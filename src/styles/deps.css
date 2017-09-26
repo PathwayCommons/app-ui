@@ -1,0 +1,14 @@
+/* css entry point for dependencies bundle */
+
+@import "normalize.css";
+
+@import "./vars.css";
+
+/* fonts */
+@import "./vendor/fonts/open-sans.css";
+@import "./vendor/fonts/inconsolata.css";
+@import "./vendor/fonts/font-awesome.css";
+/*@import "./vendor/fonts/font-awesome-form.css";*/
+@import "./vendor/fonts/font-awesome-custom.css";
+@import "./vendor/fonts/material-icons.css";
+@import "./vendor/fonts/material-form.css";

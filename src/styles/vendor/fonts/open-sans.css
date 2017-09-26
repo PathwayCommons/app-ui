@@ -46,7 +46,7 @@
 @font-face {
     font-family: 'Open Sans';
     src:
-         /* /* url('./open-sans/opensans-italic.woff2') format('woff2'), */ */
+         /* url('./open-sans/opensans-italic.woff2') format('woff2'), */
          url('./open-sans/opensans-italic.woff') format('woff')
     ;
     font-weight: 400;

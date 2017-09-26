@@ -2,9 +2,10 @@
 const {BrowserRouter, Route, Switch} = require('react-router-dom');
 const h = require('react-hyperscript');
 const _ = require('lodash');
+const Button = require('material-ui').Button;
 
 const Entry = () => h('div', 'entry');
-const Search = () => h('div', 'search');
+const Search = () => h(Button, {className: 'search'}, 'search');
 const View = () => h('div', 'view');
 const Paint = () => h('div', 'paint');
 const Err = () => h('div', 'err');

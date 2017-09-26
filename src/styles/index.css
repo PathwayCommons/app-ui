@@ -1,6 +1,10 @@
 /* css entry point */
 
-/* app styles */
-@import "./vars.css";
+/* these aren't really needed since mui gives styling */
+/* @import "./vars.css";
 @import "./animations.css";
-@import "./base.css";
+@import "./base.css"; */
+
+/* per-page css files */
+@import "./fonts.css";
+@import "./search.css";

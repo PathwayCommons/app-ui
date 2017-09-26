@@ -1,21 +1,16 @@
 require('babel-polyfill');
 
-let debug = require('./debug');
+const debug = require('./debug');
+const hh = require('hyperscript');
+const h = require('react-hyperscript');
+const Router = require('./router');
+const ReactDOM = require('react-dom');
 
 if( debug.enabled() ){
   debug.init();
 }
 
-// TODO client
-// react example
+let root = hh('div#root');
+document.body.appendChild( root );
 
-let React = require('react');
-let ReactDOM = require('react-dom');
-
-let div = document.createElement('div');
-document.body.appendChild( div );
-
-ReactDOM.render(
-  <h1>Hello, world!</h1>,
-  div
-);
+ReactDOM.render( h(Router), root);

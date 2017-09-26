@@ -33,17 +33,20 @@
     "test": "mocha"
   },
   "dependencies": {
+    "body-parser": "^1.15.1",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.13.4",
+    "fready": "^1.0.0",
+    "hyperscript": "^2.0.2",
+    "lodash": "^4.17.4",
+    "material-ui": "^1.0.0-beta.12",
+    "morgan": "^1.7.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-hyperscript": "^3.0.0",
-    "express": "^4.13.4",
+    "react-router-dom": "^4.2.2",
     "serve-favicon": "^2.3.0",
-    "cookie-parser": "^1.4.3",
-    "body-parser": "^1.15.1",
-    "morgan": "^1.7.0",
-    "winston": "^2.3.1",
-    "lodash": "^4.17.4",
-    "fready": "^1.0.0"
+    "winston": "^2.3.1"
   },
   "devDependencies": {
     "babel-preset-react": "^6.16.0",

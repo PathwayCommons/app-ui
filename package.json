@@ -43,6 +43,7 @@
     "pathway-commons": "^1.5.4",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
+    "react-ga": "^2.3.4",
     "react-hyperscript": "^3.0.0",
     "react-router-dom": "^4.2.2",
     "serve-favicon": "^2.3.0",

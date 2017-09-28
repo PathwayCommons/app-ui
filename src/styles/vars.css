@@ -1,11 +1,21 @@
 :root {
+
+  /* /Pathway commons colors */
+  --green-sea: #16A085;
+	--midnight-blue: #2C3E50;
+	--cloud: #ECF0F1;
+
   --widgetBorderColor: #aaa;
   --widgetBorderRadius: 4px;
   --widgetDisabledBorderColor: #ddd;
   --widgetDisabledTextColor: #888;
   --widgetActiveColor: #aaa;
+  --widgetToggleColor: #ccc;
+  --buttonActiveColor: #000;
   --widgetHeight: 1.75em;
   --defaultWidgetWidth: 12em;
   --activeColor: #3193fd;
   --invalidColor: #c20e0e;
+  --smallFontSize: 0.8em;
+  --fadedColor: #888;
 }

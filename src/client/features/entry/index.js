@@ -17,11 +17,12 @@ class Entry extends React.Component {
           h('h5.entry-pc-description', 'Search pathways from public databases')
         ])
       ]),
-      h(SearchBar, {
-        placeholder: 'Enter pathway name or gene names',
-        className: 'entry-searchbar',
-        icon: 'search', query: {}
-      })
+      h('div.entry-searchbar', [
+        h(SearchBar, {
+          placeholder: 'Enter pathway name or gene names',
+          icon: 'search', query: {}
+        })
+      ])
     ]);
   }
 }

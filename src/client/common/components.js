@@ -13,7 +13,7 @@ class SearchBar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      query: this.props.query
+      query: _.assign({q: ''},this.props.query)
     };
   }
 

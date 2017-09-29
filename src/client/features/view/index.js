@@ -6,3 +6,5 @@ class View extends React.Component {
     return h('div', 'View');
   }
 }
+
+module.exports = View;

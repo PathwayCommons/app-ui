@@ -6,3 +6,5 @@ class Entry extends React.Component {
     return h('div', 'Entry');
   }
 }
+
+module.exports = Entry;

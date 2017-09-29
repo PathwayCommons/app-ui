@@ -1,4 +1,4 @@
-const react = require('react');
+const React = require('react');
 const h = require('react-hyperscript');
 
 class SearchList extends React.Component {

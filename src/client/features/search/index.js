@@ -9,7 +9,6 @@ const SearchList = require('./search-list');
 class Search extends React.Component {
   constructor(props){
     super(props);
-    this.props.logPageView( this.props.history.location );
 
     const queryDefaults = {
       q: '',
@@ -23,17 +22,6 @@ class Search extends React.Component {
     this.state = {
       query: query
     };
-  }
-
-  componentWillReceiveProps( nextProps ) {
-    const locationChanged = nextProps.location !== this.props.location;
-    if( locationChanged ){
-      this.props.logEvent({
-        category: 'Search',
-        action: 'query',
-        label: nextProps.location.search
-      });
-    }
   }
 
   updateSearchQuery(query) {

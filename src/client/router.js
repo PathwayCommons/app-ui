@@ -6,11 +6,6 @@ const _ = require('lodash');
 
 const Features = require('./features');
 
-const Entry = () => h('div', 'entry');
-const Search = () => h('div', {className: 'search'}, 'search');
-const View = () => h('div', 'view');
-
-
 ReactGA.initialize('UA-43341809-7');
 const Analytics = (props) => {
   ReactGA.set({ page: props.location.pathname + props.location.search });
@@ -28,15 +23,15 @@ module.exports = () => {
       },
       {
         path: '/',
-        render: props => h(Entry, props)
+        render: props => h(Features.Entry, props)
       },
       {
         path: '/search',
-        render: props => h(Search, props)
+        render: props => h(Features.Search, props)
       },
       {
         path: '/view',
-        render: props => h(View, props)
+        render: props => h(Features.View, props)
       },
       {
         path: '/paint',

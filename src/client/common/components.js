@@ -1,14 +1,15 @@
 const React = require('react');
 const h = require('react-hyperscript');
+const _ =  require('lodash');
 
-module.exports.ErrorMessage = props => h('div', props.message || 'Error');
+const ErrorMessage = props => h('div', props.message || 'Error');
 
-module.exports.Icon = props => h('i.material-icons', props.icon);
+const Icon = props => h('i.material-icons', props.icon);
 
-module.exports.SearchFaq = props => h('div', 'faq');
+const SearchFaq = props => h('div', 'faq');
 
 // e.g. h(Icon, { icon: 'done' })
-module.exports.SearchBar = class SearchBar extends React.Component {
+class SearchBar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -31,7 +32,7 @@ module.exports.SearchBar = class SearchBar extends React.Component {
   }
 
   onSearchValueChange(e) {
-    const newQueryState = {...this.state.query};
+    const newQueryState = _.assign({}, this.state.query);
     newQueryState.q = e.target.value;
     this.setState({query: newQueryState});
   }
@@ -41,15 +42,26 @@ module.exports.SearchBar = class SearchBar extends React.Component {
     const state = this.state;
 
     return (
-      h('input', {
-        type: 'text',
-        placeholder: props.placeholder,
-        value: state.query.q,
-        onChange: e => this.onSearchValueChange(e),
-        onKeyPress: e => this.submitSearchQuery(e)
-      }, [
-        h(Icon, {icon: props.icon})
+      h('div', [
+        h('input', {
+          type: 'text',
+          placeholder: props.placeholder,
+          value: state.query.q,
+          onChange: e => this.onSearchValueChange(e),
+          onKeyPress: e => this.submitSearchQuery(e)
+        }),
+        h('a', [
+          h(Icon, {icon: props.icon})
+        ])
       ])
     );
   }
 }
+
+
+module.exports = {
+  Icon: Icon,
+  SearchBar: SearchBar,
+  SearchFaq: SearchFaq,
+  ErrorMessage: ErrorMessage
+};

@@ -26,11 +26,12 @@
 }
 
 .entry-searchbar {
+  border: none;
   width: 400px;
 }
 
 .entry-searchicon {
-  padding-top: 5px;
+  padding: 5px;
   display: flex;
   justify-content: center;
   align-items: center;

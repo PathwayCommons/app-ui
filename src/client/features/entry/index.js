@@ -1,6 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 
+const Icon = require('../../common/components').Icon;
 const SearchBar = require('../../common/components').SearchBar;
 
 class Entry extends React.Component {
@@ -15,13 +16,19 @@ class Entry extends React.Component {
         h('div.entry-title', [
           h('h2.entry-pc-title', 'athway Commons'),
           h('h5.entry-pc-description', 'Search pathways from public databases')
+        ]),
+        h('div.entry-search', [
+          h(SearchBar, {
+            className: 'entry-searchbar',
+            placeholder: 'Enter pathway name or gene names',
+            query: {}
+          }),
+          h('div.entry-searchicon', [
+            h('a', [
+              h(Icon, {icon: 'search'})
+            ])
+          ])
         ])
-      ]),
-      h('div.entry-searchbar', [
-        h(SearchBar, {
-          placeholder: 'Enter pathway name or gene names',
-          icon: 'search', query: {}
-        })
       ])
     ]);
   }

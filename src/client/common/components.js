@@ -44,15 +44,13 @@ class SearchBar extends React.Component {
     return (
       h('div', [
         h('input', {
+          className: props.className,
           type: 'text',
           placeholder: props.placeholder,
           value: state.query.q,
           onChange: e => this.onSearchValueChange(e),
           onKeyPress: e => this.submitSearchQuery(e)
-        }),
-        h('a', [
-          h(Icon, {icon: props.icon})
-        ])
+        })
       ])
     );
   }

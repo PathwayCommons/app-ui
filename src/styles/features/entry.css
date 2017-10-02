@@ -25,9 +25,9 @@
   align-items: flex-start;
 }
 
-.entry-searchbar {
+.entry-search > input {
   border: none;
-  width: 400px;
+  width: 500px;
 }
 
 .entry-searchicon {

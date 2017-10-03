@@ -97,7 +97,7 @@ class Search extends React.Component {
         ])
       ]),
       h('div.search-list-container', [
-        h('div.search-list', searchResults)
+        h('div.search-list', [`${state.searchResults.length} results`].concat(searchResults))
       ])
     ]);
   }

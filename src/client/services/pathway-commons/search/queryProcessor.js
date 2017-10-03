@@ -1,5 +1,6 @@
-import {utilities} from 'pathway-commons';
-import getHGNCData from './hgnc';
+const {utilities} = require('pathway-commons');
+const getHGNCData = require('./hgnc');
+
 
 const sourceList = [
   'uniprot',
@@ -31,7 +32,7 @@ const tokenPrefix = (phrase, collection) => {
     });
 };
 
-export default (query, failureCount = 0) => { // Pass in all query parameters
+module.exports = (query, failureCount = 0) => { // Pass in all query parameters
   // queries must be non empty strings
   let queryVal = query.q;
 

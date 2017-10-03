@@ -1,10 +1,10 @@
-const lodash = require('lodash');
+const _ = require('lodash');
 const {search, datasources} = require('pathway-commons');
 
 const processQuery = require('./queryProcessor');
 
 
-export default lodash.memoize((query, failureCount) => {
+module.exports = _.memoize((query, failureCount) => {
   failureCount = typeof failureCount === 'number' ? failureCount : 0;
   return processQuery(query, failureCount) // Get processed q using processQuery
     .then(processedQuery => { // Peform fetch using pathway-commons
@@ -52,7 +52,7 @@ export default lodash.memoize((query, failureCount) => {
       }
     })
     .catch(() => {
-      if(lodash.isEmpty(query)) { // Invalid object passed in
+      if(_.isEmpty(query)) { // Invalid object passed in
         return Promise.resolve(undefined);
       }
       if(failureCount !== -1) { // Advance failureCount and recurse

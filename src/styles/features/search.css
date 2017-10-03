@@ -4,7 +4,7 @@
 }
 .search-header-container {
   display: grid;
-  grid-template-columns: 10% 90%;
+  grid-template-columns: 10%;
   background-color: var(--midnight-blue);
   padding: 10px;
 }
@@ -44,4 +44,14 @@
   padding: 10px;
   border-radius: 5px;
   background-color: var(--cloud);
+}
+
+.search-list-container {
+  display: grid;
+  grid-template-columns: 10%;
+  padding: 10px;
+}
+
+.search-list {
+  grid-column: 2;
 }

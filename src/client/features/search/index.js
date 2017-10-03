@@ -6,13 +6,15 @@ const _ = require('lodash');
 const Icon = require('../../common/components').Icon;
 const PathwayCommonsService = require('../../services').PathwayCommonsService;
 
-const data = require('./data');
-
 class Search extends React.Component {
+
   constructor(props) {
     super(props);
+
+    const query = queryString.parse(props.location.search);
+
     this.state = {
-      query: _.assign({q: '', gt: 3, lt: 250}, this.props.query),
+      query: _.assign({q: '', gt: 3, lt: 250}, query),
       searchResults: []
     };
   }
@@ -66,7 +68,7 @@ class Search extends React.Component {
         h('h2', result.name),
         h('div', `datasource: ${result.dataSource[0]}`),
         h('div', `datasource image here`),
-        h('div', `size: ${result.size}`)
+        h('div', `size: ${result.numParticipants}`)
       ]);
     });
 

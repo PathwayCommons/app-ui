@@ -1,65 +1,40 @@
-const _ = require('lodash');
-const {search, datasources} = require('pathway-commons');
+const {search} = require('pathway-commons');
 
-const processQuery = require('./queryProcessor');
+// all datasources that return pathways
+const valid_datasources = [
+  'reactome',
+  'pid',
+  'humancyc',
+  'panther',
+  'kegg',
+  'smpdb',
+  'inoh',
+  'netpath',
+  'wikipathways'
+];
 
+const querySearch = (query) => {
+  const queryValue = query.q;
 
-module.exports = _.memoize((query, failureCount) => {
-  failureCount = typeof failureCount === 'number' ? failureCount : 0;
-  return processQuery(query, failureCount) // Get processed q using processQuery
-    .then(processedQuery => { // Peform fetch using pathway-commons
-      if(processedQuery == null) { // Check for processQuery failure
-        // Force failure and signal break recursion
-        failureCount = -1;
-        throw new Error();
-      }
-      return Promise.all([
-        search()
-          .query(query)
-          .q(processedQuery)
-          .format('json')
-          .fetch(),
-        datasources.fetch()
-      ]);
-    })
-    .then(promiseArray => { // Perform filtering and throw error if no valid results returned
-      var searchObject = promiseArray[0];
-      var datasources = promiseArray[1];
-      if(searchObject == null || (typeof searchObject === 'object' && searchObject.empty === true)) { // Check for no returned results
-        throw new Error();
-      }
+  return search()
+    .query(query)
+    .q(queryValue)
+    .datasource(valid_datasources)
+    .format('json')
+    .fetch()
+    .then(searchResult => {
+      const minResultSize = query.gt || 250;
+      const maxResultSize = query.lt || 3;
 
-      searchObject.searchHit = searchObject.searchHit.filter(item => { // Perform filtering by numParticipants
-        if(((query.lt > item.numParticipants) || query.lt === undefined) && ((query.gt < item.numParticipants) || query.gt === undefined)) {
-          return true;
-        }
-        else {
-          return false;
-        }
+      const filteredResults = searchResult.searchHit.filter(hit => {
+        const resultSize = hit.numParticipants ? hit.numParticipants : 0;
+        return minResultSize < resultSize && resultSize < maxResultSize;
       });
 
-      if(searchObject.searchHit.length > 0) { // Process searchData to add extra properties from dataSources
-        return {
-          searchHit: searchObject.searchHit.map(searchResult => {
-            searchResult['sourceInfo'] = datasources[searchResult.dataSource[0]];
-            return searchResult;
-          }),
-          ...searchObject
-        };
-      }
-      else { // Assume filtering has removed all search hits
-        throw new Error();
-      }
-    })
-    .catch(() => {
-      if(_.isEmpty(query)) { // Invalid object passed in
-        return Promise.resolve(undefined);
-      }
-      if(failureCount !== -1) { // Advance failureCount and recurse
-        return processQuery(query, failureCount + 1);
-      }
-      else { // Break recursion and return null
-        return Promise.resolve(null);
-      }
+      searchResult.searchHit = filteredResults;
+
+      return searchResult;
     });
-});
+};
+
+module.exports = querySearch;

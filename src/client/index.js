@@ -1,4 +1,5 @@
 require('babel-polyfill');
+require('whatwg-fetch');
 
 const debug = require('./debug');
 const hh = require('hyperscript');

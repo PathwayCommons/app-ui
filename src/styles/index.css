@@ -7,8 +7,6 @@
 
 /* per-page css files */
 @import "./vars.css";
-@import "./vendor/fonts/material-icons.css";
-@import "./vendor/fonts/material-form.css";
 @import "./fonts.css";
 @import "./base.css";
 @import "./app.css";

@@ -47,12 +47,13 @@ class Entry extends React.Component {
       });
     }
   }
+
   render() {
     const state = this.state;
     return h('div.entry', [
       h('div.entry-header', [
         h('a.entry-pc-link', {
-          href: 'http://www.pathwaycommons.org'
+          href: 'https://www.pathwaycommons.org'
         }, [
           h('img.entry-logo')
         ]),
@@ -61,14 +62,14 @@ class Entry extends React.Component {
           h('h5.entry-pc-description', 'Search pathways from public databases')
         ]),
         h('div.entry-search', [
-          h('input.entry-searchbar', {
+          h('input', {
             type: 'text',
             placeholder: 'Enter pathway name or gene names',
             value: state.query.q,
             onChange: e => this.onSearchValueChange(e),
             onKeyPress: e => this.onSearchValueChange(e)
           }),
-          h('div.entry-searchicon', [
+          h('div.entry-search-icon', [
             h('a', [
               h(Icon, {icon: 'search'})
             ])

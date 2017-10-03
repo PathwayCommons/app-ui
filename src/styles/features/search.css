@@ -1,3 +1,47 @@
 .search {
+  height: 100vh;
+  width: 100vw;
+}
+.search-header-container {
+  display: grid;
+  grid-template-columns: 10% 90%;
+  background-color: var(--midnight-blue);
+  padding: 10px;
+}
 
+.search-header {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+}
+
+.search-searchbar {
+  padding-left: 20px;
+  display: flex;
+  align-content: space-around;
+}
+
+.search-searchbar > input {
+  background: none;
+  background-color: var(--cloud);
+  border: none;
+  width: 500px;
+  height: 50px;
+}
+
+.search-searchbar > input[type="text"] {
+}
+
+
+.search-logo {
+  background-image: url("../image/pc_logo_dark.svg");
+  height: 50px;
+  width: 50px;
+}
+
+.search-filter-icon {
+  font-size: 24px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: var(--cloud);
 }

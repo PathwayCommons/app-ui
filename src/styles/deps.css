@@ -4,6 +4,9 @@
 
 @import "./vars.css";
 
+@import "./vendor/fonts/material-icons.css";
+@import "./vendor/fonts/material-form.css";
+
 /* fonts */
 /* @import "./vendor/fonts/roboto.css"; */
 @import "./vendor/fonts/open-sans.css";

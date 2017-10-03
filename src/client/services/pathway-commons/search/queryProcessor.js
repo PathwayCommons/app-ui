@@ -42,19 +42,22 @@ module.exports = (query, failureCount = 0) => { // Pass in all query parameters
 
   let words = query.q.trim();
 
-
   // Prefix non-symbol tokens with Lucene index field 'name'
   if (failureCount === 0) {
     return getHGNCData('hgncSymbols.txt')
       .then( tokenPrefix.bind( null, words ) ) //implicit Promise result
-      .then( result => '(name:' + escapeSpaces( words ) + ') OR (' + 'name:*' + escapeSpaces( words ) + '*) OR (' + result.join(' AND ') + ")" );
+      .then( result => {
+        return '(name:' + escapeSpaces( words ) + ') OR (' + 'name:*' + escapeSpaces( words ) + '*) OR (' + result.join(' AND ') + ")"
+      });
   }
 
   // Perform less strict search -- separated from the groups above because I found it slower on the backend
   if ( failureCount === 1 ) {
     return getHGNCData
       .then( tokenPrefix.bind( null, words ) )
-      .then( result => '(' + result.join(' OR ') + ')' );
+      .then( result => {
+        return '(' + result.join(' OR ') + ')';
+      });
   }
 
   // Perform search for matches with any white-space separated token

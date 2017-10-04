@@ -14,7 +14,7 @@ class Search extends React.Component {
     const query = queryString.parse(props.location.search);
 
     this.state = {
-      query: _.assign({q: '', gt: 3, lt: 250}, query),
+      query: _.assign({q: '', gt: 3, lt: 250, type: 'Pathway'}, query),
       searchResults: []
     };
   }
@@ -52,7 +52,8 @@ class Search extends React.Component {
 
       PathwayCommonsService.querySearch(query)
         .then(searchResults => {
-          this.setState({ searchResults: searchResults });
+          console.log(searchResults);
+          this.setState({ searchResults: searchResults ? searchResults : [] });
         });
     }
   }

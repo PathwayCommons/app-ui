@@ -1,18 +1,5 @@
 const {search} = require('pathway-commons');
 
-// all datasources that return pathways
-const valid_datasources = [
-  'reactome',
-  'pid',
-  'humancyc',
-  'panther',
-  'kegg',
-  'smpdb',
-  'inoh',
-  'netpath',
-  'wikipathways'
-];
-
 // todo
 // - return a list of search results instead of the whole search result
 // create a better algorithm that needs to:
@@ -25,13 +12,13 @@ const valid_datasources = [
 // most of them have some hits that are empty and there is no option to filter by hit size
 // therefore, multiple search methods must be used to build a list of $MAX_HITS size
 
-const querySearch = (query) => {
+const querySearch = (query, datasources) => {
   const queryValue = query.q;
 
   return search()
     .query(query)
     .q(queryValue)
-    .datasource(valid_datasources)
+    .datasource(datasources)
     .format('json')
     .fetch()
     .then(searchResult => {
@@ -43,9 +30,7 @@ const querySearch = (query) => {
         return minResultSize < resultSize && resultSize < maxResultSize;
       });
 
-      searchResult.searchHit = filteredResults;
-
-      return searchResult;
+      return filteredResults;
     });
 };
 

@@ -52,9 +52,7 @@ class Search extends React.Component {
 
       PathwayCommonsService.querySearch(query)
         .then(searchResults => {
-          this.setState({
-            searchResults: searchResults.searchHit ? searchResults.searchHit : []
-          });
+          this.setState({ searchResults: searchResults });
         });
     }
   }

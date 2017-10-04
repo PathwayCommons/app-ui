@@ -42,7 +42,7 @@ const PathwayCommonsService = {
   },
 
   querySearch (query) {
-    return search(query, validDataSources);
+    return search(query, validDataSources.map(ds => ds.id));
   } 
 };
 

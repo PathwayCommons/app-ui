@@ -50,7 +50,6 @@ const querySearch = (query) => {
       .format('json')
       .fetch()
       .then(searchResult => {
-        console.log(searchResult);
         const minResultSize = query.gt || 250;
         const maxResultSize = query.lt || 3;
 

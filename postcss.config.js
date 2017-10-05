@@ -11,7 +11,7 @@ let conf = {
       warnForDuplicates: false
     }),
     isProd ? require('cssnano')({
-      preset: 'default',
+      safe: true
     }) : null
   ].filter( isNonNil )
 };

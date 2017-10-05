@@ -9,10 +9,10 @@
 
 /* fonts */
 /* @import "./vendor/fonts/roboto.css"; */
-/*@import "./vendor/open-sans.css";*/
-@import "./vendor/open-sans-latin-greek.css";
-/*@import "./vendor/inconsolata.css";*/
-@import "./vendor/inconsolata-ascii.css";
+/*@import "./vendor/fonts/open-sans.css";*/
+@import "./vendor/fonts/open-sans-latin-greek.css";
+/*@import "./vendor/fonts/inconsolata.css";*/
+@import "./vendor/fonts/inconsolata-ascii.css";
 /* @import "./vendor/fonts/font-awesome.css"; */
 /*@import "./vendor/fonts/font-awesome-form.css";*/
 /* @import "./vendor/fonts/font-awesome-custom.css"; */

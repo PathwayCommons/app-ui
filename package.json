@@ -11,7 +11,7 @@
   },
   "homepage": "https://github.com/PathwayCommons/app-ui",
   "scripts": {
-    "postinstall": "run-s build-prod",
+    "postinstall": "run-s build",
     "start": "forever ./src/server",
     "stop": "forever stop ./src/server",
     "lint:js": "eslint ./src",

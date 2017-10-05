@@ -30,20 +30,14 @@ const PathwayCommonsService = {
   isServiceOnline (delay) {
     return pc.utilities.pcCheck(delay);
   },
-  
+
   datasources () {
     return validDataSources;
   },
 
-  lookupDataSourceIcon (datasourceIdString) {
-    return _.find(validDataSources, datasource => {
-      return datasource.id === datasourceIdString;
-    }).iconUrl;
-  },
-
   querySearch (query) {
     return search(query, validDataSources.map(ds => ds.id));
-  } 
+  }
 };
 
 // expose core cpath2 client api

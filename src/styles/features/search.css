@@ -48,10 +48,39 @@
 
 .search-list-container {
   display: grid;
-  grid-template-columns: 10%;
+  grid-template-columns: 5%;
   padding: 10px;
 }
 
 .search-list {
   grid-column: 2;
+}
+
+.search-item {
+  display: grid;
+  grid-template-columns: 10%;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.search-item > img {
+  grid-column: 1;
+  height: 50px;
+}
+
+.search-item-content {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+
+}
+
+.search-item-content-title {
+  margin: 0;
+  height: 25px;
+  color: #539DD6;
+}
+
+.search-item-content-participants {
+  color: #7F8C8D;
 }

@@ -1,5 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
+const Link = require('react-router-dom').Link;
 const queryString = require('query-string');
 const _ = require('lodash');
 
@@ -15,8 +16,27 @@ class Search extends React.Component {
 
     this.state = {
       query: _.assign({q: '', gt: 3, lt: 250, type: 'Pathway'}, query),
-      searchResults: []
+      searchResults: [],
+      dataSources: PathwayCommonsService.datasources()
     };
+  }
+
+  getSearchResult() {
+    const state = this.state;
+    const query = state.query;
+
+    if (query.q !== '') {
+      PathwayCommonsService.querySearch(query)
+      .then(searchResults => {
+        this.setState({
+          searchResults: searchResults ? searchResults : []
+        });
+      });
+    }
+  }
+
+  componentDidMount() {
+    this.getSearchResult();
   }
 
   onSearchValueChange(e) {
@@ -50,11 +70,7 @@ class Search extends React.Component {
         state: {}
       });
 
-      PathwayCommonsService.querySearch(query)
-        .then(searchResults => {
-          console.log(searchResults);
-          this.setState({ searchResults: searchResults ? searchResults : [] });
-        });
+      this.getSearchResult();
     }
   }
 
@@ -63,11 +79,19 @@ class Search extends React.Component {
     const state = this.state;
 
     const searchResults = state.searchResults.map(result => {
-      return h('div', [
-        h('h2', result.name),
-        h('div', `datasource: ${result.dataSource[0]}`),
-        h('div', `datasource image here`),
-        h('div', `size: ${result.numParticipants}`)
+      const dsInfo = _.find(state.dataSources, ds => {
+        return ds.uri === result.dataSource[0];
+      });
+
+      return h('div.search-item', [
+        h('img.search-item-icon', {src: dsInfo.iconUrl}),
+        h('div.search-item-content', [
+          h(Link, {to: {pathname: '/view', search: result.uri, target: '_blank'}}, [
+            h('h3.search-item-content-title', result.name),
+          ]),
+          h('div.search-item-content-datasource', ` ${dsInfo.name}`),
+          h('div.search-item-content-participants', `${result.numParticipants} Participants`)
+        ])
       ]);
     });
 
@@ -89,7 +113,7 @@ class Search extends React.Component {
             }),
             h('div.search-filter-icon', [
               h('a', [
-                h(Icon, {icon: 'filter_list'})
+                h(Icon, {icon: 'search'})
               ])
             ])
           ])

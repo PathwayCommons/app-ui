@@ -88,5 +88,6 @@
   },
   "engines": {
     "node": ">=6.3.0"
-  }
+  },
+  "browserslist": "last 3 versions, >1%"
 }

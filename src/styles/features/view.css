@@ -1,3 +1,56 @@
-.view {
+.View {
+  width: 100vw;
+  height: 100vh;
 
+  & .menuBar {
+    width: 100%;
+    height: 10%;
+    justify-content: space-between;
+    background-color: var(--cloud);
+
+    & .titleContainer {
+      padding-left: 3em;
+      color: var(--midnight-blue);
+      flex-grow: 1;
+    }
+
+    & .toolbarContainer {
+      padding-right: 3em;
+      flex-grow: 1;
+      justify-content: flex-end;
+
+      & .toolButton {
+        font-size: 36px;
+        color: var(--midnight-blue);
+        padding: 0.5em;
+      }
+
+      & .layoutDropdown {
+        background-color: white;
+      }
+    }
+
+  }
+
+  & .Graph {
+    width: 100%;
+    height: 90%;
+  }
+
+  /* change someday to global "snackbar" component */
+  & .editWarning {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 1.8em;
+    padding: 0.4em 1em 0.4em 1em;
+    border-radius: 3px 3px 0px 0px;
+    box-shadow: 0px 0px 47px 0px rgba(0,0,0,0.4);
+    background-color: rgba(194, 14, 14, 0.5); /* var(--invalidColor) taken and dropped to 50% opacity */
+    transition: transform 1s ease;
+
+    &.closed {
+      transform: translateY(3.8em);
+    }
+  }
 }

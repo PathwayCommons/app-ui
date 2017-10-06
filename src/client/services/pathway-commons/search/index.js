@@ -44,7 +44,7 @@ export default lodash.memoize((query, failureCount) => {
             searchResult['sourceInfo'] = datasources[searchResult.dataSource[0]];
             return searchResult;
           }),
-          ...searchObject
+          searchObject // fixed an error here by removing ... before searchObject. I may have broken something...
         };
       }
       else { // Assume filtering has removed all search hits

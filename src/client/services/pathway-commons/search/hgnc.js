@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const symbolNameBlackList = [
   'CELL'
 ];
@@ -15,11 +16,11 @@ const parseHGNCData = text => {
   return parsed;
 };
 
-module.exports = (filename) => {
+module.exports = _.memoize((filename) => {
   return fetch(filename, {method: 'get', mode: 'no-cors'})
   .then(res => res.text())
   .then(parseHGNCData)
   .then(hgncSymbols => {
     return new Set(hgncSymbols);
   });
-};
+});

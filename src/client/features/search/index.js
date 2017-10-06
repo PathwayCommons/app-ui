@@ -86,7 +86,7 @@ class Search extends React.Component {
       return h('div.search-item', [
         h('img.search-item-icon', {src: dsInfo.iconUrl}),
         h('div.search-item-content', [
-          h(Link, {to: {pathname: '/view', search: result.uri, target: '_blank'}}, [
+          h(Link, {to: {pathname: '/view', search: result.uri}, target: '_blank'}, [
             h('h3.search-item-content-title', result.name),
           ]),
           h('div.search-item-content-datasource', ` ${dsInfo.name}`),

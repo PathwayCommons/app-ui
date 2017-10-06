@@ -16,22 +16,25 @@
 }
 
 .search-searchbar {
-  padding-left: 20px;
+  border: 1px solid;
+  border-color: var(--cloud);
+  margin-left: 16px;
+  padding-left: 5px;
   display: flex;
   align-content: space-around;
+  background-color: var(--cloud);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 
+.search-searchbar {
+  box-shadow: 0 5px 10px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
 .search-searchbar > input {
   background: none;
-  background-color: var(--cloud);
   border: none;
   width: 500px;
   height: 50px;
 }
-
-.search-searchbar > input[type="text"] {
-}
-
 
 .search-logo {
   background-image: url("../image/pc_logo_dark.svg");
@@ -44,8 +47,14 @@
   border-radius: 5px;
   background-color: var(--cloud);
 }
+
 .search-search-button > button {
   height: 50px;
+  border: none;
+}
+
+.search-searchbar > button > i {
+  color: #333333;
 }
 
 .search-list-container {

@@ -10,6 +10,7 @@
 @import "./fonts.css";
 @import "./base.css";
 @import "./app.css";
+@import "./general.css";
 
 @import "./features/entry.css";
 @import "./features/search.css";

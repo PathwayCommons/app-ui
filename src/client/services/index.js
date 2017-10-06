@@ -1,5 +1,3 @@
 const PathwayCommonsService = require('./pathway-commons/');
 
-module.exports = {
-  PathwayCommonsService: PathwayCommonsService
-};
+module.exports = PathwayCommonsService;

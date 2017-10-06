@@ -39,17 +39,30 @@
   width: 50px;
 }
 
-.search-filter-icon {
+.search-search-button {
   font-size: 24px;
-  padding: 10px;
   border-radius: 5px;
   background-color: var(--cloud);
+}
+.search-search-button > button {
+  height: 50px;
 }
 
 .search-list-container {
   display: grid;
   grid-template-columns: 5%;
   padding: 10px;
+}
+
+.search-options {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: 10%;
+  padding-bottom: 5px;
+}
+
+.search-hit-counter {
+  grid-column: 2;
 }
 
 .search-list {

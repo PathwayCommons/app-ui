@@ -98,9 +98,7 @@ class Search extends React.Component {
     return h('div.search', [
       h('div.search-header-container', [
         h('div.search-header', [
-          h('a.search-pc-link', {
-            href: 'https://www.pathwaycommons.org'
-          }, [
+          h(Link, { className: 'a.search-pc-link', to: {pathname: '/'} }, [
             h('img.search-logo')
           ]),
           h('div.search-searchbar', [
@@ -111,8 +109,8 @@ class Search extends React.Component {
               onChange: e => this.onSearchValueChange(e),
               onKeyPress: e => this.onSearchValueChange(e)
             }),
-            h('div.search-filter-icon', [
-              h('a', [
+            h('div.search-search-button', [
+              h('button', { onClick: e => this.submitSearchQuery(e) }, [
                 h(Icon, {icon: 'search'})
               ])
             ])
@@ -120,7 +118,10 @@ class Search extends React.Component {
         ])
       ]),
       h('div.search-list-container', [
-        h('div.search-list', [`${state.searchResults.length} results`].concat(searchResults))
+        h('div.search-options', [
+          h('div.search-hit-counter', `${state.searchResults.length} results`)
+        ]),
+        h('div.search-list', searchResults)
       ])
     ]);
   }

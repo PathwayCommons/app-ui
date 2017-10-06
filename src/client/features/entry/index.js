@@ -69,8 +69,10 @@ class Entry extends React.Component {
             onChange: e => this.onSearchValueChange(e),
             onKeyPress: e => this.onSearchValueChange(e)
           }),
-          h('div.entry-search-icon', [
-            h('a', [
+          h('div.entry-search-button', [
+            h('button', {
+              onClick: e => this.submitSearchQuery(e)
+              },[
               h(Icon, {icon: 'search'})
             ])
           ])

@@ -59,7 +59,7 @@ class Entry extends React.Component {
         ]),
         h('div.entry-title', [
           h('h2.entry-pc-title', 'athway Commons'),
-          h('h5.entry-pc-description', 'Search pathways from public databases')
+          h('h5.entry-pc-description', 'A web resource for biological pathway data')
         ]),
         h('div.entry-search', [
           h('input', {

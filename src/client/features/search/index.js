@@ -99,7 +99,7 @@ class Search extends React.Component {
       h('div.search-header-container', [
         h('div.search-header', [
           h(Link, { className: 'a.search-pc-link', to: {pathname: '/'} }, [
-            h('img.search-logo')
+            h('i.search-logo')
           ]),
           h('div.search-searchbar', [
             h('input', {

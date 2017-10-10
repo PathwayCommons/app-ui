@@ -55,10 +55,10 @@ class Entry extends React.Component {
         h('a.entry-pc-link', {
           href: 'https://www.pathwaycommons.org'
         }, [
-          h('img.entry-logo')
+          h('i.entry-logo')
         ]),
         h('div.entry-title', [
-          h('h2.entry-pc-title', 'athway Commons'),
+          h('h2.entry-pc-title', 'Pathway Commons'),
           h('h5.entry-pc-description', 'A web resource for biological pathway data')
         ]),
         h('div.entry-search', [

@@ -5,9 +5,8 @@ Props
 - name
 - uri
 - datasource
-- active_overlay
-- cy
-- changeOverlay
+- updateLayout
+- currLayout
 */
 class Menu extends React.Component {
   render() {
@@ -20,23 +19,13 @@ class Menu extends React.Component {
     return (
       <div className='menuBar flexCenter'>
         <div className='titleContainer'>
-          <h1>{this.props.name}</h1>
+          <h4>{this.props.name+' | '+this.props.datasource}</h4>
         </div>
-        <div className='toolbarContainer flexCenter'>
-          <div className='toolButton noSelect'>
-            <i className='material-icons'>panorama</i>
-          </div>
-          <div className='toolButton noSelect'>
-            <i className='material-icons'>file_download</i>
-          </div>
-          <div className='toolButton noSelect'>
-            <i className='material-icons'>help</i>
-          </div>
-          <div className='layoutDropdown'>
-            <select value={this.props.currLayout} onChange={(e) => this.props.updateLayout(e.target.value)}>
-              {layoutItems}
-            </select>
-          </div>
+        <div className='layoutDropdown flexCenter'>
+          <span>Layout</span>
+          <select value={this.props.currLayout} onChange={(e) => this.props.updateLayout(e.target.value)}>
+            {layoutItems}
+          </select>
         </div>
       </div>
     );

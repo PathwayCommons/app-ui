@@ -2,8 +2,17 @@
 
   /* /Pathway commons colors */
   --green-sea: #16A085;
-	--midnight-blue: #2C3E50;
-	--cloud: #ECF0F1;
+  --midnight-blue: #212F3D;
+	--midnight-blue-dark: #0E243A;
+  --cloud: #ECF0F1;
+  --dark-cloud: #D3D8DA;
+  --soft-red: #d65355;
+  --soft-red-hover: #d18183;
+  --soft-blue: #007dc0;
+  --soft-blue-hover: #40a0cf;
+  --soft-green: #00a887;
+  --soft-green-hover: #45c7ad;
+  --beige: #e1e1cf;
 
   --widgetBorderColor: #aaa;
   --widgetBorderRadius: 4px;

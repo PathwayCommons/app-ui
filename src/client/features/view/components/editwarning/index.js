@@ -4,22 +4,18 @@ const React = require('react');
 class EditWarning extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      active: false
-    };
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.active) {
-      this.setState({
-        active: nextProps.active
-      });
       setTimeout(() => {
         this.props.deactivate();
       }, this.props.dur);
-    } else {
-      this.setState({active: nextProps.active});
     }
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return this.props.active !== nextProps.active;
   }
 
   // Dynamically set "left" to centre div on screen after mounting
@@ -32,11 +28,7 @@ class EditWarning extends React.Component {
 
   render() {
     return (
-      <div className={
-        'flexCenter noSelect editWarning'
-        +(this.state.active ? '' : ' closed')
-        
-      }>
+      <div className={'flexCenter noSelect editWarning'+(this.props.active ? '' : ' closed')}>
         {this.props.children}
       </div>
     );

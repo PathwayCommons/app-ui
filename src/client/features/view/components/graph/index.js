@@ -7,8 +7,8 @@ class Graph extends React.Component {
       graphId: Math.floor(Math.random() * Math.pow(10, 8)) + 1,
       graphEmpty: false,
       graphRendered: false,
-      width: '100%',
-      height: '100%'
+      width: '100vw',
+      height: '100vh'
     };
   }
 
@@ -19,7 +19,23 @@ class Graph extends React.Component {
   componentDidMount() {
     const container = document.getElementById(this.state.graphId);
     this.props.cy.mount(container);
-    this.renderGraph(this.props.graphJSON);
+    this.checkRenderGraph(this.props.graphJSON);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.checkRenderGraph(nextProps.graphJSON);
+  }
+
+  // isempty part should be moved to a more communal file
+  // retrieved from https://coderwall.com/p/_g3x9q/how-to-check-if-javascript-object-is-empty
+  checkRenderGraph(graphJSON) {
+    if (this.state.graphRendered) return;
+    var empty = true;    
+    for(var key in graphJSON) {
+        if(graphJSON.hasOwnProperty(key))
+            empty = false;
+    }
+    if (!empty) this.renderGraph(graphJSON);
   }
 
   // Graph rendering is not tracked by React
@@ -28,39 +44,17 @@ class Graph extends React.Component {
 
     cy.remove('*');
     cy.add(graphJSON);
-    cy.zoom(0.75); // [NOT WORKING] lets the graph container be large without the graph being obnoxiously big
+    cy.zoom(0.75); // [NOT WORKING]
 
     //toolTipCreator.bindTippyToElements(cy);
     this.props.updateRenderStatus(true);
+    this.setState({graphRendered: true});
   }
 
   render() {
     if (!this.state.graphEmpty) {
       return (
         <div className='Graph flexCenter'>
-          {/* <List className='layoutMenu'>
-            <ListItem
-              button
-              aria-haspopup='true'
-              aria-controls='lock-menu'
-              aria-label={`Layout | ${this.state.layout}`}
-              onClick={(e) => this.setState({layoutMenuOpen: true, layoutMenuAnchorEl: e.currentTarget})}
-            >
-              <ListItemText
-                primary={`Layout | ${this.state.layout}`}
-              />
-            </ListItem>
-          </List>
-          <Menu
-            anchorEl={this.state.layoutMenuAnchorEl}
-            open={this.state.layoutMenuOpen}
-            onRequestClose={() => this.setState({layoutMenuOpen: false})}
-          >
-            {layoutDropdownItems}
-          </Menu> */}
-          {/* <div className="SpinnerContainer">
-            <Spinner hidden={this.state.graphRendered} />
-          </div> */}
           <div id={this.state.graphId} style={{
             width: this.state.width,
             height: this.state.height

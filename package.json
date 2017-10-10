@@ -34,7 +34,7 @@
     "test": "mocha"
   },
   "dependencies": {
-    "body-parser": "^1.15.1",
+    "body-parser": "^1.18.2",
     "classnames": "^2.2.5",
     "cookie-parser": "^1.4.3",
     "cytoscape": "git+https://github.com/d2fong/cytoscape.js.git#unstable-build",
@@ -46,12 +46,14 @@
     "cytoscape-sbgn-stylesheet": "3.0.1",
     "cytoscape-klay": "^3.0.0",    
     "ejs": "^2.5.7",
-    "express": "^4.13.4",
+    "express": "^4.16.2",
+    "express-jwt": "^5.3.0",    
     "fready": "^1.0.0",
     "hyperscript": "^2.0.2",
+    "ip": "^1.1.5",
     "klayjs": "^0.4.1",
     "lodash": "^4.17.4",
-    "morgan": "^1.7.0",
+    "morgan": "^1.9.0",
     "pathway-commons": "^1.5.4",
     "query-string": "^5.0.0",
     "react": "^16.0.0",
@@ -60,10 +62,12 @@
     "react-hyperscript": "^3.0.0",
     "react-router-dom": "^4.2.2",
     "sbgnml-to-cytoscape": "^4.0.1",
-    "serve-favicon": "^2.3.0",
     "socket.io": "^2.0.3",
+    "rethinkdb": "^2.3.3",
+    "serve-favicon": "^2.4.5",
+    "uuid": "^3.1.0",
     "whatwg-fetch": "^2.0.3",
-    "winston": "^2.3.1"
+    "winston": "^2.4.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

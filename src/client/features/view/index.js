@@ -4,13 +4,16 @@ const h = require('react-hyperscript');
 const Menu = require('./components/index.js').Menu;
 const Graph = require('./components/index.js').Graph;
 const EditWarning = require('./components/index.js').EditWarning;
+const Sidebar = require('./components/index.js').Sidebar;
 
 const lo = require('./layout/');
 const make_cytoscape = require('./cy/');
 const test = require('./example.js');
 
 const queryString = require('query-string');
-const PathwayCommonsService = require('../../services');
+const PathwayCommonsService = require('../../services/index.js').PathwayCommonsService;
+// const io = require('socket.io-client');
+const CDC = require('../../services/index.js').CDC;
 
 class View extends React.Component {
   constructor(props) {
@@ -19,8 +22,7 @@ class View extends React.Component {
     this.state = {
       query: query,
       cy: make_cytoscape({ headless: true }), // cytoscape mounted after Graph component has mounted
-      sbgnText: {}, // outdated. graphJSON is used now. Any function using this field needs to be changed
-      graphJSON: test.cyjson, // TEST VALUE. CHANGE TO {} in production
+      graphJSON: [],
       layout: lo.defaultLayout,
       graphRendered: false,
       availableLayouts: [],
@@ -28,10 +30,10 @@ class View extends React.Component {
       datasource: '',
       warningMessage: '',
       activateWarning: false,
-      active_overlay: ''
+      sidebarOpen: false,
+      sidebarMenu: '',
+      count: 0
     };
-
-    //socket.emit(this.state.query.uri)
 
     PathwayCommonsService.query(query.uri, 'json', 'Named/displayName')
       .then(responseObj => {
@@ -53,17 +55,22 @@ class View extends React.Component {
     //   action: 'view',
     //   label: query.uri
     // });
+    this.updateGraphJSON = this.updateGraphJSON.bind(this);
   }
 
-  componentWillReceiveProps( nextProps ) {
-    const locationChanged = nextProps.location !== this.props.location;
-    if( locationChanged ){
-      this.props.logEvent({
-        category: 'View',
-        action: 'view',
-        label: this.state.query.uri
-      });
-    }
+  // componentWillReceiveProps( nextProps ) {
+  //   const locationChanged = nextProps.location !== this.props.location;
+  //   if( locationChanged ){
+  //     this.props.logEvent({
+  //       category: 'View',
+  //       action: 'view',
+  //       label: this.state.query.uri
+  //     });
+  //   }
+  // }
+
+  updateGraphJSON(newGraphJSON) {
+    this.setState({graphJSON: newGraphJSON});
   }
   
   componentWillMount() {
@@ -79,19 +86,19 @@ class View extends React.Component {
     } else {
       console.log('No edit key submitted');
     }
+
+    //CDC.initLayoutSocket(this.updateGraphJSON);
+    //CDC.requestGraph(this.state.query.uri, 9);
   }
   
   updateRenderStatus(status) {
-    console.log(this.state);
     if (status) {
       const def_layout = lo.getDefaultLayout(this.state.cy.nodes().size());
-      console.log('Status is true and layout is '+def_layout);
       this.setState(
         {
           availableLayouts: lo.layoutNames(this.state.cy.nodes().size()),
           graphRendered: status,
-          layout: def_layout,
-          new_val: true
+          layout: def_layout
         },
         () => {
           this.performLayout(this.state.layout);
@@ -109,16 +116,20 @@ class View extends React.Component {
     cy.layout(lo.layoutMap.get(layoutName)).run();
   }
 
+  handleUpdateSidebar(menu) {
+    this.setState({
+      sidebarMenu: menu,
+      sidebarOpen: true
+    });
+  }
+
   render() {
+    console.log('VIEW RENDERED');
     return (
       <div className="View">
         <Menu
           name={this.state.name}
-          uri={this.state.query.uri}
           datasource={this.state.datasource}
-          active_overlay={this.state.active_overlay}
-          cy={this.state.cy}
-          changeOverlay={(overlay) => this.handleOverlayToggle(overlay)}
           layouts={this.state.availableLayouts}
           updateLayout={(layout) => this.performLayout(layout)}
           currLayout={this.state.layout}
@@ -132,10 +143,15 @@ class View extends React.Component {
         <EditWarning
           active={this.state.activateWarning}
           deactivate={() => this.setState({activateWarning: false})}
-          dur={4000}
+          dur={2000}
         >
           {this.state.warningMessage}
         </EditWarning>
+        <Sidebar
+          open={this.state.sidebarOpen}
+          menu={this.state.sidebarMenu}
+          closeMenu={() => this.setState({sidebarOpen: false})}
+        />
       </div>
     );
   }

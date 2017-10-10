@@ -89,8 +89,8 @@ class Search extends React.Component {
           h(Link, {to: {pathname: '/view', search: queryString.stringify({uri: result.uri})}, target: '_blank'}, [
             h('h3.search-item-content-title', result.name),
           ]),
-          h('div.search-item-content-datasource', ` ${dsInfo.name}`),
-          h('div.search-item-content-participants', `${result.numParticipants} Participants`)
+          h('p.search-item-content-datasource', ` ${dsInfo.name}`),
+          h('p.search-item-content-participants', `${result.numParticipants} Participants`)
         ])
       ]);
     });

@@ -1,3 +1,16 @@
 .paint {
+  width: 100vw;
+  height: 100vh;
 
+  display: flex;
+  flex-direction: row;
+}
+
+.paint-menu {
+  flex-basis: 300px;
+  background-color: var(--midnight-blue);
+}
+
+.paint-graph {
+  flex-basis: 1000px;
 }

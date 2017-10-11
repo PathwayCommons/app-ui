@@ -33,12 +33,10 @@ const PathwayCommonsService = {
 
   datasources () {
     return validDataSources;
-  },
-
-  querySearch (query) {
-    return search(query);
   }
 };
+
+PathwayCommonsService.querySearch = _.memoize(search, query => JSON.stringify(query));
 
 // expose core cpath2 client api
 PathwayCommonsService.core = pc;

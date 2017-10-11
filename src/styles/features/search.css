@@ -3,14 +3,11 @@
   width: 100vw;
 }
 .search-header-container {
-  display: grid;
-  grid-template-columns: 10%;
   background-color: var(--midnight-blue);
   padding: 10px;
 }
 
 .search-header {
-  grid-column: 2;
   display: flex;
   align-items: center;
 }
@@ -59,42 +56,31 @@
 }
 
 .search-list-container {
-  display: grid;
-  grid-template-columns: 5%;
   padding: 10px;
 }
 
 .search-options {
-  grid-column: 2;
-  display: grid;
-  grid-template-columns: 10%;
   padding-bottom: 5px;
 }
 
 .search-hit-counter {
-  grid-column: 2;
 }
 
 .search-list {
-  grid-column: 2;
 }
 
 .search-item {
-  display: grid;
-  grid-template-columns: 10%;
   padding-top: 20px;
   padding-bottom: 20px;
 }
 
 .search-item > img {
-  grid-column: 1;
   height: auto;
   max-height: 80px;
   max-width: 100px;
 }
 
 .search-item-content {
-  grid-column: 2;
   display: flex;
   flex-direction: column;
 

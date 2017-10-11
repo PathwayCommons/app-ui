@@ -101,6 +101,10 @@ class Search extends React.Component {
           h(Link, { className: 'a.search-pc-link', to: {pathname: '/'} }, [
             h('i.search-logo')
           ]),
+          h('div.search-pc-title', [
+            h('h2', 'Pathway'),
+            h('h2', 'Commons')
+          ]),
           h('div.search-searchbar', [
             h('input', {
               type: 'text',

@@ -3,6 +3,8 @@ const { env } = require('process');
 const isProd = env.NODE_ENV === 'production';
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const isNonNil = x => x != null;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const isProfile = env.PROFILE == 'true';
 
 let conf = {
   entry: './src/client/index.js',
@@ -11,12 +13,15 @@ let conf = {
     filename: './build/bundle.js'
   },
 
+  devtool: 'inline-source-map',
   module: {
     rules: [
-      { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" }
+      { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' }
     ]
   },
   plugins: [
+    isProfile ? new BundleAnalyzerPlugin() : null,
+
     new webpack.EnvironmentPlugin(['NODE_ENV']),
 
     new webpack.optimize.CommonsChunkPlugin({

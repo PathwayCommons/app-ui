@@ -7,11 +7,11 @@ let conf = {
     require('postcss-import')(),
     require('postcss-url')({ url: 'inline', maxSize: Number.MAX_SAFE_INTEGER }),
     require('postcss-cssnext')({
-      browsers: "> 1%, last 2 versions",
+      browsers: require('./package.json').browserslist,
       warnForDuplicates: false
     }),
     isProd ? require('cssnano')({
-      preset: 'default',
+      safe: true
     }) : null
   ].filter( isNonNil )
 };

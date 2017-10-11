@@ -21,6 +21,7 @@ The following environment variables can be used to configure the server:
 - `npm stop` : stop the server
 - `npm run build` : build project
 - `npm run build-prod` : build the project for production
+- `npm run bundle-profile` : visualise the bundle dependencies
 - `npm run clean` : clean the project
 - `npm run watch` : watch mode (debug mode enabled, autorebuild, autoreload)
 - `npm test` : run tests
@@ -73,4 +74,3 @@ All files `/test` will be run by [Mocha](https://mochajs.org/).  You can `npm te
   1. For a breaking API change, run `npm version major.`
   1. For a specific version number (e.g. 1.2.3), run `npm version 1.2.3`.
 1. Push the release: `git push origin --tags`
-

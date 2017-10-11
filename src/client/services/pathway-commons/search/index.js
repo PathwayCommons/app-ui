@@ -1,65 +1,76 @@
-const lodash = require('lodash');
-const {search, datasources} = require('pathway-commons');
+const {search, utilities} = require('pathway-commons');
 
-const processQuery = require('./queryProcessor');
+const getHGNCData = require('./hgnc');
 
+const removeSpaces = (token) => {
+  return token.replace(/(\s+)/g, '\\$1');
+};
 
-export default lodash.memoize((query, failureCount) => {
-  failureCount = typeof failureCount === 'number' ? failureCount : 0;
-  return processQuery(query, failureCount) // Get processed q using processQuery
-    .then(processedQuery => { // Peform fetch using pathway-commons
-      if(processedQuery == null) { // Check for processQuery failure
-        // Force failure and signal break recursion
-        failureCount = -1;
-        throw new Error();
-      }
-      return Promise.all([
-        search()
-          .query(query)
-          .q(processedQuery)
-          .format('json')
-          .fetch(),
-        datasources.fetch()
-      ]);
-    })
-    .then(promiseArray => { // Perform filtering and throw error if no valid results returned
-      var searchObject = promiseArray[0];
-      var datasources = promiseArray[1];
-      if(searchObject == null || (typeof searchObject === 'object' && searchObject.empty === true)) { // Check for no returned results
-        throw new Error();
-      }
+const processPhrase = (phrase, collection) => {
+  const sourceList = [
+    'uniprot',
+    'chebi',
+    'smpdb',
+    'refseq'
+  ];
 
-      searchObject.searchHit = searchObject.searchHit.filter(item => { // Perform filtering by numParticipants
-        if(((query.lt > item.numParticipants) || query.lt === undefined) && ((query.gt < item.numParticipants) || query.gt === undefined)) {
-          return true;
-        }
-        else {
-          return false;
-        }
+  const tokens = phrase.split(/\s+/g);
+
+  return tokens
+    .map(token => {
+      //if symbol is recognized by at least one source
+      const tokenRecognized = sourceList.some(source => utilities.sourceCheck(source, token))
+      || collection.has(token.toUpperCase());
+      const luceneToken = token.replace(/([\!\*\+\-\&\|\(\)\[\]\{\}\^\~\?\:\/\\"])/g, '\\$1');
+
+      return tokenRecognized ? luceneToken : ( 'name:' + '*' + luceneToken + '*' );
+    });
+};
+
+const processQueryString = async (queryString) => {
+  return getHGNCData('hgncSymbols.txt')
+    .then(hgncSymbols => {
+      const processedQuery = processPhrase(queryString, hgncSymbols);
+    
+      // return three query candidates to search, first query is fastest, last query slowest
+      return [
+        '(name:' + removeSpaces(queryString) + ') OR (' + 'name:*' + removeSpaces(queryString) + '*) OR (' + processedQuery.join(' AND ') + ')',
+        '(' + processedQuery + ')',
+        queryString
+      ];
+    });
+};
+
+// needs query object with the following values:
+//  - q: string to search
+//  - lt: max graph size result returned
+//  - gt: min graph size result returned
+//  - type: the type of object to get (usually 'Pathway')
+
+const querySearch = async (query) => {
+  const processedQueries = await processQueryString(query.q.trim());
+
+  for (let pq of processedQueries) {
+    const searchResult = await search()
+      .query(query)
+      .q(pq)
+      .format('json')
+      .fetch();
+
+    if (searchResult.searchHit.length > 0) {
+      const minResultSize = query.gt || 250;
+      const maxResultSize = query.lt || 3;
+
+      const filteredResults = searchResult.searchHit.filter(hit => {
+        const resultSize = hit.numParticipants ? hit.numParticipants : 0;
+        return minResultSize < resultSize && resultSize < maxResultSize;
       });
 
-      if(searchObject.searchHit.length > 0) { // Process searchData to add extra properties from dataSources
-        return {
-          searchHit: searchObject.searchHit.map(searchResult => {
-            searchResult['sourceInfo'] = datasources[searchResult.dataSource[0]];
-            return searchResult;
-          }),
-          searchObject // fixed an error here by removing ... before searchObject. I may have broken something...
-        };
-      }
-      else { // Assume filtering has removed all search hits
-        throw new Error();
-      }
-    })
-    .catch(() => {
-      if(lodash.isEmpty(query)) { // Invalid object passed in
-        return Promise.resolve(undefined);
-      }
-      if(failureCount !== -1) { // Advance failureCount and recurse
-        return processQuery(query, failureCount + 1);
-      }
-      else { // Break recursion and return null
-        return Promise.resolve(null);
-      }
-    });
-});
+      return filteredResults;
+    }
+  }
+
+  return [];
+};
+
+module.exports = querySearch;

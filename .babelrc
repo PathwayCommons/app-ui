@@ -3,6 +3,9 @@
     "env",
     "react"
   ],
+  "plugins": [
+    "transform-async-to-generator"
+  ],
   "ignore": "node_modules/**/*",
   "sourceMaps": "inline"
 }

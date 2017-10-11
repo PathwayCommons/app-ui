@@ -1,5 +1,4 @@
-const fetch = require('whatwg-fetch');
-
+const _ = require('lodash');
 const symbolNameBlackList = [
   'CELL'
 ];
@@ -11,18 +10,17 @@ const parseHGNCData = text => {
 
   let parsed = textNoHeader.split(/[\s,]+/)
     .filter(symbol => {
-      if (symbol.length > 0 || symbolNameBlackList.indexOf(symbol) == -1) {
-        return true;
-      }
-      return false;
+      return symbol.length > 0 || symbolNameBlackList.indexOf(symbol) == -1;
     });
 
   return parsed;
 };
 
-module.exports = (filename) => {
+module.exports = _.memoize((filename) => {
   return fetch(filename, {method: 'get', mode: 'no-cors'})
   .then(res => res.text())
   .then(parseHGNCData)
-  .then(hgncSymbols => new Set(hgncSymbols));
-};
+  .then(hgncSymbols => {
+    return new Set(hgncSymbols);
+  });
+});

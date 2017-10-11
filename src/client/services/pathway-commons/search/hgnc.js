@@ -23,4 +23,4 @@ module.exports = _.memoize((filename) => {
   .then(hgncSymbols => {
     return new Set(hgncSymbols);
   });
-});
+}, fname => fname);

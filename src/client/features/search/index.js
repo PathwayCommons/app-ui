@@ -134,21 +134,24 @@ class Search extends React.Component {
               ])
             ]),
             h('div.search-tabs', [
-              h('button', {
-                className: classNames('search-option-item', state.query.type === 'Pathway' ? 'search-option-item-active' : ''),
-                onClick: e => this.setQueryType(e, 'Pathway') }, 'Pathways'),
-              h('button', {
-                className: classNames('search-option-item', state.query.type === 'Catalysis' ? 'search-option-item-active' : ''),
-                onClick: e => this.setQueryType(e, 'Catalysis') }, 'Catalysis'),
-              h('button', {
-                className: classNames('search-option-item', state.query.type === 'Interaction' ? 'search-option-item-active' : ''),
-                onClick: e => this.setQueryType(e, 'Interaction') }, 'Interaction'),
-              h('button', {
-                className: classNames('search-option-item', state.query.type === 'MolecularInteraction' ? 'search-option-item-active' : ''),
-                onClick: e => this.setQueryType(e, 'MolecularInteraction') }, 'Molecular Interaction'),
-              h('button', {
-                className: classNames('search-option-item', state.query.type === 'TemplateReactionRegulation' ? 'search-option-item-active' : ''),
-                onClick: e => this.setQueryType(e, 'TemplateReactionRegulation') }, 'Template Reaction Regulation'),
+              h('div', {className: classNames('search-option-item', state.query.type === 'Pathway' ? 'search-option-item-active' : '')}, [
+                h('button', { onClick: e => this.setQueryType(e, 'Pathway') }, 'Pathways')
+              ]),
+              h('div', {className: classNames('search-option-item', state.query.type === 'Catalysis' ? 'search-option-item-active' : '')}, [
+                h('button', { onClick: e => this.setQueryType(e, 'Catalysis') }, 'Catalysis')
+              ]),
+              h('div', {className: classNames('search-option-item', state.query.type === 'Interaction' ? 'search-option-item-active' : '')}, [
+                h('button', {
+                  onClick: e => this.setQueryType(e, 'Interaction') }, 'Interaction')
+              ]),
+              h('div', {className: classNames('search-option-item', state.query.type === 'MolecularInteraction' ? 'search-option-item-active' : '')}, [
+                h('button', {
+                  onClick: e => this.setQueryType(e, 'MolecularInteraction') }, 'Molecular Interaction')
+              ]),
+              h('div', {className: classNames('search-option-item', state.query.type === 'TemplateReactionRegulation' ? 'search-option-item-active' : '')}, [
+                h('button', {
+                  onClick: e => this.setQueryType(e, 'TemplateReactionRegulation') }, 'Template Reaction Regulation')
+              ])
             ])
           ])
         ])

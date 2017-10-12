@@ -3,6 +3,7 @@ const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
 const queryString = require('query-string');
 const _ = require('lodash');
+const classNames = require('classnames');
 
 const Icon = require('../../common/components').Icon;
 const PathwayCommonsService = require('../../services').PathwayCommonsService;
@@ -54,6 +55,12 @@ class Search extends React.Component {
       newQueryState.q = e.target.value;
       this.setState({query: newQueryState});
     }
+  }
+
+  setQueryType(e, type) {
+    const newQueryState = _.assign({}, this.state.query);
+    newQueryState.type = type;
+    this.setState({query: newQueryState}, function () { this.submitSearchQuery(); });
   }
 
   submitSearchQuery() {
@@ -111,26 +118,43 @@ class Search extends React.Component {
             h('h2', 'Pathway'),
             h('h2', 'Commons')
           ]),
-          h('div.search-searchbar', [
-            h('input', {
-              type: 'text',
-              placeholder: 'Enter pathway name or gene names',
-              value: state.query.q,
-              onChange: e => this.onSearchValueChange(e),
-              onKeyPress: e => this.onSearchValueChange(e)
-            }),
-            h('div.search-search-button', [
-              h('button', { onClick: e => this.submitSearchQuery(e) }, [
-                h(Icon, {icon: 'search'})
+          h('div.search-searchbar-container', [
+            h('div.search-searchbar', [
+              h('input', {
+                type: 'text',
+                placeholder: 'Enter pathway name or gene names',
+                value: state.query.q,
+                onChange: e => this.onSearchValueChange(e),
+                onKeyPress: e => this.onSearchValueChange(e)
+              }),
+              h('div.search-search-button', [
+                h('button', { onClick: e => this.submitSearchQuery(e) }, [
+                  h(Icon, {icon: 'search'})
+                ])
               ])
+            ]),
+            h('div.search-tabs', [
+              h('button', {
+                className: classNames('search-option-item', state.query.type === 'Pathway' ? 'search-option-item-active' : ''),
+                onClick: e => this.setQueryType(e, 'Pathway') }, 'Pathways'),
+              h('button', {
+                className: classNames('search-option-item', state.query.type === 'Catalysis' ? 'search-option-item-active' : ''),
+                onClick: e => this.setQueryType(e, 'Catalysis') }, 'Catalysis'),
+              h('button', {
+                className: classNames('search-option-item', state.query.type === 'Interaction' ? 'search-option-item-active' : ''),
+                onClick: e => this.setQueryType(e, 'Interaction') }, 'Interaction'),
+              h('button', {
+                className: classNames('search-option-item', state.query.type === 'MolecularInteraction' ? 'search-option-item-active' : ''),
+                onClick: e => this.setQueryType(e, 'MolecularInteraction') }, 'Molecular Interaction'),
+              h('button', {
+                className: classNames('search-option-item', state.query.type === 'TemplateReactionRegulation' ? 'search-option-item-active' : ''),
+                onClick: e => this.setQueryType(e, 'TemplateReactionRegulation') }, 'Template Reaction Regulation'),
             ])
           ])
         ])
       ]),
       h('div.search-list-container', [
-        h('div.search-options', [
-          h('div.search-hit-counter', `${state.searchResults.length} results`)
-        ]),
+        h('div.search-hit-counter', `${state.searchResults.length} results`),
         h('div.search-list', searchResults)
       ])
     ]);

@@ -8,10 +8,7 @@ router.get('*', function(req, res, next) {
 });
 
 router.post('/paint', function(req, res, next) {
-  console.log(req.body);
-  res.render('paint', {paintData: JSON.stringify(req.body)}, function( err, html) {
-    console.log(err, html);
-  });
+  res.render('paint', {paintData: JSON.stringify(req.body)});
 });
 
 module.exports = router;

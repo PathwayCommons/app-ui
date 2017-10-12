@@ -15,7 +15,7 @@ class Search extends React.Component {
     const query = queryString.parse(props.location.search);
 
     this.state = {
-      query: _.assign({q: '', gt: 3, lt: 250, type: 'Pathway'}, query),
+      query: _.assign({q: '', gt: 2, lt: 250, type: 'Pathway'}, query),
       searchResults: [],
       dataSources: PathwayCommonsService.datasources()
     };

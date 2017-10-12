@@ -43,9 +43,9 @@ const processQueryString = async (queryString) => {
 
 // needs query object with the following values:
 //  - q: string to search
+//  - type: the type of bioPAX class to get
 //  - lt: max graph size result returned
 //  - gt: min graph size result returned
-//  - type: the type of object to get (usually 'Pathway')
 
 const querySearch = async (query) => {
   const processedQueries = await processQueryString(query.q.trim());

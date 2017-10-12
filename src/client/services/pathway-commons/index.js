@@ -1,5 +1,8 @@
 const pc = require('pathway-commons');
-const querySearch = require('./search/');
+const _ = require('lodash');
+
+const search = require('./search/');
+const validDataSources = require('./datasources');
 
 const PathwayCommonsService = {
   // query pathway commons for pathways, sbgn, information, etc.
@@ -28,13 +31,14 @@ const PathwayCommonsService = {
     return pc.utilities.pcCheck(delay);
   },
 
-  lookupDataSourceIcon (datasourceString) {
-    return pc.datasources.lookupIcon(datasourceString);
+  datasources () {
+    return validDataSources;
+  },
+
+  querySearch (query) {
+    return search(query);
   }
-
 };
-
-PathwayCommonsService.querySearch = querySearch;
 
 // expose core cpath2 client api
 PathwayCommonsService.core = pc;

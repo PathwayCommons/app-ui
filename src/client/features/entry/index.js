@@ -11,7 +11,7 @@ class Entry extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      query: _.assign({q: '', gt: 3, lt: 250}, this.props.query)
+      query: _.assign({q: '', gt: 3, lt: 250, type: 'Pathway'}, this.props.query)
     };
   }
 
@@ -55,11 +55,11 @@ class Entry extends React.Component {
         h('a.entry-pc-link', {
           href: 'https://www.pathwaycommons.org'
         }, [
-          h('img.entry-logo')
+          h('i.entry-logo')
         ]),
         h('div.entry-title', [
-          h('h2.entry-pc-title', 'athway Commons'),
-          h('h5.entry-pc-description', 'Search pathways from public databases')
+          h('h2.entry-pc-title', 'Pathway Commons'),
+          h('h5.entry-pc-description', 'A web resource for biological pathway data')
         ]),
         h('div.entry-search', [
           h('input', {
@@ -69,8 +69,10 @@ class Entry extends React.Component {
             onChange: e => this.onSearchValueChange(e),
             onKeyPress: e => this.onSearchValueChange(e)
           }),
-          h('div.entry-search-icon', [
-            h('a', [
+          h('div.entry-search-button', [
+            h('button', {
+              onClick: e => this.submitSearchQuery(e)
+              },[
               h(Icon, {icon: 'search'})
             ])
           ])

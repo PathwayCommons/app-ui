@@ -4,18 +4,18 @@
 
   & .menuBar {
     position: absolute;
+    justify-content: flex-start;
     z-index: 100;
     top: 0;
     left: 2%;
-    justify-content: space-around;
     background-color: var(--beige);
     border-radius: 0px 0px 3px 3px;
     border: 2px solid black;
     border-width: 0px 2px 2px 2px;
-    padding: 1em;
-    box-shadow: 0px 8px 47px 0px rgba(0,0,0,0.4);
+    box-shadow: 0px 8px 35px 0px rgba(0,0,0,0.4);
 
     & .titleContainer {
+      padding: 1em;
       color: var(--midnight-blue);
 
       & h4 {
@@ -23,11 +23,37 @@
       }
     }
 
+    & .layoutDropdownButton {
+      height: 2em;
+      width: 2em;
+      color: var(--midnight-blue);
+      border-color: black;
+      border-style: solid;
+      border-width: 0px 0px 0px 2px;
+      box-sizing: border-box;
+      font-size: 2em;
+      transition: all 0.1s linear;
+      cursor: pointer;
+
+      &:hover {
+        background-color: var(--beige-hover);
+      }
+    }
+
     & .layoutDropdown {
+      display: none;
       margin-left: 1em;
+      margin-right: 1em;
+
       & select {
         margin-left: 1em;
+        margin-right: 1em;
         background-color: white;
+      }
+
+      &.open {
+        max-width: 100%;
+        display: inline;
       }
     }
   }
@@ -45,13 +71,14 @@
     height: 1.8em;
     padding: 0.4em 1em 0.4em 1em;
     border-radius: 3px 3px 0px 0px;
-    box-shadow: 0px 0px 47px 0px rgba(0,0,0,0.4);
+    box-shadow: 0px 0px 35px 0px rgba(0,0,0,0.4);
     background-color: rgba(194, 14, 14, 0.5); /* var(--invalidColor) taken and dropped to 50% opacity */
-    transition: transform 1s ease 0s, width 1s linear 1s;
+    transition: transform 1s ease 0s, opacity 1s ease 1s; 
 
     &.closed {
       transform: translateY(100%);
       box-shadow: 0px;
+      opacity: 0;
     }
   }
 
@@ -67,23 +94,32 @@
 
     &.open {
       transform: translateX(0%);
-      box-shadow: 0px 0px 47px 0px rgba(0,0,0,0.4);
+      box-shadow: 0px 0px 35px 0px rgba(0,0,0,0.4);
+    }
+
+    & a {
+      color: var(--link);
+      text-decoration: underline;
+      &:visited {
+        color: var(--link-visited);
+      }
     }
 
     & .sidebarSelect {
       position: absolute;
-      z-index: 200;
-      top: calc(50% - 4.5em);
+      /* z-index: 200; */
+      top: calc(50% - 6em);
       left: -3em;
-      height: 9em;
+      height: 12em;
       width: 3em;
       display: flex;
       flex-direction: column;
-      border: 2px solid black;
+      border-color: black;
+      border-style: solid;
       border-width: 2px 0px 2px 2px;
       /* box-sizing: border-box; */
       border-radius: 3px 0px 0px 3px;
-      box-shadow: -8px 0px 47px 0px rgba(0,0,0,0.4);
+      box-shadow: -8px 0px 35px 0px rgba(0,0,0,0.4);
 
       & .toolButton {
         height: 3em;
@@ -91,6 +127,7 @@
         color: var(--midnight-blue);
         background-color: var(--cloud);
         transition: all 0.1s linear;
+        position: relative;
         /* border-bottom: 1px solid black; */ /* causes sliver issue on bottom button*/
 
         &:first-child {
@@ -101,11 +138,19 @@
 
         &:nth-child(2) {
           background-color: var(--soft-blue);
+          border-top: 2px solid black;
           &:hover {background-color: var(--soft-blue-hover)}
         }
 
         &:nth-child(3) {
+          background-color: var(--soft-purple);
+          border-top: 2px solid black;
+          &:hover {background-color: var(--soft-purple-hover)}
+        }
+
+        &:nth-child(4) {
           background-color: var(--soft-green);
+          border-top: 2px solid black;
           &:hover {background-color: var(--soft-green-hover)}
         }
 
@@ -127,12 +172,121 @@
     & .sidebarContent {
       height: 100%;
       width: 100%;
-      z-index: 100;
-      background-color: var(--cloud);
       border: 2px solid black;
       border-width: 0px 0px 0px 2px;
-      overflow-y: scroll;
-      padding: 1em;
+      position: relative;
+      z-index: 50;
+
+      & .sidebarText {
+        height: 100%;
+        width: 100%;
+        z-index: 300;
+        position: relative;
+        background-color: var(--cloud);
+        overflow-y: scroll;
+        border-color: var(--beige);
+        border-style: solid;
+        border-width: 0px 0px 0px 10px;
+        padding: 1em;
+        box-sizing: border-box;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        transition: all 0.5s linear;
+
+        /* change someday to global "imageCard" component */
+        & .imageCard {
+          margin: auto;
+          margin-top: 1em;
+          margin-bottom: 1em;
+          max-width: 90%;
+          padding: 1em;
+          flex-direction: column;
+          background-color: white;
+          box-shadow: 0px 0px 35px 0px rgba(0,0,0,0.75);
+
+          & img {
+            border: 1px solid black;
+            min-height: 3em;
+            min-width: 100%;
+            max-width: 100%;
+            text-align: center;
+            line-height: 3em;
+            margin-bottom: 1em;
+          }
+
+          & span {
+            font-size: 0.75em;
+          }
+        }
+
+        & .fileDownloadMenu {
+          width: 100%;
+          height: 100%;
+
+
+          & .downloadOption {
+            /* height: 10em; */
+
+            width: 95%;
+            margin: auto;
+            box-sizing: border-box;
+            padding: 1em;
+            padding-left: 0;
+            background-color: white;
+            display: flex;
+            align-content: center;
+            border-style: solid;
+            border-color: black;
+            border-width: 2px 2px 0px 2px;
+
+            &:first-child {
+              margin-top: 1em;
+            }
+
+            &:last-child {
+              margin-bottom: 1em;
+              border-width: 2px 2px 2px 2px;
+            }
+
+            & .downloadIconContainer {
+              width: 30%;
+              height: 100%;
+              margin: auto;
+
+              
+              & .downloadIconInnerContainer {
+                width: 1em;
+                height: 1em;
+                padding: 0.2em;
+                font-size: 1em;
+                color: black;
+                border-radius: 50%;
+                font-size: 2em;
+                background-color: var(--soft-blue);
+                color: var(--midnight-blue);
+                transition: all 0.1s linear;
+                border: 2px solid black;
+
+                &:hover {
+                  background-color: var(--soft-blue-hover);
+                  cursor: pointer;
+                }
+              }
+            }
+
+            & .downloadOptionDescription {
+              width: 70%;
+              height: 100%;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: flex-start;
+            }
+          }
+        }
+
+      }
     }
 
   }

@@ -17,8 +17,14 @@ class Search extends React.Component {
     this.state = {
       query: _.assign({q: '', gt: 2, lt: 250, type: 'Pathway'}, query),
       searchResults: [],
-      dataSources: PathwayCommonsService.datasources()
+      dataSources: []
     };
+
+    PathwayCommonsService.datasources()
+    .then(result => this.setState({
+      dataSources: result
+      })
+    );
   }
 
   getSearchResult() {

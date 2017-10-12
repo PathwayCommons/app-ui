@@ -5,6 +5,7 @@ const FileDownloadMenu = require('./menus/fileDownload.js');
 const GraphInfoMenu = require('./menus/graphInfoMenu.js');
 
 const PathwayCommonsService = require('../../../../services/index.js').PathwayCommonsService;
+const tippy = require('tippy.js');
 
 // Currently a really bad solution to a problem I can't seem to solve programatically
 const buttonColors = {
@@ -26,6 +27,20 @@ class Sidebar extends React.Component {
 
     this.updateIfOutOfMenu = this.updateIfOutOfMenu.bind(this);
 
+  }
+
+  componentDidMount() {
+    this.initTooltips();
+  }
+
+  initTooltips() {
+    tippy('.toolButton', {
+      delay: [800, 400],
+      animation: 'scale',
+      theme: 'dark',
+      arrow: true,
+      position: 'left'
+    });
   }
 
   

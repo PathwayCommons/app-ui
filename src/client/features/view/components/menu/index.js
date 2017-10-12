@@ -1,4 +1,5 @@
 const React = require('react');
+const tippy = require('tippy.js');
 
 /*
 Props
@@ -14,6 +15,19 @@ class Menu extends React.Component {
     this.state = {
       dropdownOpen: false
     };
+  }
+
+  componentDidMount() {
+    this.initTooltips();
+  }
+
+  initTooltips() {
+    tippy('.layoutDropdownButton', {
+      delay: [800, 400],
+      animation: 'scale',
+      theme: 'dark',
+      arrow: true
+    });
   }
 
   render() {
@@ -41,6 +55,7 @@ class Menu extends React.Component {
         <div
           className='layoutDropdownButton flexCenter noSelect'
           onClick={() => this.setState({dropdownOpen: !this.state.dropdownOpen})}
+          title='Additional layout options'
         >
           <i className='material-icons'>timeline</i>
         </div>

@@ -80,6 +80,7 @@
   color: var(--cloud);
   margin-right: 20px;
   border: 0;
+  font-size: 14px;
 }
 
 .search-option-item-active {

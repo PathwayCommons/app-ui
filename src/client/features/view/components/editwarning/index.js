@@ -18,6 +18,10 @@ class EditWarning extends React.Component {
     return this.props.active !== nextProps.active;
   }
 
+  componentWillUpdate() {
+    document.getElementsByClassName('editWarning')[0].style.display = (this.props.active ? 'flex' : 'none');
+  }
+
   // Dynamically set "left" to centre div on screen after mounting
   componentDidMount() {
     const warningDOM = document.getElementsByClassName('editWarning')[0];

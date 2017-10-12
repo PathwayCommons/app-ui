@@ -1,5 +1,5 @@
 const io = require('socket.io-client');
-var socket = io('192.168.90.176:2001');
+var socket = io('192.168.90.176:3000');
 
 const CDC = {
   initLayoutSocket(updateFunction) {
@@ -9,7 +9,7 @@ const CDC = {
   },
 
   requestGraph(uri, version) {
-    socket.emit('getlayout', {uri: uri, version: version.toString()});
+    socket.emit('Layout/Get', {uri: uri, version: version.toString()});
   },
 
   requestKeyEval(key) {

@@ -3,6 +3,11 @@
   width: 100vw;
 }
 .search-header-container {
+<<<<<<< HEAD
+=======
+  display: grid;
+  grid-template-columns: 10%;
+>>>>>>> Added menus to view. Layout dropdown still needs to be fleshed out.
   background-color: var(--midnight-blue);
   padding: 10px;
   padding-left: 20px;
@@ -33,6 +38,10 @@
 .search-searchbar {
   border: 1px solid;
   border-color: var(--cloud);
+<<<<<<< HEAD
+=======
+  margin-left: 16px;
+>>>>>>> Added menus to view. Layout dropdown still needs to be fleshed out.
   padding-left: 5px;
   display: flex;
   align-content: space-around;

@@ -11,7 +11,11 @@ class Entry extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+<<<<<<< HEAD
       query: _.assign({q: '', gt: 2, lt: 250, type: 'Pathway'}, this.props.query)
+=======
+      query: _.assign({q: '', gt: 3, lt: 250, type: 'Pathway'}, this.props.query)
+>>>>>>> Added menus to view. Layout dropdown still needs to be fleshed out.
     };
   }
 

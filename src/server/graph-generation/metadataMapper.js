@@ -26,7 +26,7 @@ var DOMParser = require('xmldom').DOMParser;
 //Map metadata from BioPax to nodes
 //Returns a cy cytoscape json
 //Requires valid BioPax and sbgn files
-module.exports.mapMetaData = function (biopax, sbgn){
+module.exports = function (biopax, sbgn){
   //Convert sbgn to json
   let cyGraph = convert(sbgn);
 
@@ -152,7 +152,7 @@ function buildBioPaxTree(children, biopaxFile) {
   });
   var tokens = ' :percent.bold.white :elapseds.italic.white';
   var completedColor = 'red';
-  var schema = '[.white:filled.' + completedColor + ':blank.grey] .white' + tokens;
+  var schema = 'Mapping Metadata [.white:filled.' + completedColor + ':blank.grey] .white' + tokens;
   bar.setSchema(schema);
   bar.tick(100 / children.length); 
 
@@ -171,7 +171,7 @@ function buildBioPaxTree(children, biopaxFile) {
     var subtree = buildBioPaxSubtree(children[i], biopaxFile, visited);
     result.push([id, subtree]);
 
-    //Increment bar 
+    //Increment bar
     bar.tick((bar.total - bar.current) / (children.length - i));
 
   }
@@ -179,6 +179,9 @@ function buildBioPaxTree(children, biopaxFile) {
   while(!bar.completed){
     bar.tick();
   }
+
+  //Clear progress bar 
+  bar.clear(); 
 
   //Return Biopax Tree
   return result;

@@ -92,4 +92,4 @@ function getCytoscapeJson(uri) {
 
 module.exports = {
   getCytoscapeJson : getCytoscapeJson
-}; 
+};

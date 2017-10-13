@@ -146,16 +146,6 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
 function buildBioPaxTree(children, biopaxFile) {
   var result = [];
 
-  //Progress Bar 
-  var bar = new ProgressBar({
-    total: children.length
-  });
-  var tokens = ' :percent.bold.white :elapseds.italic.white';
-  var completedColor = 'red';
-  var schema = 'Mapping Metadata [.white:filled.' + completedColor + ':blank.grey] .white' + tokens;
-  bar.setSchema(schema);
-  bar.tick(100 / children.length); 
-
   //Iterate over all children
   for (var i = 0; i < children.length; i++) {
 
@@ -171,18 +161,7 @@ function buildBioPaxTree(children, biopaxFile) {
     var subtree = buildBioPaxSubtree(children[i], biopaxFile, visited);
     result.push([id, subtree]);
 
-    //Increment bar
-    bar.tick((bar.total - bar.current) / (children.length - i));
-
   }
-
-  while(!bar.completed){
-    bar.tick();
-  }
-
-  //Clear progress bar 
-  bar.clear(); 
-
   //Return Biopax Tree
   return result;
 }

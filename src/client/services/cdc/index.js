@@ -3,8 +3,14 @@ var socket = io('192.168.90.176:3000');
 
 const CDC = {
   initLayoutSocket(updateFunction) {
-    socket.on('LayoutPackage', function(cyJSON) {
+    socket.on('LayoutPackage', (cyJSON) => {
       updateFunction(cyJSON.graph);
+    });
+  },
+
+  initEditLinkSocket(updateFunction) {
+    socket.on('EditKey', (editURI) => {
+      updateFunction(editURI);
     });
   },
 
@@ -12,9 +18,15 @@ const CDC = {
     socket.emit('Layout/Get', {uri: uri, version: version.toString()});
   },
 
-  requestKeyEval(key) {
-    socket.emit('API CALL TO BE CHANGED', {key: key.toString()});
+  requestEditLink(uri, version) {
+    // console.log('--------------------------------\nREQUESTING EDIT LINK FOR '+uri);
+    socket.emit('getEditKey', {uri: uri, version: version.toString()});
   }
+
 };
+
+socket.on('error', (msg) => {
+  console.log('##################\nCDC error\n'+msg+'\n##################');
+});
 
 module.exports = CDC;

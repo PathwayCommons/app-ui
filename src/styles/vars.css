@@ -6,12 +6,6 @@
 	--midnight-blue-dark: #0E243A;
   --cloud: #ECF0F1;
   --dark-cloud: #D3D8DA;
-
-  /* for now the --soft-red, --soft-blue, etc.
-  need to be copied over to the js file for the sidebar
-  which is currently at
-  src/client/features/view/components/sidebar/index.js
-  until I figure out a better solution */
   --soft-red: #d65355;
   --soft-red-hover: #d18183;
   --soft-blue: #007dc0;
@@ -20,7 +14,6 @@
   --soft-green-hover: #45c7ad;
   --soft-purple: #ad5fd1;
   --soft-purple-hover: #b885cf;
-
   --beige: #e1e1cf;
   --beige-hover: #f3f3e3;
 

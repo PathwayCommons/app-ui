@@ -7,15 +7,6 @@ const GraphInfoMenu = require('./menus/graphInfoMenu.js');
 const PathwayCommonsService = require('../../../../services/index.js').PathwayCommonsService;
 const tippy = require('tippy.js');
 
-// Currently a really bad solution to a problem I can't seem to solve programatically
-const buttonColors = {
-  'info': '#d65355',
-  'file_download': '#007dc0',
-  'help': '#00a887',
-  'center_focus_strong': '#ad5fd1',
-  'center_focus_weak': '#ad5fd1'
-};
-
 class Sidebar extends React.Component {
   constructor(props) {
     super(props);
@@ -23,6 +14,14 @@ class Sidebar extends React.Component {
       open: false,
       activeMenu: '',
       nodeData: false,
+      toolButtonNames: ['info', 'file_download', 'center_focus_strong', 'center_focus_weak', 'help'],
+      tooltips: [
+        'See extra information about this graph',
+        'Graph download options',
+        'Display node information',
+        'Field guide to interpreting the display'        
+      ],
+      buttonColours: []
     };
 
     this.updateIfOutOfMenu = this.updateIfOutOfMenu.bind(this);
@@ -31,6 +30,7 @@ class Sidebar extends React.Component {
 
   componentDidMount() {
     this.initTooltips();
+    this.initStripeColours();
   }
 
   initTooltips() {
@@ -43,12 +43,27 @@ class Sidebar extends React.Component {
     });
   }
 
+  initStripeColours() {
+    const toolButtonNames = this.state.toolButtonNames;
+    var colours = {};
+    for (var i = 0; i < toolButtonNames.length; i++) {
+      const button_name = toolButtonNames[i];
+      var button = button_name;
+
+      // bandaid for the issue of two icons for one button
+      if (button_name === 'center_focus_strong') button = 'center_focus_weak';
+
+      colours[button_name] = window
+      .getComputedStyle(document.getElementsByClassName(button+'MenuButton')[0])
+      .getPropertyValue('background-color');
+    }
+    this.setState({buttonColours: colours});
+  }
   
 
   handleIconClick(button) {
     if (!this.state.open) {this.toggleCloseListener(true);}
-    // I feel bad using this constant but I can't figure out how to get the right color programatically
-    document.getElementsByClassName('sidebarText')[0].style.borderColor = buttonColors[button];
+    document.getElementsByClassName('sidebarText')[0].style.borderColor = this.state.buttonColours[button];
     var toolButtons = document.getElementsByClassName('toolButton');
     for (var i = toolButtons.length - 1; i >= 0; i--) {
       toolButtons[i].style.zIndex = 1;
@@ -105,14 +120,9 @@ class Sidebar extends React.Component {
       )
     };
 
-    var toolButtonNames = ['info', 'file_download', 'center_focus', 'help'];
-    this.state.nodeData ? toolButtonNames[2] += '_strong' : toolButtonNames[2] += '_weak';
-    const tooltips = [
-      'See extra information about this graph',
-      'Graph download options',
-      'Field guide to interpreting the display',
-      'Display node information'
-    ];
+    var toolButtonNames = this.state.toolButtonNames.slice();
+    this.state.nodeData ? toolButtonNames.splice(3, 1) : toolButtonNames.splice(2, 1);
+    const tooltips = this.state.tooltips;
     const toolButtons = toolButtonNames.map((button, index) => {
       var buttonClassName = button+'MenuButton';
       return (

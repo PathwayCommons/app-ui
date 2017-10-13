@@ -1,36 +1,19 @@
-/**
-    Pathway Commons Central Data Cache
 
-    Pathway Commons Database Interaction Functions
-    accessDB.js
-
-    Purpose : Provides functions to read from and write to the database.
-
-    Requires : None
-
-    Effects : None
-
-    Note : None
-
-    TODO: 
-    - go over error handling and create meaningful failure messages and mechanisms
-    - clean up auxillary test files and move them into mocha/chai
-    - add layout cache to database design. Create helper scripts to handle flushing of cache  
-
-    @author Geoff Elder
-    @version 1.1 2017/10/10
-**/
+/*
+- go over error handling and create meaningful failure messages and mechanisms
+- clean up auxillary test files and move them into mocha/chai
+- add layout cache to database design. Create helper scripts to handle flushing of cache
+*/
 
 const dbName = 'layouts';
 const r = require('rethinkdb');
 const uuid = require('uuid/v4');
 const heuristics = require('./heuristics.js');
-const checksum = require('checksum');
 
 
 // Convenience function to create root for common queries depending on whether
 // the desired version of PC is 'latest' or an exact version number
-function getQueryRoot(pcID, releaseID) {
+function getQueryRoot(pcID, releaseID){
   // Two options for the query root depending on if releaseID is specified or 'latest' is used
   // if latest: order the version rows matching the pcid and take the highest version
   const latestQuery = r.db(dbName).table('version').filter({ pc_id: pcID }).orderBy('release_id').limit(1);
@@ -49,7 +32,7 @@ function insert(table, data, connection, callback) {
 
 // Convenience function to handle the result of an asynchronous call with
 // an optional callback and a returned promise if none is given.
-function handleResult(resultPromise, callback) {
+function handleResult(resultPromise, callback){
   if (callback) {
     resultPromise.then(result => {
       callback(result);
@@ -58,7 +41,7 @@ function handleResult(resultPromise, callback) {
     });
   } else {
     return resultPromise;
-  }
+  } 
 }
 
 // returns a promise for a connection to the database.
@@ -66,43 +49,24 @@ function connect() {
   return r.connect({ host: 'localhost', port: 28015 });
 }
 
-
-function compareGraphs(graph1, graph2){
-  if (graph1.checksum === graph2.checksum){
-    return (graph1 === graph2);
-  }
-
-  return false;
-}
-
-
-function isNewGraph(newGraph, connection){
-  var graphList = r.db(dbName)
-  .table('graph')
-  .run(connection);
-
-  var numGraphs = graphList.length;
-  var i = 0;
-
-  while(i<numGraphs){
-    if(compareGraphs(newGraph,graphList[i])){
-      return false;
-    }
-    i++;
-  }
-
-  return true;
-}
 // create a database entry for a graph object. No default layout is
 // stored. pcID is expected to be the pathway commons uri, data the 
 // graph object and release the version of pathway commons associated
 // with all this data.
 function createNew(pcID, data, release, connection, callback) {
 
-  var graphID = uuid();
-  var obj = { id: graphID, graph: data, checksum: checksum(data) };
-  var createPromise = insert('graph', obj, connection);
-
+  // Insert the graph object. 
+  // this try block exists to help me understand the behaviour
+  // of the 8 misbehaving files.
+  try {
+    var graphID = uuid();
+    //console.log(JSON.stringify(data));
+    var obj = {id:graphID, graph: data};
+    //console.log(obj);
+    var createPromise = insert('graph', obj, connection);
+  } catch (e) {
+    throw e;
+  }
 
   createPromise.then(() => {
     // Create the version id map row. Connects the entry point (PC_id + release_id) to the graph and its layouts
@@ -125,7 +89,7 @@ version of PC.
 */
 function getGraphID(pcID, releaseID, connection, callback) {
   // set the generic root for ease of use throughout the function.
-  var queryRoot = getQueryRoot(pcID, releaseID);
+  var queryRoot = getQueryRoot(pcID,releaseID);
 
   // The result of both of these queries will always be a cursor of length one
   // (once proper databse instantiation is complete)
@@ -184,7 +148,7 @@ Accepts 'latest' as a valid releaseID
 */
 function getGraphAndLayout(pcID, releaseID, connection, callback) {
   // Extract a list of layouts associated with the version from the database
-  var layout = getLayout(pcID, releaseID, connection);
+  var layout = getLayout(pcID,releaseID,connection);
 
   // Extract the graph as well. Maybe this should be its own function
   var graph = getGraph(pcID, releaseID, connection);
@@ -192,13 +156,13 @@ function getGraphAndLayout(pcID, releaseID, connection, callback) {
   // Package the combined results together to return
   var data = Promise.all([layout, graph])
     .then(([layout, graph]) => {
-      return { layout: layout ? layout.positions : null, graph: graph ? graph.graph : null };
+      return { layout: layout ? layout.positions : null, graph: graph.graph };
     }).catch(() => {
       throw Error('Error: data could not be retrieved');
     });
 
   // handle callback/promise decision
-  return handleResult(data, callback);
+  handleResult(data,callback);
 }
 
 function getLayout(pcID, releaseID, connection, callback) {
@@ -214,11 +178,6 @@ function getLayout(pcID, releaseID, connection, callback) {
     }).catch((e) => {          // from a cursor to an array
       throw e;
     }).then((versionArray) => {
-      if (!versionArray.legnth) {
-        let err = new Error('No saved layouts');
-        err.status = 'NoLayouts';
-        throw err;
-      }
       // join the layouts to their layout ids 
       return r.expr(versionArray[0].layout_ids) // create a rethink expression from list of ids
         .eqJoin((id) => { return id; }, r.db(dbName).table('layout'))
@@ -232,35 +191,31 @@ function getLayout(pcID, releaseID, connection, callback) {
       // currently just returns the most recent submission
       return heuristics.run(allSubmissions);
     }).catch((e) => {
-      if (e.status === 'NoLayouts') {
-        layout = null;
-      } else {
-        throw e;
-      }
+      throw e;
     });
 
   // handle callback/promise decision
-  return handleResult(layout, callback);
+  handleResult(layout,callback);
 }
 
-function getGraph(pcID, releaseID, connection, callback) {
+function getGraph (pcID, releaseID, connection, callback){
   // set the generic root for ease of use throughout the function.
   var queryRoot = getQueryRoot(pcID, releaseID);
 
   var graph = queryRoot
-    .eqJoin('graph_id', r.db(dbName).table('graph'))
-    .zip()
-    .pluck('graph')
-    .run(connection)
-    .then((cursor) => {
-      return cursor.toArray();
-    }).catch((e) => {
-      throw e;
-    }).then((array) => {
-      return array[0];
-    });
+  .eqJoin('graph_id', r.db(dbName).table('graph'))
+  .zip()
+  .pluck('graph')
+  .run(connection)
+  .then((cursor) => {
+    return cursor.toArray();
+  }).catch((e) => {
+    throw e;
+  }).then((array) => {
+    return array[0];
+  });
 
-  return handleResult(graph, callback);
+  handleResult(graph,callback);
 }
 
 module.exports = {

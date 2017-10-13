@@ -79,22 +79,17 @@
   flex-direction: row;
 }
 .search-option-item {
+  color: var(--cloud);  
   margin-right: 20px;
-  height: 40px;
+  height: 30px;
   font-size: 14px;
 }
 
-.search-option-item > button {
-  border-radius: 0;
-  border: none;
-  outline: none;
-  color: var(--cloud);
+.search-option-item > a:hover {
+  cursor: pointer;
 }
 
-.search-option-item > button:focus {
-  border: 0;
-  outline: none;
-}
+
 
 .search-option-item-active {
   color: var(--green-sea);

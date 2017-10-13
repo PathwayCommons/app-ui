@@ -110,6 +110,22 @@ class Search extends React.Component {
       ]);
     });
 
+    const searchTypes = [
+      { name: 'Pathways', value: 'Pathway' },
+      { name: 'Catalysis', value: 'Catalysis' },
+      { name: 'Molecular Interactions', value: 'MolecularInteraction' },
+      { name: 'Transcription/Translation', value: 'TemplateReactionRegulation' }
+    ];
+
+    const searchTypeTabs = searchTypes.map(searchType => {
+      return h('div', {
+        onClick: e => this.setQueryType(e, searchType.value),
+        className: classNames('search-option-item', state.query.type === searchType.value ? 'search-option-item-active' : '')
+      }, [
+        h('a', searchType.name)
+      ]);
+    });
+
     return h('div.search', [
       h('div.search-header-container', [
         h('div.search-header', [
@@ -135,22 +151,7 @@ class Search extends React.Component {
                 ])
               ])
             ]),
-            h('div.search-tabs', [
-              h('div', {className: classNames('search-option-item', state.query.type === 'Pathway' ? 'search-option-item-active' : '')}, [
-                h('button', { onClick: e => this.setQueryType(e, 'Pathway') }, 'Pathways')
-              ]),
-              h('div', {className: classNames('search-option-item', state.query.type === 'Catalysis' ? 'search-option-item-active' : '')}, [
-                h('button', { onClick: e => this.setQueryType(e, 'Catalysis') }, 'Catalysis')
-              ]),
-              h('div', {className: classNames('search-option-item', state.query.type === 'MolecularInteraction' ? 'search-option-item-active' : '')}, [
-                h('button', {
-                  onClick: e => this.setQueryType(e, 'MolecularInteraction') }, 'Molecular Interaction')
-              ]),
-              h('div', {className: classNames('search-option-item', state.query.type === 'TemplateReactionRegulation' ? 'search-option-item-active' : '')}, [
-                h('button', {
-                  onClick: e => this.setQueryType(e, 'TemplateReactionRegulation') }, 'Transcription/Translation')
-              ])
-            ])
+            h('div.search-tabs', searchTypeTabs)
           ])
         ])
       ]),

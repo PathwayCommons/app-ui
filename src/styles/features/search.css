@@ -121,7 +121,6 @@
   display: flex;
   padding-top: 20px;
   padding-bottom: 20px;
-  width: 790px;
 }
 
 .search-item > img {
@@ -133,9 +132,6 @@
 
 .search-item-content {
   padding-left: 10px;
-  display: flex;
-  flex-direction: column;
-  flex-flow: column wrap;
 }
 
 .search-item-content-title {

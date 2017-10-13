@@ -97,10 +97,12 @@ class Search extends React.Component {
       });
 
       return h('div.search-item', [
-        h('img.search-item-icon', {src: dsInfo.iconUrl}),
+        h('div.search-item-icon', [
+          h('img', {src: dsInfo.iconUrl})
+        ]),
         h('div.search-item-content', [
           h(Link, {to: {pathname: '/view', search: queryString.stringify({uri: result.uri})}, target: '_blank'}, [
-            h('h3.search-item-content-title', result.name),
+            h('h3.search-item-content-title', result.name  || 'N/A'),
           ]),
           h('p.search-item-content-datasource', ` ${dsInfo.name}`),
           h('p.search-item-content-participants', `${result.numParticipants} Participants`)
@@ -140,17 +142,13 @@ class Search extends React.Component {
               h('div', {className: classNames('search-option-item', state.query.type === 'Catalysis' ? 'search-option-item-active' : '')}, [
                 h('button', { onClick: e => this.setQueryType(e, 'Catalysis') }, 'Catalysis')
               ]),
-              h('div', {className: classNames('search-option-item', state.query.type === 'Interaction' ? 'search-option-item-active' : '')}, [
-                h('button', {
-                  onClick: e => this.setQueryType(e, 'Interaction') }, 'Interaction')
-              ]),
               h('div', {className: classNames('search-option-item', state.query.type === 'MolecularInteraction' ? 'search-option-item-active' : '')}, [
                 h('button', {
                   onClick: e => this.setQueryType(e, 'MolecularInteraction') }, 'Molecular Interaction')
               ]),
               h('div', {className: classNames('search-option-item', state.query.type === 'TemplateReactionRegulation' ? 'search-option-item-active' : '')}, [
                 h('button', {
-                  onClick: e => this.setQueryType(e, 'TemplateReactionRegulation') }, 'Template Reaction Regulation')
+                  onClick: e => this.setQueryType(e, 'TemplateReactionRegulation') }, 'Transcription/Translation')
               ])
             ])
           ])

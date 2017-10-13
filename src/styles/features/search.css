@@ -123,11 +123,14 @@
   padding-bottom: 20px;
 }
 
-.search-item > img {
-  max-height: 40px;
-  width: auto;
+
+.search-item-icon {
+  width: 80px;
+  height: 40px;
+}
+.search-item-icon > img {
   max-width: 80px;
-  height: auto;
+  max-height: 40px;
 }
 
 .search-item-content {

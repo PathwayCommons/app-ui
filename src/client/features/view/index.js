@@ -12,7 +12,6 @@ const test = require('./example.js');
 
 const queryString = require('query-string');
 const PathwayCommonsService = require('../../services/index.js').PathwayCommonsService;
-// const io = require('socket.io-client');
 const CDC = require('../../services/index.js').CDC;
 
 class View extends React.Component {
@@ -124,7 +123,7 @@ class View extends React.Component {
   }
 
   render() {
-    console.log('VIEW RENDERED');
+    // console.log('VIEW RENDERED');
     return (
       <div className="View">
         <Menu

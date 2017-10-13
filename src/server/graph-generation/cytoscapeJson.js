@@ -68,7 +68,6 @@ function getMetadataJson(uri) {
   });
 }
 
-
 //Return enhanced cytoscape json 
 //Requires a valid pathway uri 
 function getCytoscapeJson(uri) {
@@ -90,3 +89,7 @@ function getCytoscapeJson(uri) {
     spinner.error('main');
   })
 }
+
+module.exports = {
+  getCytoscapeJson : getCytoscapeJson
+}; 

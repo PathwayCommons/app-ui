@@ -12,7 +12,13 @@
   --soft-blue-hover: #40a0cf;
   --soft-green: #00a887;
   --soft-green-hover: #45c7ad;
+  --soft-purple: #ad5fd1;
+  --soft-purple-hover: #b885cf;
   --beige: #e1e1cf;
+  --beige-hover: #f3f3e3;
+
+  --link: #03A9F4;
+  --link-visited: #7E57C2;
 
   --widgetBorderColor: #aaa;
   --widgetBorderRadius: 4px;

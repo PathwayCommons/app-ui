@@ -12,7 +12,6 @@ const test = require('./example.js');
 
 const queryString = require('query-string');
 const PathwayCommonsService = require('../../services/index.js').PathwayCommonsService;
-// const io = require('socket.io-client');
 const CDC = require('../../services/index.js').CDC;
 
 class View extends React.Component {
@@ -87,8 +86,8 @@ class View extends React.Component {
       console.log('No edit key submitted');
     }
 
-    //CDC.initLayoutSocket(this.updateGraphJSON);
-    //CDC.requestGraph(this.state.query.uri, 9);
+    CDC.initLayoutSocket(this.updateGraphJSON);
+    CDC.requestGraph(this.state.query.uri, 9);
   }
   
   updateRenderStatus(status) {
@@ -124,12 +123,14 @@ class View extends React.Component {
   }
 
   render() {
-    console.log('VIEW RENDERED');
+    // console.log('VIEW RENDERED');
     return (
       <div className="View">
         <Menu
           name={this.state.name}
+          nameFallback='Unnamed Pathway'
           datasource={this.state.datasource}
+          datasourceFallback='Unnamed Datasource'
           layouts={this.state.availableLayouts}
           updateLayout={(layout) => this.performLayout(layout)}
           currLayout={this.state.layout}
@@ -143,7 +144,7 @@ class View extends React.Component {
         <EditWarning
           active={this.state.activateWarning}
           deactivate={() => this.setState({activateWarning: false})}
-          dur={2000}
+          dur={4000}
         >
           {this.state.warningMessage}
         </EditWarning>
@@ -151,6 +152,9 @@ class View extends React.Component {
           open={this.state.sidebarOpen}
           menu={this.state.sidebarMenu}
           closeMenu={() => this.setState({sidebarOpen: false})}
+          cy={this.state.cy}
+          uri={this.state.query.uri}
+          name={this.state.name}
         />
       </div>
     );

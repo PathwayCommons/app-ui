@@ -1,20 +1,32 @@
 const io = require('socket.io-client');
-var socket = io('192.168.90.176:2001');
+var socket = io('192.168.90.176:3000');
 
 const CDC = {
   initLayoutSocket(updateFunction) {
-    socket.on('LayoutPackage', function(cyJSON) {
+    socket.on('LayoutPackage', (cyJSON) => {
       updateFunction(cyJSON.graph);
     });
   },
 
-  requestGraph(uri, version) {
-    socket.emit('getlayout', {uri: uri, version: version.toString()});
+  initEditLinkSocket(updateFunction) {
+    socket.on('EditKey', (editURI) => {
+      updateFunction(editURI);
+    });
   },
 
-  requestKeyEval(key) {
-    socket.emit('API CALL TO BE CHANGED', {key: key.toString()});
+  requestGraph(uri, version) {
+    socket.emit('Layout/Get', {uri: uri, version: version.toString()});
+  },
+
+  requestEditLink(uri, version) {
+    // console.log('--------------------------------\nREQUESTING EDIT LINK FOR '+uri);
+    socket.emit('getEditKey', {uri: uri, version: version.toString()});
   }
+
 };
+
+socket.on('error', (msg) => {
+  console.log('##################\nCDC error\n'+msg+'\n##################');
+});
 
 module.exports = CDC;

@@ -1,0 +1,17 @@
+/*
+Most of the styles for the admin page come from the search.css styling, since it is essentially the same application
+right now. This may be changedin the future.
+*/
+
+.Admin {
+  width: 100vw;
+  height: 100vh;
+}
+
+.search-item-content-name {
+  margin: 0;
+  height: 25px;
+  margin-top: 2px;
+  font-size: 1em;
+  font-weight: bold;
+}

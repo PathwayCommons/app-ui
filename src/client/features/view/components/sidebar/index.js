@@ -12,6 +12,7 @@ class Sidebar extends React.Component {
     super(props);
     this.state = {
       open: false,
+      locked: false,
       activeMenu: '',
       nodeData: false,
       toolButtonNames: ['info', 'file_download', 'center_focus_strong', 'center_focus_weak', 'help'],
@@ -62,7 +63,6 @@ class Sidebar extends React.Component {
   
 
   handleIconClick(button) {
-    if (!this.state.open) {this.toggleCloseListener(true);}
     document.getElementsByClassName('sidebarText')[0].style.borderColor = this.state.buttonColours[button];
     var toolButtons = document.getElementsByClassName('toolButton');
     for (var i = toolButtons.length - 1; i >= 0; i--) {
@@ -73,11 +73,6 @@ class Sidebar extends React.Component {
       open: true,
       activeMenu: button
     });
-  }
-
-  toggleCloseListener(open) {
-    if (open) {window.addEventListener('mousedown', this.updateIfOutOfMenu);}
-    else {window.removeEventListener('mousedown', this.updateIfOutOfMenu);}
   }
 
   updateIfOutOfMenu(evt) {
@@ -93,12 +88,17 @@ class Sidebar extends React.Component {
       }
       currentEl = currentEl.parentElement;
 
-      // Catching infinite loops for safety. We should never have this run more than 100 times
+      // Catching infinite loops for safety. This code should
+      // never run. Doesn't hurt to be safe though?
       loops++;
       if (loops > 100) {return;}
     }
-    this.toggleCloseListener(false);
     this.setState({open: false});
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    if (nextState.open && !nextState.locked) {window.addEventListener('mousedown', this.updateIfOutOfMenu);}
+    else {window.removeEventListener('mousedown', this.updateIfOutOfMenu);}
   }
 
   render() {
@@ -131,7 +131,7 @@ class Sidebar extends React.Component {
           onClick={() => this.handleIconClick(button)}
           title={tooltips[index]}
         >
-          <i className={'material-icons '+buttonClassName}>{button}</i>
+          <i className='material-icons'>{button}</i>
         </div>
       );
     });
@@ -140,6 +140,15 @@ class Sidebar extends React.Component {
       <div className={'sidebarMenu'+(this.state.open ? ' open' : '')}>
         <div className='sidebarSelect'>
           {toolButtons}
+        </div>
+        <div className={'sidebarSelect conditional'+(this.state.open ? ' open' : '')}>
+          <div
+            className={'toolButton noSelect flexCenter lockMenuButton'}
+            onClick={() => this.setState({locked: !this.state.locked})}
+            title={'Lock the sidebar (the Shareef don\'t like it)'}
+          >
+            <i className='material-icons'>{this.state.locked ? 'lock' : 'lock_open'}</i>
+          </div>
         </div>
         <div className='sidebarContent'>
           <div className='sidebarText flexCenter'>

@@ -14,8 +14,21 @@
   --soft-green-hover: #45c7ad;
   --soft-purple: #ad5fd1;
   --soft-purple-hover: #b885cf;
+  --soft-yellow: #c6d15f;
+  --soft-yellow-hover: #d1d69b;
   --beige: #e1e1cf;
   --beige-hover: #f3f3e3;
+
+  --menu-button-1: var(--soft-red);
+  --menu-button-1-hover: var(--soft-red-hover);
+  --menu-button-2: var(--soft-blue);
+  --menu-button-2-hover: var(--soft-blue-hover);
+  --menu-button-3: var(--soft-purple);
+  --menu-button-3-hover: var(--soft-purple-hover);
+  --menu-button-4: var(--soft-green);
+  --menu-button-4-hover: var(--soft-green-hover);
+  --menu-button-5: var(--soft-yellow);
+  --menu-button-5-hover: var(--soft-yellow-hover);
 
   --link: #03A9F4;
   --link-visited: #7E57C2;

@@ -8,6 +8,7 @@
     z-index: 100;
     top: 0;
     left: 2%;
+    padding: 0;
     background-color: var(--beige);
     border-radius: 0px 0px 3px 3px;
     border: 2px solid black;
@@ -94,6 +95,7 @@
     box-shadow: 0px;
     transform: translateX(100%);
     transition: all 0.5s ease-out;
+    resize: horizontal;
 
     &.open {
       transform: translateX(0%);
@@ -124,6 +126,28 @@
       border-radius: 3px 0px 0px 3px;
       box-shadow: -8px 0px 35px 0px rgba(0,0,0,0.4);
 
+      &.conditional {
+        height: 3em;
+        border-width: 2px 0px 0px 2px;
+        left: 0;
+        top: auto;
+        bottom: 0;
+        transition: all 0.5s ease-out;
+        box-shadow: 0px 0px 0px 0px rgba(0,0,0,0.4);
+
+        &.open {
+          left: -3em;
+          box-shadow: -8px 0px 35px 0px rgba(0,0,0,0.4);
+        }
+
+        & .toolButton {
+          &:nth-child(1) {
+            background-color: var(--menu-button-5);
+            &:hover {background-color: var(--menu-button-5-hover)}
+          }
+        }
+      }
+
       & .toolButton {
         height: 3em;
         font-size: 2em;
@@ -135,26 +159,29 @@
 
         &:first-child {
           border-radius: 2px 0px 0px 0px;
-          background-color: var(--soft-red);
-          &:hover {background-color: var(--soft-red-hover)}
+        }
+
+        &:nth-child(1) {
+          background-color: var(--menu-button-1);
+          &:hover {background-color: var(--menu-button-1-hover)}
         }
 
         &:nth-child(2) {
-          background-color: var(--soft-blue);
+          background-color: var(--menu-button-2);
           border-top: 2px solid black;
-          &:hover {background-color: var(--soft-blue-hover)}
+          &:hover {background-color: var(--menu-button-2-hover)}
         }
 
         &:nth-child(3) {
-          background-color: var(--soft-purple);
+          background-color: var(--menu-button-3);
           border-top: 2px solid black;
-          &:hover {background-color: var(--soft-purple-hover)}
+          &:hover {background-color: var(--menu-button-3-hover)}
         }
 
         &:nth-child(4) {
-          background-color: var(--soft-green);
+          background-color: var(--menu-button-4);
           border-top: 2px solid black;
-          &:hover {background-color: var(--soft-green-hover)}
+          &:hover {background-color: var(--menu-button-4-hover)}
         }
 
         &:last-child {

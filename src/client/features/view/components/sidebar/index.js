@@ -81,7 +81,6 @@ class Sidebar extends React.Component {
   }
 
   updateIfOutOfMenu(evt) {
-    console.log('click detected.');
     var currentEl = evt.target;
     var loops = 0;
     while (currentEl.className !== 'View') {

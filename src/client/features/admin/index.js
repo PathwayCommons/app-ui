@@ -56,16 +56,13 @@ class Admin extends React.Component {
       });
     }
   }
-
-  shouldComponentUpdate() {
-    return (Object.keys(this.state.editLinks).length >= 66);
-  }
-
+  
   componentDidMount() {
     this.getSearchResult();
   }
 
   onSearchValueChange(e) {
+    console.log(e.target.value);
     // if the user presses enter, submit the query
     if (e.which && e.which ===  13) {
       this.submitSearchQuery(e);

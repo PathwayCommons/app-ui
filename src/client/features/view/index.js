@@ -8,7 +8,7 @@ const Sidebar = require('./components/index.js').Sidebar;
 
 const lo = require('./layout/');
 const make_cytoscape = require('./cy/');
-const test = require('./example.js');
+const bindMove = require('./cy/events/move.js');
 
 const queryString = require('query-string');
 const PathwayCommonsService = require('../../services/index.js').PathwayCommonsService;
@@ -31,7 +31,7 @@ class View extends React.Component {
       activateWarning: false,
       sidebarOpen: false,
       sidebarMenu: '',
-      count: 0
+      admin: false
     };
 
     PathwayCommonsService.query(query.uri, 'json', 'Named/displayName')
@@ -75,19 +75,21 @@ class View extends React.Component {
   componentWillMount() {
     const editkey = this.state.query.editkey;
     if (editkey != null) {
-      // CHECK FOR VALID EDIT KEY HERE
-      if (editkey === '12345678') {
-        this.setState({warningMessage: 'Be careful! Your changes are live.'});
-      } else {
-        this.setState({warningMessage: 'Edit key submitted, but invalid.'});
-      }
-      this.setState({activateWarning: true});
-    } else {
-      console.log('No edit key submitted');
+      CDC.initEditKeyValidation((valid) => {
+        this.setState({
+          admin: valid,
+          activateWarning: valid,
+          warningMessage: 'Be careful! Your changes are live.'
+        });
+        if (valid) {
+          bindMove(this.state.query.uri, 'latest', editkey, this.state.cy);
+        }
+      });
+      CDC.requestEditKeyValidation(this.state.query.uri, 'latest', editkey);
     }
 
     CDC.initLayoutSocket(this.updateGraphJSON);
-    CDC.requestGraph(this.state.query.uri, 9);
+    CDC.requestGraph(this.state.query.uri, 'latest');
   }
   
   updateRenderStatus(status) {
@@ -144,7 +146,7 @@ class View extends React.Component {
         <EditWarning
           active={this.state.activateWarning}
           deactivate={() => this.setState({activateWarning: false})}
-          dur={4000}
+          dur={8000}
         >
           {this.state.warningMessage}
         </EditWarning>

@@ -20,18 +20,19 @@
 
 const fs = require('fs');
 const convert = require('sbgnml-to-cytoscape');
+const metadataParser = require('./metadataParser.js');
 var ProgressBar = require('ascii-progress');
 var DOMParser = require('xmldom').DOMParser;
 
 //Map metadata from BioPax to nodes
 //Returns a cy cytoscape json
 //Requires valid BioPax and sbgn files
-module.exports = function (biopax, sbgn){
+module.exports = function (biopax, sbgn) {
   //Convert sbgn to json
   let cyGraph = convert(sbgn);
 
   //Get mapped node list
-  var  nodes = cyGraph.nodes;
+  var nodes = cyGraph.nodes;
   cyGraph.nodes = processBioPax(biopax, nodes);
 
   //Return Enhanced JSON
@@ -83,7 +84,7 @@ function GetElementsByAttributeWithoutTag(attr, attrValue, doc) {
 function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
   var result = [];
 
-  if(!biopaxElement) return result;
+  if (!biopaxElement) return result;
 
   var children = biopaxElement.childNodes;
 
@@ -105,16 +106,16 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
     //Recurse on the referenced element
     if ((resource && resource.charAt(0) === '#') || entityRef) {
       //Get reference id
-      var refId = resource.substring(1);
+      var refId = resource.charAt(0) === '#' ?  resource.substring(1) : resource;
       var referencedItem = GetElementsByAttributeWithoutTag('rdf:ID', refId, biopaxFile)[0];
 
       //Check if next node was visited
       var nodeVisited = (visitCopy.indexOf(refId) <= -1);
 
       //Restore original id for  entity references
-      if (entityRef){
+      if (entityRef && resource.charAt(0) !== '#') {
         //Store ID if current element is a entity reference
-        refId = children[i].getAttribute('rdf:resource');
+        //refId = children[i].getAttribute('rdf:resource');
         tag += '_' + refId;
         referencedItem = GetElementsByAttributeWithoutTag('rdf:about', refId, biopaxFile)[0];
       }
@@ -154,6 +155,7 @@ function buildBioPaxTree(children, biopaxFile) {
 
     //Get the node id
     var id = children[i].getAttribute('rdf:ID');
+    if (!(id)) id = children[i].getAttribute('rdf:about');
     if (!(id)) continue;
 
     //Build a subtree
@@ -200,7 +202,17 @@ function getBioPaxSubtree(nodeId, tree) {
   }
 
   //Check if id is an unification reference
-  nodeId = 'UnificationXref_' + nodeId;
+  fixedNodeId = 'UnificationXref_' + nodeId;
+
+  //Loop over all level-1 subnodes and return the corresponding metadata object
+  for (var i = 0; i < tree.length; i++) {
+    if (tree[i][0].indexOf(fixedNodeId) > -1) {
+      return tree[i][1];
+    }
+  }
+
+  //Check if id is an external identifier
+  fixedNodeId = 'http://identifiers.org/' + nodeId.replace(/_/g, '/');
 
   //Loop over all level-1 subnodes and return the corresponding metadata object
   for (var i = 0; i < tree.length; i++) {
@@ -231,8 +243,16 @@ function processBioPax(data, nodes) {
     //Get metadata for current node
     var metadata = getBioPaxSubtree(id, bioPaxTree);
 
+    //Parse metadata
+    try {
+    var parsedMetadata = metadataParser(metadata);
+    }
+    catch (e) {console.log(e);}
+
     //Add data to nodes
     nodes[i].data.metadata = metadata;
+    nodes[i].data.parsedMetadata = parsedMetadata;
+
   }
 
   //Return nodes

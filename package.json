@@ -37,6 +37,9 @@
     "body-parser": "^1.15.1",
     "classnames": "^2.2.5",
     "cookie-parser": "^1.4.3",
+    "cytoscape": "git+https://github.com/d2fong/cytoscape.js.git#unstable-build",
+    "cytoscape-cose-bilkent": "git+https://github.com/d2fong/cytoscape.js-cose-bilkent.git#simple-label-dimensions",
+    "cytoscape-sbgn-stylesheet": "3.0.1",
     "ejs": "^2.5.7",
     "express": "^4.13.4",
     "fready": "^1.0.0",
@@ -50,6 +53,7 @@
     "react-ga": "^2.3.4",
     "react-hyperscript": "^3.0.0",
     "react-router-dom": "^4.2.2",
+    "sbgnml-to-cytoscape": "^4.0.1",
     "serve-favicon": "^2.3.0",
     "whatwg-fetch": "^2.0.3",
     "winston": "^2.3.1"

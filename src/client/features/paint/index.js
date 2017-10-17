@@ -84,8 +84,7 @@ class Paint extends React.Component {
         h('div.paint-toolbar', [
           h(Icon, { className: 'paint-control-icon', icon: 'image' }),
           h(Icon, { className: 'paint-control-icon', icon: 'shuffle' }),
-          h(Icon, { className: 'paint-control-icon', icon: 'help' }),
-
+          h(Icon, { className: 'paint-control-icon', icon: 'help' })
         ])
       ]),
       h('div.paint-graph', [

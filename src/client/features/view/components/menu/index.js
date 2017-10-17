@@ -37,20 +37,10 @@ class Menu extends React.Component {
       );
     });
 
-    const nameText = (
-      this.props.name ?
-      this.props.name : this.props.nameFallback
-    );
-
-    const datasourceText = (
-      this.props.datasource ? 
-      this.props.datasource : this.props.datasourceFallback
-    );
-
     return (
       <div className='menuBar flexCenter'>
         <div className='titleContainer'>
-          <h4>{nameText+' | '+datasourceText}</h4>
+          <h4>{this.props.name+' | '+this.props.datasource}</h4>
         </div>
         <div
           className='layoutDropdownButton flexCenter noSelect'

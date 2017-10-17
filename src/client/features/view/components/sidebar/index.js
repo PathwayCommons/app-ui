@@ -1,3 +1,28 @@
+/**
+    Pathway Commons Viewer
+
+    Sidebar
+
+    Purpose:  Retractable sidebar for information and utilities. Navigable by
+              toggleable access buttons.
+
+    Props:    - cy
+              - uri
+              - name
+              - datasource
+
+    Note: 
+
+    To do:    - Approval
+              - Resizability
+              - Colour scheme
+              - Node metadata dock
+
+    @author Jonah Dlin
+    @version 1.1 2017/10/17
+**/
+
+
 const React = require('react');
 
 const HelpMenu = require('./menus/help.js');
@@ -14,26 +39,39 @@ class Sidebar extends React.Component {
       open: false,
       locked: false,
       activeMenu: '',
-      nodeData: false,
-      toolButtonNames: ['info', 'file_download', 'center_focus_strong', 'center_focus_weak', 'help'],
+      nodeData: false, // a future field for toggling the node metadata dock
+      // these can be changed to edit the icons that appear in the side panel
+      // but they also correspond to names in the menus constant in the render
+      // function right now.
+      // Icons that should change depending on a binary state should be stored
+      // in an object under fields 'true' and 'false'
+      // Stripe colour will default to false field
+      toolButtonNames: [
+        'info',
+        'file_download',
+        {true: 'center_focus_strong', false: 'center_focus_weak'},
+        'help'
+      ],
+      // Tooltips for each icon. Should be the same length and order as toolButtonNames
       tooltips: [
         'See extra information about this graph',
         'Graph download options',
         'Display node information',
         'Field guide to interpreting the display'        
       ],
+      // Populated on mount by initStripeColours
       buttonColours: []
     };
 
     this.updateIfOutOfMenu = this.updateIfOutOfMenu.bind(this);
-
   }
 
   componentDidMount() {
-    this.initTooltips();
-    this.initStripeColours();
+    this.initTooltips(); // For icons
+    this.initStripeColours(); // For the sidebar stripe
   }
 
+  // Function called to initialize tippy.js tooltips for icons
   initTooltips() {
     tippy('.toolButton', {
       delay: [800, 400],
@@ -44,24 +82,26 @@ class Sidebar extends React.Component {
     });
   }
 
+  // Button colours calculated variably from CSS using the state toolButtonNames
   initStripeColours() {
     const toolButtonNames = this.state.toolButtonNames;
     var colours = {};
     for (var i = 0; i < toolButtonNames.length; i++) {
-      const button_name = toolButtonNames[i];
-      var button = button_name;
+      var button = toolButtonNames[i];
 
-      // bandaid for the issue of two icons for one button
-      if (button_name === 'center_focus_strong') button = 'center_focus_weak';
+      // If an object was given, assume it is for a variable icon, and that the initial
+      // icon is false. This works right now but should be changed in the future
+      if (typeof toolButtonNames[i] === typeof {}) button = toolButtonNames[i].false;
 
-      colours[button_name] = window
-      .getComputedStyle(document.getElementsByClassName(button+'MenuButton')[0])
-      .getPropertyValue('background-color');
+      // Style taken directly from the computed value
+      colours[button] = window
+        .getComputedStyle(document.getElementsByClassName(button+'MenuButton')[0])
+        .getPropertyValue('background-color');
     }
     this.setState({buttonColours: colours});
   }
   
-
+  // Used for the panel buttons to set menus in the sidebar and dynamically change the style
   handleIconClick(button) {
     document.getElementsByClassName('sidebarText')[0].style.borderColor = this.state.buttonColours[button];
     var toolButtons = document.getElementsByClassName('toolButton');
@@ -75,9 +115,15 @@ class Sidebar extends React.Component {
     });
   }
 
+  // Checks if a click event occured outside the sidebar or not
   updateIfOutOfMenu(evt) {
     var currentEl = evt.target;
-    var loops = 0;
+    var loops = 0; // a safety variable
+    // Not sure if there's a betterway to do this so I loop through the
+    // element that is clicked on and its parents, grandparents, etc.
+    // until I either reach the View (which I assume covers the whole page)
+    // or I reach the sidebarMenu or a toolButton (which I assume are children
+    // the View)
     while (currentEl.className !== 'View') {
       var currClassNames = currentEl.className.split(' ');
       if (
@@ -96,14 +142,18 @@ class Sidebar extends React.Component {
     this.setState({open: false});
   }
 
+  // Every time the state updates we should check if the event listening for a menu close is worth
+  // keeping active, since it's a waste of resources to keep it active if the sidebar is closed
   componentWillUpdate(nextProps, nextState) {
     if (nextState.open && !nextState.locked) {window.addEventListener('mousedown', this.updateIfOutOfMenu);}
     else {window.removeEventListener('mousedown', this.updateIfOutOfMenu);}
   }
 
   render() {
+    // Not a great solution, but the icon names from toolButtonNames should be copied here and relate to
+    // their specific menu
     const menus = {
-      'info': <GraphInfoMenu uri={this.props.uri} />,
+      'info': <GraphInfoMenu uri={this.props.uri} name={this.props.name} datasource={this.props.datasource}/>,
       'file_download': <FileDownloadMenu cy={this.props.cy} uri={this.props.uri} name={this.props.name} />,
       'help': <HelpMenu />,
       'center_focus_strong': (
@@ -119,8 +169,15 @@ class Sidebar extends React.Component {
       )
     };
 
-    var toolButtonNames = this.state.toolButtonNames.slice();
-    this.state.nodeData ? toolButtonNames.splice(3, 1) : toolButtonNames.splice(2, 1);
+    // Take this.state.toolButtonNames and map them to a usable array (since some of them could be objects)
+    // Right now there is only code here for the node data menu to toggle, so if any other multi-icon button
+    // is added, code to deal with it must be put here
+    var toolButtonNames = this.state.toolButtonNames.map(name => {
+      if (typeof name === typeof {}) return name[this.state.nodeData.toString()];
+      else return name;
+    });
+
+    // Map tool buttons to actual elements with tooltips frmo tippy.js
     const tooltips = this.state.tooltips;
     const toolButtons = toolButtonNames.map((button, index) => {
       var buttonClassName = button+'MenuButton';

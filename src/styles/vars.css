@@ -1,38 +1,18 @@
 :root {
-
   /* /Pathway commons colors */
   --green-sea: #16A085;
+  --green-sea-dark: rgb(16, 117, 97);
   --midnight-blue: #212F3D;
 	--midnight-blue-dark: #0E243A;
   --cloud: #ECF0F1;
-  --dark-cloud: #D3D8DA;
-  --soft-red: #d65355;
-  --soft-red-hover: #d18183;
-  --soft-blue: #007dc0;
-  --soft-blue-hover: #40a0cf;
-  --soft-green: #00a887;
-  --soft-green-hover: #45c7ad;
-  --soft-purple: #ad5fd1;
-  --soft-purple-hover: #b885cf;
-  --soft-yellow: #c6d15f;
-  --soft-yellow-hover: #d1d69b;
-  --beige: #e1e1cf;
-  --beige-hover: #f3f3e3;
+  --cloud-dark: #D3D8DA;
 
-  --menu-button-1: var(--soft-red);
-  --menu-button-1-hover: var(--soft-red-hover);
-  --menu-button-2: var(--soft-blue);
-  --menu-button-2-hover: var(--soft-blue-hover);
-  --menu-button-3: var(--soft-purple);
-  --menu-button-3-hover: var(--soft-purple-hover);
-  --menu-button-4: var(--soft-green);
-  --menu-button-4-hover: var(--soft-green-hover);
-  --menu-button-5: var(--soft-yellow);
-  --menu-button-5-hover: var(--soft-yellow-hover);
+  --box-shadow: 0px 0px 20px 3px rgba(0,0,0,0.4);
+  --icon-size: 3vmin;
 
   --link: #03A9F4;
   --link-visited: #7E57C2;
-
+  
   --widgetBorderColor: #aaa;
   --widgetBorderRadius: 4px;
   --widgetDisabledBorderColor: #ddd;

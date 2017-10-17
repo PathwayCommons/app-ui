@@ -13,8 +13,7 @@
 
     Note: 
 
-    To do:    - Approval
-              - Resizability
+    To do:    - Resizability
               - Colour scheme
               - Node metadata dock
 
@@ -58,17 +57,14 @@ class Sidebar extends React.Component {
         'Graph download options',
         'Display node information',
         'Field guide to interpreting the display'        
-      ],
-      // Populated on mount by initStripeColours
-      buttonColours: []
+      ]
     };
 
     this.updateIfOutOfMenu = this.updateIfOutOfMenu.bind(this);
   }
 
   componentDidMount() {
-    this.initTooltips(); // For icons
-    this.initStripeColours(); // For the sidebar stripe
+    this.initTooltips(); // For icon tooltips
   }
 
   // Function called to initialize tippy.js tooltips for icons
@@ -82,33 +78,22 @@ class Sidebar extends React.Component {
     });
   }
 
-  // Button colours calculated variably from CSS using the state toolButtonNames
-  initStripeColours() {
-    const toolButtonNames = this.state.toolButtonNames;
-    var colours = {};
-    for (var i = 0; i < toolButtonNames.length; i++) {
-      var button = toolButtonNames[i];
-
-      // If an object was given, assume it is for a variable icon, and that the initial
-      // icon is false. This works right now but should be changed in the future
-      if (typeof toolButtonNames[i] === typeof {}) button = toolButtonNames[i].false;
-
-      // Style taken directly from the computed value
-      colours[button] = window
-        .getComputedStyle(document.getElementsByClassName(button+'MenuButton')[0])
-        .getPropertyValue('background-color');
+  // Utility function to clear all styling on the toolButtons and return them to the
+  // standard colour. Currently that color must be specified here.
+  clearToolButtonStyling() {
+    var toolButtons = document.getElementsByClassName('toolButton');
+    for (var i = toolButtons.length - 1; i >= 0; i--) {
+      toolButtons[i].style.zIndex = 1;
+      toolButtons[i].style.backgroundColor = '#ECF0F1';
     }
-    this.setState({buttonColours: colours});
   }
   
   // Used for the panel buttons to set menus in the sidebar and dynamically change the style
   handleIconClick(button) {
-    document.getElementsByClassName('sidebarText')[0].style.borderColor = this.state.buttonColours[button];
-    var toolButtons = document.getElementsByClassName('toolButton');
-    for (var i = toolButtons.length - 1; i >= 0; i--) {
-      toolButtons[i].style.zIndex = 1;
-    }
-    document.getElementsByClassName(button+'MenuButton')[0].style.zIndex = 100;
+    var currButton = document.getElementsByClassName(button+'MenuButton')[0];
+    this.clearToolButtonStyling();
+    currButton.style.zIndex = 100;
+    currButton.style.backgroundColor = '#16A085';
     this.setState({
       open: true,
       activeMenu: button
@@ -139,6 +124,8 @@ class Sidebar extends React.Component {
       loops++;
       if (loops > 100) {return;}
     }
+
+    this.clearToolButtonStyling();
     this.setState({open: false});
   }
 
@@ -202,7 +189,7 @@ class Sidebar extends React.Component {
           <div
             className={'toolButton noSelect flexCenter lockMenuButton'}
             onClick={() => this.setState({locked: !this.state.locked})}
-            title={'Lock the sidebar (the Shareef don\'t like it)'}
+            title={'Lock the sidebar'}
           >
             <i className='material-icons'>{this.state.locked ? 'lock' : 'lock_open'}</i>
           </div>

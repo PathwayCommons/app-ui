@@ -39,6 +39,9 @@ class Menu extends React.Component {
 
     return (
       <div className='menuBar flexCenter'>
+        <div className='pcLogoContainer flexCenter'>
+          <img src='/img/icon.png'></img>
+        </div>
         <div className='titleContainer'>
           <h4>{this.props.name+' | '+this.props.datasource}</h4>
         </div>
@@ -50,7 +53,6 @@ class Menu extends React.Component {
           <i className='material-icons'>timeline</i>
         </div>
         <div className={'layoutDropdown flexCenter'+(this.state.dropdownOpen ? ' open' : '')}>
-          <span>Layout</span>
           <select value={this.props.currLayout} onChange={(e) => this.props.updateLayout(e.target.value)}>
             {layoutItems}
           </select>

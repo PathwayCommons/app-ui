@@ -11,7 +11,7 @@
 
   &.open {
     transform: translateX(0%);
-    box-shadow: 0px 0px 35px 0px rgba(0,0,0,0.4);
+    box-shadow: var(--box-shadow);
   }
 
   & a {
@@ -23,23 +23,23 @@
   }
 
   & .sidebarSelect {
+    --number-of-icons: 4;
+
     position: absolute;
-    /* z-index: 200; */
-    top: calc(50% - 6em);
-    left: -3em;
-    height: 12em;
-    width: 3em;
+    top: calc(50% - ((var(--icon-size) * 3 / 2) * var(--number-of-icons) / 2));
+    left: calc(- var(--icon-size) * 3 / 2);
+    height: calc((var(--icon-size) * 3 / 2) * var(--number-of-icons));
+    width: calc(var(--icon-size) * 3 / 2);
     display: flex;
     flex-direction: column;
     border-color: black;
     border-style: solid;
     border-width: 2px 0px 2px 2px;
-    /* box-sizing: border-box; */
     border-radius: 3px 0px 0px 3px;
-    box-shadow: -8px 0px 35px 0px rgba(0,0,0,0.4);
+    box-shadow: var(--box-shadow);
 
     &.conditional {
-      height: 3em;
+      height: calc(var(--icon-size) * 3 / 2);
       border-width: 2px 0px 0px 2px;
       left: 0;
       top: auto;
@@ -48,65 +48,27 @@
       box-shadow: 0px 0px 0px 0px rgba(0,0,0,0.4);
 
       &.open {
-        left: -3em;
+        left: calc(- var(--icon-size) * 3 / 2);
         box-shadow: -8px 0px 35px 0px rgba(0,0,0,0.4);
-      }
-
-      & .toolButton {
-        &:nth-child(1) {
-          background-color: var(--menu-button-5);
-          &:hover {background-color: var(--menu-button-5-hover)}
-        }
       }
     }
 
     & .toolButton {
-      height: 3em;
-      font-size: 2em;
+      height: calc(var(--icon-size) * 3 / 2);
+      font-size: var(--icon-size);
       color: var(--midnight-blue);
       background-color: var(--cloud);
+      border-top: 2px solid black;
       transition: all 0.1s linear;
       position: relative;
-      /* border-bottom: 1px solid black; */ /* causes sliver issue on bottom button*/
 
       &:first-child {
         border-radius: 2px 0px 0px 0px;
-      }
-
-      &:nth-child(1) {
-        background-color: var(--menu-button-1);
-        &:hover {background-color: var(--menu-button-1-hover)}
-      }
-
-      &:nth-child(2) {
-        background-color: var(--menu-button-2);
-        border-top: 2px solid black;
-        &:hover {background-color: var(--menu-button-2-hover)}
-      }
-
-      &:nth-child(3) {
-        background-color: var(--menu-button-3);
-        border-top: 2px solid black;
-        &:hover {background-color: var(--menu-button-3-hover)}
-      }
-
-      &:nth-child(4) {
-        background-color: var(--menu-button-4);
-        border-top: 2px solid black;
-        &:hover {background-color: var(--menu-button-4-hover)}
-      }
-
-      &:last-child {
-        border-bottom: 0px;
-        border-radius: 0px 0px 0px 2px;
+        border-top: 0;
       }
 
       &:hover {
         cursor: pointer;
-      }
-
-      &:active {
-        background-color: var(--dark-cloud);
       }
     }
   }
@@ -126,7 +88,7 @@
       position: relative;
       background-color: var(--cloud);
       overflow-y: scroll;
-      border-color: var(--beige); /* fallback. should never appear */
+      border-color: var(--green-sea);
       border-style: solid;
       border-width: 0px 0px 0px 10px;
       padding: 1em;
@@ -198,20 +160,18 @@
 
             
             & .downloadIconInnerContainer {
-              width: 1em;
-              height: 1em;
+              width: var(--icon-size);
+              height: var(--icon-size);
               padding: 0.2em;
-              font-size: 1em;
               color: black;
               border-radius: 50%;
-              font-size: 2em;
-              background-color: var(--soft-blue);
+              font-size: var(--icon-size);
+              background-color: var(--green-sea);
               color: var(--midnight-blue);
               transition: all 0.1s linear;
               border: 2px solid black;
 
               &:hover {
-                background-color: var(--soft-blue-hover);
                 cursor: pointer;
               }
             }

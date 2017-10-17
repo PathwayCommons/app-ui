@@ -14,118 +14,100 @@
     Note : Script may take time to parse metadata
 
     @author Harsh Mistry
-    @version 1.1 2017/10/10
+    @version 1.1 2017/10/17
 **/
 
-//Returns all values mapped to a key in a given subtree
-//Requires subtree to be valid
-//Note : - A empty array is returned if no match is found
-//       - Recurse indicates if other levels of the tree should be searched
-function searchTree(subtree, key, recurse = true) {
-  var result = []
+const treeTraversal = require('./treeTraversal.js');
 
-  //Loop through all level nodes
-  for (var i = 0; i < subtree.length; i++) {
-    //Push current value if it matches
-    if (subtree[i][0] == key) {
-      result.push(subtree[i][1]);
-    }
+//Parse database ids
+//Requires a subtree consisting of database ID objects
+//Note : null is returnd if no ID is found.
+function parseDatabaseIDs(subTree) {
+  var result = [];
 
-    //Recurse on subtree if one exists
-    if (subtree[i][1] instanceof Array && recurse) {
-      result.push(searchTree(subtree[i][1], key));
-    }
+  //Loop through all different database ids
+  for (var i = 0; i < subTree.length; i++) {
+    //Get values
+    //console.log(subTree[i]);
+    var id = treeTraversal.searchForExactNode(subTree[i], 'bp:id');
+    var source = treeTraversal.searchForExactNode(subTree[i], 'bp:db');
+
+    //Push to result
+    if (id && source) result.push([source, id]);
   }
 
   return result;
 }
 
-//Search for just one entry
-//Requires a valid subtree
-function searchOne(subtree, key, name) {
-  var temp = searchTree(subtree, key, false);
-  if (temp.length > 0) return name + temp[0];
-  else return null;
-}
-
-//Search for multiple entries
-//Requires a valid subtree
-function searchMultiple(subtree, key, name) {
-  var temp = searchTree(subtree, key, false);
-  if (temp) return [name, temp];
-  else return null;
-}
-
-
-//Search for a subnode
-//Returns an array, a string, or null
-//Requires a valid subtree
-function searchForNode(subtree, key) {
-  for (var i = 0; i < subtree.length; i++){
-    if (subtree[i][0].indexOf(key) !== -1) return subtree[i][1];
-  }
-  return null;
-}
-
-
 //Returns a human readable array of metadata
-//Requies subtree to be valid
+//Requires subtree to be valid
 //Note : null is returned if nothing can be parsed
 function parse(subTree) {
   var result = [];
   var temp = [];
+  var databaseIDs = [];
 
   //Stop id subtree is invalid
   if (!(subTree)) return null;
 
   //Get the entity reference object
-  var eRef = searchForNode(subTree, 'bp:entityReference');
-
+  var eRef = treeTraversal.searchForExactNode(subTree, 'bp:entityReference');
 
   if (eRef) {
     //Get the standard name
-    result.push(searchOne(eRef, 'bp:standardName', 'Standard Name : '));
+    result.push(treeTraversal.searchOne(eRef, 'bp:standardName', 'Standard Name : '));
 
     //Get names
-    result.push(searchMultiple(eRef, 'bp:name', 'Names'));
+    result.push(treeTraversal.searchMultiple(eRef, 'bp:name', 'Names'));
 
     //Get database ids
-    result.push(searchMultiple(eRef, 'bp:xref', 'Database IDs'));
+    databaseIDs = treeTraversal.searchMultiple(eRef, 'bp:xref', 'Database IDs')
+    if (databaseIDs) databaseIDs = databaseIDs[1];
   }
 
   //Get data source
-  var source = searchForNode(subTree, 'bp:dataSource');
-  if (typeof source === 'string' ) result.push("Data Source : " + source);
-  else if(source) result.push("Data Source : " + source[0][1]);
+  var source = treeTraversal.searchForNode(subTree, 'bp:dataSource');
+  if (typeof source === 'string') result.push("Data Source : " + source);
+  else if (source) result.push("Data Source : " + treeTraversal.searchForNode(source, ''));
 
   //Get values if entity reference was not found
-  if (!eRef){
+  if (!eRef) {
     //Get BioPax Names
-    result.push(searchMultiple(subTree, 'bp:name', 'Names'));
+    result.push(treeTraversal.searchMultiple(subTree, 'bp:name', 'Names'));
 
     //Get Biopax database id's
-    result.push(["Database IDs", searchForNode(subTree, 'bp:xref')]);
+    databaseIDs = [treeTraversal.searchForNode(subTree, 'bp:xref')];
   }
 
-
   //Get cellular location
-  var location = searchForNode(subTree, 'bp:cellularLocation');
-  if(location) {
-    var term = searchForNode(location, 'bp:term');
-    result.push('Cellular Location : ' + term); 
+  var location = treeTraversal.searchForNode(subTree, 'bp:cellularLocation');
+  if (location) {
+    //var term = searchForNode(location, 'bp:term');
+    var term = treeTraversal.searchForFirst(location, 'bp:term');
+    if (term) result.push('Cellular Location : ' + term);
   }
 
   //Get all comments
-  result.push(searchMultiple(subTree, 'bp:comment', 'Comments')); 
+  result.push(treeTraversal.searchMultiple(subTree, 'bp:comment', 'Comments'));
+
+  //Get display name
+  temp = treeTraversal.searchForNode(subTree, 'bp:displayName');
+  if (temp) result.push('Display Name : ' + temp);
+
+  //Parse database id objects
+  if (databaseIDs) databaseIDs = parseDatabaseIDs(databaseIDs);
+  if (databaseIDs) result.push(['Database IDs', databaseIDs]);
 
   //Remove all invalid values
-  for (var i = 0; i < result.length; i++){
-    if(!(result[i])){
+  for (var i = 0; i < result.length; i++) {
+    if (!(result[i])) {
       result.splice(i, 1);
     }
   }
 
-  return result; 
+  if (result)
+
+    return result;
 }
 
 //Export main function

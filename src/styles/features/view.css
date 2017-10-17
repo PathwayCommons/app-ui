@@ -1,3 +1,9 @@
-.view {
+@import "./view/menuBar.css";
+@import "./view/graph.css";
+@import "./view/editWarning.css";
+@import "./view/sidebarMenu.css";
 
+.View {
+  width: 100vw;
+  height: 100vh;
 }

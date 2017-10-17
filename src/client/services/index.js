@@ -1,5 +1,7 @@
 const PathwayCommonsService = require('./pathway-commons/');
+const CDC = require('./cdc/index.js');
 
 module.exports = {
-  PathwayCommonsService: PathwayCommonsService
+  PathwayCommonsService: PathwayCommonsService,
+  CDC: CDC
 };

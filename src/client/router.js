@@ -36,6 +36,10 @@ module.exports = () => {
       {
         path: '/paint',
         render: props => h(Features.Paint, props)
+      },
+      {
+        path: '/admin',
+        render: props => h(Features.Admin, props)
       }
     ].map( spec => h(Route, _.assign({ exact: true }, spec)) ))
   ]);

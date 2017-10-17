@@ -61,7 +61,8 @@ class Paint extends React.Component {
       state.cy.remove('*');
       state.cy.add(sbgnJson);
       state.cy.layout({
-        name: 'cose-bilkent'
+        name: 'cose-bilkent',
+        nodeDimensionsIncludeLabels: true
       }).run();
     });
   }

@@ -4,13 +4,50 @@
 
   display: flex;
   flex-direction: row;
-}
-
-.paint-menu {
-  flex-basis: 300px;
-  background-color: var(--midnight-blue);
+  align-items: stretch;
 }
 
 .paint-graph {
-  flex-basis: 1000px;
+  width: 100%;
+}
+
+.paint-menu {
+  flex-basis: 370px;
+  display: flex;
+  flex-flow: row wrap;
+  align-content: flex-start;
+  align-items: center;
+  background-color: var(--midnight-blue);
+  padding: 10px;
+  color: var(--cloud);
+}
+
+.paint-graph-info {
+  background-color: var(--cloud);
+  color: black;
+}
+
+.paint-graph-name {
+  margin-bottom: 5px;
+}
+.paint-datasource {
+  margin-top: 0;
+}
+
+.paint-logo {
+  width: 40px;
+  height: 40px;
+  background-image: url('../image/pc_logo_dark.svg');
+}
+
+.paint-tab-toggle {
+  width: 100%;
+}
+
+.paint-view-toggle {
+  height: 30px;
+}
+
+.paint-toolbar {
+  font-size: 30px;
 }

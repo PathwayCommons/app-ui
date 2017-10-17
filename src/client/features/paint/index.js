@@ -3,9 +3,13 @@ const h = require('react-hyperscript');
 const queryString = require('query-string');
 
 const cytoscape = require('cytoscape');
+const cose = require('cytoscape-cose-bilkent');
+cytoscape.use(cose);
+
 const sbgn2Json = require('sbgnml-to-cytoscape');
 const sbgnStylesheet = require('cytoscape-sbgn-stylesheet');
 
+const Icon = require('../../common/components').Icon;
 const PathwayCommonsService = require('../../services/').PathwayCommonsService;
 
 class Paint extends React.Component {
@@ -56,12 +60,34 @@ class Paint extends React.Component {
       const sbgnJson = sbgn2Json(text);
       state.cy.remove('*');
       state.cy.add(sbgnJson);
+      state.cy.layout({
+        name: 'cose-bilkent'
+      }).run();
     });
   }
 
   render() {
+    const state = this.state;
+
     return h('div.paint', [
-      h('div.paint-menu'),
+      h('div.paint-menu', [
+        h('div.paint-logo'),
+        h('h2.paint-title', 'Pathway Commons'),
+        h('div.paint-graph-info', [
+          h('h4.paint-graph-name', state.name),
+          h('h4.paint-datasource', state.datasource)
+        ]),
+        h('div.paint-tab-toggle', [
+          h('div.paint-view-toggle', 'Enrichment Graph'),
+          h('div.paint-view-toggle', 'Enrichment Data')
+        ]),
+        h('div.paint-toolbar', [
+          h(Icon, { className: 'paint-control-icon', icon: 'image' }),
+          h(Icon, { className: 'paint-control-icon', icon: 'shuffle' }),
+          h(Icon, { className: 'paint-control-icon', icon: 'help' }),
+
+        ])
+      ]),
       h('div.paint-graph', [
         h(`div.#cy-container`, {style: {width: '100%', height: '100%'}})
       ])

@@ -79,7 +79,7 @@
   flex-direction: row;
 }
 .search-option-item {
-  color: var(--cloud);  
+  color: var(--cloud);
   margin-right: 20px;
   height: 30px;
   font-size: 14px;
@@ -130,11 +130,11 @@
 
 .search-item-content {
   padding-left: 10px;
+  flex-basis: 650px;
 }
 
 .search-item-content-title {
   margin: 0;
-  height: 25px;
   color: #539DD6;
 }
 

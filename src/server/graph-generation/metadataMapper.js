@@ -15,7 +15,7 @@
     To do : Integrate Web API Traverse Function
 
     @author Harsh Mistry
-    @version 1.1 2017/10/10
+    @version 1.1 2017/10/17
 **/
 
 const fs = require('fs');
@@ -183,6 +183,20 @@ function removeAfterUnderscore(word, numberOfElements) {
   return newWord;
 }
 
+//Find a key on the 1st level of a given tree
+//Requires a tree to be a valid biopax tree
+function searchLevelOne(tree, key){
+  //Find a Match
+  for (var i = 0; i < tree.length; i++){
+    if(tree[i][0].indexOf(key) >-1){
+      return tree[i][1];
+    }
+  }
+
+  //No Match
+  return null;
+}
+
 //Get subtree for each node
 //Requires tree to be a valid biopax tree
 function getBioPaxSubtree(nodeId, tree) {
@@ -194,32 +208,23 @@ function getBioPaxSubtree(nodeId, tree) {
     fixedNodeId = nodeId;
   }
 
-  //Loop over all level-1 subnodes and return the corresponding metadata object
-  for (var i = 0; i < tree.length; i++) {
-    if (tree[i][0].indexOf(fixedNodeId) > -1) {
-      return tree[i][1];
-    }
-  }
+  //Conduct a basic search
+  var basicSearch = searchLevelOne(tree, fixedNodeId)
+  if(basicSearch) return basicSearch; 
 
   //Check if id is an unification reference
   fixedNodeId = 'UnificationXref_' + nodeId;
 
-  //Loop over all level-1 subnodes and return the corresponding metadata object
-  for (var i = 0; i < tree.length; i++) {
-    if (tree[i][0].indexOf(fixedNodeId) > -1) {
-      return tree[i][1];
-    }
-  }
+  //Conduct a unification ref search
+  var uniSearch = searchLevelOne(tree, fixedNodeId);
+  if(uniSearch) return uniSearch;
 
   //Check if id is an external identifier
   fixedNodeId = 'http://identifiers.org/' + nodeId.replace(/_/g, '/');
 
-  //Loop over all level-1 subnodes and return the corresponding metadata object
-  for (var i = 0; i < tree.length; i++) {
-    if (tree[i][0].indexOf(fixedNodeId) > -1) {
-      return tree[i][1];
-    }
-  }
+  //Conduct a external identifier search 
+  var extSearch = searchLevelOne(tree, fixedNodeId);
+  if(extSearch) return extSearch;
 
   return null;
 }

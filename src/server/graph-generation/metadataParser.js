@@ -14,7 +14,7 @@
     Note : Script may take time to parse metadata
 
     @author Harsh Mistry
-    @version 1.1 2017/10/10
+    @version 1.1 2017/10/17
 **/
 
 //Returns all values mapped to a key in a given subtree
@@ -37,11 +37,19 @@ function searchTree(subtree, key, recurse = true) {
     }
   }
 
+  //Remove all invalid values
+  for (var i = 0; i < result.length; i++) {
+    if (!(result[i])) {
+      result.splice(i, 1);
+    }
+  }
+
   return result;
 }
 
 //Search for just one entry
 //Requires a valid subtree
+//Note : Recurse will search entire subtree for the node
 function searchOne(subtree, key, name) {
   var temp = searchTree(subtree, key, false);
   if (temp.length > 0) return name + temp[0];
@@ -52,7 +60,7 @@ function searchOne(subtree, key, name) {
 //Requires a valid subtree
 function searchMultiple(subtree, key, name) {
   var temp = searchTree(subtree, key, false);
-  if (temp) return [name, temp];
+  if (temp && temp.length > 0) return [name, temp];
   else return null;
 }
 
@@ -61,26 +69,78 @@ function searchMultiple(subtree, key, name) {
 //Returns an array, a string, or null
 //Requires a valid subtree
 function searchForNode(subtree, key) {
-  for (var i = 0; i < subtree.length; i++){
+  if (!(subtree)) return null;
+  for (var i = 0; i < subtree.length; i++) {
     if (subtree[i][0].indexOf(key) !== -1) return subtree[i][1];
   }
   return null;
 }
 
+//Search for first instance of a key in a subtree
+//Returns a string or array
+//Requires valid subtree
+function searchForFirst(subTree, key) {
+  if (!(subTree)) return null;
+
+  //Loop through all nodes
+  for (var i = 0; i < subTree.length; i++) {
+    if (subTree[i][0].indexOf(key) > -1) {
+      return subTree[i][1];
+    }
+    else if (subTree[i][1] instanceof Array) {
+      var result = searchForFirst(subTree[i][1], key);
+      if (result) return result;
+    }
+  }
+
+  //No Match
+  return null;
+}
+
+//Search for a subnode based on an exact match
+//Returns an array, a string, or null
+//Requires a valid subtree
+function searchForExactNode(subtree, key) {
+  if (!(subtree)) return null;
+  for (var i = 0; i < subtree.length; i++) {
+    if (subtree[i][0] === key) return subtree[i][1];
+  }
+  return null;
+}
+
+//Parse database ids
+//Requires a subtree consisting of database ID objects
+//Note : null is returnd if no ID is found. 
+function parseDatabaseIDs(subTree) {
+  var result = [];
+
+  //Loop through all different database ids
+  for (var i = 0; i < subTree.length; i++) {
+    //Get values
+    //console.log(subTree[i]);
+    var id = searchForExactNode(subTree[i], 'bp:id');
+    var source = searchForExactNode(subTree[i], 'bp:db');
+
+    //Push to result
+    if (id && source) result.push([source, id]);
+  }
+
+  return result;
+}
 
 //Returns a human readable array of metadata
-//Requies subtree to be valid
+//Requires subtree to be valid
 //Note : null is returned if nothing can be parsed
 function parse(subTree) {
   var result = [];
   var temp = [];
+  var databaseIDs = [];
 
   //Stop id subtree is invalid
   if (!(subTree)) return null;
 
   //Get the entity reference object
   var eRef = searchForNode(subTree, 'bp:entityReference');
-
 
   if (eRef) {
     //Get the standard name
@@ -90,42 +150,53 @@ function parse(subTree) {
     result.push(searchMultiple(eRef, 'bp:name', 'Names'));
 
     //Get database ids
-    result.push(searchMultiple(eRef, 'bp:xref', 'Database IDs'));
+    databaseIDs = searchMultiple(eRef, 'bp:xref', 'Database IDs')
+    if(databaseIDs) databaseIDs = databaseIDs[1];
   }
 
   //Get data source
   var source = searchForNode(subTree, 'bp:dataSource');
-  if (typeof source === 'string' ) result.push("Data Source : " + source);
-  else if(source) result.push("Data Source : " + source[0][1]);
+  if (typeof source === 'string') result.push("Data Source : " + source);
+  else if (source) result.push("Data Source : " + searchForNode(source, ''));
 
   //Get values if entity reference was not found
-  if (!eRef){
+  if (!eRef) {
     //Get BioPax Names
     result.push(searchMultiple(subTree, 'bp:name', 'Names'));
 
     //Get Biopax database id's
-    result.push(["Database IDs", searchForNode(subTree, 'bp:xref')]);
+    databaseIDs = [searchForNode(subTree, 'bp:xref')];
   }
-
 
   //Get cellular location
   var location = searchForNode(subTree, 'bp:cellularLocation');
-  if(location) {
-    var term = searchForNode(location, 'bp:term');
-    result.push('Cellular Location : ' + term); 
+  if (location) {
+    //var term = searchForNode(location, 'bp:term');
+    var term = searchForFirst(location, 'bp:term');
+    if (term) result.push('Cellular Location : ' + term);
   }
 
   //Get all comments
-  result.push(searchMultiple(subTree, 'bp:comment', 'Comments')); 
+  result.push(searchMultiple(subTree, 'bp:comment', 'Comments'));
+
+  //Get display name 
+  temp = searchForNode(subTree, 'bp:displayName');
+  if (temp) result.push('Display Name : ' + temp);
+
+  //Parse database id objects
+  if (databaseIDs) databaseIDs = parseDatabaseIDs(databaseIDs);
+  if (databaseIDs) result.push(['Database IDs', databaseIDs]);
 
   //Remove all invalid values
-  for (var i = 0; i < result.length; i++){
-    if(!(result[i])){
+  for (var i = 0; i < result.length; i++) {
+    if (!(result[i])) {
       result.splice(i, 1);
     }
   }
 
-  return result; 
+  if(result )
+
+  return result;
 }
 
 //Export main function

@@ -37,9 +37,7 @@ CDC.requestEditKeyValidation(params);
 const CDC = {
   initGraphSocket(updateFunction) {
     socket.on('LayoutPackage', (cyZip) => {
-      var cyString = "";
-      gzip.unzip(cyZip).forEach(ch => cyString+=(String.fromCharCode(ch)));
-      var cyJSON = JSON.parse(cyString);
+      var cyJSON = JSON.parse(atob(cyZip));
       updateFunction(cyJSON.graph);
     });
   },

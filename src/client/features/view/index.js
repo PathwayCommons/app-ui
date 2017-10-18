@@ -90,6 +90,7 @@ class View extends React.Component {
     const editkey = this.state.query.editkey;
     if (editkey != null) {
       CDC.initEditKeyValidationSocket((valid) => {
+        if (typeof valid === typeof {}) {alert('Key validation error!'); return;}
         this.setState({
           admin: valid,
           activateWarning: valid, // this activates the warning tab

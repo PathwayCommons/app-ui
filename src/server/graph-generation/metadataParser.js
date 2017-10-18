@@ -67,8 +67,8 @@ function parse(subTree) {
 
   //Get data source
   var source = treeTraversal.searchForNode(subTree, 'bp:dataSource');
-  if (typeof source === 'string') result.push("Data Source : " + source);
-  else if (source) result.push("Data Source : " + treeTraversal.searchForNode(source, ''));
+  if (typeof source === 'string') result.push(['Data Source', source]);
+  else if (source) result.push(['Data Source', treeTraversal.searchForNode(source, '')]);
 
   //Get values if entity reference was not found
   if (!eRef) {
@@ -84,15 +84,15 @@ function parse(subTree) {
   if (location) {
     //var term = searchForNode(location, 'bp:term');
     var term = treeTraversal.searchForFirst(location, 'bp:term');
-    if (term) result.push('Cellular Location : ' + term);
-  }
+    if (term) result.push(['Cellular Location', term]);
+  } 
 
   //Get all comments
   result.push(treeTraversal.searchMultiple(subTree, 'bp:comment', 'Comments'));
 
   //Get display name
   temp = treeTraversal.searchForNode(subTree, 'bp:displayName');
-  if (temp) result.push('Display Name : ' + temp);
+  if (temp) result.push(['Display Name', temp]);
 
   //Parse database id objects
   if (databaseIDs) databaseIDs = parseDatabaseIDs(databaseIDs);
@@ -105,9 +105,7 @@ function parse(subTree) {
     }
   }
 
-  if (result)
-
-    return result;
+  return result;
 }
 
 //Export main function

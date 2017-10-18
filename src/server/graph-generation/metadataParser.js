@@ -39,6 +39,8 @@ function parseDatabaseIDs(subTree) {
   return result;
 }
 
+//x.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig)
+
 //Returns a human readable array of metadata
 //Requires subtree to be valid
 //Note : null is returned if nothing can be parsed
@@ -85,7 +87,7 @@ function parse(subTree) {
     //var term = searchForNode(location, 'bp:term');
     var term = treeTraversal.searchForFirst(location, 'bp:term');
     if (term) result.push(['Cellular Location', term]);
-  } 
+  }
 
   //Get all comments
   result.push(treeTraversal.searchMultiple(subTree, 'bp:comment', 'Comments'));
@@ -94,9 +96,14 @@ function parse(subTree) {
   temp = treeTraversal.searchForNode(subTree, 'bp:displayName');
   if (temp) result.push(['Display Name', temp]);
 
+  //Get any inObject database ids
+  var noRefId = treeTraversal.searchForExactNode(subTree, 'bp:id');
+  var noRefDb = treeTraversal.searchForExactNode(subTree, 'bp:db');
+
   //Parse database id objects
   if (databaseIDs) databaseIDs = parseDatabaseIDs(databaseIDs);
-  if (databaseIDs) result.push(['Database IDs', databaseIDs]);
+  if (noRefId && noRefDb) databaseIDs.push([noRefDb, noRefId]);
+  if (databaseIDs && databaseIDs.length > 0) result.push(['Database IDs', databaseIDs]);
 
   //Remove all invalid values
   for (var i = 0; i < result.length; i++) {

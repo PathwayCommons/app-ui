@@ -74,7 +74,15 @@ class Sidebar extends React.Component {
       animation: 'scale',
       theme: 'dark',
       arrow: true,
-      position: 'left'
+      position: 'left',
+      touchHold: true,
+      popperOptions: {
+        modifiers: {
+          flip: {
+            behavior: ['left', 'top']
+          }
+        }
+      }
     });
   }
 
@@ -132,8 +140,13 @@ class Sidebar extends React.Component {
   // Every time the state updates we should check if the event listening for a menu close is worth
   // keeping active, since it's a waste of resources to keep it active if the sidebar is closed
   componentWillUpdate(nextProps, nextState) {
-    if (nextState.open && !nextState.locked) {window.addEventListener('mousedown', this.updateIfOutOfMenu);}
-    else {window.removeEventListener('mousedown', this.updateIfOutOfMenu);}
+    if (nextState.open && !nextState.locked) {
+      window.addEventListener('mousedown', this.updateIfOutOfMenu);
+      window.addEventListener('touchend', this.updateIfOutOfMenu);
+    } else {
+      window.removeEventListener('mousedown', this.updateIfOutOfMenu);
+      window.removeEventListener('touchend', this.updateIfOutOfMenu);
+    }
   }
 
   render() {

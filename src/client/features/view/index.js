@@ -115,6 +115,8 @@ class View extends React.Component {
       CDC.requestEditKeyValidation(this.state.query.uri, 'latest', editkey);
     }
 
+    window.addEventListener('resize', () => window.scrollTo(0, 1));
+
     // Arrow functions like these tie socket.io directly into the React state
     CDC.initGraphSocket(newGraphJSON => this.setState({graphJSON: newGraphJSON}));
     CDC.requestGraph(this.state.query.uri, 'latest');

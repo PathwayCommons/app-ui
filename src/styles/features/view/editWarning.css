@@ -1,19 +1,17 @@
 @import "./bounce.css";
 
 /* change someday to global "snackbar" component, like in react material-ui */
-.editWarning {
+.editWarningContainer {
   position: fixed;
+  pointer-events: none;
+  height: 2.6em;
+  width: 100%;
   bottom: 0;
   left: 0;
-  height: 1.8em;
-  padding: 0.4em 1em 0.4em 1em;
-  border-radius: 3px 3px 0px 0px;
-  box-shadow: 0px 0px 35px 0px rgba(0,0,0,0.4);
-  background-color: var(--invalidColor);
-  animation-name: bounce; /* leaving this out till a better animation is made */
+  animation-name: bounce;
   animation-duration: 1s;
   /* animation-iteration-count: 20; */
-  transition: transform 1s ease 0s, opacity 1s ease 1s; 
+  transition: transform 1s ease 0s, opacity 1s ease 1s;
 
   &.closed {
     transform: translateY(100%);
@@ -21,3 +19,41 @@
     opacity: 0;
   }
 }
+
+
+.editWarning {
+  height: 1.8em;
+  padding: 0.4em 1em 0.4em 1em;
+  border-radius: 3px 3px 0px 0px;
+  box-shadow: var(--box-shadow);
+  background-color: var(--invalidColor);
+}
+
+/* Portrait-specific mobile scaling */
+@media (width <= 768px) and (height <= 736px) and (height > 414px) {
+  .editWarningContainer {
+    height: 100%;
+    width: 2.6em;
+    bottom: 0;
+    left: calc(100% - 2.6em);
+    animation-name: none;
+    transition: transform 1s ease 0s, opacity 1s ease 1s;
+  
+    &.closed {
+      transform: translateX(100%);
+      box-shadow: 0px;
+      opacity: 0;
+    }
+  }
+  
+  
+  .editWarning {
+    height: 1.8em;
+    min-width: 20em;
+    transform: rotate(-90deg);
+    padding: 0.4em 1em 0.4em 1em;
+    border-radius: 3px 3px 0px 0px;
+    box-shadow: var(--box-shadow);
+    background-color: var(--invalidColor);
+  }
+} 

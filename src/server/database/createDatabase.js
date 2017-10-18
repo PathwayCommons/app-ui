@@ -25,10 +25,10 @@
 
 const fs = require('fs'); // node file system, to be used for importing XMLs
 const convert = require('sbgnml-to-cytoscape'); // used to convert to cy JSONs
-const update = require('./updateVersion.js');
 const accessDB = require('./accessDB.js');
 const Promise = require('bluebird');
 const checksum = require('checksum');
+const cyJson = require('./../graph-generation/cytoscapeJson');
 
 const args = process.argv;
 
@@ -56,84 +56,45 @@ function URIify(str) {
   return str_change;
 }
 
-function readURINames(dir){
-  var text = fs.readFileSync(dir+ '/pathways.txt',{encoding: 'utf-8'});
+function readURINames(dir) {
+  var text = fs.readFileSync(dir + '/pathways.txt', { encoding: 'utf-8' });
 
-  var matches =  text.match(/^(\S)+/mg); // Slice ignores file header
-  matches = Array.from(new Set (matches));
+  var matches = text.match(/^(\S)+/mg); // Slice ignores file header
+  matches = Array.from(new Set(matches)); // Remove duplication
 
-  var pathways = matches.slice(1);
-  console.log(pathways.length);
+  return matches.slice(1); // Remove the header from the table.
 
-  
-  pathways = pathways.filter((uri) => {
-    var match = uri.match(/_/g);
-    return match && match.length >0;
-  });
-  console.log(pathways.length);
-
-  pathways = pathways.filter((uri) => {
-    var match = uri.match(/^((?!Pathway_).)*$/g);
-    return match && match.length >0;
-  });
-  console.log(pathways);
-
-
-  return; 
-} 
-
-
-var connectionPromise = update.connect();
-var conn = null;
-
-
-
-function processFile(dir, file) {
-
-  if (!validateURI(file)) {
-    return;
-  }
-
-  var uri = URIify(file);
-  var xml_data = fs.readFileSync(dir + '/' + file);
-  var json_data = convert(xml_data);
-  var pcID = file.replace(/\s/g,'').slice(0,-4); // Remove .xml extension
-
-  try {
-    if (!uri) {
-      console.log(file);
-    }
-    return accessDB.createNew(uri, json_data, version, conn);
-
-  } catch (e) { 
-    // Temporary hack until Dylan can address the creation of undefined values
-    // in the sbgn-to-cytoscape converter
-    json_data = JSON.parse(JSON.stringify(json_data));
-    return accessDB.createNew(uri, json_data, version, conn);
-  }
 }
-/*
-connectionPromise.then((connection) => {
-  conn = connection;
-}).catch((e) => {
-  throw e;
-}).then(() => {
-  if (!conn) {
-    throw Error('No connection');
-  }
-  var numProcessed = 0;
-  fs.readdir(dir, function (err, files) {
-    Promise.map(files, function (file) {
 
-      numProcessed++;
-      if (!(numProcessed % 20)) {
-        console.log(numProcessed);
-      }
-      return processFile(dir, file);
+
+var connectionPromise = accessDB.connect();
+
+
+function processFile(pc_id, release_id, connection) {
+  return cyJson.getCytoscapeJson(pc_id)
+    .then((data) => {
+      return accessDB.updateGraph(pc_id, release_id, data, connection);
+    }).catch((e)=>{
+      throw e;
+    });
+}
+
+
+connectionPromise.then((connection) => {
+  accessDB.setDatabase('testLayouts', connection).then(() => {
+    if (!connection) throw new Error('No database connection');
+
+    var fileList = readURINames(dir);
+
+    Promise.map(fileList, function (file) {
+      return processFile(file, version, connection);
     },
       { concurrency: 4 });
-
   });
-});*/
 
-readURINames(dir);
+}).catch((e) => {
+  throw e;
+});
+
+
+

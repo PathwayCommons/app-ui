@@ -26,7 +26,7 @@ const auth = require('./auth.js');
 const accessDB = require('./../database/accessDB.js');
 const fetch = require('node-fetch');
 const lazyLoad = require('./../lazyload');
-var gzip = require('gzip-js');
+const btoa = require('btoa');
 
 const express = require('express');
 const router = express.Router();
@@ -46,7 +46,7 @@ function getLayout(io, socket, ioPackage) {
         connection,
         function (layout) {
 
-          io.emit('LayoutPackage', gzip.zip(layout));
+          io.emit('LayoutPackage', btoa(JSON.stringify(layout)));
         });
     });
   }
@@ -61,7 +61,7 @@ function submitLayout(io, socket, ioPackage) {
   //Get the requested layout
   try {
     connPromise.then((connection) => {
-      if (auth.checkUser(socket.request.connection.remoteAddress, true)) {
+      if (hasRightKey(ioPackage.uri, ioPackage.version, ioPackage.key)) {
         accessDB.saveLayout(ioPackage.uri,
           ioPackage.layout,
           ioPackage.version,
@@ -107,15 +107,24 @@ function getEditKey(io, socket, ioPackage) {
   }
 }
 
+function hasRightKey(pc_id, release_id, key) {
+  return connPromise.then((connection) => {
+    return accessDB.getGraphID(
+      pc_id,
+      release_id,
+      connection
+    );
+  }).then((result)=>{
+    return result === key;
+  });
+}
+
 function checkEditKey(io, socket, ioPackage) {
   try {
-    connPromise.then((connection) => {
-      accessDB.getGraphID(
-        ioPackage.uri,
-        ioPackage.version,
-        connection,
-        function (result) { io.emit('EditPermissions', result === ioPackage.key); }
-      );
+    hasRightKey(ioPackage.uri, ioPackage.version, ioPackage.key).then((result)=>{
+      io.emit('EditPermissions',result);
+    }).catch(()=>{
+      io.emit('error', 'ERROR : Edit Priviliges Check Failed');
     });
   } catch (e) {
     io.emit('error', 'ERROR : Edit Priviliges Check Failed');
@@ -128,7 +137,6 @@ var returnRouter = function (io) {
     console.log('I hear voices');
     //Get Layout
     socket.on('getlayout', function (ioPackage) {
-      console.log('tyring to get a layout');
       getLayout(io, socket, ioPackage);
     });
 

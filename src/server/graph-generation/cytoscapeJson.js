@@ -84,10 +84,10 @@ function getCytoscapeJson(uri) {
       data.pathwayMetadata = pathwayMetadata;
       spinner.success('main');
       return data;
-    })
+    });
   }).catch(function(e){
     spinner.error('main');
-  })
+  });
 }
 
 module.exports = {

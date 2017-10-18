@@ -21,11 +21,11 @@
     @version 1.1 2017/10/10
 **/
 
-const dbName = 'layouts';
+var dbName = 'layouts';
 const r = require('rethinkdb');
 const uuid = require('uuid/v4');
 const heuristics = require('./heuristics.js');
-const checksum = require('checksum');
+const hash = require('json-hash');
 
 
 // Convenience function to create root for common queries depending on whether
@@ -67,52 +67,73 @@ function connect() {
 }
 
 
-function compareGraphs(graph1, graph2){
-  if (graph1.checksum === graph2.checksum){
-    return (graph1 === graph2);
+function compareGraphs(graph1, graph2) { // hash should be saved in the graph object
+  if (!graph1.hash) {
+    graph1.hash = hash.digest(graph1.data);
   }
 
-  return false;
+  if (!graph2.hash) {
+    graph2.hash = hash.digest(graph2.data);
+  }
+  return graph1.hash === graph2.hash;
 }
 
 
-function isNewGraph(newGraph, connection){
-  var graphList = r.db(dbName)
-  .table('graph')
-  .run(connection);
+function isExistingGraph(newGraph, connection) {
+  var graphListProm = r.db(dbName)
+    .table('graph')
+    .run(connection)
+    .then((cursor) => {
+      return cursor.toArray();
+    });
 
-  var numGraphs = graphList.length;
-  var i = 0;
 
-  while(i<numGraphs){
-    if(compareGraphs(newGraph,graphList[i])){
-      return false;
+  return graphListProm.then((graphList) => {
+    var numGraphs = graphList.length; // You will be undefined
+    var i = 0;
+
+    while (i < numGraphs) {
+      if (compareGraphs(newGraph, graphList[i])) {
+        return graphList[i].id;
+      }
+      i++;
     }
-    i++;
-  }
-
-  return true;
+    return null;
+  });
 }
-// create a database entry for a graph object. No default layout is
-// stored. pcID is expected to be the pathway commons uri, data the 
-// graph object and release the version of pathway commons associated
-// with all this data.
-function createNew(pcID, data, release, connection, callback) {
 
+function updateGraph(pcID, releaseID, cyJson, connection, callback) {
   var graphID = uuid();
-  var obj = { id: graphID, graph: data, checksum: checksum(data) };
-  var createPromise = insert('graph', obj, connection);
 
 
-  createPromise.then(() => {
-    // Create the version id map row. Connects the entry point (PC_id + release_id) to the graph and its layouts
-    return insert('version', { id: uuid(), pc_id: pcID, graph_id: graphID, release_id: release, layout_ids: [] }, connection);
+  var newGraph = {
+    id: graphID,
+    graph: cyJson,
+    hash: hash.digest(cyJson)
+  };
+
+
+  var result = isExistingGraph(newGraph, connection).then((existingGraphID) => {
+    if (existingGraphID) {
+
+      // create new pointer to existing graph
+      return insert('version', { id: uuid(), pc_id: pcID, graph_id: existingGraphID, layout_ids: [] }, connection);
+      // TODO: If the releaseid and pcid and graphid are already linked in version, don't create a new object?
+      // this would allow an update script to run blindly
+    } else {
+      // create new graph
+
+      return Promise.all([
+        insert('graph', newGraph, connection),
+        insert('version', { id: uuid(), pc_id: pcID, release_id: releaseID, graph_id: graphID, layout_ids: [] }, connection)
+      ]);
+    }
   }).catch((e) => {
     throw e;
   });
 
-  // Once this is done either return the promise or run the callback.
-  return handleResult(createPromise, callback);
+
+  return handleResult(result, callback);
 }
 
 /*
@@ -157,13 +178,15 @@ function saveLayout(pcID, layout, releaseID, connection, callback) {
   // set the generic root for ease of use throughout the function.
   var queryRoot = getQueryRoot(pcID, releaseID);
 
-
   // Create the new layout entry in the database
   var layoutID = uuid();
   var result = insert('layout', { id: layoutID, positions: layout, date_added: r.now() }, connection)
     .then(() => {
       // Find the related version row and store the layout_id so that it may be accessed.
-      queryRoot.update({ layout_ids: r.row('layout_ids').append(layoutID) })
+      queryRoot.update(
+        function (layout) {
+          return { layout_ids: layout('layout_ids').append(layoutID) };
+        })
         .run(connection);
     }).catch(() => {
       throw Error('Failed insertion');
@@ -214,7 +237,7 @@ function getLayout(pcID, releaseID, connection, callback) {
     }).catch((e) => {          // from a cursor to an array
       throw e;
     }).then((versionArray) => {
-      if (!versionArray.legnth) {
+      if (!versionArray.length) {
         let err = new Error('No saved layouts');
         err.status = 'NoLayouts';
         throw err;
@@ -228,11 +251,12 @@ function getLayout(pcID, releaseID, connection, callback) {
     }).catch((e) => {
       throw e;
     }).then((allSubmissions) => {
-      // Run decision making process to almagamate down to one layout to return
+      // Run decision making process to amalgamate down to one layout to return
       // currently just returns the most recent submission
       return heuristics.run(allSubmissions);
     }).catch((e) => {
       if (e.status === 'NoLayouts') {
+        console.log('This is happening');
         layout = null;
       } else {
         throw e;
@@ -263,6 +287,21 @@ function getGraph(pcID, releaseID, connection, callback) {
   return handleResult(graph, callback);
 }
 
+function setDatabase(name, connection, callback) {
+  var prom = r.dbList()
+    .run(connection)
+    .then((dbList) => {
+      if (dbList.indexOf(name) >= 0) {
+        dbName = name;
+
+      } else {
+        throw Error('ERROR: Database ' + name + ' does not exist');
+      }
+    });
+
+  return handleResult(prom, callback);
+}
+
 module.exports = {
   connect: connect,
   getLayout: getLayout,
@@ -270,5 +309,6 @@ module.exports = {
   getGraphID: getGraphID,
   getGraphAndLayout: getGraphAndLayout,
   saveLayout: saveLayout,
-  createNew: createNew
+  updateGraph: updateGraph,
+  setDatabase: setDatabase
 };

@@ -112,8 +112,8 @@ class Search extends React.Component {
 
     const searchTypes = [
       { name: 'Pathways', value: 'Pathway' },
-      { name: 'Catalysis', value: 'Catalysis' },
       { name: 'Molecular Interactions', value: 'MolecularInteraction' },
+      { name: 'Reactions', value: 'Control' },
       { name: 'Transcription/Translation', value: 'TemplateReactionRegulation' }
     ];
 

@@ -66,10 +66,20 @@ const CDC = {
     socket.emit('getEditKey', {uri: uri, version: version.toString()});
   },
 
-  // Used every single time a layout is sent. If the editkey is invalid, the layout is
-  // not used.
+  // Used to initially validate a user
   requestEditKeyValidation(uri, version, key) {
     socket.emit('checkEditKey', {uri: uri, version: version.toString(), key: key});
+  },
+
+  // Send a dif in a node to the backend. The backend will deal with merging these diffs into
+  // a layout
+  submitDiff(uri, version, key, node_id, pos) {
+    socket.emit('submitlayout', {uri: uri, version: version.toString(), key: key, id: node_id, pos: JSON.stringify(pos)});
+  },
+
+  // Send a session closed message to the backend so it can save the diffs to a new layout
+  submitSessionEnd() {
+    socket.emit('sessionEnd', {closed: true});
   }
 
 };

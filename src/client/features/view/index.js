@@ -32,6 +32,12 @@ const queryString = require('query-string');
 const PathwayCommonsService = require('../../services/index.js').PathwayCommonsService;
 const CDC = require('../../services/index.js').CDC;
 
+// window.onbeforeunload = sendSessionEnd;
+// function sendSessionEnd(){
+//    CDC.submitSessionEnd();
+//    return null;
+// }
+
 class View extends React.Component {
   constructor(props) {
     super(props);
@@ -73,25 +79,7 @@ class View extends React.Component {
           datasource: dsStr
         });
       });
-
-    // props.logPageView( props.history.location );
-    // props.logEvent({
-    //   category: 'View',
-    //   action: 'view',
-    //   label: query.uri
-    // });
   }
-
-  // componentWillReceiveProps( nextProps ) {
-  //   const locationChanged = nextProps.location !== this.props.location;
-  //   if( locationChanged ){
-  //     this.props.logEvent({
-  //       category: 'View',
-  //       action: 'view',
-  //       label: this.state.query.uri
-  //     });
-  //   }
-  // }
 
   componentWillMount() {
     // Before we mount we get the edit key from the URL

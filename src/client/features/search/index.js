@@ -18,6 +18,7 @@ class Search extends React.Component {
     this.state = {
       query: _.assign({q: '', gt: 2, lt: 250, type: 'Pathway'}, query),
       searchResults: [],
+      loading: false,
       dataSources: []
     };
 
@@ -33,10 +34,14 @@ class Search extends React.Component {
     const query = state.query;
 
     if (query.q !== '') {
+      this.setState({
+        loading: true
+      });
       PathwayCommonsService.querySearch(query)
       .then(searchResults => {
         this.setState({
-          searchResults: searchResults
+          searchResults: searchResults,
+          loading: false
         });
       });
     }
@@ -58,9 +63,12 @@ class Search extends React.Component {
   }
 
   setQueryType(e, type) {
-    const newQueryState = _.assign({}, this.state.query);
-    newQueryState.type = type;
-    this.setState({query: newQueryState}, function () { this.submitSearchQuery(); });
+    const state = this.state;
+    if (!state.loading) {
+      const newQueryState = _.assign({}, this.state.query);
+      newQueryState.type = type;
+      this.setState({query: newQueryState}, function () { this.submitSearchQuery(); });
+    }
   }
 
   submitSearchQuery() {
@@ -120,7 +128,7 @@ class Search extends React.Component {
     const searchTypeTabs = searchTypes.map(searchType => {
       return h('div', {
         onClick: e => this.setQueryType(e, searchType.value),
-        className: classNames('search-option-item', state.query.type === searchType.value ? 'search-option-item-active' : '')
+        className: classNames('search-option-item', state.loading ? 'search-option-item-disabled' : '', state.query.type === searchType.value ? 'search-option-item-active' : '')
       }, [
         h('a', searchType.name)
       ]);

@@ -98,6 +98,10 @@
   border-bottom-color: var(--green-sea);
 }
 
+.search-option-item-disabled {
+  color: grey;
+}
+
 .search-option-item-active > button {
   color: var(--green-sea);
 }

@@ -153,3 +153,7 @@
   color: #7F8C8D;
   font-size: 12px;
 }
+
+.loader {
+  color: var(--green-sea);
+}

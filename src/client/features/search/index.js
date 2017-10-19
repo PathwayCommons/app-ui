@@ -1,6 +1,8 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
+const Loader = require('react-loader');
+
 const queryString = require('query-string');
 const _ = require('lodash');
 const classNames = require('classnames');
@@ -163,9 +165,11 @@ class Search extends React.Component {
           ])
         ])
       ]),
-      h('div.search-list-container', [
-        h('div.search-hit-counter', `${state.searchResults.length} results`),
-        h('div.search-list', searchResults)
+      h(Loader, { loaded: !state.loading, options: {left: '30%', color: '#16A085' } }, [
+        h('div.search-list-container', [
+          h('div.search-hit-counter', `${state.searchResults.length} results`),
+          h('div.search-list', searchResults)
+        ])
       ])
     ]);
   }

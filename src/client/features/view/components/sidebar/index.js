@@ -1,3 +1,27 @@
+/**
+    Pathway Commons Viewer
+
+    Sidebar
+
+    Purpose:  Retractable sidebar for information and utilities. Navigable by
+              toggleable access buttons.
+
+    Props:    - cy
+              - uri
+              - name
+              - datasource
+
+    Note: 
+
+    To do:    - Resizability
+              - Colour scheme
+              - Node metadata dock
+
+    @author Jonah Dlin
+    @version 1.1 2017/10/17
+**/
+
+
 const React = require('react');
 
 const HelpMenu = require('./menus/help.js');
@@ -12,27 +36,38 @@ class Sidebar extends React.Component {
     super(props);
     this.state = {
       open: false,
+      locked: false,
       activeMenu: '',
-      nodeData: false,
-      toolButtonNames: ['info', 'file_download', 'center_focus_strong', 'center_focus_weak', 'help'],
+      nodeData: false, // a future field for toggling the node metadata dock
+      // these can be changed to edit the icons that appear in the side panel
+      // but they also correspond to names in the menus constant in the render
+      // function right now.
+      // Icons that should change depending on a binary state should be stored
+      // in an object under fields 'true' and 'false'
+      // Stripe colour will default to false field
+      toolButtonNames: [
+        'info',
+        'file_download',
+        {true: 'center_focus_strong', false: 'center_focus_weak'},
+        'help'
+      ],
+      // Tooltips for each icon. Should be the same length and order as toolButtonNames
       tooltips: [
         'See extra information about this graph',
         'Graph download options',
         'Display node information',
         'Field guide to interpreting the display'        
-      ],
-      buttonColours: []
+      ]
     };
 
     this.updateIfOutOfMenu = this.updateIfOutOfMenu.bind(this);
-
   }
 
   componentDidMount() {
-    this.initTooltips();
-    this.initStripeColours();
+    this.initTooltips(); // For icon tooltips
   }
 
+  // Function called to initialize tippy.js tooltips for icons
   initTooltips() {
     tippy('.toolButton', {
       delay: [800, 400],
@@ -43,47 +78,37 @@ class Sidebar extends React.Component {
     });
   }
 
-  initStripeColours() {
-    const toolButtonNames = this.state.toolButtonNames;
-    var colours = {};
-    for (var i = 0; i < toolButtonNames.length; i++) {
-      const button_name = toolButtonNames[i];
-      var button = button_name;
-
-      // bandaid for the issue of two icons for one button
-      if (button_name === 'center_focus_strong') button = 'center_focus_weak';
-
-      colours[button_name] = window
-      .getComputedStyle(document.getElementsByClassName(button+'MenuButton')[0])
-      .getPropertyValue('background-color');
-    }
-    this.setState({buttonColours: colours});
-  }
-  
-
-  handleIconClick(button) {
-    if (!this.state.open) {this.toggleCloseListener(true);}
-    document.getElementsByClassName('sidebarText')[0].style.borderColor = this.state.buttonColours[button];
+  // Utility function to clear all styling on the toolButtons and return them to the
+  // standard colour. Currently that color must be specified here.
+  clearToolButtonStyling() {
     var toolButtons = document.getElementsByClassName('toolButton');
     for (var i = toolButtons.length - 1; i >= 0; i--) {
       toolButtons[i].style.zIndex = 1;
+      toolButtons[i].style.backgroundColor = '#ECF0F1';
     }
-    document.getElementsByClassName(button+'MenuButton')[0].style.zIndex = 100;
+  }
+  
+  // Used for the panel buttons to set menus in the sidebar and dynamically change the style
+  handleIconClick(button) {
+    var currButton = document.getElementsByClassName(button+'MenuButton')[0];
+    this.clearToolButtonStyling();
+    currButton.style.zIndex = 100;
+    currButton.style.backgroundColor = '#16A085';
     this.setState({
       open: true,
       activeMenu: button
     });
   }
 
-  toggleCloseListener(open) {
-    if (open) {window.addEventListener('mousedown', this.updateIfOutOfMenu);}
-    else {window.removeEventListener('mousedown', this.updateIfOutOfMenu);}
-  }
-
+  // Checks if a click event occured outside the sidebar or not
   updateIfOutOfMenu(evt) {
-    console.log('click detected.');
     var currentEl = evt.target;
-    var loops = 0;
+    var loops = 0; // a safety variable
+    // Not sure if there's a betterway to do this so I loop through the
+    // element that is clicked on and its parents, grandparents, etc.
+    // until I either reach the View (which I assume covers the whole page)
+    // or I reach the sidebarMenu or a toolButton (which I assume are children
+    // the View)
     while (currentEl.className !== 'View') {
       var currClassNames = currentEl.className.split(' ');
       if (
@@ -94,17 +119,28 @@ class Sidebar extends React.Component {
       }
       currentEl = currentEl.parentElement;
 
-      // Catching infinite loops for safety. We should never have this run more than 100 times
+      // Catching infinite loops for safety. This code should
+      // never run. Doesn't hurt to be safe though?
       loops++;
       if (loops > 100) {return;}
     }
-    this.toggleCloseListener(false);
+
+    this.clearToolButtonStyling();
     this.setState({open: false});
   }
 
+  // Every time the state updates we should check if the event listening for a menu close is worth
+  // keeping active, since it's a waste of resources to keep it active if the sidebar is closed
+  componentWillUpdate(nextProps, nextState) {
+    if (nextState.open && !nextState.locked) {window.addEventListener('mousedown', this.updateIfOutOfMenu);}
+    else {window.removeEventListener('mousedown', this.updateIfOutOfMenu);}
+  }
+
   render() {
+    // Not a great solution, but the icon names from toolButtonNames should be copied here and relate to
+    // their specific menu
     const menus = {
-      'info': <GraphInfoMenu uri={this.props.uri} />,
+      'info': <GraphInfoMenu uri={this.props.uri} name={this.props.name} datasource={this.props.datasource}/>,
       'file_download': <FileDownloadMenu cy={this.props.cy} uri={this.props.uri} name={this.props.name} />,
       'help': <HelpMenu />,
       'center_focus_strong': (
@@ -120,8 +156,15 @@ class Sidebar extends React.Component {
       )
     };
 
-    var toolButtonNames = this.state.toolButtonNames.slice();
-    this.state.nodeData ? toolButtonNames.splice(3, 1) : toolButtonNames.splice(2, 1);
+    // Take this.state.toolButtonNames and map them to a usable array (since some of them could be objects)
+    // Right now there is only code here for the node data menu to toggle, so if any other multi-icon button
+    // is added, code to deal with it must be put here
+    var toolButtonNames = this.state.toolButtonNames.map(name => {
+      if (typeof name === typeof {}) return name[this.state.nodeData.toString()];
+      else return name;
+    });
+
+    // Map tool buttons to actual elements with tooltips frmo tippy.js
     const tooltips = this.state.tooltips;
     const toolButtons = toolButtonNames.map((button, index) => {
       var buttonClassName = button+'MenuButton';
@@ -132,7 +175,7 @@ class Sidebar extends React.Component {
           onClick={() => this.handleIconClick(button)}
           title={tooltips[index]}
         >
-          <i className={'material-icons '+buttonClassName}>{button}</i>
+          <i className='material-icons'>{button}</i>
         </div>
       );
     });
@@ -141,6 +184,15 @@ class Sidebar extends React.Component {
       <div className={'sidebarMenu'+(this.state.open ? ' open' : '')}>
         <div className='sidebarSelect'>
           {toolButtons}
+        </div>
+        <div className={'sidebarSelect conditional'+(this.state.open ? ' open' : '')}>
+          <div
+            className={'toolButton noSelect flexCenter lockMenuButton'}
+            onClick={() => this.setState({locked: !this.state.locked})}
+            title={'Lock the sidebar'}
+          >
+            <i className='material-icons'>{this.state.locked ? 'lock' : 'lock_open'}</i>
+          </div>
         </div>
         <div className='sidebarContent'>
           <div className='sidebarText flexCenter'>

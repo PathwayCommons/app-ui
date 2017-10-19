@@ -1,0 +1,67 @@
+.menuBar {
+  position: absolute;
+  justify-content: flex-start;
+  z-index: 100;
+  top: 0;
+  left: 2%;
+  padding: 0;
+  background-color: var(--cloud);
+  border-radius: 0px 0px 3px 3px;
+  border: 2px solid black;
+  border-width: 0px 2px 2px 2px;
+  box-shadow: var(--box-shadow);
+
+  & .pcLogoContainer {
+    height: calc(var(--icon-size) * 3 / 2);
+    width: calc(var(--icon-size) * 3 / 2);
+
+    & img {
+      height: var(--icon-size);
+      width: auto;
+    }
+  }
+
+  & .titleContainer {
+    padding-left: calc(1em - var(--icon-size) / 3);
+    padding-right: 1em;
+    color: var(--midnight-blue);
+
+    & h4 {
+      margin: 0;
+    }
+  }
+
+  & .layoutDropdownButton {
+    height: calc(var(--icon-size) * 3 / 2);
+    width: calc(var(--icon-size) * 3 / 2);
+
+    color: var(--midnight-blue);
+    border-color: black;
+    border-style: solid;
+    border-width: 0px 0px 0px 2px;
+    box-sizing: border-box;
+    font-size: var(--icon-size);
+    transition: all 0.1s linear;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--cloud-dark);
+    }
+  }
+
+  & .layoutDropdown {
+    display: none;
+    margin-left: 1em;
+    margin-right: 1em;
+
+    & select {
+      background-color: white;
+      width: 100%;
+    }
+
+    &.open {
+      max-width: 100%;
+      display: inline;
+    }
+  }
+}

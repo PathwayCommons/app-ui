@@ -3,22 +3,36 @@
   width: 100vw;
 }
 .search-header-container {
-  display: grid;
-  grid-template-columns: 10%;
   background-color: var(--midnight-blue);
   padding: 10px;
+  padding-left: 20px;
+  padding-bottom: 0;
 }
 
 .search-header {
-  grid-column: 2;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  margin-top: 10px;
+}
+
+.search-pc-title {
+  color: var(--cloud);
+  padding-left: 5px;
+}
+
+.search-pc-title > h2 {
+  margin: 0;
+}
+
+.search-searchbar-container {
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .search-searchbar {
   border: 1px solid;
   border-color: var(--cloud);
-  margin-left: 16px;
   padding-left: 5px;
   display: flex;
   align-content: space-around;
@@ -32,7 +46,7 @@
 .search-searchbar > input {
   background: none;
   border: none;
-  width: 500px;
+  width: 690px;
   height: 50px;
 }
 
@@ -58,46 +72,64 @@
   color: #333333;
 }
 
-.search-list-container {
-  display: grid;
-  grid-template-columns: 5%;
-  padding: 10px;
+
+.search-tabs {
+  padding-top: 20px;
+  display: flex;
+  flex-direction: row;
+}
+.search-option-item {
+  color: var(--cloud);  
+  margin-right: 20px;
+  height: 30px;
+  font-size: 14px;
 }
 
-.search-options {
-  grid-column: 2;
-  display: grid;
-  grid-template-columns: 10%;
-  padding-bottom: 5px;
+.search-option-item > a:hover {
+  cursor: pointer;
+}
+
+
+
+.search-option-item-active {
+  color: var(--green-sea);
+  font-weight: bold;
+  border-bottom: 4px solid;
+  border-bottom-color: var(--green-sea);
+}
+
+.search-option-item-active > button {
+  color: var(--green-sea);
+}
+.search-list-container {
+  padding: 10px;
+  padding-left: 200px;
 }
 
 .search-hit-counter {
-  grid-column: 2;
-}
+  font-size: 12px;
+  color: #7F8C8D;
 
-.search-list {
-  grid-column: 2;
 }
 
 .search-item {
-  display: grid;
-  grid-template-columns: 10%;
+  display: flex;
   padding-top: 20px;
   padding-bottom: 20px;
 }
 
-.search-item > img {
-  grid-column: 1;
-  height: auto;
-  max-height: 80px;
-  max-width: 100px;
+
+.search-item-icon {
+  width: 80px;
+  height: 40px;
+}
+.search-item-icon > img {
+  max-width: 80px;
+  max-height: 40px;
 }
 
 .search-item-content {
-  grid-column: 2;
-  display: flex;
-  flex-direction: column;
-
+  padding-left: 10px;
 }
 
 .search-item-content-title {
@@ -109,9 +141,11 @@
 .search-item-content-datasource {
   margin: 0;
   margin-top: 2px;
+  font-size: 14px;
 }
 .search-item-content-participants {
   margin: 0;
   margin-top: 2px;
   color: #7F8C8D;
+  font-size: 12px;
 }

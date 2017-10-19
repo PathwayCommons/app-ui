@@ -2,7 +2,7 @@ const pc = require('pathway-commons');
 const _ = require('lodash');
 
 const search = require('./search/');
-const validDataSources = require('./datasources');
+const datasources = require('./datasources');
 
 const PathwayCommonsService = {
   // query pathway commons for pathways, sbgn, information, etc.
@@ -29,16 +29,11 @@ const PathwayCommonsService = {
   // check if pathway commons is online
   isServiceOnline (delay) {
     return pc.utilities.pcCheck(delay);
-  },
-
-  datasources () {
-    return validDataSources;
-  },
-
-  querySearch (query) {
-    return search(query);
   }
 };
+
+PathwayCommonsService.querySearch = _.memoize(search, query => JSON.stringify(query));
+PathwayCommonsService.datasources = _.memoize(datasources);
 
 // expose core cpath2 client api
 PathwayCommonsService.core = pc;

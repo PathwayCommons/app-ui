@@ -17,18 +17,20 @@ class GraphInfoMenu extends React.Component {
   render() {
     return (
       <div className='graphInfoMenu'>
-        <h1>Graph Information</h1>
+        <h1>{this.props.name}</h1>
+        <h4>{'Source: '+this.props.datasource}</h4>
         {this.state.comments.length ?
+          <h2>Additional Information</h2>+
           this.state.comments.map((comment, index) => {
             return (
               <div key={index}>
                 {comment.replace(/<p>/g, ' ')}
-                <br/>
-                <br/>
+                <br/><br/>
               </div>
             );
           })
-          : 'No graph information found.'
+          :
+          ''
         }
       </div>
     );

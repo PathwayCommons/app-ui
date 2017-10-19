@@ -3,6 +3,7 @@ const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
 const queryString = require('query-string');
 const _ = require('lodash');
+const classNames = require('classnames');
 
 const Icon = require('../../common/components').Icon;
 const PathwayCommonsService = require('../../services').PathwayCommonsService;
@@ -15,10 +16,16 @@ class Search extends React.Component {
     const query = queryString.parse(props.location.search);
 
     this.state = {
-      query: _.assign({q: '', gt: 3, lt: 250, type: 'Pathway'}, query),
+      query: _.assign({q: '', gt: 2, lt: 250, type: 'Pathway'}, query),
       searchResults: [],
-      dataSources: PathwayCommonsService.datasources()
+      dataSources: []
     };
+
+    PathwayCommonsService.datasources()
+    .then(result => this.setState({
+      dataSources: result
+      })
+    );
   }
 
   getSearchResult() {
@@ -48,6 +55,12 @@ class Search extends React.Component {
       newQueryState.q = e.target.value;
       this.setState({query: newQueryState});
     }
+  }
+
+  setQueryType(e, type) {
+    const newQueryState = _.assign({}, this.state.query);
+    newQueryState.type = type;
+    this.setState({query: newQueryState}, function () { this.submitSearchQuery(); });
   }
 
   submitSearchQuery() {
@@ -84,14 +97,32 @@ class Search extends React.Component {
       });
 
       return h('div.search-item', [
-        h('img.search-item-icon', {src: dsInfo.iconUrl}),
+        h('div.search-item-icon', [
+          h('img', {src: dsInfo.iconUrl})
+        ]),
         h('div.search-item-content', [
           h(Link, {to: {pathname: '/view', search: queryString.stringify({uri: result.uri})}, target: '_blank'}, [
-            h('h3.search-item-content-title', result.name),
+            h('h3.search-item-content-title', result.name  || 'N/A'),
           ]),
           h('p.search-item-content-datasource', ` ${dsInfo.name}`),
           h('p.search-item-content-participants', `${result.numParticipants} Participants`)
         ])
+      ]);
+    });
+
+    const searchTypes = [
+      { name: 'Pathways', value: 'Pathway' },
+      { name: 'Catalysis', value: 'Catalysis' },
+      { name: 'Molecular Interactions', value: 'MolecularInteraction' },
+      { name: 'Transcription/Translation', value: 'TemplateReactionRegulation' }
+    ];
+
+    const searchTypeTabs = searchTypes.map(searchType => {
+      return h('div', {
+        onClick: e => this.setQueryType(e, searchType.value),
+        className: classNames('search-option-item', state.query.type === searchType.value ? 'search-option-item-active' : '')
+      }, [
+        h('a', searchType.name)
       ]);
     });
 
@@ -101,26 +132,31 @@ class Search extends React.Component {
           h(Link, { className: 'a.search-pc-link', to: {pathname: '/'} }, [
             h('i.search-logo')
           ]),
-          h('div.search-searchbar', [
-            h('input', {
-              type: 'text',
-              placeholder: 'Enter pathway name or gene names',
-              value: state.query.q,
-              onChange: e => this.onSearchValueChange(e),
-              onKeyPress: e => this.onSearchValueChange(e)
-            }),
-            h('div.search-search-button', [
-              h('button', { onClick: e => this.submitSearchQuery(e) }, [
-                h(Icon, {icon: 'search'})
+          h(Link, { className: 'search-pc-title', to: {pathname: '/'} }, [
+            h('h2', 'Pathway'),
+            h('h2', 'Commons')
+          ]),
+          h('div.search-searchbar-container', [
+            h('div.search-searchbar', [
+              h('input', {
+                type: 'text',
+                placeholder: 'Enter pathway name or gene names',
+                value: state.query.q,
+                onChange: e => this.onSearchValueChange(e),
+                onKeyPress: e => this.onSearchValueChange(e)
+              }),
+              h('div.search-search-button', [
+                h('button', { onClick: e => this.submitSearchQuery(e) }, [
+                  h(Icon, {icon: 'search'})
+                ])
               ])
-            ])
+            ]),
+            h('div.search-tabs', searchTypeTabs)
           ])
         ])
       ]),
       h('div.search-list-container', [
-        h('div.search-options', [
-          h('div.search-hit-counter', `${state.searchResults.length} results`)
-        ]),
+        h('div.search-hit-counter', `${state.searchResults.length} results`),
         h('div.search-list', searchResults)
       ])
     ]);

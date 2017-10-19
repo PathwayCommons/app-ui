@@ -44,6 +44,7 @@ class Graph extends React.Component {
 
     cy.remove('*');
     cy.add(graphJSON);
+    
     cy.zoom(0.75); // [NOT WORKING]
 
     //toolTipCreator.bindTippyToElements(cy);

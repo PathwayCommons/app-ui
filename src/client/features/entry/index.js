@@ -11,7 +11,7 @@ class Entry extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      query: _.assign({q: '', gt: 3, lt: 250, type: 'Pathway'}, this.props.query)
+      query: _.assign({q: '', gt: 2, lt: 250, type: 'Pathway'}, this.props.query)
     };
   }
 
@@ -58,23 +58,23 @@ class Entry extends React.Component {
           h('i.entry-logo')
         ]),
         h('div.entry-title', [
-          h('h2.entry-pc-title', 'Pathway Commons'),
+          h('h1.entry-pc-title', 'Pathway Commons'),
           h('h5.entry-pc-description', 'A web resource for biological pathway data')
-        ]),
-        h('div.entry-search', [
-          h('input', {
-            type: 'text',
-            placeholder: 'Enter pathway name or gene names',
-            value: state.query.q,
-            onChange: e => this.onSearchValueChange(e),
-            onKeyPress: e => this.onSearchValueChange(e)
-          }),
-          h('div.entry-search-button', [
-            h('button', {
-              onClick: e => this.submitSearchQuery(e)
-              },[
-              h(Icon, {icon: 'search'})
-            ])
+        ])
+      ]),
+      h('div.entry-search', [
+        h('input', {
+          type: 'text',
+          placeholder: 'Enter pathway name or gene names',
+          value: state.query.q,
+          onChange: e => this.onSearchValueChange(e),
+          onKeyPress: e => this.onSearchValueChange(e)
+        }),
+        h('div.entry-search-button', [
+          h('button', {
+            onClick: e => this.submitSearchQuery(e)
+            },[
+            h(Icon, {icon: 'search'})
           ])
         ])
       ])

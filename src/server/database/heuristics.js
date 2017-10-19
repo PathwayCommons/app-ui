@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 
 /**
@@ -23,6 +24,8 @@
 **/
 
 
+=======
+>>>>>>> 764c802a3d679603c48bae2209c95baf2a6d98d7
 // --------- Fake Heuristics ---------------
 // This should probably go in its own file
 function run(layouts, callback) {

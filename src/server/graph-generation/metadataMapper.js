@@ -15,23 +15,39 @@
     To do : Integrate Web API Traverse Function
 
     @author Harsh Mistry
+<<<<<<< HEAD
     @version 1.1 2017/10/10
+=======
+    @version 1.1 2017/10/17
+>>>>>>> 764c802a3d679603c48bae2209c95baf2a6d98d7
 **/
 
 const fs = require('fs');
 const convert = require('sbgnml-to-cytoscape');
+<<<<<<< HEAD
+=======
+const metadataParser = require('./metadataParser.js');
+>>>>>>> 764c802a3d679603c48bae2209c95baf2a6d98d7
 var ProgressBar = require('ascii-progress');
 var DOMParser = require('xmldom').DOMParser;
 
 //Map metadata from BioPax to nodes
 //Returns a cy cytoscape json
 //Requires valid BioPax and sbgn files
+<<<<<<< HEAD
 module.exports = function (biopax, sbgn){
+=======
+module.exports = function (biopax, sbgn) {
+>>>>>>> 764c802a3d679603c48bae2209c95baf2a6d98d7
   //Convert sbgn to json
   let cyGraph = convert(sbgn);
 
   //Get mapped node list
+<<<<<<< HEAD
   var  nodes = cyGraph.nodes;
+=======
+  var nodes = cyGraph.nodes;
+>>>>>>> 764c802a3d679603c48bae2209c95baf2a6d98d7
   cyGraph.nodes = processBioPax(biopax, nodes);
 
   //Return Enhanced JSON
@@ -83,7 +99,11 @@ function GetElementsByAttributeWithoutTag(attr, attrValue, doc) {
 function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
   var result = [];
 
+<<<<<<< HEAD
   if(!biopaxElement) return result;
+=======
+  if (!biopaxElement) return result;
+>>>>>>> 764c802a3d679603c48bae2209c95baf2a6d98d7
 
   var children = biopaxElement.childNodes;
 
@@ -105,16 +125,26 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
     //Recurse on the referenced element
     if ((resource && resource.charAt(0) === '#') || entityRef) {
       //Get reference id
+<<<<<<< HEAD
       var refId = resource.substring(1);
+=======
+      var refId = resource.charAt(0) === '#' ?  resource.substring(1) : resource;
+>>>>>>> 764c802a3d679603c48bae2209c95baf2a6d98d7
       var referencedItem = GetElementsByAttributeWithoutTag('rdf:ID', refId, biopaxFile)[0];
 
       //Check if next node was visited
       var nodeVisited = (visitCopy.indexOf(refId) <= -1);
 
       //Restore original id for  entity references
+<<<<<<< HEAD
       if (entityRef){
         //Store ID if current element is a entity reference
         refId = children[i].getAttribute('rdf:resource');
+=======
+      if (entityRef && resource.charAt(0) !== '#') {
+        //Store ID if current element is a entity reference
+        //refId = children[i].getAttribute('rdf:resource');
+>>>>>>> 764c802a3d679603c48bae2209c95baf2a6d98d7
         tag += '_' + refId;
         referencedItem = GetElementsByAttributeWithoutTag('rdf:about', refId, biopaxFile)[0];
       }
@@ -154,6 +184,10 @@ function buildBioPaxTree(children, biopaxFile) {
 
     //Get the node id
     var id = children[i].getAttribute('rdf:ID');
+<<<<<<< HEAD
+=======
+    if (!(id)) id = children[i].getAttribute('rdf:about');
+>>>>>>> 764c802a3d679603c48bae2209c95baf2a6d98d7
     if (!(id)) continue;
 
     //Build a subtree
@@ -181,6 +215,23 @@ function removeAfterUnderscore(word, numberOfElements) {
   return newWord;
 }
 
+<<<<<<< HEAD
+=======
+//Find a key on the 1st level of a given tree
+//Requires a tree to be a valid biopax tree
+function searchLevelOne(tree, key){
+  //Find a Match
+  for (var i = 0; i < tree.length; i++){
+    if(tree[i][0].indexOf(key) >-1){
+      return tree[i][1];
+    }
+  }
+
+  //No Match
+  return null;
+}
+
+>>>>>>> 764c802a3d679603c48bae2209c95baf2a6d98d7
 //Get subtree for each node
 //Requires tree to be a valid biopax tree
 function getBioPaxSubtree(nodeId, tree) {
@@ -192,6 +243,7 @@ function getBioPaxSubtree(nodeId, tree) {
     fixedNodeId = nodeId;
   }
 
+<<<<<<< HEAD
   //Loop over all level-1 subnodes and return the corresponding metadata object
   for (var i = 0; i < tree.length; i++) {
     if (tree[i][0].indexOf(fixedNodeId) > -1) {
@@ -208,6 +260,25 @@ function getBioPaxSubtree(nodeId, tree) {
       return tree[i][1];
     }
   }
+=======
+  //Conduct a basic search
+  var basicSearch = searchLevelOne(tree, fixedNodeId)
+  if(basicSearch) return basicSearch; 
+
+  //Check if id is an unification reference
+  fixedNodeId = 'UnificationXref_' + nodeId;
+
+  //Conduct a unification ref search
+  var uniSearch = searchLevelOne(tree, fixedNodeId);
+  if(uniSearch) return uniSearch;
+
+  //Check if id is an external identifier
+  fixedNodeId = 'http://identifiers.org/' + nodeId.replace(/_/g, '/');
+
+  //Conduct a external identifier search 
+  var extSearch = searchLevelOne(tree, fixedNodeId);
+  if(extSearch) return extSearch;
+>>>>>>> 764c802a3d679603c48bae2209c95baf2a6d98d7
 
   return null;
 }
@@ -231,8 +302,21 @@ function processBioPax(data, nodes) {
     //Get metadata for current node
     var metadata = getBioPaxSubtree(id, bioPaxTree);
 
+<<<<<<< HEAD
     //Add data to nodes
     nodes[i].data.metadata = metadata;
+=======
+    //Parse metadata
+    try {
+    var parsedMetadata = metadataParser(metadata);
+    }
+    catch (e) {console.log(e);}
+
+    //Add data to nodes
+    nodes[i].data.metadata = metadata;
+    nodes[i].data.parsedMetadata = parsedMetadata;
+
+>>>>>>> 764c802a3d679603c48bae2209c95baf2a6d98d7
   }
 
   //Return nodes

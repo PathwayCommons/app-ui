@@ -37,20 +37,13 @@ class Menu extends React.Component {
       );
     });
 
-    const nameText = (
-      this.props.name ?
-      this.props.name : this.props.nameFallback
-    );
-
-    const datasourceText = (
-      this.props.datasource ? 
-      this.props.datasource : this.props.datasourceFallback
-    );
-
     return (
       <div className='menuBar flexCenter'>
+        <div className='pcLogoContainer flexCenter'>
+          <img src='/img/icon.png'></img>
+        </div>
         <div className='titleContainer'>
-          <h4>{nameText+' | '+datasourceText}</h4>
+          <h4>{this.props.name+' | '+this.props.datasource}</h4>
         </div>
         <div
           className='layoutDropdownButton flexCenter noSelect'
@@ -60,7 +53,6 @@ class Menu extends React.Component {
           <i className='material-icons'>timeline</i>
         </div>
         <div className={'layoutDropdown flexCenter'+(this.state.dropdownOpen ? ' open' : '')}>
-          <span>Layout</span>
           <select value={this.props.currLayout} onChange={(e) => this.props.updateLayout(e.target.value)}>
             {layoutItems}
           </select>

@@ -15,7 +15,6 @@
 
 const io = require('socket.io-client');
 var socket = io('192.168.90.176:3000');
-var gzip = require('gzip-js');
 
 /*
 Socket.io works similarly to React in that when updates happen, it pushes them live.
@@ -36,27 +35,27 @@ CDC.requestEditKeyValidation(params);
 
 const CDC = {
   initGraphSocket(updateFunction) {
-    socket.on('LayoutPackage', (cyZip) => {
+    socket.on('layoutPackage', (cyZip) => {
       var cyJSON = JSON.parse(atob(cyZip));
       updateFunction(cyJSON.graph);
     });
   },
 
   initEditLinkSocket(updateFunction) {
-    socket.on('EditKey', (editURI) => {
+    socket.on('editKey', (editURI) => {
       updateFunction(editURI);
     });
   },
 
   initEditKeyValidationSocket(updateFunction) {
-    socket.on('EditPermissions', (valid) => {
+    socket.on('editPermissions', (valid) => {
       updateFunction(valid);
     });
   },
 
   // Request a graph from the server. Should send back a cyJSON graph
   requestGraph(uri, version) {
-    socket.emit('getlayout', {uri: uri, version: version.toString()});
+    socket.emit('getLayout', {uri: uri, version: version.toString()});
   },
 
   // Used only in the admin app. Validation is done on the server-side

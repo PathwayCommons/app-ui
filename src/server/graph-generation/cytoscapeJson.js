@@ -12,19 +12,27 @@
 
     Note : Script may take time to download from pc2, due to uptime issues
 
-    @author Harsh Mistry
+    @author Harsh Mistry 
     @version 1.1 2017/10/10
 **/
 
 const fs = require('fs');
 const fileDownloader = require('./fileDownloader.js');
-const metadataMapper = require('./metadataMapper.js');
-var Multispinner = require('multispinner')
+const metadataMapperJson= require('./metadataMapperJson.js'); 
+var Multispinner = require('multispinner');
+const Promise = require('bluebird');
+
+
+//http://identifiers.org/reactome/R-HSA-6804754
+//http://identifiers.org/kegg.pathway/hsa00260
+//var x = getCytoscapeJson('http://identifiers.org/reactome/R-HSA-70171').then(data => fs.writeFileSync('tester4', JSON.stringify(data)));
+
+
 
 //Get pathway name, description, and datasource
 //Requires a valid pathway uri
 function getPathwayLevelMetadata(uri) {
-  var title, dataSource, comments;
+  var title, dataSource, comments, organism;
 
   //Get title
   return fileDownloader.traversePC2(uri, 'Named/displayName').then(function (data) {
@@ -38,12 +46,18 @@ function getPathwayLevelMetadata(uri) {
       return fileDownloader.traversePC2(uri, 'Entity/comment').then(function (data) {
         comments = data.traverseEntry[0].value;
 
-        //Return pathway metadata
-        return {
-          comments: comments,
-          dataSource: dataSource,
-          title: title
-        };
+        return fileDownloader.traversePC2(uri, 'Entity/organism/displayName').then(function (data) {
+          organism = data.traverseEntry[0].value;
+
+          //Return pathway metadata
+          return {
+            comments: comments,
+            dataSource: dataSource,
+            title: title,
+            organism : organism
+          };
+
+        })
       });
     });
   });
@@ -59,11 +73,12 @@ function getMetadataJson(uri) {
     sbgn = data;
 
     //Get BioPax XML
-    return fileDownloader.getPC2(uri, 'biopax').then(function (data) {
+    return fileDownloader.getPC2(uri, 'jsonld').then(function (data) {
       biopax = data;
 
       //Map metadata
-      return metadataMapper(biopax, sbgn);
+      //return metadataMapper(biopax, sbgn);
+      return metadataMapperJson(biopax, sbgn);
     })
   });
 }
@@ -74,8 +89,7 @@ function getCytoscapeJson(uri) {
   var pathwayMetadata;
 
   //Start Spinner
-  const spinner = new Multispinner({'main' : uri });
-  //console.log('\x1b[36m%s\x1b[0m', 'Processing ' + uri);
+  const spinner = new Multispinner({ 'main': uri });
 
   //Start Generation
   return getPathwayLevelMetadata(uri).then(function (data) {
@@ -85,11 +99,12 @@ function getCytoscapeJson(uri) {
       spinner.success('main');
       return data;
     })
-  }).catch(function(e){
+  }).catch(function (e) {
+    console.log(e);
     spinner.error('main');
   })
 }
 
 module.exports = {
-  getCytoscapeJson : getCytoscapeJson
+  getCytoscapeJson: getCytoscapeJson
 };

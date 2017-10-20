@@ -23,8 +23,7 @@
 
 //Import Depedencies
 const auth = require('./auth.js');
-const accessDB = require('./../database/accessDB.js');
-const fetch = require('node-fetch');
+const accessDB = require('./../database/accessDB.js')('testLayouts');
 const lazyLoad = require('./../lazyload');
 const btoa = require('btoa');
 

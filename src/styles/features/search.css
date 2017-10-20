@@ -89,8 +89,6 @@
   cursor: pointer;
 }
 
-
-
 .search-option-item-active {
   color: var(--green-sea);
   font-weight: bold;
@@ -100,6 +98,11 @@
 
 .search-option-item-disabled {
   color: grey;
+  cursor: default;
+}
+
+.search-option-item-disabled > a:hover {
+  cursor: default;
 }
 
 .search-option-item-active > button {

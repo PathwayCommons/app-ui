@@ -14,15 +14,16 @@
 
     TODO: None
 
-    @author Geoff Elder
+    @author Geoff Elder, Jonah Dlin
     @version 1.1 2017/10/10
 **/
 
 const express = require('express');
 const router = express.Router();
-
-const db = require('../database/accessDB.js');
 const queryString = require('query-string');
+
+const graphgen = require('../graph-generation/cytoscapeJson.js');
+
 
 /* GET home page.
 All URLS not specified earlier in server/index.js (e.g. REST URLs) get handled by the React UI */
@@ -35,40 +36,28 @@ router.get('*', function(req, res, next) {
   if (url.substring(0, 6) === '/view?') {
     const query = queryString.parse(url.slice(5));
     if (query.uri) {
-      db.connect().then(connection => {
-        db.getGraph(query.uri, 'latest', connection).then(graph => {
-          const gr = graph.graph;
-          if (!gr) {
-            console.log('COULD NOT FIND GRAPH');
-          } else {
-            console.log(gr.pathwayMetadata);
-            var title = '',
-                ds = '',
-                comments = '';
-            if (
-              typeof gr.pathwayMetadata === typeof {}
-              && Object.keys(gr.pathwayMetadata).length > 0
-            ) {
-              title = gr.pathwayMetadata.title[0];
-              ds = gr.pathwayMetadata.dataSource[0];
+      graphgen.getPathwayLevelMetadata(query.uri).then(md => {
+        console.log(md);
 
-              const comments_arr = gr.pathwayMetadata.comments;
-              for (var i = 0; i < comments_arr.length; i++) {
-                comments += comments_arr[i]+(i === comments_arr.length - 1 ? '' : '\n');
-              }
-            }
-            console.log(title);
-            console.log(ds);
-            console.log(comments);
+        var title = md.title,
+            ds = md.dataSource,
+            comments_arr = md.comments,
+            comments = '';
 
-            if (!title) title = 'Pathway Commons';
-            if (!ds) ds = 'Unknown datasource';
-            if (!comments) comments = 'An interaction from Pathway Commons';
+        for (var i = 0; i < comments_arr.length; i++) {
+          comments += comments_arr[i]+(i === comments_arr.length - 1 ? '' : '\n');
+        }
 
-            const displayTitle = title + ' | '+ds;
-            res.render('index', {title: displayTitle, desc: comments});
-          }
-        });
+        console.log(title);
+        console.log(ds);
+        console.log(comments);
+
+        if (!title) title = 'Pathway Commons';
+        if (!ds) ds = 'Unknown datasource';
+        if (!comments) comments = 'An interaction from Pathway Commons';
+
+        const displayTitle = title + ' | '+ds;
+        res.render('index', {title: displayTitle, desc: comments});
       });
     }
   }

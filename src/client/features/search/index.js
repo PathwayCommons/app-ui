@@ -21,6 +21,7 @@ class Search extends React.Component {
       query: _.assign({q: '', gt: 2, lt: 250, type: 'Pathway'}, query),
       searchResults: [],
       loading: false,
+      showFilters: false,
       dataSources: []
     };
 
@@ -161,13 +162,23 @@ class Search extends React.Component {
                 ])
               ])
             ]),
-            h('div.search-tabs', searchTypeTabs)
+            h('div.search-tabs', searchTypeTabs.concat([
+                h('div', {
+                  className: classNames('search-option-item', state.loading ? 'search-option-item-disabled' : '', 'search-tools', state.showFilters ? 'search-tools-active' : ''),
+                  onClick: e => this.setState({showFilters: true})
+                }, [
+                  h('a', 'Tools')
+                ])
+              ]
+            ))
           ])
         ])
       ]),
-      h(Loader, { loaded: !state.loading, options: {left: '30%', color: '#16A085' } }, [
+      h(Loader, { loaded: !state.loading, options: {left: '525px', color: '#16A085' } }, [
         h('div.search-list-container', [
-          h('div.search-hit-counter', `${state.searchResults.length} results`),
+          h('search-result-info', [
+            h('div.search-hit-counter', `${state.searchResults.length} results`)
+          ]),
           h('div.search-list', searchResults)
         ])
       ])

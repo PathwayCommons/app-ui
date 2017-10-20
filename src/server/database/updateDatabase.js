@@ -24,10 +24,11 @@
 
 
 const fs = require('fs'); // node file system, to be used for importing XMLs
-const convert = require('sbgnml-to-cytoscape'); // used to convert to cy JSONs
 const accessDB = require('./accessDB.js');
 const Promise = require('bluebird');
 const checksum = require('checksum');
+
+const whilst = require('async/whilst');
 const cyJson = require('./../graph-generation/cytoscapeJson');
 
 const args = process.argv;
@@ -69,27 +70,102 @@ function readURINames(dir) {
 
 var connectionPromise = accessDB.connect();
 
-
-function processFile(pc_id, release_id, connection) {
+// Errors from cyJson.getCytoscapeJson will be an object with exactly one
+// key, called error, with value of a string containing a description of the error
+// e.g. {error: "errormsg"}
+function processFile(pc_id, release_id, method, connection) {
+  // will eventually need to change method each time in getCytoscapeJson
   return cyJson.getCytoscapeJson(pc_id)
-    .then((data) => {
+    .then(data => {
+      if (typeof data !== typeof {}) {
+        return {error: 'No object received.'};
+      } else if (
+        Object.keys(data).length === 1 
+        && Object.keys(data)[0] === 'error'
+      ) {
+        return data;
+      } else {
       return accessDB.updateGraph(pc_id, release_id, data, connection);
-    }).catch((e)=>{
-      throw e;
+      }
     });
 }
 
-
-connectionPromise.then((connection) => {
+// After connection is received, try to get stuff from Harsh's cyJSON script
+// and use the results to update the DB. For each URL, three methods are tried
+// from fastest to slowest until one works, or they all fail.
+connectionPromise.then(connection => {
   accessDB.setDatabase('testLayouts', connection).then(() => {
     if (!connection) throw new Error('No database connection');
 
-    var fileList = readURINames(dir);
+    // the getCytoscapeJson script can use one of three different methods to fetch
+    // data. the fastest uses JSON, a slower method uses xml biopax data, and the
+    // (by far) slowest uses PC2 directly. The exact names of the methods used there
+    // should go here.
+    const methods=['json', 'xml', 'pc2'];
 
-    Promise.map(fileList, function (file) {
-      return processFile(file, version, connection);
-    },
-      { concurrency: 4 });
+    // Get URIs from the optionally specified file (or from the current dir if none),
+    // and give them a starting attempt of 1.
+    var fileList = readURINames(dir).map(uri => {
+      return [1, uri];
+    });
+
+    // To be populated with URIs that don't work with any of the methods
+    var unreadURIs = [];
+
+    // Asyncronous while loop
+    whilst(
+      // Stop looping only when the fileList is completely empty.
+      function() { return fileList.length > 0; },
+      function(callback) {
+        console.log(fileList);
+
+        // The current one of interest is always stored at the front of the array.
+        // The fileList is basically used as a queue
+        const attempt = fileList[0][0];
+        const uri = fileList[0][1];
+
+        processFile(uri, version, methods[attempt], connection).then(res => {
+          // Identify the very specific structure of an error sent from cytoscapeJSON.js
+          // e.g. {error: 'errormsg'}
+          // It is assumed that processFile always returns an object for now
+          if (
+            Object.keys(res).length === 1 
+            && Object.keys(res)[0] === 'error'
+          ) {
+            // The offender is at the front of the array so take it out and store it
+            var offender = fileList.shift();
+            if (attempt > methods.length) {
+               // If we've tried everything, give up and permanently remove the offender
+               // from fileList, storing it in a garbage array
+              unreadURIs.push(uri);
+            } else {
+              // If we haven't gone through all the methods yet, increase the offender's
+              // attempt number and put it at the back of the queue.
+              offender[0]++;
+              fileList.push(offender);
+            }
+            callback(null, unreadURIs); // prepare callback function 
+          } else {
+            fileList.shift(); // if all is well, remove from fileList and move on
+            callback(null, unreadURIs); // prepare callback function 
+          }
+        });
+      },
+      function(err, unreadURIs) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        console.log(unreadURIs);
+      }
+    );
+
+    // Old code that uses map to run many asynchronous calls at once
+    // but does not deal with errors
+    // Promise.map(fileList, file => {
+    //   return processFile(file, version, connection);
+    // },
+    //   { concurrency: 4 });
   });
 
 }).catch((e) => {

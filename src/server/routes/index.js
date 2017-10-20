@@ -32,7 +32,7 @@ All URLS not specified earlier in server/index.js (e.g. REST URLs) get handled b
 
 router.get('*', function(req, res, next) {
   const url = req.originalUrl;
-
+  console.log(url);
   if (url.substring(0, 6) === '/view?') {
     const query = queryString.parse(url.slice(5));
     if (query.uri) {
@@ -60,6 +60,8 @@ router.get('*', function(req, res, next) {
         res.render('index', {title: displayTitle, desc: comments});
       });
     }
+  } else {
+    res.render('index', {title: 'Pathway Commons', desc: 'Search our database of pathways and interactions!'});
   }
 });
 

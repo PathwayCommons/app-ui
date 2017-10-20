@@ -99,11 +99,18 @@ function getCytoscapeJson(uri) {
       data.pathwayMetadata = pathwayMetadata;
       spinner.success('main');
       return data;
+<<<<<<< HEAD
+    });
+  }).catch(function(e){
+    spinner.error('main');
+  });
+=======
     })
   }).catch(function (e) {
     console.log(e);
     spinner.error('main');
   })
+>>>>>>> 764c802a3d679603c48bae2209c95baf2a6d98d7
 }
 
 module.exports = {

@@ -1,3 +1,26 @@
+<<<<<<< HEAD
+/**
+    Pathway Commons Central Data Cache
+
+    Pathway Commons Database Creation
+    buildDB.js
+
+    Purpose : Creates the tables of the database.
+
+    Requires : A running rethinkdb connection
+
+    Effects : Creates an empty database in rethinkdb.
+
+    Note : None
+
+    TODO: 
+    - consider merging this file with createDatabase.js (which populates an empty database) 
+
+    @author Geoff Elder
+    @version 1.1 2017/10/10
+**/
+=======
+>>>>>>> 764c802a3d679603c48bae2209c95baf2a6d98d7
 /*
 The purpose of this script is to build the database. This should ideally only be run once to set up
 and populate the DB.
@@ -10,7 +33,11 @@ var connection = null;
 r.connect( {host: 'localhost', port: 28015}, function(err, conn) {
   if (err) throw err;
   connection = conn;
+<<<<<<< HEAD
+  createTables('layouts', [
+=======
   createTables('testLayouts', [
+>>>>>>> 764c802a3d679603c48bae2209c95baf2a6d98d7
     'graph',
     'version',
     'layout',

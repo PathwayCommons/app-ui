@@ -13,12 +13,12 @@
     Note : Script may take time to process large BioPax files
 
     @author Harsh Mistry
-    @version 1.1 2017/10/10
+    @version 1.1 2017/10/17
 **/
 
 const fs = require('fs');
 const convert = require('sbgnml-to-cytoscape');
-const metadataParser = require('./metadataParser.js');
+const metadataParser = require('./metadataParserXML.js');
 var ProgressBar = require('ascii-progress');
 var DOMParser = require('xmldom').DOMParser;
 
@@ -118,8 +118,7 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
     //Recurse on the referenced element
     if ((resource) || entityRef) {
       //Get reference id
-
-      var refId = resource.charAt(0) === '#' ?  resource.substring(1) : resource;
+      var refId = resource.charAt(0) === '#' ? resource.substring(1) : resource;
       var referencedItem = GetElementsByAttributeWithoutTag('rdf:ID', refId, biopaxFile)[0];
 
       //Check if next node was visited
@@ -192,7 +191,6 @@ function removeAfterUnderscore(word, numberOfElements) {
   return newWord;
 }
 
-
 //Find a key on the 1st level of a given tree
 //Requires a tree to be a valid biopax tree
 function searchLevelOne(tree, key) {
@@ -230,22 +228,6 @@ function getBioPaxSubtree(nodeId, biopax) {
     fixedNodeId = nodeId;
   }
 
-  //Loop over all level-1 subnodes and return the corresponding metadata object
-  for (var i = 0; i < tree.length; i++) {
-    if (tree[i][0].indexOf(fixedNodeId) > -1) {
-      return tree[i][1];
-    }
-  }
-
-  //Check if id is an unification reference
-  nodeId = 'UnificationXref_' + nodeId;
-
-  //Loop over all level-1 subnodes and return the corresponding metadata object
-  for (var i = 0; i < tree.length; i++) {
-    if (tree[i][0].indexOf(fixedNodeId) > -1) {
-      return tree[i][1];
-    }
-  }
   //Conduct a basic search
   var basicSearch = getElementFromBioPax(biopax, fixedNodeId);
   if (basicSearch) return buildBioPaxTree(basicSearch, biopax);
@@ -260,9 +242,9 @@ function getBioPaxSubtree(nodeId, biopax) {
   //Check if id is an external identifier
   fixedNodeId = 'http://identifiers.org/' + nodeId.replace(/_/g, '/');
 
-  //Conduct a external identifier search 
-  var extSearch = searchLevelOne(tree, fixedNodeId);
-  if(extSearch) return extSearch;
+  //Conduct a external identifier search
+  var extSearch = getElementFromBioPax(biopax, fixedNodeId);
+  if (extSearch) buildBioPaxTree(extSearch, biopax);
 
   return null;
 }
@@ -286,9 +268,6 @@ function processBioPax(data, nodes) {
 
     //Get metadata for current node
     var metadata = getBioPaxSubtree(id, xmlDoc);
-
-    //Add data to nodes
-    nodes[i].data.metadata = metadata;
 
     //Parse metadata
     try {

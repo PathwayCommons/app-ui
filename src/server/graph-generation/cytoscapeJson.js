@@ -46,6 +46,7 @@ function getPathwayLevelMetadata(uri) {
       return fileDownloader.traversePC2(uri, 'Entity/comment').then(function (data) {
         comments = data.traverseEntry[0].value;
 
+        //Get organism name
         return fileDownloader.traversePC2(uri, 'Entity/organism/displayName').then(function (data) {
           organism = data.traverseEntry[0].value;
 
@@ -106,5 +107,6 @@ function getCytoscapeJson(uri) {
 }
 
 module.exports = {
-  getCytoscapeJson: getCytoscapeJson
+  getCytoscapeJson: getCytoscapeJson,
+  getPathwayLevelMetadata : getPathwayLevelMetadata
 };

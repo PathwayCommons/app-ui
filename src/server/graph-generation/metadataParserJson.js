@@ -49,11 +49,12 @@ function parse(subTree) {
 
   //Make a copy of subtree
   var subTreeCopy = subTree.slice();
+  subTreeCopy = subTreeCopy[0][1];
 
   //Get All References
-  for (var i = 0; i < references.length; i++){
-    if(subTree[i][0] === 'Reference') {
-      references.push(subTree[i]);
+  for (var i = 0; i < subTreeCopy.length; i++){
+    if(subTreeCopy[i][0] === 'Reference') {
+      references.push(subTreeCopy[i]);
       subTreeCopy.splice(i, 1);
     }
   }

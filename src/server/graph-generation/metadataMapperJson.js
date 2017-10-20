@@ -51,7 +51,7 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
   var dataSource = biopaxElement['dataSource'];
   if (dataSource) result.push(['Data Source', dataSource]);
 
-  //Get display name 
+  //Get display name
   var dName = biopaxElement['displayName'];
   if (dName) result.push(['Display Name', dName]);
 
@@ -67,9 +67,13 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
   var sName = biopaxElement['standardName'];
   if (sName) result.push(['Standard Name', sName]);
 
-  //Get Chemical Formula 
+  //Get Chemical Formula
   var formula = biopaxElement['chemicalFormula'];
   if (formula) result.push(['Chemical Formula', formula]);
+
+  //Get Cellular Location
+  var cellLocation = biopaxElement['cellularLocation'];
+  if (cellLocation) result.push(['Cellular Location', cellLocation]);
 
   //Get database id
   var db = biopaxElement['db'];
@@ -79,11 +83,18 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
   //Get any cross references
   var xref = biopaxElement['xref'];
 
-  //Recurse on each cross reference (Limit level depth to 4)
+  //Resolve String/Array Issue
+  if (typeof xref == 'string') xref = [xref];
+
+  //Get entity reference and add it to xref
+  //var eref = biopaxElement['entityReference']
+  //xref.push(eref); 
+
+  //Recurse on each cross reference (Lim it level depth to 4)
   if (xref) {
     for (var i = 0; i < xref.length; i++) {
       //Get Referenced Element
-      var refElement = biopaxFile[xref[i]];
+      var refElement = getElementFromBioPax(biopaxFile, xref[i]);
 
       //Make a copy of visited
       var visitCopy = visited.slice();
@@ -94,12 +105,12 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
       //Recurse on current element
       if (visitCopy.indexOf(xref[i]) <= -1 && visitCopy.length <= 4) {
         visitCopy.push(xref[i]);
-        result.push(['Reference', buildBioPaxSubtree(refElement, biopaxFile, visitCopy)]);
+        result.push(['Reference', buildBioPaxSubtree(refElement[0], biopaxFile, visitCopy)]);
       }
     }
   }
 
-  
+
   //Return subtree
   return result;
 }
@@ -108,7 +119,7 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
 function buildBioPaxTree(children, biopaxFile) {
   var result = [];
 
-  if(!(children[0])) return;
+  if (!(children[0])) return;
 
   children = children[0];
 
@@ -116,7 +127,7 @@ function buildBioPaxTree(children, biopaxFile) {
   var id = children['pathid']
   if (!(id)) id = children['about'];
   if (!(id)) return;
- 
+
   //Build a subtree
   var visited = [id];
   var subtree = buildBioPaxSubtree(children, biopaxFile, visited);
@@ -150,7 +161,7 @@ function getElementFromBioPax(biopaxFile, id) {
     id = 'http://pathwaycommons.org/pc2/' + id;
   }
 
-  
+
   var str = "$..[?(@.pathid==\"" + id + "\")]";
   //Get element matching the id
   var result = jp.query(biopaxFile, str);
@@ -216,12 +227,12 @@ function processBioPax(data, nodes) {
 
     //Get metadata for current node
     var metadata = getBioPaxSubtree(id, graph);
-  
+
     //Parse metadata
     try {
       //Add data to nodes
-      var parsedMetadata = metadataParser(metadata);
       nodes[i].data.metadata = metadata;
+      var parsedMetadata = metadataParser(metadata);
       nodes[i].data.parsedMetadata = parsedMetadata;
     }
     catch (e) { console.log(e); }

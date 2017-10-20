@@ -137,6 +137,13 @@ class Search extends React.Component {
       ]);
     });
 
+    const searchResultInfo = state.showFilters ? h('div.search-filters', [
+      h('div.search-filter-label', 'datasource'),
+      h(Icon, {icon: 'arrow_drop_down'})
+    ]) :
+    h('div.search-hit-counter', `${state.searchResults.length} results`);
+
+
     return h('div.search', [
       h('div.search-header-container', [
         h('div.search-header', [
@@ -164,8 +171,8 @@ class Search extends React.Component {
             ]),
             h('div.search-tabs', searchTypeTabs.concat([
                 h('div', {
-                  className: classNames('search-option-item', state.loading ? 'search-option-item-disabled' : '', 'search-tools', state.showFilters ? 'search-tools-active' : ''),
-                  onClick: e => this.setState({showFilters: true})
+                  className: classNames('search-option-item', state.loading ? 'search-option-item-disabled' : '', 'search-tools', state.showFilters ? 'search-option-item-active' : ''),
+                  onClick: e => this.setState({showFilters: !state.showFilters})
                 }, [
                   h('a', 'Tools')
                 ])
@@ -176,9 +183,7 @@ class Search extends React.Component {
       ]),
       h(Loader, { loaded: !state.loading, options: {left: '525px', color: '#16A085' } }, [
         h('div.search-list-container', [
-          h('search-result-info', [
-            h('div.search-hit-counter', `${state.searchResults.length} results`)
-          ]),
+          h('search-result-info', [ searchResultInfo ]),
           h('div.search-list', searchResults)
         ])
       ])

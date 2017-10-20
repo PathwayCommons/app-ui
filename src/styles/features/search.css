@@ -124,6 +124,12 @@
   color: #7F8C8D;
 }
 
+.search-filters {
+  font-size: 12px;
+  display: flex;
+  flex-direction: row;
+}
+
 .search-item {
   display: flex;
   padding-top: 20px;

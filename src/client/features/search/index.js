@@ -18,7 +18,13 @@ class Search extends React.Component {
     const query = queryString.parse(props.location.search);
 
     this.state = {
-      query: _.assign({q: '', gt: 2, lt: 250, type: 'Pathway'}, query),
+      query: _.assign({
+        q: '',
+        gt: 2,
+        lt: 250,
+        type: 'Pathway',
+        datasource: []
+      }, query),
       searchResults: [],
       loading: false,
       showFilters: false,
@@ -68,8 +74,17 @@ class Search extends React.Component {
   setQueryType(e, type) {
     const state = this.state;
     if (!state.loading) {
-      const newQueryState = _.assign({}, this.state.query);
+      const newQueryState = _.assign({}, state.query);
       newQueryState.type = type;
+      this.setState({query: newQueryState}, function () { this.submitSearchQuery(); });
+    }
+  }
+
+  setQueryFilter(e) {
+    const state = this.state;
+    if (!state.loading) {
+      const newQueryState = _.assign({}, state.query);
+      newQueryState.datasource = e.target.value;
       this.setState({query: newQueryState}, function () { this.submitSearchQuery(); });
     }
   }
@@ -138,8 +153,10 @@ class Search extends React.Component {
     });
 
     const searchResultInfo = state.showFilters ? h('div.search-filters', [
-      h('div.search-filter-label', 'datasource'),
-      h(Icon, {icon: 'arrow_drop_down'})
+      h('select.search-datasource-filter', {onChange: e => this.setQueryFilter(e)}, [
+        h('option', {value: state.dataSources}, 'datasource: any')].concat(
+        _.sortBy(Object.values(state.dataSources), 'name').map(ds => h('option', {value: ds.id}, ds.name))
+      )),
     ]) :
     h('div.search-hit-counter', `${state.searchResults.length} results`);
 

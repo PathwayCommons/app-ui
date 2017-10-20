@@ -126,8 +126,21 @@
 
 .search-filters {
   font-size: 12px;
+  height: 13px;
   display: flex;
   flex-direction: row;
+}
+
+.search-datasource-filter {
+  border: none;
+  width: 115px;
+  font-size: 12px;
+}
+
+.search-datasource-filter > option {
+  width: 115px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .search-item {
@@ -135,7 +148,6 @@
   padding-top: 20px;
   padding-bottom: 20px;
 }
-
 
 .search-item-icon {
   width: 80px;

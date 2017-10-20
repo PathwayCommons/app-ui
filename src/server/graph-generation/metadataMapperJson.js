@@ -73,6 +73,10 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
 
   //Get Cellular Location
   var cellLocation = biopaxElement['cellularLocation'];
+  if (cellLocation && cellLocation.indexOf('http') !== -1) {
+    cellLocation = getElementFromBioPax(biopaxFile, cellLocation);
+    cellLocation = cellLocation[0]['term'];
+  }
   if (cellLocation) result.push(['Cellular Location', cellLocation]);
 
   //Get database id
@@ -86,13 +90,19 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
   //Resolve String/Array Issue
   if (typeof xref == 'string') xref = [xref];
 
-  //Get entity reference and add it to xref
-  //var eref = biopaxElement['entityReference']
-  //xref.push(eref); 
 
   //Recurse on each cross reference (Lim it level depth to 4)
   if (xref) {
+
+    //Get entity reference and add it to xref
+    var eref = biopaxElement['entityReference']
+    if (eref) xref.push(eref);
+
     for (var i = 0; i < xref.length; i++) {
+
+      var keyName = 'Reference';
+      if (i == (xref.length - 1) && eref) keyName = 'EntityReference';
+      
       //Get Referenced Element
       var refElement = getElementFromBioPax(biopaxFile, xref[i]);
 
@@ -105,7 +115,7 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
       //Recurse on current element
       if (visitCopy.indexOf(xref[i]) <= -1 && visitCopy.length <= 4) {
         visitCopy.push(xref[i]);
-        result.push(['Reference', buildBioPaxSubtree(refElement[0], biopaxFile, visitCopy)]);
+        result.push([keyName, buildBioPaxSubtree(refElement[0], biopaxFile, visitCopy)]);
       }
     }
   }
@@ -231,11 +241,10 @@ function processBioPax(data, nodes) {
     //Parse metadata
     try {
       //Add data to nodes
-      nodes[i].data.metadata = metadata;
       var parsedMetadata = metadataParser(metadata);
       nodes[i].data.parsedMetadata = parsedMetadata;
     }
-    catch (e) { console.log(e); }
+    catch (e) { console.log(e); throw e; }
 
   }
 

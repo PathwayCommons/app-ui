@@ -94,18 +94,31 @@ function searchTree(subtree, key, recurse = true) {
   }
   
   //Search for a subnode based on an exact match
-  //Returns an array, a string, or null
+  //Returns an integer, array, a string, or null
   //Requires a valid subtree
-  function searchForExactNode(subtree, key) {
+  //Note : If return index=true then the index of the node is returned
+  function searchForExactNode(subtree, key, returnIndex = false) {
     if (!(subtree)) return null;
     for (var i = 0; i < subtree.length; i++) {
-      if (subtree[i][0] === key) return subtree[i][1];
+      if (subtree[i][0] === key) return (returnIndex ? i : subtree[i][1]);
+    }
+    return null;
+  }
+
+  //Search for a subnode based on an exact match
+  //Returns an object with required ata
+  //Requires a valid subtree
+  function searchForExactNodeWithObjectResult(subtree, key) {
+    if (!(subtree)) return null;
+    for (var i = 0; i < subtree.length; i++) {
+      if (subtree[i][0] === key) return {index : i, data : subtree[i][1]};
     }
     return null;
   }
 
   module.exports = {
       searchForExactNode : searchForExactNode,
+      searchForExactNodeWithObjectResult : searchForExactNodeWithObjectResult, 
       searchForFirst : searchForFirst,
       searchForNode: searchForNode,
       searchMultiple: searchMultiple,

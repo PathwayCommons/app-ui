@@ -32,10 +32,11 @@ class Search extends React.Component {
     };
 
     PathwayCommonsService.datasources()
-    .then(result => this.setState({
-      dataSources: result
-      })
-    );
+    .then(result => {
+      this.setState({
+        dataSources: Object.values(result)
+      });
+    });
   }
 
   getSearchResult() {
@@ -136,14 +137,12 @@ class Search extends React.Component {
       ]);
     });
 
-    const searchTypes = [
+    const searchTypeTabs = [
       { name: 'Pathways', value: 'Pathway' },
       { name: 'Molecular Interactions', value: 'MolecularInteraction' },
       { name: 'Reactions', value: 'Control' },
       { name: 'Transcription/Translation', value: 'TemplateReactionRegulation' }
-    ];
-
-    const searchTypeTabs = searchTypes.map(searchType => {
+    ].map(searchType => {
       return h('div', {
         onClick: e => this.setQueryType(e, searchType.value),
         className: classNames('search-option-item', state.loading ? 'search-option-item-disabled' : '', state.query.type === searchType.value ? 'search-option-item-active' : '')
@@ -154,8 +153,8 @@ class Search extends React.Component {
 
     const searchResultInfo = state.showFilters ? h('div.search-filters', [
       h('select.search-datasource-filter', {onChange: e => this.setQueryFilter(e)}, [
-        h('option', {value: state.dataSources}, 'datasource: any')].concat(
-        _.sortBy(Object.values(state.dataSources), 'name').map(ds => h('option', {value: ds.id}, ds.name))
+        h('option', {value: state.dataSources.map(ds => ds.id), selected: state.query.datasource === []}, 'datasource: any')].concat(
+        _.sortBy(state.dataSources, 'name').map(ds => h('option', {value: ds.id, selected: state.query.datasource === ds.id }, ds.name))
       )),
     ]) :
     h('div.search-hit-counter', `${state.searchResults.length} results`);

@@ -72,21 +72,11 @@ class Search extends React.Component {
     }
   }
 
-  setQueryType(e, type) {
+  setQueryState(query) {
     const state = this.state;
     if (!state.loading) {
-      const newQueryState = _.assign({}, state.query);
-      newQueryState.type = type;
-      this.setState({query: newQueryState}, function () { this.submitSearchQuery(); });
-    }
-  }
-
-  setQueryFilter(e) {
-    const state = this.state;
-    if (!state.loading) {
-      const newQueryState = _.assign({}, state.query);
-      newQueryState.datasource = e.target.value;
-      this.setState({query: newQueryState}, function () { this.submitSearchQuery(); });
+      const newQueryState = _.assign({}, state.query, query);
+      this.setState({query: newQueryState}, function(){ this.submitSearchQuery(); });
     }
   }
 
@@ -144,7 +134,7 @@ class Search extends React.Component {
       { name: 'Transcription/Translation', value: 'TemplateReactionRegulation' }
     ].map(searchType => {
       return h('div', {
-        onClick: e => this.setQueryType(e, searchType.value),
+        onClick: e => this.setQueryState({type: searchType.value}),
         className: classNames('search-option-item', state.loading ? 'search-option-item-disabled' : '', state.query.type === searchType.value ? 'search-option-item-active' : '')
       }, [
         h('a', searchType.name)
@@ -152,7 +142,7 @@ class Search extends React.Component {
     });
 
     const searchResultInfo = state.showFilters ? h('div.search-filters', [
-      h('select.search-datasource-filter', {onChange: e => this.setQueryFilter(e)}, [
+      h('select.search-datasource-filter', {onChange: e => this.setQueryState({datasource: e.target.value})}, [
         h('option', {value: state.dataSources.map(ds => ds.id), selected: state.query.datasource === []}, 'datasource: any')].concat(
         _.sortBy(state.dataSources, 'name').map(ds => h('option', {value: ds.id, selected: state.query.datasource === ds.id }, ds.name))
       )),

@@ -85,23 +85,14 @@ class Search extends React.Component {
     const state = this.state;
 
     const query = state.query;
-    const uriRegex = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
 
-    if (query.q.match(uriRegex)) {
-      props.history.push({
-        pathname: '/paint',
-        search: queryString.stringify({uri: state.query.q}),
-        state: {}
-      });
-    } else {
-      props.history.push({
-        pathname: '/search',
-        search: queryString.stringify(query),
-        state: {}
-      });
+    props.history.push({
+      pathname: '/search',
+      search: queryString.stringify(query),
+      state: {}
+    });
 
-      this.getSearchResult();
-    }
+    this.getSearchResult();
   }
 
   render() {

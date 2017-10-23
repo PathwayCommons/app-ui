@@ -137,15 +137,18 @@ function parse(subTree) {
     entityRef = parseEntityReference(entityRef.data);
   }
 
-  //Get All References
-  for (var i = 0; i < subTreeCopy.length; i++) {
+  var check= treeTraversal.searchForExactNode(subTreeCopy, 'Names');
 
+  //Get all references
+  for (var i = 0; i < subTreeCopy.length; i++) {
     //Get in-object references
     if (subTreeCopy[i][0] === 'Reference') {
       references.push(subTreeCopy[i]);
-      subTreeCopy.splice(i, 1);
     }
   }
+
+  //Delete all references and re-index array
+  subTreeCopy = subTreeCopy.filter(key => key[0] !== 'Reference');
 
   //Parse Database ID's
   var parsedIDs = parseDatabaseIDs(references);

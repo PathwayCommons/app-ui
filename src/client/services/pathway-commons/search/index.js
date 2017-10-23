@@ -27,15 +27,15 @@ const processPhrase = (phrase, collection) => {
     });
 };
 
-const processQueryString = async (queryString) => {
+const processQueryString =  queryString => {
   return getHGNCData('hgncSymbols.txt')
     .then(hgncSymbols => {
-      const processedQuery = processPhrase(queryString, hgncSymbols);
+      const processedTokens = processPhrase(queryString, hgncSymbols);
 
       // return three query candidates to search, first query is fastest, last query slowest
       return [
-        '(name:' + removeSpaces(queryString) + ') OR (' + 'name:*' + removeSpaces(queryString) + '*) OR (' + processedQuery.join(' AND ') + ')',
-        '(' + processedQuery + ')',
+        '(name:' + removeSpaces(queryString) + ') OR (' + 'name:*' + removeSpaces(queryString) + '*) OR (' + processedTokens.join(' AND ') + ')',
+        '(' + processedTokens.join(' OR ') + ')',
         queryString
       ];
     });

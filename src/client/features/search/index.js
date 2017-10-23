@@ -143,7 +143,7 @@ class Search extends React.Component {
 
     const searchResultInfo = state.showFilters ? h('div.search-filters', [
       h('select.search-datasource-filter', {onChange: e => this.setQueryState({datasource: e.target.value})}, [
-        h('option', {value: state.dataSources.map(ds => ds.id), selected: state.query.datasource === []}, 'datasource: any')].concat(
+        h('option', {value: [], selected: state.query.datasource === []}, 'datasource: any')].concat(
         _.sortBy(state.dataSources, 'name').map(ds => h('option', {value: ds.id, selected: state.query.datasource === ds.id }, ds.name))
       )),
     ]) :

@@ -57,7 +57,7 @@ function parse(subTree) {
 
   if (eRef) {
     //Get the standard name
-    result.push(treeTraversal.searchOne(eRef, 'bp:standardName', 'Standard Name : '));
+    result.push(treeTraversal.searchOne(eRef, 'bp:standardName', 'Standard Name'));
 
     //Get names
     result.push(treeTraversal.searchMultiple(eRef, 'bp:name', 'Names'));
@@ -90,7 +90,7 @@ function parse(subTree) {
   }
 
   //Get all comments
-  result.push(treeTraversal.searchMultiple(subTree, 'bp:comment', 'Comments'));
+  result.push(treeTraversal.searchMultiple(subTree, 'bp:comment', 'Comment'));
 
   //Get display name
   temp = treeTraversal.searchForNode(subTree, 'bp:displayName');

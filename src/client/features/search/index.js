@@ -76,7 +76,7 @@ class Search extends React.Component {
     const state = this.state;
     if (!state.loading) {
       const newQueryState = _.assign({}, state.query, query);
-      this.setState({query: newQueryState}, function(){ this.submitSearchQuery(); });
+      this.setState({query: newQueryState}, () => this.submitSearchQuery());
     }
   }
 

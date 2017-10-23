@@ -27,10 +27,10 @@ const r = require('rethinkdb');
 
 var connection = null;
 
-r.connect( {host: 'localhost', port: 28015}, function(err, conn) {
+r.connect( {host: '192.168.90.176', port: 28015}, function(err, conn) {
   if (err) throw err;
   connection = conn;
-  createTables('layouts', [
+  createTables('metadataTest', [
     'graph',
     'version',
     'layout',

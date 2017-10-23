@@ -74,7 +74,7 @@ var connectionPromise = accessDB.connect();
 // and use the results to update the DB. For each URL, three methods are tried
 // from fastest to slowest until one works, or they all fail.
 connectionPromise.then(connection => {
-  accessDB.setDatabase('testLayouts', connection).then(() => {
+  accessDB.setDatabase('metadataTest', connection).then(() => {
     if (!connection) throw new Error('No database connection');
 
     // the getCytoscapeJson script can use one of three different methods to fetch
@@ -108,7 +108,7 @@ connectionPromise.then(connection => {
           'script': `Attempt ${attempt} of uri ${uri} \t\t ${originalLength-fileList.length+1} / ${originalLength}`
         });
 
-        processFile(uri, version, methods[attempt], connection).then(res => {
+        processFile(uri, version, methods[attempt - 1], connection).then(res => {
           // Identify the very specific structure of an error sent from cytoscapeJSON.js
           // e.g. {error: 'errormsg'}
           // It is assumed that processFile always returns an object for now

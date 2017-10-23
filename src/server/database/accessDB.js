@@ -21,7 +21,7 @@
     @version 1.1 2017/10/10
 **/
 
-var dbName = 'layouts';
+var dbName = 'metadataTest';
 const r = require('rethinkdb');
 const uuid = require('uuid/v4');
 const heuristics = require('./heuristics.js');

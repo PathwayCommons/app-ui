@@ -23,7 +23,7 @@ const processPhrase = (phrase, collection) => {
       || collection.has(token.toUpperCase());
       const luceneToken = token.replace(/([\!\*\+\-\&\|\(\)\[\]\{\}\^\~\?\:\/\\"])/g, '\\$1');
 
-      return tokenRecognized ? luceneToken : ( 'name:' + '*' + luceneToken + '*' );
+      return tokenRecognized ? ( 'xrefid:' + luceneToken ) : ( 'name:' + '*' + luceneToken + '*' );
     });
 };
 

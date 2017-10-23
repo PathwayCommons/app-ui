@@ -18,15 +18,14 @@
     - consider merging this file with updateVersiion.js (which populates a non empty)
 
 
-    @author Geoff Elder
+    @author Geoff Elder, Jonah Dlin
     @version 1.1 2017/10/10
 **/
 
 
 const fs = require('fs'); // node file system, to be used for importing XMLs
 const accessDB = require('./accessDB.js');
-const Promise = require('bluebird');
-const checksum = require('checksum');
+// const Promise = require('bluebird'); // used in old file process code
 var Multispinner = require('multispinner');
 
 const whilst = require('async/whilst');
@@ -39,25 +38,6 @@ const dir = args[3] ? args[3] : './';
 
 if (!version) throw Error('no version provided');
 
-
-// Takes in a uri-to-be with and checks if it has the form
-// 'http___stuff_morestuff_otherstuff'
-function validateURI(uri) {
-  return uri.slice(-4) === '.xml' || /^http_{3}/.test(uri);
-}
-
-
-// Takes in a uri-to-be with the form http___stuff_morestuff_otherstuff
-// and replace all underscores with the URI characted for "/", except those
-// three underscores following http
-function URIify(str) {
-  var str_change = str.replace(/\s/g, ''); // eliminate whitespace
-  str_change = str_change.replace(/^(http)_{3}/, 'http://'); // replace http___ with uri encoded http://
-  str_change = str_change.replace(/_/g, '/'); // replace rest of underscores with slashes
-  str_change = str_change.slice(0, -4); // get rid of .xml extension
-  return str_change;
-}
-
 function readURINames(dir) {
   var text = fs.readFileSync(dir + '/pathways.txt', { encoding: 'utf-8' });
 
@@ -68,15 +48,12 @@ function readURINames(dir) {
 
 }
 
-
-var connectionPromise = accessDB.connect();
-
 // Errors from cyJson.getCytoscapeJson will be an object with exactly one
 // key, called error, with value of a string containing a description of the error
 // e.g. {error: "errormsg"}
 function processFile(pc_id, release_id, method, connection) {
   // will eventually need to change method each time in getCytoscapeJson
-  return cyJson.getCytoscapeJson(pc_id, method);
+  return cyJson.getCytoscapeJson(pc_id, method)
     .then(data => {
       if (typeof data !== typeof {}) {
         return {error: 'No object received.'};
@@ -90,6 +67,8 @@ function processFile(pc_id, release_id, method, connection) {
       }
     });
 }
+
+var connectionPromise = accessDB.connect();
 
 // After connection is received, try to get stuff from Harsh's cyJSON script
 // and use the results to update the DB. For each URL, three methods are tried
@@ -110,6 +89,8 @@ connectionPromise.then(connection => {
       return [1, uri];
     });
 
+    const originalLength = fileList.length;
+
     // To be populated with URIs that don't work with any of the methods
     var unreadURIs = [];
 
@@ -123,7 +104,9 @@ connectionPromise.then(connection => {
         const attempt = fileList[0][0];
         const uri = fileList[0][1];
 
-        const spinner = new Multispinner({'script': 'Attempt '+attempt+' of uri '+uri});
+        const spinner = new Multispinner({
+          'script': `Attempt ${attempt} of uri ${uri} \t\t ${originalLength-fileList.length+1} / ${originalLength}`
+        });
 
         processFile(uri, version, methods[attempt], connection).then(res => {
           // Identify the very specific structure of an error sent from cytoscapeJSON.js
@@ -136,8 +119,8 @@ connectionPromise.then(connection => {
             // The offender is at the front of the array so take it out and store it
             var offender = fileList.shift();
             if (attempt > methods.length) {
-               // If we've tried everything, give up and permanently remove the offender
-               // from fileList, storing it in a garbage array
+              // If we've tried everything, give up and permanently remove the offender
+              // from fileList, storing it in a garbage array
               unreadURIs.push(uri);
             } else {
               // If we haven't gone through all the methods yet, increase the offender's
@@ -160,12 +143,14 @@ connectionPromise.then(connection => {
           console.log(err);
           return;
         }
+
         console.log(unreadURIs);
       }
     );
 
     // Old code that uses map to run many asynchronous calls at once
     // but does not deal with errors
+
     // Promise.map(fileList, file => {
     //   return processFile(file, version, connection);
     // },

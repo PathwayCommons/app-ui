@@ -63,7 +63,7 @@ function handleResult(resultPromise, callback) {
 
 // returns a promise for a connection to the database.
 function connect() {
-  return r.connect({ host: 'localhost', port: 28015 });
+  return r.connect({ host: '192.168.90.176', port: 28015 });
 }
 
 

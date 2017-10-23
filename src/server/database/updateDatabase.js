@@ -27,6 +27,7 @@ const fs = require('fs'); // node file system, to be used for importing XMLs
 const accessDB = require('./accessDB.js');
 const Promise = require('bluebird');
 const checksum = require('checksum');
+var Multispinner = require('multispinner');
 
 const whilst = require('async/whilst');
 const cyJson = require('./../graph-generation/cytoscapeJson');
@@ -75,7 +76,7 @@ var connectionPromise = accessDB.connect();
 // e.g. {error: "errormsg"}
 function processFile(pc_id, release_id, method, connection) {
   // will eventually need to change method each time in getCytoscapeJson
-  return cyJson.getCytoscapeJson(pc_id)
+  return cyJson.getCytoscapeJson(pc_id, method);
     .then(data => {
       if (typeof data !== typeof {}) {
         return {error: 'No object received.'};
@@ -101,7 +102,7 @@ connectionPromise.then(connection => {
     // data. the fastest uses JSON, a slower method uses xml biopax data, and the
     // (by far) slowest uses PC2 directly. The exact names of the methods used there
     // should go here.
-    const methods=['json', 'xml', 'pc2'];
+    const methods=['jsonld', 'biopax', 'pc2'];
 
     // Get URIs from the optionally specified file (or from the current dir if none),
     // and give them a starting attempt of 1.
@@ -117,12 +118,12 @@ connectionPromise.then(connection => {
       // Stop looping only when the fileList is completely empty.
       function() { return fileList.length > 0; },
       function(callback) {
-        console.log(fileList);
-
         // The current one of interest is always stored at the front of the array.
         // The fileList is basically used as a queue
         const attempt = fileList[0][0];
         const uri = fileList[0][1];
+
+        const spinner = new Multispinner({'script': 'Attempt '+attempt+' of uri '+uri});
 
         processFile(uri, version, methods[attempt], connection).then(res => {
           // Identify the very specific structure of an error sent from cytoscapeJSON.js
@@ -144,9 +145,12 @@ connectionPromise.then(connection => {
               offender[0]++;
               fileList.push(offender);
             }
+            spinner.error('script');
+            console.log('Failed on attempt '+attempt);
             callback(null, unreadURIs); // prepare callback function 
           } else {
             fileList.shift(); // if all is well, remove from fileList and move on
+            spinner.success('script');
             callback(null, unreadURIs); // prepare callback function 
           }
         });

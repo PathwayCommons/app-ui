@@ -18,7 +18,8 @@
 
 const fs = require('fs');
 const fileDownloader = require('./fileDownloader.js');
-const metadataMapperJson= require('./metadataMapperJson.js'); 
+const metadataMapperJson= require('./metadataMapperJson.js');
+const metadataMapperXML = require('./metadataMapperXML.js');
 var Multispinner = require('multispinner');
 const Promise = require('bluebird');
 
@@ -63,7 +64,7 @@ function getPathwayLevelMetadata(uri) {
 
 //Get metadata enhanced cytoscape JSON
 //Requires a valid pathway uri 
-function getMetadataJson(uri) {
+function getMetadataJson(uri, parseType) {
   var sbgn, biopax;
 
   //Get SBGN XML
@@ -71,19 +72,20 @@ function getMetadataJson(uri) {
     sbgn = data;
 
     //Get BioPax XML
-    return fileDownloader.getPC2(uri, 'jsonld').then(function (data) {
+    return fileDownloader.getPC2(uri, parseType).then(function (data) {
       biopax = data;
 
       //Map metadata
       //return metadataMapper(biopax, sbgn);
-      return metadataMapperJson(biopax, sbgn);
+      if(parseType === 'jsonld') return metadataMapperJson(biopax, sbgn);
+      else if (parseType === 'biopax') return metadataMapperXML(biopax, sbgn); 
     })
   });
 }
 
 //Return enhanced cytoscape json 
 //Requires a valid pathway uri 
-function getCytoscapeJson(uri) {
+function getCytoscapeJson(uri, parseType = 'jsonld') {
   var pathwayMetadata;
 
   //Start Spinner
@@ -92,14 +94,15 @@ function getCytoscapeJson(uri) {
   //Start Generation
   return getPathwayLevelMetadata(uri).then(function (data) {
     pathwayMetadata = data;
-    return getMetadataJson(uri).then(function (data) {
+    return getMetadataJson(uri, parseType).then(function (data) {
       data.pathwayMetadata = pathwayMetadata;
+      data.parseType = parseType;
       spinner.success('main');
       return data;
     })
   }).catch(function (e) {
-    console.log(e);
     spinner.error('main');
+    return {error : e};
   })
 }
 

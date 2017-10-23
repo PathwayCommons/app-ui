@@ -1,7 +1,7 @@
 /**
     Pathway Commons Central Data Cache
 
-    Metadata Mapper for JSON-LD 
+    Metadata Mapper for JSON-LD
     metadataMapperJson.js
 
     Purpose : Maps Metadata to SBGN nodes and returns an enhanced cytoscape json
@@ -102,7 +102,7 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
 
       var keyName = 'Reference';
       if (i == (xref.length - 1) && eref) keyName = 'EntityReference';
-      
+
       //Get Referenced Element
       var refElement = getElementFromBioPax(biopaxFile, xref[i]);
 

@@ -48,7 +48,7 @@ function searchTree(subtree, key, recurse = true) {
   //Note : Recurse will search entire subtree for the node
   function searchOne(subtree, key, name) {
     var temp = searchTree(subtree, key, false);
-    if (temp.length > 0) return name + temp[0];
+    if (temp.length > 0) return [name,  temp[0]];
     else return null;
   }
   

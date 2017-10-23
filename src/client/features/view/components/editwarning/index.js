@@ -19,7 +19,7 @@ class EditWarning extends React.Component {
   }
 
   componentDidUpdate() {
-    const warningDOM = document.getElementsByClassName('editWarningContainer')[0];
+    const warningDOM = this.warningDOM;
     
     // Set animation iteration dynamically based off duration and animation duration
     const anim_length = window.getComputedStyle(warningDOM).getPropertyValue('animation-duration');
@@ -30,8 +30,8 @@ class EditWarning extends React.Component {
 
   render() {
     return (
-      <div className={'flexCenter editWarningContainer noSelect'+(this.props.active ? '' : ' closed')}>
-        <div className='flexCenter editWarning'>
+      <div className={'edit-warning-container '+(this.props.active ? '' : ' closed')} ref={dom => this.warningDOM = dom}>
+        <div className='edit-warning'>
           {this.props.children}
         </div>
       </div>

@@ -1,7 +1,10 @@
 @import "./bounce.css";
 
 /* change someday to global "snackbar" component, like in react material-ui */
-.editWarningContainer {
+.edit-warning-container {
+  @apply --flex-center;
+  @apply --no-select;
+
   position: fixed;
   pointer-events: none;
   height: 2.6em;
@@ -21,7 +24,9 @@
 }
 
 
-.editWarning {
+.edit-warning {
+  @apply --flex-center;
+
   height: 1.8em;
   padding: 0.4em 1em 0.4em 1em;
   border-radius: 3px 3px 0px 0px;
@@ -31,7 +36,7 @@
 
 /* Portrait-specific mobile scaling */
 @media (width <= 768px) and (height <= 736px) and (height > 414px) {
-  .editWarningContainer {
+  .edit-warning-container {
     height: 100%;
     width: 2.6em;
     bottom: 0;
@@ -47,7 +52,7 @@
   }
   
   
-  .editWarning {
+  .edit-warning {
     height: 1.8em;
     min-width: 20em;
     transform: rotate(-90deg);

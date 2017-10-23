@@ -1,4 +1,4 @@
-.sidebarMenu {
+.sidebar-menu {
   height: 100%;
   width: 25%;
   position: fixed;
@@ -23,7 +23,7 @@
   }
 }
 
-.sidebarSelect {
+.sidebar-select {
   position: absolute;
   top: calc(50% - ((var(--icon-size) * 3 / 2) * 4 / 2));
   left: calc(- var(--icon-size) * 3 / 2);
@@ -53,7 +53,10 @@
   }
 }
 
-.toolButton {
+.tool-button {
+  @apply --flex-center;
+  @apply --no-select;
+
   height: calc(var(--icon-size) * 3 / 2);
   font-size: var(--icon-size);
   color: var(--midnight-blue);
@@ -72,7 +75,7 @@
   }
 }
 
-.sidebarContent {
+.sidebar-content {
   height: 100%;
   width: 100%;
   border: 2px solid black;
@@ -81,7 +84,9 @@
   z-index: 50;
 }
 
-.sidebarText {
+.sidebar-text {
+  @apply --flex-center;
+  
   height: 100%;
   width: 100%;
   z-index: 300;
@@ -99,8 +104,10 @@
   transition: all 0.5s linear;
 }
 
-/* change someday to global "imageCard" component */
-.imageCard {
+/* change someday to global "image-card" component */
+.image-card {
+  @apply --flex-center;
+  
   margin: auto;
   margin-top: 1em;
   margin-bottom: 1em;
@@ -125,12 +132,12 @@
   }
 }
 
-.fileDownloadMenu {
+.file-download-menu {
   width: 100%;
   height: 100%;
 }
 
-.downloadOption {
+.download-option {
   /* height: 10em; */
   
   width: 95%;
@@ -155,13 +162,17 @@
   }
 }
 
-.downloadIconContainer {
+.download-icon-container {
+  @apply --flex-center;
+
   width: 30%;
   height: 100%;
   margin: auto;
 }
 
-.downloadIconInnerContainer {
+.download-icon-inner-container {
+  @apply --flex-center;
+
   width: var(--icon-size);
   height: var(--icon-size);
   padding: 0.2em;
@@ -178,7 +189,7 @@
   }
 }
 
-.downloadOptionDescription {
+.download-option-description {
   width: 70%;
   height: 100%;
   display: flex;
@@ -189,7 +200,7 @@
 
 /* Mobile scaling */
 @media (width <= 768px) {
-  .sidebarSelect {
+  .sidebar-select {
     top: calc(50% - ((var(--icon-size-mobile) * 3 / 2) * 4 / 2));
     left: calc(- var(--icon-size-mobile) * 3 / 2);
     height: calc((var(--icon-size-mobile) * 3 / 2) * 4);
@@ -204,7 +215,7 @@
     }
   }
 
-  .toolButton {
+  .tool-button {
     height: calc(var(--icon-size-mobile) * 3 / 2);
     font-size: var(--icon-size-mobile);
   }
@@ -212,7 +223,7 @@
 
 /* Portrait-specific */
 @media (width <= 768px) and (height <= 736px) and (height > 414px) {
-  .sidebarMenu {
+  .sidebar-menu {
     height: 25%;
     width: 100%;
     position: fixed;
@@ -226,7 +237,7 @@
     }
   }
   
-  .sidebarSelect {
+  .sidebar-select {
     position: absolute;
     top: calc(- var(--icon-size-mobile) * 3 / 2);
     left: calc(50% - ((var(--icon-size-mobile) * 3 / 2) * 4 / 2));
@@ -251,7 +262,7 @@
     }
   }
   
-  .toolButton {
+  .tool-button {
     height: calc(var(--icon-size-mobile) * 3 / 2);
     flex-grow: 1;
 
@@ -263,11 +274,11 @@
     }
   }
   
-  .sidebarContent {
+  .sidebar-content {
     border-width: 2px 0px 0px 0px;
   }
   
-  .sidebarText {
+  .sidebar-text {
     border-width: 10px 0px 0px 0px;
   }
 } 

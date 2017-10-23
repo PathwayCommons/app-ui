@@ -1,4 +1,6 @@
-.menuBar {
+.menu-bar {
+  @apply --flex-center;
+
   position: absolute;
   justify-content: flex-start;
   z-index: 100;
@@ -12,7 +14,13 @@
   box-shadow: var(--box-shadow);
 }
 
-.pcLogoContainer {
+.menu-bar-inner-container {
+  @apply --flex-center;
+}
+
+.pc-logo-container {
+  @apply --flex-center;
+
   height: calc(var(--icon-size) * 3 / 2);
   width: calc(var(--icon-size) * 3 / 2);
 
@@ -22,7 +30,7 @@
   }
 }
 
-.titleContainer {
+.title-container {
   padding-left: calc(1em - var(--icon-size) / 3);
   padding-right: 1em;
   color: var(--midnight-blue);
@@ -32,7 +40,10 @@
   }
 }
 
-.layoutDropdownButton {
+.layout-dropdown-button {
+  @apply --flex-center;
+  @apply --no-select;
+
   height: calc(var(--icon-size) * 3 / 2);
   width: calc(var(--icon-size) * 3 / 2);
   color: var(--midnight-blue);
@@ -49,7 +60,9 @@
   }
 }
 
-.layoutDropdown {
+.layout-dropdown {
+  @apply --flex-center;
+
   display: none;
   margin-left: 1em;
   margin-right: 1em;
@@ -61,37 +74,37 @@
 
   &.open {
     max-width: 100%;
-    display: inline;
+    display: flex;
   }
 }
 
 /* Mobile scaling */
 @media (width <= 768px) {
-  .menuBar {
+  .menu-bar {
     left: 0;
   }
 
-  .layoutDropdownButton {
+  .layout-dropdown-button {
     height: calc(var(--icon-size-mobile) * 3 / 2);
     width: calc(var(--icon-size-mobile) * 3 / 2);
   }
 
-  .titleContainer {
+  .title-container {
     padding-left: 1em;
   }
 
-  .pcLogoContainer {
+  .pc-logo-container {
     display: none;
   }
 }
 
 /* Portrait-specific */
 @media (width <= 768px) and (height <= 736px) and (height > 414px) {
-  .menuBar {
+  .menu-bar {
     flex-direction: column;
   }
 
-  .layoutDropdown {
+  .layout-dropdown {
     padding-top: 1em;
     padding-bottom: 1em;
   }

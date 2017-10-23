@@ -89,7 +89,7 @@ class Search extends React.Component {
 
     if (query.q.match(uriRegex)) {
       props.history.push({
-        pathname: '/view',
+        pathname: '/paint',
         search: queryString.stringify({uri: state.query.q}),
         state: {}
       });

@@ -20,14 +20,14 @@ const fs = require('fs');
 const fileDownloader = require('./fileDownloader.js');
 const metadataMapperJson = require('./metadataMapperJson.js');
 const metadataMapperXML = require('./metadataMapperXML.js');
-//const metadataMapperPC2 = require('./metadataMapperPC2.js');
+const metadataMapperPC2 = require('./metadataMapperPC2.js');
 var Multispinner = require('multispinner');
 const Promise = require('bluebird');
 
 //Debug code (Ignore)
 //http://identifiers.org/reactome/R-HSA-6804754
 //http://identifiers.org/kegg.pathway/hsa00260
-//var x = getCytoscapeJson('http://identifiers.org/reactome/R-HSA-6804754').then(data => fs.writeFileSync('testFile', JSON.stringify(data)));
+var x = getCytoscapeJson('http://identifiers.org/kegg.pathway/hsa00260', 'pc2').then(data => fs.writeFileSync('testFile', JSON.stringify(data)));
 
 //Get pathway name, description, and datasource
 //Requires a valid pathway uri
@@ -83,7 +83,7 @@ function getMetadataJson(uri, parseType) {
       //return metadataMapper(biopax, sbgn);
       if (parseType === 'jsonld') { return metadataMapperJson(biopax, sbgn); }
       else if (parseType === 'biopax') { return metadataMapperXML(biopax, sbgn);} 
-      //else if (parseType === 'pc2') {return metadataMapperPC2(biopax, sbgn);} //PC2 Traverse Commented Out 
+      else if (parseType === 'pc2') {return metadataMapperPC2(biopax, sbgn);} 
     })
   });
 }
@@ -107,6 +107,7 @@ function getCytoscapeJson(uri, parseType = 'jsonld') {
     })
   }).catch(function (e) {
     spinner.error('main');
+    console.log(e);
     return { error: e };
   })
 }

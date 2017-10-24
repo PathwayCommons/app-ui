@@ -54,8 +54,8 @@
 }
 
 .tool-button {
-  @apply --flex-center;
-  @apply --no-select;
+  @extend %flex-center;
+  @extend %no-select;
 
   height: calc(var(--icon-size) * 3 / 2);
   font-size: var(--icon-size);
@@ -85,8 +85,8 @@
 }
 
 .sidebar-text {
-  @apply --flex-center;
-  
+  @extend %flex-center;
+
   height: 100%;
   width: 100%;
   z-index: 300;
@@ -106,8 +106,8 @@
 
 /* change someday to global "image-card" component */
 .image-card {
-  @apply --flex-center;
-  
+  @extend %flex-center;
+
   margin: auto;
   margin-top: 1em;
   margin-bottom: 1em;
@@ -116,7 +116,7 @@
   flex-direction: column;
   background-color: white;
   box-shadow: 0px 0px 35px 0px rgba(0,0,0,0.75);
-  
+
   & img {
     border: 1px solid black;
     min-height: 3em;
@@ -139,7 +139,7 @@
 
 .download-option {
   /* height: 10em; */
-  
+
   width: 95%;
   margin: auto;
   box-sizing: border-box;
@@ -151,7 +151,7 @@
   border-style: solid;
   border-color: black;
   border-width: 2px 2px 0px 2px;
-  
+
   &:first-child {
     margin-top: 1em;
   }
@@ -163,7 +163,7 @@
 }
 
 .download-icon-container {
-  @apply --flex-center;
+  @extend %flex-center;
 
   width: 30%;
   height: 100%;
@@ -171,7 +171,7 @@
 }
 
 .download-icon-inner-container {
-  @apply --flex-center;
+  @extend %flex-center;
 
   width: var(--icon-size);
   height: var(--icon-size);
@@ -205,10 +205,10 @@
     left: calc(- var(--icon-size-mobile) * 3 / 2);
     height: calc((var(--icon-size-mobile) * 3 / 2) * 4);
     width: calc(var(--icon-size-mobile) * 3 / 2);
-  
+
     &.conditional {
       height: calc(var(--icon-size-mobile) * 3 / 2);
-  
+
       &.open {
         left: calc(- var(--icon-size-mobile) * 3 / 2);
       }
@@ -231,12 +231,12 @@
     left: 0;
     box-shadow: 0px;
     transform: translateY(0%);
-  
+
     &.open {
       transform: translateY(-100%);
     }
   }
-  
+
   .sidebar-select {
     position: absolute;
     top: calc(- var(--icon-size-mobile) * 3 / 2);
@@ -246,14 +246,14 @@
     flex-direction: row;
     border-width: 2px 2px 0px 2px;
     border-radius: 3px 3px 0px 0px;
-  
+
     &.conditional {
       height: calc(var(--icon-size-mobile) * 3 / 2);
       width: calc(var(--icon-size-mobile) * 3 / 2);
       border-width: 2px 2px 0px 0px;
       top: 0;
       box-shadow: 0px 0px 0px 0px rgba(0,0,0,0.4);
-  
+
       &.open {
         top: calc(- var(--icon-size-mobile) * 3 / 2);
         left: 0;
@@ -261,24 +261,24 @@
       }
     }
   }
-  
+
   .tool-button {
     height: calc(var(--icon-size-mobile) * 3 / 2);
     flex-grow: 1;
 
     border-left: 2px solid black;
     border-top: 0;
-  
+
     &:first-child {
       border-left: 0;
     }
   }
-  
+
   .sidebar-content {
     border-width: 2px 0px 0px 0px;
   }
-  
+
   .sidebar-text {
     border-width: 10px 0px 0px 0px;
   }
-} 
+}

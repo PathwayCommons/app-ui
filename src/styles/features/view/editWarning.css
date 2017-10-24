@@ -2,8 +2,8 @@
 
 /* change someday to global "snackbar" component, like in react material-ui */
 .edit-warning-container {
-  @apply --flex-center;
-  @apply --no-select;
+  @extend %flex-center;
+  @extend %no-select;
 
   position: fixed;
   pointer-events: none;
@@ -25,7 +25,7 @@
 
 
 .edit-warning {
-  @apply --flex-center;
+  @extend %flex-center;
 
   height: 1.8em;
   padding: 0.4em 1em 0.4em 1em;
@@ -43,15 +43,15 @@
     left: calc(100% - 2.6em);
     animation-name: none;
     transition: transform 1s ease 0s, opacity 1s ease 1s;
-  
+
     &.closed {
       transform: translateX(100%);
       box-shadow: 0px;
       opacity: 0;
     }
   }
-  
-  
+
+
   .edit-warning {
     height: 1.8em;
     min-width: 20em;
@@ -61,4 +61,4 @@
     box-shadow: var(--box-shadow);
     background-color: var(--invalidColor);
   }
-} 
+}

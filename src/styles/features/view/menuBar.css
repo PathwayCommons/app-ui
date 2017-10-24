@@ -1,5 +1,5 @@
 .menu-bar {
-  @apply --flex-center;
+  @extend %flex-center;
 
   position: absolute;
   justify-content: flex-start;
@@ -15,11 +15,11 @@
 }
 
 .menu-bar-inner-container {
-  @apply --flex-center;
+  @extend %flex-center;
 }
 
 .pc-logo-container {
-  @apply --flex-center;
+  @extend %flex-center;
 
   height: calc(var(--icon-size) * 3 / 2);
   width: calc(var(--icon-size) * 3 / 2);
@@ -41,8 +41,8 @@
 }
 
 .layout-dropdown-button {
-  @apply --flex-center;
-  @apply --no-select;
+  @extend %flex-center;
+  @extend %no-select;
 
   height: calc(var(--icon-size) * 3 / 2);
   width: calc(var(--icon-size) * 3 / 2);
@@ -61,7 +61,7 @@
 }
 
 .layout-dropdown {
-  @apply --flex-center;
+  @extend %flex-center;
 
   display: none;
   margin-left: 1em;
@@ -108,4 +108,4 @@
     padding-top: 1em;
     padding-bottom: 1em;
   }
-} 
+}

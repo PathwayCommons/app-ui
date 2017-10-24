@@ -1,9 +1,12 @@
 //
 
 
+const database = 'layouts';
+
 //Import Depedencies
 const auth = require('./auth.js');
-const accessDB = require('./../database/accessDB.js');
+const accessDB = require('./../database/accessDB.js')(database);
+//const saveDiffs = require('./../database/saveDiffs.js')(database);
 const lazyLoad = require('./../lazyload');
 const btoa = require('btoa');
 
@@ -24,16 +27,24 @@ function getLayout(io, socket, ioPackage) {
         ioPackage.version,
         connection,
         function (layout, err) {
-          if (!err){
+          if (!err) {
             io.emit('layoutPackage', btoa(JSON.stringify(layout)));
           } else {
-            lazyLoad.queryPC();
+            try {
+              io.emit('layoutPackage', btoa(lazyLoad.queryMetadata(ioPackage.uri)));
+            } catch(e) {
+              try {
+                io.emit('layoutPackage', btoa(lazyLoad.queryPC(ioPackage.uri)));
+              } catch(e) {
+                io.emit('error',`ERROR: Layout for ${ioPackage.uri} could not be retrieved from database or PC2`);
+                
+              }
+            }
           }
         });
     });
   }
   catch (e) {
-    console.log(e);
     io.emit('error', 'error');
   }
 }
@@ -51,6 +62,34 @@ function submitLayout(io, socket, ioPackage) {
           function () { io.emit('updated', 'Layout was updated.'); });
       }
       else {
+        io.emit('error', 'ERROR: Incorrect Edit key');
+      }
+    }).catch((e) => {
+      throw e;
+    });
+  }
+  catch (e) {
+    io.emit('error', 'ERROR: Something went wrong in submitting the layout');
+  }
+}
+
+// This function should only be callable on an active edit layout
+/*
+function submitDiff(io, socket, ioPackage) {
+  //Get the requested layout
+  try {
+    connPromise.then((connection) => {
+      if (hasRightKey(ioPackage.uri, ioPackage.version, ioPackage.key)) {
+        saveDiffs.hasActiveLayout(ioPackage.uri, ioPackage.version, connection).then((result) => {
+          if(!result) throw new Error('ERROR: submitting to a non-active layout');
+
+          saveDiffs.saveDiff(ioPackage.uri,
+            ioPackage.version,
+            ioPackage.layout,
+            connection,
+            function () { io.emit('updated', 'Layout was updated.'); });
+        });
+      } else {
         io.emit('error', 'ERROR');
       }
     }).catch((e) => {
@@ -61,6 +100,7 @@ function submitLayout(io, socket, ioPackage) {
     io.emit('error', 'ERROR');
   }
 }
+*/
 
 function getEditKey(io, socket, ioPackage) {
 
@@ -116,7 +156,6 @@ function checkEditKey(io, socket, ioPackage) {
 
 var returnRouter = function (io) {
   io.on('connection', function (socket) {
-    console.log('I hear voices');
     //Get Layout
     socket.on('getLayout', function (ioPackage) {
       getLayout(io, socket, ioPackage);

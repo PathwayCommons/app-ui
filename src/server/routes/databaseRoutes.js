@@ -23,8 +23,8 @@
 
 //Import Depedencies
 const auth = require('./auth.js');
-const accessDB = require('./../database/accessDB.js');
-const fetch = require('node-fetch');
+const accessDB = require('./../database/accessDB.js')('testLayouts');
+const saveDiffs = require('./../database/saveDiffs')('testLayouts');
 const lazyLoad = require('./../lazyload');
 const btoa = require('btoa');
 
@@ -34,126 +34,7 @@ const router = express.Router();
 var connPromise = accessDB.connect(); // returns a promise.
 
 
-
-// Get a layout and respond using socket.io
-function getLayout(io, socket, ioPackage) {
-  //Get the requested layout
-  try {
-    connPromise.then((connection) => {
-      accessDB.getGraphAndLayout(
-        ioPackage.uri,
-        ioPackage.version,
-        connection,
-        function (layout) {
-
-          io.emit('LayoutPackage', btoa(JSON.stringify(layout)));
-        });
-    });
-  }
-  catch (e) {
-    console.log(e);
-    io.emit('error', 'error');
-  }
-}
-
-// Submit a layout and respond using socket.io
-function submitLayout(io, socket, ioPackage) {
-  //Get the requested layout
-  try {
-    connPromise.then((connection) => {
-      if (hasRightKey(ioPackage.uri, ioPackage.version, ioPackage.key)) {
-        accessDB.saveLayout(ioPackage.uri,
-          ioPackage.layout,
-          ioPackage.version,
-          connection,
-          function () { io.emit('Updated'); });
-      }
-      else {
-        io.emit('error', 'ERROR');
-      }
-    }).catch((e) => {
-      throw e;
-    });
-  }
-  catch (e) {
-    io.emit('error', 'ERROR');
-  }
-}
-
-function getEditKey(io, socket, ioPackage) {
-
-  try {
-    connPromise.then((connection) => {
-      if (auth.checkUser(socket.request.connection.remoteAddress, true)) {
-        accessDB.getGraphID(
-          ioPackage.uri,
-          ioPackage.version,
-          connection,
-          function (result) {
-            if (result) {
-              io.emit('EditKey', ioPackage.uri + '&editkey=' + result);
-            } else {
-              io.emit('error', 'ERROR: No edit key could be found');
-            }
-          });
-      } else {
-        io.emit('error', 'ERROR: Non-authenticated user');
-      }
-    });
-  }
-  catch (e) {
-    io.emit('error', 'ERROR: Edit Key Request Failed');
-    throw e;
-  }
-}
-
-function hasRightKey(pc_id, release_id, key) {
-  return connPromise.then((connection) => {
-    return accessDB.getGraphID(
-      pc_id,
-      release_id,
-      connection
-    );
-  }).then((result)=>{
-    return result === key;
-  });
-}
-
-function checkEditKey(io, socket, ioPackage) {
-  try {
-    hasRightKey(ioPackage.uri, ioPackage.version, ioPackage.key).then((result)=>{
-      io.emit('EditPermissions',result);
-    }).catch(()=>{
-      io.emit('error', 'ERROR : Edit Priviliges Check Failed');
-    });
-  } catch (e) {
-    io.emit('error', 'ERROR : Edit Priviliges Check Failed');
-    throw e;
-  }
-}
-
-var returnRouter = function (io) {
-  io.on('connection', function (socket) {
-    console.log('I hear voices');
-    //Get Layout
-    socket.on('getlayout', function (ioPackage) {
-      getLayout(io, socket, ioPackage);
-    });
-
-    //Submit Layout
-    socket.on('submitlayout', function (ioPackage) {
-      submitLayout(io, socket, ioPackage);
-    });
-
-    socket.on('getEditKey', function (ioPackage) {
-      getEditKey(io, socket, ioPackage);
-    });
-
-    socket.on('checkEditKey', function (ioPackage) {
-      checkEditKey(io, socket, ioPackage);
-    });
-
-  });
+var returnRouter = function () {
 
 
   // ------------------ Standard API Functions (Sans Socket IO) ----------------
@@ -207,7 +88,7 @@ var returnRouter = function (io) {
     }
   });
 
-  router.get('/GetEditKey', function (req, res) {
+  router.get('/getEditKey', function (req, res) {
 
     try {
       connPromise.then((connection) => {
@@ -218,7 +99,7 @@ var returnRouter = function (io) {
             connection,
             function (result) {
               if (result) {
-                res.json(req.query.uri + '&editkey=' + result);
+                res.json(result);
               } else {
                 res.json('ERROR: No edit key could be found');
               }
@@ -235,7 +116,7 @@ var returnRouter = function (io) {
     }
   });
 
-  router.get('/CheckEditKey', function (req, res) {
+  router.get('/checkEditKey', function (req, res) {
     if (!(req.query.uri && req.query.version)) {
       res.json('ERROR: Required Parameters Not Defined');
       return;
@@ -258,7 +139,6 @@ var returnRouter = function (io) {
 
   });
 
-  //Return if a user can edit
   router.post('/Submit', function (req, res) {
     if (!(req.body.layout && req.body.version && req.body.uri)) {
       res.json = ('ERROR : Required Parameters Undefined');

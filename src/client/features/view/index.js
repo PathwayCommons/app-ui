@@ -41,7 +41,7 @@ const CDC = require('../../services/index.js').CDC;
 class View extends React.Component {
   constructor(props) {
     super(props);
-    const query = queryString.parse(window.location.search); // TEST VALUE. CHANGE TO props.location.search
+    const query = queryString.parse(window.location.search);
     this.state = {
       query: query,
 

@@ -35,7 +35,7 @@ CDC.requestEditKeyValidation(params);
 
 const CDC = {
   initGraphSocket(updateFunction) {
-    socket.on('LayoutPackage', (cyZip) => {
+    socket.on('layoutPackage', (cyZip) => {
       var cyJSON = JSON.parse(atob(cyZip));
       updateFunction(cyJSON.graph);
     });
@@ -71,7 +71,7 @@ const CDC = {
   // Send a dif in a node to the backend. The backend will deal with merging these diffs into
   // a layout
   submitDiff(uri, version, key, node_id, pos) {
-    socket.emit('submitlayout', {uri: uri, version: version.toString(), key: key, id: node_id, pos: JSON.stringify(pos)});
+    socket.emit('submitLayout', {uri: uri, version: version.toString(), key: key, id: node_id, pos: JSON.stringify(pos)});
   },
 
   // Send a session closed message to the backend so it can save the diffs to a new layout

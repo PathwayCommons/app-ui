@@ -28,6 +28,8 @@ class Admin extends React.Component {
       dataSources: result
       })
     );
+
+    this.updateEditLinks = this.updateEditLinks.bind(this);
   }
 
   updateEditLinks(editURI) {

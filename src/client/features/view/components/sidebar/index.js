@@ -166,7 +166,7 @@ class Sidebar extends React.Component {
       'center_focus_weak': (
         <div className='nodeMenuNoNode'>
           <h1>Node Information</h1>
-          <div>Right click on any node and click the dock button to see information about it.</div>
+          <div>Not yet implemented.</div>
         </div>
       )
     };

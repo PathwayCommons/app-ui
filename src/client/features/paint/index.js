@@ -61,7 +61,8 @@ class Paint extends React.Component {
       state.cy.remove('*');
       state.cy.add(sbgnJson);
       state.cy.layout({
-        name: 'cose-bilkent'
+        name: 'cose-bilkent',
+        nodeDimensionsIncludeLabels: true
       }).run();
     });
   }
@@ -84,8 +85,7 @@ class Paint extends React.Component {
         h('div.paint-toolbar', [
           h(Icon, { className: 'paint-control-icon', icon: 'image' }),
           h(Icon, { className: 'paint-control-icon', icon: 'shuffle' }),
-          h(Icon, { className: 'paint-control-icon', icon: 'help' }),
-
+          h(Icon, { className: 'paint-control-icon', icon: 'help' })
         ])
       ]),
       h('div.paint-graph', [

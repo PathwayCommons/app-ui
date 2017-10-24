@@ -23,19 +23,19 @@ const processPhrase = (phrase, collection) => {
       || collection.has(token.toUpperCase());
       const luceneToken = token.replace(/([\!\*\+\-\&\|\(\)\[\]\{\}\^\~\?\:\/\\"])/g, '\\$1');
 
-      return tokenRecognized ? luceneToken : ( 'name:' + '*' + luceneToken + '*' );
+      return tokenRecognized ? ( 'xrefid:' + luceneToken ) : ( 'name:' + '*' + luceneToken + '*' );
     });
 };
 
-const processQueryString = async (queryString) => {
+const processQueryString =  queryString => {
   return getHGNCData('hgncSymbols.txt')
     .then(hgncSymbols => {
-      const processedQuery = processPhrase(queryString, hgncSymbols);
-    
+      const processedTokens = processPhrase(queryString, hgncSymbols);
+
       // return three query candidates to search, first query is fastest, last query slowest
       return [
-        '(name:' + removeSpaces(queryString) + ') OR (' + 'name:*' + removeSpaces(queryString) + '*) OR (' + processedQuery.join(' AND ') + ')',
-        '(' + processedQuery + ')',
+        '(name:' + removeSpaces(queryString) + ') OR (' + 'name:*' + removeSpaces(queryString) + '*) OR (' + processedTokens.join(' AND ') + ')',
+        '(' + processedTokens.join(' OR ') + ')',
         queryString
       ];
     });

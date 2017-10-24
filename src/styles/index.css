@@ -6,8 +6,6 @@
 @import "./fonts.css";
 @import "./base.css";
 @import "./app.css";
-@import "./tippy.css";
-
 @import "./features/entry.css";
 @import "./features/search.css";
 @import "./features/paint.css";

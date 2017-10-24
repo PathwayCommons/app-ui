@@ -1,6 +1,8 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
+const Loader = require('react-loader');
+
 const queryString = require('query-string');
 const _ = require('lodash');
 const classNames = require('classnames');
@@ -16,16 +18,25 @@ class Search extends React.Component {
     const query = queryString.parse(props.location.search);
 
     this.state = {
-      query: _.assign({q: '', gt: 2, lt: 250, type: 'Pathway'}, query),
+      query: _.assign({
+        q: '',
+        gt: 2,
+        lt: 250,
+        type: 'Pathway',
+        datasource: []
+      }, query),
       searchResults: [],
+      loading: false,
+      showFilters: false,
       dataSources: []
     };
 
     PathwayCommonsService.datasources()
-    .then(result => this.setState({
-      dataSources: result
-      })
-    );
+    .then(result => {
+      this.setState({
+        dataSources: Object.values(result)
+      });
+    });
   }
 
   getSearchResult() {
@@ -33,10 +44,14 @@ class Search extends React.Component {
     const query = state.query;
 
     if (query.q !== '') {
+      this.setState({
+        loading: true
+      });
       PathwayCommonsService.querySearch(query)
       .then(searchResults => {
         this.setState({
-          searchResults: searchResults
+          searchResults: searchResults,
+          loading: false
         });
       });
     }
@@ -57,10 +72,12 @@ class Search extends React.Component {
     }
   }
 
-  setQueryType(e, type) {
-    const newQueryState = _.assign({}, this.state.query);
-    newQueryState.type = type;
-    this.setState({query: newQueryState}, function () { this.submitSearchQuery(); });
+  setQueryState(query) {
+    const state = this.state;
+    if (!state.loading) {
+      const newQueryState = _.assign({}, state.query, query);
+      this.setState({query: newQueryState}, () => this.submitSearchQuery());
+    }
   }
 
   submitSearchQuery() {
@@ -68,23 +85,14 @@ class Search extends React.Component {
     const state = this.state;
 
     const query = state.query;
-    const uriRegex = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
 
-    if (query.q.match(uriRegex)) {
-      props.history.push({
-        pathname: '/view',
-        search: queryString.stringify({uri: state.query.q}),
-        state: {}
-      });
-    } else {
-      props.history.push({
-        pathname: '/search',
-        search: queryString.stringify(query),
-        state: {}
-      });
+    props.history.push({
+      pathname: '/search',
+      search: queryString.stringify(query),
+      state: {}
+    });
 
-      this.getSearchResult();
-    }
+    this.getSearchResult();
   }
 
   render() {
@@ -101,7 +109,7 @@ class Search extends React.Component {
           h('img', {src: dsInfo.iconUrl})
         ]),
         h('div.search-item-content', [
-          h(Link, {to: {pathname: '/view', search: queryString.stringify({uri: result.uri})}, target: '_blank'}, [
+          h(Link, {to: {pathname: '/paint', search: queryString.stringify({uri: result.uri})}, target: '_blank'}, [
             h('h3.search-item-content-title', result.name  || 'N/A'),
           ]),
           h('p.search-item-content-datasource', ` ${dsInfo.name}`),
@@ -110,21 +118,28 @@ class Search extends React.Component {
       ]);
     });
 
-    const searchTypes = [
+    const searchTypeTabs = [
       { name: 'Pathways', value: 'Pathway' },
-      { name: 'Catalysis', value: 'Catalysis' },
       { name: 'Molecular Interactions', value: 'MolecularInteraction' },
+      { name: 'Reactions', value: 'Control' },
       { name: 'Transcription/Translation', value: 'TemplateReactionRegulation' }
-    ];
-
-    const searchTypeTabs = searchTypes.map(searchType => {
+    ].map(searchType => {
       return h('div', {
-        onClick: e => this.setQueryType(e, searchType.value),
-        className: classNames('search-option-item', state.query.type === searchType.value ? 'search-option-item-active' : '')
+        onClick: e => this.setQueryState({type: searchType.value}),
+        className: classNames('search-option-item', state.loading ? 'search-option-item-disabled' : '', state.query.type === searchType.value ? 'search-option-item-active' : '')
       }, [
         h('a', searchType.name)
       ]);
     });
+
+    const searchResultInfo = state.showFilters ? h('div.search-filters', [
+      h('select.search-datasource-filter', {onChange: e => this.setQueryState({datasource: e.target.value})}, [
+        h('option', {value: [], selected: state.query.datasource === []}, 'datasource: any')].concat(
+        _.sortBy(state.dataSources, 'name').map(ds => h('option', {value: ds.id, selected: state.query.datasource === ds.id }, ds.name))
+      )),
+    ]) :
+    h('div.search-hit-counter', `${state.searchResults.length} results`);
+
 
     return h('div.search', [
       h('div.search-header-container', [
@@ -151,13 +166,23 @@ class Search extends React.Component {
                 ])
               ])
             ]),
-            h('div.search-tabs', searchTypeTabs)
+            h('div.search-tabs', searchTypeTabs.concat([
+                h('div', {
+                  className: classNames('search-option-item', state.loading ? 'search-option-item-disabled' : '', 'search-tools', state.showFilters ? 'search-option-item-active' : ''),
+                  onClick: e => this.setState({showFilters: !state.showFilters})
+                }, [
+                  h('a', 'Tools')
+                ])
+              ]
+            ))
           ])
         ])
       ]),
-      h('div.search-list-container', [
-        h('div.search-hit-counter', `${state.searchResults.length} results`),
-        h('div.search-list', searchResults)
+      h(Loader, { loaded: !state.loading, options: {left: '525px', color: '#16A085' } }, [
+        h('div.search-list-container', [
+          h('search-result-info', [ searchResultInfo ]),
+          h('div.search-list', searchResults)
+        ])
       ])
     ]);
   }

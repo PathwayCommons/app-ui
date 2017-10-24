@@ -6,7 +6,7 @@ const database = 'layouts';
 //Import Depedencies
 const auth = require('./auth.js');
 const accessDB = require('./../database/accessDB.js')(database);
-const saveDiffs = require('./../database/saveDiffs.js')(database);
+//const saveDiffs = require('./../database/saveDiffs.js')(database);
 const lazyLoad = require('./../lazyload');
 const btoa = require('btoa');
 
@@ -74,6 +74,7 @@ function submitLayout(io, socket, ioPackage) {
 }
 
 // This function should only be callable on an active edit layout
+/*
 function submitDiff(io, socket, ioPackage) {
   //Get the requested layout
   try {
@@ -99,6 +100,7 @@ function submitDiff(io, socket, ioPackage) {
     io.emit('error', 'ERROR');
   }
 }
+*/
 
 function getEditKey(io, socket, ioPackage) {
 
@@ -152,21 +154,8 @@ function checkEditKey(io, socket, ioPackage) {
   }
 }
 
-function createActiveLayout(io, socket, ioPackage){
-  try{
-    connPromise.then((connection)=>{
-      saveDiffs.joinSession(ioPackage.uri, ioPackage.version, connection).then(()=>{
-        io.emit('session', 'Session joined');
-      });
-    });
-  }catch(e) {
-    io.emit('error', 'ERROR: active layout not created.');
-  }
-}
-
 var returnRouter = function (io) {
   io.on('connection', function (socket) {
-    console.log('I hear voices');
     //Get Layout
     socket.on('getLayout', function (ioPackage) {
       getLayout(io, socket, ioPackage);

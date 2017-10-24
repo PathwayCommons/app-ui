@@ -4,7 +4,7 @@ const DownloadOption = require('./components/downloadOption.js');
 class FileDownloadMenu extends React.Component {
   render() {
     return (
-      <div className='fileDownloadMenu'>
+      <div className='file-download-menu'>
         <h1>Graph Downloads</h1>
         <DownloadOption
           cy={this.props.cy}

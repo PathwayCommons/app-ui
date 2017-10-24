@@ -13,9 +13,7 @@
 
     Note: 
 
-    To do:    - Resizability
-              - Colour scheme
-              - Node metadata dock
+    To do:    
 
     @author Jonah Dlin
     @version 1.1 2017/10/17
@@ -69,19 +67,27 @@ class Sidebar extends React.Component {
 
   // Function called to initialize tippy.js tooltips for icons
   initTooltips() {
-    tippy('.toolButton', {
+    tippy('.tool-button', {
       delay: [800, 400],
       animation: 'scale',
       theme: 'dark',
       arrow: true,
-      position: 'left'
+      position: 'left',
+      touchHold: true,
+      popperOptions: {
+        modifiers: {
+          flip: {
+            behavior: ['left', 'top']
+          }
+        }
+      }
     });
   }
 
-  // Utility function to clear all styling on the toolButtons and return them to the
+  // Utility function to clear all styling on the tool-buttons and return them to the
   // standard colour. Currently that color must be specified here.
   clearToolButtonStyling() {
-    var toolButtons = document.getElementsByClassName('toolButton');
+    var toolButtons = this.toolButtons;
     for (var i = toolButtons.length - 1; i >= 0; i--) {
       toolButtons[i].style.zIndex = 1;
       toolButtons[i].style.backgroundColor = '#ECF0F1';
@@ -90,7 +96,11 @@ class Sidebar extends React.Component {
   
   // Used for the panel buttons to set menus in the sidebar and dynamically change the style
   handleIconClick(button) {
-    var currButton = document.getElementsByClassName(button+'MenuButton')[0];
+    var toolButtonNames = this.state.toolButtonNames.map(name => {
+      if (typeof name === typeof {}) return name[this.state.nodeData.toString()];
+      else return name;
+    });
+    var currButton = this.toolButtons[toolButtonNames.indexOf(button)];
     this.clearToolButtonStyling();
     currButton.style.zIndex = 100;
     currButton.style.backgroundColor = '#16A085';
@@ -104,16 +114,16 @@ class Sidebar extends React.Component {
   updateIfOutOfMenu(evt) {
     var currentEl = evt.target;
     var loops = 0; // a safety variable
-    // Not sure if there's a betterway to do this so I loop through the
+    // Not sure if there's a better way to do this so I loop through the
     // element that is clicked on and its parents, grandparents, etc.
     // until I either reach the View (which I assume covers the whole page)
-    // or I reach the sidebarMenu or a toolButton (which I assume are children
+    // or I reach the sidebar-menu or a toolButton (which I assume are children
     // the View)
     while (currentEl.className !== 'View') {
       var currClassNames = currentEl.className.split(' ');
       if (
-        currClassNames.includes('sidebarMenu') ||
-        currClassNames.includes('toolButton')
+        currClassNames.includes('sidebar-menu') ||
+        currClassNames.includes('tool-button')
       ) {
         return;
       }
@@ -132,8 +142,13 @@ class Sidebar extends React.Component {
   // Every time the state updates we should check if the event listening for a menu close is worth
   // keeping active, since it's a waste of resources to keep it active if the sidebar is closed
   componentWillUpdate(nextProps, nextState) {
-    if (nextState.open && !nextState.locked) {window.addEventListener('mousedown', this.updateIfOutOfMenu);}
-    else {window.removeEventListener('mousedown', this.updateIfOutOfMenu);}
+    if (nextState.open && !nextState.locked) {
+      window.addEventListener('mousedown', this.updateIfOutOfMenu);
+      window.addEventListener('touchend', this.updateIfOutOfMenu);
+    } else {
+      window.removeEventListener('mousedown', this.updateIfOutOfMenu);
+      window.removeEventListener('touchend', this.updateIfOutOfMenu);
+    }
   }
 
   render() {
@@ -166,14 +181,16 @@ class Sidebar extends React.Component {
 
     // Map tool buttons to actual elements with tooltips frmo tippy.js
     const tooltips = this.state.tooltips;
+    this.toolButtons = new Array(toolButtonNames.length);
     const toolButtons = toolButtonNames.map((button, index) => {
       var buttonClassName = button+'MenuButton';
       return (
         <div
           key={index}
-          className={'toolButton noSelect flexCenter '+buttonClassName}
+          className={'tool-button '+buttonClassName}
           onClick={() => this.handleIconClick(button)}
           title={tooltips[index]}
+          ref={dom => this.toolButtons[index] = dom}
         >
           <i className='material-icons'>{button}</i>
         </div>
@@ -181,21 +198,21 @@ class Sidebar extends React.Component {
     });
 
     return (
-      <div className={'sidebarMenu'+(this.state.open ? ' open' : '')}>
-        <div className='sidebarSelect'>
+      <div className={'sidebar-menu'+(this.state.open ? ' open' : '')}>
+        <div className='sidebar-select'>
           {toolButtons}
         </div>
-        <div className={'sidebarSelect conditional'+(this.state.open ? ' open' : '')}>
+        <div className={'sidebar-select conditional'+(this.state.open ? ' open' : '')}>
           <div
-            className={'toolButton noSelect flexCenter lockMenuButton'}
+            className={'tool-button lockMenuButton'}
             onClick={() => this.setState({locked: !this.state.locked})}
             title={'Lock the sidebar'}
           >
             <i className='material-icons'>{this.state.locked ? 'lock' : 'lock_open'}</i>
           </div>
         </div>
-        <div className='sidebarContent'>
-          <div className='sidebarText flexCenter'>
+        <div className='sidebar-content'>
+          <div className='sidebar-text'>
             {menus[this.state.activeMenu]}
           </div>
         </div>

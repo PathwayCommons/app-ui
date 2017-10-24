@@ -32,6 +32,12 @@ const queryString = require('query-string');
 const PathwayCommonsService = require('../../services/index.js').PathwayCommonsService;
 const CDC = require('../../services/index.js').CDC;
 
+// window.onbeforeunload = sendSessionEnd;
+// function sendSessionEnd(){
+//    CDC.submitSessionEnd();
+//    return null;
+// }
+
 class View extends React.Component {
   constructor(props) {
     super(props);
@@ -73,25 +79,7 @@ class View extends React.Component {
           datasource: dsStr
         });
       });
-
-    // props.logPageView( props.history.location );
-    // props.logEvent({
-    //   category: 'View',
-    //   action: 'view',
-    //   label: query.uri
-    // });
   }
-
-  // componentWillReceiveProps( nextProps ) {
-  //   const locationChanged = nextProps.location !== this.props.location;
-  //   if( locationChanged ){
-  //     this.props.logEvent({
-  //       category: 'View',
-  //       action: 'view',
-  //       label: this.state.query.uri
-  //     });
-  //   }
-  // }
 
   componentWillMount() {
     // Before we mount we get the edit key from the URL
@@ -102,6 +90,7 @@ class View extends React.Component {
     const editkey = this.state.query.editkey;
     if (editkey != null) {
       CDC.initEditKeyValidationSocket((valid) => {
+        if (typeof valid === typeof {}) {alert('Key validation error!'); return;}
         this.setState({
           admin: valid,
           activateWarning: valid, // this activates the warning tab
@@ -114,6 +103,8 @@ class View extends React.Component {
       });
       CDC.requestEditKeyValidation(this.state.query.uri, 'latest', editkey);
     }
+
+    window.addEventListener('resize', () => window.scrollTo(0, 1));
 
     // Arrow functions like these tie socket.io directly into the React state
     CDC.initGraphSocket(newGraphJSON => this.setState({graphJSON: newGraphJSON}));

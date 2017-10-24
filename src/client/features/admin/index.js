@@ -3,25 +3,31 @@ const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
 const queryString = require('query-string');
 const _ = require('lodash');
+const classNames = require('classnames');
 
 const Icon = require('../../common/components').Icon;
 const PathwayCommonsService = require('../../services').PathwayCommonsService;
 const CDC = require('../../services/index.js').CDC;
 
 class Admin extends React.Component {
+  
   constructor(props) {
     super(props);
 
     const query = queryString.parse(props.location.search);
 
     this.state = {
-      query: _.assign({q: '', gt: 3, lt: 250, type: 'Pathway'}, query),
+      query: _.assign({q: '', gt: 2, lt: 250, type: 'Pathway'}, query),
       searchResults: [],
       editLinks: [],
-      dataSources: PathwayCommonsService.datasources()
+      dataSources: []
     };
 
-    this.updateEditLinks = this.updateEditLinks.bind(this);
+    PathwayCommonsService.datasources()
+    .then(result => this.setState({
+      dataSources: result
+      })
+    );
   }
 
   updateEditLinks(editURI) {
@@ -39,7 +45,7 @@ class Admin extends React.Component {
     const editkey = editURI.substring(editURI.indexOf(id) + id.length, editURI.length);
     return {uri: uri, editkey: editkey};
   }
-
+  
   getSearchResult() {
     const state = this.state;
     const query = state.query;
@@ -56,13 +62,12 @@ class Admin extends React.Component {
       });
     }
   }
-  
+
   componentDidMount() {
     this.getSearchResult();
   }
 
   onSearchValueChange(e) {
-    console.log(e.target.value);
     // if the user presses enter, submit the query
     if (e.which && e.which ===  13) {
       this.submitSearchQuery(e);
@@ -71,6 +76,12 @@ class Admin extends React.Component {
       newQueryState.q = e.target.value;
       this.setState({query: newQueryState});
     }
+  }
+
+  setQueryType(e, type) {
+    const newQueryState = _.assign({}, this.state.query);
+    newQueryState.type = type;
+    this.setState({query: newQueryState}, function () { this.submitSearchQuery(); });
   }
 
   submitSearchQuery() {
@@ -110,35 +121,44 @@ class Admin extends React.Component {
         return ds.uri === result.dataSource[0];
       });
 
-      const editkey = state.editLinks[result.uri];
-
-      var searchItemContent = [];
-      if (editkey) {
-        searchItemContent = [
-          h('p.search-item-content-name', result.name),
-          h(Link, {to: {pathname: '/view', search: queryString.stringify({uri: result.uri, editkey: editkey})}, target: '_blank'}, [
-            h('h3.search-item-content-title', 'Edit'),
-          ]),
-          h(Link, {to: {pathname: '/view', search: queryString.stringify({uri: result.uri})}, target: '_blank'}, [
-            h('h3.search-item-content-title', 'Read-only'),
-          ]),
-          h('p.search-item-content-datasource', ` ${dsInfo.name}`),
-          h('p.search-item-content-participants', `${result.numParticipants} Participants`)
-        ];
-      } else {
-        searchItemContent = [
-          h('p.search-item-content-name', result.name),
-          h(Link, {to: {pathname: '/view', search: queryString.stringify({uri: result.uri})}, target: '_blank'}, [
-            h('h3.search-item-content-title', 'Read-only'),
-          ]),
-          h('p.search-item-content-datasource', ` ${dsInfo.name}`),
-          h('p.search-item-content-participants', `${result.numParticipants} Participants`)
-        ];
-      }
-
       return h('div.search-item', [
-        h('img.search-item-icon', {src: dsInfo.iconUrl}),
-        h('div.search-item-content', searchItemContent)
+        h('div.search-item-icon', [
+          h('img', {src: dsInfo.iconUrl})
+        ]),
+        h('div.search-item-content', [
+          h('h3.search-item-content-title .admin-search-item-content-title', result.name  || 'N/A'),
+          h('h3.search-item-admin-links', [
+            (state.editLinks[result.uri] ? 
+              h(Link, {to: {pathname: '/view', search: queryString.stringify({uri: result.uri, editkey: state.editLinks[result.uri]})}, target: '_blank'}, [
+                h('h3.search-item-content-title', 'Edit'),
+              ])
+              :
+              'Edit Link Missing'
+            ),
+            ' | ',
+            h(Link, {to: {pathname: '/view', search: queryString.stringify({uri: result.uri})}, target: '_blank'}, [
+              h('h3.search-item-content-title', 'Read-only'),
+            ])
+          ]),
+          h('p.search-item-content-datasource', ` ${dsInfo.name}`),
+          h('p.search-item-content-participants', `${result.numParticipants} Participants`)
+        ])
+      ]);
+    });
+
+    const searchTypes = [
+      { name: 'Pathways', value: 'Pathway' },
+      { name: 'Catalysis', value: 'Catalysis' },
+      { name: 'Molecular Interactions', value: 'MolecularInteraction' },
+      { name: 'Transcription/Translation', value: 'TemplateReactionRegulation' }
+    ];
+
+    const searchTypeTabs = searchTypes.map(searchType => {
+      return h('div', {
+        onClick: e => this.setQueryType(e, searchType.value),
+        className: classNames('search-option-item', state.query.type === searchType.value ? 'search-option-item-active' : '')
+      }, [
+        h('a', searchType.name)
       ]);
     });
 
@@ -148,30 +168,35 @@ class Admin extends React.Component {
           h(Link, { className: 'a.search-pc-link', to: {pathname: '/'} }, [
             h('i.search-logo')
           ]),
-          h('div.search-searchbar', [
-            h('input', {
-              type: 'text',
-              placeholder: 'Enter pathway name or gene names',
-              value: state.query.q,
-              onChange: e => this.onSearchValueChange(e),
-              onKeyPress: e => this.onSearchValueChange(e)
-            }),
-            h('div.search-search-button', [
-              h('button', { onClick: e => this.submitSearchQuery(e) }, [
-                h(Icon, {icon: 'search'})
+          h(Link, { className: 'search-pc-title', to: {pathname: '/'} }, [
+            h('h2', 'Pathway'),
+            h('h2', 'Commons')
+          ]),
+          h('div.search-searchbar-container', [
+            h('div.search-searchbar', [
+              h('input', {
+                type: 'text',
+                placeholder: 'Enter pathway name or gene names',
+                value: state.query.q,
+                onChange: e => this.onSearchValueChange(e),
+                onKeyPress: e => this.onSearchValueChange(e)
+              }),
+              h('div.search-search-button', [
+                h('button', { onClick: e => this.submitSearchQuery(e) }, [
+                  h(Icon, {icon: 'search'})
+                ])
               ])
-            ])
+            ]),
+            h('div.search-tabs', searchTypeTabs)
           ])
         ])
       ]),
       h('div.search-list-container', [
-        h('div.search-options', [
-          h('div.search-hit-counter', `${state.searchResults.length} results. ${Object.keys(state.editLinks).length} have edit links.`)
-        ]),
+        h('div.search-hit-counter', `${state.searchResults.length} results. ${Object.keys(state.editLinks).length} edit keys retrieved.`),
         h('div.search-list', searchResults)
       ])
     ]);
   }
 }
-
+  
 module.exports = Admin;

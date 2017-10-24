@@ -15,7 +15,6 @@
 
 const io = require('socket.io-client');
 var socket = io('192.168.90.176:3000');
-var gzip = require('gzip-js');
 
 /*
 Socket.io works similarly to React in that when updates happen, it pushes them live.
@@ -43,20 +42,20 @@ const CDC = {
   },
 
   initEditLinkSocket(updateFunction) {
-    socket.on('EditKey', (editURI) => {
+    socket.on('editKey', (editURI) => {
       updateFunction(editURI);
     });
   },
 
   initEditKeyValidationSocket(updateFunction) {
-    socket.on('EditPermissions', (valid) => {
+    socket.on('editPermissions', (valid) => {
       updateFunction(valid);
     });
   },
 
   // Request a graph from the server. Should send back a cyJSON graph
   requestGraph(uri, version) {
-    socket.emit('getlayout', {uri: uri, version: version.toString()});
+    socket.emit('getLayout', {uri: uri, version: version.toString()});
   },
 
   // Used only in the admin app. Validation is done on the server-side
@@ -64,10 +63,20 @@ const CDC = {
     socket.emit('getEditKey', {uri: uri, version: version.toString()});
   },
 
-  // Used every single time a layout is sent. If the editkey is invalid, the layout is
-  // not used.
+  // Used to initially validate a user
   requestEditKeyValidation(uri, version, key) {
     socket.emit('checkEditKey', {uri: uri, version: version.toString(), key: key});
+  },
+
+  // Send a dif in a node to the backend. The backend will deal with merging these diffs into
+  // a layout
+  submitDiff(uri, version, key, node_id, pos) {
+    socket.emit('submitlayout', {uri: uri, version: version.toString(), key: key, id: node_id, pos: JSON.stringify(pos)});
+  },
+
+  // Send a session closed message to the backend so it can save the diffs to a new layout
+  submitSessionEnd() {
+    socket.emit('sessionEnd', {closed: true});
   }
 
 };

@@ -22,11 +22,12 @@ class Menu extends React.Component {
   }
 
   initTooltips() {
-    tippy('.layoutDropdownButton', {
+    tippy('.layout-dropdown-button', {
       delay: [800, 400],
       animation: 'scale',
       theme: 'dark',
-      arrow: true
+      arrow: true,
+      touchHold: true
     });
   }
 
@@ -38,21 +39,23 @@ class Menu extends React.Component {
     });
 
     return (
-      <div className='menuBar flexCenter'>
-        <div className='pcLogoContainer flexCenter'>
-          <img src='/img/icon.png'></img>
+      <div className='menu-bar'>
+        <div className='menu-bar-inner-container'>
+          <div className='pc-logo-container'>
+            <img src='/img/icon.png'></img>
+          </div>
+          <div className='title-container'>
+            <h4>{this.props.name+' | '+this.props.datasource}</h4>
+          </div>
+          <div
+            className='layout-dropdown-button'
+            onClick={() => this.setState({dropdownOpen: !this.state.dropdownOpen})}
+            title='Additional layout options'
+          >
+            <i className='material-icons'>timeline</i>
+          </div>
         </div>
-        <div className='titleContainer'>
-          <h4>{this.props.name+' | '+this.props.datasource}</h4>
-        </div>
-        <div
-          className='layoutDropdownButton flexCenter noSelect'
-          onClick={() => this.setState({dropdownOpen: !this.state.dropdownOpen})}
-          title='Additional layout options'
-        >
-          <i className='material-icons'>timeline</i>
-        </div>
-        <div className={'layoutDropdown flexCenter'+(this.state.dropdownOpen ? ' open' : '')}>
+        <div className={'layout-dropdown '+(this.state.dropdownOpen ? ' open' : '')}>
           <select value={this.props.currLayout} onChange={(e) => this.props.updateLayout(e.target.value)}>
             {layoutItems}
           </select>

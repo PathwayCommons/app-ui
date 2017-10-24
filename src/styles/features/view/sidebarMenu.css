@@ -1,4 +1,4 @@
-.sidebarMenu {
+.sidebar-menu {
   height: 100%;
   width: 25%;
   position: fixed;
@@ -11,7 +11,7 @@
 
   &.open {
     transform: translateX(0%);
-    box-shadow: 0px 0px 35px 0px rgba(0,0,0,0.4);
+    box-shadow: var(--box-shadow);
   }
 
   & a {
@@ -21,212 +21,264 @@
       color: var(--link-visited);
     }
   }
+}
 
-  & .sidebarSelect {
-    position: absolute;
-    /* z-index: 200; */
-    top: calc(50% - 6em);
-    left: -3em;
-    height: 12em;
-    width: 3em;
-    display: flex;
-    flex-direction: column;
-    border-color: black;
-    border-style: solid;
-    border-width: 2px 0px 2px 2px;
-    /* box-sizing: border-box; */
-    border-radius: 3px 0px 0px 3px;
-    box-shadow: -8px 0px 35px 0px rgba(0,0,0,0.4);
+.sidebar-select {
+  position: absolute;
+  top: calc(50% - ((var(--icon-size) * 3 / 2) * 4 / 2));
+  left: calc(- var(--icon-size) * 3 / 2);
+  height: calc((var(--icon-size) * 3 / 2) * 4);
+  width: calc(var(--icon-size) * 3 / 2);
+  display: flex;
+  flex-direction: column;
+  border-color: black;
+  border-style: solid;
+  border-width: 2px 0px 2px 2px;
+  border-radius: 3px 0px 0px 3px;
+  box-shadow: var(--box-shadow);
 
-    &.conditional {
-      height: 3em;
-      border-width: 2px 0px 0px 2px;
-      left: 0;
-      top: auto;
-      bottom: 0;
-      transition: all 0.5s ease-out;
-      box-shadow: 0px 0px 0px 0px rgba(0,0,0,0.4);
+  &.conditional {
+    height: calc(var(--icon-size) * 3 / 2);
+    border-width: 2px 0px 0px 2px;
+    left: 0;
+    top: auto;
+    bottom: 0;
+    transition: all 0.5s ease-out;
+    box-shadow: 0px 0px 0px 0px rgba(0,0,0,0.4);
 
-      &.open {
-        left: -3em;
-        box-shadow: -8px 0px 35px 0px rgba(0,0,0,0.4);
-      }
-
-      & .toolButton {
-        &:nth-child(1) {
-          background-color: var(--menu-button-5);
-          &:hover {background-color: var(--menu-button-5-hover)}
-        }
-      }
-    }
-
-    & .toolButton {
-      height: 3em;
-      font-size: 2em;
-      color: var(--midnight-blue);
-      background-color: var(--cloud);
-      transition: all 0.1s linear;
-      position: relative;
-      /* border-bottom: 1px solid black; */ /* causes sliver issue on bottom button*/
-
-      &:first-child {
-        border-radius: 2px 0px 0px 0px;
-      }
-
-      &:nth-child(1) {
-        background-color: var(--menu-button-1);
-        &:hover {background-color: var(--menu-button-1-hover)}
-      }
-
-      &:nth-child(2) {
-        background-color: var(--menu-button-2);
-        border-top: 2px solid black;
-        &:hover {background-color: var(--menu-button-2-hover)}
-      }
-
-      &:nth-child(3) {
-        background-color: var(--menu-button-3);
-        border-top: 2px solid black;
-        &:hover {background-color: var(--menu-button-3-hover)}
-      }
-
-      &:nth-child(4) {
-        background-color: var(--menu-button-4);
-        border-top: 2px solid black;
-        &:hover {background-color: var(--menu-button-4-hover)}
-      }
-
-      &:last-child {
-        border-bottom: 0px;
-        border-radius: 0px 0px 0px 2px;
-      }
-
-      &:hover {
-        cursor: pointer;
-      }
-
-      &:active {
-        background-color: var(--dark-cloud);
-      }
-    }
-  }
-
-  & .sidebarContent {
-    height: 100%;
-    width: 100%;
-    border: 2px solid black;
-    border-width: 0px 0px 0px 2px;
-    position: relative;
-    z-index: 50;
-
-    & .sidebarText {
-      height: 100%;
-      width: 100%;
-      z-index: 300;
-      position: relative;
-      background-color: var(--cloud);
-      overflow-y: scroll;
-      border-color: var(--beige); /* fallback. should never appear */
-      border-style: solid;
-      border-width: 0px 0px 0px 10px;
-      padding: 1em;
-      box-sizing: border-box;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: flex-start;
-      transition: all 0.5s linear;
-
-      /* change someday to global "imageCard" component */
-      & .imageCard {
-        margin: auto;
-        margin-top: 1em;
-        margin-bottom: 1em;
-        max-width: 90%;
-        padding: 1em;
-        flex-direction: column;
-        background-color: white;
-        box-shadow: 0px 0px 35px 0px rgba(0,0,0,0.75);
-
-        & img {
-          border: 1px solid black;
-          min-height: 3em;
-          min-width: 100%;
-          max-width: 100%;
-          text-align: center;
-          line-height: 3em;
-          margin-bottom: 1em;
-        }
-
-        & span {
-          font-size: 0.75em;
-        }
-      }
-
-      & .fileDownloadMenu {
-        width: 100%;
-        height: 100%;
-
-
-        & .downloadOption {
-          /* height: 10em; */
-
-          width: 95%;
-          margin: auto;
-          box-sizing: border-box;
-          padding: 1em;
-          padding-left: 0;
-          background-color: white;
-          display: flex;
-          align-content: center;
-          border-style: solid;
-          border-color: black;
-          border-width: 2px 2px 0px 2px;
-
-          &:first-child {
-            margin-top: 1em;
-          }
-
-          &:last-child {
-            margin-bottom: 1em;
-            border-width: 2px 2px 2px 2px;
-          }
-
-          & .downloadIconContainer {
-            width: 30%;
-            height: 100%;
-            margin: auto;
-
-            
-            & .downloadIconInnerContainer {
-              width: 1em;
-              height: 1em;
-              padding: 0.2em;
-              font-size: 1em;
-              color: black;
-              border-radius: 50%;
-              font-size: 2em;
-              background-color: var(--soft-blue);
-              color: var(--midnight-blue);
-              transition: all 0.1s linear;
-              border: 2px solid black;
-
-              &:hover {
-                background-color: var(--soft-blue-hover);
-                cursor: pointer;
-              }
-            }
-          }
-
-          & .downloadOptionDescription {
-            width: 70%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
-          }
-        }
-      }
+    &.open {
+      left: calc(- var(--icon-size) * 3 / 2);
+      box-shadow: -8px 0px 35px 0px rgba(0,0,0,0.4);
     }
   }
 }
+
+.tool-button {
+  @apply --flex-center;
+  @apply --no-select;
+
+  height: calc(var(--icon-size) * 3 / 2);
+  font-size: var(--icon-size);
+  color: var(--midnight-blue);
+  background-color: var(--cloud);
+  border-top: 2px solid black;
+  transition: all 0.1s linear;
+  position: relative;
+
+  &:first-child {
+    border-radius: 2px 0px 0px 0px;
+    border-top: 0;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.sidebar-content {
+  height: 100%;
+  width: 100%;
+  border: 2px solid black;
+  border-width: 0px 0px 0px 2px;
+  position: relative;
+  z-index: 50;
+}
+
+.sidebar-text {
+  @apply --flex-center;
+  
+  height: 100%;
+  width: 100%;
+  z-index: 300;
+  position: relative;
+  background-color: var(--cloud);
+  overflow-y: scroll;
+  border-color: var(--green-sea);
+  border-style: solid;
+  border-width: 0px 0px 0px 10px;
+  padding: 1em;
+  box-sizing: border-box;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  transition: all 0.5s linear;
+}
+
+/* change someday to global "image-card" component */
+.image-card {
+  @apply --flex-center;
+  
+  margin: auto;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  max-width: 90%;
+  padding: 1em;
+  flex-direction: column;
+  background-color: white;
+  box-shadow: 0px 0px 35px 0px rgba(0,0,0,0.75);
+  
+  & img {
+    border: 1px solid black;
+    min-height: 3em;
+    min-width: 100%;
+    max-width: 100%;
+    text-align: center;
+    line-height: 3em;
+    margin-bottom: 1em;
+  }
+
+  & span {
+    font-size: 0.75em;
+  }
+}
+
+.file-download-menu {
+  width: 100%;
+  height: 100%;
+}
+
+.download-option {
+  /* height: 10em; */
+  
+  width: 95%;
+  margin: auto;
+  box-sizing: border-box;
+  padding: 1em;
+  padding-left: 0;
+  background-color: white;
+  display: flex;
+  align-content: center;
+  border-style: solid;
+  border-color: black;
+  border-width: 2px 2px 0px 2px;
+  
+  &:first-child {
+    margin-top: 1em;
+  }
+
+  &:last-child {
+    margin-bottom: 1em;
+    border-width: 2px 2px 2px 2px;
+  }
+}
+
+.download-icon-container {
+  @apply --flex-center;
+
+  width: 30%;
+  height: 100%;
+  margin: auto;
+}
+
+.download-icon-inner-container {
+  @apply --flex-center;
+
+  width: var(--icon-size);
+  height: var(--icon-size);
+  padding: 0.2em;
+  color: black;
+  border-radius: 50%;
+  font-size: var(--icon-size);
+  background-color: var(--green-sea);
+  color: var(--midnight-blue);
+  transition: all 0.1s linear;
+  border: 2px solid black;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.download-option-description {
+  width: 70%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Mobile scaling */
+@media (width <= 768px) {
+  .sidebar-select {
+    top: calc(50% - ((var(--icon-size-mobile) * 3 / 2) * 4 / 2));
+    left: calc(- var(--icon-size-mobile) * 3 / 2);
+    height: calc((var(--icon-size-mobile) * 3 / 2) * 4);
+    width: calc(var(--icon-size-mobile) * 3 / 2);
+  
+    &.conditional {
+      height: calc(var(--icon-size-mobile) * 3 / 2);
+  
+      &.open {
+        left: calc(- var(--icon-size-mobile) * 3 / 2);
+      }
+    }
+  }
+
+  .tool-button {
+    height: calc(var(--icon-size-mobile) * 3 / 2);
+    font-size: var(--icon-size-mobile);
+  }
+}
+
+/* Portrait-specific */
+@media (width <= 768px) and (height <= 736px) and (height > 414px) {
+  .sidebar-menu {
+    height: 25%;
+    width: 100%;
+    position: fixed;
+    top: 100%;
+    left: 0;
+    box-shadow: 0px;
+    transform: translateY(0%);
+  
+    &.open {
+      transform: translateY(-100%);
+    }
+  }
+  
+  .sidebar-select {
+    position: absolute;
+    top: calc(- var(--icon-size-mobile) * 3 / 2);
+    left: calc(50% - ((var(--icon-size-mobile) * 3 / 2) * 4 / 2));
+    height: calc(var(--icon-size-mobile) * 3 / 2);
+    width: calc((var(--icon-size-mobile) * 3 / 2) * 4);
+    flex-direction: row;
+    border-width: 2px 2px 0px 2px;
+    border-radius: 3px 3px 0px 0px;
+  
+    &.conditional {
+      height: calc(var(--icon-size-mobile) * 3 / 2);
+      width: calc(var(--icon-size-mobile) * 3 / 2);
+      border-width: 2px 2px 0px 0px;
+      top: 0;
+      box-shadow: 0px 0px 0px 0px rgba(0,0,0,0.4);
+  
+      &.open {
+        top: calc(- var(--icon-size-mobile) * 3 / 2);
+        left: 0;
+        box-shadow: var(--box-shadow);
+      }
+    }
+  }
+  
+  .tool-button {
+    height: calc(var(--icon-size-mobile) * 3 / 2);
+    flex-grow: 1;
+
+    border-left: 2px solid black;
+    border-top: 0;
+  
+    &:first-child {
+      border-left: 0;
+    }
+  }
+  
+  .sidebar-content {
+    border-width: 2px 0px 0px 0px;
+  }
+  
+  .sidebar-text {
+    border-width: 10px 0px 0px 0px;
+  }
+} 

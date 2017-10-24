@@ -15,3 +15,16 @@ right now. This may be changedin the future.
   font-size: 1em;
   font-weight: bold;
 }
+
+.search-item-admin-links {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 0;
+  width: 100%;
+}
+
+.admin-search-item-content-title {
+  height: auto;
+  color: black;
+}

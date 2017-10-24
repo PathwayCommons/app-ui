@@ -19,13 +19,8 @@ class EditWarning extends React.Component {
   }
 
   componentDidUpdate() {
-    const warningDOM = document.getElementsByClassName('editWarning')[0];
+    const warningDOM = this.warningDOM;
     
-    // Set centering style for warning
-    const curr_width = warningDOM.offsetWidth;
-    const page_width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    warningDOM.style.left = (page_width - curr_width)/2+'px';
-
     // Set animation iteration dynamically based off duration and animation duration
     const anim_length = window.getComputedStyle(warningDOM).getPropertyValue('animation-duration');
     const inms = anim_length.indexOf('ms');
@@ -35,8 +30,10 @@ class EditWarning extends React.Component {
 
   render() {
     return (
-      <div className={'flexCenter noSelect editWarning'+(this.props.active ? '' : ' closed')}>
-        {this.props.children}
+      <div className={'edit-warning-container '+(this.props.active ? '' : ' closed')} ref={dom => this.warningDOM = dom}>
+        <div className='edit-warning'>
+          {this.props.children}
+        </div>
       </div>
     );
   }

@@ -7,20 +7,24 @@ class GraphInfoMenu extends React.Component {
     this.state = {
       comments: []
     };
-    PathwayCommonsService.query(props.uri, 'json', 'Entity/comment')
-    .then(responses => {
-      this.setState({
-        comments: responses ? responses.traverseEntry[0].value : []
-      });
-    });
   }
+
+  componentWillMount() {
+    PathwayCommonsService.query(this.props.uri, 'json', 'Entity/comment')
+      .then(responses => {
+        this.setState({
+          comments: responses ? responses.traverseEntry[0].value : []
+        });
+      });
+  }
+
   render() {
     return (
       <div className='graphInfoMenu'>
         <h1>{this.props.name}</h1>
         <h4>{'Source: '+this.props.datasource}</h4>
+        <h2>Additional Information</h2>
         {this.state.comments.length ?
-          <h2>Additional Information</h2>+
           this.state.comments.map((comment, index) => {
             return (
               <div key={index}>
@@ -30,7 +34,7 @@ class GraphInfoMenu extends React.Component {
             );
           })
           :
-          ''
+          'No additional information provided by datasource.'
         }
       </div>
     );

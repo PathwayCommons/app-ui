@@ -57,16 +57,16 @@ class DownloadOption extends React.Component {
 
   render() {
     return (
-      <div className='downloadOption'>
-        <div className='downloadIconContainer flexCenter'>
+      <div className='download-option'>
+        <div className='download-icon-container'>
           <div
-            className='downloadIconInnerContainer flexCenter'
+            className='download-icon-inner-container'
             onClick={() => this.handleDownloadClick(this.props.type)}
           >
             <i className='material-icons'>file_download</i>
           </div>
         </div>
-        <div className='downloadOptionDescription'>
+        <div className='download-option-description'>
           {this.props.children}
         </div>
       </div>

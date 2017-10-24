@@ -17,7 +17,7 @@ class Graph extends React.Component {
   }
 
   componentDidMount() {
-    const container = document.getElementById(this.state.graphId);
+    const container = this.graphDOM;
     this.props.cy.mount(container);
     this.checkRenderGraph(this.props.graphJSON);
   }
@@ -55,11 +55,15 @@ class Graph extends React.Component {
   render() {
     if (!this.state.graphEmpty) {
       return (
-        <div className='Graph flexCenter'>
-          <div id={this.state.graphId} style={{
-            width: this.state.width,
-            height: this.state.height
-          }} />
+        <div className='Graph'>
+          <div
+            id={this.state.graphId}
+            ref={dom => this.graphDOM = dom}
+            style={{
+              width: this.state.width,
+              height: this.state.height
+            }}
+          />
         </div>
       );
     }

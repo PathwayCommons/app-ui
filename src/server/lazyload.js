@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const convert = require('sbgnml-to-cytoscape');
+const cyJson = require('./graph-generation/cytoscapeJson');
 
 function queryPC(pcID) {
     const prefix = 'http://www.pathwaycommons.org/pc2/get?uri=';
@@ -17,7 +18,9 @@ function queryPC(pcID) {
 }
 
 function queryMetadata(pcID){
-    throw new Error('ERROR: Harsh\'s metadata script is not yet implemented');
+    return cyJson.getCytoscapeJson(pcID).then((result)=>{
+        return result;
+    });
 }
 
 module.exports = {

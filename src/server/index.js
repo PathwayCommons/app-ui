@@ -71,7 +71,7 @@ app.use(function (req, res, next) {
 });
 
 
-app.use('/Layout', require('./routes/databaseRoutes')(io));
+app.use('/Layout', require('./routes/databaseSocket')(io));
 app.use( '/', require('./routes/index'));
 
 // catch 404 and forward to error handler

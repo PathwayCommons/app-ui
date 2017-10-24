@@ -31,7 +31,7 @@ const processQueryString = async (queryString) => {
   return getHGNCData('hgncSymbols.txt')
     .then(hgncSymbols => {
       const processedQuery = processPhrase(queryString, hgncSymbols);
-
+    
       // return three query candidates to search, first query is fastest, last query slowest
       return [
         '(name:' + removeSpaces(queryString) + ') OR (' + 'name:*' + removeSpaces(queryString) + '*) OR (' + processedQuery.join(' AND ') + ')',

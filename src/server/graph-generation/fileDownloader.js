@@ -55,9 +55,25 @@ function traversePC2(uri, path) {
   return fetch(url, traverseOptions).then(response => response.json());
 }
 
+//Generate URL for getting data
+function getURL (uri, format){
+  var uri = encodeURIComponent(uri);
+  var url = 'https://www.pathwaycommons.org/pc2/get?format=' + format + '&uri=' + uri + '&user=pathwaycommons-js-lib%3Apathways-search';
+  return url;
+}
+
+//Generate URL for a traverse query
+function traverseURL(uri, path){
+  var uri = encodeURIComponent(uri);
+  var url = 'https://www.pathwaycommons.org/pc2/traverse?format=json&uri=' + uri + '&path=' + path;
+  return url;
+}
+
 //Export Functions
 module.exports = {
   getPC2: getPC2,
-  traversePC2: traversePC2
+  traversePC2: traversePC2,
+  getURL : getURL,
+  traverseURL : traverseURL
 }
 

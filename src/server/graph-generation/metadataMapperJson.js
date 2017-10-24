@@ -44,32 +44,32 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
 
   //Get type
   var type = biopaxElement['@type']
-  if (type) result.push(['Type', type]);
+  if (type) { result.push(['Type', type]);}
 
 
   //Get data source
   var dataSource = biopaxElement['dataSource'];
-  if (dataSource) result.push(['Data Source', dataSource]);
+  if (dataSource) { result.push(['Data Source', dataSource]); }
 
   //Get display name
   var dName = biopaxElement['displayName'];
-  if (dName) result.push(['Display Name', dName]);
+  if (dName) { result.push(['Display Name', dName]); }
 
   //Get Comments
   var comment = biopaxElement['comment'];
-  if (comment) result.push(['Comment', comment]);
+  if (comment) { result.push(['Comment', comment]); }
 
   //Get Names
   var name = biopaxElement['name'];
-  if (name) result.push(['Names', name]);
+  if (name) { result.push(['Names', name]); }
 
   //Get Standard Name
   var sName = biopaxElement['standardName'];
-  if (sName) result.push(['Standard Name', sName]);
+  if (sName) { result.push(['Standard Name', sName]); }
 
   //Get Chemical Formula
   var formula = biopaxElement['chemicalFormula'];
-  if (formula) result.push(['Chemical Formula', formula]);
+  if (formula) { result.push(['Chemical Formula', formula]); }
 
   //Get Cellular Location
   var cellLocation = biopaxElement['cellularLocation'];
@@ -77,31 +77,35 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
     cellLocation = getElementFromBioPax(biopaxFile, cellLocation);
     cellLocation = cellLocation[0]['term'];
   }
-  if (cellLocation) result.push(['Cellular Location', cellLocation]);
+  if (cellLocation) { result.push(['Cellular Location', cellLocation]);}
 
   //Get database id
   var db = biopaxElement['db'];
   var id = biopaxElement['id'];
-  if (db && id) result.push(['Database ID', [db, id]]);
+  if (db && id) {result.push(['Database ID', [db, id]]);}
 
   //Get any cross references
   var xref = biopaxElement['xref'];
 
   //Resolve String/Array Issue
-  if (typeof xref == 'string') xref = [xref];
+  if (typeof xref == 'string') { xref = [xref];}
+  if (!(xref)) { xref = [];}
+
+  //Get entity reference and add it to xref
+  var eref = biopaxElement['entityReference']
+  if (eref) xref.push(eref);
 
 
   //Recurse on each cross reference (Lim it level depth to 4)
   if (xref) {
 
-    //Get entity reference and add it to xref
-    var eref = biopaxElement['entityReference']
-    if (eref) xref.push(eref);
-
     for (var i = 0; i < xref.length; i++) {
 
       var keyName = 'Reference';
-      if (i == (xref.length - 1) && eref) keyName = 'EntityReference';
+      if (i == (xref.length - 1) && eref) { keyName = 'EntityReference' };
+
+      //Ignore Reaction IDs (Temp fix to long loading times)
+      if(xref[i].indexOf('Reaction') !== -1) continue;
 
       //Get Referenced Element
       var refElement = getElementFromBioPax(biopaxFile, xref[i]);
@@ -110,10 +114,10 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
       var visitCopy = visited.slice();
 
       //Check validity of element
-      if (!(refElement)) continue;
+      if (!(refElement)) { continue; }
 
       //Recurse on current element
-      if (visitCopy.indexOf(xref[i]) <= -1 && visitCopy.length <= 4) {
+      if (visitCopy.indexOf(xref[i]) <= -1 && visitCopy.length <= 2) {
         visitCopy.push(xref[i]);
         result.push([keyName, buildBioPaxSubtree(refElement[0], biopaxFile, visitCopy)]);
       }
@@ -129,14 +133,14 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
 function buildBioPaxTree(children, biopaxFile) {
   var result = [];
 
-  if (!(children[0])) return;
+  if (!(children[0])) { return };
 
   children = children[0];
 
   //Get the node id
   var id = children['pathid']
-  if (!(id)) id = children['about'];
-  if (!(id)) return;
+  if (!(id)) { id = children['about']; }
+  if (!(id)) { return; }
 
   //Build a subtree
   var visited = [id];
@@ -175,8 +179,8 @@ function getElementFromBioPax(biopaxFile, id) {
   var str = "$..[?(@.pathid==\"" + id + "\")]";
   //Get element matching the id
   var result = jp.query(biopaxFile, str);
-  if (result[0]) return result;
-  else return null;
+  if (result[0]) { return result; }
+  else { return null; }
 }
 
 //Get subtree for each node
@@ -192,14 +196,14 @@ function getBioPaxSubtree(nodeId, biopax) {
 
   //Conduct a basic search
   var basicSearch = getElementFromBioPax(biopax, fixedNodeId);
-  if (basicSearch) return buildBioPaxTree(basicSearch, biopax);
+  if (basicSearch) { return buildBioPaxTree(basicSearch, biopax);}
 
   //Check if id is an unification reference
   fixedNodeId = 'UnificationXref_' + nodeId;
 
   //Conduct a unification ref search
   var uniSearch = getElementFromBioPax(biopax, fixedNodeId);
-  if (uniSearch) return buildBioPaxTree(uniSearch, biopax);
+  if (uniSearch) { return buildBioPaxTree(uniSearch, biopax);}
 
   //Check if id is an external identifier
   var fixedNodeId = removeAfterUnderscore(nodeId, 2);
@@ -207,7 +211,7 @@ function getBioPaxSubtree(nodeId, biopax) {
 
   //Conduct a external identifier search
   var extSearch = getElementFromBioPax(biopax, fixedNodeId);
-  if (extSearch) return buildBioPaxTree(extSearch, biopax);
+  if (extSearch) { return buildBioPaxTree(extSearch, biopax);}
 
   return null;
 }
@@ -251,6 +255,5 @@ function processBioPax(data, nodes) {
   //Return nodes
   return nodes;
 }
-
 
 

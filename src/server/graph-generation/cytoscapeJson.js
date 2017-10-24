@@ -12,20 +12,22 @@
 
     Note : Script may take time to download from pc2, due to uptime issues
 
-    @author Harsh Mistry 
+    @author Harsh Mistry
     @version 1.1 2017/10/10
 **/
 
 const fs = require('fs');
 const fileDownloader = require('./fileDownloader.js');
-const metadataMapperJson= require('./metadataMapperJson.js');
+const metadataMapperJson = require('./metadataMapperJson.js');
 const metadataMapperXML = require('./metadataMapperXML.js');
+//const metadataMapperPC2 = require('./metadataMapperPC2.js');
 var Multispinner = require('multispinner');
 const Promise = require('bluebird');
 
+//Debug code (Ignore)
 //http://identifiers.org/reactome/R-HSA-6804754
 //http://identifiers.org/kegg.pathway/hsa00260
-//var x = getCytoscapeJson('http://identifiers.org/reactome/R-HSA-70171').then(data => fs.writeFileSync('tester4', JSON.stringify(data)));
+//var x = getCytoscapeJson('http://identifiers.org/reactome/R-HSA-6804754').then(data => fs.writeFileSync('testFile', JSON.stringify(data)));
 
 //Get pathway name, description, and datasource
 //Requires a valid pathway uri
@@ -53,7 +55,7 @@ function getPathwayLevelMetadata(uri) {
             comments: comments,
             dataSource: dataSource,
             title: title,
-            organism : organism
+            organism: organism
           };
 
         })
@@ -63,7 +65,7 @@ function getPathwayLevelMetadata(uri) {
 }
 
 //Get metadata enhanced cytoscape JSON
-//Requires a valid pathway uri 
+//Requires a valid pathway uri
 function getMetadataJson(uri, parseType) {
   var sbgn, biopax;
 
@@ -71,14 +73,17 @@ function getMetadataJson(uri, parseType) {
   return fileDownloader.getPC2(uri, 'sbgn').then(function (data) {
     sbgn = data;
 
+    var downloadType = (parseType === 'pc2' ? 'jsonld' : parseType);
+
     //Get BioPax XML
-    return fileDownloader.getPC2(uri, parseType).then(function (data) {
+    return fileDownloader.getPC2(uri, downloadType).then(function (data) {
       biopax = data;
 
       //Map metadata
       //return metadataMapper(biopax, sbgn);
-      if(parseType === 'jsonld') return metadataMapperJson(biopax, sbgn);
-      else if (parseType === 'biopax') return metadataMapperXML(biopax, sbgn); 
+      if (parseType === 'jsonld') { return metadataMapperJson(biopax, sbgn); }
+      else if (parseType === 'biopax') { return metadataMapperXML(biopax, sbgn);} 
+      //else if (parseType === 'pc2') {return metadataMapperPC2(biopax, sbgn);} //PC2 Traverse Commented Out 
     })
   });
 }
@@ -102,11 +107,12 @@ function getCytoscapeJson(uri, parseType = 'jsonld') {
     })
   }).catch(function (e) {
     spinner.error('main');
-    return {error : e};
+    return { error: e };
   })
 }
 
+
 module.exports = {
   getCytoscapeJson: getCytoscapeJson,
-  getPathwayLevelMetadata : getPathwayLevelMetadata
+  getPathwayLevelMetadata: getPathwayLevelMetadata
 };

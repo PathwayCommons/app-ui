@@ -161,4 +161,3 @@ function parse(subTree) {
 
 //Export main function
 module.exports = parse;
-

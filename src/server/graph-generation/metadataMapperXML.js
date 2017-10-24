@@ -70,7 +70,7 @@ function GetElementsByAttributeWithoutTag(attr, attrValue, doc) {
 
   //Matches an element by its attribute and attribute value
   var matcher = function (el) {
-    if (!el.tagName) return false;
+    if (!el.tagName) { return false; }
     return el.getAttribute(attr) == attrValue;
   };
 
@@ -83,7 +83,7 @@ function GetElementsByAttributeWithoutTagNoPrecision(attr, attrValue, doc) {
   //Get all level-1 items in the biopax file
   var elems = Array.prototype.slice.call(doc.getElementsByTagName('rdf:RDF')[0].childNodes, 0);
   return elems.filter(function (data) {
-    if (!data.tagName) return false;
+    if (!data.tagName) { return false; }
     if (data.getAttribute(attr).indexOf(attrValue) !== -1) {
       return true;
     }
@@ -96,7 +96,7 @@ function GetElementsByAttributeWithoutTagNoPrecision(attr, attrValue, doc) {
 function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
   var result = [];
 
-  if (!biopaxElement) return result;
+  if (!biopaxElement) { return result; }
 
   var children = biopaxElement.childNodes;
 
@@ -108,7 +108,7 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
     var visitCopy = visited.slice();
 
     //Skip if current child is not a element
-    if (!(children[i].tagName)) continue;
+    if (!(children[i].tagName)) { continue; }
 
     //Check if current node is a resource
     var resource = children[i].getAttribute('rdf:resource');
@@ -138,12 +138,12 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited) {
         content = buildBioPaxSubtree(referencedItem, biopaxFile, visitCopy);
       }
       else {
-        if (children[i].childNodes.length > 0) content = children[i].childNodes[0].data;
+        if (children[i].childNodes.length > 0) { content = children[i].childNodes[0].data; }
       }
     }
     //Set content to existing element
     else {
-      if (children[i].childNodes.length > 0) content = children[i].childNodes[0].data;
+      if (children[i].childNodes.length > 0) { content = children[i].childNodes[0].data; }
     }
 
     //Push Data
@@ -160,12 +160,12 @@ function buildBioPaxTree(children, biopaxFile) {
   var result = [];
 
   //Skip if there current child is not an element
-  if (!(children.tagName)) return;
+  if (!(children.tagName)) { return; }
 
   //Get the node id
   var id = children.getAttribute('rdf:ID');
-  if (!(id)) id = children.getAttribute('rdf:about');
-  if (!(id)) return;
+  if (!(id)) { id = children.getAttribute('rdf:about'); }
+  if (!(id)) { return; }
 
   //Build a subtree
   var visited = [id];
@@ -230,21 +230,21 @@ function getBioPaxSubtree(nodeId, biopax) {
 
   //Conduct a basic search
   var basicSearch = getElementFromBioPax(biopax, fixedNodeId);
-  if (basicSearch) return buildBioPaxTree(basicSearch, biopax);
+  if (basicSearch) { return buildBioPaxTree(basicSearch, biopax); }
 
   //Check if id is an unification reference
   fixedNodeId = 'UnificationXref_' + nodeId;
 
   //Conduct a unification ref search
   var uniSearch = getElementFromBioPax(biopax, fixedNodeId);
-  if (uniSearch) return buildBioPaxTree(uniSearch, biopax);
+  if (uniSearch) { return buildBioPaxTree(uniSearch, biopax); }
 
   //Check if id is an external identifier
   fixedNodeId = 'http://identifiers.org/' + nodeId.replace(/_/g, '/');
 
   //Conduct a external identifier search
   var extSearch = getElementFromBioPax(biopax, fixedNodeId);
-  if (extSearch) buildBioPaxTree(extSearch, biopax);
+  if (extSearch) { buildBioPaxTree(extSearch, biopax); }
 
   return null;
 }

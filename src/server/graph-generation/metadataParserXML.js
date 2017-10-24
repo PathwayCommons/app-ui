@@ -106,7 +106,7 @@ function parse(subTree) {
   if (databaseIDs && databaseIDs.length > 0) result.push(['Database IDs', databaseIDs]);
 
   //Remove all invalid values
-  for (var i = 0; i < result.length; i++) {
+  for (var i = result.length - 1; i >= 0; i--) {
     if (!(result[i])) {
       result.splice(i, 1);
     }

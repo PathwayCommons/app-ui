@@ -1,25 +1,5 @@
-/**
-    Pathway Commons Central Data Cache
-
-    Metadata Mapper for PC2 Traverse
-    metadataMapperPC2.js
-
-    Purpose : Maps Metadata to SBGN nodes and returns an enhanced cytoscape json
-
-    Requires : Valid Matching SBGN File
-
-    Effects : Utilizes PC2 Traverse Web API
-
-    Note : Script may take time to process large BioPax files
-
-    @author Harsh Mistry
-    @version 1.1 2017/10/17
-**/
-
-const fs = require('fs');
 const convert = require('sbgnml-to-cytoscape');
 const fileDownloader = require('./fileDownloader.js')
-var request = require('sync-request')
 var jp = require('jsonpath');
 const Promise = require('bluebird');
 

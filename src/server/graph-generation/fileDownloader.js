@@ -1,21 +1,3 @@
-/**
-    Pathway Commons Central Data Cache
-
-    File Downloader
-    fileDownloader.js
-
-    Purpose : Downloads SBGN, BioPax, Title, and Metadata files from PC2
-
-    Requires : Valid URI's
-
-    Effects : Downloads files asynchronously
-
-    Note : Script may take time to download from pc2, due to uptime issues
-
-    @author Harsh Mistry
-    @version 1.1 2017/10/10
-**/
-
 var fetch = require('node-fetch');
 const got = require('got');
 

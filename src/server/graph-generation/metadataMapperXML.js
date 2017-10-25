@@ -1,25 +1,6 @@
-/**
-    Pathway Commons Central Data Cache
-
-    Metadata Mapper for XML Files
-    metadataMapperXML.js
-
-    Purpose : Maps Metadata to SBGN nodes and returns an enhanced cytoscape json
-
-    Requires : Valid Matching BioPax and SBGN Files
-
-    Effects : Utilizes Node DOM Parser to parse XML files
-
-    Note : Script may take time to process large BioPax files
-
-    @author Harsh Mistry
-    @version 1.1 2017/10/17
-**/
-
 const fs = require('fs');
 const convert = require('sbgnml-to-cytoscape');
 const metadataParser = require('./metadataParserXML.js');
-var ProgressBar = require('ascii-progress');
 var DOMParser = require('xmldom').DOMParser;
 
 //Map metadata from BioPax to nodes

@@ -122,5 +122,30 @@
   "engines": {
     "node": ">=6.3.0"
   },
-  "browserslist": "last 3 versions, >1%"
+  "browserslist": "last 3 versions, >1%",
+  "contributors": [
+    {
+      "name": "Dylan Fong",
+      "email": "dylanfong.ut@gmail.com"
+    },
+    {
+      "name": "Geoff Elder",
+      "email": "geoff.elder@edu.uwaterloo.ca"
+    },
+    {
+      "name": "Harsh Mistry",
+      "email": "hnmistry@uwaterloo.ca"
+    },
+    {
+      "name": "Jonah Dlin",
+      "email": "jdlin@edu.uwaterloo.ca",
+      "url": "http://jonahdlin.com"
+    },
+    {
+      "name": "Max Franz",
+      "email": "maxkfranz@gmail.com",
+      "url": "http://maxfranz.com"
+    }
+  ],
+  "license": "MIT"
 }

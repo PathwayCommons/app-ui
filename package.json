@@ -122,5 +122,13 @@
   "engines": {
     "node": ">=6.3.0"
   },
-  "browserslist": "last 3 versions, >1%"
+  "browserslist": "last 3 versions, >1%",
+  "contributors": [
+    "Dylan Fong <dylanfong.ut@gmail.com>",
+    "Geoff Elder <geoff.elder@edu.uwaterloo.ca>",
+    "Harsh Mistry <hnmistry@uwaterloo.ca>",
+    "Jonah Dlin <jdlin@edu.uwaterloo.ca> (http://jonahdlin.com)",
+    "Max Franz <maxkfranz@gmail.com> (http://maxfranz.com)"
+  ],
+  "license": "MIT"
 }

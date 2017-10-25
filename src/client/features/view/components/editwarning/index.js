@@ -1,5 +1,11 @@
 const React = require('react');
 
+/* Props
+- active
+- deactivate()
+- dur
+*/
+
 // could stand to be made a global 'snackbar' class at some point
 class EditWarning extends React.Component {
   constructor(props) {

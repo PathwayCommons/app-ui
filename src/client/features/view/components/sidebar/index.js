@@ -7,6 +7,13 @@ const GraphInfoMenu = require('./menus/graphInfoMenu.js');
 const PathwayCommonsService = require('../../../../services/index.js').PathwayCommonsService;
 const tippy = require('tippy.js');
 
+/* Props
+- cy
+- uri
+- name
+- datasource
+*/
+
 class Sidebar extends React.Component {
   constructor(props) {
     super(props);

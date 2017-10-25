@@ -27,15 +27,15 @@
   --invalidColor: #c20e0e;
   --smallFontSize: 0.8em;
   --fadedColor: #888;
+}
 
-  %flex-center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+%flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  %no-select {
-    user-select: none;
-    cursor: default;
-  }
+%no-select {
+  user-select: none;
+  cursor: default;
 }

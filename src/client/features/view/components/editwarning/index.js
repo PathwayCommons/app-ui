@@ -30,7 +30,7 @@ class EditWarning extends React.Component {
     // Set animation iteration dynamically based off duration and animation duration
     const anim_length = window.getComputedStyle(warningDOM).getPropertyValue('animation-duration');
     const inms = anim_length.indexOf('ms');
-    var milliseconds = anim_length.slice(0, (inms === -1 ? -1 : -2)) * (inms === -1 ? 1000 : 1);
+    let milliseconds = anim_length.slice(0, (inms === -1 ? -1 : -2)) * (inms === -1 ? 1000 : 1);
     warningDOM.style.animationIterationCount = Math.ceil(this.props.dur / milliseconds).toString();
   }
 

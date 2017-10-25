@@ -1,5 +1,5 @@
 const React = require('react');
-const DownloadOption = require('./components/downloadOption.js');
+const DownloadOption = require('./components/downloadOption');
 
 class FileDownloadMenu extends React.Component {
   render() {

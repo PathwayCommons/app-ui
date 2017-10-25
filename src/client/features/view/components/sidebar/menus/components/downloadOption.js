@@ -51,7 +51,7 @@ class DownloadOption extends React.Component {
 
   generatePathwayName() {
     const FILENAME_CUTOFF = 20;
-    var filename = this.props.name || 'pathway';
+    let filename = this.props.name || 'pathway';
     return filename.substr(0, filename.length < FILENAME_CUTOFF ? filename.length : FILENAME_CUTOFF).replace(/ /g, '_');
   }
 

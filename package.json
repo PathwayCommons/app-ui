@@ -124,11 +124,28 @@
   },
   "browserslist": "last 3 versions, >1%",
   "contributors": [
-    "Dylan Fong <dylanfong.ut@gmail.com>",
-    "Geoff Elder <geoff.elder@edu.uwaterloo.ca>",
-    "Harsh Mistry <hnmistry@uwaterloo.ca>",
-    "Jonah Dlin <jdlin@edu.uwaterloo.ca> (http://jonahdlin.com)",
-    "Max Franz <maxkfranz@gmail.com> (http://maxfranz.com)"
+    {
+      "name": "Dylan Fong",
+      "email": "dylanfong.ut@gmail.com"
+    },
+    {
+      "name": "Geoff Elder",
+      "email": "geoff.elder@edu.uwaterloo.ca"
+    },
+    {
+      "name": "Harsh Mistry",
+      "email": "hnmistry@uwaterloo.ca"
+    },
+    {
+      "name": "Jonah Dlin",
+      "email": "jdlin@edu.uwaterloo.ca",
+      "url": "http://jonahdlin.com"
+    },
+    {
+      "name": "Max Franz",
+      "email": "maxkfranz@gmail.com",
+      "url": "http://maxfranz.com"
+    }
   ],
   "license": "MIT"
 }

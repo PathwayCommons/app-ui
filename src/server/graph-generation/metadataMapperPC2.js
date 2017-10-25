@@ -81,7 +81,7 @@ function buildBioPaxTree(id) {
 
   //Wait for all promises to resolve
   return Promise.all(promiseArray).then(data => {
-    //Push basic results to result 
+    //Push basic results to result
     result = pushData(data[0], 'Data Source', result);
     result = pushData(data[1], 'Display Name', result);
     result = pushData(data[2], 'Comment', result);

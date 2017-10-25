@@ -1,27 +1,3 @@
-/**
-    Pathway Commons Central Data Cache
-
-    Pathway Commons Database Population
-    createDatabase.js
-
-    Purpose : Adds the data to an existing empty database (created by buildDB.js)
-    based on a directory of pathway commons 
-
-    Requires : A running rethinkdb connection and a directory of sbgn files
-    as grabbed from the pathway commons web service.
-
-    Effects : Creates graph and version entries in the database.
-
-    Note : None
-
-    TODO: 
-    - consider merging this file with updateVersiion.js (which populates a non empty)
-
-
-    @author Geoff Elder, Jonah Dlin
-    @version 1.1 2017/10/10
-**/
-
 
 const fs = require('fs'); // node file system, to be used for importing XMLs
 const accessDB = require('./accessDB.js');

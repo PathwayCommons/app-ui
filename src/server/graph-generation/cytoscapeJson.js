@@ -1,20 +1,3 @@
-/**
-    Pathway Commons Central Data Cache
-
-    Cytoscape JSON 
-    cytoscapeJson.js
-
-    Purpose : To generate an enhanced Cytoscape compatible JSON file, 
-
-    Requires : Valid URI's
-
-    Effects : Downloads files asynchronously
-
-    Note : Script may take time to download from pc2, due to uptime issues
-
-    @author Harsh Mistry
-    @version 1.1 2017/10/10
-**/
 
 const fs = require('fs');
 const fileDownloader = require('./fileDownloader.js');

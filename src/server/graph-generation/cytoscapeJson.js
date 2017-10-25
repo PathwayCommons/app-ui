@@ -1,33 +1,13 @@
-/**
-    Pathway Commons Central Data Cache
-
-    Cytoscape JSON 
-    cytoscapeJson.js
-
-    Purpose : To generate an enhanced Cytoscape compatible JSON file, 
-
-    Requires : Valid URI's
-
-    Effects : Downloads files asynchronously
-
-    Note : Script may take time to download from pc2, due to uptime issues
-
-    @author Harsh Mistry
-    @version 1.1 2017/10/10
-**/
-
-const fs = require('fs');
 const fileDownloader = require('./fileDownloader.js');
 const metadataMapperJson = require('./metadataMapperJson.js');
 const metadataMapperXML = require('./metadataMapperXML.js');
-//const metadataMapperPC2 = require('./metadataMapperPC2.js');
-var Multispinner = require('multispinner');
-const Promise = require('bluebird');
+const metadataMapperPC2 = require('./metadataMapperPC2.js');
 
 //Debug code (Ignore)
+const fs = require('fs');
 //http://identifiers.org/reactome/R-HSA-6804754
 //http://identifiers.org/kegg.pathway/hsa00260
-//var x = getCytoscapeJson('http://identifiers.org/reactome/R-HSA-6804754').then(data => fs.writeFileSync('testFile', JSON.stringify(data)));
+var x = getCytoscapeJson('http://identifiers.org/kegg.pathway/hsa00260').then(data => fs.writeFileSync('testFile', JSON.stringify(data)));
 
 //Get pathway name, description, and datasource
 //Requires a valid pathway uri
@@ -35,8 +15,8 @@ function getPathwayLevelMetadata(uri) {
   var title, dataSource, comments, organism;
 
   //Get title
-  return fileDownloader.traversePC2(uri, 'Named/displayName').then(function (data) {
-    title = data.traverseEntry[0].value;
+  return fileDownloader.traversePC2(uri, 'Named/displayName').then(function (data) 
+{  title = data.traverseEntry[0].value;
 
     //Get data source
     return fileDownloader.traversePC2(uri, 'Entity/dataSource/displayName').then(function (data) {
@@ -83,18 +63,15 @@ function getMetadataJson(uri, parseType) {
       //return metadataMapper(biopax, sbgn);
       if (parseType === 'jsonld') { return metadataMapperJson(biopax, sbgn); }
       else if (parseType === 'biopax') { return metadataMapperXML(biopax, sbgn);} 
-      //else if (parseType === 'pc2') {return metadataMapperPC2(biopax, sbgn);} //PC2 Traverse Commented Out 
+      else if (parseType === 'pc2') {return metadataMapperPC2(biopax, sbgn);} 
     })
   });
 }
 
-//Return enhanced cytoscape json 
+//Return enhanced cytoscape json
 //Requires a valid pathway uri 
 function getCytoscapeJson(uri, parseType = 'jsonld') {
   var pathwayMetadata;
-
-  //Start Spinner
-  const spinner = new Multispinner({ 'main': uri });
 
   //Start Generation
   return getPathwayLevelMetadata(uri).then(function (data) {
@@ -102,11 +79,10 @@ function getCytoscapeJson(uri, parseType = 'jsonld') {
     return getMetadataJson(uri, parseType).then(function (data) {
       data.pathwayMetadata = pathwayMetadata;
       data.parseType = parseType;
-      spinner.success('main');
       return data;
     })
   }).catch(function (e) {
-    spinner.error('main');
+    console.log(e);
     return { error: e };
   })
 }

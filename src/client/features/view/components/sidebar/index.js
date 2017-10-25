@@ -1,10 +1,9 @@
 const React = require('react');
 
-const HelpMenu = require('./menus/help.js');
-const FileDownloadMenu = require('./menus/fileDownload.js');
-const GraphInfoMenu = require('./menus/graphInfoMenu.js');
+const HelpMenu = require('./menus/help');
+const FileDownloadMenu = require('./menus/fileDownload');
+const GraphInfoMenu = require('./menus/graphInfoMenu');
 
-const PathwayCommonsService = require('../../../../services/index.js').PathwayCommonsService;
 const tippy = require('tippy.js');
 
 /* Props
@@ -72,8 +71,8 @@ class Sidebar extends React.Component {
   // Utility function to clear all styling on the tool-buttons and return them to the
   // standard colour. Currently that color must be specified here.
   clearToolButtonStyling() {
-    var toolButtons = this.toolButtons;
-    for (var i = toolButtons.length - 1; i >= 0; i--) {
+    let toolButtons = this.toolButtons;
+    for (let i = toolButtons.length - 1; i >= 0; i--) {
       toolButtons[i].style.zIndex = 1;
       toolButtons[i].style.backgroundColor = '#ECF0F1';
     }
@@ -81,11 +80,11 @@ class Sidebar extends React.Component {
   
   // Used for the panel buttons to set menus in the sidebar and dynamically change the style
   handleIconClick(button) {
-    var toolButtonNames = this.state.toolButtonNames.map(name => {
+    let toolButtonNames = this.state.toolButtonNames.map(name => {
       if (typeof name === typeof {}) return name[this.state.nodeData.toString()];
       else return name;
     });
-    var currButton = this.toolButtons[toolButtonNames.indexOf(button)];
+    let currButton = this.toolButtons[toolButtonNames.indexOf(button)];
     this.clearToolButtonStyling();
     currButton.style.zIndex = 100;
     currButton.style.backgroundColor = '#16A085';
@@ -97,15 +96,15 @@ class Sidebar extends React.Component {
 
   // Checks if a click event occured outside the sidebar or not
   updateIfOutOfMenu(evt) {
-    var currentEl = evt.target;
-    var loops = 0; // a safety variable
+    let currentEl = evt.target;
+    let loops = 0; // a safety variable
     // Not sure if there's a better way to do this so I loop through the
     // element that is clicked on and its parents, grandparents, etc.
     // until I either reach the View (which I assume covers the whole page)
     // or I reach the sidebar-menu or a toolButton (which I assume are children
     // the View)
     while (currentEl.className !== 'View') {
-      var currClassNames = currentEl.className.split(' ');
+      let currClassNames = currentEl.className.split(' ');
       if (
         currClassNames.includes('sidebar-menu') ||
         currClassNames.includes('tool-button')
@@ -159,7 +158,7 @@ class Sidebar extends React.Component {
     // Take this.state.toolButtonNames and map them to a usable array (since some of them could be objects)
     // Right now there is only code here for the node data menu to toggle, so if any other multi-icon button
     // is added, code to deal with it must be put here
-    var toolButtonNames = this.state.toolButtonNames.map(name => {
+    let toolButtonNames = this.state.toolButtonNames.map(name => {
       if (typeof name === typeof {}) return name[this.state.nodeData.toString()];
       else return name;
     });
@@ -168,7 +167,7 @@ class Sidebar extends React.Component {
     const tooltips = this.state.tooltips;
     this.toolButtons = new Array(toolButtonNames.length);
     const toolButtons = toolButtonNames.map((button, index) => {
-      var buttonClassName = button+'MenuButton';
+      let buttonClassName = button+'MenuButton';
       return (
         <div
           key={index}

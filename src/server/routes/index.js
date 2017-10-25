@@ -1,23 +1,3 @@
-/**
-    Pathway Commons Central Data Cache
-
-    Pathway Commons Server Routing
-    index.js
-
-    Purpose : Defines basic routes for the server
-
-    Requires : None
-
-    Effects : None
-
-    Note : None
-
-    TODO: None
-
-    @author Geoff Elder, Jonah Dlin
-    @version 1.1 2017/10/10
-**/
-
 const express = require('express');
 const router = express.Router();
 const queryString = require('query-string');

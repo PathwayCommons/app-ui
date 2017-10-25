@@ -1,6 +1,3 @@
-//
-
-
 const database = 'layouts';
 
 //Import Depedencies

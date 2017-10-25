@@ -1,14 +1,6 @@
 const React = require('react');
 const tippy = require('tippy.js');
 
-/*
-Props
-- name
-- uri
-- datasource
-- updateLayout
-- currLayout
-*/
 class Menu extends React.Component {
   constructor(props) {
     super(props);

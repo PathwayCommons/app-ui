@@ -1,25 +1,3 @@
-/**
-    Pathway Commons Central Data Cache
-
-    Pathway Commons Database Interaction Functions
-    accessDB.js
-
-    Purpose : Provides functions to read from and write to the database.
-
-    Requires : None
-
-    Effects : None
-
-    Note : None
-
-    TODO: 
-    - go over error handling and create meaningful failure messages and mechanisms
-    - clean up auxillary test files and move them into mocha/chai
-    - add layout cache to database design. Create helper scripts to handle flushing of cache  
-
-    @author Geoff Elder
-    @version 1.1 2017/10/10
-**/
 
 var dbName = 'metadataTest';
 const r = require('rethinkdb');

@@ -1,37 +1,5 @@
-/**
-  Pathway Commons Central Data Caches
-
-  CDC Interface
-
-  Purpose:  Backend interface. Designed to work well with React.
-
-  Note: See blurb below for use and explanation
-
-  To do: 
-
-  @author Jonah Dlin
-  @version 1.1 2017/10/17
-**/
-
 const io = require('socket.io-client');
 var socket = io('192.168.90.176:3000');
-
-/*
-Socket.io works similarly to React in that when updates happen, it pushes them live.
-With that in mind, these socket.io functions are meant to work directly with React
-states by way of an updateFunction. Normally this updateFunction is an arrow function
-that updates the state of a React component with whatever information is passed through
-by the server, giving the backend the ability to live rerender the page.
-
-Functions here starting with "init" and ending with "Socket" are meant to take an updateFunction
-and those starting with "request" are meant to prompt the backend to send something through the
-matching "init___Socket" function. Example of use would be:
-
-CDC.initEditKeyValidationSocket(valid => {
-  this.setState({editkeyvalid: valid});
-});
-CDC.requestEditKeyValidation(params);
-*/
 
 const CDC = {
   initGraphSocket(updateFunction) {

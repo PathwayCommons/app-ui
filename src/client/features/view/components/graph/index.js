@@ -1,5 +1,12 @@
 const React = require('react');
 
+/* Props
+- updateRenderStatus(status)
+- updateLayout()
+- cy
+- graphJSON
+*/
+
 class Graph extends React.Component {
   constructor(props) {
     super(props);

@@ -1,20 +1,3 @@
-/**
-  Pathway Commons Viewer
-
-  View
-
-  Purpose:  Create the view app and render all subcomponents
-
-  Props:    None now, but eventually it should take some props from react-router
-
-  Note:
-
-  To do: 
-
-  @author Jonah Dlin
-  @version 1.1 2017/10/17
-**/
-
 const React = require('react');
 const h = require('react-hyperscript');
 

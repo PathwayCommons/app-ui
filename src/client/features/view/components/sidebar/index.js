@@ -1,25 +1,3 @@
-/**
-    Pathway Commons Viewer
-
-    Sidebar
-
-    Purpose:  Retractable sidebar for information and utilities. Navigable by
-              toggleable access buttons.
-
-    Props:    - cy
-              - uri
-              - name
-              - datasource
-
-    Note: 
-
-    To do:    
-
-    @author Jonah Dlin
-    @version 1.1 2017/10/17
-**/
-
-
 const React = require('react');
 
 const HelpMenu = require('./menus/help.js');
@@ -28,6 +6,13 @@ const GraphInfoMenu = require('./menus/graphInfoMenu.js');
 
 const PathwayCommonsService = require('../../../../services/index.js').PathwayCommonsService;
 const tippy = require('tippy.js');
+
+/* Props
+- cy
+- uri
+- name
+- datasource
+*/
 
 class Sidebar extends React.Component {
   constructor(props) {

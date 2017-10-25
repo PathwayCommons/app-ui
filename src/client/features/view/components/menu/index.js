@@ -1,11 +1,10 @@
 const React = require('react');
 const tippy = require('tippy.js');
 
-/*
-Props
+/* Props
 - name
-- uri
 - datasource
+- layouts
 - updateLayout
 - currLayout
 */

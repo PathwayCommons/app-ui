@@ -1,26 +1,3 @@
-/**
-    Pathway Commons Central Data Cache
-
-    Pathway Commons Database Authorization Checker
-    auth.js
-
-    Purpose : Script to determine if a user has edit authentication
-
-    Requires : A running rethinkdb connection and a directory of sbgn files
-    as grabbed from the pathway commons web service.
-
-    Effects : None
-
-    Note : Currently only allows users in the lab to edit.
-
-    TODO: None
-
-
-    @author Harsh Mistry
-    @version 1.1 2017/10/10
-**/
-
-
 //Replace Authentication Code Here with User Login System Later 
 var ip = require('ip');
 

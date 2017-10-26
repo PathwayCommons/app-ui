@@ -1,5 +1,5 @@
 const convert = require('sbgnml-to-cytoscape');
-const fileDownloader = require('./fileDownloader.js')
+const pcServices = require('./pcServices');
 var jp = require('jsonpath');
 const Promise = require('bluebird');
 
@@ -24,7 +24,7 @@ function getData(id, path) {
     id = 'http://pathwaycommons.org/pc2/' + id;
   }
 
-  return fileDownloader.traversePC2(id, path).then(data => data.traverseEntry[0].value);
+  return pcServices.traversePC2(id, path).then(data => data.traverseEntry[0].value);
 
 }
 
@@ -52,7 +52,7 @@ function buildBioPaxTree(id) {
     getData(id, 'Entity/comment'),
     getData(id, 'Named/name'),
     getData(id, 'Named/standardName'),
-    getData(id, 'Entity/cellularLocation'),
+    getData(id, 'Entity/cellularLocation/term'),
     getData(id, 'SimplePhysicalEntity/entityReference/xref/db'),
     getData(id, 'SimplePhysicalEntity/entityReference/xref/id'),
     getData(id, 'Entity/xref/db'),
@@ -67,13 +67,15 @@ function buildBioPaxTree(id) {
     result = pushData(data[2], 'Comment', result);
     result = pushData(data[3], 'Names', result);
     result = pushData(data[4], 'Standard Name', result);
+    result = pushData(data[5], 'Cellular Location', result);
 
     //Process Cellular Location
+    /*
     var cellLocation = data[5];
     if (cellLocation.length !== 0 && cellLocation[0].indexOf('http') !== -1) {
       cellLocation = getData(cellLocation[0], 'ControlledVocabulary/term');
     }
-    if (cellLocation) { result.push(['Cellular Location', cellLocation]); }
+    if (cellLocation) { result.push(['Cellular Location', cellLocation]); } */
 
     //Merge Database ID's
     var erefDatabases = data[6];

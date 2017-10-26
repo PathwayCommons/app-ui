@@ -1,7 +1,7 @@
-const fileDownloader = require('./fileDownloader.js');
-const metadataMapperJson = require('./metadataMapperJson.js');
-const metadataMapperXML = require('./metadataMapperXML.js');
-const metadataMapperPC2 = require('./metadataMapperPC2.js');
+const pcServices = require('./pcServices');
+const metadataMapperJson = require('./metadataMapperJson');
+const metadataMapperXML = require('./metadataMapperXML');
+const metadataMapperPC2 = require('./metadataMapperPC2');
 
 //Debug code (Ignore)
 const fs = require('fs');
@@ -15,19 +15,19 @@ function getPathwayLevelMetadata(uri) {
   var title, dataSource, comments, organism;
 
   //Get title
-  return fileDownloader.traversePC2(uri, 'Named/displayName').then(function (data) 
+  return pcServices.traversePC2(uri, 'Named/displayName').then(function (data) 
 {  title = data.traverseEntry[0].value;
 
     //Get data source
-    return fileDownloader.traversePC2(uri, 'Entity/dataSource/displayName').then(function (data) {
+    return pcServices.traversePC2(uri, 'Entity/dataSource/displayName').then(function (data) {
       dataSource = data.traverseEntry[0].value;
 
       //Get comments
-      return fileDownloader.traversePC2(uri, 'Entity/comment').then(function (data) {
+      return pcServices.traversePC2(uri, 'Entity/comment').then(function (data) {
         comments = data.traverseEntry[0].value;
 
         //Get organism name
-        return fileDownloader.traversePC2(uri, 'Entity/organism/displayName').then(function (data) {
+        return pcServices.traversePC2(uri, 'Entity/organism/displayName').then(function (data) {
           organism = data.traverseEntry[0].value;
 
           //Return pathway metadata
@@ -50,13 +50,13 @@ function getMetadataJson(uri, parseType) {
   var sbgn, biopax;
 
   //Get SBGN XML
-  return fileDownloader.getPC2(uri, 'sbgn').then(function (data) {
+  return pcServices.getPC2(uri, 'sbgn').then(function (data) {
     sbgn = data;
 
     var downloadType = (parseType === 'pc2' ? 'jsonld' : parseType);
 
     //Get BioPax XML
-    return fileDownloader.getPC2(uri, downloadType).then(function (data) {
+    return pcServices.getPC2(uri, downloadType).then(function (data) {
       biopax = data;
 
       //Map metadata

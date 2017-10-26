@@ -1,4 +1,4 @@
-const treeTraversal = require('./treeTraversal.js');
+const treeTraversal = require('./treeTraversal');
 const concat = require('unique-concat');
 
 //Parse database ids

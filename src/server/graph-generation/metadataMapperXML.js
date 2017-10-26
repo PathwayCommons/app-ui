@@ -1,6 +1,6 @@
 const fs = require('fs');
 const convert = require('sbgnml-to-cytoscape');
-const metadataParser = require('./metadataParserXML.js');
+const metadataParser = require('./metadataParserXML');
 var DOMParser = require('xmldom').DOMParser;
 
 //Map metadata from BioPax to nodes

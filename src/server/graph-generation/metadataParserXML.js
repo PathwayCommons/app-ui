@@ -1,4 +1,4 @@
-const treeTraversal = require('./treeTraversal.js');
+const treeTraversal = require('./treeTraversal');
 
 //Parse database ids
 //Requires a subtree consisting of database ID objects

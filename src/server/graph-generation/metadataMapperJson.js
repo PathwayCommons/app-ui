@@ -1,5 +1,5 @@
 const convert = require('sbgnml-to-cytoscape');
-const metadataParser = require('./metadataParserJson.js');
+const metadataParser = require('./metadataParserJson');
 
 //Map metadata from BioPax to nodes
 //Returns a cy cytoscape json

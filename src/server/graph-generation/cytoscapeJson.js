@@ -1,36 +1,27 @@
-
-const fs = require('fs');
-const fileDownloader = require('./fileDownloader.js');
-const metadataMapperJson = require('./metadataMapperJson.js');
-const metadataMapperXML = require('./metadataMapperXML.js');
-//const metadataMapperPC2 = require('./metadataMapperPC2.js');
-var Multispinner = require('multispinner');
-const Promise = require('bluebird');
-
-//Debug code (Ignore)
-//http://identifiers.org/reactome/R-HSA-6804754
-//http://identifiers.org/kegg.pathway/hsa00260
-//var x = getCytoscapeJson('http://identifiers.org/reactome/R-HSA-6804754').then(data => fs.writeFileSync('testFile', JSON.stringify(data)));
+const pcServices = require('./pcServices');
+const metadataMapperJson = require('./metadataMapperJson');
+const metadataMapperXML = require('./metadataMapperXML');
+const metadataMapperPC2 = require('./metadataMapperPC2');
 
 //Get pathway name, description, and datasource
 //Requires a valid pathway uri
 function getPathwayLevelMetadata(uri) {
-  var title, dataSource, comments, organism;
+  let title, dataSource, comments, organism;
 
   //Get title
-  return fileDownloader.traversePC2(uri, 'Named/displayName').then(function (data) {
-    title = data.traverseEntry[0].value;
+  return pcServices.traversePC2(uri, 'Named/displayName').then(function (data) 
+{  title = data.traverseEntry[0].value;
 
     //Get data source
-    return fileDownloader.traversePC2(uri, 'Entity/dataSource/displayName').then(function (data) {
+    return pcServices.traversePC2(uri, 'Entity/dataSource/displayName').then(function (data) {
       dataSource = data.traverseEntry[0].value;
 
       //Get comments
-      return fileDownloader.traversePC2(uri, 'Entity/comment').then(function (data) {
+      return pcServices.traversePC2(uri, 'Entity/comment').then(function (data) {
         comments = data.traverseEntry[0].value;
 
         //Get organism name
-        return fileDownloader.traversePC2(uri, 'Entity/organism/displayName').then(function (data) {
+        return pcServices.traversePC2(uri, 'Entity/organism/displayName').then(function (data) {
           organism = data.traverseEntry[0].value;
 
           //Return pathway metadata
@@ -50,34 +41,30 @@ function getPathwayLevelMetadata(uri) {
 //Get metadata enhanced cytoscape JSON
 //Requires a valid pathway uri
 function getMetadataJson(uri, parseType) {
-  var sbgn, biopax;
+  let sbgn, biopax;
 
   //Get SBGN XML
-  return fileDownloader.getPC2(uri, 'sbgn').then(function (data) {
+  return pcServices.getPC2(uri, 'sbgn').then(function (data) {
     sbgn = data;
 
-    var downloadType = (parseType === 'pc2' ? 'jsonld' : parseType);
+    let downloadType = (parseType === 'pc2' ? 'jsonld' : parseType);
 
     //Get BioPax XML
-    return fileDownloader.getPC2(uri, downloadType).then(function (data) {
+    return pcServices.getPC2(uri, downloadType).then(function (data) {
       biopax = data;
 
       //Map metadata
-      //return metadataMapper(biopax, sbgn);
       if (parseType === 'jsonld') { return metadataMapperJson(biopax, sbgn); }
       else if (parseType === 'biopax') { return metadataMapperXML(biopax, sbgn);} 
-      //else if (parseType === 'pc2') {return metadataMapperPC2(biopax, sbgn);} //PC2 Traverse Commented Out 
+      else if (parseType === 'pc2') {return metadataMapperPC2(biopax, sbgn);} 
     })
   });
 }
 
-//Return enhanced cytoscape json 
+//Return enhanced cytoscape json
 //Requires a valid pathway uri 
 function getCytoscapeJson(uri, parseType = 'jsonld') {
-  var pathwayMetadata;
-
-  //Start Spinner
-  const spinner = new Multispinner({ 'main': uri });
+  let pathwayMetadata;
 
   //Start Generation
   return getPathwayLevelMetadata(uri).then(function (data) {
@@ -85,11 +72,10 @@ function getCytoscapeJson(uri, parseType = 'jsonld') {
     return getMetadataJson(uri, parseType).then(function (data) {
       data.pathwayMetadata = pathwayMetadata;
       data.parseType = parseType;
-      spinner.success('main');
       return data;
     })
   }).catch(function (e) {
-    spinner.error('main');
+    console.log(e);
     return { error: e };
   })
 }

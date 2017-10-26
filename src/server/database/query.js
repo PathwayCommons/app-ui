@@ -77,8 +77,6 @@ function connect() {
           db.insert('version', { id: uuid(), pc_id: pcID, release_id: releaseID, graph_id: graphID, layout_ids: [] }, connection)
         ]);
       }
-    }).catch((e) => {
-      throw e;
     });
 
 
@@ -103,8 +101,6 @@ function connect() {
     var idPromise = queryRoot.run(connection)
       .then((result) => {
         return result.toArray();
-      }).catch((e) => {
-        throw e;
       }).then((result) => {
         return result[0].graph_id;
       }).catch(() => {
@@ -194,9 +190,7 @@ function connect() {
     var layout = queryRoot
       .run(connection)
       .then((cursor) => {
-        return cursor.toArray(); // Convert list of valid versions (should be only 1)
-      }).catch((e) => {          // from a cursor to an array
-        throw e;
+        return cursor.toArray(); // Convert list of valid versions (should be only 1) from a cursor to an array
       }).then((versionArray) => {
         if (!versionArray.length) {
           let err = new Error('No saved layouts');
@@ -209,8 +203,6 @@ function connect() {
           .zip()
           .pluck('positions') // We're only looking for positions
           .run(connection);
-      }).catch((e) => {
-        throw e;
       }).then((allSubmissions) => {
         // Run decision making process to amalgamate down to one layout to return
         // currently just returns the most recent submission
@@ -238,8 +230,6 @@ function connect() {
       .run(connection)
       .then((cursor) => {
         return cursor.toArray();
-      }).catch((e) => {
-        throw e;
       }).then((array) => {
         return array[0];
       });

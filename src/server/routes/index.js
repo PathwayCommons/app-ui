@@ -22,7 +22,6 @@ router.get('*', function (req, res, next) {
     const query = queryString.parse(url.slice(5));
     if (query.uri) {
       graphgen.getPathwayLevelMetadata(query.uri).then(md => {
-        console.log(md);
 
         var title = md.title,
           ds = md.dataSource,
@@ -33,9 +32,6 @@ router.get('*', function (req, res, next) {
           comments += comments_arr[i] + (i === comments_arr.length - 1 ? '' : '\n');
         }
 
-        console.log(title);
-        console.log(ds);
-        console.log(comments);
 
         if (!title) title = 'Pathway Commons';
         if (!ds) ds = 'Unknown datasource';

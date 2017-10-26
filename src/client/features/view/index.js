@@ -56,15 +56,13 @@ class View extends React.Component {
           datasource: dsStr
         });
       });
-  }
 
-  componentWillMount() {
     // Before we mount we get the edit key from the URL
     // The validation performed here only occurs once, on View mount,
     // and is for initializing access privileges. To the regular user,
     // the move event does not need to be bound. The downside is that
     // there is no way to add an edit key part-way through a session.
-    const editkey = this.state.query.editkey;
+    const editkey = query.editkey;
     if (editkey != null) {
       CDC.initEditKeyValidationSocket((valid) => {
         if (typeof valid === typeof {}) {alert('Key validation error!'); return;}
@@ -75,19 +73,17 @@ class View extends React.Component {
         });
         if (valid) {
           // Bind move event only if necessary
-          bindMove(this.state.query.uri, 'latest', editkey, this.state.cy);
+          bindMove(query.uri, 'latest', editkey, this.state.cy);
         }
       });
-      CDC.requestEditKeyValidation(this.state.query.uri, 'latest', editkey);
+      CDC.requestEditKeyValidation(query.uri, 'latest', editkey);
     }
-
-    window.addEventListener('resize', () => window.scrollTo(0, 1));
 
     // Arrow functions like these tie socket.io directly into the React state
     CDC.initGraphSocket(newGraphJSON => this.setState({graphJSON: newGraphJSON}));
-    CDC.requestGraph(this.state.query.uri, 'latest');
+    CDC.requestGraph(query.uri, 'latest');
   }
-  
+
   // To be called when the graph renders (since this is determined by the Graph class)
   updateRenderStatus(status) {
     if (status) {

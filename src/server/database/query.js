@@ -2,13 +2,13 @@
 var dbName = 'metadataTest';
 const r = require('rethinkdb');
 const uuid = require('uuid/v4');
-const heuristics = require('./heuristics.js');
+const heuristics = require('./heuristics');
 const hash = require('json-hash');
 
 module.exports = function (dbName) {
   var module = {};
 
-  const db = require('./databaseUtilities')(dbName);
+  const db = require('./utilities')(dbName);
 
 // returns a promise for a connection to the database.
 function connect() {
@@ -177,6 +177,18 @@ function connect() {
     // set the generic root for ease of use throughout the function.
     var queryRoot = db.queryRoot(pcID, releaseID);
 
+
+    Promise.resolve(queryRoot.run(connection))
+    .then((cursor)=> cursor.toArray())
+    .then((versionArray)=> {
+      if (!versionArray.length) {
+        let err = new Error('No saved layouts');
+        err.status = 'NoLayouts';
+        throw err;
+      }
+
+      return 
+    });
 
     // Extract a list of layouts associated with the version from the database
     var layout = queryRoot

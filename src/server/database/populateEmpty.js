@@ -1,8 +1,7 @@
 
 const fs = require('fs'); // node file system, to be used for importing XMLs
 const convert = require('sbgnml-to-cytoscape'); // used to convert to cy JSONs
-const update = require('./updateVersion.js');
-const accessDB = require('./accessDB.js');
+const accessDB = require('./query');
 const Promise = require('bluebird');
 
 const args = process.argv;
@@ -32,7 +31,7 @@ function URIify(str) {
 
 
 
-var connectionPromise = update.connect();
+var connectionPromise = accessDB.connect();
 var conn = null;
 
 function processFile(dir, file) {

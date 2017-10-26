@@ -24,6 +24,6 @@ function queryMetadata(pcID) {
 }
 
 module.exports = {
-  queryPC: queryPC,
-  queryMetadata: queryMetadata
+  queryPC,
+  queryMetadata
 };

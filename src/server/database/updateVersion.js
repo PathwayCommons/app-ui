@@ -1,6 +1,6 @@
 
 const fs = require('fs'); // node file system, to be used for importing XMLs
-const accessDB = require('./accessDB.js');
+const accessDB = require('./query');
 // const Promise = require('bluebird'); // used in old file process code
 var Multispinner = require('multispinner');
 

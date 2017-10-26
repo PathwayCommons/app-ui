@@ -8,17 +8,17 @@ const bindClick = (cy) => {
       var isHidden = evt.target.scratch('showPopper');
       //Hide all other tooltips 
       evt.cy.elements().each(function (element, i) {
-          try {
+        try {
           var tempElement = element.scratch('tippy-popper');
           element.scratch('tippy').hide(tempElement);
           element.scratch('showPopper', true);
-          }
-          catch (e) {}
+        }
+        catch (e) { }
       });
       //Show only if popper is hidden 
       if (isHidden || isHidden === undefined) {
-          evt.target.scratch('tippy').show(popperElement);
-          evt.target.scratch('showPopper', false);
+        evt.target.scratch('tippy').show(popperElement);
+        evt.target.scratch('showPopper', false);
       }
     }
     catch (e) { }

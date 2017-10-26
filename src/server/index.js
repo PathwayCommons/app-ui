@@ -44,8 +44,8 @@ app.set('view engine', 'ejs');
 app.use(favicon(path.join(__dirname, '../..', 'public', 'icon.png')));
 app.use(morgan('dev', {
   stream: new stream.Writable({
-    write( chunk, encoding, next ){
-      logger.info( chunk.toString('utf8').trim() );
+    write(chunk, encoding, next) {
+      logger.info(chunk.toString('utf8').trim());
 
       next();
     }
@@ -57,25 +57,25 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../..', 'public')));
 
 app.use(function (req, res, next) {
-// Website you wish to allow to connect
-   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-   // Request methods you wish to allow
-   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-   // Request headers you wish to allow
-   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-   // Set to true if you need the website to include cookies in the requests sent
-   // to the API (e.g. in case you use sessions)
-   res.setHeader('Access-Control-Allow-Credentials', true);
-   // Pass to next layer of middleware
-   next();
+  // Website you wish to allow to connect
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+  // Request methods you wish to allow
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  // Request headers you wish to allow
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  // Set to true if you need the website to include cookies in the requests sent
+  // to the API (e.g. in case you use sessions)
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  // Pass to next layer of middleware
+  next();
 });
 
 
 app.use('/Layout', require('./routes/databaseSocket')(io));
-app.use( '/', require('./routes/index'));
+app.use('/', require('./routes/index'));
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   let err = new Error('Not Found');
   err.status = 404;
   next(err);
@@ -84,7 +84,7 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
+  app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.render('error');
   });
@@ -93,7 +93,7 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 // error page handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });

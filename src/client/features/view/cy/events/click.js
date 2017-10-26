@@ -4,12 +4,12 @@ const bindClick = (cy) => {
   //Bind right click event to tippy.show()
   cy.on('cxttap', 'node', function (evt) {
     try {
-      var popperElement = evt.target.scratch('tippy-popper');
-      var isHidden = evt.target.scratch('showPopper');
+      let popperElement = evt.target.scratch('tippy-popper');
+      let isHidden = evt.target.scratch('showPopper');
       //Hide all other tooltips 
       evt.cy.elements().each(function (element, i) {
         try {
-          var tempElement = element.scratch('tippy-popper');
+          let tempElement = element.scratch('tippy-popper');
           element.scratch('tippy').hide(tempElement);
           element.scratch('showPopper', true);
         }
@@ -27,7 +27,7 @@ const bindClick = (cy) => {
   //Bind drag  event to tippy.hide()
   cy.on('drag', 'node', function (evt) {
     try {
-      var popperElement = evt.target.scratch('tippy-popper');
+      let popperElement = evt.target.scratch('tippy-popper');
       evt.target.scratch('tippy').hide(popperElement);
       evt.target.scratch('showPopper', true);
     }

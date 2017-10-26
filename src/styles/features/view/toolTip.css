@@ -1,0 +1,56 @@
+.tooltip-image {
+    position: relative;
+    width: 100%; 
+ }
+
+ .tooltip-internal {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    width: 243px;
+    height: 290px;
+    word-wrap: break-word;
+    overflow-y: auto;
+    font-size: 8pt;
+ }
+
+ .tooltip-heading {
+    position: absolute;
+    top: 2px;
+    text-align: center;
+    width: 243px;
+    height: 290px;
+    word-wrap: break-word;
+    overflow-y: auto;
+    font-size: 17pt;
+    font-weight: 300;
+    color: #2196f3;
+}
+
+.tooltip-button-pdf {
+    position: absolute;
+    top: 253px;
+    left: 94px;
+    text-align: center;
+    width: 15px;
+    /* height: 290px; */
+    /* word-wrap: break-word; */
+    overflow-y: auto;
+    font-size: 12pt;
+    font-weight: 300;
+    color: var(--midnight-blue);
+}
+
+.tooltip-button-show {
+    position: absolute;
+    top: 252px;
+    left: 120px;
+    text-align: center;
+    width: 20px;
+    /* height: 290px; */
+    /* word-wrap: break-word; */
+    overflow-y: auto+;
+    font-size: 12pt;
+    font-weight: 300;
+    color: var(--midnight-blue);
+}

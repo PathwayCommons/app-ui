@@ -1,4 +1,4 @@
-var fetch = require('node-fetch');
+let fetch = require('node-fetch');
 const got = require('got');
 
 
@@ -24,8 +24,8 @@ const getOptions = {
 //Requires uri and format to be valid xml files
 function getPC2(uri, format) {
   //Construct query url
-  var uri = encodeURIComponent(uri);
-  var url = 'https://www.pathwaycommons.org/pc2/get?format=' + format + '&uri=' + uri + '&user=pathwaycommons-js-lib%3Apathways-search';
+  uri = encodeURIComponent(uri);
+  let url = 'https://www.pathwaycommons.org/pc2/get?format=' + format + '&uri=' + uri + '&user=pathwaycommons-js-lib%3Apathways-search';
   return fetch(url, getOptions).then(response => response.text());
 }
 
@@ -36,8 +36,8 @@ function traversePC2(uri, path) {
   //Construct query url
   uri = encodeURIComponent(uri);
   path = encodeURIComponent(path);
-  var url = 'https://www.pathwaycommons.org/pc2/traverse?format=json&uri=' + uri + '&path=' + path + '&user=pathwaycommons-js-lib%3Apathways-search';
-  var retries = 10; 
+  let url = 'https://www.pathwaycommons.org/pc2/traverse?format=json&uri=' + uri + '&path=' + path + '&user=pathwaycommons-js-lib%3Apathways-search';
+  let retries = 10; 
 
   //Use Got instead of fetch due to known issue with fetch  which causes socket hangups
   return got(url, { json: true, retries: retries }).then(response => {
@@ -49,15 +49,15 @@ function traversePC2(uri, path) {
 
 //Generate URL for getting data
 function getURL(uri, format) {
-  var uri = encodeURIComponent(uri);
-  var url = 'https://www.pathwaycommons.org/pc2/get?format=' + format + '&uri=' + uri + '&user=pathwaycommons-js-lib%3Apathways-search';
+  uri = encodeURIComponent(uri);
+  let url = 'https://www.pathwaycommons.org/pc2/get?format=' + format + '&uri=' + uri + '&user=pathwaycommons-js-lib%3Apathways-search';
   return url;
 }
 
 //Generate URL for a traverse query
 function traverseURL(uri, path) {
-  var uri = encodeURIComponent(uri);
-  var url = 'https://www.pathwaycommons.org/pc2/traverse?format=json&uri=' + uri + '&path=' + path;
+  uri = encodeURIComponent(uri);
+  let url = 'https://www.pathwaycommons.org/pc2/traverse?format=json&uri=' + uri + '&path=' + path;
   return url;
 }
 

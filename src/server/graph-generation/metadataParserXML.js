@@ -4,14 +4,14 @@ const treeTraversal = require('./treeTraversal');
 //Requires a subtree consisting of database ID objects
 //Note : null is returnd if no ID is found.
 function parseDatabaseIDs(subTree) {
-  var result = [];
+  let result = [];
 
   //Loop through all different database ids
-  for (var i = 0; i < subTree.length; i++) {
+  for (let i = 0; i < subTree.length; i++) {
     //Get values
     //console.log(subTree[i]);
-    var id = treeTraversal.searchForExactNode(subTree[i], 'bp:id');
-    var source = treeTraversal.searchForExactNode(subTree[i], 'bp:db');
+    let id = treeTraversal.searchForExactNode(subTree[i], 'bp:id');
+    let source = treeTraversal.searchForExactNode(subTree[i], 'bp:db');
 
     //Push to result
     if (id && source) result.push([source, id]);
@@ -24,15 +24,15 @@ function parseDatabaseIDs(subTree) {
 //Requires subtree to be valid
 //Note : null is returned if nothing can be parsed
 function parse(subTree) {
-  var result = [];
-  var temp = [];
-  var databaseIDs = [];
+  let result = [];
+  let temp = [];
+  let databaseIDs = [];
 
   //Stop id subtree is invalid
   if (!(subTree)) return null;
 
   //Get the entity reference object
-  var eRef = treeTraversal.searchForExactNode(subTree, 'bp:entityReference');
+  let eRef = treeTraversal.searchForExactNode(subTree, 'bp:entityReference');
 
   if (eRef) {
     //Get the standard name
@@ -47,7 +47,7 @@ function parse(subTree) {
   }
 
   //Get data source
-  var source = treeTraversal.searchForNode(subTree, 'bp:dataSource');
+  let source = treeTraversal.searchForNode(subTree, 'bp:dataSource');
   if (typeof source === 'string') result.push(['Data Source', source]);
   else if (source) result.push(['Data Source', treeTraversal.searchForNode(source, '')]);
 
@@ -61,10 +61,10 @@ function parse(subTree) {
   }
 
   //Get cellular location
-  var location = treeTraversal.searchForNode(subTree, 'bp:cellularLocation');
+  let location = treeTraversal.searchForNode(subTree, 'bp:cellularLocation');
   if (location) {
-    //var term = searchForNode(location, 'bp:term');
-    var term = treeTraversal.searchForFirst(location, 'bp:term');
+    //let term = searchForNode(location, 'bp:term');
+    let term = treeTraversal.searchForFirst(location, 'bp:term');
     if (term) result.push(['Cellular Location', term]);
   }
 
@@ -76,8 +76,8 @@ function parse(subTree) {
   if (temp) result.push(['Display Name', temp]);
 
   //Get any inObject database ids
-  var noRefId = treeTraversal.searchForExactNode(subTree, 'bp:id');
-  var noRefDb = treeTraversal.searchForExactNode(subTree, 'bp:db');
+  let noRefId = treeTraversal.searchForExactNode(subTree, 'bp:id');
+  let noRefDb = treeTraversal.searchForExactNode(subTree, 'bp:db');
 
   //Parse database id objects
   if (databaseIDs) databaseIDs = parseDatabaseIDs(databaseIDs);
@@ -85,7 +85,7 @@ function parse(subTree) {
   if (databaseIDs && databaseIDs.length > 0) result.push(['Database IDs', databaseIDs]);
 
   //Remove all invalid values
-  for (var i = result.length - 1; i >= 0; i--) {
+  for (let i = result.length - 1; i >= 0; i--) {
     if (!(result[i])) {
       result.splice(i, 1);
     }

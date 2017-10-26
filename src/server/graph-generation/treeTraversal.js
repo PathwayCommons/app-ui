@@ -18,10 +18,10 @@
 //Note : - A empty array is returned if no match is found
 //       - Recurse indicates if other levels of the tree should be searched
 function searchTree(subtree, key, recurse = true) {
-  var result = []
+  let result = []
 
   //Loop through all level nodes
-  for (var i = 0; i < subtree.length; i++) {
+  for (let i = 0; i < subtree.length; i++) {
     //Push current value if it matches
     if (subtree[i][0] == key) {
       result.push(subtree[i][1]);
@@ -34,7 +34,7 @@ function searchTree(subtree, key, recurse = true) {
   }
 
   //Remove all invalid values
-  for (var i = (result.length - 1); i >= 0; i--) {
+  for (let i = (result.length - 1); i >= 0; i--) {
     if (!(result[i])) {
       result.splice(i, 1);
     }
@@ -47,7 +47,7 @@ function searchTree(subtree, key, recurse = true) {
 //Requires a valid subtree
 //Note : Recurse will search entire subtree for the node
 function searchOne(subtree, key, name) {
-  var temp = searchTree(subtree, key, false);
+  let temp = searchTree(subtree, key, false);
   if (temp.length > 0) return [name, temp[0]];
   else return null;
 }
@@ -55,7 +55,7 @@ function searchOne(subtree, key, name) {
 //Search for multiple entries
 //Requires a valid subtree
 function searchMultiple(subtree, key, name) {
-  var temp = searchTree(subtree, key, false);
+  let temp = searchTree(subtree, key, false);
   if (temp && temp.length > 0) return [name, temp];
   else return null;
 }
@@ -66,7 +66,7 @@ function searchMultiple(subtree, key, name) {
 //Requires a valid subtree
 function searchForNode(subtree, key) {
   if (!(subtree)) return null;
-  for (var i = 0; i < subtree.length; i++) {
+  for (let i = 0; i < subtree.length; i++) {
     if (subtree[i][0].indexOf(key) !== -1) return subtree[i][1];
   }
   return null;
@@ -79,12 +79,12 @@ function searchForFirst(subTree, key) {
   if (!(subTree)) return null;
 
   //Loop through all nodes
-  for (var i = 0; i < subTree.length; i++) {
+  for (let i = 0; i < subTree.length; i++) {
     if (subTree[i][0].indexOf(key) > -1) {
       return subTree[i][1];
     }
     else if (subTree[i][1] instanceof Array) {
-      var result = searchForFirst(subTree[i][1], key);
+      let result = searchForFirst(subTree[i][1], key);
       if (result) return result;
     }
   }
@@ -99,7 +99,7 @@ function searchForFirst(subTree, key) {
 //Note : If return index=true then the index of the node is returned
 function searchForExactNode(subtree, key, returnIndex = false) {
   if (!(subtree)) return null;
-  for (var i = 0; i < subtree.length; i++) {
+  for (let i = 0; i < subtree.length; i++) {
     if (subtree[i][0] === key) return (returnIndex ? i : subtree[i][1]);
   }
   return null;
@@ -110,7 +110,7 @@ function searchForExactNode(subtree, key, returnIndex = false) {
 //Requires a valid subtree
 function searchForExactNodeWithObjectResult(subtree, key) {
   if (!(subtree)) return null;
-  for (var i = 0; i < subtree.length; i++) {
+  for (let i = 0; i < subtree.length; i++) {
     if (subtree[i][0] === key) return { index: i, data: subtree[i][1] };
   }
   return null;

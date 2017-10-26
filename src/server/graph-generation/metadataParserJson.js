@@ -5,15 +5,15 @@ const concat = require('unique-concat');
 //Requires a subtree consisting of database ID objects
 //Note : [] is returned if no ID is found.
 function parseDatabaseIDs(subTree) {
-  var result = [];
+  let result = [];
 
   //Loop through all different database ids
-  for (var i = 0; i < subTree.length; i++) {
+  for (let i = 0; i < subTree.length; i++) {
     //Get Reference Child
-    var child = subTree[i][1];
+    let child = subTree[i][1];
 
     //Search for database id's 
-    var dbIdObject = treeTraversal.searchForExactNode(child, 'Database ID');
+    let dbIdObject = treeTraversal.searchForExactNode(child, 'Database ID');
     if (dbIdObject) result.push(dbIdObject);
   }
 
@@ -24,13 +24,13 @@ function parseDatabaseIDs(subTree) {
 //Requires a valid subtree of a entity reference
 //Note : {} is returned if subtree can't be parsed
 function parseEntityReference(eref) {
-  var result = {};
-  var references = [];
+  let result = {};
+  let references = [];
 
-  var subtree = eref.slice();
+  let subtree = eref.slice();
 
   //Loop over all children
-  for (var i = 0; i < subtree.length; i++) {
+  for (let i = 0; i < subtree.length; i++) {
     if (subtree[i][0] === 'Standard Name') result.sName = subtree[i];
     if (subtree[i][0] === 'Names') result.names = subtree[i];
     if (subtree[i][0] === 'Reference') references.push(subtree[i]);
@@ -46,10 +46,10 @@ function parseEntityReference(eref) {
 //Merge entity reference with Standard Object
 //Requires a valid parsed entity reference and object metadata array
 function mergeMetadataArrays(entityRef, objectRef) {
-  var temp = [];
+  let temp = [];
   //Merge database Ids
   if (entityRef.references) {
-    var databaseIds = treeTraversal.searchForExactNodeWithObjectResult(objectRef, 'Database IDs');
+    let databaseIds = treeTraversal.searchForExactNodeWithObjectResult(objectRef, 'Database IDs');
 
     //Determine if arrays should be created or merged
     if (databaseIds) {
@@ -63,7 +63,7 @@ function mergeMetadataArrays(entityRef, objectRef) {
 
   //Merge names
   if (entityRef.names) {
-    var names = treeTraversal.searchForExactNodeWithObjectResult(objectRef, 'Names');
+    let names = treeTraversal.searchForExactNodeWithObjectResult(objectRef, 'Names');
 
     //Determine if arrays should be created or merged
     if (names) {
@@ -80,7 +80,7 @@ function mergeMetadataArrays(entityRef, objectRef) {
 
    //Merge standard name
    if (entityRef.sName) {
-    var sName = treeTraversal.searchForExactNodeWithObjectResult(objectRef, 'Standard Name');
+    let sName = treeTraversal.searchForExactNodeWithObjectResult(objectRef, 'Standard Name');
 
     //Determine if arrays should be created or merged
     if (sName) {
@@ -100,16 +100,16 @@ function mergeMetadataArrays(entityRef, objectRef) {
 //Requires subtree to be valid
 //Note : null is returned if nothing can be parsed
 function parse(subTree) {
-  var references = [];
+  let references = [];
 
   //Validate subtree
   if (!(subTree)) return null;
 
   //Make a copy of subtree
-  var subTreeCopy = subTree.slice()[0][1];
+  let subTreeCopy = subTree.slice()[0][1];
 
   //Get Entity Reference
-  var entityRef = treeTraversal.searchForExactNodeWithObjectResult(subTreeCopy, 'EntityReference')
+  let entityRef = treeTraversal.searchForExactNodeWithObjectResult(subTreeCopy, 'EntityReference')
   if (entityRef) {
     //Remove un parsed copy
     subTreeCopy.splice(entityRef.index, 1);
@@ -118,10 +118,10 @@ function parse(subTree) {
     entityRef = parseEntityReference(entityRef.data);
   }
 
-  var check= treeTraversal.searchForExactNode(subTreeCopy, 'Names');
+  let check= treeTraversal.searchForExactNode(subTreeCopy, 'Names');
 
   //Get all references
-  for (var i = 0; i < subTreeCopy.length; i++) {
+  for (let i = 0; i < subTreeCopy.length; i++) {
     //Get in-object references
     if (subTreeCopy[i][0] === 'Reference') {
       references.push(subTreeCopy[i]);
@@ -132,7 +132,7 @@ function parse(subTree) {
   subTreeCopy = subTreeCopy.filter(key => key[0] !== 'Reference');
 
   //Parse Database ID's
-  var parsedIDs = parseDatabaseIDs(references);
+  let parsedIDs = parseDatabaseIDs(references);
   if (parsedIDs) subTreeCopy.push(['Database IDs', parsedIDs]);
 
   if (entityRef) subTreeCopy = mergeMetadataArrays(entityRef, subTreeCopy);

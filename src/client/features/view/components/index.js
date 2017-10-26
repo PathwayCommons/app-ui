@@ -1,7 +1,7 @@
-const Graph = require('./graph/index.js');
-const Menu = require('./menu/index.js');
-const EditWarning = require('./editwarning/index.js');
-const Sidebar = require('./sidebar/index.js');
+const Graph = require('./graph/index');
+const Menu = require('./menu/index');
+const EditWarning = require('./editwarning/index');
+const Sidebar = require('./sidebar/index');
 
 module.exports = {
   Graph: Graph,

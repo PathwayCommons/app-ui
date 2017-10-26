@@ -7,7 +7,7 @@ const h = require('react-hyperscript');
 const Router = require('./router');
 const ReactDOM = require('react-dom');
 
-const RegisterCyExtensions = require('./cytoscape-extensions.js');
+const RegisterCyExtensions = require('./cytoscape-extensions');
 
 if( debug.enabled() ){
   debug.init();

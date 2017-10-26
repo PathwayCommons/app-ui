@@ -1,8 +1,8 @@
-const colaOpts = require('./cola.js');
-const coseBilkentOpts = require('./coseBilkent.js');
-const dagreOpts = require('./dagre.js');
-const klayOpts = require('./klay.js');
-const stratifiedLayeredOpts = require('./stratifiedKlay.js');
+const colaOpts = require('./cola');
+const coseBilkentOpts = require('./coseBilkent');
+const dagreOpts = require('./dagre');
+const klayOpts = require('./klay');
+const stratifiedLayeredOpts = require('./stratifiedKlay');
 
 const coseBilkentMaxGraphSize = 100;
 

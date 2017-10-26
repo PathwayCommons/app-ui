@@ -1,29 +1,6 @@
-
-/**
-    Pathway Commons Central Data Cache
-
-    Database Server Query Routing
-    databaseRoutes.js
-
-    Purpose : Provides functions to read from and write to the database.
-
-    Requires : None
-
-    Effects : None
-
-    Note : None
-
-    TODO: 
-    - ensure querying via socket.io still works
-    - Run proper functionality testing 
-
-    @author Geoff Elder
-    @version 1.1 2017/10/10
-**/
-
 //Import Depedencies
 const auth = require('./auth.js');
-const accessDB = require('./../database/accessDB.js')('testLayouts');
+const accessDB = require('./../database/query')('testLayouts');
 const saveDiffs = require('./../database/saveDiffs')('testLayouts');
 const lazyLoad = require('./../lazyload');
 const btoa = require('btoa');
@@ -39,7 +16,7 @@ var returnRouter = function () {
 
   // ------------------ Standard API Functions (Sans Socket IO) ----------------
   //Get Layout
-  router.get('/Get', function (req, res) {
+  router.get('/get', function (req, res) {
     //Get the requested layout
     try {
       connPromise.then((connection) => {
@@ -88,7 +65,7 @@ var returnRouter = function () {
     }
   });
 
-  router.get('/getEditKey', function (req, res) {
+  router.get('/get-edit-key', function (req, res) {
 
     try {
       connPromise.then((connection) => {
@@ -116,7 +93,7 @@ var returnRouter = function () {
     }
   });
 
-  router.get('/checkEditKey', function (req, res) {
+  router.get('/check-edit-key', function (req, res) {
     if (!(req.query.uri && req.query.version)) {
       res.json('ERROR: Required Parameters Not Defined');
       return;
@@ -139,7 +116,7 @@ var returnRouter = function () {
 
   });
 
-  router.post('/Submit', function (req, res) {
+  router.post('/submit', function (req, res) {
     if (!(req.body.layout && req.body.version && req.body.uri)) {
       res.json = ('ERROR : Required Parameters Undefined');
       return;

@@ -20,8 +20,6 @@ function parseDatabaseIDs(subTree) {
   return result;
 }
 
-//x.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig)
-
 //Returns a human readable array of metadata
 //Requires subtree to be valid
 //Note : null is returned if nothing can be parsed

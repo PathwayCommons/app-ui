@@ -69,14 +69,6 @@ function buildBioPaxTree(id) {
     result = pushData(data[4], 'Standard Name', result);
     result = pushData(data[5], 'Cellular Location', result);
 
-    //Process Cellular Location
-    /*
-    var cellLocation = data[5];
-    if (cellLocation.length !== 0 && cellLocation[0].indexOf('http') !== -1) {
-      cellLocation = getData(cellLocation[0], 'ControlledVocabulary/term');
-    }
-    if (cellLocation) { result.push(['Cellular Location', cellLocation]); } */
-
     //Merge Database ID's
     var erefDatabases = data[6];
     var erefDatabaseIds = data[7];

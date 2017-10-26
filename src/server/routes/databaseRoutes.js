@@ -1,26 +1,3 @@
-
-/**
-    Pathway Commons Central Data Cache
-
-    Database Server Query Routing
-    databaseRoutes.js
-
-    Purpose : Provides functions to read from and write to the database.
-
-    Requires : None
-
-    Effects : None
-
-    Note : None
-
-    TODO: 
-    - ensure querying via socket.io still works
-    - Run proper functionality testing 
-
-    @author Geoff Elder
-    @version 1.1 2017/10/10
-**/
-
 //Import Depedencies
 const auth = require('./auth.js');
 const accessDB = require('./../database/accessDB.js')('testLayouts');

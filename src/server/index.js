@@ -1,21 +1,3 @@
-/**
-    Pathway Commons Central Data Cache
-
-    Pathway Commons Server Index
-    index.js
-
-    Purpose : Main Server code for checking database and supplying front end code to user
-
-    Requires : None
-
-    Effects : Creates the server for the app
-
-    Note : None
-
-    @author Geoff Elder
-    @version 1.1 2017/10/10
-**/
-
 const express = require('express');
 const path = require('path');
 const favicon = require('serve-favicon');

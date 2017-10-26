@@ -1,5 +1,5 @@
 const React = require('react');
-const ImageCard = require('./components/imageCard.js');
+const ImageCard = require('./components/imageCard');
 
 class HelpMenu extends React.Component {
   render() {

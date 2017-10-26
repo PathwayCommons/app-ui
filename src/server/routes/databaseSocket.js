@@ -2,7 +2,7 @@ const database = 'layouts';
 
 //Import Depedencies
 const auth = require('./auth.js');
-const accessDB = require('./../database/accessDB.js')(database);
+const accessDB = require('./../database/query')(database);
 //const saveDiffs = require('./../database/saveDiffs.js')(database);
 const lazyLoad = require('./../lazyload');
 const btoa = require('btoa');

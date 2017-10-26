@@ -34,7 +34,7 @@ class Admin extends React.Component {
 
   updateEditLinks(editURI) {
     const editLinkObj = this.deconstructEditURI(editURI);
-    var editLinks = this.state.editLinks;
+    let editLinks = this.state.editLinks;
     editLinks[editLinkObj.uri] = editLinkObj.editkey;
     this.setState({
       editLinks: editLinks
@@ -57,7 +57,7 @@ class Admin extends React.Component {
       .then(searchResults => {
         this.setState({searchResults: searchResults}, () => {
           CDC.initEditLinkSocket(this.updateEditLinks);
-          for (var i = 0; i < searchResults.length; i++) {
+          for (let i = 0; i < searchResults.length; i++) {
             CDC.requestEditLink(searchResults[i].uri, 'latest');
           }
         });

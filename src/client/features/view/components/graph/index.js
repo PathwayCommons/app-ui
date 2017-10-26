@@ -37,8 +37,8 @@ class Graph extends React.Component {
   // retrieved from https://coderwall.com/p/_g3x9q/how-to-check-if-javascript-object-is-empty
   checkRenderGraph(graphJSON) {
     if (this.state.graphRendered) return;
-    var empty = true;    
-    for(var key in graphJSON) {
+    let empty = true;    
+    for(let key in graphJSON) {
         if(graphJSON.hasOwnProperty(key))
             empty = false;
     }

@@ -133,8 +133,6 @@ connectionPromise.then(connection => {
     //   { concurrency: 4 });
   });
 
-}).catch((e) => {
-  throw e;
 });
 
 

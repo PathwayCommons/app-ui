@@ -117,11 +117,11 @@ function searchForExactNodeWithObjectResult(subtree, key) {
 }
 
 module.exports = {
-  searchForExactNode: searchForExactNode,
-  searchForExactNodeWithObjectResult: searchForExactNodeWithObjectResult,
-  searchForFirst: searchForFirst,
-  searchForNode: searchForNode,
-  searchMultiple: searchMultiple,
-  searchOne: searchOne,
-  searchTree: searchTree
+  searchForExactNode,
+  searchForExactNodeWithObjectResult,
+  searchForFirst,
+  searchForNode,
+  searchMultiple,
+  searchOne,
+  searchTree,
 }

@@ -1,19 +1,19 @@
 const React = require('react');
 const h = require('react-hyperscript');
 
-const Menu = require('./components/index.js').Menu;
-const Graph = require('./components/index.js').Graph;
-const EditWarning = require('./components/index.js').EditWarning;
-const Sidebar = require('./components/index.js').Sidebar;
+const Menu = require('./components/index').Menu;
+const Graph = require('./components/index').Graph;
+const EditWarning = require('./components/index').EditWarning;
+const Sidebar = require('./components/index').Sidebar;
 
-const lo = require('./layout/');
+const lo = require('./components/graph/layout/index');
 const make_cytoscape = require('./cy/');
 const bindMove = require('./cy/events/move');
 
 const queryString = require('query-string');
 // Eventually all PCS deps will be absorbed into the CDC and we won't use it for anything
-const PathwayCommonsService = require('../../services/index.js').PathwayCommonsService;
-const CDC = require('../../services/index.js').CDC;
+const PathwayCommonsService = require('../../services/index').PathwayCommonsService;
+const CDC = require('../../services/index').CDC;
 
 class View extends React.Component {
   constructor(props) {
@@ -113,37 +113,32 @@ class View extends React.Component {
 
   render() {
     return (
-      <div className="View">
-        <Menu
-          // These fallbacks are here in case we want to set them dynamically based off
-          // of things like type in the future (when we expand beyond pathways)
-          name={this.state.name}
-          datasource={this.state.datasource}
-          layouts={this.state.availableLayouts}
-          updateLayout={(layout) => this.performLayout(layout)}
-          currLayout={this.state.layout}
-        />
-        <Graph
-          updateRenderStatus={status => this.updateRenderStatus(status)}
-          updateLayout={() => this.performLayout(this.state.layout)}
-          cy={this.state.cy}
-          graphJSON={this.state.graphJSON}
-        />
-        <EditWarning
-          active={this.state.activateWarning}
-          deactivate={() => this.setState({activateWarning: false})}
-          dur={8000}
-        >
-          {this.state.warningMessage}
-        </EditWarning>
-        <Sidebar
-          // These are useful for the information section and later for the metadata section
-          cy={this.state.cy}
-          uri={this.state.query.uri}
-          name={this.state.name}
-          datasource={this.state.datasource}
-        />
-      </div>
+      h('div.View', [
+        h(Menu, {
+          'name': this.state.name,
+          'datasource': this.state.datasource,
+          'layouts': this.state.availableLayouts,
+          'updateLayout': layout => this.performLayout(layout),
+          'currLayout': this.state.layout
+        }),
+        h(Graph, {
+          'updateRenderStatus': status => this.updateRenderStatus(status),
+          'updateLayout': () => this.performLayout(this.state.layout),
+          'cy': this.state.cy,
+          'graphJSON': this.state.graphJSON
+        }),
+        h(EditWarning, {
+          'active': this.state.activateWarning,
+          'deactivate': () => this.setState({activateWarning: false}),
+          'dur': 8000
+        }, this.state.warningMessage),
+        h(Sidebar, {
+          'cy': this.state.cy,
+          'uri': this.state.query.uri,
+          'name': this.state.name,
+          'datasource': this.state.datasource
+        })
+      ])
     );
   }
 }

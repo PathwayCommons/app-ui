@@ -1,4 +1,6 @@
 const React = require('react');
+const h = require('react-hyperscript');
+const classNames = require('classnames');
 
 /* Props
 - active
@@ -36,11 +38,12 @@ class EditWarning extends React.Component {
 
   render() {
     return (
-      <div className={'edit-warning-container '+(this.props.active ? '' : ' closed')} ref={dom => this.warningDOM = dom}>
-        <div className='edit-warning'>
-          {this.props.children}
-        </div>
-      </div>
+      h('div', {
+        className: classNames('edit-warning-container', this.props.active ? '' : 'closed'),
+        ref: dom => this.warningDOM = dom
+      }, [
+        h('div.edit-warning', this.props.children)
+      ])
     );
   }
 }

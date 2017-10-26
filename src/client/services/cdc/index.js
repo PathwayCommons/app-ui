@@ -1,10 +1,10 @@
 const io = require('socket.io-client');
-var socket = io('192.168.90.176:3000');
+let socket = io('192.168.90.176:3000');
 
 const CDC = {
   initGraphSocket(updateFunction) {
     socket.on('layoutPackage', (cyZip) => {
-      var cyJSON = JSON.parse(atob(cyZip));
+      let cyJSON = JSON.parse(atob(cyZip));
       updateFunction(cyJSON.graph);
     });
   },

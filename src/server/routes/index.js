@@ -5,8 +5,8 @@ const queryString = require('query-string');
 const graphgen = require('../graph-generation/cytoscapeJson.js');
 
 
-router.post('/paint', function(req, res, next) {
-  res.render('paint', {paintData: JSON.stringify(req.body)});
+router.post('/paint', function (req, res, next) {
+  res.render('paint', { paintData: JSON.stringify(req.body) });
 });
 
 
@@ -15,7 +15,7 @@ All URLS not specified earlier in server/index.js (e.g. REST URLs) get handled b
 
 
 
-router.get('*', function(req, res, next) {
+router.get('*', function (req, res, next) {
   const url = req.originalUrl;
   console.log(url);
   if (url.substring(0, 6) === '/view?') {
@@ -25,12 +25,12 @@ router.get('*', function(req, res, next) {
         console.log(md);
 
         var title = md.title,
-            ds = md.dataSource,
-            comments_arr = md.comments,
-            comments = '';
+          ds = md.dataSource,
+          comments_arr = md.comments,
+          comments = '';
 
         for (var i = 0; i < comments_arr.length; i++) {
-          comments += comments_arr[i]+(i === comments_arr.length - 1 ? '' : '\n');
+          comments += comments_arr[i] + (i === comments_arr.length - 1 ? '' : '\n');
         }
 
         console.log(title);
@@ -41,12 +41,12 @@ router.get('*', function(req, res, next) {
         if (!ds) ds = 'Unknown datasource';
         if (!comments) comments = 'An interaction from Pathway Commons';
 
-        const displayTitle = title + ' | '+ds;
-        res.render('index', {title: displayTitle, desc: comments});
+        const displayTitle = title + ' | ' + ds;
+        res.render('index', { title: displayTitle, desc: comments });
       });
     }
   } else {
-    res.render('index', {title: 'Pathway Commons', desc: 'Search our database of pathways and interactions!'});
+    res.render('index', { title: 'Pathway Commons', desc: 'Search our database of pathways and interactions!' });
   }
 });
 

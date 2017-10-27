@@ -1,56 +1,61 @@
+.tippy-tooltip [x-circle] {
+  border-radius : 0%;
+}
+
+.tippy-tooltip.tippy-tooltip--regular.light-theme.enter.tippy-notransition {
+  border-radius: 5%;
+  border: 2px solid black; 
+}
+
 .tooltip-image {
     position: relative;
-    width: 100%; 
+    width: 100%;
+    color: black;
+    min-width: 300px;
+    min-height: 250px;
+    border-radius: 0%;
+    height: 20vh;
+    width: 20vw;
  }
 
  .tooltip-internal {
-    position: absolute;
-    top: 40px;
+    position: relative;
+    top:  5%;
     left: 0;
-    width: 243px;
-    height: 290px;
     word-wrap: break-word;
     overflow-y: auto;
-    font-size: 8pt;
+    height: 100%;
+    font-size: 9pt;
  }
 
  .tooltip-heading {
-    position: absolute;
+    position: relative;
     top: 2px;
     text-align: center;
-    width: 243px;
-    height: 290px;
     word-wrap: break-word;
-    overflow-y: auto;
-    font-size: 17pt;
-    font-weight: 300;
-    color: #2196f3;
+    font-size: 18pt;
+    font-weight: 400;
+    color : var(--midnight-blue)
 }
 
 .tooltip-button-pdf {
     position: absolute;
-    top: 253px;
-    left: 94px;
+    top: 85%;
+    right : 40%;
     text-align: center;
     width: 15px;
-    /* height: 290px; */
-    /* word-wrap: break-word; */
-    overflow-y: auto;
-    font-size: 12pt;
+    font-size: 17pt;
     font-weight: 300;
     color: var(--midnight-blue);
 }
 
 .tooltip-button-show {
     position: absolute;
-    top: 252px;
-    left: 120px;
+    top: 85%;
+    left: 38%;
     text-align: center;
     width: 20px;
-    /* height: 290px; */
-    /* word-wrap: break-word; */
-    overflow-y: auto+;
-    font-size: 12pt;
+    font-size: 17pt;
     font-weight: 300;
     color: var(--midnight-blue);
 }

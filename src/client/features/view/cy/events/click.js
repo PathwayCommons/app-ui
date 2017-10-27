@@ -9,16 +9,19 @@ const bindClick = (cy) => {
       let data = evt.target.data();
       let name = data.label;
       let metadata = data.parsedMetadata;
-      let refObject = data.popperRef();
+      let refObject = evt.target.popperRef();
+      let tooltip; 
 
-      let tooltip = evt.target.scratch('tooltipTippy');
-      if(!tooltip){ 
+      if(!tooltip){
         let tooltipHTML = createToolTip(name, data);
-        tooltip = tippy(refObject, {html : tooltipHTML});
+        tooltip = tippy(refObject, {html : tooltipHTML, theme : 'light', interactive : true});
       }
 
+      tooltip.selector.dim = refObject.dim;
+      tooltip.selector.cyElement = refObject.cyElement; 
+      console.log(refObject);
       console.log(tooltip);
-
+      tooltip.show(tooltip.store[0].popper);
 
   });
 

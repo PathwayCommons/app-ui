@@ -1,3 +1,4 @@
+const h = require('hyperscript');
 //Create a html element with given attributes
 //Returns a html element with given attributes
 //Requires a valid attribute array
@@ -17,7 +18,6 @@ function createHtmlElement(elementName, attributes, textContent) {
   return el;
 }
 
-
 //Append a series of elements to a parent
 //Returns a html element with appended children
 //Requires valid html element and array of children
@@ -27,7 +27,6 @@ function appendMultiple(parent, children) {
   }
   return parent;
 }
-
 
 //Formats mapped data into a html tooltip object
 //Returns a HTML Object
@@ -41,7 +40,7 @@ function createToolTipHTMLObject(name, data) {
 
   var tooltip = createHtmlElement('div', [['className', 'tooltip-image']]);
   var tooltipChildren = [
-    createHtmlElement('img', [['src', 'img/tooltip.png']]),
+    // createHtmlElement('img', [['src', 'img/tooltip.png']]),
     createHtmlElement('div', [['className', 'tooltip-heading']], name),
     createHtmlElement('i', [['className', 'material-icons tooltip-button-show']], 'open_in_new'),
     createHtmlElement('i', [['className', 'material-icons tooltip-button-pdf']], 'picture_as_pdf'),

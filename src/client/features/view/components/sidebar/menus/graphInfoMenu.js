@@ -1,4 +1,6 @@
 const React = require('react');
+const h = require('react-hyperscript');
+
 const PathwayCommonsService = require('../../../../../services/').PathwayCommonsService;
 
 class GraphInfoMenu extends React.Component {
@@ -20,23 +22,26 @@ class GraphInfoMenu extends React.Component {
 
   render() {
     return (
-      <div className='graphInfoMenu'>
-        <h1>{this.props.name}</h1>
-        <h4>{'Source: '+this.props.datasource}</h4>
-        <h2>Additional Information</h2>
-        {this.state.comments.length ?
+      h('div', [
+        h('h1', this.props.name),
+        h('h4', 'Source: '+this.props.datasource),
+        h('h2', 'Additional Information'),
+        (this.state.comments.length ?
           this.state.comments.map((comment, index) => {
             return (
-              <div key={index}>
-                {comment.replace(/<p>/g, ' ')}
-                <br/><br/>
-              </div>
+              h('div', {
+                'key': index
+              }, [
+                comment.replace(/<p>/g, ' '),
+                h('br'),
+                h('br')
+              ])
             );
           })
           :
           'No additional information provided by datasource.'
-        }
-      </div>
+        )
+      ])
     );
   }
 }

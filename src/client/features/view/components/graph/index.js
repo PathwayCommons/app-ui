@@ -1,4 +1,5 @@
 const React = require('react');
+const h = require('react-hyperscript');
 
 /* Props
 - updateRenderStatus(status)
@@ -62,23 +63,20 @@ class Graph extends React.Component {
   render() {
     if (!this.state.graphEmpty) {
       return (
-        <div className='Graph'>
-          <div
-            id={this.state.graphId}
-            ref={dom => this.graphDOM = dom}
-            style={{
+        h('div.Graph', [
+          h('div', {
+            id: this.state.graphId,
+            ref: dom => this.graphDOM = dom,
+            style: {
               width: this.state.width,
               height: this.state.height
-            }}
-          />
-        </div>
+            }
+          })
+        ])
       );
-    }
-    else {
+    } else {
       return (
-        // <ErrorMessage className='Graph'>
-          <span>No Paths Found</span>
-        // </ErrorMessage>
+        h('span', 'No Graph Found')
       );
     }
   }

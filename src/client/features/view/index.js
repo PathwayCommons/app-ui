@@ -12,8 +12,8 @@ const bindMove = require('./cy/events/move');
 
 const queryString = require('query-string');
 // Eventually all PCS deps will be absorbed into the CDC and we won't use it for anything
-const PathwayCommonsService = require('../../services/').PathwayCommonsService;
-const CDC = require('../../services/').CDC;
+const PathwayCommonsService = require('../../../service/').PathwayCommonsService;
+const CDC = require('../../../service/').CDC;
 
 class View extends React.Component {
   constructor(props) {

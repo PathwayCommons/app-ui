@@ -8,7 +8,7 @@ const _ = require('lodash');
 const classNames = require('classnames');
 
 const Icon = require('../../common/components').Icon;
-const PathwayCommonsService = require('../../services').PathwayCommonsService;
+const PathwayCommonsService = require('../../../service').PathwayCommonsService;
 
 class Search extends React.Component {
 

@@ -6,8 +6,8 @@ const _ = require('lodash');
 const classNames = require('classnames');
 
 const Icon = require('../../common/components').Icon;
-const PathwayCommonsService = require('../../services').PathwayCommonsService;
-const CDC = require('../../services/').CDC;
+const PathwayCommonsService = require('../../../service').PathwayCommonsService;
+const CDC = require('../../../service/').CDC;
 
 class Admin extends React.Component {
   

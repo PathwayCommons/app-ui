@@ -5,7 +5,7 @@ const accessDB = require('./query');
 var Multispinner = require('multispinner');
 
 const whilst = require('async/whilst');
-const cyJson = require('./../graph-generation/cytoscapeJson');
+const cyJson = require('./../../service/graph-generation/cytoscapeJson');
 
 const args = process.argv;
 

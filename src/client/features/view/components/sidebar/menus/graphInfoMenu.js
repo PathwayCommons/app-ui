@@ -1,7 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 
-const PathwayCommonsService = require('../../../../../services/').PathwayCommonsService;
+const PathwayCommonsService = require('../../../../../../service/').PathwayCommonsService;
 
 class GraphInfoMenu extends React.Component {
   constructor(props) {

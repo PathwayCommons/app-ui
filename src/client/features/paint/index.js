@@ -10,7 +10,7 @@ const sbgn2Json = require('sbgnml-to-cytoscape');
 const sbgnStylesheet = require('cytoscape-sbgn-stylesheet');
 
 const Icon = require('../../common/components').Icon;
-const PathwayCommonsService = require('../../services/').PathwayCommonsService;
+const PathwayCommonsService = require('../../../service/').PathwayCommonsService;
 
 class Paint extends React.Component {
   constructor(props) {

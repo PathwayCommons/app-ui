@@ -1,5 +1,3 @@
-const database = 'layouts';
-
 //Import Depedencies
 const auth = require('./auth.js');
 const query = require('./../database/query');
@@ -11,7 +9,7 @@ const btoa = require('btoa');
 const express = require('express');
 const router = express.Router();
 
-var connPromise = query.connect(); // returns a promise.
+let connPromise = query.connect(); // returns a promise.
 
 
 
@@ -109,7 +107,7 @@ function checkEditKey(io, socket, ioPackage) {
     });
 }
 
-var returnRouter = function (io) {
+let returnRouter = function (io) {
   io.on('connection', function (socket) {
     //Get Layout
     socket.on('getLayout', function (ioPackage) {

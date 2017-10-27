@@ -19,12 +19,12 @@ version of PC.
 */
 function getGraphID(pcID, releaseID, connection, callback) {
   // set the generic root for ease of use throughout the function.
-  var queryRoot = db.queryRoot(pcID, releaseID);
+  let queryRoot = db.queryRoot(pcID, releaseID);
 
   // The result of both of these queries will always be a cursor of length one
   // (once proper databse instantiation is complete)
   // Convert this cursor to an array then grab the first (and only) entries uuid
-  var idPromise = queryRoot.run(connection)
+  let idPromise = queryRoot.run(connection)
     .then((result) => {
       return result.toArray();
     }).catch((e) => {
@@ -50,13 +50,13 @@ Accepts 'latest' as a valid releaseID
 */
 function getGraphAndLayout(pcID, releaseID, connection, callback) {
   // Extract a list of layouts associated with the version from the database
-  var layout = getLayout(pcID, releaseID, connection);
+  let layout = getLayout(pcID, releaseID, connection);
 
   // Extract the graph as well. Maybe this should be its own function
-  var graph = getGraph(pcID, releaseID, connection);
+  let graph = getGraph(pcID, releaseID, connection);
 
   // Package the combined results together to return
-  var data = Promise.all([layout, graph])
+  let data = Promise.all([layout, graph])
     .then(([layout, graph]) => {
       return { layout: layout ? layout.positions : null, graph: graph ? graph.graph : null };
     }).catch(() => {
@@ -69,7 +69,7 @@ function getGraphAndLayout(pcID, releaseID, connection, callback) {
 
 function getLayout(pcID, releaseID, connection, callback) {
   // set the generic root for ease of use throughout the function.
-  var queryRoot = db.queryRoot(pcID, releaseID);
+  let queryRoot = db.queryRoot(pcID, releaseID);
 
 
   Promise.resolve(queryRoot.run(connection))
@@ -85,7 +85,7 @@ function getLayout(pcID, releaseID, connection, callback) {
     });
 
   // Extract a list of layouts associated with the version from the database
-  var layout = queryRoot
+  let layout = queryRoot
     .run(connection)
     .then((cursor) => {
       return cursor.toArray(); // Convert list of valid versions (should be only 1)
@@ -124,9 +124,9 @@ function getLayout(pcID, releaseID, connection, callback) {
 
 function getGraph(pcID, releaseID, connection, callback) {
   // set the generic root for ease of use throughout the function.
-  var queryRoot = db.queryRoot(pcID, releaseID);
+  let queryRoot = db.queryRoot(pcID, releaseID);
 
-  var graph = queryRoot
+  let graph = queryRoot
     .eqJoin('graph_id', r.db(config.databaseName).table('graph'))
     .zip()
     .pluck('graph')

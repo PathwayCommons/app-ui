@@ -9,18 +9,6 @@ function connect() {
   return r.connect({ host: config.ip, port: config.port });
 }
 
-
-function compareGraphs(graph1, graph2) { // hash should be saved in the graph object
-  if (!graph1.hash) {
-    graph1.hash = hash.digest(graph1.data);
-  }
-
-  if (!graph2.hash) {
-    graph2.hash = hash.digest(graph2.data);
-  }
-  return graph1.hash === graph2.hash;
-}
-
 /*
 getGraphID(pcID, releaseID, connection [,callback])
 returns the database uuid for the graph specified by the provided

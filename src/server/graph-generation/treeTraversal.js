@@ -123,5 +123,5 @@ module.exports = {
   searchForNode,
   searchMultiple,
   searchOne,
-  searchTree,
+  searchTree
 }

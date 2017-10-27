@@ -1,5 +1,3 @@
-const database = 'layouts';
-
 //Import Depedencies
 const auth = require('./auth.js');
 const query = require('./../database/query');
@@ -13,7 +11,23 @@ const router = express.Router();
 
 var connPromise = query.connect(); // returns a promise.
 
+function getLayoutFallback(io, socket, ioPackage, connection) {
+  lazyLoad.queryMetadata(ioPackage.uri)
+  .catch((e) => {
+    return lazyLoad.queryPC(ioPackage.uri);
+  }).then(result => {
+    let output = { graph: result, layout: null };
+    io.emit('layoutPackage', btoa(JSON.stringify(output)));
 
+    if (connection && result.pathwayMetadata) {
+      console.log('I am writing this new stufff');
+      update.updateGraph(ioPackage.uri, ioPackage.version, result, connection);
+    }
+  }).catch((e) => {
+    console.log(e);
+    io.emit('error', `ERROR: Layout for ${ioPackage.uri} could not be retrieved from database or PC2`);
+  });
+}
 
 // Get a layout and respond using socket.io
 function getLayout(io, socket, ioPackage) {
@@ -23,24 +37,14 @@ function getLayout(io, socket, ioPackage) {
     query.getGraphAndLayout(
       ioPackage.uri,
       ioPackage.version,
-      connection,
-      function (layout, err) {
-        if (!err) {
-          io.emit('layoutPackage', btoa(JSON.stringify(layout)));
-        } else {
-          try {
-            io.emit('layoutPackage', btoa(lazyLoad.queryMetadata(ioPackage.uri)));
-          } catch (e) {
-            try {
-              io.emit('layoutPackage', btoa(lazyLoad.queryPC(ioPackage.uri)));
-            } catch (e) {
-              io.emit('error', `ERROR: Layout for ${ioPackage.uri} could not be retrieved from database or PC2`);
-            }
-          }
-        }
+      connection)
+      .then((layout) => {
+        io.emit('layoutPackage', btoa(JSON.stringify(layout)));
+      }).catch(() => {
+        return getLayoutFallback(io, socket, ioPackage, connection);
       });
   }).catch(() => {
-    io.emit('error', 'error');
+    getLayoutFallback(io, socket, ioPackage);
   });
 }
 
@@ -67,26 +71,26 @@ function submitLayout(io, socket, ioPackage) {
 }
 
 function getEditKey(io, socket, ioPackage) {
-    connPromise.then((connection) => {
-      if (auth.checkUser(socket.request.connection.remoteAddress, true)) {
-        query.getGraphID(
-          ioPackage.uri,
-          ioPackage.version,
-          connection,
-          function (result) {
-            if (result) {
-              io.emit('editKey', ioPackage.uri + '&editkey=' + result);
-            } else {
-              io.emit('error', 'ERROR: No edit key could be found');
-            }
-          });
-      } else {
-        io.emit('error', 'ERROR: Non-authenticated user');
-      }
-    }).catch(()=>{
-      io.emit('error', 'ERROR: Edit Key Request Failed');
-    });
-  
+  connPromise.then((connection) => {
+    if (auth.checkUser(socket.request.connection.remoteAddress, true)) {
+      query.getGraphID(
+        ioPackage.uri,
+        ioPackage.version,
+        connection,
+        function (result) {
+          if (result) {
+            io.emit('editKey', ioPackage.uri + '&editkey=' + result);
+          } else {
+            io.emit('error', 'ERROR: No edit key could be found');
+          }
+        });
+    } else {
+      io.emit('error', 'ERROR: Non-authenticated user');
+    }
+  }).catch(() => {
+    io.emit('error', 'ERROR: Edit Key Request Failed');
+  });
+
 }
 
 function hasRightKey(pc_id, release_id, key) {
@@ -102,11 +106,11 @@ function hasRightKey(pc_id, release_id, key) {
 }
 
 function checkEditKey(io, socket, ioPackage) {
-    hasRightKey(ioPackage.uri, ioPackage.version, ioPackage.key).then((result) => {
-      io.emit('editPermissions', result);
-    }).catch(() => {
-      io.emit('error', 'ERROR : Edit Priviliges Check Failed');
-    });
+  hasRightKey(ioPackage.uri, ioPackage.version, ioPackage.key).then((result) => {
+    io.emit('editPermissions', result);
+  }).catch(() => {
+    io.emit('error', 'ERROR : Edit Priviliges Check Failed');
+  });
 }
 
 var returnRouter = function (io) {

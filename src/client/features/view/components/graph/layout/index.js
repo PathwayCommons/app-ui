@@ -39,9 +39,4 @@ const getDefaultLayout = (graphSize) => {
   return layout;
 };
 
-module.exports = {
-  layoutMap: layoutMap,
-  defaultLayout: defaultLayout,
-  layoutNames: layoutNames,
-  getDefaultLayout: getDefaultLayout
-};
+module.exports = {layoutMap, defaultLayout, layoutNames, getDefaultLayout};

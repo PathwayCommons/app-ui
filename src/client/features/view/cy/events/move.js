@@ -1,3 +1,5 @@
+const CDC = require('../../../../services/').CDC;
+
 const bindMove = (uri, version, editkey, cy) => {
   cy.on('free', 'node', function(evt) {
     // code to send node positions via socket.io will go here.

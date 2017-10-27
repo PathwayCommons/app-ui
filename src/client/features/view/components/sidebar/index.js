@@ -1,4 +1,6 @@
 const React = require('react');
+const h = require('react-hyperscript');
+const classNames = require('classnames');
 
 const HelpMenu = require('./menus/help');
 const FileDownloadMenu = require('./menus/fileDownload');
@@ -139,19 +141,19 @@ class Sidebar extends React.Component {
     // Not a great solution, but the icon names from toolButtonNames should be copied here and relate to
     // their specific menu
     const menus = {
-      'info': <GraphInfoMenu uri={this.props.uri} name={this.props.name} datasource={this.props.datasource}/>,
-      'file_download': <FileDownloadMenu cy={this.props.cy} uri={this.props.uri} name={this.props.name} />,
-      'help': <HelpMenu />,
+      'info': h(GraphInfoMenu, {'uri': this.props.uri, 'name': this.props.name, 'datasource': this.props.datasource}),
+      'file_download': h(FileDownloadMenu, {'cy': this.props.cy, 'uri': this.props.uri, 'name': this.props.name}),
+      'help': h(HelpMenu),
       'center_focus_strong': (
-        <div className='nodeMenuActive'>
-          <span>Harsh's fancy metadata tree goes here.</span>
-        </div>
+        h('div', [
+          h('span', 'Harsh\'s fancy metadata tree goes here.')
+        ])
       ),
       'center_focus_weak': (
-        <div className='nodeMenuNoNode'>
-          <h1>Node Information</h1>
-          <div>Not yet implemented.</div>
-        </div>
+        h('div', [
+          h('h1', 'Node Information'),
+          h('div', 'Not yet implemented.')
+        ])
       )
     };
 
@@ -167,40 +169,39 @@ class Sidebar extends React.Component {
     const tooltips = this.state.tooltips;
     this.toolButtons = new Array(toolButtonNames.length);
     const toolButtons = toolButtonNames.map((button, index) => {
-      let buttonClassName = button+'MenuButton';
       return (
-        <div
-          key={index}
-          className={'tool-button '+buttonClassName}
-          onClick={() => this.handleIconClick(button)}
-          title={tooltips[index]}
-          ref={dom => this.toolButtons[index] = dom}
-        >
-          <i className='material-icons'>{button}</i>
-        </div>
+        h('div.tool-button', {
+          key: index,
+          onClick: () => this.handleIconClick(button),
+          title: tooltips[index],
+          ref: dom => this.toolButtons[index] = dom
+        }, [
+          h('i.material-icons', button)
+        ])
       );
     });
 
     return (
-      <div className={'sidebar-menu'+(this.state.open ? ' open' : '')}>
-        <div className='sidebar-select'>
-          {toolButtons}
-        </div>
-        <div className={'sidebar-select conditional'+(this.state.open ? ' open' : '')}>
-          <div
-            className={'tool-button lockMenuButton'}
-            onClick={() => this.setState({locked: !this.state.locked})}
-            title={'Lock the sidebar'}
-          >
-            <i className='material-icons'>{this.state.locked ? 'lock' : 'lock_open'}</i>
-          </div>
-        </div>
-        <div className='sidebar-content'>
-          <div className='sidebar-text'>
-            {menus[this.state.activeMenu]}
-          </div>
-        </div>
-      </div>
+      h('div', {
+        className: classNames('sidebar-menu', this.state.open ? 'open' : '')
+      }, [
+        h('div.sidebar-select', toolButtons),
+        h('div', {
+          className: classNames('sidebar-select', 'conditional', this.state.open ? 'open' : '')
+        }, [
+          h('div.tool-button', {
+            onClick: () => this.setState({locked: !this.state.locked}),
+            title: 'Lock the sidebar'
+          }, [
+            h('i.material-icons', this.state.locked ? 'lock' : 'lock_open')
+          ])
+        ]),
+        h('div.sidebar-content', [
+          h('div.sidebar-text', [
+            menus[this.state.activeMenu]
+          ])
+        ])
+      ])
     );
   }
 }

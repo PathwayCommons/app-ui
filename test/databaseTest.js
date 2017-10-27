@@ -1,4 +1,4 @@
-const db = require('./accessDB.js');
+const db = require('./../src/server/database/query');
 const r = require('rethinkdb');
 var connection = null;
 

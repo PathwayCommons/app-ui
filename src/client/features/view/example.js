@@ -994,7 +994,4 @@ const cyjson = {
   "uri": "http%3A%2F%2Fidentifiers.org%2Fkegg.pathway%2Fhsa00072"
 };
 
-module.exports = {
-  cyjson: cyjson,
-  uri: uri
-};
+module.exports = {cyjson, uri};

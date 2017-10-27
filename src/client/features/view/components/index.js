@@ -1,11 +1,6 @@
-const Graph = require('./graph/index');
-const Menu = require('./menu/index');
-const EditWarning = require('./editwarning/index');
-const Sidebar = require('./sidebar/index');
+const Graph = require('./graph/');
+const Menu = require('./menu/');
+const EditWarning = require('./editwarning/');
+const Sidebar = require('./sidebar/');
 
-module.exports = {
-  Graph: Graph,
-  Menu: Menu,
-  EditWarning: EditWarning,
-  Sidebar: Sidebar
-};
+module.exports = {Graph, Menu,EditWarning, Sidebar};

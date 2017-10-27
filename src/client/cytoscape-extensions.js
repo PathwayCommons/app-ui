@@ -11,7 +11,7 @@ const compoundCollapse = require('cytoscape-compound-collapse');
 const fisheye = require('cytoscape-fisheye');
 
 //Tooltips
-//const popper = require('cytoscape-popper');
+const popper = require('cytoscape-popper');
 
 
 module.exports = () => {
@@ -21,6 +21,6 @@ module.exports = () => {
   cytoscape.use(dagre);
   cytoscape.use(compoundCollapse);
   cytoscape.use(fisheye);
-  //cytoscape.use(popper);
+  cytoscape.use(popper);
   // cytoscape.use(tippy);
 };

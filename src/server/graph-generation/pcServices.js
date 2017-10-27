@@ -63,9 +63,9 @@ function traverseURL(uri, path) {
 
 //Export Functions
 module.exports = {
-  getPC2: getPC2,
-  traversePC2: traversePC2,
-  getURL: getURL,
-  traverseURL: traverseURL
+  getPC2,
+  traversePC2,
+  getURL,
+  traverseURL,
 }
 

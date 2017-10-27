@@ -5,10 +5,11 @@ and populate the DB.
 */
 
 const r = require('rethinkdb');
+const config = require('./config');
 
 let connection = null;
 
-r.connect( {host: '192.168.90.176', port: 28015}, function(err, conn) {
+r.connect( {host: config.ip, port: config.port}, function(err, conn) {
   if (err) throw err;
   connection = conn;
   createTables('metadataTest', [

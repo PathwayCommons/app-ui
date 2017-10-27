@@ -72,18 +72,6 @@ function getLayout(pcID, releaseID, connection, callback) {
   let queryRoot = db.queryRoot(pcID, releaseID);
 
 
-  Promise.resolve(queryRoot.run(connection))
-    .then((cursor) => cursor.toArray())
-    .then((versionArray) => {
-      if (!versionArray.length) {
-        let err = new Error('No saved layouts');
-        err.status = 'NoLayouts';
-        throw err;
-      }
-
-      return
-    });
-
   // Extract a list of layouts associated with the version from the database
   let layout = queryRoot
     .run(connection)
@@ -117,7 +105,6 @@ function getLayout(pcID, releaseID, connection, callback) {
       }
     });
 
-
   // handle callback/promise decision
   return db.handleResult(layout, callback);
 }
@@ -133,12 +120,12 @@ function getGraph(pcID, releaseID, connection, callback) {
     .run(connection)
     .then((cursor) => {
       return cursor.toArray();
-    }).catch((e) => {
-      throw e;
     }).then((array) => {
+      if (!array[0]) {
+        return Promise.reject(new Error('No available graph'));
+      }
       return array[0];
     });
-
   return db.handleResult(graph, callback);
 }
 

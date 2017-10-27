@@ -1,6 +1,6 @@
 
 const fs = require('fs'); // node file system, to be used for importing XMLs
-const accessDB = require('./query')('metadataTest');
+const query = require('./query');
 const Promise = require('bluebird'); // used in old file process code
 let Multispinner = require('multispinner');
 
@@ -31,7 +31,7 @@ function readURINames(dir) {
 //   return 
 // }
 
-let connectionPromise = accessDB.connect();
+let connectionPromise = query.connect();
 
 // After connection is received, try to get stuff from Harsh's cyJSON script
 // and use the results to update the DB. For each URL, three methods are tried
@@ -63,7 +63,7 @@ connectionPromise.then(connection => {
         return data;
       } else {
         spinner.success('script');
-        return accessDB.updateGraph(file, version, data, connection);
+        return query.updateGraph(file, version, data, connection);
       }
     });
   }, {concurrency: concurrency}).then(data => console.log('Finished.'));

@@ -7,10 +7,10 @@ const lazyLoad = require('./../lazyload');
 const express = require('express');
 const router = express.Router();
 
-var connPromise = query.connect(); // returns a promise.
+let connPromise = query.connect(); // returns a promise.
 
 
-var returnRouter = function () {
+let returnRouter = function () {
 
 
   // ------------------ Standard API Functions (Sans Socket IO) ----------------
@@ -19,12 +19,12 @@ var returnRouter = function () {
     //Get the requested layout
 
     connPromise.then((connection) => {
-      var graph = query.getGraph(
+      let graph = query.getGraph(
         req.query.uri,
         req.query.version,
         connection
       );
-      var layout = query.getLayout(
+      let layout = query.getLayout(
         req.query.uri,
         req.query.version,
         connection

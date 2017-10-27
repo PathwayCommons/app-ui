@@ -10,9 +10,6 @@ const config = require('./config');
 const logger = require('./logger');
 const stream = require('stream');
 const fs = require('fs');
-const qs = require('query-string');
-const jwt = require('express-jwt');
-
 
 const app = express();
 const server = http.createServer(app);
@@ -21,7 +18,15 @@ const io = require('socket.io')(server);
 // view engine setup
 app.set('views', path.join(__dirname, '../', 'views'));
 
-app.set('view engine', 'ejs');
+app.engine('html', function (filePath, options, callback) {
+  fs.readFile(filePath, function (err, content) {
+    if (err) { return callback(err);}
+
+    return callback(null, content.toString());
+  });
+});
+app.set('view engine', 'html');
+
 
 app.use(favicon(path.join(__dirname, '../..', 'public', 'icon.png')));
 app.use(morgan('dev', {

@@ -1,14 +1,13 @@
 //Import Depedencies
 const auth = require('./auth.js');
-const accessDB = require('./../database/query')('testLayouts');
-const saveDiffs = require('./../database/saveDiffs')('testLayouts');
+const query = require('./../database/query');
+const update = require('./../database/update');
 const lazyLoad = require('./../lazyload');
-const btoa = require('btoa');
 
 const express = require('express');
 const router = express.Router();
 
-var connPromise = accessDB.connect(); // returns a promise.
+var connPromise = query.connect(); // returns a promise.
 
 
 var returnRouter = function () {
@@ -20,12 +19,12 @@ var returnRouter = function () {
     //Get the requested layout
 
     connPromise.then((connection) => {
-      var graph = accessDB.getGraph(
+      var graph = query.getGraph(
         req.query.uri,
         req.query.version,
         connection
       );
-      var layout = accessDB.getLayout(
+      var layout = query.getLayout(
         req.query.uri,
         req.query.version,
         connection
@@ -64,7 +63,7 @@ var returnRouter = function () {
   router.get('/get-edit-key', function (req, res) {
     connPromise.then((connection) => {
       if (auth.checkUser(req)) {
-        accessDB.getGraphID(
+        query.getGraphID(
           req.query.uri,
           req.query.version,
           connection,
@@ -91,7 +90,7 @@ var returnRouter = function () {
 
 
     connPromise.then((connection) => {
-      accessDB.getGraphID(
+      query.getGraphID(
         req.query.uri,
         req.query.version,
         connection,
@@ -113,7 +112,7 @@ var returnRouter = function () {
 
     connPromise.then((connection) => {
       if (auth.checkUser(req)) {
-        accessDB.saveLayout(req.body.uri,
+        update.saveLayout(req.body.uri,
           req.body.layout,
           req.body.version,
           connection,

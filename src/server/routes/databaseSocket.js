@@ -2,7 +2,8 @@ const database = 'layouts';
 
 //Import Depedencies
 const auth = require('./auth.js');
-const accessDB = require('./../database/query')(database);
+const query = require('./../database/query');
+const update = require('./../database/update');
 //const saveDiffs = require('./../database/saveDiffs.js')(database);
 const lazyLoad = require('./../lazyload');
 const btoa = require('btoa');
@@ -10,7 +11,7 @@ const btoa = require('btoa');
 const express = require('express');
 const router = express.Router();
 
-var connPromise = accessDB.connect(); // returns a promise.
+var connPromise = query.connect(); // returns a promise.
 
 
 
@@ -19,7 +20,7 @@ function getLayout(io, socket, ioPackage) {
   //Get the requested layout
 
   connPromise.then((connection) => {
-    accessDB.getGraphAndLayout(
+    query.getGraphAndLayout(
       ioPackage.uri,
       ioPackage.version,
       connection,
@@ -49,7 +50,7 @@ function submitLayout(io, socket, ioPackage) {
 
   connPromise.then((connection) => {
     if (hasRightKey(ioPackage.uri, ioPackage.version, ioPackage.key)) {
-      accessDB.saveLayout(ioPackage.uri,
+      update.saveLayout(ioPackage.uri,
         ioPackage.layout,
         ioPackage.version,
         connection,
@@ -68,7 +69,7 @@ function submitLayout(io, socket, ioPackage) {
 function getEditKey(io, socket, ioPackage) {
     connPromise.then((connection) => {
       if (auth.checkUser(socket.request.connection.remoteAddress, true)) {
-        accessDB.getGraphID(
+        query.getGraphID(
           ioPackage.uri,
           ioPackage.version,
           connection,
@@ -90,7 +91,7 @@ function getEditKey(io, socket, ioPackage) {
 
 function hasRightKey(pc_id, release_id, key) {
   return connPromise.then((connection) => {
-    return accessDB.getGraphID(
+    return query.getGraphID(
       pc_id,
       release_id,
       connection

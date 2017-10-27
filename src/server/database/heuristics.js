@@ -2,7 +2,7 @@
 // --------- Fake Heuristics ---------------
 // This should probably go in its own file
 function run(layouts, callback) {
-    var layout = layouts.toArray()
+    let layout = layouts.toArray()
       .then((result) => {
         return result[0];
       }).catch(function (e) {

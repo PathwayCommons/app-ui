@@ -17,7 +17,7 @@ function compareGraphs(graph1, graph2) { // hash should be saved in the graph ob
 
 
 function isExistingGraph(newGraph, connection) {
-  var graphListProm = r.db(config.databaseName)
+  let graphListProm = r.db(config.databaseName)
     .table('graph')
     .run(connection)
     .then((cursor) => {
@@ -26,8 +26,8 @@ function isExistingGraph(newGraph, connection) {
 
 
   return graphListProm.then((graphList) => {
-    var numGraphs = graphList.length; // You will be undefined
-    var i = 0;
+    let numGraphs = graphList.length; // You will be undefined
+    let i = 0;
 
     while (i < numGraphs) {
       if (compareGraphs(newGraph, graphList[i])) {
@@ -40,17 +40,17 @@ function isExistingGraph(newGraph, connection) {
 }
 
 function updateGraph(pcID, releaseID, cyJson, connection, callback) {
-  var graphID = uuid();
+  let graphID = uuid();
 
 
-  var newGraph = {
+  let newGraph = {
     id: graphID,
     graph: cyJson,
     hash: hash.digest(cyJson)
   };
 
 
-  var result = isExistingGraph(newGraph, connection).then((existingGraphID) => {
+  let result = isExistingGraph(newGraph, connection).then((existingGraphID) => {
     if (existingGraphID) {
 
       // create new pointer to existing graph
@@ -82,11 +82,11 @@ Accepts 'latest' as a valid releaseID
 */
 function saveLayout(pcID, layout, releaseID, connection, callback) {
   // set the generic root for ease of use throughout the function.
-  var queryRoot = db.queryRoot(pcID, releaseID);
+  let queryRoot = db.queryRoot(pcID, releaseID);
 
   // Create the new layout entry in the database
-  var layoutID = uuid();
-  var result = db.insert('layout', { id: layoutID, positions: layout, date_added: r.now() }, connection)
+  let layoutID = uuid();
+  let result = db.insert('layout', { id: layoutID, positions: layout, date_added: r.now() }, connection)
     .then(() => {
       // Find the related version row and store the layout_id so that it may be accessed.
       queryRoot.update(

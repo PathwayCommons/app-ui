@@ -51,6 +51,7 @@ function getGraphID(pcID, releaseID, connection, callback) {
   return db.handleResult(idPromise, callback);
 }
 
+
 // ------------------- Get a layout -----------------------
 /*
 getLayout(pcID, releaseID, connection [,callback]) 
@@ -127,6 +128,7 @@ function getLayout(pcID, releaseID, connection, callback) {
         throw e;
       }
     });
+
 
   // handle callback/promise decision
   return db.handleResult(layout, callback);

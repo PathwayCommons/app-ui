@@ -17,7 +17,7 @@ r.connect( {host: '192.168.90.176', port: 28015}, function(err, conn) {
     'layout',
     'layout_cache'
   ], true);
-})
+});
 
 
 function createTables(dbName, table_arr, enable_logs){
@@ -30,7 +30,7 @@ function createTables(dbName, table_arr, enable_logs){
     r.db(dbName).tableCreate(table_arr[i]).run(connection, function(err, result) {
       if (err) throw err;
       
-    })
+    });
   }
   if (enable_logs) console.log('Tables created.');
   

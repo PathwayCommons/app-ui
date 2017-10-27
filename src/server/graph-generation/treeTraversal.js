@@ -1,18 +1,3 @@
-/**
-    Pathway Commons Central Data Cache
-
-    Tree Traversal
-    treeTraversal.js
-
-    Purpose  : To provide functions to search and traverse a tree represented using 
-               javascript arrays
-
-    Requires : Valid tree array
-
-    @author Harsh Mistry
-    @version 1.1 2017/10/17
-**/
-
 //Returns all values mapped to a key in a given subtree
 //Requires subtree to be valid
 //Note : - A empty array is returned if no match is found

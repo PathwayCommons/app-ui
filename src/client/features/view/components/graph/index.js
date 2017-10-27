@@ -65,11 +65,11 @@ class Graph extends React.Component {
       return (
         h('div.Graph', [
           h('div', {
-            'id': this.state.graphId,
-            'ref': dom => this.graphDOM = dom,
-            'style': {
-              'width': this.state.width,
-              'height': this.state.height
+            id: this.state.graphId,
+            ref: dom => this.graphDOM = dom,
+            style: {
+              width: this.state.width,
+              height: this.state.height
             }
           })
         ])

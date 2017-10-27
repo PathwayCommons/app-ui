@@ -37,8 +37,8 @@ class Menu extends React.Component {
     const layoutItems = this.props.layouts.map((layout, index) => {
       return (
         h('option', {
-          'key': index,
-          'value': layout
+          key: index,
+          value: layout
         }, layout)
       );
     });
@@ -48,15 +48,15 @@ class Menu extends React.Component {
         h('div.menu-bar-inner-container', [
           h('div.pc-logo-container', [
             h('img', {
-              'src': '/img/icon.png'
+              src: '/img/icon.png'
             })
           ]),
           h('div.title-container', [
             h('h4', `${this.props.name} | ${this.props.datasource}`)
           ]),
           h('div.layout-dropdown-button', {
-            'onClick': () => this.setState({dropdownOpen: !this.state.dropdownOpen}),
-            'title': 'Additional layout options'
+            onClick: () => this.setState({dropdownOpen: !this.state.dropdownOpen}),
+            title: 'Additional layout options'
           }, [
             h('i.material-icons', 'timeline')
           ])
@@ -65,8 +65,8 @@ class Menu extends React.Component {
           className: classNames('layout-dropdown', this.state.dropdownOpen ? 'open' : '')
         }, [
           h('select', {
-            'value': this.props.currLayout,
-            'onChange': (e) => this.props.updateLayout(e.target.value)
+            value: this.props.currLayout,
+            onChange: (e) => this.props.updateLayout(e.target.value)
           }, layoutItems)
         ])
       ])

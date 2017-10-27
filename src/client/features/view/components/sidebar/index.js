@@ -171,10 +171,10 @@ class Sidebar extends React.Component {
     const toolButtons = toolButtonNames.map((button, index) => {
       return (
         h('div.tool-button', {
-          'key': index,
-          'onClick': () => this.handleIconClick(button),
-          'title': tooltips[index],
-          'ref': dom => this.toolButtons[index] = dom
+          key: index,
+          onClick: () => this.handleIconClick(button),
+          title: tooltips[index],
+          ref: dom => this.toolButtons[index] = dom
         }, [
           h('i.material-icons', button)
         ])
@@ -190,8 +190,8 @@ class Sidebar extends React.Component {
           className: classNames('sidebar-select', 'conditional', this.state.open ? 'open' : '')
         }, [
           h('div.tool-button', {
-            'onClick': () => this.setState({locked: !this.state.locked}),
-            'title': 'Lock the sidebar'
+            onClick: () => this.setState({locked: !this.state.locked}),
+            title: 'Lock the sidebar'
           }, [
             h('i.material-icons', this.state.locked ? 'lock' : 'lock_open')
           ])

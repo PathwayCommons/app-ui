@@ -5,7 +5,7 @@ const ImageCard = require('./components/imageCard');
 class HelpMenu extends React.Component {
   render() {
     return (
-      h('div.helpMenu', [
+      h('div', [
         h('h1', 'Help'),
         h('h2', 'Features'),
         h('h4', 'Layouts'),
@@ -13,29 +13,29 @@ class HelpMenu extends React.Component {
         h('ul', [
           h('li', [
             h('a', {
-              'href': 'http://marvl.infotech.monash.edu/webcola/',
-              'target': '_blank'
+              href: 'http://marvl.infotech.monash.edu/webcola/',
+              target: '_blank'
             }, 'force-directed (cola)'),
             ' - The Cola.js physics simulation layout for Cytoscape.js'
           ]),
           h('li', [
             h('a', {
-              'href': 'http://www.sciencedirect.com/science/article/pii/S0020025508004799',
-              'target': '_blank'
+              href: 'http://www.sciencedirect.com/science/article/pii/S0020025508004799',
+              target: '_blank'
             }, 'force-directed (Cose-Bilkent)'),
             ' - A force-directed layout algorithm for undirected compound graphs'
           ]),
           h('li', [
             h('a', {
-              'href': 'https://github.com/cytoscape/cytoscape.js-dagre',
-              'target': '_blank'
+              href: 'https://github.com/cytoscape/cytoscape.js-dagre',
+              target: '_blank'
             }, 'tree / hierarchical (dagre)'),
             ' - The Dagre layout for DAGs and trees for Cytoscape.js'
           ]),
           h('li', [
             h('a', {
-              'href': 'https://github.com/OpenKieler/klayjs',
-              'target': '_blank'
+              href: 'https://github.com/OpenKieler/klayjs',
+              target: '_blank'
             }, 'layered (klay)'),
             ' - Layer-based layout for node-link diagrams'
           ]),
@@ -44,7 +44,7 @@ class HelpMenu extends React.Component {
         h('h4', 'Expand and Collapse'),
         'Initially, complexes - those entities composed of others - are collapsed to reduce complexity. Click the octogonal shape to show or hide contents.',
         h(ImageCard, {
-          'src': 'img/view/help/help_figure_collapse.png'
+          src: 'img/view/help/help_figure_collapse.png'
         }, [
           h('strong', 'Expanding and collapsing complexes.'),
           h('br'),
@@ -53,7 +53,7 @@ class HelpMenu extends React.Component {
         h('h4', 'Nearest Neighbours'),
         'Hovering over a node triggers a highlight of the nearest neighbouring nodes and associated edges. Use this to follow a path of interest.',
         h(ImageCard, {
-          'src': 'img/view/help/help_highlightNeighbour.png'
+          src: 'img/view/help/help_highlightNeighbour.png'
         }, [
           h('strong', 'Highlighting neighbouring nodes and edges.'),
           h('br'),
@@ -63,13 +63,13 @@ class HelpMenu extends React.Component {
         h('h4', 'Systems Biology Graphic Notation (SBGN)'),
         'The view represents biochemical and cellular processes with symbols that conform to the ',
         h('a', {
-          'href': 'http://www.nature.com/nbt/journal/v27/n8/full/nbt.1558.html',
-          'target': '_blank'
+          href: 'http://www.nature.com/nbt/journal/v27/n8/full/nbt.1558.html',
+          target: '_blank'
         }, 'Systems Biology Graphic Notation (SBGN) standard'),
         '. The SBGN standard is composed of three \'languages\' which are levels of increasing granularity. The viewer implements the ',
         h('a', {
-          'href': 'http://journal.imbio.de/article.php?aid=263',
-          'target': '_blank'
+          href: 'http://journal.imbio.de/article.php?aid=263',
+          target: '_blank'
         }, [
           'Process Description (PD) visual language which aims to represent the progression or change of molecular entities from one form to another.',
           h('br'),
@@ -79,8 +79,8 @@ class HelpMenu extends React.Component {
           h('li', [
             'Leverage the richness of the underlying data representation (',
             h('a', {
-              'href': 'http://www.biopax.org/',
-              'target': '_blank'
+              href: 'http://www.biopax.org/',
+              target: '_blank'
             }, 'Biological Pathway Exchange (BioPAX)'),
             ')'
           ]),
@@ -94,22 +94,22 @@ class HelpMenu extends React.Component {
         h('h4', 'Example walkthough'),
         'To illustrate the interpretation of an SBGN-PD view, we examine a portion of the ',
         h('a', {
-          'href': 'http://www.reactome.org/PathwayBrowser/#/R-HSA-201451',
-          'target': '_blank'
+          href: 'http://www.reactome.org/PathwayBrowser/#/R-HSA-201451',
+          target: '_blank'
         }, '\'Signaling by BMP\''),
         ' pathway from ',
         h('a', {
-          'href': 'http://www.reactome.org/',
-          'target': '_blank'
+          href: 'http://www.reactome.org/',
+          target: '_blank'
         }, 'Reactome'),
         '. In particular, we focus our attention on a single \'reaction\' within the pathway that depicts ',
         h('a', {
-          'href': 'http://www.reactome.org/PathwayBrowser/#/R-HSA-201451&SEL=R-HSA-201443&PATH=R-HSA-162582',
-          'target': '_blank'
+          href: 'http://www.reactome.org/PathwayBrowser/#/R-HSA-201451&SEL=R-HSA-201443&PATH=R-HSA-162582',
+          target: '_blank'
         }, 'trans-phosphorylation of the Type I receptor by the Type II receptor following binding of the BMP ligand'),
         '. The original view from the Reactome web site is shown below.',
         h(ImageCard, {
-          'src': 'img/view/help/help_walkthrough_reactome_sigBMP.png'
+          src: 'img/view/help/help_walkthrough_reactome_sigBMP.png'
         }, [
           h('strong', 'Reactome view of \'Type II receptor phosphorylates type I receptor\'.'),
           h('br'),
@@ -117,7 +117,7 @@ class HelpMenu extends React.Component {
         ]),
         'The same pathway sourced from Pathway Commons and displayed in the SBGN-PD-compliant View is very similar to Reactome\'s rendering.',
         h(ImageCard, {
-          'src': 'img/view/help/help_walkthrough_search_sigBMP_expanded.png'
+          src: 'img/view/help/help_walkthrough_search_sigBMP_expanded.png'
         }, [
           h('strong', 'View of Reactome\'s \'Signaling by BMP\' sourced from Pathway Commons.'),
           h('br'),
@@ -127,14 +127,14 @@ class HelpMenu extends React.Component {
         h('h4', 'Quick reference: SBGN-PD Glyphs'),
         'Right click the following image and select \'open in new tab\' to view a larger version.',
         h(ImageCard, {
-          'src': 'img/view/help/help_figure_sbgnpd.png'
+          src: 'img/view/help/help_figure_sbgnpd.png'
         }, [
           h('strong', 'List of all glyphs specified by SBGN Process Diagram Level 1.'),
           h('br'),
           'Please refer to the ',
           h('a', {
-            'href': 'http://sbgn.github.io/sbgn/specifications',
-            'target': '_blank'
+            href: 'http://sbgn.github.io/sbgn/specifications',
+            target: '_blank'
           }, 'SBGN-PD specification'),
           ' for a full description of the symbols and their meaning.'
         ])

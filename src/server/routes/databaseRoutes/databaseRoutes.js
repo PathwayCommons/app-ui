@@ -5,8 +5,6 @@ const update = require('./../../database/update');
 const lazyLoad = require('./../../lazyload');
 const btoa = require('btoa');
 
-var connPromise = query.connect(); // returns a promise.
-
 function getLayoutFallback(pc_id, release_id, connection) {
   return lazyLoad.queryMetadata(pc_id)
     .catch(() => {
@@ -26,7 +24,7 @@ function getLayoutFallback(pc_id, release_id, connection) {
 }
 
 function getLayout(pc_id, release_id) {
-  return connPromise.then((connection) => {
+  return query.connect().then((connection) => {
     return query.getGraphAndLayout(pc_id, release_id, connection)
       .then((layout) => {
         return { result: btoa(JSON.stringify(layout)), socket: 'layoutPackage' };
@@ -40,7 +38,7 @@ function getLayout(pc_id, release_id) {
 
 function submitLayout(pcID, releaseID, layout, key) {
   //Get the requested layout
-  return connPromise.then((connection) => {
+  return query.connect().then((connection) => {
     if (hasRightKey(pcID, releaseID, key)) {
       update.saveLayout(pcID, layout, releaseID, connection);
       return { socket: 'updated', result: 'Layout was updated.' };
@@ -54,7 +52,7 @@ function submitLayout(pcID, releaseID, layout, key) {
 }
 
 function getEditKey(pcID, releaseID, remoteAddress, socketIO = false) {
-  return connPromise.then((connection) => {
+  return query.connect().then((connection) => {
     if (auth.checkUser(remoteAddress, socketIO)) {
       return query.getGraphID(pcID, releaseID, connection).then((result) => {
         if (result) {
@@ -73,7 +71,7 @@ function getEditKey(pcID, releaseID, remoteAddress, socketIO = false) {
 }
 
 function hasRightKey(pcID, releaseID, key) {
-  return connPromise.then((connection) => {
+  return query.connect().then((connection) => {
     return query.getGraphID(
       pcID,
       releaseID,

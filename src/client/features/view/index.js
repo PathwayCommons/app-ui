@@ -22,7 +22,7 @@ class View extends React.Component {
     this.state = {
       query: query,
 
-      cy: make_cytoscape({ headless: true }), // cytoscape mounted after Graph component has mounted
+      cy: null,
       graphJSON: [],
       layout: lo.defaultLayout,
       availableLayouts: [],
@@ -32,6 +32,8 @@ class View extends React.Component {
 
       activateWarning: false,
       warningMessage: '',
+
+      activeNodeMenu: '',
 
       admin: false
     };
@@ -59,6 +61,10 @@ class View extends React.Component {
   }
 
   componentWillMount() {
+    this.setState({
+      cy: make_cytoscape({ headless: true }, nodeId => this.setState({activeNodeMenu: nodeId}))
+    }); // cytoscape mounted after Graph component has mounted
+
     // Before we mount we get the edit key from the URL
     // The validation performed here only occurs once, on View mount,
     // and is for initializing access privileges. To the regular user,

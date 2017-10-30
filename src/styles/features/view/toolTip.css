@@ -4,18 +4,18 @@
 
 .tippy-tooltip.tippy-tooltip--regular.light-theme.enter.tippy-notransition {
   border-radius: 5%;
-  border: 2px solid black; 
 }
 
 .tooltip-image {
     position: relative;
     width: 100%;
     color: black;
-    min-width: 300px;
-    min-height: 250px;
+    /* min-width: 300px;
+    min-height: 250px; */
+    max-width: 20vw;
     border-radius: 0%;
-    height: 20vh;
-    width: 20vw;
+    /* height: 16vh;
+    width: 16vw; */
  }
 
  .tooltip-internal {
@@ -24,8 +24,9 @@
     left: 0;
     word-wrap: break-word;
     overflow-y: auto;
+    text-align: left;
     height: 100%;
-    font-size: 9pt;
+    font-size: 1.3vh !important;
  }
 
  .tooltip-heading {
@@ -33,29 +34,41 @@
     top: 2px;
     text-align: center;
     word-wrap: break-word;
-    font-size: 18pt;
+    font-size: 2vh;
     font-weight: 400;
     color : var(--midnight-blue)
 }
 
-.tooltip-button-pdf {
-    position: absolute;
-    top: 85%;
-    right : 40%;
-    text-align: center;
-    width: 15px;
-    font-size: 17pt;
-    font-weight: 300;
+.tooltip-buttons{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     color: var(--midnight-blue);
+    font-size: 2.45vh !important;
+    font-weight: 400 !important;
+}
+
+.tooltip-button-pdf {
+    margin: 4px;
 }
 
 .tooltip-button-show {
-    position: absolute;
-    top: 85%;
-    left: 38%;
-    text-align: center;
-    width: 20px;
-    font-size: 17pt;
-    font-weight: 300;
-    color: var(--midnight-blue);
+    margin: 4px;
+}
+
+.field-name{
+    margin: 2px;
+    display: inline-block;
+}
+
+.db-name {
+    text-decoration: underline;
+    margin: 3px;
+    display: inline-block;
+}
+
+a {
+  color: var(--link);
+  margin: 1px;
 }

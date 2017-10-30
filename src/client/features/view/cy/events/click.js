@@ -1,4 +1,3 @@
-const tippy = require('tippy.js');
 const createToolTip = require('../createToolTip');
 
 const bindClick = (cy) => {
@@ -8,21 +7,8 @@ const bindClick = (cy) => {
   cy.on('cxttap', 'node', function (evt) {
       let data = evt.target.data();
       let name = data.label;
-      let metadata = data.parsedMetadata;
-      let refObject = evt.target.popperRef();
-      let tooltip; 
-
-      if(!tooltip){
-        let tooltipHTML = createToolTip(name, data);
-        tooltip = tippy(refObject, {html : tooltipHTML, theme : 'light', interactive : true});
-      }
-
-      tooltip.selector.dim = refObject.dim;
-      tooltip.selector.cyElement = refObject.cyElement; 
-      console.log(refObject);
-      console.log(tooltip);
-      tooltip.show(tooltip.store[0].popper);
-
+      let html = new createToolTip(name, data, evt.target);
+      html.show();
   });
 
   //Bind drag  event to tippy.hide()

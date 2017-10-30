@@ -34,7 +34,7 @@ Build the container.  Here, `app-ui` is used as the container name.
 
 ```
 cd app-ui
-docker build -t app-ui .
+docker build --build-arg "NODE_ENV=production" -t app-ui .
 ```
 
 Run the container:

@@ -5,10 +5,11 @@ and populate the DB.
 */
 
 const r = require('rethinkdb');
+const config = require('./config');
 
-var connection = null;
+let connection = null;
 
-r.connect( {host: '192.168.90.176', port: 28015}, function(err, conn) {
+r.connect( {host: config.ip, port: config.port}, function(err, conn) {
   if (err) throw err;
   connection = conn;
   createTables('metadataTest', [
@@ -17,7 +18,7 @@ r.connect( {host: '192.168.90.176', port: 28015}, function(err, conn) {
     'layout',
     'layout_cache'
   ], true);
-})
+});
 
 
 function createTables(dbName, table_arr, enable_logs){
@@ -26,11 +27,11 @@ function createTables(dbName, table_arr, enable_logs){
     if (enable_logs) console.log('Database '+dbName+' created.');
   });
 
-  for (var i = 0; i < table_arr.length; i++) {
+  for (let i = 0; i < table_arr.length; i++) {
     r.db(dbName).tableCreate(table_arr[i]).run(connection, function(err, result) {
       if (err) throw err;
       
-    })
+    });
   }
   if (enable_logs) console.log('Tables created.');
   

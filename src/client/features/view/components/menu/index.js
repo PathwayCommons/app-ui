@@ -1,4 +1,7 @@
 const React = require('react');
+const h = require('react-hyperscript');
+const classNames = require('classnames');
+
 const tippy = require('tippy.js');
 
 /* Props
@@ -33,33 +36,40 @@ class Menu extends React.Component {
   render() {
     const layoutItems = this.props.layouts.map((layout, index) => {
       return (
-        <option key={index} value={layout}>{layout}</option>
+        h('option', {
+          key: index,
+          value: layout
+        }, layout)
       );
     });
 
     return (
-      <div className='menu-bar'>
-        <div className='menu-bar-inner-container'>
-          <div className='pc-logo-container'>
-            <img src='/img/icon.png'></img>
-          </div>
-          <div className='title-container'>
-            <h4>{this.props.name+' | '+this.props.datasource}</h4>
-          </div>
-          <div
-            className='layout-dropdown-button'
-            onClick={() => this.setState({dropdownOpen: !this.state.dropdownOpen})}
-            title='Additional layout options'
-          >
-            <i className='material-icons'>timeline</i>
-          </div>
-        </div>
-        <div className={'layout-dropdown '+(this.state.dropdownOpen ? ' open' : '')}>
-          <select value={this.props.currLayout} onChange={(e) => this.props.updateLayout(e.target.value)}>
-            {layoutItems}
-          </select>
-        </div>
-      </div>
+      h('div.menu-bar', [
+        h('div.menu-bar-inner-container', [
+          h('div.pc-logo-container', [
+            h('img', {
+              src: '/img/icon.png'
+            })
+          ]),
+          h('div.title-container', [
+            h('h4', `${this.props.name} | ${this.props.datasource}`)
+          ]),
+          h('div.layout-dropdown-button', {
+            onClick: () => this.setState({dropdownOpen: !this.state.dropdownOpen}),
+            title: 'Additional layout options'
+          }, [
+            h('i.material-icons', 'timeline')
+          ])
+        ]),
+        h('div', {
+          className: classNames('layout-dropdown', this.state.dropdownOpen ? 'open' : '')
+        }, [
+          h('select', {
+            value: this.props.currLayout,
+            onChange: (e) => this.props.updateLayout(e.target.value)
+          }, layoutItems)
+        ])
+      ])
     );
   }
 }

@@ -57,9 +57,4 @@ class SearchBar extends React.Component {
 }
 
 
-module.exports = {
-  Icon: Icon,
-  SearchBar: SearchBar,
-  SearchFaq: SearchFaq,
-  ErrorMessage: ErrorMessage
-};
+module.exports = {Icon, SearchBar, SearchFaq, ErrorMessage};

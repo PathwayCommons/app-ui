@@ -1,4 +1,6 @@
 const React = require('react');
+const h = require('react-hyperscript');
+
 const saveAs = require('file-saver').saveAs;
 const PathwayCommonsService = require('../../../../../../services/').PathwayCommonsService;
 
@@ -57,19 +59,16 @@ class DownloadOption extends React.Component {
 
   render() {
     return (
-      <div className='download-option'>
-        <div className='download-icon-container'>
-          <div
-            className='download-icon-inner-container'
-            onClick={() => this.handleDownloadClick(this.props.type)}
-          >
-            <i className='material-icons'>file_download</i>
-          </div>
-        </div>
-        <div className='download-option-description'>
-          {this.props.children}
-        </div>
-      </div>
+      h('div.download-option', [
+        h('div.download-icon-container', [
+          h('div.download-icon-inner-container', {
+            'onClick': () => this.handleDownloadClick(this.props.type)
+          }, [
+            h('i.material-icons', 'file_download')
+          ])
+        ]),
+        h('div.download-option-description', this.props.children)
+      ])
     );
   }
 }

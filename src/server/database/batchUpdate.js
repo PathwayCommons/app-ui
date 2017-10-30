@@ -2,7 +2,7 @@
 const fs = require('fs'); // node file system, to be used for importing XMLs
 const accessDB = require('./query');
 // const Promise = require('bluebird'); // used in old file process code
-var Multispinner = require('multispinner');
+let Multispinner = require('multispinner');
 
 const whilst = require('async/whilst');
 const cyJson = require('./../graph-generation/cytoscapeJson');
@@ -15,9 +15,9 @@ const dir = args[3] ? args[3] : './';
 if (!version) throw Error('no version provided');
 
 function readURINames(dir) {
-  var text = fs.readFileSync(dir + '/pathways.txt', { encoding: 'utf-8' });
+  let text = fs.readFileSync(dir + '/pathways.txt', { encoding: 'utf-8' });
 
-  var matches = text.match(/^(\S)+/mg); // Slice ignores file header
+  let matches = text.match(/^(\S)+/mg); // Slice ignores file header
   matches = Array.from(new Set(matches)); // Remove duplication
 
   return matches.slice(1); // Remove the header from the table.
@@ -44,7 +44,7 @@ function processFile(pc_id, release_id, method, connection) {
     });
 }
 
-var connectionPromise = accessDB.connect();
+let connectionPromise = accessDB.connect();
 
 // After connection is received, try to get stuff from Harsh's cyJSON script
 // and use the results to update the DB. For each URL, three methods are tried
@@ -61,14 +61,14 @@ connectionPromise.then(connection => {
 
     // Get URIs from the optionally specified file (or from the current dir if none),
     // and give them a starting attempt of 1.
-    var fileList = readURINames(dir).map(uri => {
+    let fileList = readURINames(dir).map(uri => {
       return [1, uri];
     });
 
     const originalLength = fileList.length;
 
     // To be populated with URIs that don't work with any of the methods
-    var unreadURIs = [];
+    let unreadURIs = [];
 
     // Asyncronous while loop
     whilst(
@@ -93,7 +93,7 @@ connectionPromise.then(connection => {
             && Object.keys(res)[0] === 'error'
           ) {
             // The offender is at the front of the array so take it out and store it
-            var offender = fileList.shift();
+            let offender = fileList.shift();
             if (attempt > methods.length) {
               // If we've tried everything, give up and permanently remove the offender
               // from fileList, storing it in a garbage array
@@ -133,8 +133,6 @@ connectionPromise.then(connection => {
     //   { concurrency: 4 });
   });
 
-}).catch((e) => {
-  throw e;
 });
 
 

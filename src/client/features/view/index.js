@@ -1,19 +1,19 @@
 const React = require('react');
 const h = require('react-hyperscript');
 
-const Menu = require('./components/index.js').Menu;
-const Graph = require('./components/index.js').Graph;
-const EditWarning = require('./components/index.js').EditWarning;
-const Sidebar = require('./components/index.js').Sidebar;
+const Menu = require('./components/').Menu;
+const Graph = require('./components/').Graph;
+const EditWarning = require('./components/').EditWarning;
+const Sidebar = require('./components/').Sidebar;
 
-const lo = require('./layout/');
+const lo = require('./components/graph/layout/');
 const make_cytoscape = require('./cy/');
 const bindMove = require('./cy/events/move');
 
 const queryString = require('query-string');
 // Eventually all PCS deps will be absorbed into the CDC and we won't use it for anything
-const PathwayCommonsService = require('../../services/index.js').PathwayCommonsService;
-const CDC = require('../../services/index.js').CDC;
+const PathwayCommonsService = require('../../services/').PathwayCommonsService;
+const CDC = require('../../services/').CDC;
 
 class View extends React.Component {
   constructor(props) {
@@ -22,7 +22,7 @@ class View extends React.Component {
     this.state = {
       query: query,
 
-      cy: null,
+      cy: make_cytoscape({ headless: true }), // cytoscape mounted after Graph component has mounted
       graphJSON: [],
       layout: lo.defaultLayout,
       availableLayouts: [],
@@ -32,8 +32,6 @@ class View extends React.Component {
 
       activateWarning: false,
       warningMessage: '',
-
-      activeNodeMenu: '',
 
       admin: false
     };
@@ -58,19 +56,13 @@ class View extends React.Component {
           datasource: dsStr
         });
       });
-  }
-
-  componentWillMount() {
-    this.setState({
-      cy: make_cytoscape({ headless: true }, nodeId => this.setState({activeNodeMenu: nodeId}))
-    }); // cytoscape mounted after Graph component has mounted
 
     // Before we mount we get the edit key from the URL
     // The validation performed here only occurs once, on View mount,
     // and is for initializing access privileges. To the regular user,
     // the move event does not need to be bound. The downside is that
     // there is no way to add an edit key part-way through a session.
-    const editkey = this.state.query.editkey;
+    const editkey = query.editkey;
     if (editkey != null) {
       CDC.initEditKeyValidationSocket((valid) => {
         if (typeof valid === typeof {}) {alert('Key validation error!'); return;}
@@ -81,19 +73,17 @@ class View extends React.Component {
         });
         if (valid) {
           // Bind move event only if necessary
-          bindMove(this.state.query.uri, 'latest', editkey, this.state.cy);
+          bindMove(query.uri, 'latest', editkey, this.state.cy);
         }
       });
-      CDC.requestEditKeyValidation(this.state.query.uri, 'latest', editkey);
+      CDC.requestEditKeyValidation(query.uri, 'latest', editkey);
     }
-
-    window.addEventListener('resize', () => window.scrollTo(0, 1));
 
     // Arrow functions like these tie socket.io directly into the React state
     CDC.initGraphSocket(newGraphJSON => this.setState({graphJSON: newGraphJSON}));
-    CDC.requestGraph(this.state.query.uri, 'latest');
+    CDC.requestGraph(query.uri, 'latest');
   }
-  
+
   // To be called when the graph renders (since this is determined by the Graph class)
   updateRenderStatus(status) {
     if (status) {
@@ -119,37 +109,32 @@ class View extends React.Component {
 
   render() {
     return (
-      <div className="View">
-        <Menu
-          // These fallbacks are here in case we want to set them dynamically based off
-          // of things like type in the future (when we expand beyond pathways)
-          name={this.state.name}
-          datasource={this.state.datasource}
-          layouts={this.state.availableLayouts}
-          updateLayout={(layout) => this.performLayout(layout)}
-          currLayout={this.state.layout}
-        />
-        <Graph
-          updateRenderStatus={status => this.updateRenderStatus(status)}
-          updateLayout={() => this.performLayout(this.state.layout)}
-          cy={this.state.cy}
-          graphJSON={this.state.graphJSON}
-        />
-        <EditWarning
-          active={this.state.activateWarning}
-          deactivate={() => this.setState({activateWarning: false})}
-          dur={8000}
-        >
-          {this.state.warningMessage}
-        </EditWarning>
-        <Sidebar
-          // These are useful for the information section and later for the metadata section
-          cy={this.state.cy}
-          uri={this.state.query.uri}
-          name={this.state.name}
-          datasource={this.state.datasource}
-        />
-      </div>
+      h('div.View', [
+        h(Menu, {
+          name: this.state.name,
+          datasource: this.state.datasource,
+          layouts: this.state.availableLayouts,
+          updateLayout: layout => this.performLayout(layout),
+          currLayout: this.state.layout
+        }),
+        h(Graph, {
+          updateRenderStatus: status => this.updateRenderStatus(status),
+          updateLayout: () => this.performLayout(this.state.layout),
+          cy: this.state.cy,
+          graphJSON: this.state.graphJSON
+        }),
+        h(EditWarning, {
+          active: this.state.activateWarning,
+          deactivate: () => this.setState({activateWarning: false}),
+          dur: 8000
+        }, this.state.warningMessage),
+        h(Sidebar, {
+          cy: this.state.cy,
+          uri: this.state.query.uri,
+          name: this.state.name,
+          datasource: this.state.datasource
+        })
+      ])
     );
   }
 }

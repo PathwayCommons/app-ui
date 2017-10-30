@@ -1,9 +1,9 @@
 //Replace Authentication Code Here with User Login System Later 
-var ip = require('ip');
+let ip = require('ip');
 
 //Compare IP aganist reserved local ips
 function reservedIPComparison(givenIP) {
-  var reservedIp = [
+  let reservedIp = [
     ['167772160', 184549375],  /*    10.0.0.0 -  10.255.255.255 */
     ['3232235520', 3232301055], /* 192.168.0.0 - 192.168.255.255 */
     ['2130706432', 2147483647], /*   127.0.0.0 - 127.255.255.255 */
@@ -17,8 +17,8 @@ function reservedIPComparison(givenIP) {
   }
 
   //Get Long of given ip
-  var ipLong = ip.toLong(givenIP);
-  var i = 0;
+  let ipLong = ip.toLong(givenIP);
+  let i = 0;
 
   //Compare against all reserved ips
   for (i = 0; i < reservedIp.length; i++) {
@@ -34,7 +34,7 @@ function reservedIPComparison(givenIP) {
 //Determine if a user is locally present
 module.exports.checkUser = function (req, socketIO = false) {
   //Get Ip 
-  var ip;
+  let ip;
 
   if (socketIO) {
     ip = req;

@@ -1,12 +1,15 @@
 .menu-bar {
   @extend %flex-center;
 
+  padding: 0;
+
   position: absolute;
   justify-content: flex-start;
   z-index: 100;
+
   top: 0;
   left: 2%;
-  padding: 0;
+  
   background-color: var(--cloud);
   border-radius: 0px 0px 3px 3px;
   border: 2px solid black;
@@ -33,6 +36,7 @@
 .title-container {
   padding-left: calc(1em - var(--icon-size) / 3);
   padding-right: 1em;
+
   color: var(--midnight-blue);
 
   & h4 {
@@ -46,14 +50,20 @@
 
   height: calc(var(--icon-size) * 3 / 2);
   width: calc(var(--icon-size) * 3 / 2);
-  color: var(--midnight-blue);
+
+  box-sizing: border-box;
+
   border-color: black;
   border-style: solid;
   border-width: 0px 0px 0px 2px;
-  box-sizing: border-box;
+  
+  
   font-size: var(--icon-size);
-  transition: all 0.1s linear;
+  color: var(--midnight-blue);
+
   cursor: pointer;
+
+  transition: all 0.1s linear;
 
   &:hover {
     background-color: var(--cloud-dark);
@@ -63,13 +73,14 @@
 .layout-dropdown {
   @extend %flex-center;
 
-  display: none;
   margin-left: 1em;
   margin-right: 1em;
 
+  display: none;
+  
   & select {
-    background-color: white;
     width: 100%;
+    background-color: white;
   }
 
   &.open {

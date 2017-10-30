@@ -27,8 +27,6 @@ function handleResult(resultPromise, callback) {
   if (callback) {
     resultPromise.then(result => {
       callback(result);
-    }).catch((e) => {
-      throw e;
     });
   } else {
     return resultPromise;

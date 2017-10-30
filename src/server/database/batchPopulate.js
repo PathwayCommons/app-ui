@@ -22,7 +22,7 @@ function validateURI(uri) {
 // and replace all underscores with the URI characted for "/", except those
 // three underscores following http
 function URIify(str) {
-  var str_change = str.replace(/\s/g, ''); // eliminate whitespace
+  let str_change = str.replace(/\s/g, ''); // eliminate whitespace
   str_change = str_change.replace(/^(http)_{3}/, 'http%3A%2F%2F'); // replace http___ with uri encoded http://
   str_change = str_change.replace(/_/g, '%2F'); // replace rest of underscores with slashes
   str_change = str_change.slice(0, -4); // get rid of .xml extension
@@ -31,8 +31,8 @@ function URIify(str) {
 
 
 
-var connectionPromise = accessDB.connect();
-var conn = null;
+let connectionPromise = accessDB.connect();
+let conn = null;
 
 function processFile(dir, file) {
 
@@ -40,10 +40,10 @@ function processFile(dir, file) {
     return;
   }
 
-  var uri = URIify(file);
-  var xml_data = fs.readFileSync(dir + '/' + file);
-  var json_data = convert(xml_data);
-  var pcID = file.replace(/\s/g,'').slice(0,-4); // Remove .xml extension
+  let uri = URIify(file);
+  let xml_data = fs.readFileSync(dir + '/' + file);
+  let json_data = convert(xml_data);
+  let pcID = file.replace(/\s/g,'').slice(0,-4); // Remove .xml extension
 
   try {
     if (!uri) {
@@ -67,7 +67,7 @@ connectionPromise.then((connection) => {
   if (!conn) {
     throw Error('No connection');
   }
-  var numProcessed = 0;
+  let numProcessed = 0;
   fs.readdir(dir, function (err, files) {
     Promise.map(files, function (file) {
 

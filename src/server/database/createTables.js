@@ -12,7 +12,7 @@ let connection = null;
 r.connect( {host: config.ip, port: config.port}, function(err, conn) {
   if (err) throw err;
   connection = conn;
-  createTables('metadataTest', [
+  createTables('metadataTestMk2', [
     'graph',
     'version',
     'layout',

@@ -1,8 +1,9 @@
-
 const fs = require('fs'); // node file system, to be used for importing XMLs
 const query = require('./query');
+const update = require('./update');
 const Promise = require('bluebird'); // used in old file process code
 let Multispinner = require('multispinner');
+const _ = require('lodash');
 
 const cyJson = require('./../graph-generation/cytoscapeJson');
 
@@ -23,6 +24,8 @@ function readURINames(dir) {
 
 }
 
+
+
 // // Errors from cyJson.getCytoscapeJson will be an object with exactly one
 // // key, called error, with value of a string containing a description of the error
 // // e.g. {error: "errormsg"}
@@ -40,7 +43,13 @@ connectionPromise.then(connection => {
   if (!connection) throw new Error('No database connection');
 
   // Get URIs from the optionally specified file (or from the current dir if none)
-  let fileList = readURINames(dir);
+  let finishedPathways = fs.readdirSync(dir).indexOf('finishedPathways.txt') !== -1;
+
+  let doneFiles = finishedPathways ?
+    fs.readFileSync('./finishedPathways.txt', { encoding: 'utf-8' }).toString().split('\n')
+    : [];
+  let fileList = _.difference(readURINames(dir), doneFiles);
+  // fileList = ['http://identifiers.org/smpdb/SMP00109', 'http://identifiers.org/smpdb/SMP00329'];
 
   const concurrency = 4;
   const numFiles = fileList.length;
@@ -52,6 +61,7 @@ connectionPromise.then(connection => {
     const spinner = new Multispinner({
       'script': `${Math.floor(counter++)} / ${numFiles}\t\t${file}`
     });
+
     return cyJson.getCytoscapeJson(file, method).then(data => {
       if (typeof data !== typeof {}) {
         return {error: 'No object received.'};
@@ -62,9 +72,8 @@ connectionPromise.then(connection => {
         spinner.error('script');
         return data;
       } else {
-        spinner.success('script');
-        return query.updateGraph(file, version, data, connection);
+        return update.updateGraph(file, version, data, connection).then(() => spinner.success('script'));
       }
-    });
-  }, {concurrency: concurrency}).then(data => console.log('Finished.'));
+    }); 
+  }, {concurrency: concurrency}).then(() => console.log('Finished.'));
 });

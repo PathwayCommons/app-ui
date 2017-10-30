@@ -51,6 +51,8 @@ connectionPromise.then(connection => {
   let fileList = _.difference(readURINames(dir), doneFiles);
   // fileList = ['http://identifiers.org/smpdb/SMP00109', 'http://identifiers.org/smpdb/SMP00329'];
 
+  let unloadedFiles = [];
+
   const concurrency = 4;
   const numFiles = fileList.length;
   const method = 'jsonld';
@@ -70,6 +72,7 @@ connectionPromise.then(connection => {
         && Object.keys(data)[0] === 'error'
       ) {
         spinner.error('script');
+        unloadedFiles.push(file);
         return data;
       } else {
         return update.updateGraph(file, version, data, connection).then(() => spinner.success('script'));

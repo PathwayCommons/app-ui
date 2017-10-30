@@ -2,7 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 
 const saveAs = require('file-saver').saveAs;
-const PathwayCommonsService = require('../../../../../../services/').PathwayCommonsService;
+const PathwayCommonsService = require('../../../../../../../service/').PathwayCommonsService;
 
 class DownloadOption extends React.Component {
   constructor(props) {

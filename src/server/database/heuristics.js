@@ -16,6 +16,4 @@ function run(layouts, callback) {
     }
   }
 
-  module.exports = {
-      run : run
-  };
+  module.exports = run;

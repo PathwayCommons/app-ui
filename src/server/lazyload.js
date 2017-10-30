@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 const convert = require('sbgnml-to-cytoscape');
-const cyJson = require('./graph-generation/cytoscapeJson');
+const cyJson = require('./../service/graph-generation/cytoscapeJson');
 
 function queryPC(pcID) {
   const prefix = 'http://www.pathwaycommons.org/pc2/get?uri=';

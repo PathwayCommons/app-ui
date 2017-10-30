@@ -93,7 +93,7 @@ class metadataTip {
   generateDBLink(dbName, dbId) {
     //Get base url for dbid
     let link = this.db.filter(value => dbName.toUpperCase() === value[0].toUpperCase());
-    if(!(link)) {
+    if(!link || link.length !== 1) {
       link = this.db.filter(value => dbName.toUpperCase().indexOf(value[0].toUpperCase()) !== -1);
     }
 

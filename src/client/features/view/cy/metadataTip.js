@@ -5,7 +5,7 @@ const tippy = require('tippy.js');
 
 //Manage the creation and display of tooltips
 //Requires a valid name, cytoscape element, and parsedMetadata array
-class metadataTip {
+class MetadataTip {
 
   constructor(name, data, cyElement) {
     this.name = name;
@@ -180,4 +180,4 @@ class metadataTip {
 }
 
 
-module.exports = metadataTip;
+module.exports = MetadataTip;

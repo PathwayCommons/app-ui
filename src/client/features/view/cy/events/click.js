@@ -1,4 +1,4 @@
-const createToolTip = require('../createToolTip');
+const MetadataTip = require('../metadataTip');
 
 const bindClick = (cy) => {
   //Tippy JS Events
@@ -7,7 +7,7 @@ const bindClick = (cy) => {
   cy.on('cxttap', 'node', function (evt) {
       let data = evt.target.data();
       let name = data.label;
-      let html = new createToolTip(name, data, evt.target);
+      let html = new MetadataTip(name, data, evt.target);
       html.show();
   });
 

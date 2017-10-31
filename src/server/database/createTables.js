@@ -12,6 +12,7 @@ function connect(){
   return r.connect({host: config.ip, port: config.port});
 }
 
+
 function createTable(dbName, tableName, connection) {
   return r.db(dbName).tableCreate(tableName).run(connection);
 }

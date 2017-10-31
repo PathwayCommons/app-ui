@@ -66,7 +66,9 @@ const querySearch = async (query) => {
         return minResultSize < resultSize && resultSize < maxResultSize;
       });
 
-      return filteredResults;
+      if (filteredResults.length > 0) {
+        return filteredResults;
+      }
     }
   }
 

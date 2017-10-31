@@ -1,5 +1,5 @@
 const io = require('socket.io-client');
-let socket = io('192.168.90.176:3000');
+let socket = io('192.168.81.233:3000');
 
 const CDC = {
   initGraphSocket(updateFunction) {

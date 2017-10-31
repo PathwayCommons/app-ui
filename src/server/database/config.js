@@ -1,5 +1,5 @@
 module.exports = {
   databaseName : 'metadataTestMk2',
-  ip: '192.168.81.233',
+  ip: '127.0.0.1',
   port: '28015'
 };

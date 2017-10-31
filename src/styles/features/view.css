@@ -2,8 +2,9 @@
 @import "./view/graph.css";
 @import "./view/editWarning.css";
 @import "./view/sidebarMenu.css";
+@import "./view/toolTip.css";
 
 .View {
   width: 100vw;
   height: 100vh;
-}
+}   

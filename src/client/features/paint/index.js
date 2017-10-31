@@ -16,7 +16,6 @@ class Paint extends React.Component {
   constructor(props) {
     super(props);
 
-    const query = queryString.parse(props.location.search);
     const cy = cytoscape({
       style: sbgnStylesheet(cytoscape),
       minZoom: 0.16,
@@ -25,25 +24,11 @@ class Paint extends React.Component {
     });
 
     this.state = {
-      query: query,
+      enrichmentData: {},
       cy: cy,
       name: '',
       datasource: ''
     };
-
-    PathwayCommonsService.query(query.uri, 'json', 'Named/displayName')
-      .then(response => {
-        this.setState({
-          name: response ? response.traverseEntry[0].value.pop() : ''
-        });
-      });
-
-    PathwayCommonsService.query(query.uri, 'json', 'Entity/dataSource/displayName')
-      .then(responseObj => {
-        this.setState({
-          datasource: responseObj ? responseObj.traverseEntry[0].value.pop() : ''
-        });
-      });
   }
 
   componentWillUnmount() {
@@ -51,20 +36,13 @@ class Paint extends React.Component {
   }
 
   componentDidMount() {
-    const state = this.state;
-    const container = document.getElementById('cy-container');
-    state.cy.mount(container);
+    const props = this.props;
+    const query = queryString.parse(props.location.search);
+    const enrichmentsURI = query.uri ? query.uri : null;
 
-    PathwayCommonsService.query(state.query.uri, 'SBGN')
-    .then(text => {
-      const sbgnJson = sbgn2Json(text);
-      state.cy.remove('*');
-      state.cy.add(sbgnJson);
-      state.cy.layout({
-        name: 'cose-bilkent',
-        nodeDimensionsIncludeLabels: true
-      }).run();
-    });
+    if (enrichmentsURI != null) {
+      fetch(enrichmentsURI).then(response => response.json()).then(enrichmentJson => this.setState({enrichmentData: enrichmentJson}));
+    }
   }
 
   render() {
@@ -85,8 +63,11 @@ class Paint extends React.Component {
         h('div.paint-toolbar', [
           h(Icon, { className: 'paint-control-icon', icon: 'image' }),
           h(Icon, { className: 'paint-control-icon', icon: 'shuffle' }),
-          h(Icon, { className: 'paint-control-icon', icon: 'help' })
-        ])
+          h(Icon, { className: 'paint-control-icon', icon: 'help' }),
+        ]),
+        h('div.paint-toolbar',
+          JSON.stringify(state.enrichmentData, null, 4)
+        )
       ]),
       h('div.paint-graph', [
         h(`div.#cy-container`, {style: {width: '100%', height: '100%'}})

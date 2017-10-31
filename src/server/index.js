@@ -16,6 +16,9 @@ const app = express();
 const server = http.createServer(app);
 const io = require('socket.io')(server);
 
+app.use(bodyParser.urlencoded({ extended: true}));
+app.use(bodyParser.json());
+
 // view engine setup
 app.set('views', path.join(__dirname, '../', 'views'));
 
@@ -39,8 +42,7 @@ app.use(morgan('dev', {
     }
   })
 }));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../..', 'public')));
 
@@ -59,8 +61,9 @@ app.use(function (req, res, next) {
 });
 
 
-app.use('/Layout', require('./routes/databaseSocket')(io));
-app.use('/', require('./routes/index'));
+app.use('/', require('./routes/databaseRoutes/sockets')(io));
+app.use('/layout', require('./routes/databaseRoutes/REST'));
+app.use('/', require('./routes/'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

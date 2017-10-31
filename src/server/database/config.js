@@ -1,6 +1,5 @@
 module.exports = {
-  databaseName : 'halfBaked',
-  tables : [ 'graph', 'version', 'layout'], 
-  ip: '192.168.90.176',
+  databaseName : 'metadataTestMk2',
+  ip: '127.0.0.1',
   port: '28015'
 };

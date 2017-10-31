@@ -1,0 +1,63 @@
+.download-option {
+  width: 95%;
+  margin: auto;
+  padding: 1em;
+  padding-left: 0;
+
+  display: flex;
+  align-content: center;
+  box-sizing: border-box;
+  
+  background-color: white;
+  border-style: solid;
+  border-color: black;
+  border-width: 2px 2px 0px 2px;
+
+  &:first-child {
+    margin-top: 1em;
+  }
+
+  &:last-child {
+    margin-bottom: 1em;
+    border-width: 2px 2px 2px 2px;
+  }
+}
+
+.download-icon-container {
+  @extend %flex-center;
+
+  height: 100%;
+  width: 30%;
+  margin: auto;
+}
+
+.download-icon-inner-container {
+  @extend %flex-center;
+
+  height: var(--icon-size);
+  width: var(--icon-size);
+  padding: 0.2em;
+
+  background-color: var(--green-sea);
+  border: 2px solid black;
+  border-radius: 50%;
+
+  font-size: var(--icon-size);
+  color: var(--midnight-blue);
+
+  transition: all 0.1s linear;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.download-option-description {
+  height: 100%;
+  width: 70%;
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}

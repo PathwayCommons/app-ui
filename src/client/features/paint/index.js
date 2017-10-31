@@ -49,6 +49,9 @@ class Paint extends React.Component {
   render() {
     const state = this.state;
     const enrichments = objPath.get(state, 'enrichmentDataSets.0.expressions', null);
+    // const gNames = enrichments ? enrichments.map(e => e.geneName).sort().join('  ') : '';
+    // console.log(enrichments);
+    // console.log(gNames);
 
     return h('div.paint', [
       h('div.paint-menu', [

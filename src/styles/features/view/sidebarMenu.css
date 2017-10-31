@@ -1,13 +1,18 @@
+@import "./sidebarMenus/help.css";
+@import "./sidebarMenus/downloadMenu.css";
+
 .sidebar-menu {
   height: 100%;
   width: 25%;
+
   position: fixed;
   top: 0;
   right: 0;
+
   box-shadow: 0px;
   transform: translateX(100%);
+
   transition: all 0.5s ease-out;
-  resize: horizontal;
 
   &.open {
     transform: translateX(0%);
@@ -17,6 +22,7 @@
   & a {
     color: var(--link);
     text-decoration: underline;
+
     &:visited {
       color: var(--link-visited);
     }
@@ -24,13 +30,16 @@
 }
 
 .sidebar-select {
+  height: calc((var(--icon-size) * 3 / 2) * 4);
+  width: calc(var(--icon-size) * 3 / 2);
+
+  display: flex;
+  flex-direction: column;
+
   position: absolute;
   top: calc(50% - ((var(--icon-size) * 3 / 2) * 4 / 2));
   left: calc(- var(--icon-size) * 3 / 2);
-  height: calc((var(--icon-size) * 3 / 2) * 4);
-  width: calc(var(--icon-size) * 3 / 2);
-  display: flex;
-  flex-direction: column;
+
   border-color: black;
   border-style: solid;
   border-width: 2px 0px 2px 2px;
@@ -39,11 +48,13 @@
 
   &.conditional {
     height: calc(var(--icon-size) * 3 / 2);
-    border-width: 2px 0px 0px 2px;
+    
     left: 0;
     top: auto;
     bottom: 0;
+
     transition: all 0.5s ease-out;
+    border-width: 2px 0px 0px 2px;
     box-shadow: 0px 0px 0px 0px rgba(0,0,0,0.4);
 
     &.open {
@@ -58,12 +69,15 @@
   @extend %no-select;
 
   height: calc(var(--icon-size) * 3 / 2);
-  font-size: var(--icon-size);
-  color: var(--midnight-blue);
+
+  position: relative;
+
   background-color: var(--cloud);
   border-top: 2px solid black;
   transition: all 0.1s linear;
-  position: relative;
+  
+  font-size: var(--icon-size);
+  color: var(--midnight-blue);
 
   &:first-child {
     border-radius: 2px 0px 0px 0px;
@@ -78,10 +92,12 @@
 .sidebar-content {
   height: 100%;
   width: 100%;
-  border: 2px solid black;
-  border-width: 0px 0px 0px 2px;
+
   position: relative;
   z-index: 50;
+
+  border: 2px solid black;
+  border-width: 0px 0px 0px 2px;
 }
 
 .sidebar-text {
@@ -89,113 +105,24 @@
 
   height: 100%;
   width: 100%;
-  z-index: 300;
-  position: relative;
-  background-color: var(--cloud);
-  overflow-y: scroll;
-  border-color: var(--green-sea);
-  border-style: solid;
-  border-width: 0px 0px 0px 10px;
   padding: 1em;
-  box-sizing: border-box;
+
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  transition: all 0.5s linear;
-}
-
-/* change someday to global "image-card" component */
-.image-card {
-  @extend %flex-center;
-
-  margin: auto;
-  margin-top: 1em;
-  margin-bottom: 1em;
-  max-width: 90%;
-  padding: 1em;
-  flex-direction: column;
-  background-color: white;
-  box-shadow: 0px 0px 35px 0px rgba(0,0,0,0.75);
-
-  & img {
-    border: 1px solid black;
-    min-height: 3em;
-    min-width: 100%;
-    max-width: 100%;
-    text-align: center;
-    line-height: 3em;
-    margin-bottom: 1em;
-  }
-
-  & span {
-    font-size: 0.75em;
-  }
-}
-
-.file-download-menu {
-  width: 100%;
-  height: 100%;
-}
-
-.download-option {
-  /* height: 10em; */
-
-  width: 95%;
-  margin: auto;
   box-sizing: border-box;
-  padding: 1em;
-  padding-left: 0;
-  background-color: white;
-  display: flex;
-  align-content: center;
+
+  position: relative;
+  z-index: 300;
+  
+  background-color: var(--cloud);
+  border-color: var(--green-sea);
   border-style: solid;
-  border-color: black;
-  border-width: 2px 2px 0px 2px;
+  border-width: 0px 0px 0px 10px;
+  
+  overflow-y: scroll;
 
-  &:first-child {
-    margin-top: 1em;
-  }
-
-  &:last-child {
-    margin-bottom: 1em;
-    border-width: 2px 2px 2px 2px;
-  }
-}
-
-.download-icon-container {
-  @extend %flex-center;
-
-  width: 30%;
-  height: 100%;
-  margin: auto;
-}
-
-.download-icon-inner-container {
-  @extend %flex-center;
-
-  width: var(--icon-size);
-  height: var(--icon-size);
-  padding: 0.2em;
-  color: black;
-  border-radius: 50%;
-  font-size: var(--icon-size);
-  background-color: var(--green-sea);
-  color: var(--midnight-blue);
-  transition: all 0.1s linear;
-  border: 2px solid black;
-
-  &:hover {
-    cursor: pointer;
-  }
-}
-
-.download-option-description {
-  width: 70%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
+  transition: all 0.5s linear;
 }
 
 /* Mobile scaling */

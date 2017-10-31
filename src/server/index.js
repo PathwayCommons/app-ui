@@ -10,6 +10,7 @@ const config = require('./config');
 const logger = require('./logger');
 const stream = require('stream');
 const fs = require('fs');
+const checkTables = require('./database/createTables');
 
 const app = express();
 const server = http.createServer(app);
@@ -144,5 +145,8 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+// Create database instance if one does not already exist.
+checkTables.checkDatabase();
 
 module.exports = app;

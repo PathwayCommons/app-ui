@@ -10,10 +10,6 @@ cytoscape.use(cose);
 const sbgnStylesheet = require('cytoscape-sbgn-stylesheet');
 
 const Icon = require('../../common/components').Icon;
-<<<<<<< HEAD
-const PathwayCommonsService = require('../../../service/').PathwayCommonsService;
-=======
->>>>>>> 678e39d269e266d9118fed1f7d31d2411781801c
 
 class Paint extends React.Component {
   constructor(props) {

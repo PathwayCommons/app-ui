@@ -2,6 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const queryString = require('query-string');
 const objPath = require('object-path');
+const color = require('color');
 
 const cytoscape = require('cytoscape');
 const cose = require('cytoscape-cose-bilkent');
@@ -37,8 +38,15 @@ class Paint extends React.Component {
     this.state.cy.destroy();
   }
 
+  colorMap(value) {
+    return color.hsl(value * 240 / 255, 100, 50).string();
+  }
+  
   // only call this after you know component is mounted
-  submitGeneSearch(geneNames) {
+  initPainter(expressionsList) {
+    const expressions = objPath.get(expressionsList, '0.expressions', null);
+    const geneNames = expressions ? expressions.map(e => e.geneName) : [];
+
     const state = this.state;
     const query = {
       q: geneNames.slice(0, 15).sort().join(' '),
@@ -50,7 +58,7 @@ class Paint extends React.Component {
 
     PathwayCommonsService.querySearch(query)
       .then(searchResults => {
-        const uri = objPath.get(searchResults, '0.uri', null);
+        const uri = objPath.get(searchResults, '5.uri', null);
         if (uri != null) {
           PathwayCommonsService.query(uri, 'json', 'Named/displayName')
           .then(response => {
@@ -75,8 +83,16 @@ class Paint extends React.Component {
               name: 'cose-bilkent',
               nodeDimensionsIncludeLabels: true
             }).run();
+
+            expressions.forEach(expression => {
+              state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
+                node.style({
+                  'background-color': this.colorMap(expression.values[0])                
+                });
+              });
+            });
+
           });
-      
         }
       });
   }
@@ -97,9 +113,7 @@ class Paint extends React.Component {
           this.setState({
             enrichmentDataSets: enrichmentDataSetJSON.dataSetExpressionList
           }, () => {
-            const enrichments = objPath.get(enrichmentDataSetJSON, 'dataSetExpressionList.0.expressions', null);
-            const gNames = enrichments ? enrichments.map(e => e.geneName) : [];
-            this.submitGeneSearch(gNames);
+            this.initPainter(enrichmentDataSetJSON.dataSetExpressionList);
           });
         });
     }

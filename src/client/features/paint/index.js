@@ -87,7 +87,13 @@ class Paint extends React.Component {
             expressions.forEach(expression => {
               state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
                 node.style({
-                  'background-color': this.colorMap(expression.values[0])                
+                  'pie-size': '100%',
+                  'pie-1-background-color': this.colorMap(expression.values[0]),
+                  'pie-1-background-size': '50%',
+                  'pie-1-background-opacity': 1,
+                  'pie-2-background-color': this.colorMap(expression.values[expression.values.length - 1]),
+                  'pie-2-background-size': '50%',
+                  'pie-2-background-opacity': 1
                 });
               });
             });

@@ -26,7 +26,7 @@ router.post('/submit', function (req, res) {
 });
 
 router.get('/get', function (req, res) {
-  routes.etLayout(req.query.uri, req.query.version).then((package) => {
+  routes.getLayout(req.query.uri, req.query.version).then((package) => {
     res.json(package.result);
   });
 });

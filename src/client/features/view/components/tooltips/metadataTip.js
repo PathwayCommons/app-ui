@@ -1,6 +1,8 @@
 const h = require('hyperscript');
 const classNames = require('classnames');
 const tippy = require('tippy.js');
+const tableify = require('tableify');
+const config = require('../../config');
 
 
 //Manage the creation and display of tooltips
@@ -11,27 +13,7 @@ class MetadataTip {
     this.name = name;
     this.data = data.parsedMetadata;
     this.cyElement = cyElement;
-    this.db = [
-      ['BioGrid', 'https://thebiogrid.org/', ''],
-      ['DrugBank', 'https://www.drugbank.ca/', ''],
-      ['mirtarBase', 'http://mirtarbase.mbc.nctu.edu.tw/', 'php/detail.php?mirtid=MIRT000002'],
-      ['NetPath', 'http://www.netpath.org/', 'molecule?molecule_id='],
-      ['Panther', 'http://pantherdb.org/', 'genes/geneList.do?searchType=basic&fieldName=all&organism=all&listType=1&fieldValue='],
-      ['PID', null],
-      ['PhosphoSitePlus', null],
-      ['Reactome', 'https://reactome.org/', 'content/detail/'],
-      ['SMPD', null],
-      ['Wikipathways', null],
-      ['uniprot', 'http://www.uniprot.org/', 'uniprot/'],
-      ['HGNC', 'https://www.genenames.org/', 'cgi-bin/search?search_type=all&search='],
-      ['ChEBI', 'https://www.ebi.ac.uk/chebi/', 'searchId.do?chebiId='],
-      ['Kegg Reaction', 'http://www.genome.jp/', 'dbget-bin/www_bget?rn:'],
-      ['Kegg Compound', 'http://www.genome.jp/', 'dbget-bin/www_bget?cpd:'],
-      ['Kegg Drug', 'http://www.genome.jp/', 'dbget-bin/www_bget?drg:'],
-      ['KEGG', 'http://www.genome.jp/dbget-bin/www_bfind_sub?mode=bfind&max_hit=1000&dbkey=kegg&keywords=', ''],
-      ['PubMed', 'https://www.ncbi.nlm.nih.gov/pubmed/', '?term='],
-      ['Ensembl', 'https://www.ensembl.org/' , 'Multi/Search/Results?q=']
-    ];
+    this.db = config.databases;
   }
 
   //Generate HTML elements for Each Parsed Metadata Field
@@ -52,35 +34,42 @@ class MetadataTip {
       let shortArray = pair[1].slice(0, 3);
 
       //Filter out Chemical formulas
-      if(shortArray instanceof Array) shortArray = shortArray.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig)));
+      if (shortArray instanceof Array) shortArray = shortArray.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig)));
       return h('p', h('div.field-name', 'Synonyms: '), shortArray.toString());
     }
     else if (key === 'Database IDs') {
       //Sort the array by database names
       let sortedArray = this.sortByDatabaseId(pair[1]);
-      if(sortedArray.length < 1) { return; }
+      if (sortedArray.length < 1) { return; }
       return h('div.field-name', 'Database Id(s):', h('ul', sortedArray.map(this.generateIdList, this)));
     }
 
     return;
   }
-  
+
   //Generate HTML Elements for tooltips
   generateToolTip() {
-    if(!(this.data)){this.data = [];}
+
+    //Order the data array
+    let data = this.orderArray(this.data); 
+
+    if (!(this.data)) { this.data = []; }
     return h('div.tooltip-image',
       h('div.tooltip-heading', this.name),
-      h('div.tooltip-internal', h('div', (this.data).map(this.parseMetadata, this))),
+      h('div.tooltip-internal', h('div', (data).map(this.parseMetadata, this))),
       h('div.tooltip-buttons',
         h('i', { className: classNames('material-icons', 'tooltip-button-pdf') }, 'open_in_new'),
-        h('i', { className: classNames('material-icons', 'tooltip-button-show') }, 'picture_as_pdf'))
+        h('i', { className: classNames('material-icons', 'tooltip-button-show'), onclick : this.getRawData(data) }, 'file_download'))
     );
   }
 
   //Show Tippy Tooltip
-  show() {
+  show(cy) {
     //Get tooltip object from class
     let tooltip = this.tooltip;
+
+    //Hide all other tooltips
+    this.hideAll(cy);
 
     //If no tooltip exists create one
     if (!tooltip) {
@@ -94,13 +83,14 @@ class MetadataTip {
 
     //Show Tooltip
     tooltip.show(tooltip.store[0].popper);
+    this.visible = true;
   }
 
   //Generate a database link
   generateDBLink(dbName, dbId) {
     //Get base url for dbid
     let link = this.db.filter(value => dbName.toUpperCase() === value[0].toUpperCase());
-    if(!link || link.length !== 1) {
+    if (!link || link.length !== 1) {
       link = this.db.filter(value => dbName.toUpperCase().indexOf(value[0].toUpperCase()) !== -1);
     }
 
@@ -113,8 +103,6 @@ class MetadataTip {
       return dbId;
     }
   }
-
-
 
   //Generate list of all given database id's
   //Requires a valid database Id Object
@@ -165,25 +153,56 @@ class MetadataTip {
     }
   }
 
+  //Hide all tooltip objects
+  hideAll(cy) {
+    cy.elements().each(function (element) {
+      var tempElement = element.scratch('tooltip');
+      if(tempElement && tempElement.isVisible()) {tempElement.hide();}
+    });
+  }
+
 
   //Hide Tippy tooltip
   hide() {
-    //To do
+    if (this.tooltip) {
+      this.tooltip.hide(this.tooltip.store[0].popper);
+    }
+    this.visible = false;
   }
 
   //Destroy Tippy tooltip
   destroy() {
-    //To do
+    if (this.tooltip) {
+      this.tooltip.destory(this.tooltip.store[0].popper);
+      this.tooltip = null;
+    }
   }
+
+  //Get display status of tooltip
+  isVisible(){
+    return this.visible;
+  }
+
 
   //Bind tooltip to sidebar more info view
   displayMore() {
     //To do
   }
 
-  //Get Raw Data
-  getRawData() {
+  //Return a function that provides raw data
+  getRawData(data) {
+    var html = tableify(data);
+    return () => window.open().document.write(html);
   }
+
+    //Order a given metadata data array
+  orderArray(data){
+      for(var x in data){
+        data[x][0] == "Database IDs" ? data.push( data.splice(x,1)[0] ) : 0;
+      }
+      return data;
+    }
+
 }
 
 

@@ -1,4 +1,4 @@
-const MetadataTip = require('../metadataTip');
+const MetadataTip = require('../../components/tooltips/metadataTip');
 
 const bindClick = (cy) => {
   //Tippy JS Events
@@ -7,15 +7,17 @@ const bindClick = (cy) => {
   cy.on('cxttap', 'node', function (evt) {
       let data = evt.target.data();
       let name = data.label;
-      let html = new MetadataTip(name, data, evt.target);
-      html.show();
+      let cy = evt.cy;
+
+      //Create or get tooltip HTML object
+      let html = evt.target.scratch('tooltip');
+      if(!(html)){
+        html = new MetadataTip(name, data, evt.target);
+        evt.target.scratch('tooltip', html);
+      }
+
+      html.show(cy);
   });
-
-  //Bind drag  event to tippy.hide()
-  cy.on('drag', 'node', function (evt) {
-
-  });
-
 };
 
 module.exports = bindClick;

@@ -72,6 +72,7 @@
     "sbgnml-to-cytoscape": "^4.0.1",
     "serve-favicon": "^2.4.5",
     "socket.io": "^2.0.3",
+    "tableify": "^1.1.0",
     "tippy.js": "^1.4.1",
     "unique-concat": "^0.2.2",
     "uuid": "^3.1.0",

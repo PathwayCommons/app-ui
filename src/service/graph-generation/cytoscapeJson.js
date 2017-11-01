@@ -14,7 +14,7 @@ function getPathwayLevelMetadata(uri) {
   return Promise.all([
     get('Named/displayName').then(value => title = value),
     get('Entity/dataSource/displayName').then(value => dataSource = value),
-    get('Entity/comment').then(value => dataSource = value),
+    get('Entity/comment').then(value => comments = value),
     get('Entity/organism/displayName').then(value => organism = value)
   ]).then(data => ({ comments, dataSource, title, organism }));
 };

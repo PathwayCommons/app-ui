@@ -6,33 +6,60 @@ and populate the DB.
 
 const r = require('rethinkdb');
 const config = require('./config');
+const Promise = require('bluebird');
 
-let connection = null;
-
-r.connect( {host: config.ip, port: config.port}, function(err, conn) {
-  if (err) throw err;
-  connection = conn;
-  createTables('metadataTest', [
-    'graph',
-    'version',
-    'layout',
-    'layout_cache'
-  ], true);
-});
-
-
-function createTables(dbName, table_arr, enable_logs){
-  r.dbCreate(dbName).run(connection, function(err,callback){
-    if (err) throw err;
-    if (enable_logs) console.log('Database '+dbName+' created.');
-  });
-
-  for (let i = 0; i < table_arr.length; i++) {
-    r.db(dbName).tableCreate(table_arr[i]).run(connection, function(err, result) {
-      if (err) throw err;
-      
-    });
-  }
-  if (enable_logs) console.log('Tables created.');
-  
+function connect(){
+  return r.connect({host: config.ip, port: config.port});
 }
+
+
+function createTable(dbName, tableName, connection) {
+  return r.db(dbName).tableCreate(tableName).run(connection);
+}
+
+function createTables(dbName, table_arr, connection) {
+  return r.dbCreate(dbName).run(connection).then(() => {
+    return Promise.map(table_arr, function (table) {
+      return createTable(dbName, table, connection);
+    });
+  });
+}
+
+function checkTable(tableName) {
+  let connection;
+  connect().then((conn)=>{
+    connection = conn;
+    return r.db(config.databaseName).tableList().run(connection);
+  }).then((tableList)=>{
+    if (tableList.indexOf(tableName) < 0){
+      return r.db(config.databaseName).tableCreate(tableName).run(connection);
+    } else {
+      return;
+    }
+  });
+}
+
+function checkTables() {
+  return Promise.map(config.tables, function (tableName) {
+    return checkTable(tableName);
+  });
+}
+
+function checkDatabase() {
+  let connection;
+  return connect()
+    .then((conn) => {
+      connection = conn;
+      return r.dbList().run(connection);
+    })
+    .then((dbArray) => {
+      if (dbArray.indexOf(config.databaseName) >= 0) {
+        // If the database exists, ensure all the corrct tables exist as well.
+        return checkTables();
+      } else {
+        return createTables(config.databaseName, config.tables, connection);
+      }
+    });
+}
+
+module.exports = { checkDatabase };

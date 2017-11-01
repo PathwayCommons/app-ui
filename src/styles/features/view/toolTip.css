@@ -1,0 +1,74 @@
+.tippy-tooltip [x-circle] {
+  border-radius : 0%;
+}
+
+.tippy-tooltip.tippy-tooltip--regular.light-theme.enter.tippy-notransition {
+  border-radius: 5%;
+}
+
+.tooltip-image {
+    position: relative;
+    width: 100%;
+    color: black;
+    /* min-width: 300px;
+    min-height: 250px; */
+    max-width: 20vw;
+    border-radius: 0%;
+    /* height: 16vh;
+    width: 16vw; */
+ }
+
+ .tooltip-internal {
+    position: relative;
+    top:  5%;
+    left: 0;
+    word-wrap: break-word;
+    overflow-y: auto;
+    text-align: left;
+    height: 100%;
+    font-size: 1.3vh !important;
+ }
+
+ .tooltip-heading {
+    position: relative;
+    top: 2px;
+    text-align: center;
+    word-wrap: break-word;
+    font-size: 2vh;
+    font-weight: 400;
+    color : var(--midnight-blue)
+}
+
+.tooltip-buttons{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--midnight-blue);
+    font-size: 2.45vh !important;
+    font-weight: 400 !important;
+}
+
+.tooltip-button-pdf {
+    margin: 4px;
+}
+
+.tooltip-button-show {
+    margin: 4px;
+}
+
+.field-name{
+    margin: 2px;
+    display: inline-block;
+}
+
+.db-name {
+    text-decoration: underline;
+    margin: 3px;
+    display: inline-block;
+}
+
+a {
+  color: var(--link);
+  margin: 1px;
+}

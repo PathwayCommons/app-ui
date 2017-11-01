@@ -17,13 +17,13 @@
   flex-flow: row wrap;
   align-content: flex-start;
   align-items: center;
-  background-color: var(--midnight-blue);
+  background-color: var(--dark-base-colour);
   padding: 10px;
-  color: var(--cloud);
+  color: var(--light-base-colour);
 }
 
 .paint-graph-info {
-  background-color: var(--cloud);
+  background-color: var(--light-base-colour);
   color: black;
 }
 

@@ -1,11 +1,15 @@
 :root {
-  /* /Pathway commons colors */
+  /* Pathway commons colors */
   --green-sea: #16A085;
-  --green-sea-dark: rgb(16, 117, 97);
   --midnight-blue: #212F3D;
-	--midnight-blue-dark: #0E243A;
   --cloud: #ECF0F1;
-  --cloud-dark: #D3D8DA;
+  --cloud-dark: #d3d8da;
+
+  /* Colours used by other modules */
+  --accent-1-colour: var(--green-sea);
+  --light-base-colour: var(--cloud);
+  --light-base-colour-dark: var(--cloud-dark);
+  --dark-base-colour: var(--midnight-blue);
 
   --box-shadow: 0px 0px 20px 3px rgba(0,0,0,0.4);
   --icon-size: 3vmin;

@@ -72,12 +72,12 @@
 
   position: relative;
 
-  background-color: var(--cloud);
+  background-color: var(--light-base-colour);
   border-top: 2px solid black;
   transition: all 0.1s linear;
   
   font-size: var(--icon-size);
-  color: var(--midnight-blue);
+  color: var(--dark-base-colour);
 
   &:first-child {
     border-radius: 2px 0px 0px 0px;
@@ -115,8 +115,8 @@
   position: relative;
   z-index: 300;
   
-  background-color: var(--cloud);
-  border-color: var(--green-sea);
+  background-color: var(--light-base-colour);
+  border-color: var(--accent-1-colour);
   border-style: solid;
   border-width: 0px 0px 0px 10px;
   

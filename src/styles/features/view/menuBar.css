@@ -10,7 +10,7 @@
   top: 0;
   left: 2%;
   
-  background-color: var(--cloud);
+  background-color: var(--light-base-colour);
   border-radius: 0px 0px 3px 3px;
   border: 2px solid black;
   border-width: 0px 2px 2px 2px;
@@ -37,7 +37,7 @@
   padding-left: calc(1em - var(--icon-size) / 3);
   padding-right: 1em;
 
-  color: var(--midnight-blue);
+  color: var(--dark-base-colour);
 
   & h4 {
     margin: 0;
@@ -59,14 +59,14 @@
   
   
   font-size: var(--icon-size);
-  color: var(--midnight-blue);
+  color: var(--dark-base-colour);
 
   cursor: pointer;
 
   transition: all 0.1s linear;
 
   &:hover {
-    background-color: var(--cloud-dark);
+    background-color: var(--light-base-colour-dark);
   }
 }
 

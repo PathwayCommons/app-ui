@@ -38,12 +38,12 @@
   width: var(--icon-size);
   padding: 0.2em;
 
-  background-color: var(--green-sea);
+  background-color: var(--accent-1-colour);
   border: 2px solid black;
   border-radius: 50%;
 
   font-size: var(--icon-size);
-  color: var(--midnight-blue);
+  color: var(--dark-base-colour);
 
   transition: all 0.1s linear;
 

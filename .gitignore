@@ -5,3 +5,4 @@ build
 *.log
 package-lock.json
 src/server/database/pathways.txt
+src/server/database/finishedPathways.txt

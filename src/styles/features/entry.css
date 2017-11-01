@@ -25,7 +25,7 @@
 }
 
 .entry-pc-title {
-  color: var(--midnight-blue);
+  color: var(--dark-base-colour);
   margin-bottom: 0;
 }
 
@@ -37,7 +37,7 @@
 .entry-search {
   width: 625px;
   border: 1px solid;
-  border-color: var(--cloud);
+  border-color: var(--light-base-colour);
   display: flex;
   align-items: flex-start;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);

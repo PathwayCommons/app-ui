@@ -1,0 +1,6 @@
+@import "/components/downloadOption.css";
+
+.file-download-menu {
+  height: 100%;
+  width: 100%;
+}

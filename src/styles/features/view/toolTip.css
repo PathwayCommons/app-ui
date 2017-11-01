@@ -3,7 +3,7 @@
 }
 
 .tippy-tooltip.tippy-tooltip--regular.light-theme.enter.tippy-notransition {
-  border-radius: 5%;
+  border-radius: 3%;
 }
 
 .tooltip-image {
@@ -66,9 +66,4 @@
     text-decoration: underline;
     margin: 3px;
     display: inline-block;
-}
-
-a {
-  color: var(--link);
-  margin: 1px;
 }

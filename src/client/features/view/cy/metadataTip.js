@@ -16,7 +16,7 @@ class MetadataTip {
       ['DrugBank', 'https://www.drugbank.ca/', ''],
       ['mirtarBase', 'http://mirtarbase.mbc.nctu.edu.tw/', 'php/detail.php?mirtid=MIRT000002'],
       ['NetPath', 'http://www.netpath.org/', 'molecule?molecule_id='],
-      ['Panther', null],
+      ['Panther', 'http://pantherdb.org/', 'genes/geneList.do?searchType=basic&fieldName=all&organism=all&listType=1&fieldValue='],
       ['PID', null],
       ['PhosphoSitePlus', null],
       ['Reactome', 'https://reactome.org/', 'content/detail/'],
@@ -28,7 +28,9 @@ class MetadataTip {
       ['Kegg Reaction', 'http://www.genome.jp/', 'dbget-bin/www_bget?rn:'],
       ['Kegg Compound', 'http://www.genome.jp/', 'dbget-bin/www_bget?cpd:'],
       ['Kegg Drug', 'http://www.genome.jp/', 'dbget-bin/www_bget?drg:'],
-      ['KEGG', 'http://www.genome.jp/dbget-bin/www_bfind_sub?mode=bfind&max_hit=1000&dbkey=kegg&keywords=', '']
+      ['KEGG', 'http://www.genome.jp/dbget-bin/www_bfind_sub?mode=bfind&max_hit=1000&dbkey=kegg&keywords=', ''],
+      ['PubMed', 'https://www.ncbi.nlm.nih.gov/pubmed/', '?term='],
+      ['Ensembl', 'https://www.ensembl.org/' , 'Multi/Search/Results?q=']
     ];
   }
 
@@ -37,8 +39,8 @@ class MetadataTip {
     let key = pair[0];
 
     //Get HTML for current data pair based on key value
-    if (key === 'Display Name') {
-      return h('p', h('div.field-name', 'Display Name: '), pair[1].toString());
+    if (key === 'Standard Name') {
+      return h('p', h('div.field-name', 'Standard Name: '), pair[1].toString());
     }
     else if (key === 'Data Source') {
       let source = pair[1].replace('http://pathwaycommons.org/pc2/', '');
@@ -48,19 +50,24 @@ class MetadataTip {
     else if (key === 'Names') {
       //Trim results to first 3 names to avoid overflow
       let shortArray = pair[1].slice(0, 3);
+
+      //Filter out Chemical formulas
+      if(shortArray instanceof Array) shortArray = shortArray.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig)));
       return h('p', h('div.field-name', 'Synonyms: '), shortArray.toString());
     }
     else if (key === 'Database IDs') {
       //Sort the array by database names
       let sortedArray = this.sortByDatabaseId(pair[1]);
+      if(sortedArray.length < 1) { return; }
       return h('div.field-name', 'Database Id(s):', h('ul', sortedArray.map(this.generateIdList, this)));
     }
 
     return;
   }
-
+  
   //Generate HTML Elements for tooltips
   generateToolTip() {
+    if(!(this.data)){this.data = [];}
     return h('div.tooltip-image',
       h('div.tooltip-heading', this.name),
       h('div.tooltip-internal', h('div', (this.data).map(this.parseMetadata, this))),
@@ -100,7 +107,7 @@ class MetadataTip {
     //Build reference url
     if (link.length === 1 && link[0][1]) {
       let url = link[0][1] + link[0][2] + dbId;
-      return h('a', { href: url, target: '_blank' }, dbId);
+      return h('a.plain-link', { href: url, target: '_blank' }, dbId);
     }
     else {
       return dbId;
@@ -148,7 +155,7 @@ class MetadataTip {
   generateDataSourceLink(name, prefix = '') {
     let link = this.db.filter(value => name.toUpperCase().indexOf(value[0].toUpperCase()) !== -1);
     if (link.length === 1 && link[0][1]) {
-      return h('div', h('div.field-name', prefix), h('a', { href: link[0][1], target: '_blank' }, link[0][0]));
+      return h('div', h('div.field-name', prefix), h('a.plain-link', { href: link[0][1], target: '_blank' }, link[0][0]));
     }
     else if (link.length === 1) {
       return link[0][1];

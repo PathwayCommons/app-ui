@@ -15,18 +15,6 @@ function compareGraphs(graph1, graph2) { // hash should be saved in the graph ob
   return graph1.hash === graph2.hash;
 }
 
-
-function compareGraphs(graph1, graph2) { // hash should be saved in the graph object
-  if (!graph1.hash) {
-    graph1.hash = hash.digest(graph1.data);
-  }
-
-  if (!graph2.hash) {
-    graph2.hash = hash.digest(graph2.data);
-  }
-  return graph1.hash === graph2.hash;
-}
-
 function isExistingGraph(newGraph, connection) {
   let graphListProm = r.db(config.databaseName)
     .table('graph')

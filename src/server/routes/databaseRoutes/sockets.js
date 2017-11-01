@@ -7,28 +7,28 @@ const router = express.Router();
 
 function getLayout(io, socket, ioPackage) {
   routes.getLayout(ioPackage.uri, ioPackage.version).then((package) => {
-    io.send('layoutPackage', btoa(package));
+    socket.emit('layoutPackage', btoa(package));
   });
 }
 
 function submitLayout(io, socket, ioPackage) {
   routes.submitLayout(ioPackage.uri, ioPackage.version, ioPackage.layout, ioPackage.key)
     .then((package) => {
-      io.send('updated', package);
+      io.emit('updated', package);
     });
 }
 
 function getEditKey(io, socket, ioPackage) {
   routes.getEditKey(ioPackage.uri, ioPackage.version, socket.request.connection.remoteAddress, true)
     .then((package) => {
-      io.send('editKey', package);
+      io.emit('editKey', package);
     });
 }
 
 function checkEditKey(io, socket, ioPackage) {
   routes.checkEditKey(ioPackage.uri, ioPackage.version, ioPackage.key)
     .then((package) => {
-      io.send('editPermissions', package);
+      io.emit('editPermissions', package);
     });
 }
 

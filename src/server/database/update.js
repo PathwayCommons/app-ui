@@ -76,8 +76,6 @@ function updateGraph(pcID, releaseID, cyJson, connection, callback) {
         db.insert('version', { id: uuid(), pc_id: pcID, release_id: releaseID, graph_id: graphID, layout_ids: [] }, connection)
       ]);
     }
-  }).catch((e) => {
-    throw e;
   });
 
 

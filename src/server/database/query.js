@@ -27,8 +27,6 @@ function getGraphID(pcID, releaseID, connection, callback) {
   let idPromise = queryRoot.run(connection)
     .then((result) => {
       return result.toArray();
-    }).catch((e) => {
-      throw e;
     }).then((result) => {
       return result[0].graph_id;
     }).catch(() => {
@@ -77,8 +75,6 @@ function getLayout(pcID, releaseID, connection, callback) {
     .run(connection)
     .then((cursor) => {
       return cursor.toArray(); // Convert list of valid versions (should be only 1)
-    }).catch((e) => {          // from a cursor to an array
-      throw e;
     }).then((versionArray) => {
       if (!versionArray.length) {
         let err = new Error('No saved layouts');
@@ -91,8 +87,6 @@ function getLayout(pcID, releaseID, connection, callback) {
         .zip()
         .pluck('positions') // We're only looking for positions
         .run(connection);
-    }).catch((e) => {
-      throw e;
     }).then((allSubmissions) => {
       // Run decision making process to amalgamate down to one layout to return
       // currently just returns the most recent submission

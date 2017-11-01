@@ -1,7 +1,7 @@
 
 const fs = require('fs'); // node file system, to be used for importing XMLs
 const convert = require('sbgnml-to-cytoscape'); // used to convert to cy JSONs
-const accessDB = require('./query');
+const query = require('./query');
 const Promise = require('bluebird');
 
 const args = process.argv;
@@ -29,12 +29,7 @@ function URIify(str) {
   return str_change;
 }
 
-
-
-let connectionPromise = accessDB.connect();
-let conn = null;
-
-function processFile(dir, file) {
+function processFile(dir, file,conn) {
 
   if (!validateURI(file)) {
     return;
@@ -49,22 +44,18 @@ function processFile(dir, file) {
     if (!uri) {
       console.log(file);
     }
-    return accessDB.createNew(pcID, json_data, version, conn);
+    return query.createNew(pcID, json_data, version, conn);
 
   } catch (e) { 
     // Temporary hack until Dylan can address the creation of undefined values
     // in the sbgn-to-cytoscape converter
     json_data = JSON.parse(JSON.stringify(json_data));
-    return accessDB.createNew(pcID, json_data, version, conn);
+    return query.createNew(pcID, json_data, version, conn);
   }
 }
 
-connectionPromise.then((connection) => {
-  conn = connection;
-}).catch((e) => {
-  throw e;
-}).then(() => {
-  if (!conn) {
+query.connect().then((connection) => {
+  if (!connection) {
     throw Error('No connection');
   }
   let numProcessed = 0;
@@ -75,7 +66,7 @@ connectionPromise.then((connection) => {
       if (!(numProcessed % 20)) {
         console.log(numProcessed);
       }
-      return processFile(dir, file);
+      return processFile(dir, file, connection);
     },
       { concurrency: 4 });
 

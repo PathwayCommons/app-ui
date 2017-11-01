@@ -7,9 +7,12 @@ const cytoscape = require('cytoscape');
 const cose = require('cytoscape-cose-bilkent');
 cytoscape.use(cose);
 
+const sbgn2Json = require('sbgnml-to-cytoscape');
 const sbgnStylesheet = require('cytoscape-sbgn-stylesheet');
 
 const Icon = require('../../common/components').Icon;
+const PathwayCommonsService = require('../../services').PathwayCommonsService;
+
 
 class Paint extends React.Component {
   constructor(props) {
@@ -34,24 +37,76 @@ class Paint extends React.Component {
     this.state.cy.destroy();
   }
 
+  // only call this after you know component is mounted
+  submitGeneSearch(geneNames) {
+    const state = this.state;
+    const query = {
+      q: geneNames.slice(0, 15).sort().join(' '),
+      gt: 2,
+      lt: 100,
+      type: 'Pathway',
+      datasource: 'reactome'
+    };
+
+    PathwayCommonsService.querySearch(query)
+      .then(searchResults => {
+        const uri = objPath.get(searchResults, '0.uri', null);
+        if (uri != null) {
+          PathwayCommonsService.query(uri, 'json', 'Named/displayName')
+          .then(response => {
+            this.setState({
+              name: response ? response.traverseEntry[0].value.pop() : ''
+            });
+          });
+    
+        PathwayCommonsService.query(uri, 'json', 'Entity/dataSource/displayName')
+          .then(responseObj => {
+            this.setState({
+              datasource: responseObj ? responseObj.traverseEntry[0].value.pop() : ''
+            });
+          });
+
+        PathwayCommonsService.query(uri, 'SBGN')
+          .then(text => {
+            const sbgnJson = sbgn2Json(text);
+            state.cy.remove('*');
+            state.cy.add(sbgnJson);
+            state.cy.layout({
+              name: 'cose-bilkent',
+              nodeDimensionsIncludeLabels: true
+            }).run();
+          });
+      
+        }
+      });
+  }
+
   componentDidMount() {
     const props = this.props;
+    const state = this.state;
+    const container = document.getElementById('cy-container');
+    state.cy.mount(container);
+
     const query = queryString.parse(props.location.search);
     const enrichmentsURI = query.uri ? query.uri : null;
 
     if (enrichmentsURI != null) {
       fetch(enrichmentsURI)
         .then(response => response.json())
-        .then(enrichmentDataSetJSON => this.setState({enrichmentDataSets: enrichmentDataSetJSON.dataSetExpressionList}));
+        .then(enrichmentDataSetJSON => {
+          this.setState({
+            enrichmentDataSets: enrichmentDataSetJSON.dataSetExpressionList
+          }, () => {
+            const enrichments = objPath.get(enrichmentDataSetJSON, 'dataSetExpressionList.0.expressions', null);
+            const gNames = enrichments ? enrichments.map(e => e.geneName) : [];
+            this.submitGeneSearch(gNames);
+          });
+        });
     }
   }
 
   render() {
     const state = this.state;
-    const enrichments = objPath.get(state, 'enrichmentDataSets.0.expressions', null);
-    // const gNames = enrichments ? enrichments.map(e => e.geneName).sort().join('  ') : '';
-    // console.log(enrichments);
-    // console.log(gNames);
 
     return h('div.paint', [
       h('div.paint-menu', [
@@ -69,10 +124,6 @@ class Paint extends React.Component {
           h(Icon, { className: 'paint-control-icon', icon: 'image' }),
           h(Icon, { className: 'paint-control-icon', icon: 'shuffle' }),
           h(Icon, { className: 'paint-control-icon', icon: 'help' }),
-        ]),
-        h('div.paint-toolbar', [
-          h('p', `${JSON.stringify(enrichments, null, 2)}`)
-
         ])
       ]),
       h('div.paint-graph', [

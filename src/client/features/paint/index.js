@@ -1,16 +1,15 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const queryString = require('query-string');
+const objPath = require('object-path');
 
 const cytoscape = require('cytoscape');
 const cose = require('cytoscape-cose-bilkent');
 cytoscape.use(cose);
 
-const sbgn2Json = require('sbgnml-to-cytoscape');
 const sbgnStylesheet = require('cytoscape-sbgn-stylesheet');
 
 const Icon = require('../../common/components').Icon;
-const PathwayCommonsService = require('../../services/').PathwayCommonsService;
 
 class Paint extends React.Component {
   constructor(props) {
@@ -24,7 +23,7 @@ class Paint extends React.Component {
     });
 
     this.state = {
-      enrichmentData: {},
+      enrichmentDataSets: [],
       cy: cy,
       name: '',
       datasource: ''
@@ -41,12 +40,18 @@ class Paint extends React.Component {
     const enrichmentsURI = query.uri ? query.uri : null;
 
     if (enrichmentsURI != null) {
-      fetch(enrichmentsURI).then(response => response.json()).then(enrichmentJson => this.setState({enrichmentData: enrichmentJson}));
+      fetch(enrichmentsURI)
+        .then(response => response.json())
+        .then(enrichmentDataSetJSON => this.setState({enrichmentDataSets: enrichmentDataSetJSON.dataSetExpressionList}));
     }
   }
 
   render() {
     const state = this.state;
+    const enrichments = objPath.get(state, 'enrichmentDataSets.0.expressions', null);
+    // const gNames = enrichments ? enrichments.map(e => e.geneName).sort().join('  ') : '';
+    // console.log(enrichments);
+    // console.log(gNames);
 
     return h('div.paint', [
       h('div.paint-menu', [
@@ -65,9 +70,10 @@ class Paint extends React.Component {
           h(Icon, { className: 'paint-control-icon', icon: 'shuffle' }),
           h(Icon, { className: 'paint-control-icon', icon: 'help' }),
         ]),
-        h('div.paint-toolbar',
-          JSON.stringify(state.enrichmentData, null, 4)
-        )
+        h('div.paint-toolbar', [
+          h('p', `${JSON.stringify(enrichments, null, 2)}`)
+
+        ])
       ]),
       h('div.paint-graph', [
         h(`div.#cy-container`, {style: {width: '100%', height: '100%'}})

@@ -18,9 +18,7 @@ function queryPC(pcID) {
 }
 
 function queryMetadata(pcID) {
-  return cyJson.getCytoscapeJson(pcID).then((result) => {
-    return result;
-  });
+  return cyJson.getCytoscapeJson(pcID);
 }
 
 module.exports = {

@@ -3,7 +3,6 @@ const auth = require('./../auth.js');
 const query = require('./../../database/query');
 const update = require('./../../database/update');
 const lazyLoad = require('./../../lazyload');
-const btoa = require('btoa');
 
 function getLayoutFallback(pc_id, release_id, connection) {
   return lazyLoad.queryMetadata(pc_id)
@@ -16,10 +15,9 @@ function getLayoutFallback(pc_id, release_id, connection) {
         update.updateGraph(pc_id, release_id, result, connection);
       }
 
-      return { result: btoa(JSON.stringify(output)), socket: 'layoutPackage' };
+      return JSON.stringify(output);
     }).catch(() => {
-      let result = `ERROR: Layout for ${pc_id} could not be retrieved from database or PC2`;
-      return { result, socket: 'error' };
+      return `ERROR: Layout for ${pc_id} could not be retrieved from database or PC2`;
     });
 }
 
@@ -27,12 +25,13 @@ function getLayout(pc_id, release_id) {
   return query.connect().then((connection) => {
     return query.getGraphAndLayout(pc_id, release_id, connection)
       .then((layout) => {
-        return { result: btoa(JSON.stringify(layout)), socket: 'layoutPackage' };
+        return JSON.stringify(layout);
       }).catch(() => {
         return getLayoutFallback(pc_id, release_id, connection);
       });
   }).catch(() => {
-    return getLayoutFallback(pc_id, release_id);
+    // Error.
+    return 'ERROR: Connection to database failed';
   });
 }
 
@@ -41,13 +40,13 @@ function submitLayout(pcID, releaseID, layout, key) {
   return query.connect().then((connection) => {
     if (hasRightKey(pcID, releaseID, key)) {
       update.saveLayout(pcID, layout, releaseID, connection);
-      return { socket: 'updated', result: 'Layout was updated.' };
+      return 'Layout was updated.';
     }
     else {
-      return { socket: 'error', result: 'ERROR: Incorrect Edit key' };
+      return 'ERROR: Incorrect Edit key';
     }
   }).catch(() => {
-    return { socket: 'error', result: 'ERROR: Something went wrong in submitting the layout' };
+    return 'ERROR: Something went wrong in submitting the layout';
   });
 }
 
@@ -56,17 +55,17 @@ function getEditKey(pcID, releaseID, remoteAddress, socketIO = false) {
     if (auth.checkUser(remoteAddress, socketIO)) {
       return query.getGraphID(pcID, releaseID, connection).then((result) => {
         if (result) {
-          return { socket: 'editKey', result: pcID + '&editkey=' + result };
+          return result;
         } else {
-          return { socket: 'error', result: 'ERROR: No edit key could be found' };
+          return 'ERROR: No edit key could be found';
         }
 
       });
     } else {
-      return { socket: 'error', result: 'ERROR: Non-authenticated user' };
+      return 'ERROR: Non-authenticated user';
     }
   }).catch(() => {
-    return { socket: 'error', result: 'ERROR: Edit Key Request Failed' };
+    return 'ERROR: Edit Key Request Failed';
   });
 }
 
@@ -84,10 +83,8 @@ function hasRightKey(pcID, releaseID, key) {
 
 function checkEditKey(pcID, releaseID, key) {
   return hasRightKey(pcID, releaseID, key)
-    .then((result) => {
-      return { socket: 'editPermssions', result };
-    }).catch(() => {
-      return { socket: 'error', result: 'ERROR : Edit Priviliges Check Failed' };
+    .catch(() => {
+      return 'ERROR : Edit Priviliges Check Failed';
     });
 }
 

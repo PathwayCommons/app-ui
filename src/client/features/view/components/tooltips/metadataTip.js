@@ -5,7 +5,7 @@ const tableify = require('tableify');
 const config = require('../../config');
 
 
-//Manage the creation and display of tooltips
+//Manage the creation and display of metadata HTML content
 //Requires a valid name, cytoscape element, and parsedMetadata array
 class MetadataTip {
 
@@ -17,38 +17,45 @@ class MetadataTip {
   }
 
   //Generate HTML elements for Each Parsed Metadata Field
-  parseMetadata(pair) {
+  //Optional trim parameter indicates if the data presented should be trimmed to a reasonable length
+  parseMetadata(pair, trim = true) {
     let key = pair[0];
 
     //Get HTML for current data pair based on key value
     if (key === 'Standard Name') {
-      return h('p', h('div.field-name', 'Standard Name: '), pair[1].toString());
+      return h('div.fake-paragraph', h('div.field-name', 'Standard Name: '), pair[1].toString());
     }
     else if (key === 'Data Source') {
       let source = pair[1].replace('http://pathwaycommons.org/pc2/', '');
       let link = this.generateDataSourceLink(source, 'Data Source: ');
-      return h('p', link);
+      return h('div.fake-paragraph', link);
     }
     else if (key === 'Names') {
       //Trim results to first 3 names to avoid overflow
-      let shortArray = pair[1].slice(0, 3);
+      let shortArray = pair[1];
+      if(trim) { shortArray = pair[1].slice(0, 3); }
 
       //Filter out Chemical formulas
       if (shortArray instanceof Array) shortArray = shortArray.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig)));
-      return h('p', h('div.field-name', 'Synonyms: '), shortArray.toString());
+      return h('div.fake-paragraph', h('div.field-name', 'Synonyms: '), shortArray.toString());
     }
     else if (key === 'Database IDs') {
       //Sort the array by database names
       let sortedArray = this.sortByDatabaseId(pair[1]);
       if (sortedArray.length < 1) { return; }
-      return h('div.field-name', 'Database Id(s):', h('ul', sortedArray.map(this.generateIdList, this)));
+      return h('div.fake-paragraph',
+        [h('div.field-name', 'Database Id(s):'),
+        h('div.wrap-text', h('ul', sortedArray.map(item => this.generateIdList(item, trim), this)))]);
+    }
+    else if (!(trim)){
+      return h('div.fake-paragraph', [h('div.field-name', key + ': '), pair[1].toString()]);
     }
 
     return;
   }
 
   //Generate HTML Elements for tooltips
-  generateToolTip() {
+  generateToolTip(callback) {
 
     //Order the data array
     let data = this.orderArray(this.data); 
@@ -58,13 +65,24 @@ class MetadataTip {
       h('div.tooltip-heading', this.name),
       h('div.tooltip-internal', h('div', (data).map(this.parseMetadata, this))),
       h('div.tooltip-buttons',
-        h('i', { className: classNames('material-icons', 'tooltip-button-pdf') }, 'open_in_new'),
-        h('i', { className: classNames('material-icons', 'tooltip-button-show'), onclick : this.getRawData(data) }, 'file_download'))
+        h('i', { className: classNames('material-icons', 'tooltip-button-show'), onclick : this.displayMore(callback) }, 'open_in_new'),
+        h('i', { className: classNames('material-icons', 'tooltip-button-pdf'), onclick : this.getRawData(data) }, 'file_download'))
     );
   }
 
+  //Generate HTML Elements for the side bar
+  generateSideBar(callback) {
+        //Order the data array
+        let data = this.orderArray(this.data); 
+    
+        if (!(this.data)) { this.data = []; }
+        return h('div.tooltip-image',
+          h('h1', this.name),
+          h('div.sidebar-internal', h('div', (data).map(item => this.parseMetadata(item, false), this))));
+      }
+
   //Show Tippy Tooltip
-  show(cy) {
+  show(cy, callback) {
     //Get tooltip object from class
     let tooltip = this.tooltip;
 
@@ -73,7 +91,7 @@ class MetadataTip {
 
     //If no tooltip exists create one
     if (!tooltip) {
-      let tooltipHTML = this.generateToolTip();
+      let tooltipHTML = this.generateToolTip(callback);
       let refObject = this.cyElement.popperRef();
       tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true });
       tooltip.selector.dim = refObject.dim;
@@ -97,7 +115,7 @@ class MetadataTip {
     //Build reference url
     if (link.length === 1 && link[0][1]) {
       let url = link[0][1] + link[0][2] + dbId;
-      return h('a.plain-link', { href: url, target: '_blank' }, dbId);
+      return h('a.db-link', { href: url, target: '_blank' }, dbId);
     }
     else {
       return dbId;
@@ -106,11 +124,12 @@ class MetadataTip {
 
   //Generate list of all given database id's
   //Requires a valid database Id Object
-  generateIdList(dbIdObject) {
+  generateIdList(dbIdObject, trim) {
     //get name and trim ID list to 5 items
     let name = dbIdObject.database;
-    let list = dbIdObject.ids.slice(0, 5);
-    return h('li', h('div.db-name', name + ": "), list.map(data => this.generateDBLink(name, data), this));
+    let list = dbIdObject.ids;
+    if(trim) list = dbIdObject.ids.slice(0, 5);
+    return h('li.db-item', h('div.db-name', name + ": "), list.map(data => this.generateDBLink(name, data), this));
   }
 
   //Sort Database ID's by database name
@@ -184,9 +203,11 @@ class MetadataTip {
   }
 
 
-  //Bind tooltip to sidebar more info view
-  displayMore() {
-    //To do
+  //Return a function that binds a tooltip to the sidebar more info view
+  displayMore(callback) {
+    //Get id from state
+    let id = this.cyElement.id();
+    return () => callback(id);
   }
 
   //Return a function that provides raw data

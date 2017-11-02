@@ -58,7 +58,7 @@ class Paint extends React.Component {
 
     PathwayCommonsService.querySearch(query)
       .then(searchResults => {
-        const uri = objPath.get(searchResults, '5.uri', null);
+        const uri = objPath.get(searchResults, '0.uri', null);
         if (uri != null) {
           PathwayCommonsService.query(uri, 'json', 'Named/displayName')
           .then(response => {
@@ -111,7 +111,6 @@ class Paint extends React.Component {
 
     const query = queryString.parse(props.location.search);
     const enrichmentsURI = query.uri ? query.uri : null;
-
     if (enrichmentsURI != null) {
       fetch(enrichmentsURI)
         .then(response => response.json())

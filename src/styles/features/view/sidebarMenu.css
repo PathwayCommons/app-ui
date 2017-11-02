@@ -87,6 +87,12 @@
   &:hover {
     cursor: pointer;
   }
+
+  &.active {
+    z-index: 100;
+    background-color: var(--accent-1-colour);
+  }
+
 }
 
 .sidebar-content {

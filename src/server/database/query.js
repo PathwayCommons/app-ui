@@ -55,6 +55,7 @@ function getLayout(pcID, releaseID, connection, callback) {
       return r.expr(versionArray[0].layout_ids) // create a rethink expression from list of ids
         .eqJoin((id) => { return id; }, r.db(config.databaseName).table('layout'))
         .zip()
+        .orderBy(r.asc('date_added'))
         .pluck('positions') // We're only looking for positions
         .run(connection);
     }).then((allSubmissions) => {

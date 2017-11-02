@@ -31,7 +31,7 @@ function updateGraph(pcID, releaseID, cyJson, connection, callback) {
     if (existingGraph) {
       let existingGraphID = existingGraph.id;
       // create new pointer to existing graph
-      return db.insert('version', { id: uuid(), pc_id: pcID, graph_id: existingGraphID, layout_ids: [] }, connection);
+      return db.insert('version', { id: uuid(), pc_id: pcID,release_id: releaseID, graph_id: existingGraphID, layout_ids: [] }, connection);
       // TODO: If the releaseid and pcid and graphid are already linked in version, don't create a new object?
       // this would allow an update script to run blindly
     } else {
@@ -70,6 +70,7 @@ function saveLayout(pcID, layout, releaseID, connection, callback) {
         })
         .run(connection);
     }).catch(() => {
+
       throw Error('Failed insertion');
     });
 

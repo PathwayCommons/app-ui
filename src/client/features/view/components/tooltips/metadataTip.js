@@ -56,11 +56,24 @@ class MetadataTip {
     return;
   }
 
+
+  //Validate the name of object and use Display Name as the fall back option
+  validateName() {
+    if (!(this.name)) {
+      let displayName = this.data.filter(pair => pair[0] === 'Display Name');
+      if (displayName.length > 0) { this.name = displayName[0][1].toString(); }
+    }
+  }
+
   //Generate HTML Elements for tooltips
   generateToolTip(callback) {
 
     //Order the data array
     let data = this.orderArray(this.data);
+    if(!(data)) data = [];
+
+    //Ensure name is not blank
+    this.validateName();
 
     if (!(this.data)) { this.data = []; }
     return h('div.tooltip-image',
@@ -73,9 +86,14 @@ class MetadataTip {
   }
 
   //Generate HTML Elements for the side bar
-  generateSideBar(callback) {
+  generateSideBar() {
     //Order the data array
     let data = this.orderArray(this.data);
+    if(!(data)) data = [];
+
+    //Ensure name is not blank
+    this.validateName();
+
 
     if (!(this.data)) { this.data = []; }
     return h('div.sidebar-body',

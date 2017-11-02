@@ -9,7 +9,7 @@ const databases = [
   ['Reactome', 'https://reactome.org/', 'content/detail/'],
   ['SMPD', null],
   ['Wikipathways', null],
-  ['uniprot', 'http://www.uniprot.org/', 'uniprot/'],
+  ['UniProt', 'http://www.uniprot.org/', 'uniprot/'],
   ['HGNC', 'https://www.genenames.org/', 'cgi-bin/search?search_type=all&search='],
   ['ChEBI', 'https://www.ebi.ac.uk/chebi/', 'searchId.do?chebiId='],
   ['Kegg Reaction', 'http://www.genome.jp/', 'dbget-bin/www_bget?rn:'],
@@ -19,8 +19,6 @@ const databases = [
   ['PubMed', 'https://www.ncbi.nlm.nih.gov/pubmed/', '?term='],
   ['Ensembl', 'https://www.ensembl.org/', 'Multi/Search/Results?q=']
 ];
-
-
 
 module.exports = {
   databases

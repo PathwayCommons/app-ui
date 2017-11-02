@@ -31,8 +31,8 @@ function getLayout(pcID, releaseID) {
         return getLayoutFallback(pcID, releaseID, connection);
       });
   }).catch((e) => {
-    // Error.
     logger.error(e);
+    // Error.
     return 'ERROR: Connection to database failed';
   });
 }
@@ -47,22 +47,27 @@ function submitLayout(pcID, releaseID, layout, key) {
     else {
       return 'ERROR: Incorrect Edit key';
     }
-  }).catch(() => {
+  }).catch((e) => {
+    logger.error(e);
     return 'ERROR: Something went wrong in submitting the layout';
+  });
+}
+
+function submitGraph(pcID,releaseID, newGraph){
+  return query.connect().then((connection)=>{
+    return update.updateGraph(pcID,releaseID,newGraph,connection);
+  }).catch((e)=>{
+    logger.error(e);
   });
 }
 
 function getEditKey(pcID, releaseID, remoteAddress, socketIO = false) {
   return query.connect().then((connection) => {
     if (auth.checkUser(remoteAddress, socketIO)) {
-      return query.getGraphID(pcID, releaseID, connection).then((result) => {
-        if (result) {
-          return result;
-        } else {
+      return query.getGraphID(pcID, releaseID, connection)
+        .catch(() => {
           return 'ERROR: No edit key could be found';
-        }
-
-      });
+        });
     } else {
       return 'ERROR: Non-authenticated user';
     }
@@ -94,5 +99,6 @@ module.exports = {
   checkEditKey,
   getEditKey,
   submitLayout,
+  submitGraph,
   getLayout
 };

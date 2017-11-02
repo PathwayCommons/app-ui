@@ -1,7 +1,6 @@
 
 const r = require('rethinkdb');
 const heuristics = require('./heuristics');
-const hash = require('json-hash');
 const config = require('./config');
 const db = require('./utilities');
 
@@ -30,7 +29,7 @@ function getGraphID(pcID, releaseID, connection, callback) {
     }).then((result) => {
       return result[0].graph_id;
     }).catch(() => {
-      return null;
+      throw new Error('ERROR: graph ID could not be retrieved.');
     });
 
 

@@ -36,7 +36,7 @@
     word-wrap: break-word;
     font-size: 2vh;
     font-weight: 400;
-    color : var(--midnight-blue)
+    color : var(--dark-base-colour)
 }
 
 .tooltip-buttons{
@@ -44,7 +44,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--midnight-blue);
+    color: var(--dark-base-colour);
     font-size: 2.45vh !important;
     font-weight: 400 !important;
 }

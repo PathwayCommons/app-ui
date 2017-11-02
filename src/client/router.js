@@ -38,8 +38,12 @@ module.exports = () => {
         render: props => h(Features.Paint, props)
       },
       {
-        path: '/admin',
-        render: props => h(Features.Admin, props)
+        path: '/edit',
+        render: props => {
+          let editProps = props;
+          props.admin = true;
+          return h(Features.View, editProps);
+        }
       }
     ].map( spec => h(Route, _.assign({ exact: true }, spec)) ))
   ]);

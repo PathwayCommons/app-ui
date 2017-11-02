@@ -11,7 +11,7 @@ function queryPC(pcID) {
     return response.text();
   }).then((text) => {
     if (!text) {
-      return null;
+      return Promise.reject(new Error ('Data could not be retrieved from PC2'));
     }
     return convert(text);
   });

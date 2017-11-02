@@ -4,38 +4,16 @@ const hash = require('json-hash');
 const config = require('./config');
 const db = require('./utilities');
 
-function compareGraphs(graph1, graph2) { // hash should be saved in the graph object
-  if (!graph1.hash) {
-    graph1.hash = hash.digest(graph1.data);
-  }
-
-  if (!graph2.hash) {
-    graph2.hash = hash.digest(graph2.data);
-  }
-  return graph1.hash === graph2.hash;
-}
-
 function isExistingGraph(newGraph, connection) {
-  let graphListProm = r.db(config.databaseName)
+  return r.db(config.databaseName)
     .table('graph')
+    .filter({hash : newGraph.hash})
     .run(connection)
     .then((cursor) => {
-      return cursor.toArray();
+      return cursor.next();
+    }).catch(()=>{
+      return Promise.resolve(false);
     });
-
-
-  return graphListProm.then((graphList) => {
-    let numGraphs = graphList.length; // You will be undefined
-    let i = 0;
-
-    while (i < numGraphs) {
-      if (compareGraphs(newGraph, graphList[i])) {
-        return graphList[i].id;
-      }
-      i++;
-    }
-    return null;
-  });
 }
 
 function updateGraph(pcID, releaseID, cyJson, connection, callback) {
@@ -48,12 +26,12 @@ function updateGraph(pcID, releaseID, cyJson, connection, callback) {
     hash: hash.digest(cyJson)
   };
 
+  let result = isExistingGraph(newGraph, connection).then((existingGraph) => {
 
-  let result = isExistingGraph(newGraph, connection).then((existingGraphID) => {
-    if (existingGraphID) {
-
+    if (existingGraph) {
+      let existingGraphID = existingGraph.id;
       // create new pointer to existing graph
-      return db.insert('version', { id: uuid(), pc_id: pcID, graph_id: existingGraphID, layout_ids: [] }, connection);
+      return db.insert('version', { id: uuid(), pc_id: pcID,release_id: releaseID, graph_id: existingGraphID, layout_ids: [] }, connection);
       // TODO: If the releaseid and pcid and graphid are already linked in version, don't create a new object?
       // this would allow an update script to run blindly
     } else {
@@ -92,6 +70,7 @@ function saveLayout(pcID, layout, releaseID, connection, callback) {
         })
         .run(connection);
     }).catch(() => {
+
       throw Error('Failed insertion');
     });
 

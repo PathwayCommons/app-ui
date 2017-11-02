@@ -37,67 +37,27 @@ function getLayout(pcID, releaseID) {
   });
 }
 
-function submitLayout(pcID, releaseID, layout, key) {
+function submitLayout(pcID, releaseID, layout) {
   //Get the requested layout
   return query.connect().then((connection) => {
-    if (hasRightKey(pcID, releaseID, key)) {
-      update.saveLayout(pcID, layout, releaseID, connection);
-      return 'Layout was updated.';
-    }
-    else {
-      return 'ERROR: Incorrect Edit key';
-    }
+    update.saveLayout(pcID, layout, releaseID, connection);
+    return 'Layout was updated.';
+
   }).catch((e) => {
     logger.error(e);
     return 'ERROR: Something went wrong in submitting the layout';
   });
 }
 
-function submitGraph(pcID,releaseID, newGraph){
-  return query.connect().then((connection)=>{
-    return update.updateGraph(pcID,releaseID,newGraph,connection);
-  }).catch((e)=>{
+function submitGraph(pcID, releaseID, newGraph) {
+  return query.connect().then((connection) => {
+    return update.updateGraph(pcID, releaseID, newGraph, connection);
+  }).catch((e) => {
     logger.error(e);
   });
 }
 
-function getEditKey(pcID, releaseID, remoteAddress, socketIO = false) {
-  return query.connect().then((connection) => {
-    if (auth.checkUser(remoteAddress, socketIO)) {
-      return query.getGraphID(pcID, releaseID, connection)
-        .catch(() => {
-          return 'ERROR: No edit key could be found';
-        });
-    } else {
-      return 'ERROR: Non-authenticated user';
-    }
-  }).catch(() => {
-    return 'ERROR: Edit Key Request Failed';
-  });
-}
-
-function hasRightKey(pcID, releaseID, key) {
-  return query.connect().then((connection) => {
-    return query.getGraphID(
-      pcID,
-      releaseID,
-      connection
-    );
-  }).then((result) => {
-    return result === key;
-  });
-}
-
-function checkEditKey(pcID, releaseID, key) {
-  return hasRightKey(pcID, releaseID, key)
-    .catch(() => {
-      return 'ERROR : Edit Priviliges Check Failed';
-    });
-}
-
 module.exports = {
-  checkEditKey,
-  getEditKey,
   submitLayout,
   submitGraph,
   getLayout

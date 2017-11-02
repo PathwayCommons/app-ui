@@ -18,20 +18,6 @@ function submitLayout(io, socket, ioPackage) {
     });
 }
 
-function getEditKey(io, socket, ioPackage) {
-  controller.getEditKey(ioPackage.uri, ioPackage.version, socket.request.connection.remoteAddress, true)
-    .then((package) => {
-      io.emit('editKey', package);
-    });
-}
-
-function checkEditKey(io, socket, ioPackage) {
-  controller.checkEditKey(ioPackage.uri, ioPackage.version, ioPackage.key)
-    .then((package) => {
-      io.emit('editPermissions', package);
-    });
-}
-
 var returnRouter = function (io) {
   io.on('connection', function (socket) {
     //Get Layout
@@ -43,15 +29,6 @@ var returnRouter = function (io) {
     socket.on('submitLayout', function (ioPackage) {
       submitLayout(io, socket, ioPackage);
     });
-
-    socket.on('getEditKey', function (ioPackage) {
-      getEditKey(io, socket, ioPackage);
-    });
-
-    socket.on('checkEditKey', function (ioPackage) {
-      checkEditKey(io, socket, ioPackage);
-    });
-
   });
 
   return router;

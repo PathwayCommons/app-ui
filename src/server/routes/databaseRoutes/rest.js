@@ -3,22 +3,8 @@ const controller = require('./controller');
 const express = require('express');
 const router = express.Router();
 
-router.get('/check-edit-key', function (req, res) {
-  controller.checkEditKey(req.query.uri, req.query.version, req.query.key)
-    .then((pacakge) => {
-      res.json(pacakge);
-    });
-});
-
-router.get('/get-edit-key', function (req, res) {
-  controller.getEditKey(req.query.uri, req.query.version, req)
-    .then((package) => {
-      res.json(package);
-    });
-});
-
 router.post('/submit', function (req, res) {
-  controller.submitLayout(req.body.uri, req.body.version, req.body.layout, req.body.key)
+  controller.submitLayout(req.body.uri, req.body.version, req.body.layout)
     .then((package) => {
       res.json(package);
     });

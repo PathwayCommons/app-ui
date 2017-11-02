@@ -79,7 +79,6 @@
 }
 
 .sidebar-internal {
-    position: relative;
     top:  5%;
     left: 0;
     word-wrap: break-word;
@@ -99,6 +98,10 @@
 
 .db-item {
     word-wrap: break-word;
+}
+
+.sidebar-text > div {
+    width: 100%;
 }
 
 /* Tippy JS Style Overrides */

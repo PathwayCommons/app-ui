@@ -78,7 +78,7 @@ class MetadataTip {
     let data = this.orderArray(this.data);
 
     if (!(this.data)) { this.data = []; }
-    return h('div.tooltip-image',
+    return h('div.sidebar-body',
       h('h1', this.name),
       h('div.sidebar-internal', h('div', (data).map(item => this.parseMetadata(item, false), this))));
   }

@@ -6,6 +6,7 @@ const HtmlToReactParser = require('html-to-react').Parser;
 const HelpMenu = require('./menus/help');
 const FileDownloadMenu = require('./menus/fileDownload');
 const GraphInfoMenu = require('./menus/graphInfoMenu');
+const MetadataSidebar = require('./menus/metatdataExtension');
 
 const tippy = require('tippy.js');
 
@@ -146,32 +147,7 @@ class Sidebar extends React.Component {
     if(tooltip) this.setState({open: true, activeMenu: 'center_focus_strong' });
   }
 
-  //Generate the HTML content for the sidebar
-  //Everytime the state updates, the sidebar content is regenerated based on the new provided node id
-  sidebarHTML(){
-    //Validate Cytoscape Object
-    if(!(this.props.cy)) {return 'Error : Cytoscape Object Not Found';}
-
-    //Get node and tooltip
-    let node = this.props.cy.getElementById(this.props.nodeId);
-    let tooltip = node.scratch('tooltip');
-
-    //Open Side Bar
-    if(tooltip) {
-      return tooltip.generateSideBar(() => 'g');
-    }
-    else {
-      return 'No Data Found';
-    }
-
-  }
-
   render() {
-    //Get Sidebar metadata html
-    let sidebarMetadata = this.sidebarHTML();
-    let htmlToReactParser = new HtmlToReactParser();
-    let reactElement = htmlToReactParser.parse(sidebarMetadata);
-
     // Not a great solution, but the icon names from toolButtonNames should be copied here and relate to
     // their specific menu
     const menus = {
@@ -179,7 +155,7 @@ class Sidebar extends React.Component {
       'file_download': h(FileDownloadMenu, {'cy': this.props.cy, 'uri': this.props.uri, 'name': this.props.name}),
       'help': h(HelpMenu),
       'center_focus_strong': (
-        h('div', reactElement)
+        h(MetadataSidebar, {'cy' : this.props.cy, 'nodeId' : this.props.nodeId})
       ),
       'center_focus_weak': (
         h('div', [

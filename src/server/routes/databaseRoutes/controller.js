@@ -3,34 +3,36 @@ const auth = require('./../auth.js');
 const query = require('./../../database/query');
 const update = require('./../../database/update');
 const lazyLoad = require('./../../lazyload');
+const logger = require('./../../logger');
 
-function getLayoutFallback(pc_id, release_id, connection) {
-  return lazyLoad.queryMetadata(pc_id)
+function getLayoutFallback(pcID, releaseID, connection) {
+  return lazyLoad.queryMetadata(pcID)
     .catch(() => {
-      return lazyLoad.queryPC(pc_id);
+      return lazyLoad.queryPC(pcID);
     }).then(result => {
       let output = { graph: result, layout: null };
 
       if (connection && result.pathwayMetadata) {
-        update.updateGraph(pc_id, release_id, result, connection);
+        update.updateGraph(pcID, releaseID, result, connection);
       }
 
       return JSON.stringify(output);
     }).catch(() => {
-      return `ERROR: Layout for ${pc_id} could not be retrieved from database or PC2`;
+      return `ERROR: Layout for ${pcID} could not be retrieved from database or PC2`;
     });
 }
 
-function getLayout(pc_id, release_id) {
+function getLayout(pcID, releaseID) {
   return query.connect().then((connection) => {
-    return query.getGraphAndLayout(pc_id, release_id, connection)
+    return query.getGraphAndLayout(pcID, releaseID, connection)
       .then((layout) => {
         return JSON.stringify(layout);
       }).catch(() => {
-        return getLayoutFallback(pc_id, release_id, connection);
+        return getLayoutFallback(pcID, releaseID, connection);
       });
-  }).catch(() => {
+  }).catch((e) => {
     // Error.
+    logger.error(e);
     return 'ERROR: Connection to database failed';
   });
 }

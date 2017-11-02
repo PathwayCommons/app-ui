@@ -101,7 +101,7 @@
     word-wrap: break-word;
 }
 
-/* Tippy  JS Style Overrides */
+/* Tippy JS Style Overrides */
 .tippy-tooltip [x-circle] {
     border-radius : 0%;
 }

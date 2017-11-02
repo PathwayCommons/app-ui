@@ -33,7 +33,7 @@ class MetadataTip {
     else if (key === 'Names') {
       //Trim results to first 3 names to avoid overflow
       let shortArray = pair[1];
-      if(trim) { shortArray = pair[1].slice(0, 3); }
+      if (trim) { shortArray = pair[1].slice(0, 3); }
 
       //Filter out Chemical formulas
       if (shortArray instanceof Array) shortArray = shortArray.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig)));
@@ -44,10 +44,12 @@ class MetadataTip {
       let sortedArray = this.sortByDatabaseId(pair[1]);
       if (sortedArray.length < 1) { return; }
       return h('div.fake-paragraph',
-        [h('div.field-name', 'Database Id(s):'),
-        h('div.wrap-text', h('ul', sortedArray.map(item => this.generateIdList(item, trim), this)))]);
+        [
+          h('div.field-name', 'Database Id(s):'),
+          h('div.wrap-text', h('ul', sortedArray.map(item => this.generateIdList(item, trim), this)))
+        ]);
     }
-    else if (!(trim)){
+    else if (!(trim)) {
       return h('div.fake-paragraph', [h('div.field-name', key + ': '), pair[1].toString()]);
     }
 
@@ -58,28 +60,28 @@ class MetadataTip {
   generateToolTip(callback) {
 
     //Order the data array
-    let data = this.orderArray(this.data); 
+    let data = this.orderArray(this.data);
 
     if (!(this.data)) { this.data = []; }
     return h('div.tooltip-image',
       h('div.tooltip-heading', this.name),
-      h('div.tooltip-internal', h('div', (data).map(this.parseMetadata, this))),
+      h('div.tooltip-internal', h('div', (data).map(item => this.parseMetadata(item, true), this))),
       h('div.tooltip-buttons',
-        h('i', { className: classNames('material-icons', 'tooltip-button-show'), onclick : this.displayMore(callback) }, 'open_in_new'),
-        h('i', { className: classNames('material-icons', 'tooltip-button-pdf'), onclick : this.getRawData(data) }, 'file_download'))
+        h('i', { className: classNames('material-icons', 'tooltip-button-show'), onclick: this.displayMore(callback) }, 'open_in_new'),
+        h('i', { className: classNames('material-icons', 'tooltip-button-pdf'), onclick: this.getRawData(data) }, 'file_download'))
     );
   }
 
   //Generate HTML Elements for the side bar
   generateSideBar(callback) {
-        //Order the data array
-        let data = this.orderArray(this.data); 
-    
-        if (!(this.data)) { this.data = []; }
-        return h('div.tooltip-image',
-          h('h1', this.name),
-          h('div.sidebar-internal', h('div', (data).map(item => this.parseMetadata(item, false), this))));
-      }
+    //Order the data array
+    let data = this.orderArray(this.data);
+
+    if (!(this.data)) { this.data = []; }
+    return h('div.tooltip-image',
+      h('h1', this.name),
+      h('div.sidebar-internal', h('div', (data).map(item => this.parseMetadata(item, false), this))));
+  }
 
   //Show Tippy Tooltip
   show(cy, callback) {
@@ -128,7 +130,7 @@ class MetadataTip {
     //get name and trim ID list to 5 items
     let name = dbIdObject.database;
     let list = dbIdObject.ids;
-    if(trim) list = dbIdObject.ids.slice(0, 5);
+    if (trim) list = dbIdObject.ids.slice(0, 5);
     return h('li.db-item', h('div.db-name', name + ": "), list.map(data => this.generateDBLink(name, data), this));
   }
 
@@ -176,7 +178,7 @@ class MetadataTip {
   hideAll(cy) {
     cy.elements().each(function (element) {
       var tempElement = element.scratch('tooltip');
-      if(tempElement && tempElement.isVisible()) {tempElement.hide();}
+      if (tempElement && tempElement.isVisible()) { tempElement.hide(); }
     });
   }
 
@@ -198,7 +200,7 @@ class MetadataTip {
   }
 
   //Get display status of tooltip
-  isVisible(){
+  isVisible() {
     return this.visible;
   }
 
@@ -216,13 +218,13 @@ class MetadataTip {
     return () => window.open().document.write(html);
   }
 
-    //Order a given metadata data array
-  orderArray(data){
-      for(var x in data){
-        data[x][0] == "Database IDs" ? data.push( data.splice(x,1)[0] ) : 0;
-      }
-      return data;
+  //Order a given metadata data array
+  orderArray(data) {
+    for (var x in data) {
+      data[x][0] == "Database IDs" ? data.push(data.splice(x, 1)[0]) : 0;
     }
+    return data;
+  }
 
 }
 

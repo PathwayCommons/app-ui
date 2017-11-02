@@ -172,8 +172,6 @@ class Sidebar extends React.Component {
     let htmlToReactParser = new HtmlToReactParser();
     let reactElement = htmlToReactParser.parse(sidebarMetadata);
 
-    
-
     // Not a great solution, but the icon names from toolButtonNames should be copied here and relate to
     // their specific menu
     const menus = {

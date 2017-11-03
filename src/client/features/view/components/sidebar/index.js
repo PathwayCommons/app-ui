@@ -105,12 +105,6 @@ class Sidebar extends React.Component {
       'help': h(HelpMenu),
       'center_focus_strong': (
         h(MetadataSidebar, {'cy' : this.props.cy, 'nodeId' : this.props.nodeId})
-      ),
-      'center_focus_weak': (
-        h('div', [
-          h('h1', 'Node Information'),
-          h('div', 'No Data Found' )
-        ])
       )
     };
 

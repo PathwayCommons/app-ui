@@ -47,7 +47,7 @@ class MetadataTip {
       if (sortedArray.length < 1) { return; }
       return h('div.fake-paragraph',
         [
-          h('div.field-name', 'Database Id(s):'),
+          h('div.field-name', 'Database References:'),
           h('div.wrap-text', h('ul.db-list', sortedArray.map(item => this.generateIdList(item, trim), this)))
         ]);
     }
@@ -145,7 +145,7 @@ class MetadataTip {
       return h('a.db-link', { href: url, target: '_blank' }, dbId);
     }
     else {
-      return dbId;
+      return h('div.db-no-link', dbId);
     }
   }
 
@@ -240,12 +240,6 @@ class MetadataTip {
     //Get id from state
     let id = this.cyElement.id();
     return () => callback(id);
-  }
-
-  //Return a function that provides raw data
-  getRawData(data) {
-    var html = tableify(data);
-    return () => window.open().document.write(html);
   }
 
   //Order a given metadata data array

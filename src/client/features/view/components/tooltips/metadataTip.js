@@ -86,7 +86,7 @@ class MetadataTip {
           h('div.tooltip-button', {onclick: this.displayMore(callback)},
           [
             h('i', { className: classNames('material-icons', 'tooltip-button-show')}, 'bubble_chart'),
-            h('div.describe-button', 'Open in Side Bar')
+            h('div.describe-button', 'Open in Sidebar')
           ])
         ])
     );

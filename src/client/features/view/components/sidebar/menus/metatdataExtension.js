@@ -1,4 +1,5 @@
 const React = require('react');
+const h = require('react-hyperscript');
 const HtmlToReactParser = require('html-to-react').Parser;
 
 class MetadataSidebar extends React.Component {
@@ -30,7 +31,8 @@ class MetadataSidebar extends React.Component {
     let sidebarMetadata = this.sidebarHTML().innerHTML;
     let htmlToReactParser = new HtmlToReactParser();
     let reactElement = htmlToReactParser.parse(sidebarMetadata);
-    return reactElement;
+    if(reactElement) { return reactElement; }
+    else { return h('h1', 'No Data Found');}
   }
 }
 

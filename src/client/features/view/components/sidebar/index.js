@@ -12,7 +12,7 @@ const tippy = require('tippy.js');
 const toolButtonNames = [
   'info',
   'file_download',
-  'center_focus_strong',
+  'bubble_chart',
   'help'
 ];
 
@@ -39,15 +39,12 @@ class Sidebar extends React.Component {
       activeMenu: '',
       nodeData: false
     };
+
+    this.updateIfOutOfMenu = this.updateIfOutOfMenu.bind(this);
   }
 
   componentDidMount() {
     this.initTooltips(); // TO BE REMOVED
-    window.addEventListener('click', evt => this.updateIfOutOfMenu(evt));
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('click', evt => this.updateIfOutOfMenu(evt));
   }
 
   // TO BE REMOVED
@@ -77,25 +74,53 @@ class Sidebar extends React.Component {
     });
   }
 
+ 
   // Checks if a click event occured outside the sidebar or not
-  updateIfOutOfMenu(evt) {
-    if (!this.state.open || this.state.locked) { return; }
-    let currentEl = evt.target;
-    let parentEl = this.sidebarContainer;
-
-    while (currentEl) {
-      if (currentEl === parentEl) { return; }
-      currentEl = currentEl.parentElement;
+// Checks if a click event occured outside the sidebar or not
+updateIfOutOfMenu(evt) {
+let currentEl = evt.target;
+  let loops = 0; // a safety variable
+  // Not sure if there's a better way to do this so I loop through the
+  // element that is clicked on and its parents, grandparents, etc.
+  // until I either reach the View (which I assume covers the whole page)
+  // or I reach the sidebar-menu or a toolButton (which I assume are children
+  // the View)
+  while (currentEl.className !== 'View') {
+    let currClassNames = currentEl.className.split(' ');
+    if (
+      currClassNames.includes('sidebar-menu') ||
+      currClassNames.includes('tool-button')
+    ) {
+      return;
     }
+    currentEl = currentEl.parentElement;
 
-    this.setState({open: false, activeMenu: ''});
+    // Catching infinite loops for safety. This code should
+    // never run. Doesn't hurt to be safe though?
+    loops++;
+    if (loops > 100) {return;}
+  }
+
+  this.setState({open: false, activeMenu: ''});
+}
+
+   componentWillUpdate(nextProps, nextState) {
+    if (nextState.open && !nextState.locked) {
+      window.addEventListener('mousedown', this.updateIfOutOfMenu);
+      window.addEventListener('touchend', this.updateIfOutOfMenu);
+    } else {
+      window.removeEventListener('mousedown', this.updateIfOutOfMenu);
+      window.removeEventListener('touchend', this.updateIfOutOfMenu);
+    }
   }
   
   //Receive updated props and set the state to match the desired result. 
   componentWillReceiveProps(nextProps){
     let node = nextProps.cy.getElementById(nextProps.nodeId);
     let tooltip = node.scratch('tooltip');
-    if(tooltip) this.setState({open: true, activeMenu: 'center_focus_strong' });
+    if(tooltip) {
+      this.setState({open: true, activeMenu: 'bubble_chart' });
+    }
   }
 
   render() {
@@ -103,7 +128,7 @@ class Sidebar extends React.Component {
       'info': h(GraphInfoMenu, {'uri': this.props.uri, 'name': this.props.name, 'datasource': this.props.datasource}),
       'file_download': h(FileDownloadMenu, {'cy': this.props.cy, 'uri': this.props.uri, 'name': this.props.name}),
       'help': h(HelpMenu),
-      'center_focus_strong': (
+      'bubble_chart': (
         h(MetadataSidebar, {'cy' : this.props.cy, 'nodeId' : this.props.nodeId})
       )
     };

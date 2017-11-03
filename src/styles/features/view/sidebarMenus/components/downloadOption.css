@@ -2,9 +2,9 @@
   width: 95%;
   margin: auto;
   padding: 1em;
-  padding-left: 0;
 
   display: flex;
+  flex-direction: column;
   align-content: center;
   box-sizing: border-box;
   
@@ -23,26 +23,52 @@
   }
 }
 
+.download-option-header {
+  margin-bottom: 1em;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  & h3 {
+    margin: 0;
+  }
+
+}
+
+.download-button {
+  padding: 0.5em;
+
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  box-sizing: border-box;
+
+  background-color: var(--light-base-colour);
+  border: 1px solid black;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 5px 0px;
+
+  cursor: pointer;
+
+  transition: all 0.1s linear;
+
+  &:hover {
+    /* background-color: var(--light-base-colour-dark); */
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 5px 11px 0px;
+  }
+}
+
 .download-icon-container {
   @extend %flex-center;
 
-  height: 100%;
-  width: 30%;
-  margin: auto;
-}
+  height: 1em;
+  width: 1em;
 
-.download-icon-inner-container {
-  @extend %flex-center;
-
-  height: var(--icon-size);
-  width: var(--icon-size);
-  padding: 0.2em;
-
-  background-color: var(--accent-1-colour);
-  border: 2px solid black;
+  border: 1px solid black;
   border-radius: 50%;
 
-  font-size: var(--icon-size);
+  font-size: 1em;
   color: var(--dark-base-colour);
 
   transition: all 0.1s linear;
@@ -53,8 +79,7 @@
 }
 
 .download-option-description {
-  height: 100%;
-  width: 70%;
+  width: 100%;
   
   display: flex;
   flex-direction: column;

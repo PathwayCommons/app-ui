@@ -11,7 +11,7 @@ const tippy = require('tippy.js');
 const toolButtonNames = [
   'info',
   'file_download',
-  'center_focus_strong',
+  'bubble_chart',
   'help'
 ];
 
@@ -34,7 +34,6 @@ class Sidebar extends React.Component {
     super(props);
     this.state = {
       open: false,
-      locked: false,
       activeMenu: '',
       nodeData: false
     };
@@ -42,11 +41,6 @@ class Sidebar extends React.Component {
 
   componentDidMount() {
     this.initTooltips(); // TO BE REMOVED
-    window.addEventListener('click', evt => this.updateIfOutOfMenu(evt));
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('click', evt => this.updateIfOutOfMenu(evt));
   }
 
   // TO BE REMOVED
@@ -76,26 +70,12 @@ class Sidebar extends React.Component {
     });
   }
 
-  // Checks if a click event occured outside the sidebar or not
-  updateIfOutOfMenu(evt) {
-    if (!this.state.open || this.state.locked) { return; }
-    let currentEl = evt.target;
-    let parentEl = this.sidebarContainer;
-
-    while (currentEl) {
-      if (currentEl === parentEl) { return; }
-      currentEl = currentEl.parentElement;
-    }
-
-    this.setState({open: false, activeMenu: ''});
-  }
-
   render() {
     const menus = {
       'info': h(GraphInfoMenu, {'uri': this.props.uri, 'name': this.props.name, 'datasource': this.props.datasource}),
       'file_download': h(FileDownloadMenu, {'cy': this.props.cy, 'uri': this.props.uri, 'name': this.props.name}),
       'help': h(HelpMenu),
-      'center_focus_strong': (
+      'bubble_chart': (
         h('div', [
           h('span', 'Harsh\'s fancy metadata tree goes here.')
         ])
@@ -126,10 +106,10 @@ class Sidebar extends React.Component {
           className: classNames('sidebar-select', 'conditional', this.state.open ? 'open' : '')
         }, [
           h('div.tool-button', {
-            onClick: () => this.setState({locked: !this.state.locked}),
-            title: 'Lock the sidebar'
+            onClick: () => this.setState({open: false, activeMenu: ''}),
+            title: 'Close the sidebar'
           }, [
-            h('i.material-icons', this.state.locked ? 'lock' : 'lock_open')
+            h('i.material-icons', 'close')
           ])
         ]),
         h('div.sidebar-content', [

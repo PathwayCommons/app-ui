@@ -8,6 +8,7 @@
   position: fixed;
   top: 0;
   right: 0;
+  z-index: 25;
 
   box-shadow: 0px;
   transform: translateX(100%);
@@ -50,11 +51,11 @@
     height: calc(var(--icon-size) * 3 / 2);
     
     left: 0;
-    top: auto;
-    bottom: 0;
+    top: 0;
+    bottom: auto;
 
     transition: all 0.5s ease-out;
-    border-width: 2px 0px 0px 2px;
+    border-width: 0px 0px 2px 2px;
     box-shadow: 0px 0px 0px 0px rgba(0,0,0,0.4);
 
     &.open {

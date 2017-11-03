@@ -4,12 +4,22 @@ const h = require('react-hyperscript');
 const saveAs = require('file-saver').saveAs;
 const PathwayCommonsService = require('../../../../../../services/').PathwayCommonsService;
 
+const downloadTypes = {
+  png: 'PNG',
+  gmt: 'GMT',
+  sif: 'SIF',
+  txt: 'Extended SIF',
+  biopax: 'BioPax',
+  jsonld: 'JSON-LD',
+  sbgn: 'SBGM-ML'
+};
+
 class DownloadOption extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: false
-    }
+    };
   }
 
   handleDownloadClick(type) {
@@ -28,7 +38,20 @@ class DownloadOption extends React.Component {
       case 'sif':
         this.initiatePCDownload('BINARY_SIF', 'sif');
         break;
+      case 'txt':
+        this.initiatePCDownload('TXT', 'txt');
+        break;
+      case 'biopax':
+        this.initiatePCDownload('BIOPAX', 'xml');
+        break;
+      case 'sbgn':
+        this.initiatePCDownload('SBGN', 'xml');
+        break;
+      case 'jsonld':
+        this.initiatePCDownload('JSONLD', 'json');
+        break;
       default:
+        // shouldn't be reached unless there's a programming error
         console.log('Unrecognized file format.');
     }
   }
@@ -60,14 +83,17 @@ class DownloadOption extends React.Component {
   render() {
     return (
       h('div.download-option', [
-        h('div.download-icon-container', [
-          h('div.download-icon-inner-container', {
+        h('div.download-option-header', [
+          h('h3', downloadTypes[this.props.type]),
+          h('div.download-button', {
             'onClick': () => this.handleDownloadClick(this.props.type)
           }, [
             h('i.material-icons', 'file_download')
           ])
         ]),
-        h('div.download-option-description', this.props.children)
+        h('div.download-option-description', [
+          this.props.children
+        ])
       ])
     );
   }

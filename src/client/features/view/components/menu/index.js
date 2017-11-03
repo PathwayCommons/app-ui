@@ -1,5 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
+const Link = require('react-router-dom').Link;
 const classNames = require('classnames');
 
 const tippy = require('tippy.js');
@@ -47,18 +48,20 @@ class Menu extends React.Component {
       h('div.menu-bar', [
         h('div.menu-bar-inner-container', [
           h('div.pc-logo-container', [
-            h('img', {
-              src: '/img/icon.png'
-            })
+            h(Link, {to: {pathname: '/search'}}, [
+              h('img', {
+                src: '/img/icon.png'
+              })
+            ])
           ]),
           h('div.title-container', [
             h('h4', `${this.props.name} | ${this.props.datasource}`)
           ]),
           h('div.layout-dropdown-button', {
             onClick: () => this.setState({dropdownOpen: !this.state.dropdownOpen}),
-            title: 'Additional layout options'
+            title: 'Rearrange the entities on screen'
           }, [
-            h('i.material-icons', 'timeline')
+            h('i.material-icons', 'transform')
           ])
         ]),
         h('div', {

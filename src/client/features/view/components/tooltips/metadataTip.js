@@ -22,7 +22,7 @@ class MetadataTip {
 
     //Get HTML for current data pair based on key value
     if (key === 'Standard Name') {
-      return h('div.fake-paragraph', h('div.field-name', 'Standard Name: '), pair[1].toString());
+      return h('div.fake-paragraph', h('div.field-name', 'Approved Name: '), pair[1].toString());
     }
     else if (key === 'Data Source') {
       let source = pair[1].replace('http://pathwaycommons.org/pc2/', '');

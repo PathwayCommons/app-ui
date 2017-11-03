@@ -1,7 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const classNames = require('classnames');
-const HtmlToReactParser = require('html-to-react').Parser;
 
 const HelpMenu = require('./menus/help');
 const FileDownloadMenu = require('./menus/fileDownload');

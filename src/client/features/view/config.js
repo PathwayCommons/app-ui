@@ -12,9 +12,9 @@ const databases = [
   ['UniProt', 'http://www.uniprot.org/', 'uniprot/'],
   ['HGNC', 'https://www.genenames.org/', 'cgi-bin/search?search_type=all&search='],
   ['ChEBI', 'https://www.ebi.ac.uk/chebi/', 'searchId.do?chebiId='],
-  ['Kegg Reaction', 'http://www.genome.jp/', 'dbget-bin/www_bget?rn:'],
-  ['Kegg Compound', 'http://www.genome.jp/', 'dbget-bin/www_bget?cpd:'],
-  ['Kegg Drug', 'http://www.genome.jp/', 'dbget-bin/www_bget?drg:'],
+  ['KEGG Reaction', 'http://www.genome.jp/', 'dbget-bin/www_bget?rn:'],
+  ['KEGG Compound', 'http://www.genome.jp/', 'dbget-bin/www_bget?cpd:'],
+  ['KEGG Drug', 'http://www.genome.jp/', 'dbget-bin/www_bget?drg:'],
   ['KEGG', 'http://www.genome.jp/dbget-bin/www_bfind_sub?mode=bfind&max_hit=1000&dbkey=kegg&keywords=', ''],
   ['PubMed', 'https://www.ncbi.nlm.nih.gov/pubmed/', '?term='],
   ['Ensembl', 'https://www.ensembl.org/', 'Multi/Search/Results?q=']

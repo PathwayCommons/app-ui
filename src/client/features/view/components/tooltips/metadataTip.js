@@ -1,7 +1,6 @@
 const h = require('hyperscript');
 const classNames = require('classnames');
 const tippy = require('tippy.js');
-const tableify = require('tableify');
 const config = require('../../config');
 
 
@@ -30,6 +29,9 @@ class MetadataTip {
       let link = this.generateDataSourceLink(source, 'Data Source: ');
       return h('div.fake-paragraph', link);
     }
+    else if (key === 'Type' && !trim){
+      return h('div.fake-paragraph', [h('div.field-name', key + ': '), pair[1].toString().substring(3)]);
+    }
     else if (key === 'Names') {
       //Trim results to first 3 names to avoid overflow
       let shortArray = pair[1];
@@ -46,7 +48,7 @@ class MetadataTip {
       return h('div.fake-paragraph',
         [
           h('div.field-name', 'Database Id(s):'),
-          h('div.wrap-text', h('ul', sortedArray.map(item => this.generateIdList(item, trim), this)))
+          h('div.wrap-text', h('ul.db-list', sortedArray.map(item => this.generateIdList(item, trim), this)))
         ]);
     }
     else if (!(trim)) {
@@ -70,7 +72,7 @@ class MetadataTip {
 
     //Order the data array
     let data = this.orderArray(this.data);
-    if(!(data)) data = [];
+    if (!(data)) data = [];
 
     //Ensure name is not blank
     this.validateName();
@@ -80,8 +82,13 @@ class MetadataTip {
       h('div.tooltip-heading', this.name),
       h('div.tooltip-internal', h('div', (data).map(item => this.parseMetadata(item, true), this))),
       h('div.tooltip-buttons',
-        h('i', { className: classNames('material-icons', 'tooltip-button-show'), onclick: this.displayMore(callback) }, 'open_in_new'),
-        h('i', { className: classNames('material-icons', 'tooltip-button-pdf'), onclick: this.getRawData(data) }, 'file_download'))
+        [
+          h('div.tooltip-button', {onclick: this.displayMore(callback)},
+          [
+            h('i', { className: classNames('material-icons', 'tooltip-button-show')}, 'bubble_chart'),
+            h('div.describe-button', 'Open in Side Bar')
+          ])
+        ])
     );
   }
 
@@ -89,7 +96,7 @@ class MetadataTip {
   generateSideBar() {
     //Order the data array
     let data = this.orderArray(this.data);
-    if(!(data)) data = [];
+    if (!(data)) data = [];
 
     //Ensure name is not blank
     this.validateName();
@@ -148,7 +155,12 @@ class MetadataTip {
     //get name and trim ID list to 5 items
     let name = dbIdObject.database;
     let list = dbIdObject.ids;
-    if (trim) list = dbIdObject.ids.slice(0, 5);
+
+    //Format names
+    let dbScan = this.db.filter(data => name.toUpperCase().indexOf(data[0].toUpperCase()) !== -1);
+    if(dbScan.length > 0) {name = dbScan[0][0];}
+
+    if (trim) {list = dbIdObject.ids.slice(0, 5);}
     return h('li.db-item', h('div.db-name', name + ": "), list.map(data => this.generateDBLink(name, data), this));
   }
 

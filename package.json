@@ -61,7 +61,6 @@
     "morgan": "^1.9.0",
     "multispinner": "^0.2.1",
     "node-fetch": "^1.7.3",
-    "object-path": "^0.11.4",
     "pathway-commons": "^1.5.4",
     "query-string": "^5.0.0",
     "react": "^16.0.0",

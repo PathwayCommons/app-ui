@@ -1,33 +1,20 @@
 //Import Depedencies
-const routes = require('./databaseRoutes');
+const controller = require('./controller');
 const express = require('express');
+const btoa = require('btoa');
 const router = express.Router();
 
 
 function getLayout(io, socket, ioPackage) {
-  routes.getLayout(ioPackage.uri, ioPackage.version).then((package) => {
-    io.emit(package.socket, package.result);
+  controller.getLayout(ioPackage.uri, ioPackage.version).then((package) => {
+    socket.emit('layoutPackage', btoa(package));
   });
 }
 
 function submitLayout(io, socket, ioPackage) {
-  routes.submitLayout(ioPackage.uri, ioPackage.version, ioPackage.layout, ioPackage.key)
+  controller.submitLayout(ioPackage.uri, ioPackage.version, ioPackage.layout, ioPackage.key)
     .then((package) => {
-      io.emit(package.socket, package.result);
-    });
-}
-
-function getEditKey(io, socket, ioPackage) {
-  routes.getEditKey(ioPackage.uri, ioPackage.version, socket.request.connection.remoteAddress, true)
-    .then((package) => {
-      io.emit(package.socket, package.result);
-    });
-}
-
-function checkEditKey(io, socket, ioPackage) {
-  routes.checkEditKey(ioPackage.uri, ioPackage.version, ioPackage.key)
-    .then((package) => {
-      io.emit(package.socket, package.result);
+      io.emit('updated', package);
     });
 }
 
@@ -42,15 +29,6 @@ var returnRouter = function (io) {
     socket.on('submitLayout', function (ioPackage) {
       submitLayout(io, socket, ioPackage);
     });
-
-    socket.on('getEditKey', function (ioPackage) {
-      getEditKey(io, socket, ioPackage);
-    });
-
-    socket.on('checkEditKey', function (ioPackage) {
-      checkEditKey(io, socket, ioPackage);
-    });
-
   });
 
   return router;

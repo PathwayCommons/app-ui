@@ -30,14 +30,12 @@ class View extends React.Component {
       name: '',
       datasource: '',
 
-      activateWarning: false,
-      warningMessage: '',
+      activateWarning: this.props.admin || false,
+      warningMessage: this.props.admin ? 'Be careful! Your changes are live.' : '',
 
-      activeDisplayedNode: '',
-
-      admin: false
+      activeDisplayedNode: ''
     };
-    
+
     // Get graph name from PCS
     PathwayCommonsService.query(query.uri, 'json', 'Named/displayName')
       .then(responseObj => {
@@ -59,27 +57,7 @@ class View extends React.Component {
         });
       });
 
-    // Before we mount we get the edit key from the URL
-    // The validation performed here only occurs once, on View mount,
-    // and is for initializing access privileges. To the regular user,
-    // the move event does not need to be bound. The downside is that
-    // there is no way to add an edit key part-way through a session.
-    const editkey = query.editkey;
-    if (editkey != null) {
-      CDC.initEditKeyValidationSocket((valid) => {
-        if (typeof valid === typeof {}) {alert('Key validation error!'); return;}
-        this.setState({
-          admin: valid,
-          activateWarning: valid, // this activates the warning tab
-          warningMessage: 'Be careful! Your changes are live.'
-        });
-        if (valid) {
-          // Bind move event only if necessary
-          bindMove(query.uri, 'latest', editkey, this.state.cy);
-        }
-      });
-      CDC.requestEditKeyValidation(query.uri, 'latest', editkey);
-    }
+    if (this.props.admin) {bindMove(query.uri, 'latest', this.state.cy);}
 
     // Arrow functions like these tie socket.io directly into the React state
     CDC.initGraphSocket(newGraphJSON => this.setState({graphJSON: newGraphJSON}));

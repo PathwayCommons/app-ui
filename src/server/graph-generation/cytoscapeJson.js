@@ -17,7 +17,7 @@ function getPathwayLevelMetadata(uri) {
     get('Entity/comment').then(value => comments = value),
     get('Entity/organism/displayName').then(value => organism = value)
   ]).then(data => ({ comments, dataSource, title, organism }));
-};
+}
 
 //Get metadata enhanced cytoscape JSON
 //Requires a valid pathway uri
@@ -29,16 +29,16 @@ function getMetadataJson(uri, parseType) {
   return Promise.all([
     pcServices.getPC2(uri, 'sbgn').then(file => sbgn = file),
     pcServices.getPC2(uri, downloadType).then(file => biopax = file)
-  ]).then(files => {
+  ]).then(() => {
     //Map metadata
     if (parseType === 'jsonld') { return metadataMapperJson(biopax, sbgn); }
     else if (parseType === 'biopax') { return metadataMapperXML(biopax, sbgn); }
     else if (parseType === 'pc2') { return metadataMapperPC2(biopax, sbgn); }
-  })
+  });
 }
 
 //Return enhanced cytoscape json
-//Requires a valid pathway uri 
+//Requires a valid pathway uri
 function getCytoscapeJson(uri, parseType = 'jsonld') {
   let pathwayMetadata;
 
@@ -49,11 +49,8 @@ function getCytoscapeJson(uri, parseType = 'jsonld') {
       data.pathwayMetadata = pathwayMetadata;
       data.parseType = parseType;
       return data;
-    })
-  }).catch(function (e) {
-    console.log(e);
-    return { error: e };
-  })
+    });
+  });
 }
 
 module.exports = {

@@ -1,25 +1,28 @@
-@import "./bounce.css";
+@import "./animations/bounce.css";
 
 /* change someday to global "snackbar" component, like in react material-ui */
 .edit-warning-container {
   @extend %flex-center;
   @extend %no-select;
 
-  position: fixed;
-  pointer-events: none;
   height: 2.6em;
   width: 100%;
+
+  position: fixed;
   bottom: 0;
   left: 0;
+
+  pointer-events: none;
+
   animation-name: bounce;
   animation-duration: 1s;
   /* animation-iteration-count: 20; */
   transition: transform 1s ease 0s, opacity 1s ease 1s;
 
   &.closed {
-    transform: translateY(100%);
     box-shadow: 0px;
     opacity: 0;
+    transform: translateY(100%);
   }
 }
 
@@ -29,9 +32,10 @@
 
   height: 1.8em;
   padding: 0.4em 1em 0.4em 1em;
+
+  background-color: var(--invalidColor);
   border-radius: 3px 3px 0px 0px;
   box-shadow: var(--box-shadow);
-  background-color: var(--invalidColor);
 }
 
 /* Portrait-specific mobile scaling */
@@ -39,26 +43,29 @@
   .edit-warning-container {
     height: 100%;
     width: 2.6em;
+
     bottom: 0;
     left: calc(100% - 2.6em);
+
     animation-name: none;
     transition: transform 1s ease 0s, opacity 1s ease 1s;
 
     &.closed {
-      transform: translateX(100%);
       box-shadow: 0px;
       opacity: 0;
+      transform: translateX(100%);
     }
   }
-
 
   .edit-warning {
     height: 1.8em;
     min-width: 20em;
-    transform: rotate(-90deg);
     padding: 0.4em 1em 0.4em 1em;
+    
+    background-color: var(--invalidColor);
     border-radius: 3px 3px 0px 0px;
     box-shadow: var(--box-shadow);
-    background-color: var(--invalidColor);
+    
+    transform: rotate(-90deg);
   }
 }

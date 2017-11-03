@@ -38,6 +38,7 @@
     "body-parser": "^1.18.2",
     "btoa": "^1.1.2",
     "classnames": "^2.2.5",
+    "color": "^2.0.0",
     "cookie-parser": "^1.4.3",
     "cytoscape": "git+https://github.com/d2fong/cytoscape.js.git#unstable-build",
     "cytoscape-cola": "^2.0.0",

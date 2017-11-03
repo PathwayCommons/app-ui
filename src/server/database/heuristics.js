@@ -4,13 +4,11 @@
 function run(layouts, callback) {
     let layout = layouts.toArray()
       .then((result) => {
-        return result[0];
-      }).catch(function (e) {
-        throw e;
+        return result[result.length-1];
       });
   
     if (callback) {
-      callback();
+      callback(layout);
     } else {
       return layout;
     }

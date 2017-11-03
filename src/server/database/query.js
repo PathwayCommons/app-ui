@@ -1,44 +1,12 @@
 
 const r = require('rethinkdb');
 const heuristics = require('./heuristics');
-const hash = require('json-hash');
 const config = require('./config');
 const db = require('./utilities');
 
 function connect() {
   return r.connect({ host: config.ip, port: config.port });
 }
-
-/*
-getGraphID(pcID, releaseID, connection [,callback])
-returns the database uuid for the graph specified by the provided
-pathway commons identifier and release version (releaseID).
- 
-pass releaseID = 'latest' to receive the identifier for the most recent
-version of PC.
-*/
-function getGraphID(pcID, releaseID, connection, callback) {
-  // set the generic root for ease of use throughout the function.
-  let queryRoot = db.queryRoot(pcID, releaseID);
-
-  // The result of both of these queries will always be a cursor of length one
-  // (once proper databse instantiation is complete)
-  // Convert this cursor to an array then grab the first (and only) entries uuid
-  let idPromise = queryRoot.run(connection)
-    .then((result) => {
-      return result.toArray();
-    }).catch((e) => {
-      throw e;
-    }).then((result) => {
-      return result[0].graph_id;
-    }).catch(() => {
-      return null;
-    });
-
-
-  return db.handleResult(idPromise, callback);
-}
-
 
 // ------------------- Get a layout -----------------------
 /*
@@ -77,22 +45,19 @@ function getLayout(pcID, releaseID, connection, callback) {
     .run(connection)
     .then((cursor) => {
       return cursor.toArray(); // Convert list of valid versions (should be only 1)
-    }).catch((e) => {          // from a cursor to an array
-      throw e;
     }).then((versionArray) => {
       if (!versionArray.length) {
         let err = new Error('No saved layouts');
         err.status = 'NoLayouts';
         throw err;
       }
-      // join the layouts to their layout ids 
+      // join the layouts to their layout ids
       return r.expr(versionArray[0].layout_ids) // create a rethink expression from list of ids
         .eqJoin((id) => { return id; }, r.db(config.databaseName).table('layout'))
         .zip()
+        .orderBy(r.asc('date_added'))
         .pluck('positions') // We're only looking for positions
         .run(connection);
-    }).catch((e) => {
-      throw e;
     }).then((allSubmissions) => {
       // Run decision making process to amalgamate down to one layout to return
       // currently just returns the most recent submission
@@ -133,7 +98,6 @@ function getGraph(pcID, releaseID, connection, callback) {
 module.exports = {
   getLayout,
   getGraph,
-  getGraphID,
   getGraphAndLayout,
   connect
 };

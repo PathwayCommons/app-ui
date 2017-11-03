@@ -1,5 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
+const classNames = require('classnames');
 
 const saveAs = require('file-saver').saveAs;
 const PathwayCommonsService = require('../../../../../../services/').PathwayCommonsService;
@@ -82,7 +83,10 @@ class DownloadOption extends React.Component {
 
   render() {
     return (
-      h('div.download-option', [
+      h('div', {
+        // for the sake of a quick fix, only one download option can be pre-shown. I'll fix this later
+        className: classNames('download-option', this.props.type === 'png' ? 'pre-shown' : '')
+      }, [
         h('div.download-option-header', [
           h('h3', downloadTypes[this.props.type]),
           h('div.download-button', {

@@ -15,6 +15,13 @@ const extraOptions = [
 ];
 
 class FileDownloadMenu extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      extrasActive: false
+    };
+  }
+
   render() {
     const extraMenuContents = extraOptions.map(option => {
       return (
@@ -39,8 +46,14 @@ class FileDownloadMenu extends React.Component {
           name: this.props.name
         }, [
           h(downloadDescriptions.png)
+        ]),
+        h('div.toggle-extra-downloads', {
+          onClick: () => this.setState({extrasActive: !this.state.extrasActive})
+        }, [
+          h('i.material-icons', this.state.extrasActive ? 'remove_circle_outline' : 'add_circle_outline'),
+          h('span', `${this.state.extrasActive ? 'Hide' : 'Show'} more options`)
         ])
-      ].concat(extraMenuContents))
+      ].concat(this.state.extrasActive ? extraMenuContents : []))
     );
   }
 }

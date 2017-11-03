@@ -1,6 +1,5 @@
 .download-option {
-  width: 95%;
-  margin: auto;
+  width: 100%;
   padding: 1em;
 
   display: flex;
@@ -21,6 +20,11 @@
     margin-bottom: 1em;
     border-width: 2px 2px 2px 2px;
   }
+
+  &.pre-shown {
+    border-width: 2px 2px 2px 2px;
+  }
+
 }
 
 .download-option-header {

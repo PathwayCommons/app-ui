@@ -5,7 +5,7 @@ const bindEvents = require('./events');
 
 // set the sbgn style sheet
 // bind interaction events (mouse hovering, collapsing)
-function make_cytoscape(opts){
+function make_cytoscape(opts, callback){
   const cy = cytoscape({
     container: opts.container,
     style: stylesheet,
@@ -15,7 +15,7 @@ function make_cytoscape(opts){
     zoomingEnabled: true
   });
 
-  bindEvents(cy);
+  bindEvents(cy, callback);
 
   return cy;
 }

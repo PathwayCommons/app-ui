@@ -5,6 +5,7 @@ const classNames = require('classnames');
 const HelpMenu = require('./menus/help');
 const FileDownloadMenu = require('./menus/fileDownload');
 const GraphInfoMenu = require('./menus/graphInfoMenu');
+const MetadataSidebar = require('./menus/metatdataExtension');
 
 const tippy = require('tippy.js');
 
@@ -89,6 +90,13 @@ class Sidebar extends React.Component {
 
     this.setState({open: false, activeMenu: ''});
   }
+  
+  //Receive updated props and set the state to match the desired result. 
+  componentWillReceiveProps(nextProps){
+    let node = nextProps.cy.getElementById(nextProps.nodeId);
+    let tooltip = node.scratch('tooltip');
+    if(tooltip) this.setState({open: true, activeMenu: 'center_focus_strong' });
+  }
 
   render() {
     const menus = {
@@ -96,8 +104,12 @@ class Sidebar extends React.Component {
       'file_download': h(FileDownloadMenu, {'cy': this.props.cy, 'uri': this.props.uri, 'name': this.props.name}),
       'help': h(HelpMenu),
       'center_focus_strong': (
+        h(MetadataSidebar, {'cy' : this.props.cy, 'nodeId' : this.props.nodeId})
+      ),
+      'center_focus_weak': (
         h('div', [
-          h('span', 'Harsh\'s fancy metadata tree goes here.')
+          h('h1', 'Node Information'),
+          h('div', 'No Data Found' )
         ])
       )
     };

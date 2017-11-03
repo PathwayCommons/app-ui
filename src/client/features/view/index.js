@@ -22,7 +22,7 @@ class View extends React.Component {
     this.state = {
       query: query,
 
-      cy: make_cytoscape({ headless: true }), // cytoscape mounted after Graph component has mounted
+      cy: null, // cytoscape mounted after Graph component has mounted
       graphJSON: [],
       layout: lo.defaultLayout,
       availableLayouts: [],
@@ -31,7 +31,9 @@ class View extends React.Component {
       datasource: '',
 
       activateWarning: this.props.admin || false,
-      warningMessage: this.props.admin ? 'Be careful! Your changes are live.' : ''
+      warningMessage: this.props.admin ? 'Be careful! Your changes are live.' : '',
+
+      activeDisplayedNode: ''
     };
 
     // Get graph name from PCS
@@ -60,6 +62,12 @@ class View extends React.Component {
     // Arrow functions like these tie socket.io directly into the React state
     CDC.initGraphSocket(newGraphJSON => this.setState({graphJSON: newGraphJSON}));
     CDC.requestGraph(query.uri, 'latest');
+  }
+
+  componentWillMount(){
+    this.setState({
+      cy: make_cytoscape({ headless: true }, nodeId => this.setState({activeDisplayedNode: nodeId}))
+    });
   }
 
   // To be called when the graph renders (since this is determined by the Graph class)
@@ -110,7 +118,8 @@ class View extends React.Component {
           cy: this.state.cy,
           uri: this.state.query.uri,
           name: this.state.name,
-          datasource: this.state.datasource
+          datasource: this.state.datasource,
+          nodeId: this.state.activeDisplayedNode
         })
       ])
     );

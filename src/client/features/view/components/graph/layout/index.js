@@ -7,19 +7,19 @@ const stratifiedLayeredOpts = require('./stratifiedKlay');
 const coseBilkentMaxGraphSize = 100;
 
 const layoutMap = new Map()
-.set('tree / hierarchical (dagre)', dagreOpts)
-.set('layered (klay)', klayOpts)
-.set('stratified', stratifiedLayeredOpts)
-.set('force directed (cola)', colaOpts)
-.set('force directed (CoSE-Bilkent)', coseBilkentOpts);
+.set('Force Directed 1', coseBilkentOpts)
+.set('Force Directed 2', colaOpts)
+.set('Tree', dagreOpts)
+.set('Layered', klayOpts)
+.set('Stratified', stratifiedLayeredOpts);
 
-const defaultLayout = 'layered (klay)';
+const defaultLayout = 'Layered';
 
 const layoutNames = (graphSize) => {
   let defaults = [...layoutMap.keys()];
 
   if (graphSize >= coseBilkentMaxGraphSize) {
-    const index = defaults.indexOf('force directed (CoSE-Bilkent)');
+    const index = defaults.indexOf('Force Directed 2');
 
     if (index > -1) {
       defaults.splice(index, 1);
@@ -30,10 +30,10 @@ const layoutNames = (graphSize) => {
 };
 
 const getDefaultLayout = (graphSize) => {
-  let layout = 'layered (klay)';
+  let layout = 'Layered';
 
   if (graphSize<= coseBilkentMaxGraphSize) {
-    layout = 'force directed (CoSE-Bilkent)';
+    layout = 'Force Directed 1';
   }
 
   return layout;

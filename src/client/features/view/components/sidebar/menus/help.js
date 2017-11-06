@@ -15,31 +15,31 @@ class HelpMenu extends React.Component {
             h('a', {
               href: 'http://marvl.infotech.monash.edu/webcola/',
               target: '_blank'
-            }, 'force-directed (cola)'),
-            ' - The Cola.js physics simulation layout for Cytoscape.js'
+            }, 'Force Directed 1'),
+            ' - The CoSE-Bilkent force-directed layout algorithm for undirected compound graphs'
           ]),
           h('li', [
             h('a', {
               href: 'http://www.sciencedirect.com/science/article/pii/S0020025508004799',
               target: '_blank'
-            }, 'force-directed (Cose-Bilkent)'),
-            ' - A force-directed layout algorithm for undirected compound graphs'
+            }, 'Force Directed 2'),
+            ' - The Cola.js physics simulation layout for Cytoscape.js'
           ]),
           h('li', [
             h('a', {
               href: 'https://github.com/cytoscape/cytoscape.js-dagre',
               target: '_blank'
-            }, 'tree / hierarchical (dagre)'),
+            }, 'Tree'),
             ' - The Dagre layout for DAGs and trees for Cytoscape.js'
           ]),
           h('li', [
             h('a', {
               href: 'https://github.com/OpenKieler/klayjs',
               target: '_blank'
-            }, 'layered (klay)'),
-            ' - Layer-based layout for node-link diagrams'
+            }, 'Layered'),
+            ' - The Klay Layer-based layout for node-link diagrams'
           ]),
-          h('li', 'stratified (force-directed / layered) - Vertical ordering of common cellular compartments')
+          h('li', 'Stratified - Vertical ordering of common cellular compartments')
         ]),
         h('h4', 'Expand and Collapse'),
         'Initially, complexes - those entities composed of others - are collapsed to reduce complexity. Click the octogonal shape to show or hide contents.',

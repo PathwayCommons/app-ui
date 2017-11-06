@@ -1,6 +1,6 @@
 const MetadataTip = require('../../components/tooltips/metadataTip');
 
-const bindClick = (cy) => {
+const bindClick = (cy, callback) => {
   //Tippy JS Events
   //Binding actions (Try/Catch blocks re only for quick demo purposes)
   //Bind right click event to tippy.show()
@@ -16,7 +16,7 @@ const bindClick = (cy) => {
         evt.target.scratch('tooltip', html);
       }
 
-      html.show(cy);
+      html.show(cy, callback);
   });
 };
 

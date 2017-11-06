@@ -1,27 +1,34 @@
 const databases = [
-  ['BioGrid', 'https://thebiogrid.org/', ''],
+  ['BioGrid', 'http://identifiers.org/biogrid/', ''],
   ['DrugBank', 'https://www.drugbank.ca/', ''],
-  ['mirtarBase', 'http://mirtarbase.mbc.nctu.edu.tw/', 'php/detail.php?mirtid=MIRT000002'],
+  ['mirtarBase', 'http://identifiers.org/mirtarbase/', ''],
   ['NetPath', 'http://www.netpath.org/', 'molecule?molecule_id='],
   ['Panther', 'http://pantherdb.org/', 'genes/geneList.do?searchType=basic&fieldName=all&organism=all&listType=1&fieldValue='],
   ['PID', null],
   ['PhosphoSitePlus', null],
-  ['Reactome', 'https://reactome.org/', 'content/detail/'],
+  ['Reactome', 'http://identifiers.org/reactome/', ''],
   ['SMPD', null],
-  ['Wikipathways', null],
-  ['uniprot', 'http://www.uniprot.org/', 'uniprot/'],
-  ['HGNC', 'https://www.genenames.org/', 'cgi-bin/search?search_type=all&search='],
-  ['ChEBI', 'https://www.ebi.ac.uk/chebi/', 'searchId.do?chebiId='],
-  ['Kegg Reaction', 'http://www.genome.jp/', 'dbget-bin/www_bget?rn:'],
-  ['Kegg Compound', 'http://www.genome.jp/', 'dbget-bin/www_bget?cpd:'],
-  ['Kegg Drug', 'http://www.genome.jp/', 'dbget-bin/www_bget?drg:'],
-  ['KEGG', 'http://www.genome.jp/dbget-bin/www_bfind_sub?mode=bfind&max_hit=1000&dbkey=kegg&keywords=', ''],
-  ['PubMed', 'https://www.ncbi.nlm.nih.gov/pubmed/', '?term='],
-  ['Ensembl', 'https://www.ensembl.org/', 'Multi/Search/Results?q=']
+  ['Wikipathways', 'http://identifiers.org/wikipathways/' , ''],
+  ['UniProt', '	http://identifiers.org/uniprot/', ''],
+  ['HGNC Symbol', 'http://identifiers.org/hgnc.symbol/', ''],
+  ['HGNC', 'http://identifiers.org/hgnc/', ''],
+  ['ChEBI', 'http://identifiers.org/chebi/', ''],
+  ['KEGG', 'http://identifiers.org/kegg/', ''],
+  ['PubMed', 'http://identifiers.org/pubmed/', ''],
+  ['Ensembl', 'http://identifiers.org/ensembl/', ''],
+  ['Enzyme Nomenclature', 'http://identifiers.org/ec-code/', ''],
+  ['PubChem-Substance', 'http://identifiers.org/pubchem.substance/', ''],
+  ['3DMET', 'http://identifiers.org/3dmet/', ''],
+  ['Chemical Component Dictionary', 'http://identifiers.org/pdb-ccd/', ''],
+  ['CAS', 'http://identifiers.org/cas/', '']
 ];
-
-
 
 module.exports = {
   databases
 }
+
+/*
+  ['KEGG Reaction', 'http://www.genome.jp/', 'dbget-bin/www_bget?rn:'],
+  ['KEGG Compound', 'http://www.genome.jp/', 'dbget-bin/www_bget?cpd:'],
+  ['KEGG Drug', 'http://www.genome.jp/', 'dbget-bin/www_bget?drg:'], 
+*/

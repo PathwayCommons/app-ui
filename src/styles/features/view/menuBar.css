@@ -73,6 +73,7 @@
 .layout-dropdown {
   @extend %flex-center;
 
+  box-sizing: border-box;
   margin-left: 1em;
   margin-right: 1em;
 
@@ -81,6 +82,7 @@
   & select {
     width: 100%;
     background-color: white;
+    padding-right: 1.75em;
   }
 
   &.open {

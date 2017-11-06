@@ -83,10 +83,12 @@ class MetadataTip {
       h('div.tooltip-internal', h('div', (data).map(item => this.parseMetadata(item, true), this))),
       h('div.tooltip-buttons',
         [
-          h('div.tooltip-button', {onclick: this.displayMore(callback)},
+          h('div.tooltip-button-container',
           [
-            h('i', { className: classNames('material-icons', 'tooltip-button-show')}, 'bubble_chart'),
-            h('div.describe-button', 'Open in Sidebar')
+            h('div.tooltip-button', {onclick: this.displayMore(callback)}, [
+              h('i', { className: classNames('material-icons', 'tooltip-button-show')}, 'bubble_chart'),
+              h('div.describe-button', 'Open in Sidebar')
+            ])
           ])
         ])
     );

@@ -61,7 +61,8 @@ class Menu extends React.Component {
             onClick: () => this.setState({dropdownOpen: !this.state.dropdownOpen}),
             title: 'Rearrange the entities on screen'
           }, [
-            h('i.material-icons', 'transform')
+            // options include 'transform', 'share', 'call_split'
+            h('i.material-icons', 'call_split')
           ])
         ]),
         h('div', {

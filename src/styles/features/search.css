@@ -85,6 +85,10 @@
   font-size: 14px;
 }
 
+.search-option-item > a {
+  white-space: nowrap;
+}
+
 .search-option-item > a:hover {
   cursor: pointer;
 }

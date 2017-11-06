@@ -98,6 +98,8 @@ const bindHover = (cy) => {
     const node = evt.target;
     const currZoom = cy.zoom();
 
+    if (node.isParent() && node.isExpanded()) { return; }
+
     const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
 
     node.neighborhood().nodes().union(node).forEach((node) => {

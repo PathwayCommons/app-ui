@@ -24,7 +24,7 @@ function submitLayout(io, socket, ioPackage) {
 }
 
 function submitDiff(io, socket, ioPackage) {
-  controller.submitDiff(ioPackage.uri, ioPackage.version, ioPackage.layout, socket.id)
+  controller.submitDiff(ioPackage.uri, ioPackage.version, ioPackage.diff, socket.id)
   .then((package)=>{
     io.emit('updated', package);
   });

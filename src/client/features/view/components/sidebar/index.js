@@ -36,7 +36,7 @@ class Sidebar extends React.Component {
     this.state = {
       open: false,
       activeMenu: '',
-      nodeData: false
+      nodeId: ''
     };
   }
 
@@ -75,8 +75,9 @@ class Sidebar extends React.Component {
   componentWillReceiveProps(nextProps){
     let node = nextProps.cy.getElementById(nextProps.nodeId);
     let tooltip = node.scratch('tooltip');
-    if(tooltip) {
-      this.setState({open: true, activeMenu: 'bubble_chart' });
+    let isChanged = nextProps.nodeId === this.state.nodeId;
+    if(tooltip && !isChanged) {
+      this.setState({open: true, activeMenu: 'bubble_chart', nodeId: nextProps.nodeId});
     }
   }
 

@@ -1,141 +1,146 @@
 .tooltip-image {
-    position: relative;
-    width: 100%;
-    color: black;
-    /* min-width: 300px;
-    min-height: 250px; */
-    max-width: 20vw;
-    border-radius: 0%;
-    /* height: 16vh;
-    width: 16vw; */
- }
-
- .tooltip-internal {
-    position: relative;
-    top:  5%;
-    left: 0;
-    word-wrap: break-word;
-    overflow-y: auto;
-    text-align: left;
-    height: 100%;
-    font-size: 1.3vh !important;
- }
-
- .tooltip-heading {
-    position: relative;
-    top: 2px;
-    text-align: center;
-    word-wrap: break-word;
-    font-size: 2vh;
-    font-weight: 400;
-    color : var(--dark-base-colour)
+  position: relative;
+  width: 100%;
+  color: black;
+  /* min-width: 300px;
+  min-height: 250px; */
+  max-width: 20vw;
+  border-radius: 0%;
+  /* height: 16vh;
+  width: 16vw; */
 }
 
+.tooltip-internal {
+  position: relative;
+  top: 5%;
+  left: 0;
+  word-wrap: break-word;
+  overflow-y: auto;
+  text-align: left;
+  height: 100%;
+  font-size: 1.3vh !important;
+}
 
-.tooltip-button{
-    height: 100%;
-    width: 100%;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: var(--dark-base-colour);
-    font-size: 2.45vh !important;
-    font-weight: 400 !important;
+.tooltip-heading {
+  position: relative;
+  top: 2px;
+  text-align: center;
+  word-wrap: break-word;
+  font-size: 2vh;
+  font-weight: 400;
+  color: var(--dark-base-colour)
+}
+
+.tooltip-button-container {
+  @extend %flex-center;
+
+  height: 100%;
+  width: 100%;
+  margin-bottom: 2px;
+
+  position: relative;
+}
+
+.tooltip-button {
+  @extend %flex-center;
+  @extend %no-select;
+  @extend %button-styling;
+  
+  height: 100%;
+  padding: 0.3em;
+  margin-bottom: 3px;
+
+  box-sizing: border-box;
+
+  color: var(--dark-base-colour);
+
+  & i {
+    font-size: 2.45vh;
+  }
 }
 
 .describe-button {
-    display: inline-block;
-    margin: 5px;
-    font-size: 1vh !important;
-    text-decoration: underline;
+  font-size: 0.75em;
 }
 
-.tooltip-button-pdf {
-    margin: 4px;
-}
-
-.tooltip-button-show {
-    margin: 4px;
-}
-
-.field-name{
-    margin: 2px;
-    display: inline-block;
-    font-weight: bold;
+.field-name {
+  margin: 2px;
+  display: inline-block;
+  font-weight: bold;
 }
 
 .db-name {
-    text-decoration: underline;
-    margin: 3px;
-    display: inline-block;
+  text-decoration: underline;
+  margin: 3px;
+  display: inline-block;
 }
 
 .fake-paragraph {
-    word-wrap: break-word;
-    margin: 6px;
-    padding: 2px;
+  word-wrap: break-word;
+  margin: 6px;
+  padding: 2px;
 }
 
 .wrap-text {
-   word-wrap: break-word;
-   overflow-y: auto;
-   max-height: 300px;
-   width: 100%;
+  word-wrap: break-word;
+  overflow-y: auto;
+  max-height: 300px;
+  width: 100%;
 }
 
-.sidebar-text{
-    overflow-x: hidden;
-    width: 100%;
+.sidebar-text {
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .sidebar-internal {
-    top:  5%;
-    left: 0;
-    word-wrap: break-word;
-    overflow-y: auto;
-    text-align: left;
-    height: 100%;
-    font-size: 1.3vh !important;
-    width: 100%;
+  top: 5%;
+  left: 0;
+  word-wrap: break-word;
+  overflow-y: auto;
+  text-align: left;
+  height: 100%;
+  font-size: 1.3vh !important;
+  width: 100%;
 }
 
-.db-list{
-    line-height: 0.2em;
+.db-list {
+  line-height: 0.2em;
 }
 
 .db-link {
-    color : var(--link);
-    margin: 2px;
-    font-weight: lighter;
-    display: inline-block;
+  color: var(--link);
+  margin: 2px;
+  font-weight: lighter;
+  display: inline-block;
 }
 
 .db-no-link {
-    margin: 2px;
-    font-weight: lighter;
-    display: inline-block;
+  margin: 2px;
+  font-weight: lighter;
+  display: inline-block;
 }
 
 .db-item {
-    word-wrap: break-word;
-    line-height: 0.9em;
+  word-wrap: break-word;
+  line-height: 0.9em;
 }
 
-.sidebar-text > div {
-    width: 100%;
+.sidebar-text>div {
+  width: 100%;
 }
+
 
 /* Tippy JS Style Overrides */
+
 .tippy-tooltip [x-circle] {
-    border-radius : 0%;
+  border-radius: 0%;
 }
 
 .tippy-tooltip.tippy-tooltip--regular.light-theme.enter.tippy-notransition {
-    border-radius: 3%;
+  border-radius: 3%;
 }
 
 .tippy-popper .tippy-tooltip.light-theme[data-animatefill] {
-      background-color: white !important;
+  background-color: white !important;
 }
-

@@ -43,3 +43,18 @@
   user-select: none;
   cursor: default;
 }
+
+%button-styling {
+  border-radius: 2px;
+  border: 1px solid black;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 5px 0px;
+  background-color: var(--light-base-colour);
+
+  cursor: pointer;
+
+  transition: box-shadow 0.1s linear;
+
+  &:hover {
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 5px 11px 0px;
+  }
+}

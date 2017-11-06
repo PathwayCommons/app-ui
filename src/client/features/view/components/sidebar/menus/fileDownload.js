@@ -3,67 +3,57 @@ const h = require('react-hyperscript');
 
 const DownloadOption = require('./components/downloadOption');
 
+const downloadDescriptions = require('./components/downloadDescriptions');
+
+const extraOptions = [
+  'gmt',
+  'sif',
+  'txt',
+  'biopax',
+  'jsonld',
+  'sbgn'
+];
+
 class FileDownloadMenu extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      extrasActive: false
+    };
+  }
+
   render() {
+    const extraMenuContents = extraOptions.map(option => {
+      return (
+        h(DownloadOption, {
+          cy: this.props.cy,
+          type: option,
+          uri: this.props.uri,
+          name: this.props.name
+        }, [
+          h(downloadDescriptions[option])
+        ])
+      );
+    });
+
     return (
       h('div.file-download-menu', [
         h('h1', 'Graph Downloads'),
         h(DownloadOption, {
-          'cy': this.props.cy,
-          'type': 'png',
-          'uri': this.props.uri,
-          'name': this.props.name
+          cy: this.props.cy,
+          type: 'png',
+          uri: this.props.uri,
+          name: this.props.name
         }, [
-          h('strong', 'PNG Download'),
-          h('br'),
-          'Download an image of the entire view.'
+          h(downloadDescriptions.png)
         ]),
-        h(DownloadOption, {
-          'cy': this.props.cy,
-          'type': 'gmt',
-          'uri': this.props.uri,
-          'name': this.props.name
+        h('div.toggle-extra-downloads', {
+          onClick: () => this.setState({extrasActive: !this.state.extrasActive})
         }, [
-          h('strong', [
-            h('a', {
-              'target': '_blank',
-              'href': 'http://software.broadinstitute.org/cancer/software/gsea/wiki/index.php/Data_formats#GMT:_Gene_Matrix_Transposed_file_format_.28.2A.gmt.29'
-            }, 'GMT'),
-            ' Download'
-          ]),
-          h('br'),
-          h('span', [
-            'Database of named gene sets (UniProt) useful for performing enrichment analysis using ',
-            h('a', {
-              'target': '_blank',
-              'href': 'http://software.broadinstitute.org/gsea/index.jsp'
-            }, 'Gene Set Enrichment Analysis (GSEA)')
-          ])
-        ]),
-        h(DownloadOption, {
-          'cy': this.props.cy,
-          'type': 'sif',
-          'uri': this.props.uri,
-          'name': this.props.name
-        }, [
-          h('strong', [
-            h('a', {
-              'target': '_blank',
-              'href': 'http://wiki.cytoscape.org/Cytoscape_User_Manual/Network_Formats'
-            }, 'SIF'),
-            ' Download'
-          ]),
-          h('br'),
-          h('span', [
-            'A list of interaction pairs useful for viewing, styling, and editing using ',
-            h('a', {
-              'target': '_blank',
-              'href': 'http://cytoscape.org/'
-            }, 'Cytoscape desktop software'),
-            ', and for analysis with graph algorithms.'
-          ])
+          h('i.material-icons', this.state.extrasActive ? 'remove_circle_outline' : 'add_circle_outline'),
+          h('span', `${this.state.extrasActive ? 'Hide' : 'Show'} more options`)
         ])
-      ])
+      ].concat(this.state.extrasActive ? extraMenuContents : []))
     );
   }
 }

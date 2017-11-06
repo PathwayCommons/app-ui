@@ -35,12 +35,9 @@ class Sidebar extends React.Component {
     super(props);
     this.state = {
       open: false,
-      locked: false,
       activeMenu: '',
-      nodeData: false
+      nodeId: ''
     };
-
-    this.updateIfOutOfMenu = this.updateIfOutOfMenu.bind(this);
   }
 
   componentDidMount() {
@@ -74,52 +71,13 @@ class Sidebar extends React.Component {
     });
   }
 
- 
-  // Checks if a click event occured outside the sidebar or not
-// Checks if a click event occured outside the sidebar or not
-updateIfOutOfMenu(evt) {
-let currentEl = evt.target;
-  let loops = 0; // a safety variable
-  // Not sure if there's a better way to do this so I loop through the
-  // element that is clicked on and its parents, grandparents, etc.
-  // until I either reach the View (which I assume covers the whole page)
-  // or I reach the sidebar-menu or a toolButton (which I assume are children
-  // the View)
-  while (currentEl.className !== 'View') {
-    let currClassNames = currentEl.className.split(' ');
-    if (
-      currClassNames.includes('sidebar-menu') ||
-      currClassNames.includes('tool-button')
-    ) {
-      return;
-    }
-    currentEl = currentEl.parentElement;
-
-    // Catching infinite loops for safety. This code should
-    // never run. Doesn't hurt to be safe though?
-    loops++;
-    if (loops > 100) {return;}
-  }
-
-  this.setState({open: false, activeMenu: ''});
-}
-
-   componentWillUpdate(nextProps, nextState) {
-    if (nextState.open && !nextState.locked) {
-      window.addEventListener('mousedown', this.updateIfOutOfMenu);
-      window.addEventListener('touchend', this.updateIfOutOfMenu);
-    } else {
-      window.removeEventListener('mousedown', this.updateIfOutOfMenu);
-      window.removeEventListener('touchend', this.updateIfOutOfMenu);
-    }
-  }
-  
   //Receive updated props and set the state to match the desired result. 
   componentWillReceiveProps(nextProps){
     let node = nextProps.cy.getElementById(nextProps.nodeId);
     let tooltip = node.scratch('tooltip');
-    if(tooltip) {
-      this.setState({open: true, activeMenu: 'bubble_chart' });
+    let isChanged = nextProps.nodeId === this.state.nodeId;
+    if(tooltip && !isChanged) {
+      this.setState({open: true, activeMenu: 'bubble_chart', nodeId: nextProps.nodeId});
     }
   }
 
@@ -157,10 +115,10 @@ let currentEl = evt.target;
           className: classNames('sidebar-select', 'conditional', this.state.open ? 'open' : '')
         }, [
           h('div.tool-button', {
-            onClick: () => this.setState({locked: !this.state.locked}),
-            title: 'Lock the sidebar'
+            onClick: () => this.setState({open: false, activeMenu: ''}),
+            title: 'Close the sidebar'
           }, [
-            h('i.material-icons', this.state.locked ? 'lock' : 'lock_open')
+            h('i.material-icons', 'close')
           ])
         ]),
         h('div.sidebar-content', [

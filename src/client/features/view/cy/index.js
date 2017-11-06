@@ -16,7 +16,7 @@ function make_cytoscape(opts, callback){
   });
 
   bindEvents(cy, callback);
-
+  
   return cy;
 }
 

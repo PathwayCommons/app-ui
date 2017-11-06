@@ -57,8 +57,6 @@ class View extends React.Component {
         });
       });
 
-    if (this.props.admin) {bindMove(query.uri, 'latest', this.state.cy);}
-
     // Arrow functions like these tie socket.io directly into the React state
     CDC.initGraphSocket(newGraphJSON => this.setState({graphJSON: newGraphJSON}));
     CDC.requestGraph(query.uri, 'latest');
@@ -67,6 +65,8 @@ class View extends React.Component {
   componentWillMount(){
     this.setState({
       cy: make_cytoscape({ headless: true }, nodeId => this.setState({activeDisplayedNode: nodeId}))
+    }, () => {
+      if (this.props.admin) {bindMove(this.state.query.uri, 'latest', this.state.cy);}
     });
   }
 

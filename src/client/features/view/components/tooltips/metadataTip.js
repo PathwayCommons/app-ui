@@ -29,7 +29,7 @@ class MetadataTip {
       let link = this.generateDataSourceLink(source, 'Data Source: ');
       return h('div.fake-paragraph', link);
     }
-    else if (key === 'Type' && !trim){
+    else if (key === 'Type' && !trim) {
       return h('div.fake-paragraph', [h('div.field-name', key + ': '), pair[1].toString().substring(3)]);
     }
     else if (key === 'Names') {
@@ -51,12 +51,36 @@ class MetadataTip {
           h('div.wrap-text', h('ul.db-list', sortedArray.map(item => this.generateIdList(item, trim), this)))
         ]);
     }
+    else if (key === 'Comment' && !(trim)) {
+      //Get comments
+      let comments = pair[1];
+
+      //Remove any strings with replaced
+      if (comments instanceof Array) {
+        comments = comments.filter(value => value.toUpperCase().indexOf('REPLACED') === -1);
+      }
+      else if (typeof comments === 'string' && comments.toUpperCase().indexOf('REPLACED') === -1) {
+        comments = [comments];
+      } 
+      else {
+        comments = [];
+      }
+
+      if (comments.length > 0) {
+        return h('div.fake-paragraph', [
+          h('div.field-name', 'Comments' + ': '),
+          comments.map(item => h('div.value', item))
+        ]);
+      }
+
+    }
     else if (!(trim)) {
-      return h('div.fake-paragraph', [h('div.field-name', key + ': '), pair[1].toString()]);
+      return h('div.fake-paragraph', [h('div.field-name', key + ': '), h('div.value', pair[1].toString())]);
     }
 
     return;
   }
+
 
 
   //Validate the name of object and use Display Name as the fall back option
@@ -84,12 +108,12 @@ class MetadataTip {
       h('div.tooltip-buttons',
         [
           h('div.tooltip-button-container',
-          [
-            h('div.tooltip-button', {onclick: this.displayMore(callback)}, [
-              h('i', { className: classNames('material-icons', 'tooltip-button-show')}, 'bubble_chart'),
-              h('div.describe-button', 'Open in Sidebar')
+            [
+              h('div.tooltip-button', { onclick: this.displayMore(callback) }, [
+                h('i', { className: classNames('material-icons', 'tooltip-button-show') }, 'bubble_chart'),
+                h('div.describe-button', 'Open in Sidebar')
+              ])
             ])
-          ])
         ])
     );
   }
@@ -160,9 +184,9 @@ class MetadataTip {
 
     //Format names
     let dbScan = this.db.filter(data => name.toUpperCase().indexOf(data[0].toUpperCase()) !== -1);
-    if(dbScan.length > 0) {name = dbScan[0][0];}
+    if (dbScan.length > 0) { name = dbScan[0][0]; }
 
-    if (trim) {list = dbIdObject.ids.slice(0, 5);}
+    if (trim) { list = dbIdObject.ids.slice(0, 5); }
     return h('li.db-item', h('div.db-name', name + ": "), list.map(data => this.generateDBLink(name, data), this));
   }
 

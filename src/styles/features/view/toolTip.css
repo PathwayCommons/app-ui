@@ -69,6 +69,12 @@
   font-weight: bold;
 }
 
+.value {
+  margin: 2px;
+  display: inline;
+  word-wrap: break-word;
+}
+
 .db-name {
   text-decoration: underline;
   margin: 3px;

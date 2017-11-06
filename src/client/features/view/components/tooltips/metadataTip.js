@@ -66,16 +66,19 @@ class MetadataTip {
         comments = [];
       }
 
+      //Generate HTML
       if (comments.length > 0) {
         return h('div.fake-paragraph', [
           h('div.field-name', 'Comments' + ': '),
-          comments.map(item => h('div.value', item))
+          comments.map(item => h('div.comment', [
+            h('div.tooltip-comment', item), 
+            h('br')]))
         ]);
       }
 
     }
     else if (!(trim)) {
-      return h('div.fake-paragraph', [h('div.field-name', key + ': '), h('div.value', pair[1].toString())]);
+      return h('div.fake-paragraph', [h('div.field-name', key + ': '), h('div.tooltip-value', pair[1].toString())]);
     }
 
     return;

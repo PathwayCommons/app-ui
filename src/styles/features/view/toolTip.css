@@ -69,9 +69,15 @@
   font-weight: bold;
 }
 
-.value {
+.tooltip-value {
   margin: 2px;
   display: inline;
+  word-wrap: break-word;
+}
+
+.tooltip-comment {
+  margin: 3px;
+  display: inline-block;
   word-wrap: break-word;
 }
 

@@ -34,7 +34,6 @@ let returnRouter = function (io) {
   io.on('connection', function (socket) {
     //Get Layout
     socket.on('getLayout', function (ioPackage) {
-      console.log(socket.id);
       // Add socketID/userID to User table.
       // Store graphID 
       getLayout(io, socket, ioPackage);
@@ -50,7 +49,6 @@ let returnRouter = function (io) {
     });
 
     socket.on('disconnect', function () {
-      console.log(socket.id);
       let userURL = socket.handshake.headers.referer;
 
       let editParams = userURL.match(/edit\?(.*)/);

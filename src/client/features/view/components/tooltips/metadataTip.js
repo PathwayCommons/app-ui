@@ -22,7 +22,7 @@ class MetadataTip {
 
     //Get HTML for current data pair based on key value
     if (key === 'Standard Name') {
-      return h('div.fake-paragraph', h('div.field-name', 'Approved Name: '), pair[1].toString());
+      return h('div.fake-paragraph', [h('div.field-name', 'Approved Name: '), h('div.tooltip-value', pair[1].toString())]);
     }
     else if (key === 'Data Source') {
       let source = pair[1].replace('http://pathwaycommons.org/pc2/', '');
@@ -30,7 +30,9 @@ class MetadataTip {
       return h('div.fake-paragraph', link);
     }
     else if (key === 'Type' && !trim) {
-      return h('div.fake-paragraph', [h('div.field-name', key + ': '), pair[1].toString().substring(3)]);
+      let type = pair[1].toString().substring(3);
+      let formattedType = type.replace(/([A-Z])/g, ' $1').trim();
+      return h('div.fake-paragraph', [h('div.field-name', key + ': '), formattedType]);
     }
     else if (key === 'Names') {
       //Trim results to first 3 names to avoid overflow
@@ -39,7 +41,7 @@ class MetadataTip {
 
       //Filter out Chemical formulas
       if (shortArray instanceof Array) shortArray = shortArray.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig)));
-      return h('div.fake-paragraph', h('div.field-name', 'Synonyms: '), shortArray.toString());
+      return h('div.fake-paragraph', [h('div.field-name', 'Synonyms: '), h('div.tooltip-value', shortArray.toString())]);
     }
     else if (key === 'Database IDs') {
       //Sort the array by database names

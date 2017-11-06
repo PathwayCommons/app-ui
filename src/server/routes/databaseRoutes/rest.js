@@ -23,4 +23,22 @@ router.get('/get', function (req, res) {
   });
 });
 
+router.get('/disconnect', function(req,res){
+  controller.endSession(req.query.uri, req.query.version, req.query.user)
+  .then((package)=>{
+    res.json(package);
+  });
+
+});
+
+router.post('/submit-diff', function(req,res){
+  console.log(Object.keys(req));
+  console.log(Object.keys(req.client));
+  console.log(req.connection.remoteAddress);
+  controller.submitDiff(req.body.uri, req.body.version, req.body.diff, req.body.user)
+  .then((package)=>{
+    res.json(package);
+  });
+});
+
 module.exports = router;

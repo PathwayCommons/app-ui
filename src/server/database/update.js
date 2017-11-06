@@ -31,7 +31,13 @@ function updateGraph(pcID, releaseID, cyJson, connection, callback) {
     if (existingGraph) {
       let existingGraphID = existingGraph.id;
       // create new pointer to existing graph
-      return db.insert('version', { id: uuid(), pc_id: pcID,release_id: releaseID, graph_id: existingGraphID, layout_ids: [] }, connection);
+      return db.insert('version', { 
+        id: uuid(), 
+        pc_id: pcID,
+        release_id: releaseID, 
+        graph_id: existingGraphID, 
+        layout_ids: [], 
+        users : [] }, connection);
       // TODO: If the releaseid and pcid and graphid are already linked in version, don't create a new object?
       // this would allow an update script to run blindly
     } else {
@@ -39,7 +45,7 @@ function updateGraph(pcID, releaseID, cyJson, connection, callback) {
 
       return Promise.all([
         db.insert('graph', newGraph, connection),
-        db.insert('version', { id: uuid(), pc_id: pcID, release_id: releaseID, graph_id: graphID, layout_ids: [] }, connection)
+        db.insert('version', { id: uuid(), pc_id: pcID, release_id: releaseID, graph_id: graphID, layout_ids: [], users: [] }, connection)
       ]);
     }
   });

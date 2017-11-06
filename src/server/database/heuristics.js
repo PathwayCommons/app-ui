@@ -4,7 +4,7 @@
 function run(layouts, callback) {
     let layout = layouts.toArray()
       .then((result) => {
-        return result[0];
+        return result[result.length-1];
       });
   
     if (callback) {

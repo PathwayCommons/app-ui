@@ -5,6 +5,7 @@ const classNames = require('classnames');
 const HelpMenu = require('./menus/help');
 const FileDownloadMenu = require('./menus/fileDownload');
 const GraphInfoMenu = require('./menus/graphInfoMenu');
+const MetadataSidebar = require('./menus/metatdataExtension');
 
 const tippy = require('tippy.js');
 
@@ -76,9 +77,7 @@ class Sidebar extends React.Component {
       'file_download': h(FileDownloadMenu, {'cy': this.props.cy, 'uri': this.props.uri, 'name': this.props.name}),
       'help': h(HelpMenu),
       'bubble_chart': (
-        h('div', [
-          h('span', 'Harsh\'s fancy metadata tree goes here.')
-        ])
+        h(MetadataSidebar, {'cy' : this.props.cy, 'nodeId' : this.props.nodeId})
       )
     };
 

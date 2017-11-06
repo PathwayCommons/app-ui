@@ -71,6 +71,15 @@ class Sidebar extends React.Component {
     });
   }
 
+  //Receive updated props and set the state to match the desired result. 
+  componentWillReceiveProps(nextProps){
+    let node = nextProps.cy.getElementById(nextProps.nodeId);
+    let tooltip = node.scratch('tooltip');
+    if(tooltip) {
+      this.setState({open: true, activeMenu: 'bubble_chart' });
+    }
+  }
+
   render() {
     const menus = {
       'info': h(GraphInfoMenu, {'uri': this.props.uri, 'name': this.props.name, 'datasource': this.props.datasource}),

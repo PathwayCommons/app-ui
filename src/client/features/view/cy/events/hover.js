@@ -94,9 +94,15 @@ const baseEdgeHoverStyle = {
 };
 
 const bindHover = (cy) => {
-  cy.on('mouseover', 'node[class!="compartment"]', function (evt) {
+  cy.on('mouseover', 'node[class !="compartment"]', function (evt) {
     const node = evt.target;
     const currZoom = cy.zoom();
+    const isCollapsed = node.data('compoundCollapse.collapsed');
+    const hasChildren = (node.children().length > 0);
+
+    if(hasChildren && !(isCollapsed)){
+      return;
+    }
 
     const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
 
@@ -124,7 +130,6 @@ const bindHover = (cy) => {
   cy.on('mouseout', 'node[class!="compartment"]', function (evt) {
     const node = evt.target;
     const neighborhood = node.neighborhood();
-
     removeHoverStyle(cy, neighborhood.nodes());
     removeHoverStyle(cy, node);
     removeHoverStyle(cy, neighborhood.edges());
@@ -133,7 +138,6 @@ const bindHover = (cy) => {
   cy.on('mouseover', 'edge', function (evt) {
     const edge = evt.target;
     const currZoom = cy.zoom();
-
     const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
 
     const edgeHoverStyle = extend({}, baseEdgeHoverStyle, {

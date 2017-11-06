@@ -9,7 +9,7 @@ function DescPng() {
 function DescGmt() {
   return (
     h('span', [
-      'The gene Database of named gene sets (UniProt) useful for performing enrichment analysis using ',
+      'Gene Matrix Transposed format. The gene Database of named gene sets (UniProt) useful for performing enrichment analysis using ',
       h('a', {
         'target': '_blank',
         'href': 'http://software.broadinstitute.org/gsea/index.jsp'

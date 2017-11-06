@@ -113,7 +113,7 @@ function updateLayout(pcID, releaseID, diff, connection, callback) {
       return cursor.next(); // returns the most recent layout
     }).then((activeLayout) => {
       return r.db(dbName).table('layout').get(activeLayout.id)
-        .update({ positions: { [diff.node_id]: diff.bbox } })
+        .update({ positions: { [diff.nodeID]: diff.bbox } })
         .run(connection);
 
     });

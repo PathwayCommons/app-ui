@@ -88,7 +88,9 @@ class DownloadOption extends React.Component {
         className: classNames('download-option', this.props.type === 'png' ? 'pre-shown' : '')
       }, [
         h('div.download-option-header', [
-          h('h3', downloadTypes[this.props.type]),
+          h('h3', {
+            'onClick': () => this.handleDownloadClick(this.props.type)
+          }, downloadTypes[this.props.type]),
           h('div.download-button', {
             'onClick': () => this.handleDownloadClick(this.props.type)
           }, [

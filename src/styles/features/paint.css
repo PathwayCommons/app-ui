@@ -9,10 +9,63 @@
 
 .paint-graph {
   width: 100%;
+  z-index: 0;
 }
 
+.paint-omnibar {
+  width: 400px;
+  height: 50px;
+  color: var(--light-base-colour);
+  background-color: var(--dark-base-colour);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  transition-property: box-shadow;
+  transition-duration: 0.15s;
+  transition-timing-function: ease-in-out;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+}
+
+.paint-omnibar > button {
+  color: var(--light-base-colour);
+}
+
+
+.paint-drawer {
+  position: absolute;
+  background-color:  var(--light-base-colour);;
+  top: 0;
+  bottom: 0;
+  z-index: 10;
+  width: 400px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  transition-property: box-shadow;
+  transition-duration: 0.15s;
+  transition-timing-function: ease-in-out;
+  &.closed {
+    margin-left: -400px;
+    opacity: 0;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .paint-menu {
-  flex-basis: 370px;
+  flex-basis: 1000px;
   display: flex;
   flex-flow: row wrap;
   align-content: flex-start;

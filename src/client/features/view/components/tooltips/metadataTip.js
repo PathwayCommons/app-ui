@@ -22,7 +22,10 @@ class MetadataTip {
 
     //Get HTML for current data pair based on key value
     if (key === 'Standard Name') {
-      return h('div.fake-paragraph', [h('div.field-name', 'Approved Name: '), h('div.tooltip-value', pair[1].toString())]);
+      return this.makeTooltipItem(pair[1], 'Approved Name: ');
+    }
+    if (key === 'Display Name') {
+      return this.makeTooltipItem(pair[1], 'Display Name: ');
     }
     else if (key === 'Data Source') {
       let source = pair[1].replace('http://pathwaycommons.org/pc2/', '');
@@ -41,7 +44,14 @@ class MetadataTip {
 
       //Filter out Chemical formulas
       if (shortArray instanceof Array) shortArray = shortArray.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig)));
-      return h('div.fake-paragraph', [h('div.field-name', 'Synonyms: '), h('div.tooltip-value', shortArray.toString())]);
+
+      //Determine render value
+      let renderValue = h('div.tooltip-value', shortArray.toString());
+      if (!(trim)) {
+        renderValue = this.makeList(shortArray);
+      }
+
+      return h('div.fake-paragraph', [h('div.field-name', 'Synonyms: '), renderValue]);
     }
     else if (key === 'Database IDs') {
       //Sort the array by database names
@@ -60,10 +70,13 @@ class MetadataTip {
       //Remove any strings with replaced
       if (comments instanceof Array) {
         comments = comments.filter(value => value.toUpperCase().indexOf('REPLACED') === -1);
+        comments = comments.filter(value => value.toUpperCase().indexOf('DB_ID') === -1);
       }
-      else if (typeof comments === 'string' && comments.toUpperCase().indexOf('REPLACED') === -1) {
+      else if (typeof comments === 'string'
+        && comments.toUpperCase().indexOf('REPLACED') === -1
+        && comments.toUpperCase().indexOf('DB_ID') === -1) {
         comments = [comments];
-      } 
+      }
       else {
         comments = [];
       }
@@ -72,21 +85,20 @@ class MetadataTip {
       if (comments.length > 0) {
         return h('div.fake-paragraph', [
           h('div.field-name', 'Comments' + ': '),
-          comments.map(item => h('div.comment', [
-            h('div.tooltip-comment', item), 
-            h('br')]))
+          this.makeList(comments, 'ul.comment-list', 'ul.comment-list-item')
         ]);
       }
 
     }
     else if (!(trim)) {
-      return h('div.fake-paragraph', [h('div.field-name', key + ': '), h('div.tooltip-value', pair[1].toString())]);
+      return h('div.fake-paragraph', [
+        h('div.field-name', key + ': '),
+        this.makeList(pair[1])
+      ]);
     }
 
     return;
   }
-
-
 
   //Validate the name of object and use Display Name as the fall back option
   validateName() {
@@ -95,6 +107,48 @@ class MetadataTip {
       if (displayName.length > 0) { this.name = displayName[0][1].toString(); }
     }
   }
+
+  //Convert a generic array or string to an html list
+  makeList(items, ulClass = 'ul.value-list', liClass = 'li.value-list-item') {
+    //Delete duplicates
+    items = this.deleteDuplicatesWithoutCase(items);
+
+    //Resolve possible errors
+    if (typeof items === 'string') {
+      return h('div.tooltip-value', items);
+    }
+    else if (items.length === 1) {
+      return h('div.tooltip-value', items[0]);
+    }
+    else if (!(items)){
+      return '-';
+    }
+
+    //Render List
+    return h(ulClass, items.map(item => h(liClass, item)));
+  }
+
+  //Render a standard tooltip item
+  makeTooltipItem(value, field){
+    return h('div.fake-paragraph', [h('div.field-name', field), h('div.tooltip-value', value.toString())]);
+  }
+
+  //Delete duplicates and ignore case
+  //Requires a valid array
+  deleteDuplicatesWithoutCase(list) {
+    if (!(list instanceof Array)) {
+      return list;
+    }
+    return list.reduce((result, element) => {
+      var normalize = function (x) { return typeof x === 'string' ? x.toLowerCase() : x; };
+      var normalizedElement = normalize(element);
+      if (result.every(otherElement => normalize(otherElement) !== normalizedElement)) {
+        result.push(element);
+      }
+      return result;
+    }, []);
+  }
+
 
   //Generate HTML Elements for tooltips
   generateToolTip(callback) {

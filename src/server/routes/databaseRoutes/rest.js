@@ -3,8 +3,8 @@ const controller = require('./controller');
 const express = require('express');
 const router = express.Router();
 
-router.post('/submit', function (req, res) {
-  controller.submitLayout(req.body.uri, req.body.version, req.body.layout)
+router.post('/submit-layout', function (req, res) {
+  controller.submitLayout(req.body.uri, req.body.version, req.body.layout, req.body.user)
     .then((package) => {
       res.json(package);
     });
@@ -32,9 +32,6 @@ router.get('/disconnect', function(req,res){
 });
 
 router.post('/submit-diff', function(req,res){
-  console.log(Object.keys(req));
-  console.log(Object.keys(req.client));
-  console.log(req.connection.remoteAddress);
   controller.submitDiff(req.body.uri, req.body.version, req.body.diff, req.body.user)
   .then((package)=>{
     res.json(package);

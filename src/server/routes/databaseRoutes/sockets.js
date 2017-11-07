@@ -7,17 +7,13 @@ const qs = require('querystring');
 
 
 function getLayout(io, socket, ioPackage) {
-  //console.log(Object.keys(socket));
-  //console.log(Object.keys(socket.client));
-  //console.log(socket.client);
-
   controller.getLayout(ioPackage.uri, ioPackage.version).then((package) => {
     socket.emit('layoutPackage', btoa(package));
   });
 }
 
 function submitLayout(io, socket, ioPackage) {
-  controller.submitLayout(ioPackage.uri, ioPackage.version, ioPackage.layout)
+  controller.submitLayout(ioPackage.uri, ioPackage.version, ioPackage.layout, socket.id)
     .then((package) => {
       io.emit('updated', package);
     });
@@ -29,6 +25,7 @@ function submitDiff(io, socket, ioPackage) {
     io.emit('updated', package);
   });
 }
+
 
 let returnRouter = function (io) {
   io.on('connection', function (socket) {

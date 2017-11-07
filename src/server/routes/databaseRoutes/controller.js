@@ -37,10 +37,10 @@ function getLayout(pcID, releaseID) {
   });
 }
 
-function submitLayout(pcID, releaseID, layout) {
+function submitLayout(pcID, releaseID, layout, userID) {
   //Get the requested layout
   return query.connect().then((connection) => {
-    update.saveLayout(pcID, layout, releaseID, connection);
+    update.saveLayout(pcID, releaseID, layout, userID, connection);
     return 'Layout was updated.';
 
   }).catch((e) => {

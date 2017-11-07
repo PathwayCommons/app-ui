@@ -23,7 +23,8 @@ class View extends React.Component {
       query: query,
 
       cy: null, // cytoscape mounted after Graph component has mounted
-      graphJSON: [],
+      graphJSON: null,
+      layoutJSON: null,
       layout: lo.defaultLayout,
       availableLayouts: [],
 
@@ -58,7 +59,7 @@ class View extends React.Component {
       });
 
     // Arrow functions like these tie socket.io directly into the React state
-    CDC.initGraphSocket(newGraphJSON => this.setState({graphJSON: newGraphJSON}));
+    CDC.initGraphSocket(newGraphJSON => this.setState({graphJSON: newGraphJSON.graph, layoutJSON: newGraphJSON.layout}));
     CDC.requestGraph(query.uri, 'latest');
   }
 
@@ -66,20 +67,29 @@ class View extends React.Component {
     this.setState({
       cy: make_cytoscape({ headless: true }, nodeId => this.setState({activeDisplayedNode: nodeId}))
     }, () => {
-      if (this.props.admin) {bindMove(this.state.query.uri, 'latest', this.state.cy);}
+      if (this.props.admin) {
+        bindMove(this.state.query.uri, 'latest', this.state.cy);
+      }
     });
   }
 
   // To be called when the graph renders (since this is determined by the Graph class)
   updateRenderStatus(status) {
     if (status) {
-      // Layouts must be calculated after the graph loads since there are different
-      // layouts depending on graph size
-      const def_layout = lo.getDefaultLayout(this.state.cy.nodes().size());
+      let layout;
+      let availableLayouts = lo.layoutNames(this.state.cy.nodes().size());
+
+      if (this.state.layoutJSON) {
+        layout = lo.humanLayoutName;
+        availableLayouts.splice(0, 0, lo.humanLayoutName);
+      } else {
+        layout = lo.getDefaultLayout(this.state.cy.nodes().size());
+      }
+
       this.setState(
         {
-          availableLayouts: lo.layoutNames(this.state.cy.nodes().size()),
-          layout: def_layout
+          availableLayouts: availableLayouts,
+          layout: layout
         },
         () => {this.performLayout(this.state.layout);}
       );
@@ -89,8 +99,33 @@ class View extends React.Component {
   performLayout(layoutName) {
     this.setState({layout: layoutName});
     const cy = this.state.cy;
+
+    if (layoutName === lo.humanLayoutName) {
+      const layoutJSON = this.state.layoutJSON;      
+      let options = {
+        name: 'preset',
+        positions: node => layoutJSON[node.id()],
+        animate: true,
+        animationDuration: 500
+      };
+      cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isExpanded()).collapse();
+      cy.layout(options).run();
+      return;
+    }
+
     cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isExpanded()).collapse();
-    cy.layout(lo.layoutMap.get(layoutName)).run();
+    let layout = cy.layout(lo.layoutMap.get(layoutName));
+    let that = this;
+    layout.pon('layoutstop').then(function() {
+      if (that.props.admin && layoutName !== lo.humanLayoutName) {
+        let posObj = {};
+        for (let i = 0; i < 25; i++) {
+          posObj[cy.nodes()[i].id()] = cy.nodes()[i].position();
+        }
+        CDC.submitBaseLayoutChange(that.state.query.uri, 'latest', posObj);
+      }
+    });
+    layout.run();
   }
 
   render() {

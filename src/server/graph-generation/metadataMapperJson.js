@@ -152,7 +152,7 @@ function getElementFromBioPax(biopaxFile, id) {
   }
 
   //Get element matching the id
-  let result = biopaxFile.filter(data => data['pathid'].indexOf(id) !== -1);
+  let result = biopaxFile.filter(data => data['pathid'].includes(id));
   if (result[0]) { return result; }
   else { return null; }
 }

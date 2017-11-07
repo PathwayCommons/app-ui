@@ -7,11 +7,11 @@ const db = require('./utilities');
 function isExistingGraph(newGraph, connection) {
   return r.db(config.databaseName)
     .table('graph')
-    .filter({hash : newGraph.hash})
+    .filter({ hash: newGraph.hash })
     .run(connection)
     .then((cursor) => {
       return cursor.next();
-    }).catch(()=>{
+    }).catch(() => {
       return Promise.resolve(false);
     });
 }
@@ -27,11 +27,17 @@ function updateGraph(pcID, releaseID, cyJson, connection, callback) {
   };
 
   let result = isExistingGraph(newGraph, connection).then((existingGraph) => {
-
     if (existingGraph) {
       let existingGraphID = existingGraph.id;
       // create new pointer to existing graph
-      return db.insert('version', { id: uuid(), pc_id: pcID,release_id: releaseID, graph_id: existingGraphID, layout_ids: [] }, connection);
+      return db.insert('version', {
+        id: uuid(),
+        pc_id: pcID,
+        release_id: releaseID,
+        graph_id: existingGraphID,
+        layout_ids: [],
+        users: []
+      }, connection);
       // TODO: If the releaseid and pcid and graphid are already linked in version, don't create a new object?
       // this would allow an update script to run blindly
     } else {
@@ -39,7 +45,7 @@ function updateGraph(pcID, releaseID, cyJson, connection, callback) {
 
       return Promise.all([
         db.insert('graph', newGraph, connection),
-        db.insert('version', { id: uuid(), pc_id: pcID, release_id: releaseID, graph_id: graphID, layout_ids: [] }, connection)
+        db.insert('version', { id: uuid(), pc_id: pcID, release_id: releaseID, graph_id: graphID, layout_ids: [], users: [] }, connection)
       ]);
     }
   });
@@ -55,18 +61,15 @@ saves a new layout for the graph version specfied by the given pc id and release
  
 Accepts 'latest' as a valid releaseID
 */
-function saveLayout(pcID, layout, releaseID, connection, callback) {
-  // set the generic root for ease of use throughout the function.
-  let queryRoot = db.queryRoot(pcID, releaseID);
-
+function saveLayout(pcID, releaseID, layout, userID, connection, callback) {
   // Create the new layout entry in the database
   let layoutID = uuid();
   let result = db.insert('layout', { id: layoutID, positions: layout, date_added: r.now() }, connection)
     .then(() => {
       // Find the related version row and store the layout_id so that it may be accessed.
-      queryRoot.update(
+      db.queryRoot(pcID, releaseID).update(
         function (layout) {
-          return { layout_ids: layout('layout_ids').append(layoutID) };
+          return { layout_ids: layout('layout_ids').append(layoutID), users: layout('users').setInsert(userID) };
         })
         .run(connection);
     }).catch(() => {

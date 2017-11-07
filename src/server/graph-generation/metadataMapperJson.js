@@ -53,7 +53,7 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited, nodeType = 'defa
     let cellLocation = biopaxElement['cellularLocation'];
     if (cellLocation && cellLocation.indexOf('http') !== -1) {
       cellLocation = getElementFromBioPax(biopaxFile, cellLocation);
-      cellLocation = cellLocation[0]['term'];
+      cellLocation = cellLocation['term'];
     }
     if (cellLocation) { result.push(['Cellular Location', cellLocation]); }
   }
@@ -96,7 +96,7 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited, nodeType = 'defa
       if (visitCopy.indexOf(xref[i]) <= -1 && visitCopy.length <= 2) {
 
         visitCopy.push(xref[i]);
-        result.push([keyName, buildBioPaxSubtree(refElement[0], biopaxFile, visitCopy, keyName)]);
+        result.push([keyName, buildBioPaxSubtree(refElement, biopaxFile, visitCopy, keyName)]);
 
       }
     }
@@ -109,9 +109,7 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited, nodeType = 'defa
 function buildBioPaxTree(children, biopaxFile) {
   let result = [];
 
-  if (!(children[0])) { return };
-
-  children = children[0];
+  if (!(children)) { return };
 
   //Get the node id
   let id = children['pathid']
@@ -147,14 +145,14 @@ function removeAfterUnderscore(word, numberOfElements) {
 function getElementFromBioPax(biopaxFile, id) {
 
   //Append pc2 address, if id is not already an uri
-  if (id.indexOf('http') <= -1) {
-    id = 'http://pathwaycommons.org/pc2/' + id;
+  if (id.indexOf('http') !== -1) {
+    var lastIndex = id.lastIndexOf('/');
+    id = id.substring(lastIndex + 1);
   }
 
   //Get element matching the id
-  let result = biopaxFile.filter(data => data['pathid'].indexOf(id) !== -1);
-  if (result[0]) { return result; }
-  else { return null; }
+  let result =  biopaxFile.get(id);
+  return result;
 }
 
 //Get subtree for each node
@@ -196,6 +194,26 @@ function replaceAll(str, find, replace) {
   return str.replace(new RegExp(find, 'g'), replace);
 }
 
+//Preprocess biopax file  and create a map
+//Returns a map of the biopax file
+function preProcessBioPax(biopaxFile){
+  let bioMap = new Map();
+
+  //Loop through all biopax entires and add them to the map
+  for(let i = 0; i < biopaxFile.length; i++){
+   //Get the biopax id
+   let biopaxElement = biopaxFile[i];
+   let id = biopaxElement['pathid'];
+   var lastIndex = id.lastIndexOf('/');
+   id = id.substring(lastIndex + 1);
+
+   //Add a new map entry
+   bioMap.set(id, biopaxElement);
+  }
+
+  return bioMap;
+}
+
 //Process biopax file
 function processBioPax(data, nodes) {
 
@@ -206,6 +224,9 @@ function processBioPax(data, nodes) {
 
   //Get Graph Elements
   let graph = data['@graph'];
+
+  //Create a biopax map
+  graph = preProcessBioPax(graph);
 
   //Loop through all nodes
   for (let i = 0; i < nodes.length; i++) {

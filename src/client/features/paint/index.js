@@ -53,13 +53,10 @@ class Paint extends React.Component {
 
 
   // only call this after you know component is mounted
-  initPainter(expressionsList) {
-    const expressions = _.get(expressionsList, '0.expressions', null);
-    const geneNames = expressions ? expressions.map(e => e.geneName) : [];
-
+  initPainter(expressions, queryParam) {
     const state = this.state;
     const query = {
-      q: geneNames.slice(0, 15).sort().join(' '),
+      q: queryParam,
       gt: 2,
       lt: 100,
       type: 'Pathway',
@@ -124,14 +121,17 @@ class Paint extends React.Component {
 
     const query = queryString.parse(props.location.search);
     const enrichmentsURI = query.uri ? query.uri : null;
+
     if (enrichmentsURI != null) {
       fetch(enrichmentsURI)
         .then(response => response.json())
-        .then(enrichmentDataSetJSON => {
+        .then(json => {
           this.setState({
-            enrichmentDataSets: enrichmentDataSetJSON.dataSetExpressionList
+            enrichmentDataSets: json.dataSetExpressionList
           }, () => {
-            this.initPainter(enrichmentDataSetJSON.dataSetExpressionList);
+            const expressions = _.get(json.dataSetExpressionList, '0.expressions', null);
+            const searchParam = query.q ? query.q : '';
+            this.initPainter(expressions, searchParam);
           });
         });
     }
@@ -155,7 +155,8 @@ class Paint extends React.Component {
           h('a', { onClick: e => this.toggleDrawer() }, [
             h(Icon, { icon: 'menu' }, 'click')
           ]),
-         'omnibar'
+          h('h6', state.name),
+          h('h6', state.datasource)
         ]),
         h('div.paint-graph', [
           h(`div.#cy-container`, {style: {width: '100vw', height: '100vh'}})

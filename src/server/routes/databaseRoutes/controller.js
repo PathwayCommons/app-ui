@@ -11,29 +11,28 @@ function getGraphFallback(pcID, releaseID, connection) {
     .catch(() => {
       return lazyLoad.queryPC(pcID);
     }).then(result => {
-      let output = { graph: result, layout: null };
       if (connection && result.pathwayMetadata) {
         update.updateGraph(pcID, releaseID, result, connection);
       }
 
-      return JSON.stringify(output);
+      return result;
     }).catch(() => {
       return `ERROR: Layout for ${pcID} could not be retrieved from database or PC2`;
     });
 }
 
-function getGraphAndLayout(pcID, releaseID) {
-  return db.connect().then((connection) => {
-    return query.getGraphAndLayout(pcID, releaseID, connection)
-      .then((layout) => {
-        return JSON.stringify(layout);
-      }).catch(() => {
-        return getGraphFallback(pcID, releaseID, connection);
+function getGraphAndLayout(pcID,releaseID){
+  return db.connect().then((connection)=>{
+    return Promise.all([
+      query.getGraph(pcID,releaseID,connection),
+      query.getLayout(pcID,releaseID,connection)
+    ]).then(([graph,layout]) =>{
+      return JSON.stringify({graph , layout});
+    }).catch(()=>{
+      return getGraphFallback(pcID, releaseID, connection).then((graph)=>{
+        return JSON.stringify({graph, layout : null});
       });
-  }).catch((e) => {
-    logger.error(e);
-    // Error.
-    return 'ERROR: Connection to database failed';
+    });
   });
 }
 

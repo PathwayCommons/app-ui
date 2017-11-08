@@ -18,7 +18,7 @@ router.post('/submit-graph', function(req,res){
 });
 
 router.get('/get', function (req, res) {
-  controller.getLayout(req.query.uri, req.query.version).then((package) => {
+  controller.getGraphAndLayout(req.query.uri, req.query.version).then((package) => {
     res.json(package);
   });
 });

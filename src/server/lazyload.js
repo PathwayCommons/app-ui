@@ -6,7 +6,7 @@ function queryPC(pcID) {
   const prefix = 'http://www.pathwaycommons.org/pc2/get?uri=';
   const suffix = '&format=sbgn';
 
-  var url = prefix + pcID + suffix;
+  let url = prefix + pcID + suffix;
   return fetch(url, { method: 'GET', format: 'SBGN' }).then((response) => {
     return response.text();
   }).then((text) => {

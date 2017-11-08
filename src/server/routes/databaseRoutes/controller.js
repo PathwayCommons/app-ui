@@ -5,13 +5,12 @@ const lazyLoad = require('./../../lazyload');
 const logger = require('./../../logger');
 const diffSaver = require('./../../database/saveDiffs');
 
-function getLayoutFallback(pcID, releaseID, connection) {
+function getGraphFallback(pcID, releaseID, connection) {
   return lazyLoad.queryMetadata(pcID)
     .catch(() => {
       return lazyLoad.queryPC(pcID);
     }).then(result => {
       let output = { graph: result, layout: null };
-
       if (connection && result.pathwayMetadata) {
         update.updateGraph(pcID, releaseID, result, connection);
       }
@@ -22,13 +21,13 @@ function getLayoutFallback(pcID, releaseID, connection) {
     });
 }
 
-function getLayout(pcID, releaseID) {
+function getGraphAndLayout(pcID, releaseID) {
   return query.connect().then((connection) => {
     return query.getGraphAndLayout(pcID, releaseID, connection)
       .then((layout) => {
         return JSON.stringify(layout);
       }).catch(() => {
-        return getLayoutFallback(pcID, releaseID, connection);
+        return getGraphFallback(pcID, releaseID, connection);
       });
   }).catch((e) => {
     logger.error(e);
@@ -76,5 +75,5 @@ module.exports = {
   submitGraph,
   submitDiff,
   endSession,
-  getLayout
+  getGraphAndLayout
 };

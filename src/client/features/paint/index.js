@@ -129,7 +129,7 @@ class Paint extends React.Component {
           this.setState({
             enrichmentDataSets: json.dataSetExpressionList
           }, () => {
-            const expressions = _.get(json.dataSetExpressionList, '0.expressions', null);
+            const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
             const searchParam = query.q ? query.q : '';
             this.initPainter(expressions, searchParam);
           });

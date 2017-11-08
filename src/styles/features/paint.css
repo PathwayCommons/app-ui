@@ -45,6 +45,9 @@
   font-size: 24px;
   margin-right: 5px;
 }
+.paint-omnibar > a:hover {
+  color: var(--accent-1-colour);
+}
 
 .paint-omnibar > h5 {
   margin: 0;

@@ -2,9 +2,14 @@
 const r = require('rethinkdb');
 const config = require('./config');
 
+let connectionPromise = null;
 
 function connect() {
-  return r.connect({ host: config.ip, port: config.port });
+  if (connectionPromise) return connectionPromise;
+
+  connectionPromise = r.connect({ host: config.ip, port: config.port });
+
+  return connectionPromise;
 }
 
 // Convenience function to create root for common queries depending on whether

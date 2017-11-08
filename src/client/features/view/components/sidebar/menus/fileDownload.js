@@ -38,7 +38,7 @@ class FileDownloadMenu extends React.Component {
 
     return (
       h('div.file-download-menu', [
-        h('h1', 'Graph Downloads'),
+        h('h1', 'Network Downloads'),
         h(DownloadOption, {
           cy: this.props.cy,
           type: 'png',

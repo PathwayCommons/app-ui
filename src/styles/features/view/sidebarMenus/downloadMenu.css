@@ -22,11 +22,16 @@
 
   cursor: pointer;
 
+  transition: all 0.1s linear;
+
+  &:hover {
+    background-color: var(--light-base-colour-darker);
+  }
+
   & i {
     margin-left: 0.5em;
     margin-right: 0.5em;
 
     font-size: 1.5em;
   }
-
 }

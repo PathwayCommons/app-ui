@@ -11,16 +11,16 @@ const tippy = require('tippy.js');
 
 const toolButtonNames = [
   'info',
-  'file_download',
   'bubble_chart',
+  'file_download',
   'help'
 ];
 
 const tooltips = [
-  'See extra information about this graph',
-  'Graph download options',
-  'Display node information',
-  'Field guide to interpreting the display'        
+  'Extra information about this network',
+  'Node information',
+  'Download options',
+  'Interpreting the display'        
 ];
 
 /* Props
@@ -65,10 +65,17 @@ class Sidebar extends React.Component {
   
   // Used for the panel buttons to set menus in the sidebar and dynamically change the style
   handleIconClick(button) {
-    this.setState({
-      open: true,
-      activeMenu: button
-    });
+    if (button === this.state.activeMenu) {
+      this.setState({
+        open: false,
+        activeMenu: ''
+      });
+    } else {
+      this.setState({
+        open: true,
+        activeMenu: button
+      });
+    }
   }
 
   //Receive updated props and set the state to match the desired result. 

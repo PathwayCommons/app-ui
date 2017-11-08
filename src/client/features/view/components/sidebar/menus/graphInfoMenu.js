@@ -21,27 +21,36 @@ class GraphInfoMenu extends React.Component {
   }
 
   render() {
+    const noInfoMessage = h('span', [
+      'No additional information was found for this network!',
+      h('br'),
+      h('br'),
+      'Additional information about the network is normally found here, but we couldn\'t find any for this one.'
+    ]);
+
     return (
       h('div', [
         h('h1', this.props.name),
-        h('h4', 'Source: '+this.props.datasource),
-        h('h2', 'Additional Information'),
+        h('h4', 'Sourced from '+this.props.datasource)
+      ].concat(
         (this.state.comments.length ?
-          this.state.comments.map((comment, index) => {
-            return (
-              h('div', {
-                'key': index
-              }, [
-                comment.replace(/<p>/g, ' '),
-                h('br'),
-                h('br')
-              ])
-            );
-          })
+          [h('h2', 'Additional Information')].concat(
+            this.state.comments.map((comment, index) => {
+              return (
+                h('div', {
+                  'key': index
+                }, [
+                  comment.replace(/<p>/g, ' '),
+                  h('br'),
+                  h('br')
+                ])
+              );
+            })
+          )
           :
-          'No additional information provided by datasource.'
+          [noInfoMessage]
         )
-      ])
+      ))
     );
   }
 }

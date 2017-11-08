@@ -29,6 +29,7 @@ class Paint extends React.Component {
 
     this.state = {
       enrichmentDataSets: [],
+      enrichmentClasses: [],
       cy: cy,
       name: '',
       datasource: '',
@@ -127,6 +128,7 @@ class Paint extends React.Component {
         .then(response => response.json())
         .then(json => {
           this.setState({
+            enrichmentClasses: _.get(json.dataSetClassList, '0.classes', []),
             enrichmentDataSets: json.dataSetExpressionList
           }, () => {
             const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
@@ -144,52 +146,28 @@ class Paint extends React.Component {
   render() {
     const state = this.state;
 
+    const enrichmentClassesData = Object.entries(_.countBy(state.enrichmentClasses))
+      .map(entry => {
+        return h('p', `class: ${entry[0]}, number of samples: ${entry[1]}`);
+      });
+
     return h('div.paint', [
       h('div.paint-content', [
         h('div', { className: classNames('paint-drawer', !state.drawerOpen ? 'closed' : '') }, [
           h('a', { onClick: e => this.toggleDrawer()}, [
             h(Icon, { icon: 'close'})
           ]),
-        ]),
+        ].concat(enrichmentClassesData)),
         h('div.paint-omnibar', [
           h('a', { onClick: e => this.toggleDrawer() }, [
             h(Icon, { icon: 'menu' }, 'click')
           ]),
-          h('h6', state.name),
-          h('h6', state.datasource)
+          h('h5', `${state.name} | ${state.datasource}`)
         ]),
         h('div.paint-graph', [
           h(`div.#cy-container`, {style: {width: '100vw', height: '100vh'}})
         ])
       ])
-      // h('div', { className: classNames('paint-menu', !state.drawerOpen ? 'paint-menu-closed' : '') }, [
-      //   h('div.paint-logo'),
-      //   h('h2.paint-title', 'Pathway Commons'),
-      //   h('div.paint-graph-info', [
-      //     h('h4.paint-graph-name', state.name),
-      //     h('h4.paint-datasource', state.datasource)
-      //   ]),
-      //   h('div.paint-tab-toggle', [
-      //     h('div.paint-view-toggle', 'Enrichment Graph'),
-      //     h('div.paint-view-toggle', 'Enrichment Data')
-      //   ]),
-      //   h('div.paint-toolbar', [
-      //     h(Icon, { className: 'paint-control-icon', icon: 'image' }),
-      //     h(Icon, { className: 'paint-control-icon', icon: 'shuffle' }),
-      //     h(Icon, { className: 'paint-control-icon', icon: 'help' }),
-      //   ])
-      // ]),
-      // h('div.paint-control-bar',
-      //   {
-      //     onClick: (e) => this.setState({drawerOpen: !this.state.drawerOpen})
-      //   },
-      //   [
-      //     h(Icon, {
-      //       className: 'paint-control-icon',
-      //       icon: 'keyboard_arrow_left',
-      //     })
-      //   ]
-      // ),
     ]);
   }
 }

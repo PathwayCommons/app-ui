@@ -2,6 +2,7 @@
 const fs = require('fs'); // node file system, to be used for importing XMLs
 const convert = require('sbgnml-to-cytoscape'); // used to convert to cy JSONs
 const query = require('./query');
+const db = require('./utilities');
 const Promise = require('bluebird');
 
 const args = process.argv;
@@ -54,7 +55,7 @@ function processFile(dir, file,conn) {
   }
 }
 
-query.connect().then((connection) => {
+db.connect().then((connection) => {
   if (!connection) {
     throw Error('No connection');
   }

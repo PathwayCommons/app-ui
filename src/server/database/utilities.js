@@ -2,6 +2,11 @@
 const r = require('rethinkdb');
 const config = require('./config');
 
+
+function connect() {
+  return r.connect({ host: config.ip, port: config.port });
+}
+
 // Convenience function to create root for common queries depending on whether
 // the desired version of PC is 'latest' or an exact version number
 function queryRoot(pcID, releaseID) {
@@ -36,5 +41,6 @@ function handleResult(resultPromise, callback) {
 module.exports = {
   queryRoot,
   insert,
-  handleResult
+  handleResult,
+  connect
 };

@@ -6,6 +6,8 @@ const stratifiedLayeredOpts = require('./stratifiedKlay');
 
 const coseBilkentMaxGraphSize = 100;
 
+const humanLayoutName = 'Human-created';
+
 const layoutMap = new Map()
 .set('Force Directed 1', coseBilkentOpts)
 .set('Force Directed 2', colaOpts)
@@ -39,4 +41,4 @@ const getDefaultLayout = (graphSize) => {
   return layout;
 };
 
-module.exports = {layoutMap, defaultLayout, layoutNames, getDefaultLayout};
+module.exports = {humanLayoutName, layoutMap, defaultLayout, layoutNames, getDefaultLayout};

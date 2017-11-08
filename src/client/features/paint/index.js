@@ -3,6 +3,7 @@ const h = require('react-hyperscript');
 const queryString = require('query-string');
 const color = require('color');
 const _ = require('lodash');
+const classNames = require('classnames');
 
 const cytoscape = require('cytoscape');
 const cose = require('cytoscape-cose-bilkent');
@@ -30,8 +31,10 @@ class Paint extends React.Component {
       enrichmentDataSets: [],
       cy: cy,
       name: '',
-      datasource: ''
+      datasource: '',
+      drawerOpen: false
     };
+
   }
 
   componentWillUnmount() {
@@ -48,7 +51,7 @@ class Paint extends React.Component {
     return color.hsl(hslValue, 100, 50).string();
   }
 
-  
+
   // only call this after you know component is mounted
   initPainter(expressionsList) {
     const expressions = _.get(expressionsList, '0.expressions', null);
@@ -73,7 +76,7 @@ class Paint extends React.Component {
               name: response ? response.traverseEntry[0].value.pop() : ''
             });
           });
-    
+
         PathwayCommonsService.query(uri, 'json', 'Entity/dataSource/displayName')
           .then(responseObj => {
             this.setState({
@@ -134,30 +137,58 @@ class Paint extends React.Component {
     }
   }
 
+  toggleDrawer() {
+    this.setState({drawerOpen: !this.state.drawerOpen});
+  }
+
   render() {
     const state = this.state;
 
     return h('div.paint', [
-      h('div.paint-menu', [
-        h('div.paint-logo'),
-        h('h2.paint-title', 'Pathway Commons'),
-        h('div.paint-graph-info', [
-          h('h4.paint-graph-name', state.name),
-          h('h4.paint-datasource', state.datasource)
+      h('div.paint-content', [
+        h('div', { className: classNames('paint-drawer', !state.drawerOpen ? 'closed' : '') }, [
+          h('a', { onClick: e => this.toggleDrawer()}, [
+            h(Icon, { icon: 'close'})
+          ]),
         ]),
-        h('div.paint-tab-toggle', [
-          h('div.paint-view-toggle', 'Enrichment Graph'),
-          h('div.paint-view-toggle', 'Enrichment Data')
+        h('div.paint-omnibar', [
+          h('a', { onClick: e => this.toggleDrawer() }, [
+            h(Icon, { icon: 'menu' }, 'click')
+          ]),
+         'omnibar'
         ]),
-        h('div.paint-toolbar', [
-          h(Icon, { className: 'paint-control-icon', icon: 'image' }),
-          h(Icon, { className: 'paint-control-icon', icon: 'shuffle' }),
-          h(Icon, { className: 'paint-control-icon', icon: 'help' }),
+        h('div.paint-graph', [
+          h(`div.#cy-container`, {style: {width: '100vw', height: '100vh'}})
         ])
-      ]),
-      h('div.paint-graph', [
-        h(`div.#cy-container`, {style: {width: '100%', height: '100%'}})
       ])
+      // h('div', { className: classNames('paint-menu', !state.drawerOpen ? 'paint-menu-closed' : '') }, [
+      //   h('div.paint-logo'),
+      //   h('h2.paint-title', 'Pathway Commons'),
+      //   h('div.paint-graph-info', [
+      //     h('h4.paint-graph-name', state.name),
+      //     h('h4.paint-datasource', state.datasource)
+      //   ]),
+      //   h('div.paint-tab-toggle', [
+      //     h('div.paint-view-toggle', 'Enrichment Graph'),
+      //     h('div.paint-view-toggle', 'Enrichment Data')
+      //   ]),
+      //   h('div.paint-toolbar', [
+      //     h(Icon, { className: 'paint-control-icon', icon: 'image' }),
+      //     h(Icon, { className: 'paint-control-icon', icon: 'shuffle' }),
+      //     h(Icon, { className: 'paint-control-icon', icon: 'help' }),
+      //   ])
+      // ]),
+      // h('div.paint-control-bar',
+      //   {
+      //     onClick: (e) => this.setState({drawerOpen: !this.state.drawerOpen})
+      //   },
+      //   [
+      //     h(Icon, {
+      //       className: 'paint-control-icon',
+      //       icon: 'keyboard_arrow_left',
+      //     })
+      //   ]
+      // ),
     ]);
   }
 }

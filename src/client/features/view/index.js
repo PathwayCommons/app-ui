@@ -11,8 +11,6 @@ const make_cytoscape = require('./cy/');
 const bindMove = require('./cy/events/move');
 
 const queryString = require('query-string');
-// Eventually all PCS deps will be absorbed into the CDC and we won't use it for anything
-const PathwayCommonsService = require('../../services/').PathwayCommonsService;
 const CDC = require('../../services/').CDC;
 
 class View extends React.Component {
@@ -37,29 +35,13 @@ class View extends React.Component {
       activeDisplayedNode: ''
     };
 
-    // Get graph name from PCS
-    PathwayCommonsService.query(query.uri, 'json', 'Named/displayName')
-      .then(responseObj => {
-        let nameStr = responseObj ? responseObj.traverseEntry[0].value.pop() : '';
-        // Fallback done here can be replaced with dynamic text for things other than pathways
-        nameStr = nameStr ? nameStr : 'Unnamed Pathway';
-        this.setState({
-          name: nameStr
-        });
-      });
-
-    // Get graph database from PCS
-    PathwayCommonsService.query(query.uri, 'json', 'Entity/dataSource/displayName')
-      .then(responseObj => {
-        let dsStr = responseObj ? responseObj.traverseEntry[0].value.pop() : '';
-        dsStr = dsStr ? dsStr : 'Unnamed Datasource';
-        this.setState({
-          datasource: dsStr
-        });
-      });
-
     // Arrow functions like these tie socket.io directly into the React state
-    CDC.initGraphSocket(newGraphJSON => this.setState({graphJSON: newGraphJSON.graph, layoutJSON: newGraphJSON.layout}));
+    CDC.initGraphSocket(newGraphJSON => this.setState({
+      graphJSON: newGraphJSON.graph,
+      layoutJSON: newGraphJSON.layout,
+      name: newGraphJSON.graph.pathwayMetadata.title || 'Unknown Network',
+      datasource: newGraphJSON.graph.pathwayMetadata.dataSource || 'Unknown Data Source'
+    }));
     CDC.requestGraph(query.uri, 'latest');
   }
 

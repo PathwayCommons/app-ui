@@ -6,7 +6,7 @@ const Graph = require('./components/').Graph;
 const EditWarning = require('./components/').EditWarning;
 const Sidebar = require('./components/').Sidebar;
 
-const lo = require('./components/graph/layout/');
+const lo = require('../../common/cy/layout/');
 const make_cytoscape = require('./cy/');
 const bindMove = require('./cy/events/move');
 

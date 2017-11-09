@@ -3,7 +3,7 @@ const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
 const classNames = require('classnames');
 
-const layoutConf = require('../graph/layout');
+const layoutConf = require('../../../../common/cy/layout');
 
 const Dropdown = require('../../../../common/dropdown').Dropdown;
 const DropdownOption = require('../../../../common/dropdown').DropdownOption;

@@ -1,4 +1,3 @@
-const colaOpts = require('./cola');
 const coseBilkentOpts = require('./coseBilkent');
 const dagreOpts = require('./dagre');
 const klayOpts = require('./klay');
@@ -6,12 +5,20 @@ const stratifiedLayeredOpts = require('./stratifiedKlay');
 
 const coseBilkentMaxGraphSize = 100;
 
+const humanLayoutName = 'Human-created';
+
 const layoutMap = new Map()
-.set('Force Directed 1', coseBilkentOpts)
-.set('Force Directed 2', colaOpts)
+.set('Force Directed', coseBilkentOpts)
 .set('Tree', dagreOpts)
 .set('Layered', klayOpts)
 .set('Stratified', stratifiedLayeredOpts);
+
+const layoutDescs = {
+  'Force Directed': 'Layout algorithm for undirected compound graphs',
+  'Tree': 'For DAGs and trees',
+  'Layered': 'Layer-based layout for node-link diagrams',
+  'Stratified': 'Vertical ordering of common cellular compartments'
+};
 
 const defaultLayout = 'Layered';
 
@@ -33,10 +40,10 @@ const getDefaultLayout = (graphSize) => {
   let layout = 'Layered';
 
   if (graphSize<= coseBilkentMaxGraphSize) {
-    layout = 'Force Directed 1';
+    layout = 'Force Directed';
   }
 
   return layout;
 };
 
-module.exports = {layoutMap, defaultLayout, layoutNames, getDefaultLayout};
+module.exports = {humanLayoutName, layoutDescs, layoutMap, defaultLayout, layoutNames, getDefaultLayout};

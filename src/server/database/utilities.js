@@ -1,16 +1,9 @@
 
 const r = require('rethinkdb');
 const config = require('./config');
+const _ = require('lodash');
 
-let connectionPromise = null;
-
-function connect() {
-  if (connectionPromise) return connectionPromise;
-
-  connectionPromise = r.connect({ host: config.ip, port: config.port });
-
-  return connectionPromise;
-}
+let connect = _.memoize(() => r.connect({host: config.ip, port: config.port}));
 
 // Convenience function to create root for common queries depending on whether
 // the desired version of PC is 'latest' or an exact version number

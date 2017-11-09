@@ -1,5 +1,5 @@
 const fs = require('fs'); // node file system, to be used for importing XMLs
-const query = require('./query');
+const db = require('./utilities');
 const update = require('./update');
 const Promise = require('bluebird'); // used in old file process code
 let Multispinner = require('multispinner');
@@ -34,7 +34,7 @@ function readURINames(dir) {
 //   return 
 // }
 
-let connectionPromise = query.connect();
+let connectionPromise = db.connect();
 
 // After connection is received, try to get stuff from Harsh's cyJSON script
 // and use the results to update the DB. For each URL, three methods are tried

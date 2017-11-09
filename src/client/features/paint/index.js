@@ -92,22 +92,44 @@ class Paint extends React.Component {
               nodeDimensionsIncludeLabels: true
             }).run();
 
-            expressions.forEach(expression => {
-              state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
-                const maxVal = _.max(expression.values);
-                const minVal = _.min(expression.values);
+            const enrichmentTable = this.createEnrichmentTable();
 
-                node.style({
-                  'pie-size': '100%',
-                  'pie-1-background-color': this.percentToColour(expression.values[0] / maxVal, 0, 240),
-                  'pie-1-background-size': '50%',
-                  'pie-1-background-opacity': 1,
-                  'pie-2-background-color': this.percentToColour(expression.values[expression.values.length - 1] / maxVal, 0, 240),
-                  'pie-2-background-size': '50%',
-                  'pie-2-background-opacity': 1
-                });
+            enrichmentTable.rows.forEach(row => {
+              state.cy.nodes().filter(node => node.data('label') === row.geneName).forEach(node => {
+                const maxVal = _.max(row.classValues);
+                const minVal = _.min(row.classValues);
+
+                const numSlices = row.classValues.length > 16 ? 16 : row.classValues.length;
+
+                const pieStyle = {
+                  'pie-size': '100%'
+                };
+                for (let i = 0; i < numSlices; i++) {
+                  pieStyle['pie-' + i + '-background-size'] = 100 / numSlices;
+                  pieStyle['pie-' + i + '-background-opacity'] = 1;
+                  pieStyle['pie-' + i + '-background-color'] = this.percentToColour(row.classValues[i] / maxVal, 0, 240);
+                }
+
+                node.style(pieStyle);
               });
+
             });
+            // expressions.forEach(expression => {
+            //   state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
+            //     const maxVal = _.max(expression.values);
+            //     const minVal = _.min(expression.values);
+
+            //     node.style({
+            //       'pie-size': '100%',
+            //       'pie-1-background-color': this.percentToColour(expression.values[0] / maxVal, 0, 240),
+            //       'pie-1-background-size': '50%',
+            //       'pie-1-background-opacity': 1,
+            //       'pie-2-background-color': this.percentToColour(expression.values[expression.values.length - 1] / maxVal, 0, 240),
+            //       'pie-2-background-size': '50%',
+            //       'pie-2-background-opacity': 1
+            //     });
+            //   });
+            // });
 
           });
         }
@@ -143,8 +165,40 @@ class Paint extends React.Component {
     this.setState({drawerOpen: !this.state.drawerOpen});
   }
 
+  createEnrichmentTable() {
+    const state = this.state;
+    const enrichmentTable = {};
+
+    const enrichmentClasses = state.enrichmentClasses;
+    const header = _.uniq(state.enrichmentClasses);
+
+    enrichmentTable.header = header;
+    enrichmentTable.rows = _.get(state.enrichmentDataSets, '0.expressions', []).map(enrichment => {
+      const geneName = enrichment.geneName;
+      const values = enrichment.values;
+
+      const class2ValuesMap = new Map();
+
+      for (let enrichmentClass of enrichmentClasses) {
+        class2ValuesMap.set(enrichmentClass, []);
+      }
+
+      for (let i = 0; i < values.length; i++) {
+        class2ValuesMap.get(enrichmentClasses[i]).push(values[i]);
+      }
+
+      return { geneName: geneName, classValues: Array.from(class2ValuesMap.entries()).map((entry =>  _.mean(entry[1]).toFixed(2))) };
+    });
+
+    return enrichmentTable;
+  }
+
   render() {
     const state = this.state;
+
+    const enrichmentTable = this.createEnrichmentTable();
+    const enrichmentTableHeader = enrichmentTable.header.map(column => h('div', column));
+    const enrichmentTableRows = enrichmentTable.rows.map(row => h('div', `Gene: ${row.geneName}, ${JSON.stringify(row.classValues, null, 2)}`));
 
     const enrichmentClassesData = Object.entries(_.countBy(state.enrichmentClasses))
       .map(entry => {
@@ -157,7 +211,7 @@ class Paint extends React.Component {
           h('a', { onClick: e => this.toggleDrawer()}, [
             h(Icon, { icon: 'close'})
           ]),
-        ].concat(enrichmentClassesData)),
+        ].concat(enrichmentClassesData).concat(enrichmentTableHeader).concat(enrichmentTableRows)),
         h('div.paint-omnibar', [
           h('a', { onClick: e => this.toggleDrawer() }, [
             h(Icon, { icon: 'menu' }, 'click')

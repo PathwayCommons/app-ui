@@ -7,7 +7,7 @@ const qs = require('querystring');
 
 
 function getLayout(io, socket, ioPackage) {
-  controller.getLayout(ioPackage.uri, ioPackage.version).then((package) => {
+  controller.getGraphAndLayout(ioPackage.uri, ioPackage.version).then((package) => {
     socket.emit('layoutPackage', btoa(package));
   });
 }

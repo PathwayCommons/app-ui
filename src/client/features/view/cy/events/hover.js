@@ -1,4 +1,4 @@
-const extend = require('extend');
+const _ = require('lodash');
 
 const storeStyle = (ele, keys) => {
   const storedStyleProps = {};
@@ -105,7 +105,7 @@ const bindHover = (cy) => {
     node.neighborhood().nodes().union(node).forEach((node) => {
       const { w, h } = scaledDimensions(node, currZoom);
 
-      const nodeHoverStyle = extend({}, baseNodeHoverStyle, {
+      const nodeHoverStyle = _.assign({}, baseNodeHoverStyle, {
         'font-size': fontSize,
         'text-outline-width': outlineWidth,
         'width': w,
@@ -115,7 +115,7 @@ const bindHover = (cy) => {
       applyHoverStyle(cy, node, nodeHoverStyle);
     });
 
-    const edgeHoverStyle = extend({}, baseEdgeHoverStyle, {
+    const edgeHoverStyle = _.assign({}, baseEdgeHoverStyle, {
       'arrow-scale': arrowScale,
       'width': edgeWidth
     });
@@ -138,7 +138,7 @@ const bindHover = (cy) => {
 
     const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
 
-    const edgeHoverStyle = extend({}, baseEdgeHoverStyle, {
+    const edgeHoverStyle = _.assign({}, baseEdgeHoverStyle, {
       'arrow-scale': arrowScale,
       'width': edgeWidth
     });
@@ -147,7 +147,7 @@ const bindHover = (cy) => {
 
     edge.source().union(edge.target()).forEach((node) => {
       const { w, h } = scaledDimensions(node, currZoom);
-      const nodeHoverStyle = extend({}, baseNodeHoverStyle, {
+      const nodeHoverStyle = _.assign({}, baseNodeHoverStyle, {
         'width': w,
         'height': h,
         'font-size': fontSize,

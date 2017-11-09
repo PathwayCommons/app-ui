@@ -8,10 +8,7 @@ const r = require('rethinkdb');
 const config = require('./config');
 const Promise = require('bluebird');
 const logger = require('./../logger');
-
-function connect(){
-  return r.connect({host: config.ip, port: config.port});
-}
+const db = require('./utilities');
 
 
 function createTable(dbName, tableName, connection) {
@@ -29,7 +26,7 @@ function createTables(dbName, table_arr, connection) {
 function checkTable(tableName) {
   let connection;
   
-  connect().then((conn)=>{
+  db.connect().then((conn)=>{
     connection = conn;
     return r.db(config.databaseName).tableList().run(connection);
   }).then((tableList)=>{
@@ -50,7 +47,7 @@ function checkTables() {
 
 function checkDatabase() {
   let connection;
-  return connect()
+  return db.connect()
     .then((conn) => {
       connection = conn;
       return r.dbList().run(connection);

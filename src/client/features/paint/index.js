@@ -29,6 +29,7 @@ class Paint extends React.Component {
 
     this.state = {
       enrichmentDataSets: [],
+      enrichmentClasses: [],
       cy: cy,
       name: '',
       datasource: '',
@@ -53,13 +54,10 @@ class Paint extends React.Component {
 
 
   // only call this after you know component is mounted
-  initPainter(expressionsList) {
-    const expressions = _.get(expressionsList, '0.expressions', null);
-    const geneNames = expressions ? expressions.map(e => e.geneName) : [];
-
+  initPainter(expressions, queryParam) {
     const state = this.state;
     const query = {
-      q: geneNames.slice(0, 15).sort().join(' '),
+      q: queryParam,
       gt: 2,
       lt: 100,
       type: 'Pathway',
@@ -94,22 +92,44 @@ class Paint extends React.Component {
               nodeDimensionsIncludeLabels: true
             }).run();
 
-            expressions.forEach(expression => {
-              state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
-                const maxVal = _.max(expression.values);
-                const minVal = _.min(expression.values);
+            const enrichmentTable = this.createEnrichmentTable();
 
-                node.style({
-                  'pie-size': '100%',
-                  'pie-1-background-color': this.percentToColour(expression.values[0] / maxVal, 0, 240),
-                  'pie-1-background-size': '50%',
-                  'pie-1-background-opacity': 1,
-                  'pie-2-background-color': this.percentToColour(expression.values[expression.values.length - 1] / maxVal, 0, 240),
-                  'pie-2-background-size': '50%',
-                  'pie-2-background-opacity': 1
-                });
+            enrichmentTable.rows.forEach(row => {
+              state.cy.nodes().filter(node => node.data('label') === row.geneName).forEach(node => {
+                const maxVal = _.max(row.classValues);
+                const minVal = _.min(row.classValues);
+
+                const numSlices = row.classValues.length > 16 ? 16 : row.classValues.length;
+
+                const pieStyle = {
+                  'pie-size': '100%'
+                };
+                for (let i = 0; i < numSlices; i++) {
+                  pieStyle['pie-' + i + '-background-size'] = 100 / numSlices;
+                  pieStyle['pie-' + i + '-background-opacity'] = 1;
+                  pieStyle['pie-' + i + '-background-color'] = this.percentToColour(row.classValues[i] / maxVal, 0, 240);
+                }
+
+                node.style(pieStyle);
               });
+
             });
+            // expressions.forEach(expression => {
+            //   state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
+            //     const maxVal = _.max(expression.values);
+            //     const minVal = _.min(expression.values);
+
+            //     node.style({
+            //       'pie-size': '100%',
+            //       'pie-1-background-color': this.percentToColour(expression.values[0] / maxVal, 0, 240),
+            //       'pie-1-background-size': '50%',
+            //       'pie-1-background-opacity': 1,
+            //       'pie-2-background-color': this.percentToColour(expression.values[expression.values.length - 1] / maxVal, 0, 240),
+            //       'pie-2-background-size': '50%',
+            //       'pie-2-background-opacity': 1
+            //     });
+            //   });
+            // });
 
           });
         }
@@ -124,14 +144,18 @@ class Paint extends React.Component {
 
     const query = queryString.parse(props.location.search);
     const enrichmentsURI = query.uri ? query.uri : null;
+
     if (enrichmentsURI != null) {
       fetch(enrichmentsURI)
         .then(response => response.json())
-        .then(enrichmentDataSetJSON => {
+        .then(json => {
           this.setState({
-            enrichmentDataSets: enrichmentDataSetJSON.dataSetExpressionList
+            enrichmentClasses: _.get(json.dataSetClassList, '0.classes', []),
+            enrichmentDataSets: json.dataSetExpressionList
           }, () => {
-            this.initPainter(enrichmentDataSetJSON.dataSetExpressionList);
+            const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
+            const searchParam = query.q ? query.q : '';
+            this.initPainter(expressions, searchParam);
           });
         });
     }
@@ -141,8 +165,45 @@ class Paint extends React.Component {
     this.setState({drawerOpen: !this.state.drawerOpen});
   }
 
+  createEnrichmentTable() {
+    const state = this.state;
+    const enrichmentTable = {};
+
+    const enrichmentClasses = state.enrichmentClasses;
+    const header = _.uniq(state.enrichmentClasses);
+
+    enrichmentTable.header = header;
+    enrichmentTable.rows = _.get(state.enrichmentDataSets, '0.expressions', []).map(enrichment => {
+      const geneName = enrichment.geneName;
+      const values = enrichment.values;
+
+      const class2ValuesMap = new Map();
+
+      for (let enrichmentClass of enrichmentClasses) {
+        class2ValuesMap.set(enrichmentClass, []);
+      }
+
+      for (let i = 0; i < values.length; i++) {
+        class2ValuesMap.get(enrichmentClasses[i]).push(values[i]);
+      }
+
+      return { geneName: geneName, classValues: Array.from(class2ValuesMap.entries()).map((entry =>  _.mean(entry[1]).toFixed(2))) };
+    });
+
+    return enrichmentTable;
+  }
+
   render() {
     const state = this.state;
+
+    const enrichmentTable = this.createEnrichmentTable();
+    const enrichmentTableHeader = enrichmentTable.header.map(column => h('div', column));
+    const enrichmentTableRows = enrichmentTable.rows.map(row => h('div', `Gene: ${row.geneName}, ${JSON.stringify(row.classValues, null, 2)}`));
+
+    const enrichmentClassesData = Object.entries(_.countBy(state.enrichmentClasses))
+      .map(entry => {
+        return h('p', `class: ${entry[0]}, number of samples: ${entry[1]}`);
+      });
 
     return h('div.paint', [
       h('div.paint-content', [
@@ -150,45 +211,17 @@ class Paint extends React.Component {
           h('a', { onClick: e => this.toggleDrawer()}, [
             h(Icon, { icon: 'close'})
           ]),
-        ]),
+        ].concat(enrichmentClassesData).concat(enrichmentTableHeader).concat(enrichmentTableRows)),
         h('div.paint-omnibar', [
           h('a', { onClick: e => this.toggleDrawer() }, [
             h(Icon, { icon: 'menu' }, 'click')
           ]),
-         'omnibar'
+          h('h5', `${state.name} | ${state.datasource}`)
         ]),
         h('div.paint-graph', [
           h(`div.#cy-container`, {style: {width: '100vw', height: '100vh'}})
         ])
       ])
-      // h('div', { className: classNames('paint-menu', !state.drawerOpen ? 'paint-menu-closed' : '') }, [
-      //   h('div.paint-logo'),
-      //   h('h2.paint-title', 'Pathway Commons'),
-      //   h('div.paint-graph-info', [
-      //     h('h4.paint-graph-name', state.name),
-      //     h('h4.paint-datasource', state.datasource)
-      //   ]),
-      //   h('div.paint-tab-toggle', [
-      //     h('div.paint-view-toggle', 'Enrichment Graph'),
-      //     h('div.paint-view-toggle', 'Enrichment Data')
-      //   ]),
-      //   h('div.paint-toolbar', [
-      //     h(Icon, { className: 'paint-control-icon', icon: 'image' }),
-      //     h(Icon, { className: 'paint-control-icon', icon: 'shuffle' }),
-      //     h(Icon, { className: 'paint-control-icon', icon: 'help' }),
-      //   ])
-      // ]),
-      // h('div.paint-control-bar',
-      //   {
-      //     onClick: (e) => this.setState({drawerOpen: !this.state.drawerOpen})
-      //   },
-      //   [
-      //     h(Icon, {
-      //       className: 'paint-control-icon',
-      //       icon: 'keyboard_arrow_left',
-      //     })
-      //   ]
-      // ),
     ]);
   }
 }

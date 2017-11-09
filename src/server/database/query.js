@@ -4,9 +4,7 @@ const heuristics = require('./heuristics');
 const config = require('./config');
 const db = require('./utilities');
 
-function connect() {
-  return r.connect({ host: config.ip, port: config.port });
-}
+
 
 // ------------------- Get a layout -----------------------
 /*
@@ -98,6 +96,5 @@ function getGraph(pcID, releaseID, connection, callback) {
 module.exports = {
   getLayout,
   getGraph,
-  getGraphAndLayout,
-  connect
+  getGraphAndLayout
 };

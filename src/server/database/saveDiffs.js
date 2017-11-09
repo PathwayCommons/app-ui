@@ -19,10 +19,6 @@ function updateFromExisting(version, connection) {
     });
 }
 
-function isExistingUser(version, userID) {
-  return version.users.indexOf(userID) >= 0;
-}
-
 function addUser(version, userID, connection, callback) {
   return r.db(dbName).table('version').get(version.id).update(() => {
     version.users.push(userID);
@@ -59,7 +55,7 @@ function handleUserInfo(pcID, releaseID, userID, connection, callback) {
       return cursor.next();
     }).then((version) => {
 
-      if (isExistingUser(version, userID)) {
+      if (version.users.indexOf(userID) >= 0) {
         return Promise.resolve();
       }
 

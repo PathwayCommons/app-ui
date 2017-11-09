@@ -3,6 +3,7 @@ const uuid = require('uuid/v4');
 const hash = require('json-hash');
 const config = require('./config');
 const db = require('./utilities');
+const fetch = require('node-fetch');
 
 function isExistingGraph(newGraph, connection) {
   return r.db(config.databaseName)
@@ -16,6 +17,39 @@ function isExistingGraph(newGraph, connection) {
     });
 }
 
+function getLatestPCVersion(pcID){
+  const prefix = 'http://www.pathwaycommons.org/pc2/traverse?format=JSON&path=Named/name&uri=';
+
+  let url = prefix + pcID;
+  return fetch(url, { method: 'GET'}).then((response) => {
+    return response.json();
+  }).then((json) => {
+    return json.version;
+  });
+}
+
+function saveGraph(pcID, graphID, releaseID, existingGraph, newGraph,connection){
+  if (existingGraph) {
+    let existingGraphID = existingGraph.id;
+    // create new pointer to existing graph
+    return db.insert('version', {
+      id: uuid(),
+      pc_id: pcID,
+      release_id: releaseID,
+      graph_id: existingGraphID,
+      layout_ids: [],
+      users: []
+    }, connection);
+  } else {
+    // create new graph
+
+    return Promise.all([
+      db.insert('graph', newGraph, connection),
+      db.insert('version', { id: uuid(), pc_id: pcID, release_id: releaseID, graph_id: graphID, layout_ids: [], users: [] }, connection)
+    ]);
+  }
+}
+
 function updateGraph(pcID, releaseID, cyJson, connection, callback) {
   let graphID = uuid();
 
@@ -27,26 +61,12 @@ function updateGraph(pcID, releaseID, cyJson, connection, callback) {
   };
 
   let result = isExistingGraph(newGraph, connection).then((existingGraph) => {
-    if (existingGraph) {
-      let existingGraphID = existingGraph.id;
-      // create new pointer to existing graph
-      return db.insert('version', {
-        id: uuid(),
-        pc_id: pcID,
-        release_id: releaseID,
-        graph_id: existingGraphID,
-        layout_ids: [],
-        users: []
-      }, connection);
-      // TODO: If the releaseid and pcid and graphid are already linked in version, don't create a new object?
-      // this would allow an update script to run blindly
+    if (releaseID === 'latest'){
+      return getLatestPCVersion(pcID).then((versionName)=>{
+        return saveGraph(pcID, graphID,versionName ,existingGraph,newGraph,connection);
+      });
     } else {
-      // create new graph
-
-      return Promise.all([
-        db.insert('graph', newGraph, connection),
-        db.insert('version', { id: uuid(), pc_id: pcID, release_id: releaseID, graph_id: graphID, layout_ids: [], users: [] }, connection)
-      ]);
+      return saveGraph(pcID, graphID, releaseID, existingGraph, newGraph,connection);
     }
   });
 

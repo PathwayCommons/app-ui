@@ -3,6 +3,7 @@ const h = require('react-hyperscript');
 const queryString = require('query-string');
 const color = require('color');
 const _ = require('lodash');
+const classNames = require('classnames');
 
 const cytoscape = require('cytoscape');
 const cose = require('cytoscape-cose-bilkent');
@@ -28,10 +29,13 @@ class Paint extends React.Component {
 
     this.state = {
       enrichmentDataSets: [],
+      enrichmentClasses: [],
       cy: cy,
       name: '',
-      datasource: ''
+      datasource: '',
+      drawerOpen: false
     };
+
   }
 
   componentWillUnmount() {
@@ -48,15 +52,12 @@ class Paint extends React.Component {
     return color.hsl(hslValue, 100, 50).string();
   }
 
-  
-  // only call this after you know component is mounted
-  initPainter(expressionsList) {
-    const expressions = _.get(expressionsList, '0.expressions', null);
-    const geneNames = expressions ? expressions.map(e => e.geneName) : [];
 
+  // only call this after you know component is mounted
+  initPainter(expressions, queryParam) {
     const state = this.state;
     const query = {
-      q: geneNames.slice(0, 15).sort().join(' '),
+      q: queryParam,
       gt: 2,
       lt: 100,
       type: 'Pathway',
@@ -73,7 +74,7 @@ class Paint extends React.Component {
               name: response ? response.traverseEntry[0].value.pop() : ''
             });
           });
-    
+
         PathwayCommonsService.query(uri, 'json', 'Entity/dataSource/displayName')
           .then(responseObj => {
             this.setState({
@@ -121,42 +122,51 @@ class Paint extends React.Component {
 
     const query = queryString.parse(props.location.search);
     const enrichmentsURI = query.uri ? query.uri : null;
+
     if (enrichmentsURI != null) {
       fetch(enrichmentsURI)
         .then(response => response.json())
-        .then(enrichmentDataSetJSON => {
+        .then(json => {
           this.setState({
-            enrichmentDataSets: enrichmentDataSetJSON.dataSetExpressionList
+            enrichmentClasses: _.get(json.dataSetClassList, '0.classes', []),
+            enrichmentDataSets: json.dataSetExpressionList
           }, () => {
-            this.initPainter(enrichmentDataSetJSON.dataSetExpressionList);
+            const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
+            const searchParam = query.q ? query.q : '';
+            this.initPainter(expressions, searchParam);
           });
         });
     }
   }
 
+  toggleDrawer() {
+    this.setState({drawerOpen: !this.state.drawerOpen});
+  }
+
   render() {
     const state = this.state;
 
+    const enrichmentClassesData = Object.entries(_.countBy(state.enrichmentClasses))
+      .map(entry => {
+        return h('p', `class: ${entry[0]}, number of samples: ${entry[1]}`);
+      });
+
     return h('div.paint', [
-      h('div.paint-menu', [
-        h('div.paint-logo'),
-        h('h2.paint-title', 'Pathway Commons'),
-        h('div.paint-graph-info', [
-          h('h4.paint-graph-name', state.name),
-          h('h4.paint-datasource', state.datasource)
+      h('div.paint-content', [
+        h('div', { className: classNames('paint-drawer', !state.drawerOpen ? 'closed' : '') }, [
+          h('a', { onClick: e => this.toggleDrawer()}, [
+            h(Icon, { icon: 'close'})
+          ]),
+        ].concat(enrichmentClassesData)),
+        h('div.paint-omnibar', [
+          h('a', { onClick: e => this.toggleDrawer() }, [
+            h(Icon, { icon: 'menu' }, 'click')
+          ]),
+          h('h5', `${state.name} | ${state.datasource}`)
         ]),
-        h('div.paint-tab-toggle', [
-          h('div.paint-view-toggle', 'Enrichment Graph'),
-          h('div.paint-view-toggle', 'Enrichment Data')
-        ]),
-        h('div.paint-toolbar', [
-          h(Icon, { className: 'paint-control-icon', icon: 'image' }),
-          h(Icon, { className: 'paint-control-icon', icon: 'shuffle' }),
-          h(Icon, { className: 'paint-control-icon', icon: 'help' }),
+        h('div.paint-graph', [
+          h(`div.#cy-container`, {style: {width: '100vw', height: '100vh'}})
         ])
-      ]),
-      h('div.paint-graph', [
-        h(`div.#cy-container`, {style: {width: '100%', height: '100%'}})
       ])
     ]);
   }

@@ -31,6 +31,7 @@ class DownloadOption extends React.Component {
 
     switch (type) {
       case 'png':
+      // The setTimeout triggers a rerender so that the loader appears on screen
         this.setState({ loading: true }, () => {
           setTimeout(() => {
             saveAs(this.props.cy.png({

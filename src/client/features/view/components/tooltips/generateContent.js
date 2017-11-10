@@ -1,64 +1,84 @@
 const h = require('hyperscript');
 const config = require('../../config');
 
+
+//Handle name related metadata fields
+const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Approved Name: ');
+const displayNameHandler = (pair) => makeTooltipItem(pair[1], 'Display Name: ');
+const nameHandler = (pair, trim) => {
+  //Trim results to first 3 names to avoid overflow
+  let shortArray = pair[1];
+  if (trim) { shortArray = pair[1].slice(0, 3); }
+
+  //Filter out Chemical formulas
+  if (shortArray instanceof Array) shortArray = shortArray.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig)));
+
+  //Determine render value
+  let renderValue = h('div.tooltip-value', shortArray.toString());
+  if (!(trim)) {
+    renderValue = makeList(shortArray);
+  }
+
+  return h('div.fake-paragraph', [h('div.field-name', 'Synonyms: '), renderValue]);
+};
+
+//Handle database related fields
+const dataSourceHandler = (pair) => {
+  let source = pair[1].replace('http://pathwaycommons.org/pc2/', '');
+  let link = generateDataSourceLink(source, 'Data Source: ');
+  return h('div.fake-paragraph', link);
+};
+const databaseHandler = (pair, trim) => {
+  //Sort the array by database names
+  let sortedArray = sortByDatabaseId(pair[1]);
+  if (sortedArray.length < 1) { return; }
+  return h('div.fake-paragraph',
+    [
+      h('div.field-name', 'Database References:'),
+      h('div.wrap-text', h('ul.db-list', sortedArray.map(item => generateIdList(item, trim), this)))
+    ]);
+};
+
+//Handle type related fields
+const typeHandler = (pair, trim, key) => {
+  if (!(trim)) {
+    let type = pair[1].toString().substring(3);
+    let formattedType = type.replace(/([A-Z])/g, ' $1').trim();
+    return h('div.fake-paragraph', [h('div.field-name', key + ': '), formattedType]);
+  }
+};
+
+//Default to generating a list of all items
+const defaultHandler = (pair, trim, key) => {
+  if (trim) { return; }
+  if (key === 'Comment') { key = 'Comments'; }
+  return h('div.fake-paragraph', [
+    h('div.field-name', key + ': '),
+    makeList(pair[1])
+  ]);
+};
+
+const metaDataKeyMap = new Map()
+  .set('Standard Name', standardNameHandler)
+  .set('Display Name', displayNameHandler)
+  .set('Data Source', dataSourceHandler)
+  .set('Type', typeHandler)
+  .set('Names', nameHandler)
+  .set('Database IDs', databaseHandler);
+
+
 //Generate HTML elements for a Parsed Metadata Field
 //Optional trim parameter indicates if the data presented should be trimmed to a reasonable length
 //Data Pair -> HTML
 function parseMetadata(pair, trim = true) {
   let key = pair[0];
-
-  //Get HTML for current data pair based on key value
-  if (key === 'Standard Name') {
-    return makeTooltipItem(pair[1], 'Approved Name: ');
+  let handler = metaDataKeyMap.get(key);
+  if (handler) {
+    return handler(pair, trim, key);
   }
-  if (key === 'Display Name') {
-    return makeTooltipItem(pair[1], 'Display Name: ');
+  else {
+    return defaultHandler(pair, trim, key);
   }
-  else if (key === 'Data Source') {
-    let source = pair[1].replace('http://pathwaycommons.org/pc2/', '');
-    let link = generateDataSourceLink(source, 'Data Source: ');
-    return h('div.fake-paragraph', link);
-  }
-  else if (key === 'Type' && !trim) {
-    let type = pair[1].toString().substring(3);
-    let formattedType = type.replace(/([A-Z])/g, ' $1').trim();
-    return h('div.fake-paragraph', [h('div.field-name', key + ': '), formattedType]);
-  }
-  else if (key === 'Names') {
-    //Trim results to first 3 names to avoid overflow
-    let shortArray = pair[1];
-    if (trim) { shortArray = pair[1].slice(0, 3); }
-
-    //Filter out Chemical formulas
-    if (shortArray instanceof Array) shortArray = shortArray.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig)));
-
-    //Determine render value
-    let renderValue = h('div.tooltip-value', shortArray.toString());
-    if (!(trim)) {
-      renderValue = makeList(shortArray);
-    }
-
-    return h('div.fake-paragraph', [h('div.field-name', 'Synonyms: '), renderValue]);
-  }
-  else if (key === 'Database IDs') {
-    //Sort the array by database names
-    let sortedArray = sortByDatabaseId(pair[1]);
-    if (sortedArray.length < 1) { return; }
-    return h('div.fake-paragraph',
-      [
-        h('div.field-name', 'Database References:'),
-        h('div.wrap-text', h('ul.db-list', sortedArray.map(item => generateIdList(item, trim), this)))
-      ]);
-  }
-  else if (!(trim)) {
-    if (key === 'Comment') { key = 'Comments'; }
-    return h('div.fake-paragraph', [
-      h('div.field-name', key + ': '),
-      makeList(pair[1])
-    ]);
-  }
-
-  return;
 }
 
 //Convert a generic array or string to an html list

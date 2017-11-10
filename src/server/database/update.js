@@ -71,7 +71,7 @@ function updateGraph(pcID, releaseID, cyJson, connection, callback) {
   let newGraph = {
     id: graphID,
     graph: cyJson,
-    hash: hash(hashJson.nodes)
+    hash: hash(hashJson)
   };
 
   let result = isExistingGraph(newGraph, connection).then((existingGraph) => {

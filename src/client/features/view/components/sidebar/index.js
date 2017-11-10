@@ -5,20 +5,17 @@ const classNames = require('classnames');
 const HelpMenu = require('./menus/help');
 const FileDownloadMenu = require('./menus/fileDownload');
 const GraphInfoMenu = require('./menus/graphInfoMenu');
-const MetadataSidebar = require('./menus/metatdataExtension');
 
 const tippy = require('tippy.js');
 
 const toolButtonNames = [
   'info',
-  'bubble_chart',
   'file_download',
   'help'
 ];
 
 const tooltips = [
   'Extra information about this network',
-  'Node information',
   'Download options',
   'Interpreting the display'        
 ];
@@ -92,10 +89,7 @@ class Sidebar extends React.Component {
     const menus = {
       'info': h(GraphInfoMenu, {'uri': this.props.uri, 'name': this.props.name, 'datasource': this.props.datasource}),
       'file_download': h(FileDownloadMenu, {'cy': this.props.cy, 'uri': this.props.uri, 'name': this.props.name}),
-      'help': h(HelpMenu),
-      'bubble_chart': (
-        h(MetadataSidebar, {'cy' : this.props.cy, 'nodeId' : this.props.nodeId})
-      )
+      'help': h(HelpMenu)
     };
 
     // Map tool buttons to actual elements with tooltips

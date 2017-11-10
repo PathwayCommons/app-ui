@@ -5,8 +5,7 @@ const classNames = require('classnames');
 
 const layoutConf = require('../../../../common/cy/layout');
 
-const Dropdown = require('../../../../common/dropdown').Dropdown;
-const DropdownOption = require('../../../../common/dropdown').DropdownOption;
+const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
 
 const tippy = require('tippy.js');
 

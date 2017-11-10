@@ -1,5 +1,5 @@
 const io = require('socket.io-client');
-let socket = io.connect('/');
+let socket = io.connect('192.168.81.233:3000');
 
 const CDC = {
   initGraphSocket(updateFunction) {
@@ -21,8 +21,7 @@ const CDC = {
 
   // Request a graph from the server. Should send back a cyJSON graph
   requestGraph(uri, version) {
-    console.log('requested');
-    socket.emit('getGraphAndLayout', {uri: uri, version: version.toString()});
+    socket.emit('getLayout', {uri: uri, version: version.toString()});
   },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into

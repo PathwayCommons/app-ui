@@ -1,17 +1,14 @@
 const React = require('react');
 const h = require('react-hyperscript');
 
-const Menu = require('./components/').Menu;
-const Graph = require('./components/').Graph;
-const EditWarning = require('./components/').EditWarning;
-const Sidebar = require('./components/').Sidebar;
+const { Menu, Graph, EditWarning, Sidebar } = require('./components/');
 
 const lo = require('../../common/cy/layout/');
 const make_cytoscape = require('./cy/');
 const bindMove = require('./cy/events/move');
 
 const queryString = require('query-string');
-const CDC = require('../../services/').CDC;
+const { CDC } = require('../../services/');
 
 class View extends React.Component {
   constructor(props) {
@@ -39,8 +36,8 @@ class View extends React.Component {
     CDC.initGraphSocket(newGraphJSON => this.setState({
       graphJSON: newGraphJSON.graph,
       layoutJSON: newGraphJSON.layout,
-      name: newGraphJSON.graph.pathwayMetadata.title || 'Unknown Network',
-      datasource: newGraphJSON.graph.pathwayMetadata.dataSource || 'Unknown Data Source'
+      name: newGraphJSON.graph.pathwayMetadata.title[0] || 'Unknown Network',
+      datasource: newGraphJSON.graph.pathwayMetadata.dataSource[0] || 'Unknown Data Source'
     }));
     CDC.requestGraph(query.uri, 'latest');
   }

@@ -29,14 +29,19 @@ class DownloadOption extends React.Component {
     // user clicks a link
     if (evt.target.tagName === 'A') return;
 
-    switch(type) {
+    switch (type) {
       case 'png':
-        saveAs(this.props.cy.png({
-          output: 'blob',
-          scale: 5,
-          bg: 'white',
-          full: true
-        }), this.props.name + '.png');
+        this.setState({ loading: true }, () => {
+          setTimeout(() => {
+            saveAs(this.props.cy.png({
+              output: 'blob',
+              scale: 5,
+              bg: 'white',
+              full: true
+            }), this.props.name + '.png');
+            this.setState({ loading: false });
+          }, 1);
+        });
         break;
       case 'gmt':
         this.initiatePCDownload('GSEA', 'gmt');
@@ -63,7 +68,7 @@ class DownloadOption extends React.Component {
   }
 
   initiatePCDownload(format, file_ext) {
-    this.setState({loading: true});
+    this.setState({ loading: true });
 
     PathwayCommonsService.query(this.props.uri, format)
       .then(content => {
@@ -73,11 +78,11 @@ class DownloadOption extends React.Component {
         }
         this.saveDownload(file_ext, fileContent);
       })
-      .then(() => this.setState({loading: false}));
+      .then(() => this.setState({ loading: false }));
   }
 
   saveDownload(file_ext, content) {
-    saveAs(new File([content], this.generatePathwayName() + '.' + file_ext, {type: 'text/plain;charset=utf-8'}));
+    saveAs(new File([content], this.generatePathwayName() + '.' + file_ext, { type: 'text/plain;charset=utf-8' }));
   }
 
   generatePathwayName() {
@@ -93,18 +98,21 @@ class DownloadOption extends React.Component {
         className: classNames('download-option', this.props.type === 'png' ? 'pre-shown' : ''),
         onClick: (evt) => this.handleDownloadClick(evt, this.props.type)
       }, [
-        h('div.download-option-header', [
-          h('h3',  downloadTypes[this.props.type]),
-          h('div.download-loader-container', [
-            h(Loader, { loaded: !this.state.loading, options: {
-              scale: 0.75
-            }})
+          h('div.download-option-header', [
+            h('h3', downloadTypes[this.props.type]),
+            h('div.download-loader-container', [
+              h(Loader, {
+                loaded: !this.state.loading, options: {
+                  scale: 0.5,
+                  width: 3,
+                }
+              })
+            ])
+          ]),
+          h('div.download-option-description', [
+            this.props.children
           ])
-        ]),
-        h('div.download-option-description', [
-          this.props.children
         ])
-      ])
     );
   }
 }

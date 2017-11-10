@@ -102,10 +102,9 @@
 }
 
 .db-no-link-single-ref {
-  text-decoration: underline;
   margin: 3px;
   display: inline-block;
-  color: var(--link);
+  color: black;
 }
 
 

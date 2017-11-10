@@ -17,9 +17,9 @@ router.post('/submit-graph', function(req,res){
     });
 });
 
-router.get('/get', function (req, res) {
+router.get('/get-graph-and-layout', function (req, res) {
   controller.getGraphAndLayout(req.query.uri, req.query.version).then((package) => {
-    res.json(package);
+    res.json(JSON.stringify(package));
   });
 });
 

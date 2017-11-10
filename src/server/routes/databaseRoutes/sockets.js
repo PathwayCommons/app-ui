@@ -8,7 +8,7 @@ const qs = require('querystring');
 
 function getLayout(io, socket, ioPackage) {
   controller.getGraphAndLayout(ioPackage.uri, ioPackage.version).then((package) => {
-    socket.emit('layoutPackage', btoa(package));
+    socket.emit('layoutPackage', btoa(JSON.stringify(package)));
   });
 }
 
@@ -30,7 +30,7 @@ function submitDiff(io, socket, ioPackage) {
 let returnRouter = function (io) {
   io.on('connection', function (socket) {
     //Get Layout
-    socket.on('getLayout', function (ioPackage) {
+    socket.on('getGraphAndLayout', function (ioPackage) {
       // Add socketID/userID to User table.
       // Store graphID 
       getLayout(io, socket, ioPackage);

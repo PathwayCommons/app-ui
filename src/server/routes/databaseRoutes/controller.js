@@ -14,24 +14,22 @@ function getGraphFallback(pcID, releaseID, connection) {
       if (connection && result.pathwayMetadata) {
         update.updateGraph(pcID, releaseID, result, connection);
       }
-
       return result;
-    }).catch(() => {
-      return `ERROR: Layout for ${pcID} could not be retrieved from database or PC2`;
     });
 }
 
-function getGraphAndLayout(pcID,releaseID){
-  return db.connect().then((connection)=>{
+
+
+function getGraphAndLayout(pcID, releaseID) {
+  return db.connect().then((connection) => {
     return Promise.all([
-      query.getGraph(pcID,releaseID,connection),
-      query.getLayout(pcID,releaseID,connection)
-    ]).then(([graph,layout]) =>{
-      return JSON.stringify({graph , layout});
-    }).catch(()=>{
-      return getGraphFallback(pcID, releaseID, connection).then((graph)=>{
-        return JSON.stringify({graph, layout : null});
-      });
+      query.getGraph(pcID, releaseID, connection).catch(() => getGraphFallback(pcID, releaseID, connection)),
+      query.getLayout(pcID, releaseID, connection).catch(() => Promise.resolve(null))
+    ]).then(([graph, layout]) => {
+      return { graph, layout };
+    }).catch((e)=>{
+      logger.error(e);
+      return `ERROR : could not retrieve graph for ${pcID}`;
     });
   });
 }

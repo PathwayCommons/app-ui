@@ -1,9 +1,10 @@
 const r = require('rethinkdb');
 const uuid = require('uuid/v4');
-const hash = require('json-hash');
+const hash = require('object-hash');
 const config = require('./config');
 const db = require('./utilities');
 const fetch = require('node-fetch');
+const _ = require('lodash');
 
 function isExistingGraph(newGraph, connection) {
   return r.db(config.databaseName)
@@ -12,7 +13,8 @@ function isExistingGraph(newGraph, connection) {
     .run(connection)
     .then((cursor) => {
       return cursor.next();
-    }).catch(() => {
+    }).catch((e) => {
+      console.log('no match');
       return Promise.resolve(false);
     });
 }
@@ -51,13 +53,27 @@ function saveGraph(pcID, graphID, releaseID, existingGraph, newGraph,connection)
 }
 
 function updateGraph(pcID, releaseID, cyJson, connection, callback) {
+  console.log('updating graph');
   let graphID = uuid();
 
+  let nodeSort = (n1, n2) => {
+    if (n1.data.id > n2.data.id) return 1;
+    if (n1.data.id < n2.data.id) return -1;
+    return 0;
+  };
+
+  cyJson.nodes.sort(nodeSort);
+
+  let hashJson = _.cloneDeep(cyJson);
+  hashJson.nodes = hashJson.nodes.map ((node) => {
+    _.unset(node, 'data.bbox');
+    return node;}
+  );
 
   let newGraph = {
     id: graphID,
     graph: cyJson,
-    hash: hash.digest(cyJson)
+    hash: hash(hashJson.nodes)
   };
 
   let result = isExistingGraph(newGraph, connection).then((existingGraph) => {

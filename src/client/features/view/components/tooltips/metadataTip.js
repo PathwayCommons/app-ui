@@ -63,34 +63,8 @@ class MetadataTip {
           h('div.wrap-text', h('ul.db-list', sortedArray.map(item => this.generateIdList(item, trim), this)))
         ]);
     }
-    else if (key === 'Comment' && !(trim)) {
-      //Get comments
-      let comments = pair[1];
-
-      //Remove any strings with replaced
-      if (comments instanceof Array) {
-        comments = comments.filter(value => value.toUpperCase().indexOf('REPLACED') === -1);
-        comments = comments.filter(value => value.toUpperCase().indexOf('DB_ID') === -1);
-      }
-      else if (typeof comments === 'string'
-        && comments.toUpperCase().indexOf('REPLACED') === -1
-        && comments.toUpperCase().indexOf('DB_ID') === -1) {
-        comments = [comments];
-      }
-      else {
-        comments = [];
-      }
-
-      //Generate HTML
-      if (comments.length > 0) {
-        return h('div.fake-paragraph', [
-          h('div.field-name', 'Comments' + ': '),
-          this.makeList(comments, 'ul.comment-list', 'ul.comment-list-item')
-        ]);
-      }
-
-    }
     else if (!(trim)) {
+      if (key === 'Comment') { key = 'Comments'; }
       return h('div.fake-paragraph', [
         h('div.field-name', key + ': '),
         this.makeList(pair[1])
@@ -120,7 +94,7 @@ class MetadataTip {
     else if (items.length === 1) {
       return h('div.tooltip-value', items[0]);
     }
-    else if (!(items)){
+    else if (!(items)) {
       return '-';
     }
 
@@ -129,7 +103,7 @@ class MetadataTip {
   }
 
   //Render a standard tooltip item
-  makeTooltipItem(value, field){
+  makeTooltipItem(value, field) {
     return h('div.fake-paragraph', [h('div.field-name', field), h('div.tooltip-value', value.toString())]);
   }
 
@@ -161,24 +135,24 @@ class MetadataTip {
     this.validateName();
 
     if (!(this.data)) { this.data = []; }
-    return h('div.tooltip-image',
+    return h('div.tooltip-image', [
       h('div.tooltip-heading', this.name),
       h('div.tooltip-internal', h('div', (data).map(item => this.parseMetadata(item, true), this))),
       h('div.tooltip-buttons',
         [
           h('div.tooltip-button-container',
             [
-              h('div.tooltip-button', { onclick: this.displayMore(callback) }, [
-                h('i', { className: classNames('material-icons', 'tooltip-button-show') }, 'bubble_chart'),
-                h('div.describe-button', 'Open in Sidebar')
-              ])
+              h('div.tooltip-button', { onclick: this.displayMore() }, [
+                h('i', { className: classNames('material-icons', 'tooltip-button-show') }, 'fullscreen'),
+                h('div.describe-button', 'Additional Info')
+              ]),
             ])
         ])
-    );
+    ]);
   }
 
   //Generate HTML Elements for the side bar
-  generateSideBar() {
+  generateExtendedToolTip() {
     //Order the data array
     let data = this.orderArray(this.data);
     if (!(data)) data = [];
@@ -186,29 +160,53 @@ class MetadataTip {
     //Ensure name is not blank
     this.validateName();
 
-
     if (!(this.data)) { this.data = []; }
-    return h('div.sidebar-body',
-      h('h1', this.name),
-      h('div.sidebar-internal', h('div', (data).map(item => this.parseMetadata(item, false), this))));
+    return h('div.tooltip-image', [
+      h('div.tooltip-heading', this.name),
+      h('div.tooltip-internal', h('div', (data).map(item => this.parseMetadata(item, false), this))),
+      h('div.tooltip-buttons',
+        [
+          h('div.tooltip-button-container',
+            [
+              h('div.tooltip-button', { onclick: this.displayLess() }, [
+                h('i', { className: classNames('material-icons', 'tooltip-button-show') }, 'fullscreen_exit'),
+                h('div.describe-button', 'Less Info')
+              ]),
+            ])
+        ])
+    ]
+    );
   }
 
   //Show Tippy Tooltip
   show(cy, callback) {
     //Get tooltip object from class
     let tooltip = this.tooltip;
+    let tooltipExt = tooltip;
 
     //Hide all other tooltips
     this.hideAll(cy);
 
     //If no tooltip exists create one
     if (!tooltip) {
+      //Generate HTML
       let tooltipHTML = this.generateToolTip(callback);
+      let expandedHTML = this.generateExtendedToolTip(callback);
+
+      //Create tippy object 
       let refObject = this.cyElement.popperRef();
       tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true });
+      tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true });
+
+      //Resolve Reference issues
       tooltip.selector.dim = refObject.dim;
       tooltip.selector.cyElement = refObject.cyElement;
+      tooltipExt.selector.dim = refObject.dim;
+      tooltipExt.selector.cyElement = refObject.cyElement;
+
+      //Save tooltips
       this.tooltip = tooltip;
+      this.tooltipExt = tooltipExt;
     }
 
     //Show Tooltip
@@ -217,20 +215,28 @@ class MetadataTip {
   }
 
   //Generate a database link
-  generateDBLink(dbName, dbId) {
+  generateDBLink(dbName, dbId, printId) {
     //Get base url for dbid
+    let className = '';
     let link = this.db.filter(value => dbName.toUpperCase() === value[0].toUpperCase());
     if (!link || link.length !== 1) {
       link = this.db.filter(value => dbName.toUpperCase().indexOf(value[0].toUpperCase()) !== -1);
     }
 
+    //Render link as database name, if requested
+    if (printId) {
+      className = '-single-ref';
+    }
+
     //Build reference url
     if (link.length === 1 && link[0][1]) {
       let url = link[0][1] + link[0][2] + dbId;
-      return h('a.db-link', { href: url, target: '_blank' }, dbId);
+      dbId = printId ? dbName : dbId;
+      return h('a.db-link' + className, { href: url, target: '_blank' }, dbId);
     }
     else {
-      return h('div.db-no-link', dbId);
+      dbId = printId ? dbName : dbId;
+      return h('div.db-no-link' + className, dbId);
     }
   }
 
@@ -245,8 +251,16 @@ class MetadataTip {
     let dbScan = this.db.filter(data => name.toUpperCase().indexOf(data[0].toUpperCase()) !== -1);
     if (dbScan.length > 0) { name = dbScan[0][0]; }
 
-    if (trim) { list = dbIdObject.ids.slice(0, 5); }
-    return h('li.db-item', h('div.db-name', name + ": "), list.map(data => this.generateDBLink(name, data), this));
+    //Trim list
+    if (trim) { list = dbIdObject.ids.slice(0, 1); }
+
+    //Generate a list or a single link
+    if (list.length == 1 && trim) {
+      return h('li.db-item', this.generateDBLink(name, list[0], true));
+    }
+    else {
+      return h('li.db-item', h('div.db-name', name + ": "), list.map(data => this.generateDBLink(name, data, false), this));
+    }
   }
 
   //Sort Database ID's by database name
@@ -282,10 +296,10 @@ class MetadataTip {
       return h('div', h('div.field-name', prefix), h('a.plain-link', { href: link[0][1], target: '_blank' }, link[0][0]));
     }
     else if (link.length === 1) {
-      return link[0][1];
+      return h('div', h('div.field-name', prefix), h('a.plain-link', link[0][1]));
     }
     else {
-      return name;
+      return h('div', h('div.field-name', prefix), h('a.plain-link', name));
     }
   }
 
@@ -302,6 +316,7 @@ class MetadataTip {
   hide() {
     if (this.tooltip) {
       this.tooltip.hide(this.tooltip.store[0].popper);
+      this.tooltipExt.hide(this.tooltipExt.store[0].popper);
     }
     this.visible = false;
   }
@@ -319,19 +334,48 @@ class MetadataTip {
     return this.visible;
   }
 
+  //Display the expanded tooltip
+  expandToolTip(tooltip, tooltipExt) {
+    tooltip.hide(tooltip.store[0].popper);
+    tooltipExt.show(tooltipExt.store[0].popper);
+  }
 
-  //Return a function that binds a tooltip to the sidebar more info view
-  displayMore(callback) {
-    //Get id from state
-    let id = this.cyElement.id();
-    return () => callback(id);
+
+  //Display the expanded tooltip
+  collapseToolTip(tooltip, tooltipExt) {
+    tooltip.show(tooltip.store[0].popper);
+    tooltipExt.hide(tooltipExt.store[0].popper);
+  }
+
+  //Return a function that binds a tooltip to the expanded tooltip view
+  displayMore() {
+    let that = this;
+    return () => that.expandToolTip(that.tooltip, that.tooltipExt);
+  }
+
+  //Return a function that binds an expanded tooltip to the minimized view.
+  displayLess() {
+    let that = this;
+    return () => that.collapseToolTip(that.tooltip, that.tooltipExt);
+  }
+
+  //Push a metadata field to the bottom of the list
+  pushToBottom(data, field) {
+    for (var x in data) {
+      data[x][0] == field ? data.push(data.splice(x, 1)[0]) : 0;
+    }
+    return data;
   }
 
   //Order a given metadata data array
   orderArray(data) {
-    for (var x in data) {
-      data[x][0] == "Database IDs" ? data.push(data.splice(x, 1)[0]) : 0;
-    }
+
+    //Push Database IDs to the bottom of the list
+    data = this.pushToBottom(data, "Database IDs");
+
+    //Push Comments to the bottom of the list
+    data = this.pushToBottom(data, 'Comment');
+   
     return data;
   }
 

@@ -15,10 +15,12 @@
   top: 5%;
   left: 0;
   word-wrap: break-word;
-  overflow-y: auto;
   text-align: left;
-  height: 100%;
+  overflow-y: auto;
+  max-height: 40vh;
   font-size: 1.3vh !important;
+  margin-bottom: 4px;
+  margin-top: 4px;
 }
 
 .tooltip-heading {
@@ -86,6 +88,21 @@
   margin: 3px;
   display: inline-block;
 }
+
+.db-link-single-ref {
+  text-decoration: underline;
+  margin: 3px;
+  display: inline-block;
+  color: var(--link);
+}
+
+.db-no-link-single-ref {
+  text-decoration: underline;
+  margin: 3px;
+  display: inline-block;
+  color: var(--link);
+}
+
 
 .fake-paragraph {
   word-wrap: break-word;

@@ -1,24 +1,20 @@
-  //Push a metadata field to the bottom of the list
-  function pushToBottom(data, field) {
-    for (var x in data) {
-      data[x][0] == field ? data.push(data.splice(x, 1)[0]) : 0;
-    }
-    return data;
-  }
+const _ = require('lodash');
 
-  //Order a given metadata data array
-  function orderArray(data) {
+//Push a metadata field to the bottom of the list
+function pushToBottom(data, field) {
+  let withoutField = _.filter(data, pair => pair[0] !== field);
+  let withField = _.filter(data, pair => pair[0] === field);
+  return _.concat(withoutField, withField);
+}
 
-    //Push Database IDs to the bottom of the list
-    data = this.pushToBottom(data, "Database IDs");
+//Order a given metadata data array
+function orderArray(data) {
+  let filterList = ['Database IDs', 'Comment'];
+  filterList.forEach(field => data = pushToBottom(data, field));
+  return data;
+}
 
-    //Push Comments to the bottom of the list
-    data = this.pushToBottom(data, 'Comment');
-
-    return data;
-  }
-
-  module.exports = {
-    pushToBottom,
-    orderArray
-  };
+module.exports = {
+  pushToBottom,
+  orderArray
+};

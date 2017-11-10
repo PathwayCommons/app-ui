@@ -129,7 +129,10 @@ class MetadataTip {
 
     //Order the data array
     let data = this.orderArray(this.data);
-    if (!(data)) data = [];
+
+    if(!(data) || data.length === 0){
+      return this.noDataWarning();
+    }
 
     //Ensure name is not blank
     this.validateName();
@@ -148,6 +151,14 @@ class MetadataTip {
               ]),
             ])
         ])
+    ]);
+  }
+
+  //Generate HTML Element for no data
+  noDataWarning() {
+    return h('div.tooltip-image', [
+      h('div.tooltip-heading', this.name),
+      h('div.tooltip-internal', h('div.tooltip-warning', 'No Additional Information'))
     ]);
   }
 
@@ -375,11 +386,10 @@ class MetadataTip {
 
     //Push Comments to the bottom of the list
     data = this.pushToBottom(data, 'Comment');
-   
+
     return data;
   }
 
 }
-
 
 module.exports = MetadataTip;

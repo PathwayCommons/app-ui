@@ -33,6 +33,11 @@
   color: var(--dark-base-colour)
 }
 
+.tooltip-warning{
+  padding: 10px;
+  font-weight: bold;
+}
+
 .tooltip-button-container {
   @extend %flex-center;
 

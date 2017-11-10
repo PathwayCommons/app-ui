@@ -3,6 +3,10 @@ const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
 const classNames = require('classnames');
 
+const layoutConf = require('../../../../common/cy/layout');
+
+const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
+
 const tippy = require('tippy.js');
 
 /* Props
@@ -37,10 +41,15 @@ class Menu extends React.Component {
   render() {
     const layoutItems = this.props.layouts.map((layout, index) => {
       return (
-        h('option', {
+        h(DropdownOption, {
           key: index,
-          value: layout
-        }, layout)
+          value: layout,
+          description: layoutConf.layoutDescs[layout]
+        })
+        // h('option', {
+        //   key: index,
+        //   value: layout
+        // }, layout)
       );
     });
 
@@ -62,16 +71,20 @@ class Menu extends React.Component {
             title: 'Rearrange the entities on screen'
           }, [
             // options include 'transform', 'share', 'call_split'
-            h('i.material-icons', 'call_split')
+            h('i.material-icons', 'shuffle')
           ])
         ]),
         h('div', {
           className: classNames('layout-dropdown', this.state.dropdownOpen ? 'open' : '')
         }, [
-          h('select', {
+          h(Dropdown, {
             value: this.props.currLayout,
-            onChange: (e) => this.props.updateLayout(e.target.value)
+            onChange: value => this.props.updateLayout(value)
           }, layoutItems)
+          // h('select', {
+          //   value: this.props.currLayout,
+          //   onChange: (e) => this.props.updateLayout(e.target.value)
+          // }, layoutItems)
         ])
       ])
     );

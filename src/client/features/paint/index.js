@@ -30,6 +30,7 @@ class Paint extends React.Component {
     this.state = {
       enrichmentDataSets: [],
       enrichmentClasses: [],
+      enrichmentTable: {},
       cy: cy,
       name: '',
       datasource: '',
@@ -104,14 +105,17 @@ class Paint extends React.Component {
                 const pieStyle = {
                   'pie-size': '100%'
                 };
-                for (let i = 0; i < numSlices; i++) {
+                for (let i = 1; i <= numSlices; i++) {
+
                   pieStyle['pie-' + i + '-background-size'] = 100 / numSlices;
                   pieStyle['pie-' + i + '-background-opacity'] = 1;
-                  pieStyle['pie-' + i + '-background-color'] = this.percentToColour(row.classValues[i] / maxVal, 0, 240);
+                  pieStyle['pie-' + i + '-background-color'] = this.percentToColour(row.classValues[i-1] / maxVal, 0, 240);
                 }
 
                 node.style(pieStyle);
               });
+
+              this.setState({enrichmentTable: enrichmentTable});
 
             });
             // expressions.forEach(expression => {
@@ -179,7 +183,7 @@ class Paint extends React.Component {
 
       const class2ValuesMap = new Map();
 
-      for (let enrichmentClass of enrichmentClasses) {
+      for (let enrichmentClass of header) {
         class2ValuesMap.set(enrichmentClass, []);
       }
 
@@ -196,9 +200,9 @@ class Paint extends React.Component {
   render() {
     const state = this.state;
 
-    const enrichmentTable = this.createEnrichmentTable();
-    const enrichmentTableHeader = enrichmentTable.header.map(column => h('div', column));
-    const enrichmentTableRows = enrichmentTable.rows.map(row => h('div', `Gene: ${row.geneName}, ${JSON.stringify(row.classValues, null, 2)}`));
+    const enrichmentTable = state.enrichmentTable;
+    const enrichmentTableHeader = _.get(enrichmentTable, 'header', []).map(column => h('div', column));
+    const enrichmentTableRows = _.get(enrichmentTable, 'rows', []).map(row => h('div', `Gene: ${row.geneName}, ${JSON.stringify(row.classValues, null, 2)}`));
 
     const enrichmentClassesData = Object.entries(_.countBy(state.enrichmentClasses))
       .map(entry => {

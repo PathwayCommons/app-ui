@@ -13,8 +13,7 @@ function isExistingGraph(newGraph, connection) {
     .run(connection)
     .then((cursor) => {
       return cursor.next();
-    }).catch((e) => {
-      console.log('no match');
+    }).catch(() => {
       return Promise.resolve(false);
     });
 }
@@ -53,7 +52,6 @@ function saveGraph(pcID, graphID, releaseID, existingGraph, newGraph,connection)
 }
 
 function updateGraph(pcID, releaseID, cyJson, connection, callback) {
-  console.log('updating graph');
   let graphID = uuid();
 
   let nodeSort = (n1, n2) => {

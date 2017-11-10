@@ -21,7 +21,7 @@ const CDC = {
 
   // Request a graph from the server. Should send back a cyJSON graph
   requestGraph(uri, version) {
-    socket.emit('getLayout', {uri: uri, version: version.toString()});
+    socket.emit('getGraphAndLayout', {uri: uri, version: version.toString()});
   },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into

@@ -1,41 +1,38 @@
 //Import Depedencies
 const controller = require('./controller');
-const express = require('express');
-const router = express.Router();
 
-router.post('/submit-layout', function (req, res) {
+let submitLayout = function (req, res) {
   controller.submitLayout(req.body.uri, req.body.version, req.body.layout, req.body.user)
     .then((package) => {
       res.json(package);
     });
-});
+};
 
-router.post('/submit-graph', function(req,res){
+let submitGraph =  function (req, res) {
   controller.submitGraph(req.body.uri, req.body.version, req.body.graph)
-    .then((package)=>{
+    .then((package) => {
       res.json(package);
     });
-});
+};
 
-router.get('/get-graph-and-layout', function (req, res) {
+let getGraphAndLayout = function (req, res) {
   controller.getGraphAndLayout(req.query.uri, req.query.version).then((package) => {
     res.json(JSON.stringify(package));
   });
-});
+};
 
-router.get('/disconnect', function(req,res){
+let disconnect = function (req, res) {
   controller.endSession(req.query.uri, req.query.version, req.query.user)
-  .then((package)=>{
-    res.json(package);
-  });
+    .then((package) => {
+      res.json(package);
+    });
+};
 
-});
-
-router.post('/submit-diff', function(req,res){
+let submitDiff =  function (req, res) {
   controller.submitDiff(req.body.uri, req.body.version, req.body.diff, req.body.user)
-  .then((package)=>{
-    res.json(package);
-  });
-});
+    .then((package) => {
+      res.json(package);
+    });
+};
 
-module.exports = router;
+module.exports = {submitLayout, submitGraph, submitDiff, getGraphAndLayout, disconnect};

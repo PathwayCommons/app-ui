@@ -1,12 +1,10 @@
 //Import Depedencies
 const controller = require('./controller');
-const express = require('express');
 const btoa = require('btoa');
-const router = express.Router();
 const qs = require('querystring');
 
 
-function getLayout(io, socket, ioPackage) {
+function getGraphAndLayout(io, socket, ioPackage) {
   controller.getGraphAndLayout(ioPackage.uri, ioPackage.version).then((package) => {
     socket.emit('layoutPackage', btoa(JSON.stringify(package)));
   });
@@ -26,14 +24,28 @@ function submitDiff(io, socket, ioPackage) {
   });
 }
 
+function disconnect(socket) {
+  let userURL = socket.handshake.headers.referer;
 
-let returnRouter = function (io) {
+  let editParams = userURL.match(/edit\?(.*)/);
+
+  if (editParams){
+
+    let params = qs.parse(editParams[1]);
+    let pcID = params.uri;
+    let releaseID = params.releaseID || 'latest';
+
+    controller.endSession(pcID, releaseID, socket.id);
+  }
+}
+
+let socketInit = function (io) {
   io.on('connection', function (socket) {
     //Get Layout
     socket.on('getGraphAndLayout', function (ioPackage) {
       // Add socketID/userID to User table.
       // Store graphID 
-      getLayout(io, socket, ioPackage);
+      getGraphAndLayout(io, socket, ioPackage);
     });
 
     //Submit Layout
@@ -46,22 +58,9 @@ let returnRouter = function (io) {
     });
 
     socket.on('disconnect', function () {
-      let userURL = socket.handshake.headers.referer;
-
-      let editParams = userURL.match(/edit\?(.*)/);
-
-      if (editParams){
-
-        let params = qs.parse(editParams[1]);
-        let pcID = params.uri;
-        let releaseID = params.releaseID || 'latest';
-
-        controller.endSession(pcID, releaseID, socket.id);
-      }
+      disconnect(socket);
     });
   });
-
-  return router;
 };
 
-module.exports = returnRouter;
+module.exports = socketInit;

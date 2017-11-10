@@ -1,16 +1,17 @@
 const React = require('react');
 const h = require('react-hyperscript');
+const Loader = require('react-loader');
 const classNames = require('classnames');
 
 const saveAs = require('file-saver').saveAs;
 const PathwayCommonsService = require('../../../../../../services/').PathwayCommonsService;
 
 const downloadTypes = {
-  png: 'PNG',
+  png: 'Image (PNG)',
   gmt: 'GMT',
   sif: 'SIF',
   txt: 'Extended SIF',
-  biopax: 'BioPax',
+  biopax: 'BioPAX',
   jsonld: 'JSON-LD',
   sbgn: 'SBGM-ML'
 };
@@ -23,15 +24,25 @@ class DownloadOption extends React.Component {
     };
   }
 
-  handleDownloadClick(type) {
-    switch(type) {
+  handleDownloadClick(evt, type) {
+    // Don't do anything when a link is clicked. Should not download just because
+    // user clicks a link
+    if (evt.target.tagName === 'A') return;
+
+    switch (type) {
       case 'png':
-        saveAs(this.props.cy.png({
-          output: 'blob',
-          scale: 5,
-          bg: 'white',
-          full: true
-        }), this.props.name + '.png');
+      // The setTimeout triggers a rerender so that the loader appears on screen
+        this.setState({ loading: true }, () => {
+          setTimeout(() => {
+            saveAs(this.props.cy.png({
+              output: 'blob',
+              scale: 5,
+              bg: 'white',
+              full: true
+            }), this.props.name + '.png');
+            this.setState({ loading: false });
+          }, 1);
+        });
         break;
       case 'gmt':
         this.initiatePCDownload('GSEA', 'gmt');
@@ -58,7 +69,7 @@ class DownloadOption extends React.Component {
   }
 
   initiatePCDownload(format, file_ext) {
-    this.setState({loading: !this.state.loading});
+    this.setState({ loading: true });
 
     PathwayCommonsService.query(this.props.uri, format)
       .then(content => {
@@ -68,11 +79,11 @@ class DownloadOption extends React.Component {
         }
         this.saveDownload(file_ext, fileContent);
       })
-      .then(() => this.setState({loading: !this.state.loading}));
+      .then(() => this.setState({ loading: false }));
   }
 
   saveDownload(file_ext, content) {
-    saveAs(new File([content], this.generatePathwayName() + '.' + file_ext, {type: 'text/plain;charset=utf-8'}));
+    saveAs(new File([content], this.generatePathwayName() + '.' + file_ext, { type: 'text/plain;charset=utf-8' }));
   }
 
   generatePathwayName() {
@@ -85,22 +96,24 @@ class DownloadOption extends React.Component {
     return (
       h('div', {
         // for the sake of a quick fix, only one download option can be pre-shown. I'll fix this later
-        className: classNames('download-option', this.props.type === 'png' ? 'pre-shown' : '')
+        className: classNames('download-option', this.props.type === 'png' ? 'pre-shown' : ''),
+        onClick: (evt) => this.handleDownloadClick(evt, this.props.type)
       }, [
-        h('div.download-option-header', [
-          h('h3', {
-            'onClick': () => this.handleDownloadClick(this.props.type)
-          }, downloadTypes[this.props.type]),
-          h('div.download-button', {
-            'onClick': () => this.handleDownloadClick(this.props.type)
-          }, [
-            h('i.material-icons', 'file_download')
+          h('div.download-option-header', [
+            h('h3', downloadTypes[this.props.type]),
+            h('div.download-loader-container', [
+              h(Loader, {
+                loaded: !this.state.loading, options: {
+                  scale: 0.5,
+                  width: 3,
+                }
+              })
+            ])
+          ]),
+          h('div.download-option-description', [
+            this.props.children
           ])
-        ]),
-        h('div.download-option-description', [
-          this.props.children
         ])
-      ])
     );
   }
 }

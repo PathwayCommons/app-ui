@@ -4,16 +4,19 @@
   --midnight-blue: #212F3D;
   --cloud: #ECF0F1;
   --cloud-dark: #d3d8da;
+  --cloud-darker: #b5b9bb;
 
   /* Colours used by other modules */
   --accent-1-colour: var(--green-sea);
   --light-base-colour: var(--cloud);
   --light-base-colour-dark: var(--cloud-dark);
+  --light-base-colour-darker: var(--cloud-darker);
   --dark-base-colour: var(--midnight-blue);
 
   --box-shadow: 0px 0px 20px 3px rgba(0,0,0,0.4);
   --icon-size: 3vmin;
   --icon-size-mobile: 7vmin;
+  --number-of-sidebar-icons: 3;
 
   --link: #03A9F4;
   --link-visited: #7E57C2;

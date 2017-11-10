@@ -5,22 +5,19 @@ const classNames = require('classnames');
 const HelpMenu = require('./menus/help');
 const FileDownloadMenu = require('./menus/fileDownload');
 const GraphInfoMenu = require('./menus/graphInfoMenu');
-const MetadataSidebar = require('./menus/metatdataExtension');
 
 const tippy = require('tippy.js');
 
 const toolButtonNames = [
   'info',
   'file_download',
-  'bubble_chart',
   'help'
 ];
 
 const tooltips = [
-  'See extra information about this graph',
-  'Graph download options',
-  'Display node information',
-  'Field guide to interpreting the display'        
+  'Extra information about this network',
+  'Download options',
+  'Interpreting the display'        
 ];
 
 /* Props
@@ -65,10 +62,17 @@ class Sidebar extends React.Component {
   
   // Used for the panel buttons to set menus in the sidebar and dynamically change the style
   handleIconClick(button) {
-    this.setState({
-      open: true,
-      activeMenu: button
-    });
+    if (button === this.state.activeMenu) {
+      this.setState({
+        open: false,
+        activeMenu: ''
+      });
+    } else {
+      this.setState({
+        open: true,
+        activeMenu: button
+      });
+    }
   }
 
   //Receive updated props and set the state to match the desired result. 
@@ -85,10 +89,7 @@ class Sidebar extends React.Component {
     const menus = {
       'info': h(GraphInfoMenu, {'uri': this.props.uri, 'name': this.props.name, 'datasource': this.props.datasource}),
       'file_download': h(FileDownloadMenu, {'cy': this.props.cy, 'uri': this.props.uri, 'name': this.props.name}),
-      'help': h(HelpMenu),
-      'bubble_chart': (
-        h(MetadataSidebar, {'cy' : this.props.cy, 'nodeId' : this.props.nodeId})
-      )
+      'help': h(HelpMenu)
     };
 
     // Map tool buttons to actual elements with tooltips

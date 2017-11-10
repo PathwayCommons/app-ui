@@ -4,8 +4,18 @@ let socket = io.connect('/');
 const CDC = {
   initGraphSocket(updateFunction) {
     socket.on('layoutPackage', (cyZip) => {
-      let cyJSON = JSON.parse(atob(cyZip));
-      updateFunction(cyJSON);
+      let msg = atob(cyZip);
+      try {
+        let cyJSON = JSON.parse(msg);
+        updateFunction(cyJSON);
+      } catch(err) {
+        if (msg.length > 0) {
+          console.log(JSON.parse(msg));
+          //console.log(msg);
+        } else {
+          throw err;
+        }
+      }
     });
   },
 

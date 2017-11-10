@@ -59,7 +59,7 @@ function DescBiopax() {
       h('a', {
         'target': '_blank',
         'href': 'http://www.biopax.org/'
-      }, 'Biological Pathways Exchange (BioPax)'),
+      }, 'Biological Pathways Exchange (BioPAX)'),
       ' format includes all details of the biological network stored in Pathway Commons. It is recommended that this format be interpreted using tools like ',
       h('a', {
         'target': '_blank',

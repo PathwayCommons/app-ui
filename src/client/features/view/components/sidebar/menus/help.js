@@ -15,15 +15,8 @@ class HelpMenu extends React.Component {
             h('a', {
               href: 'http://marvl.infotech.monash.edu/webcola/',
               target: '_blank'
-            }, 'Force Directed 1'),
+            }, 'Force Directed'),
             ' - The CoSE-Bilkent force-directed layout algorithm for undirected compound graphs'
-          ]),
-          h('li', [
-            h('a', {
-              href: 'http://www.sciencedirect.com/science/article/pii/S0020025508004799',
-              target: '_blank'
-            }, 'Force Directed 2'),
-            ' - The Cola.js physics simulation layout for Cytoscape.js'
           ]),
           h('li', [
             h('a', {

@@ -1,13 +1,10 @@
 const coseBilkentOpts = {
   name: 'cose-bilkent',
-  fit: true,
-  randomize: false,
-  animate: 'end',
-  animationEasing: 'ease-out-cubic',
-  animationDuration: 800,
+  nodeDimensionsIncludeLabels: true,
   tilingPaddingVertical: 20,
   tilingPaddingHorizontal: 20,
-  nodeDimensionsIncludeLabels: true
+  fit: true,
+  randomize: false
 };
 
 module.exports = coseBilkentOpts;

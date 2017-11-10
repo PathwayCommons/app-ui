@@ -3,6 +3,7 @@ const config = require('../../config');
 
 //Generate HTML elements for a Parsed Metadata Field
 //Optional trim parameter indicates if the data presented should be trimmed to a reasonable length
+//Data Pair -> HTML
 function parseMetadata(pair, trim = true) {
   let key = pair[0];
 
@@ -61,6 +62,7 @@ function parseMetadata(pair, trim = true) {
 }
 
 //Convert a generic array or string to an html list
+//Array -> HTML 
 function makeList(items, ulClass = 'ul.value-list', liClass = 'li.value-list-item') {
   //Delete duplicates
   items = deleteDuplicatesWithoutCase(items);
@@ -81,12 +83,14 @@ function makeList(items, ulClass = 'ul.value-list', liClass = 'li.value-list-ite
 }
 
 //Render a standard tooltip item
+//Strings -> HTML
 function makeTooltipItem(value, field) {
   return h('div.fake-paragraph', [h('div.field-name', field), h('div.tooltip-value', value.toString())]);
 }
 
 //Delete duplicates and ignore case
 //Requires a valid array
+//Array -> Array 
 function deleteDuplicatesWithoutCase(list) {
   if (!(list instanceof Array)) {
     return list;
@@ -105,6 +109,7 @@ function deleteDuplicatesWithoutCase(list) {
 //Generate a data source link based on database name
 //Requires a valid database name
 //Note : prefix is optional
+//String -> HTML 
 function generateDataSourceLink(name, prefix = '') {
   let db = config.databases;
   let link = db.filter(value => name.toUpperCase().indexOf(value[0].toUpperCase()) !== -1);
@@ -121,6 +126,7 @@ function generateDataSourceLink(name, prefix = '') {
 
 //Sort Database ID's by database name
 //Requires a valid database ID array
+//Array -> Array 
 function sortByDatabaseId(dbArray) {
   let databases = {};
 
@@ -145,6 +151,7 @@ function sortByDatabaseId(dbArray) {
 
 //Generate list of all given database id's
 //Requires a valid database Id Object
+//Array -> HTML
 function generateIdList(dbIdObject, trim) {
   //get name and trim ID list to 5 items
   let name = dbIdObject.database;
@@ -168,6 +175,7 @@ function generateIdList(dbIdObject, trim) {
 }
 
 //Generate a database link
+//Strings -> HTML 
 function generateDBLink(dbName, dbId, printId) {
   //Get base url for dbid
   let db = config.databases;
@@ -195,6 +203,7 @@ function generateDBLink(dbName, dbId, printId) {
 }
 
 //Generate HTML Element for no data
+// () -> HTML
 function noDataWarning() {
   return h('div.tooltip-image', [
     h('div.tooltip-heading', this.name),

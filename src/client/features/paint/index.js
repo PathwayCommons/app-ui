@@ -15,6 +15,8 @@ const sbgnStylesheet = require('cytoscape-sbgn-stylesheet');
 const Icon = require('../../common/components').Icon;
 const PathwayCommonsService = require('../../services').PathwayCommonsService;
 
+const testData = require('./sample-enrichments');
+
 
 class Paint extends React.Component {
   constructor(props) {
@@ -28,14 +30,34 @@ class Paint extends React.Component {
     });
 
     this.state = {
-      enrichmentDataSets: [],
-      enrichmentClasses: [],
+      enrichmentDataSets: testData.dataSetExpressionList,
+      enrichmentClasses: _.get(testData.dataSetClassList, '0.classes', []),
       enrichmentTable: {},
       cy: cy,
       name: '',
       datasource: '',
       drawerOpen: false
     };
+
+    const query = queryString.parse(props.location.search);
+    const enrichmentsURI = query.uri ? query.uri : null;
+
+    if (enrichmentsURI != null) {
+      fetch(enrichmentsURI)
+        .then(response => response.json())
+        .then(json => {
+          this.setState({
+            enrichmentClasses: _.get(json.dataSetClassList, '0.classes', []),
+            enrichmentDataSets: json.dataSetExpressionList
+          }, () => {
+          });
+        });
+    }
+
+    const expressions = _.get(this.state.dataSetExpressionList, '0.expressions', []);
+    const searchParam = query.q ? query.q : 'S Phase';
+    this.initPainter(expressions, searchParam);
+
 
   }
 
@@ -52,7 +74,6 @@ class Paint extends React.Component {
 
     return color.hsl(hslValue, 100, 50).string();
   }
-
 
   // only call this after you know component is mounted
   initPainter(expressions, queryParam) {
@@ -118,23 +139,6 @@ class Paint extends React.Component {
               this.setState({enrichmentTable: enrichmentTable});
 
             });
-            // expressions.forEach(expression => {
-            //   state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
-            //     const maxVal = _.max(expression.values);
-            //     const minVal = _.min(expression.values);
-
-            //     node.style({
-            //       'pie-size': '100%',
-            //       'pie-1-background-color': this.percentToColour(expression.values[0] / maxVal, 0, 240),
-            //       'pie-1-background-size': '50%',
-            //       'pie-1-background-opacity': 1,
-            //       'pie-2-background-color': this.percentToColour(expression.values[expression.values.length - 1] / maxVal, 0, 240),
-            //       'pie-2-background-size': '50%',
-            //       'pie-2-background-opacity': 1
-            //     });
-            //   });
-            // });
-
           });
         }
       });
@@ -145,24 +149,6 @@ class Paint extends React.Component {
     const state = this.state;
     const container = document.getElementById('cy-container');
     state.cy.mount(container);
-
-    const query = queryString.parse(props.location.search);
-    const enrichmentsURI = query.uri ? query.uri : null;
-
-    if (enrichmentsURI != null) {
-      fetch(enrichmentsURI)
-        .then(response => response.json())
-        .then(json => {
-          this.setState({
-            enrichmentClasses: _.get(json.dataSetClassList, '0.classes', []),
-            enrichmentDataSets: json.dataSetExpressionList
-          }, () => {
-            const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
-            const searchParam = query.q ? query.q : '';
-            this.initPainter(expressions, searchParam);
-          });
-        });
-    }
   }
 
   toggleDrawer() {

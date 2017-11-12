@@ -188,18 +188,19 @@ class Paint extends React.Component {
 
     const enrichmentTable = state.enrichmentTable;
     const enrichmentTableHeader = _.get(enrichmentTable, 'header', []).map(column => h('div', column));
-    const enrichmentTableRows = _.get(enrichmentTable, 'rows', []).map(row => h('div', `Gene: ${row.geneName}, ${JSON.stringify(row.classValues, null, 2)}`));
+    const enrichmentTableRows = _.sortBy(_.get(enrichmentTable, 'rows', []), (o) => o.geneName).map(row => h('div', `Gene: ${row.geneName}, ${JSON.stringify(row.classValues, null, 2)}`));
 
     const enrichmentClassesData = Object.entries(_.countBy(state.enrichmentClasses))
       .map(entry => {
-        return h('p', `class: ${entry[0]}, number of samples: ${entry[1]}`);
+        return h('p', `class: ${entry[0]}, number of samples: ${entry[1]}, `);
       });
 
     return h('div.paint', [
       h('div.paint-content', [
         h('div', { className: classNames('paint-drawer', !state.drawerOpen ? 'closed' : '') }, [
           h('a', { onClick: e => this.toggleDrawer()}, [
-            h(Icon, { icon: 'close'})
+            h(Icon, { icon: 'close'}),
+            // h(Table, {data: enrichmentTable.rows, columns: enrichmentTableHeader})
           ]),
         ].concat(enrichmentClassesData).concat(enrichmentTableHeader).concat(enrichmentTableRows)),
         h('div.paint-omnibar', [

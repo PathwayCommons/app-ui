@@ -187,22 +187,29 @@ class Paint extends React.Component {
     const state = this.state;
 
     const enrichmentTable = state.enrichmentTable;
-    const enrichmentTableHeader = _.get(enrichmentTable, 'header', []).map(column => h('div', column));
-    const enrichmentTableRows = _.sortBy(_.get(enrichmentTable, 'rows', []), (o) => o.geneName).map(row => h('div', `Gene: ${row.geneName}, ${JSON.stringify(row.classValues, null, 2)}`));
+    const enrichmentTableHeader = [h('th', 'Gene Name')].concat(_.get(enrichmentTable, 'header', []).map(column => h('th', column)));
+    const enrichmentTableRows = _.sortBy(
+      _.get(enrichmentTable, 'rows', []), (o) => o.geneName
+    ).map(row => h('tr',[h('td', row.geneName)].concat(row.classValues.map(cv => h('td', cv)))));
 
-    const enrichmentClassesData = Object.entries(_.countBy(state.enrichmentClasses))
-      .map(entry => {
-        return h('p', `class: ${entry[0]}, number of samples: ${entry[1]}, `);
-      });
+    // const enrichmentClassesData = Object.entries(_.countBy(state.enrichmentClasses))
+    //   .map(entry => {
+    //     return h('p', `class: ${entry[0]}, number of samples: ${entry[1]}, `);
+    //   });
 
     return h('div.paint', [
       h('div.paint-content', [
         h('div', { className: classNames('paint-drawer', !state.drawerOpen ? 'closed' : '') }, [
           h('a', { onClick: e => this.toggleDrawer()}, [
             h(Icon, { icon: 'close'}),
-            // h(Table, {data: enrichmentTable.rows, columns: enrichmentTableHeader})
+            h('table', [
+              h('thead', [
+                h('tr', enrichmentTableHeader)
+              ]),
+              h('tbody', enrichmentTableRows)
+            ])
           ]),
-        ].concat(enrichmentClassesData).concat(enrichmentTableHeader).concat(enrichmentTableRows)),
+        ]),
         h('div.paint-omnibar', [
           h('a', { onClick: e => this.toggleDrawer() }, [
             h(Icon, { icon: 'menu' }, 'click')

@@ -42,8 +42,8 @@ const typeHandler = (pair) => {
 };
 
 //Default to generating a list of all items
-const defaultHandler = (pair, trim, key) => {
-  if (trim) { return h('div.error'); }
+const defaultHandler = (pair) => {
+  let key = pair[0];
   if (key === 'Comment') { key = 'Comments'; }
   return h('div.fake-paragraph', [
     h('div.field-name', key + ': '),
@@ -79,8 +79,11 @@ function parseMetadata(pair, trim = true) {
   if (handler) {
     return handler(pair);
   }
+  else if (!(trim)) {
+    return defaultHandler(pair);
+  }
   else {
-    return defaultHandler(pair, trim, key);
+    return h('div.error');
   }
 }
 

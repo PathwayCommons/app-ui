@@ -188,7 +188,7 @@ class Paint extends React.Component {
     const state = this.state;
 
     const enrichmentTable = state.enrichmentTable;
-    const enrichmentTableHeader = [h('th', 'Gene Name')].concat(_.get(enrichmentTable, 'header', []).map(column => h('th', column)));
+    const enrichmentTableHeader = [h('th', '')].concat(_.get(enrichmentTable, 'header', []).map(column => h('th', column)));
     const enrichmentTableRows = _.sortBy(
       _.get(enrichmentTable, 'rows', []), (o) => o.geneName
     ).map(row => h('tr',[h('td', row.geneName)].concat(row.classValues.map(cv => h('td', cv)))));

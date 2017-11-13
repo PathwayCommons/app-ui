@@ -1,25 +1,20 @@
 const h = require('hyperscript');
+const _ = require('lodash');
 const config = require('../../config');
 
 
 //Handle name related metadata fields
 const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Approved Name: ');
+const standardNameHandlerTrim = (pair) => standardNameHandler(pair);
 const displayNameHandler = (pair) => makeTooltipItem(pair[1], 'Display Name: ');
-const nameHandler = (pair, trim) => {
-  //Trim results to first 3 names to avoid overflow
-  let shortArray = pair[1];
-  if (trim) { shortArray = pair[1].slice(0, 3); }
-
-  //Filter out Chemical formulas
-  if (shortArray instanceof Array) shortArray = shortArray.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig)));
-
-  //Determine render value
-  let renderValue = h('div.tooltip-value', shortArray.toString());
-  if (!(trim)) {
-    renderValue = makeList(shortArray);
-  }
-
-  return h('div.fake-paragraph', [h('div.field-name', 'Synonyms: '), renderValue]);
+const displayNameHandlerTrim = (pair) => standardNameHandler(pair);
+const nameHandlerTrim = (pair) => {
+  let shortArray = filterChemicalFormulas(pair[1].slice(0, 3));
+  return h('div.fake-paragraph', [h('div.field-name', 'Synonyms: '), h('div.tooltip-value', shortArray.toString())]);
+};
+const nameHandler = (pair) => {
+  let shortArray = filterChemicalFormulas(pair[1]);
+  return h('div.fake-paragraph', [h('div.field-name', 'Synonyms: '), valueToHtml(shortArray)]);
 };
 
 //Handle database related fields
@@ -28,43 +23,45 @@ const dataSourceHandler = (pair) => {
   let link = generateDataSourceLink(source, 'Data Source: ');
   return h('div.fake-paragraph', link);
 };
-const databaseHandler = (pair, trim) => {
+const databaseHandlerTrim = (pair) => {
+  if (pair[1].length < 1) { return h('div.error'); }
+  return generateDatabaseList(sortByDatabaseId(pair[1]), false);
+}
+const databaseHandler = (pair) => {
   //Sort the array by database names
-  let sortedArray = sortByDatabaseId(pair[1]);
-  if (sortedArray.length < 1) { return; }
-  return h('div.fake-paragraph',
-    [
-      h('div.field-name', 'Database References:'),
-      h('div.wrap-text', h('ul.db-list', sortedArray.map(item => generateIdList(item, trim), this)))
-    ]);
+  if (pair[1].length < 1) { return h('div.error'); }
+  return generateDatabaseList(sortByDatabaseId(pair[1]), true);
+
 };
 
 //Handle type related fields
-const typeHandler = (pair, trim, key) => {
-  if (!(trim)) {
-    let type = pair[1].toString().substring(3);
-    let formattedType = type.replace(/([A-Z])/g, ' $1').trim();
-    return h('div.fake-paragraph', [h('div.field-name', key + ': '), formattedType]);
-  }
+const typeHandler = (pair) => {
+  let type = pair[1].toString().substring(3);
+  let formattedType = type.replace(/([A-Z])/g, ' $1').trim();
+  return h('div.fake-paragraph', [h('div.field-name', pair[0] + ': '), formattedType]);
 };
 
 //Default to generating a list of all items
-const defaultHandler = (pair, trim, key) => {
-  if (trim) { return; }
+const defaultHandler = (pair) => {
+  let key = pair[0];
   if (key === 'Comment') { key = 'Comments'; }
   return h('div.fake-paragraph', [
     h('div.field-name', key + ': '),
-    makeList(pair[1])
+    valueToHtml(pair[1])
   ]);
 };
 
 const metaDataKeyMap = new Map()
   .set('Standard Name', standardNameHandler)
+  .set('Standard NameTrim', standardNameHandlerTrim)
   .set('Display Name', displayNameHandler)
+  .set('Display NameTrim', displayNameHandlerTrim)
   .set('Data Source', dataSourceHandler)
   .set('Type', typeHandler)
   .set('Names', nameHandler)
-  .set('Database IDs', databaseHandler);
+  .set('NamesTrim', nameHandlerTrim)
+  .set('Database IDs', databaseHandler)
+  .set('Database IDsTrim', databaseHandlerTrim);
 
 
 //Generate HTML elements for a Parsed Metadata Field
@@ -72,33 +69,49 @@ const metaDataKeyMap = new Map()
 //Data Pair -> HTML
 function parseMetadata(pair, trim = true) {
   let key = pair[0];
+
+  //Use the trim function if trim is applied
+  if (trim){
+    key += "Trim";
+  }
+
   let handler = metaDataKeyMap.get(key);
   if (handler) {
-    return handler(pair, trim, key);
+    return handler(pair);
+  }
+  else if (!(trim)) {
+    return defaultHandler(pair);
   }
   else {
-    return defaultHandler(pair, trim, key);
+    return h('div.error');
+  }
+}
+
+//Create a HTML Element for a given value
+//Anything -> HTML
+function valueToHtml(value) {
+  //String -> HTML
+  if (typeof value === 'string') {
+    return h('div.tooltip-value', value);
+  }
+  //Array Length 1 -> HTML
+  else if (value instanceof Array && value.length === 1) {
+    return h('div.tooltip-value', value[0]);
+  }
+  //Array -> HTML
+  else if (value instanceof Array && value.length > 1) {
+    value = deleteDuplicatesWithoutCase(value);
+    return makeList(value);
+  }
+  //Anything
+  else if (!(value)) {
+    return h('div.error', '-');
   }
 }
 
 //Convert a generic array or string to an html list
 //Array -> HTML 
 function makeList(items, ulClass = 'ul.value-list', liClass = 'li.value-list-item') {
-  //Delete duplicates
-  items = deleteDuplicatesWithoutCase(items);
-
-  //Resolve possible errors
-  if (typeof items === 'string') {
-    return h('div.tooltip-value', items);
-  }
-  else if (items.length === 1) {
-    return h('div.tooltip-value', items[0]);
-  }
-  else if (!(items)) {
-    return '-';
-  }
-
-  //Render List
   return h(ulClass, items.map(item => h(liClass, item)));
 }
 
@@ -146,27 +159,19 @@ function generateDataSourceLink(name, prefix = '') {
 
 //Sort Database ID's by database name
 //Requires a valid database ID array
-//Array -> Array 
+//Array -> Array
 function sortByDatabaseId(dbArray) {
-  let databases = {};
+  //Sort by database name
+  let sorted = [];
+  let databases = _.groupBy(dbArray, entry => entry[0]);
 
-  //Group Ids by database
-  for (let i = 0; i < dbArray.length; i++) {
-    let databaseName = dbArray[i][0];
-    if (!databases[databaseName]) {
-      databases[databaseName] = [];
-    }
-    databases[databaseName].push(dbArray[i][1]);
-  }
+  //Remove dbName from each entry
+  _.forEach(databases, function (value, key) {
+    databases[key] = _.map(databases[key], entry => entry[1]);
+    sorted.push({ database: key, ids: databases[key] });
+  });
 
-  //Produce final array with group names as the keys
-  dbArray = [];
-  for (let databaseName in databases) {
-    dbArray.push({ database: databaseName, ids: databases[databaseName] });
-  }
-
-  //Return result
-  return dbArray;
+  return sorted;
 }
 
 //Generate list of all given database id's
@@ -195,8 +200,10 @@ function generateIdList(dbIdObject, trim) {
 }
 
 //Generate a database link
+//Note - optional isDbVisible parameter determines
+//       if the database name should be displayed
 //Strings -> HTML 
-function generateDBLink(dbName, dbId, printId) {
+function generateDBLink(dbName, dbId, isDbVisible) {
   //Get base url for dbid
   let db = config.databases;
   let className = '';
@@ -206,18 +213,18 @@ function generateDBLink(dbName, dbId, printId) {
   }
 
   //Render link as database name, if requested
-  if (printId) {
+  if (isDbVisible) {
     className = '-single-ref';
   }
 
   //Build reference url
   if (link.length === 1 && link[0][1]) {
     let url = link[0][1] + link[0][2] + dbId;
-    dbId = printId ? dbName : dbId;
+    dbId = isDbVisible ? dbName : dbId;
     return h('a.db-link' + className, { href: url, target: '_blank' }, dbId);
   }
   else {
-    dbId = printId ? dbName : dbId;
+    dbId = isDbVisible ? dbName : dbId;
     return h('div.db-no-link' + className, dbId);
   }
 }
@@ -231,6 +238,24 @@ function noDataWarning() {
   ]);
 }
 
+//Filter out chemical formulas
+//Array -> Array
+function filterChemicalFormulas(list) {
+  //Filter out Chemical formulas
+  if (list instanceof Array) { return list.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig))); }
+  return list;
+}
+
+
+//Generate a list of database ids from sorted array 
+//Array -> HTML
+function generateDatabaseList(sortedArray, trim) {
+  return h('div.fake-paragraph',
+    [
+      h('div.field-name', 'Database References:'),
+      h('div.wrap-text', h('ul.db-list', sortedArray.map(item => generateIdList(item, trim), this)))
+    ]);
+}
 
 module.exports = {
   parseMetadata,

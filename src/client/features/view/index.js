@@ -38,17 +38,6 @@ class View extends React.Component {
       name: graphJSON.graph.pathwayMetadata.title[0] || 'Unknown Network',
       datasource: graphJSON.graph.pathwayMetadata.dataSource[0] || 'Unknown Data Source'
     }));
-
-    // CDC.initReceiveLayoutChange(layoutJSON => this.setState({ layoutJSON: layoutJSON }, () => this.performLayout(lo.humanLayoutName)));
-
-    // CDC.initReceiveNodeChange(diff => {
-    //   let newLayout = this.state.layoutJSON;
-    //   newLayout[diff.nodeID] = diff.bbox;
-    //   this.setState({
-    //     layoutJSON: newLayout,
-    //     layout: this.props.admin ? lo.humanLayoutName : this.state.layout
-    //   }, () => this.performLayout(lo.humanLayoutName));
-    // });
   }
 
   componentWillMount(){

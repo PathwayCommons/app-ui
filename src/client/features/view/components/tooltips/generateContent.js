@@ -200,8 +200,9 @@ function generateIdList(dbIdObject, trim) {
 }
 
 //Generate a database link
+//Note - Optional
 //Strings -> HTML 
-function generateDBLink(dbName, dbId, printId) {
+function generateDBLink(dbName, dbId, isDbVisible) {
   //Get base url for dbid
   let db = config.databases;
   let className = '';
@@ -211,18 +212,18 @@ function generateDBLink(dbName, dbId, printId) {
   }
 
   //Render link as database name, if requested
-  if (printId) {
+  if (isDbVisible) {
     className = '-single-ref';
   }
 
   //Build reference url
   if (link.length === 1 && link[0][1]) {
     let url = link[0][1] + link[0][2] + dbId;
-    dbId = printId ? dbName : dbId;
+    dbId = isDbVisible ? dbName : dbId;
     return h('a.db-link' + className, { href: url, target: '_blank' }, dbId);
   }
   else {
-    dbId = printId ? dbName : dbId;
+    dbId = isDbVisible ? dbName : dbId;
     return h('div.db-no-link' + className, dbId);
   }
 }

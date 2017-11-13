@@ -7,7 +7,7 @@ const config = require('../../config');
 const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Approved Name: ');
 const standardNameHandlerTrim = (pair) => standardNameHandler(pair);
 const displayNameHandler = (pair) => makeTooltipItem(pair[1], 'Display Name: ');
-const displayNameHandlerTrim = (pair) => standardNameHandler(pair);
+const displayNameHandlerTrim = (pair) => displayNameHandler(pair);
 const nameHandlerTrim = (pair) => {
   let shortArray = filterChemicalFormulas(pair[1].slice(0, 3));
   return h('div.fake-paragraph', [h('div.field-name', 'Synonyms: '), h('div.tooltip-value', shortArray.toString())]);
@@ -25,12 +25,12 @@ const dataSourceHandler = (pair) => {
 };
 const databaseHandlerTrim = (pair) => {
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDatabaseList(sortByDatabaseId(pair[1]), false);
-}
+  return generateDatabaseList(sortByDatabaseId(pair[1]), true);
+};
 const databaseHandler = (pair) => {
   //Sort the array by database names
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDatabaseList(sortByDatabaseId(pair[1]), true);
+  return generateDatabaseList(sortByDatabaseId(pair[1]), false);
 
 };
 

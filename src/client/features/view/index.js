@@ -32,14 +32,23 @@ class View extends React.Component {
       activeDisplayedNode: ''
     };
 
-    // Arrow functions like these tie socket.io directly into the React state
-    CDC.initGraphSocket(newGraphJSON => this.setState({
-      graphJSON: newGraphJSON.graph,
-      layoutJSON: newGraphJSON.layout,
-      name: newGraphJSON.graph.pathwayMetadata.title[0] || 'Unknown Network',
-      datasource: newGraphJSON.graph.pathwayMetadata.dataSource[0] || 'Unknown Data Source'
+    CDC.getGraphAndLayout(query.uri, 'latest').then(graphJSON => this.setState({
+      graphJSON: graphJSON.graph,
+      layoutJSON: graphJSON.layout,
+      name: graphJSON.graph.pathwayMetadata.title[0] || 'Unknown Network',
+      datasource: graphJSON.graph.pathwayMetadata.dataSource[0] || 'Unknown Data Source'
     }));
-    CDC.requestGraph(query.uri, 'latest');
+
+    // CDC.initReceiveLayoutChange(layoutJSON => this.setState({ layoutJSON: layoutJSON }, () => this.performLayout(lo.humanLayoutName)));
+
+    // CDC.initReceiveNodeChange(diff => {
+    //   let newLayout = this.state.layoutJSON;
+    //   newLayout[diff.nodeID] = diff.bbox;
+    //   this.setState({
+    //     layoutJSON: newLayout,
+    //     layout: this.props.admin ? lo.humanLayoutName : this.state.layout
+    //   }, () => this.performLayout(lo.humanLayoutName));
+    // });
   }
 
   componentWillMount(){
@@ -102,7 +111,7 @@ class View extends React.Component {
         for (let i = 0; i < numNodes; i++) {
           posObj[cy.nodes()[i].id()] = cy.nodes()[i].position();
         }
-        CDC.submitBaseLayoutChange(that.state.query.uri, 'latest', posObj);
+        CDC.submitLayoutChange(that.state.query.uri, 'latest', posObj);
       }
     });
     layout.run();

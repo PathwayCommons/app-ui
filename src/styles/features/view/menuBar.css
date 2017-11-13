@@ -83,9 +83,6 @@
     width: 100%;
     background-color: white;
     padding-right: 1.75em;
-
-    
-
   }
 
   &.open {
@@ -103,6 +100,8 @@
   .layout-dropdown-button {
     height: calc(var(--icon-size-mobile) * 3 / 2);
     width: calc(var(--icon-size-mobile) * 3 / 2);
+
+    font-size: var(--icon-size-mobile);
   }
 
   .title-container {

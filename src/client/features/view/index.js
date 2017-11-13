@@ -98,10 +98,9 @@ class View extends React.Component {
     layout.pon('layoutstop').then(function() {
       if (that.props.admin && layoutName !== lo.humanLayoutName) {
         let posObj = {};
-        let numNodes = cy.nodes().length;
-        for (let i = 0; i < numNodes; i++) {
-          posObj[cy.nodes()[i].id()] = cy.nodes()[i].position();
-        }
+        cy.nodes().forEach(node => {
+          posObj[node.id()] = node.position();
+        });
         CDC.submitBaseLayoutChange(that.state.query.uri, 'latest', posObj);
       }
     });

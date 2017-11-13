@@ -7,14 +7,15 @@ function pushToBottom(data, field) {
   return _.concat(withoutField, withField);
 }
 
-//Order a given metadata data array
-function orderArray(data) {
-  let filterList = ['Database IDs', 'Comment'];
-  filterList.forEach(field => data = pushToBottom(data, field));
+//Push a collection of elements to the bottom of the list
+//Takes in a list of id's and pushes all matching items to the bottom of the list
+//Requires a valid list of ids
+function collectionToBottom(data, idList) {
+  idList.forEach(field => data = pushToBottom(data, field));
   return data;
 }
 
 module.exports = {
   pushToBottom,
-  orderArray
+  collectionToBottom
 };

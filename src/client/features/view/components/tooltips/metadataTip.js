@@ -63,7 +63,7 @@ class MetadataTip {
   //Generate HTML Elements for tooltips
   generateToolTip() {
     //Order the data array
-    let data = formatArray.orderArray(this.data);
+    let data = formatArray.collectionToBottom(this.data, ['Database IDs', 'Comment']);
 
     if (!(data) || data.length === 0) {
       return generate.noDataWarning();
@@ -92,7 +92,7 @@ class MetadataTip {
   //Generate HTML Elements for the side bar
   generateExtendedToolTip() {
     //Order the data array
-    let data = formatArray.orderArray(this.data);
+    let data = formatArray.collectionToBottom(this.data, ['Database IDs', 'Comment']);
     if (!(data)) data = [];
 
     //Ensure name is not blank

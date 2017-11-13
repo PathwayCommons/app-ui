@@ -1,4 +1,5 @@
 const h = require('hyperscript');
+const _ = require('lodash');
 const config = require('../../config');
 
 
@@ -16,7 +17,7 @@ const nameHandler = (pair, trim) => {
   //Determine render value
   let renderValue = h('div.tooltip-value', shortArray.toString());
   if (!(trim)) {
-    renderValue = makeList(shortArray);
+    renderValue = valueToHtml(shortArray);
   }
 
   return h('div.fake-paragraph', [h('div.field-name', 'Synonyms: '), renderValue]);
@@ -54,7 +55,7 @@ const defaultHandler = (pair, trim, key) => {
   if (key === 'Comment') { key = 'Comments'; }
   return h('div.fake-paragraph', [
     h('div.field-name', key + ': '),
-    makeList(pair[1])
+    valueToHtml(pair[1])
   ]);
 };
 
@@ -81,24 +82,31 @@ function parseMetadata(pair, trim = true) {
   }
 }
 
+//Create a HTML Element for a given value
+//Anything -> HTML
+function valueToHtml(value) {
+  //String -> HTML
+  if (typeof value === 'string') {
+    return h('div.tooltip-value', value);
+  }
+  //Array Length 1 -> HTML
+  else if (value instanceof Array && value.length === 1) {
+    return h('div.tooltip-value', value[0]);
+  }
+  //Array -> HTML
+  else if (value instanceof Array && value.length > 1) {
+    value = deleteDuplicatesWithoutCase(value);
+    return makeList(value);
+  }
+  //Anything
+  else if (!(value)) {
+    return h('div.error', '-');
+  }
+}
+
 //Convert a generic array or string to an html list
 //Array -> HTML 
 function makeList(items, ulClass = 'ul.value-list', liClass = 'li.value-list-item') {
-  //Delete duplicates
-  items = deleteDuplicatesWithoutCase(items);
-
-  //Resolve possible errors
-  if (typeof items === 'string') {
-    return h('div.tooltip-value', items);
-  }
-  else if (items.length === 1) {
-    return h('div.tooltip-value', items[0]);
-  }
-  else if (!(items)) {
-    return '-';
-  }
-
-  //Render List
   return h(ulClass, items.map(item => h(liClass, item)));
 }
 
@@ -146,27 +154,19 @@ function generateDataSourceLink(name, prefix = '') {
 
 //Sort Database ID's by database name
 //Requires a valid database ID array
-//Array -> Array 
+//Array -> Array
 function sortByDatabaseId(dbArray) {
-  let databases = {};
+  //Sort by database name
+  let sorted = [];
+  let databases = _.groupBy(dbArray, entry => entry[0]);
 
-  //Group Ids by database
-  for (let i = 0; i < dbArray.length; i++) {
-    let databaseName = dbArray[i][0];
-    if (!databases[databaseName]) {
-      databases[databaseName] = [];
-    }
-    databases[databaseName].push(dbArray[i][1]);
-  }
+  //Remove dbName from each entry
+  _.forEach(databases, function (value, key) {
+    databases[key] = _.map(databases[key], entry => entry[1]);
+    sorted.push({ database: key, ids: databases[key] });
+  });
 
-  //Produce final array with group names as the keys
-  dbArray = [];
-  for (let databaseName in databases) {
-    dbArray.push({ database: databaseName, ids: databases[databaseName] });
-  }
-
-  //Return result
-  return dbArray;
+  return sorted;
 }
 
 //Generate list of all given database id's

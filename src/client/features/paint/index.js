@@ -15,7 +15,9 @@ const sbgnStylesheet = require('cytoscape-sbgn-stylesheet');
 const Icon = require('../../common/components').Icon;
 const PathwayCommonsService = require('../../services').PathwayCommonsService;
 
-const testData = require('./sample-enrichments');
+// const testData = require('./sample-enrichments');
+
+const augmentEnrichmentData = require('./enrichment-model');
 
 
 class Paint extends React.Component {
@@ -30,8 +32,10 @@ class Paint extends React.Component {
     });
 
     this.state = {
-      enrichmentDataSets: testData.dataSetExpressionList,
-      enrichmentClasses: _.get(testData.dataSetClassList, '0.classes', []),
+      enrichmentDataSets: [],
+      enrichmentClasses: [],
+      // enrichmentDataSets: testData.dataSetExpressionList,
+      // enrichmentClasses: _.get(testData.dataSetClassList, '0.classes', []),
       enrichmentTable: {},
       cy: cy,
       name: '',
@@ -46,6 +50,7 @@ class Paint extends React.Component {
       fetch(enrichmentsURI)
         .then(response => response.json())
         .then(json => {
+          // console.log(augmentEnrichmentData(json.dataSetClassList, json.dataSetExpressionList));
           this.setState({
             enrichmentClasses: _.get(json.dataSetClassList, '0.classes', []),
             enrichmentDataSets: json.dataSetExpressionList
@@ -63,10 +68,6 @@ class Paint extends React.Component {
 
   componentWillUnmount() {
     this.state.cy.destroy();
-  }
-
-  colorMap(value) {
-    return color.hsl(value * 240 / 255, 100, 50).string();
   }
 
   percentToColour(percent, colourRangeStart, colourRangeEnd) {
@@ -192,23 +193,23 @@ class Paint extends React.Component {
       _.get(enrichmentTable, 'rows', []), (o) => o.geneName
     ).map(row => h('tr',[h('td', row.geneName)].concat(row.classValues.map(cv => h('td', cv)))));
 
-    // const enrichmentClassesData = Object.entries(_.countBy(state.enrichmentClasses))
-    //   .map(entry => {
-    //     return h('p', `class: ${entry[0]}, number of samples: ${entry[1]}, `);
-    //   });
-
     return h('div.paint', [
       h('div.paint-content', [
         h('div', { className: classNames('paint-drawer', !state.drawerOpen ? 'closed' : '') }, [
           h('a', { onClick: e => this.toggleDrawer()}, [
             h(Icon, { icon: 'close'}),
-            h('table', [
-              h('thead', [
-                h('tr', enrichmentTableHeader)
-              ]),
-              h('tbody', enrichmentTableRows)
-            ])
           ]),
+          h('div.paint-legend', [
+            h('p', 'low'),
+            h('p', 'high')
+          ]),
+          h('table', [
+            h('thead', [
+              h('tr', enrichmentTableHeader)
+            ]),
+            h('tbody', enrichmentTableRows)
+          ])
+
         ]),
         h('div.paint-omnibar', [
           h('a', { onClick: e => this.toggleDrawer() }, [

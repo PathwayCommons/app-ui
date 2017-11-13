@@ -74,6 +74,13 @@
   overflow: scroll;
 }
 
+.paint-legend {
+  color: white;
+  background: linear-gradient(to right, hsl(0, 100%, 50%), hsl(240, 100%, 50%));
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 
 .paint-logo {
   width: 40px;

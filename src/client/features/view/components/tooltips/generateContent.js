@@ -200,7 +200,8 @@ function generateIdList(dbIdObject, trim) {
 }
 
 //Generate a database link
-//Note - Optional
+//Note - optional isDbVisible parameter determines
+//       if the database name should be displayed
 //Strings -> HTML 
 function generateDBLink(dbName, dbId, isDbVisible) {
   //Get base url for dbid

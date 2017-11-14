@@ -96,10 +96,9 @@ class View extends React.Component {
     layout.pon('layoutstop').then(function() {
       if (that.props.admin && layoutName !== lo.humanLayoutName) {
         let posObj = {};
-        let numNodes = cy.nodes().length;
-        for (let i = 0; i < numNodes; i++) {
-          posObj[cy.nodes()[i].id()] = cy.nodes()[i].position();
-        }
+        cy.nodes().forEach(node => {
+          posObj[node.id()] = node.position();
+        });
         CDC.submitLayoutChange(that.state.query.uri, 'latest', posObj);
       }
     });
@@ -125,7 +124,7 @@ class View extends React.Component {
         h(EditWarning, {
           active: this.state.activateWarning,
           deactivate: () => this.setState({activateWarning: false}),
-          dur: 8000
+          dur: 5000
         }, this.state.warningMessage),
         h(Sidebar, {
           cy: this.state.cy,

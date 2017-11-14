@@ -18,8 +18,7 @@ class Dropdown extends React.Component {
     }
   }
 
-  handleOptionClick(evt) {
-    let el = evt.target;
+  changeValFromClickedEl(el) {
     if (el === this.optionsDom) { return; }
     while (el.parentElement !== this.optionsDom) {
       el = el.parentElement;
@@ -40,7 +39,7 @@ class Dropdown extends React.Component {
         ]),
         h('div', {
           className: classNames('dropdown-options', this.state.open ? 'active': ''),
-          onClick: evt => this.handleOptionClick(evt),
+          onClick: evt => this.changeValFromClickedEl(evt.target),
           ref: dom => this.optionsDom = dom
         }, this.props.children)
       ])

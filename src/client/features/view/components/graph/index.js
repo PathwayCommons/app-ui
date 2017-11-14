@@ -1,6 +1,8 @@
 const React = require('react');
 const h = require('react-hyperscript');
 
+const _ = require('lodash');
+
 /* Props
 - updateRenderStatus(status)
 - updateLayout()
@@ -37,13 +39,7 @@ class Graph extends React.Component {
   // isempty part should be moved to a more communal file
   // retrieved from https://coderwall.com/p/_g3x9q/how-to-check-if-javascript-object-is-empty
   checkRenderGraph(graphJSON) {
-    if (this.state.graphRendered) return;
-    let empty = true;    
-    for(let key in graphJSON) {
-        if(graphJSON.hasOwnProperty(key))
-            empty = false;
-    }
-    if (!empty) this.renderGraph(graphJSON);
+    if (!this.state.graphRendered && !_.isEmpty(graphJSON)) { this.renderGraph(graphJSON); }
   }
 
   // Graph rendering is not tracked by React
@@ -52,8 +48,6 @@ class Graph extends React.Component {
 
     cy.remove('*');
     cy.add(graphJSON);
-    
-    cy.zoom(0.75); // [NOT WORKING]
 
     //toolTipCreator.bindTippyToElements(cy);
     this.props.updateRenderStatus(true);

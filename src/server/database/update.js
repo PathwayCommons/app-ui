@@ -54,13 +54,7 @@ function saveGraph(pcID, graphID, releaseID, existingGraph, newGraph,connection)
 function updateGraph(pcID, releaseID, cyJson, connection, callback) {
   let graphID = uuid();
 
-  let nodeSort = (n1, n2) => {
-    if (n1.data.id > n2.data.id) return 1;
-    if (n1.data.id < n2.data.id) return -1;
-    return 0;
-  };
-
-  cyJson.nodes.sort(nodeSort);
+  _.sortBy(cyJson.nodes, node => node.id);
 
   let hashJson = _.cloneDeep(cyJson);
   hashJson.nodes = hashJson.nodes.map ((node) => {

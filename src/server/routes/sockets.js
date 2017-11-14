@@ -2,6 +2,7 @@
 const controller = require('./controller');
 const btoa = require('btoa');
 const qs = require('querystring');
+const io = require('./../io').get();
 
 
 function getGraphAndLayout(io, socket, ioPackage) {
@@ -19,9 +20,9 @@ function submitLayout(io, socket, ioPackage) {
 
 function submitDiff(io, socket, ioPackage) {
   controller.submitDiff(ioPackage.uri, ioPackage.version, ioPackage.diff, socket.id)
-  .then((package)=>{
-    io.emit('updated', package);
-  });
+    .then((package) => {
+      io.emit('updated', package);
+    });
 }
 
 function disconnect(socket) {
@@ -29,7 +30,7 @@ function disconnect(socket) {
 
   let editParams = userURL.match(/edit\?(.*)/);
 
-  if (editParams){
+  if (editParams) {
 
     let params = qs.parse(editParams[1]);
     let pcID = params.uri;
@@ -39,28 +40,26 @@ function disconnect(socket) {
   }
 }
 
-let socketInit = function (io) {
-  io.on('connection', function (socket) {
-    //Get Layout
-    socket.on('getGraphAndLayout', function (ioPackage) {
-      // Add socketID/userID to User table.
-      // Store graphID 
-      getGraphAndLayout(io, socket, ioPackage);
-    });
 
-    //Submit Layout
-    socket.on('submitLayout', function (ioPackage) {
-      submitLayout(io, socket, ioPackage);
-    });
-
-    socket.on('submitDiff', function(ioPackage){
-      submitDiff(io,socket,ioPackage);
-    });
-
-    socket.on('disconnect', function () {
-      disconnect(socket);
-    });
+io.on('connection', function (socket) {
+  //Get Layout
+  socket.on('getGraphAndLayout', function (ioPackage) {
+    // Add socketID/userID to User table.
+    // Store graphID 
+    getGraphAndLayout(io, socket, ioPackage);
   });
-};
 
-module.exports = socketInit;
+  //Submit Layout
+  socket.on('submitLayout', function (ioPackage) {
+    submitLayout(io, socket, ioPackage);
+  });
+
+  socket.on('submitDiff', function (ioPackage) {
+    submitDiff(io, socket, ioPackage);
+  });
+
+  socket.on('disconnect', function () {
+    disconnect(socket);
+  });
+});
+

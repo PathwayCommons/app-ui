@@ -1,10 +1,10 @@
 //Import Depedencies
-const query = require('./../../database/query');
-const db = require('./../../database/utilities');
-const update = require('./../../database/update');
-const lazyLoad = require('./../../lazyload');
-const logger = require('./../../logger');
-const diffSaver = require('./../../database/saveDiffs');
+const query = require('./../database/query');
+const db = require('./../database/utilities');
+const update = require('./../database/update');
+const lazyLoad = require('./../lazyload');
+const logger = require('./../logger');
+const diffSaver = require('./../database/saveDiffs');
 
 function getGraphFallback(pcID, releaseID, connection) {
   return lazyLoad.queryMetadata(pcID)

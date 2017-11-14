@@ -1,4 +1,6 @@
 //Import Depedencies
+const express = require('express');
+const router = express.Router();
 const controller = require('./controller');
 
 let submitLayout = function (req, res) {
@@ -35,4 +37,11 @@ let submitDiff =  function (req, res) {
     });
 };
 
-module.exports = {submitLayout, submitGraph, submitDiff, getGraphAndLayout, disconnect};
+
+router.post('/submit-layout', submitLayout);
+router.post('/submit-graoh', submitGraph);
+router.post('/submit-diff', submitDiff);
+router.get('/get-graph-and-layout', getGraphAndLayout);
+router.get('/disconnect', disconnect);
+
+module.exports = router;

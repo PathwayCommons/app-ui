@@ -14,9 +14,6 @@ const checkTables = require('./database/createTables');
 
 const app = express();
 const server = http.createServer(app);
-const io = require('socket.io')(server);
-const defineSockets = require('./routes/databaseRoutes/sockets');
-
 
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json());
@@ -49,7 +46,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../..', 'public')));
 
 app.use('/', require('./routes/'));
-defineSockets(io);
+app.use('/api', require('./routes/rest'));
+require('./io').set(server);
+require('./routes/sockets');
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -126,7 +126,7 @@ class View extends React.Component {
         h(EditWarning, {
           active: this.state.activateWarning,
           deactivate: () => this.setState({activateWarning: false}),
-          dur: 8000
+          dur: 5000
         }, this.state.warningMessage),
         h(Sidebar, {
           cy: this.state.cy,

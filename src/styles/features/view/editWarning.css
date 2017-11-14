@@ -13,10 +13,12 @@
   left: 0;
 
   pointer-events: none;
+  
+  transform: translateY(0%);
 
   animation-name: bounce;
   animation-duration: 1s;
-  /* animation-iteration-count: 20; */
+  animation-iteration-count: 5; /* should be set to floor(editWarningDuration / animationDuration) */
   transition: transform 1s ease 0s, opacity 1s ease 1s;
 
   &.closed {

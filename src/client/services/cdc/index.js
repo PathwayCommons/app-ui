@@ -2,26 +2,13 @@ const io = require('socket.io-client');
 let socket = io.connect('/');
 
 const CDC = {
-  initGraphSocket(updateFunction) {
-    socket.on('layoutPackage', (cyZip) => {
-      let msg = atob(cyZip);
-      try {
-        let cyJSON = JSON.parse(msg);
-        updateFunction(cyJSON);
-      } catch(err) {
-        if (msg.length > 0) {
-          console.log(JSON.parse(msg));
-          //console.log(msg);
-        } else {
-          throw err;
-        }
+  getGraphAndLayout(uri, version) {
+    return fetch(`/get-graph-and-layout?uri=${encodeURIComponent(uri)}&version=${version}`, {
+      method: 'GET', headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
       }
-    });
-  },
-
-  // Request a graph from the server. Should send back a cyJSON graph
-  requestGraph(uri, version) {
-    socket.emit('getLayout', {uri: uri, version: version.toString()});
+    }).then(res => res.json());
   },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into
@@ -37,15 +24,25 @@ const CDC = {
     });
   },
 
-  submitBaseLayoutChange(uri, version, layout) {
-    socket.emit('submitLayout', {uri: uri, version: version, layout: layout});
-  }
-};
+  submitLayoutChange(uri, version, layout) {
+    socket.emit('submitLayout', {
+      uri: uri,
+      version: version,
+      layout: layout
+    });
+  },
 
-// All errors are currently sent through on this 'error' channel. We obviously will take out this
-// console log in production but it's good to see where the errors are coming from
-socket.on('error', (msg) => {
-  console.log('##################\nCDC error\n'+msg+'\n##################');
-});
+  initReceiveLayoutChange(callback) {
+    socket.on('layoutChange', layoutJSON => {
+      callback(layoutJSON);
+    });
+  },
+
+  initReceiveNodeChange(callback) {
+    socket.on('nodeChange', nodeDiff => {
+      callback(nodeDiff);
+    });
+  },
+};
 
 module.exports = CDC;

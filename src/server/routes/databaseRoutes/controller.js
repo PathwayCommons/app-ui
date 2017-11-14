@@ -16,7 +16,7 @@ function getGraphFallback(pcID, releaseID, connection) {
         update.updateGraph(pcID, releaseID, result, connection);
       }
 
-      return JSON.stringify(output);
+      return output;
     }).catch(() => {
       return `ERROR: Layout for ${pcID} could not be retrieved from database or PC2`;
     });
@@ -26,7 +26,7 @@ function getGraphAndLayout(pcID, releaseID) {
   return db.connect().then((connection) => {
     return query.getGraphAndLayout(pcID, releaseID, connection)
       .then((layout) => {
-        return JSON.stringify(layout);
+        return layout;
       }).catch(() => {
         return getGraphFallback(pcID, releaseID, connection);
       });

@@ -8,8 +8,7 @@ const CDC = {
         'Content-type': 'application/json',
         'Accept': 'application/json'
       }
-    }).then(res => res.json())
-    .then(data => JSON.parse(data));
+    }).then(res => res.json());
   },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into

@@ -70,8 +70,8 @@ class Paint extends React.Component {
     this.state.cy.destroy();
   }
 
-  percentToColour(percent, colourRangeStart, colourRangeEnd) {
-    const hslValue = ( percent  * ( colourRangeEnd - colourRangeStart ) ) + colourRangeStart;
+  percentToColour(percent) {
+    const hslValue = ( 1 - percent ) * 240;
 
     return color.hsl(hslValue, 100, 50).string();
   }
@@ -117,10 +117,10 @@ class Paint extends React.Component {
 
             const enrichmentTable = this.createEnrichmentTable();
 
+            const maxVal = _.max(enrichmentTable.rows.map(row => _.max(row.classValues)));
+
             enrichmentTable.rows.forEach(row => {
               state.cy.nodes().filter(node => node.data('label') === row.geneName).forEach(node => {
-                const maxVal = _.max(row.classValues);
-                const minVal = _.min(row.classValues);
 
                 const numSlices = row.classValues.length > 16 ? 16 : row.classValues.length;
 
@@ -131,7 +131,7 @@ class Paint extends React.Component {
 
                   pieStyle['pie-' + i + '-background-size'] = 100 / numSlices;
                   pieStyle['pie-' + i + '-background-opacity'] = 1;
-                  pieStyle['pie-' + i + '-background-color'] = this.percentToColour(row.classValues[i-1] / maxVal, 0, 240);
+                  pieStyle['pie-' + i + '-background-color'] = this.percentToColour(row.classValues[i-1] / maxVal);
                 }
 
                 node.style(pieStyle);
@@ -188,7 +188,7 @@ class Paint extends React.Component {
     const state = this.state;
 
     const enrichmentTable = state.enrichmentTable;
-    const enrichmentTableHeader = [h('th', 'Gene Name')].concat(_.get(enrichmentTable, 'header', []).map(column => h('th', column)));
+    const enrichmentTableHeader = [h('th', '')].concat(_.get(enrichmentTable, 'header', []).map(column => h('th', column)));
     const enrichmentTableRows = _.sortBy(
       _.get(enrichmentTable, 'rows', []), (o) => o.geneName
     ).map(row => h('tr',[h('td', row.geneName)].concat(row.classValues.map(cv => h('td', cv)))));
@@ -203,6 +203,7 @@ class Paint extends React.Component {
             h('p', 'low'),
             h('p', 'high')
           ]),
+          h('p', `columns correspond to the clockwise direction on the pie (first column starts at 12 O'Clock going clockwise)`),
           h('table', [
             h('thead', [
               h('tr', enrichmentTableHeader)

@@ -10,10 +10,9 @@ function pushToBottom(data, field) {
 //Push a collection of elements to the bottom of the list
 //Takes in a list of id's and pushes all matching items to the bottom of the list
 //Requires a valid list of ids
-function collectionToBottom(data, criteriaList) {
-  const matched = data.filter(pair => criteriaList.includes(pair[0]));
-  const notMatched = _.difference(data, matched);
-  return notMatched.concat(matched);
+function collectionToBottom(data, idList) {
+  idList.forEach(field => data = pushToBottom(data, field));
+  return data;
 }
 
 module.exports = {

@@ -57,7 +57,8 @@
 
 .paint-drawer {
   position: absolute;
-  background-color:  var(--light-base-colour);;
+  background-color: var(--light-base-colour);
+  padding: 10px;
   top: 0;
   bottom: 0;
   z-index: 10;
@@ -71,8 +72,25 @@
     margin-left: -600px;
     opacity: 0;
   }
+  overflow: scroll;
 }
 
+.paint-drawer > a {
+  font-size: 24px;
+}
+
+.paint-drawer > a:hover {
+  color: var(--accent-1-colour);
+}
+
+.paint-legend {
+  padding: 0px 10px 0px 10px;
+  color: white;
+  background: linear-gradient(to right, hsl(240, 100%, 50%), hsl(180, 100%, 50%), hsl(120, 100%, 50%), hsl(60, 100%, 50%), hsl(0, 100%, 50%));
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 
 .paint-logo {
   width: 40px;

@@ -15,6 +15,10 @@ const sbgnStylesheet = require('cytoscape-sbgn-stylesheet');
 const Icon = require('../../common/components').Icon;
 const PathwayCommonsService = require('../../services').PathwayCommonsService;
 
+// const testData = require('./sample-enrichments');
+
+const augmentEnrichmentData = require('./enrichment-model');
+
 
 class Paint extends React.Component {
   constructor(props) {
@@ -30,6 +34,8 @@ class Paint extends React.Component {
     this.state = {
       enrichmentDataSets: [],
       enrichmentClasses: [],
+      // enrichmentDataSets: testData.dataSetExpressionList,
+      // enrichmentClasses: _.get(testData.dataSetClassList, '0.classes', []),
       enrichmentTable: {},
       cy: cy,
       name: '',
@@ -37,22 +43,38 @@ class Paint extends React.Component {
       drawerOpen: false
     };
 
+    const query = queryString.parse(props.location.search);
+    const enrichmentsURI = query.uri ? query.uri : null;
+
+    if (enrichmentsURI != null) {
+      fetch(enrichmentsURI)
+        .then(response => response.json())
+        .then(json => {
+          // console.log(augmentEnrichmentData(json.dataSetClassList, json.dataSetExpressionList));
+          this.setState({
+            enrichmentClasses: _.get(json.dataSetClassList, '0.classes', []),
+            enrichmentDataSets: json.dataSetExpressionList
+          }, () => {
+          });
+        });
+    }
+
+    const expressions = _.get(this.state.dataSetExpressionList, '0.expressions', []);
+    const searchParam = query.q ? query.q : 'S Phase';
+    this.initPainter(expressions, searchParam);
+
+
   }
 
   componentWillUnmount() {
     this.state.cy.destroy();
   }
 
-  colorMap(value) {
-    return color.hsl(value * 240 / 255, 100, 50).string();
-  }
-
-  percentToColour(percent, colourRangeStart, colourRangeEnd) {
-    const hslValue = ( percent  * ( colourRangeEnd - colourRangeStart ) ) + colourRangeStart;
+  percentToColour(percent) {
+    const hslValue = ( 1 - percent ) * 240;
 
     return color.hsl(hslValue, 100, 50).string();
   }
-
 
   // only call this after you know component is mounted
   initPainter(expressions, queryParam) {
@@ -95,10 +117,10 @@ class Paint extends React.Component {
 
             const enrichmentTable = this.createEnrichmentTable();
 
+            const maxVal = _.max(enrichmentTable.rows.map(row => _.max(row.classValues)));
+
             enrichmentTable.rows.forEach(row => {
               state.cy.nodes().filter(node => node.data('label') === row.geneName).forEach(node => {
-                const maxVal = _.max(row.classValues);
-                const minVal = _.min(row.classValues);
 
                 const numSlices = row.classValues.length > 16 ? 16 : row.classValues.length;
 
@@ -109,7 +131,7 @@ class Paint extends React.Component {
 
                   pieStyle['pie-' + i + '-background-size'] = 100 / numSlices;
                   pieStyle['pie-' + i + '-background-opacity'] = 1;
-                  pieStyle['pie-' + i + '-background-color'] = this.percentToColour(row.classValues[i-1] / maxVal, 0, 240);
+                  pieStyle['pie-' + i + '-background-color'] = this.percentToColour(row.classValues[i-1] / maxVal);
                 }
 
                 node.style(pieStyle);
@@ -118,23 +140,6 @@ class Paint extends React.Component {
               this.setState({enrichmentTable: enrichmentTable});
 
             });
-            // expressions.forEach(expression => {
-            //   state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
-            //     const maxVal = _.max(expression.values);
-            //     const minVal = _.min(expression.values);
-
-            //     node.style({
-            //       'pie-size': '100%',
-            //       'pie-1-background-color': this.percentToColour(expression.values[0] / maxVal, 0, 240),
-            //       'pie-1-background-size': '50%',
-            //       'pie-1-background-opacity': 1,
-            //       'pie-2-background-color': this.percentToColour(expression.values[expression.values.length - 1] / maxVal, 0, 240),
-            //       'pie-2-background-size': '50%',
-            //       'pie-2-background-opacity': 1
-            //     });
-            //   });
-            // });
-
           });
         }
       });
@@ -145,24 +150,6 @@ class Paint extends React.Component {
     const state = this.state;
     const container = document.getElementById('cy-container');
     state.cy.mount(container);
-
-    const query = queryString.parse(props.location.search);
-    const enrichmentsURI = query.uri ? query.uri : null;
-
-    if (enrichmentsURI != null) {
-      fetch(enrichmentsURI)
-        .then(response => response.json())
-        .then(json => {
-          this.setState({
-            enrichmentClasses: _.get(json.dataSetClassList, '0.classes', []),
-            enrichmentDataSets: json.dataSetExpressionList
-          }, () => {
-            const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
-            const searchParam = query.q ? query.q : '';
-            this.initPainter(expressions, searchParam);
-          });
-        });
-    }
   }
 
   toggleDrawer() {
@@ -201,21 +188,30 @@ class Paint extends React.Component {
     const state = this.state;
 
     const enrichmentTable = state.enrichmentTable;
-    const enrichmentTableHeader = _.get(enrichmentTable, 'header', []).map(column => h('div', column));
-    const enrichmentTableRows = _.get(enrichmentTable, 'rows', []).map(row => h('div', `Gene: ${row.geneName}, ${JSON.stringify(row.classValues, null, 2)}`));
-
-    const enrichmentClassesData = Object.entries(_.countBy(state.enrichmentClasses))
-      .map(entry => {
-        return h('p', `class: ${entry[0]}, number of samples: ${entry[1]}`);
-      });
+    const enrichmentTableHeader = [h('th', '')].concat(_.get(enrichmentTable, 'header', []).map(column => h('th', column)));
+    const enrichmentTableRows = _.sortBy(
+      _.get(enrichmentTable, 'rows', []), (o) => o.geneName
+    ).map(row => h('tr',[h('td', row.geneName)].concat(row.classValues.map(cv => h('td', cv)))));
 
     return h('div.paint', [
       h('div.paint-content', [
         h('div', { className: classNames('paint-drawer', !state.drawerOpen ? 'closed' : '') }, [
           h('a', { onClick: e => this.toggleDrawer()}, [
-            h(Icon, { icon: 'close'})
+            h(Icon, { icon: 'close'}),
           ]),
-        ].concat(enrichmentClassesData).concat(enrichmentTableHeader).concat(enrichmentTableRows)),
+          h('div.paint-legend', [
+            h('p', 'low'),
+            h('p', 'high')
+          ]),
+          h('p', `columns correspond to the clockwise direction on the pie (first column starts at 12 O'Clock going clockwise)`),
+          h('table', [
+            h('thead', [
+              h('tr', enrichmentTableHeader)
+            ]),
+            h('tbody', enrichmentTableRows)
+          ])
+
+        ]),
         h('div.paint-omnibar', [
           h('a', { onClick: e => this.toggleDrawer() }, [
             h(Icon, { icon: 'menu' }, 'click')

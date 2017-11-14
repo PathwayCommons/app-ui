@@ -231,9 +231,9 @@ function generateDBLink(dbName, dbId, isDbVisible) {
 
 //Generate HTML Element for no data
 // () -> HTML
-function noDataWarning() {
+function noDataWarning(name) {
   return h('div.tooltip-image', [
-    h('div.tooltip-heading', this.name),
+    h('div.tooltip-heading', name),
     h('div.tooltip-internal', h('div.tooltip-warning', 'No Additional Information'))
   ]);
 }

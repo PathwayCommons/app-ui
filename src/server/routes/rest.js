@@ -19,7 +19,7 @@ let submitGraph =  function (req, res) {
 
 let getGraphAndLayout = function (req, res) {
   controller.getGraphAndLayout(req.query.uri, req.query.version).then((package) => {
-    res.json(JSON.stringify(package));
+    res.json(package);
   });
 };
 

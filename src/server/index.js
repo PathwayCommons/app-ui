@@ -45,8 +45,8 @@ app.use(morgan('dev', {
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../..', 'public')));
 
-app.use('/', require('./routes/'));
 app.use('/api', require('./routes/rest'));
+app.use('/', require('./routes/'));
 require('./io').set(server);
 require('./routes/sockets');
 

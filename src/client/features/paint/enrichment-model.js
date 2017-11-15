@@ -26,4 +26,26 @@ const combineEnrichmentData = (rawEnrichmentClasses, rawEnrichmentDataSets) => {
   return enrichmentExpressions;
 };
 
+const classes = (rawClassListJSON) => _.uniq(_.get(rawClassListJSON, '0.classes', []));
+
+
+
+// class EnrichmentTable {
+//   constructor (classList, expressionList) {
+//     this.expressions = combineEnrichmentData(classList, expressionList);
+//     this.rawClassList = classList;
+//     this.rawExpressionList = expressionList;
+//   }
+
+//   classes () {
+//     return _.uniq(_.get(this.rawClassList, '0', []));
+//   }
+
+//   expressions () {
+//     return this.expressions;
+//   }
+
+//   values (geneName, )
+// }
+
 module.exports = combineEnrichmentData;

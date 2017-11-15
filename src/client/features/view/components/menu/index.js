@@ -66,6 +66,12 @@ class Menu extends React.Component {
           h('div.title-container', [
             h('h4', `${this.props.name} | ${this.props.datasource}`)
           ]),
+          h('div.search-nodes', {
+            onChange : query => this.props.searchNodes(query),
+            title: 'Search for Nodes'
+          }, [
+            h('input', {type : 'text', placeholder: 'Search for Nodes'})
+          ]),
           h('div.layout-dropdown-button', {
             onClick: () => this.setState({dropdownOpen: !this.state.dropdownOpen}),
             title: 'Rearrange the entities on screen'

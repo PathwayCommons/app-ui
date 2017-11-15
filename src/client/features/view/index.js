@@ -1,11 +1,13 @@
 const React = require('react');
 const h = require('react-hyperscript');
+const _ = require('lodash');
 
 const { Menu, Graph, EditWarning, Sidebar } = require('./components/');
 
 const lo = require('../../common/cy/layout/');
 const make_cytoscape = require('./cy/');
 const bindMove = require('./cy/events/move');
+const hoverStyles = require('./cy/events/hover');
 
 const queryString = require('query-string');
 const { CDC } = require('../../services/');
@@ -40,9 +42,9 @@ class View extends React.Component {
     }));
   }
 
-  componentWillMount(){
+  componentWillMount() {
     this.setState({
-      cy: make_cytoscape({ headless: true }, nodeId => this.setState({activeDisplayedNode: nodeId}))
+      cy: make_cytoscape({ headless: true }, nodeId => this.setState({ activeDisplayedNode: nodeId }))
     }, () => {
       if (this.props.admin) {
         bindMove(this.state.query.uri, 'latest', this.state.cy);
@@ -68,17 +70,17 @@ class View extends React.Component {
           availableLayouts: availableLayouts,
           layout: layout
         },
-        () => {this.performLayout(this.state.layout);}
+        () => { this.performLayout(this.state.layout); }
       );
     }
   }
 
   performLayout(layoutName) {
-    this.setState({layout: layoutName});
+    this.setState({ layout: layoutName });
     const cy = this.state.cy;
 
     if (layoutName === lo.humanLayoutName) {
-      const layoutJSON = this.state.layoutJSON;      
+      const layoutJSON = this.state.layoutJSON;
       let options = {
         name: 'preset',
         positions: node => layoutJSON[node.id()],
@@ -93,7 +95,7 @@ class View extends React.Component {
     cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isExpanded()).collapse();
     let layout = cy.layout(lo.layoutMap.get(layoutName));
     let that = this;
-    layout.pon('layoutstop').then(function() {
+    layout.pon('layoutstop').then(function () {
       if (that.props.admin && layoutName !== lo.humanLayoutName) {
         let posObj = {};
         cy.nodes().forEach(node => {
@@ -105,6 +107,76 @@ class View extends React.Component {
     layout.run();
   }
 
+  //Applying hover styling to a collection of nodes
+  updateStyling(style, matched, applyStyle = true){
+    const cy = this.state.cy;
+    hoverStyles.removeHoverStyle(cy, cy.nodes());
+    if(applyStyle) {hoverStyles.applyHoverStyle(cy, cy.nodes(matched), style);}
+  }
+
+  //Determine if a regex pattern is valid
+validateRegex(pattern) {
+    var parts = pattern.split('/'),
+        regex = pattern,
+        options = "";
+    if (parts.length > 1) {
+        regex = parts[1];
+        options = parts[2];
+    }
+    try {
+        let regexObj = new RegExp(regex, options);
+        return regexObj;
+    }
+    catch(e) {
+        return null;
+    }
+}
+
+  //Search for nodes that match an entered query
+  searchNodes(query) {
+    const cy = this.state.cy; 
+    const searchValue = query.target.value;
+    const isBlank = _.isString(searchValue) ? !!_.trim(searchValue) : false;
+    const isRegularExp = _.startsWith(searchValue, 'regex:') && this.validateRegex(searchValue.substring(6));
+    const isExact = _.startsWith(searchValue, 'exact:');
+
+    let matched; 
+
+    //Search based on regular expression
+    if(isRegularExp){
+      let regexObject = this.validateRegex(searchValue.substring(6));
+      matched = cy.nodes().filter(node => node.data('label').match(regexObject));
+    }
+    //Search for an exact match
+    else if(isExact){
+      let trimmedValue = searchValue.substring(6).toUpperCase();
+      matched = cy.nodes().filter(node => node.data('label').toUpperCase() == trimmedValue);
+    }
+    //Search for a partial match
+    else {
+      let caseInsensitiveValue = searchValue.toUpperCase();
+      matched = cy.nodes().filter(node => node.data('label').toUpperCase().includes(caseInsensitiveValue));
+    }
+
+    //Define highlighting style
+    const searchStyle = {
+      'background-color': 'orange',
+      'opacity': 1,
+      'z-compound-depth': 'top',
+      'text-outline-color': 'black'
+    };
+
+    //Apply styling
+    if (matched.length > 0 && isBlank){
+      this.updateStyling(searchStyle, matched);
+      cy.fit();
+    }
+    else {
+      this.updateStyling(null, null, false);
+      cy.fit();
+    }
+  }
+
   render() {
     return (
       h('div.View', [
@@ -113,6 +185,7 @@ class View extends React.Component {
           datasource: this.state.datasource,
           layouts: this.state.availableLayouts,
           updateLayout: layout => this.performLayout(layout),
+          searchNodes: query => this.searchNodes(query),
           currLayout: this.state.layout
         }),
         h(Graph, {
@@ -123,7 +196,7 @@ class View extends React.Component {
         }),
         h(EditWarning, {
           active: this.state.activateWarning,
-          deactivate: () => this.setState({activateWarning: false}),
+          deactivate: () => this.setState({ activateWarning: false }),
           dur: 5000
         }, this.state.warningMessage),
         h(Sidebar, {

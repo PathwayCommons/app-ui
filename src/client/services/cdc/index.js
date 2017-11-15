@@ -3,7 +3,7 @@ let socket = io.connect('/');
 
 const CDC = {
   getGraphAndLayout(uri, version) {
-    return fetch(`/get-graph-and-layout?uri=${encodeURIComponent(uri)}&version=${version}`, {
+    return fetch(`/layout/get?uri=${encodeURIComponent(uri)}&version=${version}`, {
       method: 'GET', headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json'

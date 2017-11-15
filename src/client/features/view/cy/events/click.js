@@ -10,10 +10,10 @@ const bindClick = (cy, callback) => {
       let cy = evt.cy;
 
       //Create or get tooltip HTML object
-      let html = evt.target.scratch('tooltip');
+      let html = evt.target.scratch('_tooltip');
       if(!(html)){
         html = new MetadataTip(name, data, evt.target);
-        evt.target.scratch('tooltip', html);
+        evt.target.scratch('_tooltip', html);
       }
 
       html.show(cy, callback);

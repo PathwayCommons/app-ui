@@ -14,6 +14,12 @@ The following environment variables can be used to configure the server:
 - `NODE_ENV` : the environment mode, either `production` or `development` (default)
 - `PORT` : the port on which the server runs (default 3000)
 
+### Configure RethinkDB
+ 1. Download [RethinkDB](https://www.rethinkdb.com/docs/install/)
+ 2. Start your RethinkDB server by following the steps [here](https://www.rethinkdb.com/docs/start-a-server/)
+ 3. Go to `src/server/database/config.js`  and modify the ip field to match your server address
+ 4. Start the project : `npm run start` or `npm run watch`, then the server will auto create all the required tables for you. 
+
 
 ## Run targets
 
@@ -74,3 +80,4 @@ All files `/test` will be run by [Mocha](https://mochajs.org/).  You can `npm te
   1. For a breaking API change, run `npm version major.`
   1. For a specific version number (e.g. 1.2.3), run `npm version 1.2.3`.
 1. Push the release: `git push origin --tags`
+

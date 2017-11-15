@@ -15,10 +15,12 @@
   top: 5%;
   left: 0;
   word-wrap: break-word;
-  overflow-y: auto;
   text-align: left;
-  height: 100%;
+  overflow-y: auto;
+  max-height: 40vh;
   font-size: 1.3vh !important;
+  margin-bottom: 4px;
+  margin-top: 4px;
 }
 
 .tooltip-heading {
@@ -29,6 +31,11 @@
   font-size: 2vh;
   font-weight: 400;
   color: var(--dark-base-colour)
+}
+
+.tooltip-warning{
+  padding: 10px;
+  font-weight: bold;
 }
 
 .tooltip-button-container {
@@ -69,11 +76,37 @@
   font-weight: bold;
 }
 
+.tooltip-value {
+  margin: 2px;
+  display: inline;
+  word-wrap: break-word;
+}
+
+.tooltip-comment {
+  margin: 3px;
+  display: inline-block;
+  word-wrap: break-word;
+}
+
 .db-name {
   text-decoration: underline;
   margin: 3px;
   display: inline-block;
 }
+
+.db-link-single-ref {
+  text-decoration: underline;
+  margin: 3px;
+  display: inline-block;
+  color: var(--link);
+}
+
+.db-no-link-single-ref {
+  margin: 3px;
+  display: inline-block;
+  color: black;
+}
+
 
 .fake-paragraph {
   word-wrap: break-word;

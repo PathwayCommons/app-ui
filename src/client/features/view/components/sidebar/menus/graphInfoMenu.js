@@ -21,7 +21,7 @@ class GraphInfoMenu extends React.Component {
         });
       });
   }
-  
+
   getDatasourceLink(datasource) {
     let link = datasourceLinks.filter(value => datasource.toUpperCase().indexOf(value[0].toUpperCase()) !== -1);
     if (link.length === 1 && link[0][1]) {
@@ -46,35 +46,30 @@ class GraphInfoMenu extends React.Component {
       h('div', [
         h('h1', this.props.name),
         h('h4', [
-          'Sourced from '
-        ].concat(
-          datasourceLink.length > 0 ? 
-          h('a', {
-            href: this.getDatasourceLink(this.props.datasource),
-            target: '_blank'
-          }, this.props.datasource)
-          :
-          [this.props.datasource]
-        ))
-      ].concat(
-        (this.state.comments.length ?
+          'Sourced from ',
+          ...(datasourceLink.length > 0 ?
+            h('a', {
+              href: this.getDatasourceLink(this.props.datasource),
+              target: '_blank'
+            }, this.props.datasource) : [this.props.datasource]
+          )
+        ]),
+        ...(this.state.comments.length ?
           [h('h2', 'Additional Information')].concat(
             this.state.comments.map((comment, index) => {
               return (
                 h('div', {
                   'key': index
                 }, [
-                  comment.replace(/<p>/g, ' '),
-                  h('br'),
-                  h('br')
-                ])
+                    comment.replace(/<p>/g, ' '),
+                    h('br'),
+                    h('br')
+                  ])
               );
             })
-          )
-          :
-          [noInfoMessage]
+          ) : [noInfoMessage]
         )
-      ))
+      ])
     );
   }
 }

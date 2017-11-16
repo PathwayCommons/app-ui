@@ -9,9 +9,6 @@ const bindClick = (cy, callback) => {
       let name = data.label;
       let cy = evt.cy;
 
-      console.log(evt.target.scratch('_search-style-before'));
-      console.log(evt.target.style());
-
       //Create or get tooltip HTML object
       let html = evt.target.scratch('_tooltip');
       if(!(html)){

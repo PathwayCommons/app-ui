@@ -71,7 +71,7 @@ class Menu extends React.Component {
             onChange : query => searchNodes(query, this.props.cy),
             title: 'Search for Nodes'
           }, [
-            h('input.view-search', {type : 'text', placeholder: 'Entity Search'})
+            h('div.view-search-bar', [h('input.view-search', {type : 'text', placeholder: 'Entity Search'})])
           ]),
           h('div.layout-dropdown-button', {
             onClick: () => this.setState({dropdownOpen: !this.state.dropdownOpen}),

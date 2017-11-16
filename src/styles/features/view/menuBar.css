@@ -44,6 +44,13 @@
   }
 }
 
+.view-search {
+  background: none;
+}
+
+.view-search-bar {
+  background-color: white;
+}
 
 .search-nodes {
   @extend %flex-center;

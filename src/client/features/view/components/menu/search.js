@@ -2,8 +2,7 @@ const _ = require('lodash');
 
 //Apply hover styling to a collection of nodes
 function updateStyling(style, matched, cy) {
-  for (var i = 0; i < matched.length; i++) {
-    let node = matched[i];
+  _.forEach(matched, node => {
     let isCompartment = node.data('class') === 'compartment';
 
     //Collapse Expanded Targets
@@ -13,7 +12,7 @@ function updateStyling(style, matched, cy) {
     if (node.isChild() && node.parent().data('class') !== 'compartment') { node = node.parent(); }
 
     applySearchStyle(cy, node, style);
-  }
+  });
 }
 
 //Determine if a regex pattern is valid

@@ -1,9 +1,10 @@
 const r = require('rethinkdb');
 const uuid = require('uuid/v4');
-const hash = require('json-hash');
+const hash = require('object-hash');
 const config = require('./config');
 const db = require('./utilities');
 const fetch = require('node-fetch');
+const _ = require('lodash');
 
 function isExistingGraph(newGraph, connection) {
   return r.db(config.databaseName)
@@ -53,11 +54,18 @@ function saveGraph(pcID, graphID, releaseID, existingGraph, newGraph,connection)
 function updateGraph(pcID, releaseID, cyJson, connection, callback) {
   let graphID = uuid();
 
+  _.sortBy(cyJson.nodes, node => node.id);
+
+  let hashJson = _.cloneDeep(cyJson);
+  hashJson.nodes = hashJson.nodes.map ((node) => {
+    _.unset(node, 'data.bbox');
+    return node;}
+  );
 
   let newGraph = {
     id: graphID,
     graph: cyJson,
-    hash: hash.digest(cyJson)
+    hash: hash(hashJson)
   };
 
   let result = isExistingGraph(newGraph, connection).then((existingGraph) => {

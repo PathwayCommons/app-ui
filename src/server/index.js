@@ -14,7 +14,6 @@ const checkTables = require('./database/createTables');
 
 const app = express();
 const server = http.createServer(app);
-const io = require('socket.io')(server);
 
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json());
@@ -46,9 +45,11 @@ app.use(morgan('dev', {
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../..', 'public')));
 
-app.use('/', require('./routes/databaseRoutes/sockets')(io));
-app.use('/layout', require('./routes/databaseRoutes/rest'));
+app.use('/api', require('./routes/rest'));
 app.use('/', require('./routes/'));
+require('./io').set(server);
+require('./routes/sockets');
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

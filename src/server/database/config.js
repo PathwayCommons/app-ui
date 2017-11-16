@@ -15,7 +15,3 @@ let conf = Object.assign( {}, defaults, envVars );
 Object.freeze( conf );
 
 module.exports = conf;
-
-
-
-module.exports = conf;

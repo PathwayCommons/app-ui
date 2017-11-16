@@ -70,7 +70,7 @@ class Menu extends React.Component {
             onChange : query => this.props.searchNodes(query),
             title: 'Search for Nodes'
           }, [
-            h('input', {type : 'text', placeholder: 'Search for Nodes'})
+            h('input', {type : 'text', placeholder: 'Entity Search'})
           ]),
           h('div.layout-dropdown-button', {
             onClick: () => this.setState({dropdownOpen: !this.state.dropdownOpen}),

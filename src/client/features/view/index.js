@@ -108,73 +108,106 @@ class View extends React.Component {
   }
 
   //Applying hover styling to a collection of nodes
-  updateStyling(style, matched, applyStyle = true){
+  updateStyling(style, matched) {
     const cy = this.state.cy;
-    hoverStyles.removeHoverStyle(cy, cy.nodes());
-    if(applyStyle) {hoverStyles.applyHoverStyle(cy, cy.nodes(matched), style);}
+    for (var i = 0; i < matched.length; i++) {
+      let node = matched[i];
+      let isCompartment = node.data('class') === 'compartment';
+      if (node.isExpanded() && !isCompartment) { node.collapse(); }
+      if (node.isChild() && node.parent().data('class') !== 'compartment') node = node.parent();
+      this.applySearchStyle(cy, node, style);
+    }
   }
 
   //Determine if a regex pattern is valid
-validateRegex(pattern) {
+  validateRegex(pattern) {
     var parts = pattern.split('/'),
-        regex = pattern,
-        options = "";
+      regex = pattern,
+      options = "";
     if (parts.length > 1) {
-        regex = parts[1];
-        options = parts[2];
+      regex = parts[1];
+      options = parts[2];
     }
     try {
-        let regexObj = new RegExp(regex, options);
-        return regexObj;
+      let regexObj = new RegExp(regex, options);
+      return regexObj;
     }
-    catch(e) {
-        return null;
+    catch (e) {
+      return null;
     }
-}
+  }
+
+
+  applySearchStyle(cy, eles, style) {
+    const stylePropNames = Object.keys(style);
+
+    eles.forEach((ele) => {
+      ele.scratch('_search-style-before', hoverStyles.storeStyle(ele, stylePropNames));
+    });
+
+    cy.batch(function () {
+      eles.style(style);
+    });
+  }
+
+
+  removeSearchStyle (cy, eles)  {
+    eles.forEach((ele) => {
+      ele.style(ele.scratch('_search-style-before'));
+      ele.removeScratch('_search-style-before');
+    });
+  }
+
 
   //Search for nodes that match an entered query
   searchNodes(query) {
-    const cy = this.state.cy; 
+    const cy = this.state.cy;
     const searchValue = query.target.value;
     const isBlank = _.isString(searchValue) ? !!_.trim(searchValue) : false;
     const isRegularExp = _.startsWith(searchValue, 'regex:') && this.validateRegex(searchValue.substring(6));
     const isExact = _.startsWith(searchValue, 'exact:');
 
-    let matched; 
+    let visibleNodes = Array.prototype.slice.call(cy.nodes(), 0 );
+
+    //Add children of nodes to nodes list
+    const allChildNodes = visibleNodes.map(node => node.data('compoundCollapse.collapsedCollection'));
+    const validChildNodes = _.compact(_.flattenDeep(allChildNodes.map(collection =>  collection ? Array.prototype.slice.call( collection, 0 ) : null)));
+    const nodes = _.union(visibleNodes, validChildNodes);
+
+    let matched;
 
     //Search based on regular expression
-    if(isRegularExp){
+    if (isRegularExp) {
       let regexObject = this.validateRegex(searchValue.substring(6));
-      matched = cy.nodes().filter(node => node.data('label').match(regexObject));
+      matched = nodes.filter(node => node.data('label').match(regexObject));
     }
     //Search for an exact match
-    else if(isExact){
+    else if (isExact) {
       let trimmedValue = searchValue.substring(6).toUpperCase();
-      matched = cy.nodes().filter(node => node.data('label').toUpperCase() == trimmedValue);
+      matched = nodes.filter(node => node.data('label').toUpperCase() == trimmedValue);
     }
     //Search for a partial match
     else {
       let caseInsensitiveValue = searchValue.toUpperCase();
-      matched = cy.nodes().filter(node => node.data('label').toUpperCase().includes(caseInsensitiveValue));
+      matched = nodes.filter(node => node.data('label').toUpperCase().includes(caseInsensitiveValue));
     }
 
     //Define highlighting style
     const searchStyle = {
-      'background-color': 'orange',
-      'opacity': 1,
+      'overlay-color :': 'yellow',
+      'overlay-opacity': 1,
       'z-compound-depth': 'top',
       'text-outline-color': 'black'
     };
 
+    this.removeSearchStyle(cy, cy.nodes());
+
     //Apply styling
-    if (matched.length > 0 && isBlank){
+    if (matched.length > 0 && isBlank) {
       this.updateStyling(searchStyle, matched);
       cy.fit();
     }
-    else {
-      this.updateStyling(null, null, false);
-      cy.fit();
-    }
+  
   }
 
   render() {

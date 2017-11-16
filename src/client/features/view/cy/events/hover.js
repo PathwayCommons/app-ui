@@ -176,6 +176,5 @@ const bindHover = (cy) => {
 
 module.exports = {
   bindHover,
-  applyHoverStyle,
-  removeHoverStyle
+  storeStyle
 };

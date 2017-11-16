@@ -1,9 +1,9 @@
-const hoverStyles = require('./hover');
+const bindHover = require('./hover').bindHover;
 const bindExpandCollapse = require('./expandCollapse');
 const bindClick = require('./click');
 
 const bindEvents = (cy, callback) => {
-  hoverStyles.bindHover(cy);
+  bindHover(cy);
   bindExpandCollapse(cy);
   bindClick(cy, callback);
 };

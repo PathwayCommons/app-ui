@@ -48,7 +48,7 @@ class DownloadOption extends React.Component {
         this.initiatePCDownload('GSEA', 'gmt');
         break;
       case 'sif':
-        this.initiatePCDownload('BINARY_SIF', 'sif');
+        this.initiatePCDownload('BINARY_SIF', 'txt');
         break;
       case 'txt':
         this.initiatePCDownload('TXT', 'txt');

@@ -34,7 +34,6 @@ function checkTable(tableName) {
       return r.db(config.databaseName).tableCreate(tableName).run(connection);
     } else {
       return Promise.resolve(null);
-      //return;
     }
   });
 }

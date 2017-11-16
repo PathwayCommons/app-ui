@@ -7,7 +7,7 @@ const db = require('./utilities');
 // ------------------- Get a layout -----------------------
 /*
 getLayout(pcID, releaseID, connection [,callback]) 
-Retrieve the layout and its associated graph from the database for the 
+Retrieves a layout the database for the 
 Entry specficed by the tuple of pcID and releaseID.
  
 Accepts 'latest' as a valid releaseID
@@ -38,6 +38,14 @@ function getLayout(pcID, releaseID, connection, callback) {
   return db.handleResult(layout, callback);
 }
 
+/*
+getGraph(pcID, releaseID, connection [, callback])
+
+Retrieves a graph the database for the 
+Entry specficed by the tuple of pcID and releaseID.
+ 
+Accepts 'latest' as a valid releaseID
+*/
 function getGraph(pcID, releaseID, connection, callback) {
   let graph = db.queryRoot(pcID, releaseID)
     .eqJoin('graph_id', r.db(config.databaseName).table('graph'))

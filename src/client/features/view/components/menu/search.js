@@ -44,12 +44,13 @@ function searchNodes(query, cy) {
   const isRegularExp = _.startsWith(searchValue, 'regex:') && validateRegex(searchValue.substring(6));
   const isExact = _.startsWith(searchValue, 'exact:');
 
-  let visibleNodes = Array.prototype.slice.call(cy.nodes(), 0);
+  let nodes = cy.nodes();
 
-  //Add children of nodes to nodes list
-  const allChildNodes = visibleNodes.map(node => node.data('compoundCollapse.collapsedCollection'));
-  const validChildNodes = _.compact(_.flattenDeep(allChildNodes.map(collection => collection ? Array.prototype.slice.call(collection, 0) : null)));
-  const nodes = _.union(visibleNodes, validChildNodes);
+  //Get all child nodes
+  const allChildNodes = nodes.map(node => node.data('compoundCollapse.collapsedCollection'));
+
+  //Add all child nodes to the main node search list
+  allChildNodes.forEach(collection => nodes = nodes.union(collection));
 
   let matched;
 

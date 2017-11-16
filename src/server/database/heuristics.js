@@ -15,5 +15,5 @@ function run(layouts, callback) {
   }
 
   module.exports = {
-      run : run
+      run
   };

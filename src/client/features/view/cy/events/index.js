@@ -1,4 +1,4 @@
-const bindHover = require('./hover').bindHover;
+const bindHover = require('./hover');
 const bindExpandCollapse = require('./expandCollapse');
 const bindClick = require('./click');
 

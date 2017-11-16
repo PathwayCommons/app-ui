@@ -174,7 +174,4 @@ const bindHover = (cy) => {
 
 };
 
-module.exports = {
-  bindHover,
-  storeStyle
-};
+module.exports = bindHover;

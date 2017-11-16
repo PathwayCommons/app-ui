@@ -7,6 +7,8 @@ const layoutConf = require('../../../../common/cy/layout');
 
 const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
 
+const searchNodes = require('./search');
+
 const tippy = require('tippy.js');
 
 /* Props
@@ -37,7 +39,6 @@ class Menu extends React.Component {
       touchHold: true
     });
   }
-
   render() {
     const layoutItems = this.props.layouts.map((layout, index) => {
       return (
@@ -65,6 +66,12 @@ class Menu extends React.Component {
           ]),
           h('div.title-container', [
             h('h4', `${this.props.name} | ${this.props.datasource}`)
+          ]),
+          h('div.search-nodes', {
+            onChange : e => searchNodes(e.target.value, this.props.cy),
+            title: 'Search for Nodes'
+          }, [
+            h('div.view-search-bar', [h('input.view-search', {type : 'text', placeholder: 'Entity Search'})])
           ]),
           h('div.layout-dropdown-button', {
             onClick: () => this.setState({dropdownOpen: !this.state.dropdownOpen}),

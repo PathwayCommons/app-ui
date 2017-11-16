@@ -30,8 +30,8 @@ class MetadataTip {
       //Generate HTML
       let tooltipHTML = this.generateToolTip(callback);
       let expandedHTML = this.generateExtendedToolTip(callback);
-
-      //Create tippy object 
+      
+      //Create tippy object
       let refObject = this.cyElement.popperRef();
       tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true });
       tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true });
@@ -66,7 +66,7 @@ class MetadataTip {
     let data = formatArray.collectionToBottom(this.data, ['Database IDs', 'Comment']);
 
     if (!(data) || data.length === 0) {
-      return generate.noDataWarning();
+      return generate.noDataWarning(this.name);
     }
 
     //Ensure name is not blank

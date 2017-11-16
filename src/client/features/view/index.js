@@ -1,6 +1,5 @@
 const React = require('react');
 const h = require('react-hyperscript');
-const _ = require('lodash');
 
 const { Menu, Graph, EditWarning, Sidebar } = require('./components/');
 
@@ -107,109 +106,6 @@ class View extends React.Component {
     layout.run();
   }
 
-  //Applying hover styling to a collection of nodes
-  updateStyling(style, matched) {
-    const cy = this.state.cy;
-    for (var i = 0; i < matched.length; i++) {
-      let node = matched[i];
-      let isCompartment = node.data('class') === 'compartment';
-      if (node.isExpanded() && !isCompartment) { node.collapse(); }
-      if (node.isChild() && node.parent().data('class') !== 'compartment') node = node.parent();
-      this.applySearchStyle(cy, node, style);
-    }
-  }
-
-  //Determine if a regex pattern is valid
-  validateRegex(pattern) {
-    var parts = pattern.split('/'),
-      regex = pattern,
-      options = "";
-    if (parts.length > 1) {
-      regex = parts[1];
-      options = parts[2];
-    }
-    try {
-      let regexObj = new RegExp(regex, options);
-      return regexObj;
-    }
-    catch (e) {
-      return null;
-    }
-  }
-
-
-  applySearchStyle(cy, eles, style) {
-    const stylePropNames = Object.keys(style);
-
-    eles.forEach((ele) => {
-      ele.scratch('_search-style-before', hoverStyles.storeStyle(ele, stylePropNames));
-    });
-
-    cy.batch(function () {
-      eles.style(style);
-    });
-  }
-
-
-  removeSearchStyle (cy, eles)  {
-    eles.forEach((ele) => {
-      ele.style(ele.scratch('_search-style-before'));
-      ele.removeScratch('_search-style-before');
-    });
-  }
-
-
-  //Search for nodes that match an entered query
-  searchNodes(query) {
-    const cy = this.state.cy;
-    const searchValue = query.target.value;
-    const isBlank = _.isString(searchValue) ? !!_.trim(searchValue) : false;
-    const isRegularExp = _.startsWith(searchValue, 'regex:') && this.validateRegex(searchValue.substring(6));
-    const isExact = _.startsWith(searchValue, 'exact:');
-
-    let visibleNodes = Array.prototype.slice.call(cy.nodes(), 0 );
-
-    //Add children of nodes to nodes list
-    const allChildNodes = visibleNodes.map(node => node.data('compoundCollapse.collapsedCollection'));
-    const validChildNodes = _.compact(_.flattenDeep(allChildNodes.map(collection =>  collection ? Array.prototype.slice.call( collection, 0 ) : null)));
-    const nodes = _.union(visibleNodes, validChildNodes);
-
-    let matched;
-
-    //Search based on regular expression
-    if (isRegularExp) {
-      let regexObject = this.validateRegex(searchValue.substring(6));
-      matched = nodes.filter(node => node.data('label').match(regexObject));
-    }
-    //Search for an exact match
-    else if (isExact) {
-      let trimmedValue = searchValue.substring(6).toUpperCase();
-      matched = nodes.filter(node => node.data('label').toUpperCase() == trimmedValue);
-    }
-    //Search for a partial match
-    else {
-      let caseInsensitiveValue = searchValue.toUpperCase();
-      matched = nodes.filter(node => node.data('label').toUpperCase().includes(caseInsensitiveValue));
-    }
-
-    //Define highlighting style
-    const searchStyle = {
-      'overlay-color :': 'yellow',
-      'overlay-opacity': 1,
-      'z-compound-depth': 'top',
-      'text-outline-color': 'black'
-    };
-
-    this.removeSearchStyle(cy, cy.nodes());
-
-    //Apply styling
-    if (matched.length > 0 && isBlank) {
-      this.updateStyling(searchStyle, matched);
-      cy.fit();
-    }
-  
-  }
-
   render() {
     return (
       h('div.View', [
@@ -218,7 +114,7 @@ class View extends React.Component {
           datasource: this.state.datasource,
           layouts: this.state.availableLayouts,
           updateLayout: layout => this.performLayout(layout),
-          searchNodes: query => this.searchNodes(query),
+          cy: this.state.cy,
           currLayout: this.state.layout
         }),
         h(Graph, {

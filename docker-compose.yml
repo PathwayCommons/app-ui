@@ -13,4 +13,5 @@ services:
     container_name: appui_db
     image: rethinkdb:2.3.6
     ports:
+      - "8080:8080"   
       - "28015:28015"   

@@ -189,8 +189,8 @@ class Paint extends React.Component {
 
     const enrichmentTable = state.enrichmentTable;
 
-    const maxVal = _.max(_.get(enrichmentTable, 'rows', []).map(row => _.max(row.classValues)));
-    const minVal = _.min(_.get(enrichmentTable, 'rows', []).map(row => _.max(row.classValues)));
+    const maxVal = _.max(_.get(enrichmentTable, 'rows', []).map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
+    const minVal = _.min(_.get(enrichmentTable, 'rows', []).map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
 
     const enrichmentTableHeader = [h('th', '')].concat(_.get(enrichmentTable, 'header', []).map(column => h('th', column)));
     const enrichmentTableRows = _.sortBy(

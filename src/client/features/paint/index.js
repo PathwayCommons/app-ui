@@ -188,6 +188,10 @@ class Paint extends React.Component {
     const state = this.state;
 
     const enrichmentTable = state.enrichmentTable;
+
+    const maxVal = _.max(enrichmentTable.rows.map(row => _.max(row.classValues)));
+    const minVal = _.min(enrichmentTable.rows.map(row => _.max(row.classValues)));    
+
     const enrichmentTableHeader = [h('th', '')].concat(_.get(enrichmentTable, 'header', []).map(column => h('th', column)));
     const enrichmentTableRows = _.sortBy(
       _.get(enrichmentTable, 'rows', []), (o) => o.geneName
@@ -200,8 +204,8 @@ class Paint extends React.Component {
             h(Icon, { icon: 'close'}),
           ]),
           h('div.paint-legend', [
-            h('p', 'low'),
-            h('p', 'high')
+            h('p', `low ${minVal}`),
+            h('p', `high ${maxVal}`)
           ]),
           h('p', `columns correspond to the clockwise direction on the pie (first column starts at 12 O'Clock going clockwise)`),
           h('table', [

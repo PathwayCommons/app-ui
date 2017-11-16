@@ -68,7 +68,7 @@ class Menu extends React.Component {
             h('h4', `${this.props.name} | ${this.props.datasource}`)
           ]),
           h('div.search-nodes', {
-            onChange : query => searchNodes(query, this.props.cy),
+            onChange : e => searchNodes(e.target.value, this.props.cy),
             title: 'Search for Nodes'
           }, [
             h('div.view-search-bar', [h('input.view-search', {type : 'text', placeholder: 'Entity Search'})])

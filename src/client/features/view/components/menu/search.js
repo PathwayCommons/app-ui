@@ -39,10 +39,9 @@ function applySearchStyle(eles, style) {
 
 //Search for nodes that match an entered query
 function searchNodes(query, cy) {
-  const searchValue = query.target.value;
-  const isBlank = _.isString(searchValue) ? !!_.trim(searchValue) : false;
-  const isRegularExp = _.startsWith(searchValue, 'regex:') && validateRegex(searchValue.substring(6));
-  const isExact = _.startsWith(searchValue, 'exact:');
+  const isBlank = _.isString(query) ? !!_.trim(query) : false;
+  const isRegularExp = _.startsWith(query, 'regex:') && validateRegex(query.substring(6));
+  const isExact = _.startsWith(query, 'exact:');
 
   let nodes = cy.nodes();
 
@@ -56,17 +55,17 @@ function searchNodes(query, cy) {
 
   //Search based on regular expression
   if (isRegularExp) {
-    let regexObject = validateRegex(searchValue.substring(6));
+    let regexObject = validateRegex(query.substring(6));
     matched = nodes.filter(node => node.data('label').match(regexObject));
   }
   //Search for an exact match
   else if (isExact) {
-    let trimmedValue = searchValue.substring(6).toUpperCase();
+    let trimmedValue = query.substring(6).toUpperCase();
     matched = nodes.filter(node => node.data('label').toUpperCase() == trimmedValue);
   }
   //Search for a partial match
   else {
-    let caseInsensitiveValue = searchValue.toUpperCase();
+    let caseInsensitiveValue = query.toUpperCase();
     matched = nodes.filter(node => node.data('label').toUpperCase().includes(caseInsensitiveValue));
   }
 

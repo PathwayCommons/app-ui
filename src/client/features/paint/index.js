@@ -117,9 +117,11 @@ class Paint extends React.Component {
 
             const enrichmentTable = this.createEnrichmentTable();
 
-            const maxVal = _.max(enrichmentTable.rows.map(row => _.max(row.classValues)));
-
-            enrichmentTable.rows.forEach(row => {
+            const networkNodes = state.cy.nodes().map(node => node.data('label'));
+            const enrichmentsInNetwork = enrichmentTable.rows.filter(row => networkNodes.includes(row.geneName));
+            const maxVal = _.max(enrichmentsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
+            enrichmentsInNetwork.forEach(row => {
+              // probably more efficient to add the enrichment data to the node field instead of interating twice
               state.cy.nodes().filter(node => node.data('label') === row.geneName).forEach(node => {
 
                 const numSlices = row.classValues.length > 16 ? 16 : row.classValues.length;
@@ -189,8 +191,12 @@ class Paint extends React.Component {
 
     const enrichmentTable = state.enrichmentTable;
 
-    const maxVal = _.max(_.get(enrichmentTable, 'rows', []).map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
-    const minVal = _.min(_.get(enrichmentTable, 'rows', []).map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
+    const networkNodes = state.cy.nodes().map(node => node.data('label'));
+    const enrichmentsInNetwork = _.get(enrichmentTable, 'rows', []).filter(row => networkNodes.includes(row.geneName));
+
+
+    const maxVal = _.max(enrichmentsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
+    const minVal = _.min(enrichmentsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
 
     const enrichmentTableHeader = [h('th', '')].concat(_.get(enrichmentTable, 'header', []).map(column => h('th', column)));
     const enrichmentTableRows = _.sortBy(

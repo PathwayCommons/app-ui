@@ -1,8 +1,8 @@
 const _ = require('lodash');
 
 //Apply hover styling to a collection of nodes
-function updateStyling(style, matched, cy) {
-  _.forEach(matched, node => {
+function updateStyling(style, matchedNodes) {
+  matchedNodes.forEach(node => {
     let isCompartment = node.data('class') === 'compartment';
 
     //Collapse Expanded Targets
@@ -11,7 +11,7 @@ function updateStyling(style, matched, cy) {
     //Apply style to the parent
     if (node.isChild() && node.parent().data('class') !== 'compartment') { node = node.parent(); }
 
-    applySearchStyle(cy, node, style);
+    applySearchStyle(node, style);
   });
 }
 
@@ -33,7 +33,7 @@ function validateRegex(pattern) {
   }
 }
 
-function applySearchStyle(cy, eles, style) {
+function applySearchStyle(eles, style) {
   eles.style(style);
 }
 
@@ -81,7 +81,7 @@ function searchNodes(query, cy) {
   };
 
   //Remove all search styling
-  applySearchStyle(cy, cy.nodes(), baseStyle);
+  applySearchStyle(cy.nodes(), baseStyle);
 
   //Apply styling
   if (matched.length > 0 && isBlank) {

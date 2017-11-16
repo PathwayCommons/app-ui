@@ -89,9 +89,6 @@ function searchNodes(query, cy) {
     updateStyling(searchStyle, matched, cy);
     cy.fit();
   }
-  else {
-    cy.fit();
-  }
 }
 
 module.exports = searchNodes;

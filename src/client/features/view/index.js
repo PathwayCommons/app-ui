@@ -6,6 +6,7 @@ const { Menu, Graph, EditWarning, Sidebar } = require('./components/');
 const lo = require('../../common/cy/layout/');
 const make_cytoscape = require('./cy/');
 const bindMove = require('./cy/events/move');
+const hoverStyles = require('./cy/events/hover');
 
 const queryString = require('query-string');
 const { CDC } = require('../../services/');
@@ -40,9 +41,9 @@ class View extends React.Component {
     }));
   }
 
-  componentWillMount(){
+  componentWillMount() {
     this.setState({
-      cy: make_cytoscape({ headless: true }, nodeId => this.setState({activeDisplayedNode: nodeId}))
+      cy: make_cytoscape({ headless: true }, nodeId => this.setState({ activeDisplayedNode: nodeId }))
     }, () => {
       if (this.props.admin) {
         bindMove(this.state.query.uri, 'latest', this.state.cy);
@@ -68,17 +69,17 @@ class View extends React.Component {
           availableLayouts: availableLayouts,
           layout: layout
         },
-        () => {this.performLayout(this.state.layout);}
+        () => { this.performLayout(this.state.layout); }
       );
     }
   }
 
   performLayout(layoutName) {
-    this.setState({layout: layoutName});
+    this.setState({ layout: layoutName });
     const cy = this.state.cy;
 
     if (layoutName === lo.humanLayoutName) {
-      const layoutJSON = this.state.layoutJSON;      
+      const layoutJSON = this.state.layoutJSON;
       let options = {
         name: 'preset',
         positions: node => layoutJSON[node.id()],
@@ -93,7 +94,7 @@ class View extends React.Component {
     cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isExpanded()).collapse();
     let layout = cy.layout(lo.layoutMap.get(layoutName));
     let that = this;
-    layout.pon('layoutstop').then(function() {
+    layout.pon('layoutstop').then(function () {
       if (that.props.admin && layoutName !== lo.humanLayoutName) {
         let posObj = {};
         cy.nodes().forEach(node => {
@@ -113,6 +114,7 @@ class View extends React.Component {
           datasource: this.state.datasource,
           layouts: this.state.availableLayouts,
           updateLayout: layout => this.performLayout(layout),
+          cy: this.state.cy,
           currLayout: this.state.layout
         }),
         h(Graph, {
@@ -123,7 +125,7 @@ class View extends React.Component {
         }),
         h(EditWarning, {
           active: this.state.activateWarning,
-          deactivate: () => this.setState({activateWarning: false}),
+          deactivate: () => this.setState({ activateWarning: false }),
           dur: 5000
         }, this.state.warningMessage),
         h(Sidebar, {

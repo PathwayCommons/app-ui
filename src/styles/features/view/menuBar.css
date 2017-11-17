@@ -44,6 +44,34 @@
   }
 }
 
+.view-search {
+  background: none;
+}
+
+.view-search-bar {
+  background-color: white;
+}
+
+.search-nodes {
+  @extend %flex-center;
+  @extend %no-select;
+
+  height: calc(var(--icon-size) * 3 / 2);
+  padding: 5px; 
+  box-sizing: border-box;
+
+  border-color: black;
+  border-style: solid;
+  border-width: 0px 0px 0px 2px;
+  
+
+  color: var(--dark-base-colour);
+
+  cursor: pointer;
+
+  transition: all 0.1s linear;
+}
+
 .layout-dropdown-button {
   @extend %flex-center;
   @extend %no-select;

@@ -15,6 +15,9 @@ const checkTables = require('./database/createTables');
 const app = express();
 const server = http.createServer(app);
 
+require('./io').set(server);
+require('./routes/sockets');
+
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json());
 
@@ -47,9 +50,6 @@ app.use(express.static(path.join(__dirname, '../..', 'public')));
 
 app.use('/api', require('./routes/rest'));
 app.use('/', require('./routes/'));
-require('./io').set(server);
-require('./routes/sockets');
-
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -80,10 +80,6 @@ let port = normalizePort(config.PORT);
 
 app.set('port', port);
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
-
 function normalizePort(val) {
   let port = parseInt(val, 10);
 
@@ -99,6 +95,9 @@ function normalizePort(val) {
 
   return false;
 }
+
+server.on('error', onError);
+server.on('listening', onListening);
 
 function onError(error) {
   if (error.syscall !== 'listen') {
@@ -132,7 +131,10 @@ function onListening() {
   debug('Listening on ' + bind);
 }
 
-// Create database instance if one does not already exist.
-checkTables.checkDatabase();
+// Create database instance if one does not already exist. And start
+// the server once that is complete.
+checkTables.checkDatabase().then(()=>{
+  server.listen(port);
+});
 
 module.exports = app;

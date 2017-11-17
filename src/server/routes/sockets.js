@@ -4,62 +4,47 @@ const btoa = require('btoa');
 const qs = require('querystring');
 const io = require('./../io').get();
 
-
-function getGraphAndLayout(io, socket, ioPackage) {
-  controller.getGraphAndLayout(ioPackage.uri, ioPackage.version).then((package) => {
-    socket.emit('layoutPackage', btoa(JSON.stringify(package)));
-  });
-}
-
-function submitLayout(io, socket, ioPackage) {
-  controller.submitLayout(ioPackage.uri, ioPackage.version, ioPackage.layout, socket.id)
-    .then((package) => {
-      io.emit('updated', package);
-    });
-}
-
-function submitDiff(io, socket, ioPackage) {
-  controller.submitDiff(ioPackage.uri, ioPackage.version, ioPackage.diff, socket.id)
-    .then((package) => {
-      io.emit('updated', package);
-    });
-}
-
-function disconnect(socket) {
-  let userURL = socket.handshake.headers.referer;
-
-  let editParams = userURL.match(/edit\?(.*)/);
-
-  if (editParams) {
-
-    let params = qs.parse(editParams[1]);
-    let pcID = params.uri;
-    let releaseID = params.releaseID || 'latest';
-
-    controller.endSession(pcID, releaseID, socket.id);
-  }
-}
-
-
 io.on('connection', function (socket) {
-  //Get Layout
+  // create socket.io endpoint for controller.getGraphAndLayout
   socket.on('getGraphAndLayout', function (ioPackage) {
     // Add socketID/userID to User table.
     // Store graphID 
-    getGraphAndLayout(io, socket, ioPackage);
+    controller.getGraphAndLayout(ioPackage.uri, ioPackage.version).then((package) => {
+      socket.emit('layoutPackage', btoa(JSON.stringify(package)));
+    });
   });
 
-  //Submit Layout
+  // create socket.io endpoint for controller.submitLayout
   socket.on('submitLayout', function (ioPackage) {
-    submitLayout(io, socket, ioPackage);
+    controller.submitLayout(ioPackage.uri, ioPackage.version, ioPackage.layout, socket.id)
+    .then((package) => {
+      io.emit('updated', package);
+    });
   });
 
+  // create socket.io endpoint for controller.submitDiff
   socket.on('submitDiff', function (ioPackage) {
-    submitDiff(io, socket, ioPackage);
+    controller.submitDiff(ioPackage.uri, ioPackage.version, ioPackage.diff, socket.id)
+    .then((package) => {
+      io.emit('updated', package);
+    });
   });
 
+  // On disconnect, determine which pathway the user was viewing
+  // and end their edit session
   socket.on('disconnect', function () {
-    disconnect(socket);
+    let userURL = socket.handshake.headers.referer;
+    
+      let editParams = userURL.match(/edit\?(.*)/);
+    
+      if (editParams) {
+    
+        let params = qs.parse(editParams[1]);
+        let pcID = params.uri;
+        let releaseID = params.releaseID || 'latest';
+    
+        controller.endSession(pcID, releaseID, socket.id);
+      }
   });
 });
 

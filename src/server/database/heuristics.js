@@ -1,6 +1,13 @@
+/* This module handles the choosing of a layout to be displayed
+  from the set of human submitted layouts.
+
+  Currently, this simplly means grabbing the most recent layout,
+  but in theory this file could be expanded to allow for weighted combinations
+  or some other form of display choosing algorithm as the need arises.
+
+*/
 
 // --------- Fake Heuristics ---------------
-// This should probably go in its own file
 function run(layouts, callback) {
     let layout = layouts.toArray()
       .then((result) => {
@@ -15,5 +22,5 @@ function run(layouts, callback) {
   }
 
   module.exports = {
-      run : run
+      run
   };

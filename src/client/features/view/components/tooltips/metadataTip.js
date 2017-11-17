@@ -63,7 +63,7 @@ class MetadataTip {
   //Generate HTML Elements for tooltips
   generateToolTip() {
     //Order the data array
-    let data = formatArray.collectionToTop(this.data,['Display Name', 'Standard Name', 'Names', 'Type', 'Database IDs']);
+    let data = formatArray.collectionToTop(this.data,['Type','Display Name', 'Standard Name', 'Names', 'Database IDs']);
     data = formatArray.collectionToBottom(data, ['Comment']);
 
     if (!(data) || data.length === 0) {
@@ -93,7 +93,7 @@ class MetadataTip {
   //Generate HTML Elements for the side bar
   generateExtendedToolTip() {
     //Order the data array
-    let data = formatArray.collectionToTop(this.data,['Display Name', 'Standard Name', 'Names', 'Type', 'Database IDs']);
+    let data = formatArray.collectionToTop(this.data,['Type','Display Name', 'Standard Name', 'Names', 'Database IDs']);
     data = formatArray.collectionToBottom(data, ['Comment']);
     if (!(data)) data = [];
 

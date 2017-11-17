@@ -70,8 +70,18 @@
   font-size: 0.75em;
 }
 
+.db-names-list{
+  display: inline;
+}
+
 .field-name {
-  margin: 2px;
+  display: inline-block;
+  font-weight: bold;
+}
+
+
+
+.span-field-name {
   display: inline-block;
   font-weight: bold;
 }
@@ -83,7 +93,10 @@
 }
 
 .tooltip-comma-item {
+  padding: 2px;
+  display: inline;
 }
+
 
 .tooltip-comment {
   margin: 3px;
@@ -99,9 +112,10 @@
 
 .db-link-single-ref {
   text-decoration: underline;
-  margin: 3px;
-  display: inline-block;
+  margin: 2px;
+  display: inline;
   color: var(--link);
+  line-height: 1.5;
 }
 
 .db-no-link-single-ref {
@@ -110,10 +124,13 @@
   color: black;
 }
 
+.fake-spacer {
+  display: inline-block;
+}
 
 .fake-paragraph {
   word-wrap: break-word;
-  margin: 6px;
+  margin: 3px;
   padding: 2px;
 }
 

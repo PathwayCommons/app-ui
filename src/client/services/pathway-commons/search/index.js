@@ -57,9 +57,10 @@ const querySearch = async (query) => {
       .format('json')
       .fetch();
 
-    if (searchResult.searchHit.length > 0) {
+    const searchSuccess = searchResult != null;
+    if (searchSuccess && searchResult.searchHit.length > 0) {
       const minResultSize = query.gt || 250;
-      const maxResultSize = query.lt || 3;
+      const maxResultSize = query.lt || 0;
 
       const filteredResults = searchResult.searchHit.filter(hit => {
         const resultSize = hit.numParticipants ? hit.numParticipants : 0;

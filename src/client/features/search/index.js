@@ -146,7 +146,9 @@ class Search extends React.Component {
       });
 
       return h('div.search-item', [
-        h('div.search-item-icon', [
+        h('div', {
+          className: classNames('search-item-icon', state.smallScreen ? 'search-item-icon-hide' : '')
+        }, [
           h('img', { src: dsInfo.iconUrl })
         ]),
         h('div.search-item-content', [

@@ -212,6 +212,10 @@
 .search-item-icon {
   width: 80px;
   height: 40px;
+
+  &.search-item-icon-hide {
+    display: none;
+  }
 }
 .search-item-icon > img {
   max-width: 80px;

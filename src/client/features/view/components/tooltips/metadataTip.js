@@ -4,6 +4,7 @@ const tippy = require('tippy.js');
 const config = require('../../config');
 const generate = require('./generateContent');
 const formatArray = require('./formatArray');
+const publications = require('./publications');
 
 //Manage the creation and display of metadata HTML content
 //Requires a valid name, cytoscape element, and parsedMetadata array
@@ -30,7 +31,7 @@ class MetadataTip {
       //Generate HTML
       let tooltipHTML = this.generateToolTip(callback);
       let expandedHTML = this.generateExtendedToolTip(callback);
-      
+
       //Create tippy object
       let refObject = this.cyElement.popperRef();
       tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true });
@@ -65,6 +66,8 @@ class MetadataTip {
     //Order the data array
     let data = formatArray.collectionToTop(this.data,['Type','Display Name', 'Standard Name', 'Names', 'Database IDs']);
     data = formatArray.collectionToBottom(data, ['Comment']);
+
+    publications(data); 
 
     if (!(data) || data.length === 0) {
       return generate.noDataWarning(this.name);

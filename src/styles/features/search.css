@@ -91,6 +91,18 @@
   color: #333333;
 }
 
+.search-suggestions {
+  padding-top: 10px;
+  font-size: 0.75em;
+  color: var(--light-base-colour-dark);
+}
+
+.search-example {
+  cursor: pointer;
+  &:hover {
+    color: var(--accent-1-colour);
+  }
+}
 
 .search-tabs {
   padding-top: 20px;

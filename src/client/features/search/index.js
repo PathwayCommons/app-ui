@@ -138,18 +138,22 @@ class Search extends React.Component {
         _.sortBy(state.dataSources, 'name').map(ds => h('option', {value: ds.id, selected: state.query.datasource === ds.id }, ds.name))
       )),
     ]) :
-    h('div.search-hit-counter', `${state.searchResults.length} results`);
+    h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '': 's'}`);
 
 
     return h('div.search', [
       h('div.search-header-container', [
         h('div.search-header', [
-          h(Link, { className: 'a.search-pc-link', to: {pathname: '/'} }, [
-            h('i.search-logo')
-          ]),
-          h(Link, { className: 'search-pc-title', to: {pathname: '/'} }, [
-            h('h2', 'Pathway'),
-            h('h2', 'Commons')
+          h('div.search-branding', [
+            h('div.search-title', [
+              h(Link, { className: 'search-pc-link', to: {pathname: '/'} }, [
+                h('i.search-logo')
+              ]),
+            ]),
+            h('div.search-branding-descriptor', [
+              h('h2.search-pc-title', 'Pathway Commons'),
+              h('h1.search-search-title', 'Search')
+            ])
           ]),
           h('div.search-searchbar-container', [
             h('div.search-searchbar', [
@@ -160,6 +164,7 @@ class Search extends React.Component {
                 onChange: e => this.onSearchValueChange(e),
                 onKeyPress: e => this.onSearchValueChange(e)
               }),
+              // h('div.search-suggestions', ),
               h('div.search-search-button', [
                 h('button', { onClick: e => this.submitSearchQuery(e) }, [
                   h(Icon, {icon: 'search'})
@@ -178,9 +183,9 @@ class Search extends React.Component {
           ])
         ])
       ]),
-      h(Loader, { loaded: !state.loading, options: {left: '525px', color: '#16A085' } }, [
+      h(Loader, { loaded: !state.loading, options: {left: '50%', color: '#16A085' } }, [
         h('div.search-list-container', [
-          h('search-result-info', [ searchResultInfo ]),
+          h('div.search-result-info', [ searchResultInfo ]),
           h('div.search-list', searchResults)
         ])
       ])

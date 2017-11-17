@@ -12,14 +12,14 @@ const displayNameHandlerTrim = (pair) => displayNameHandler(pair);
 const nameHandlerTrim = (pair) => {
   let shortArray = filterChemicalFormulas(trimValue(pair[1], 3));
   return h('div.fake-paragraph', [
-    h('div.field-name','Synonyms:'),
+    h('div.field-name', 'Synonyms:'),
     valueToHtml(shortArray, true)
   ]);
 };
 const nameHandler = (pair) => {
   let shortArray = filterChemicalFormulas(pair[1]);
   return h('div.fake-paragraph', [
-    h('div.field-name','Synonyms:'),
+    h('div.field-name', 'Synonyms:'),
     valueToHtml(shortArray, true)
   ]);
 };
@@ -30,7 +30,7 @@ const dataSourceHandler = (pair) => {
   let source = pair[1].replace('http://pathwaycommons.org/pc2/', '');
   let link = generateDataSourceLink(source, 'Data Source: ');
   return h('div.fake-paragraph', link);
-};*/ 
+};*/
 
 const databaseHandlerTrim = (pair) => {
   if (pair[1].length < 1) { return h('div.error'); }
@@ -54,7 +54,7 @@ const typeHandler = (pair) => {
 const defaultHandler = (pair) => {
   let key = pair[0];
   let isCommaSeparated = true;
-  if (key === 'Comment') { 
+  if (key === 'Comment') {
     key = 'Comments';
     isCommaSeparated = false;
   }
@@ -81,30 +81,30 @@ const metaDataKeyMap = new Map()
 //Optional trim parameter indicates if the data presented should be trimmed to a reasonable length
 //Data Pair -> HTML
 function parseMetadata(pair, trim = true) {
-  const doNotRender = ['Data Source', 'Data SourceTrim'];
-  let key = pair[0];
+    const doNotRender = ['Data Source', 'Data SourceTrim'];
+    let key = pair[0];
 
-  //Use the trim function if trim is applied
-  if (trim){
-    key += "Trim";
-  }
+    //Use the trim function if trim is applied
+    if (trim) {
+      key += "Trim";
+    }
 
-  let handler = metaDataKeyMap.get(key);
-  if (handler) {
-    return handler(pair);
-  }
-  else if (!(trim) && !doNotRender.includes(key)) {
-    return defaultHandler(pair);
-  }
-  else {
-    return h('div.error');
-  }
+    let handler = metaDataKeyMap.get(key);
+    if (handler) {
+      return handler(pair);
+    }
+    else if (!(trim) && !doNotRender.includes(key)) {
+      return defaultHandler(pair);
+    }
+    else {
+      return h('div.error');
+    }
 }
 
 //Trim a value to n terms
 //String or Array -> Array
-function trimValue(value, n){
-  if(typeof value === 'string'){
+function trimValue(value, n) {
+  if (typeof value === 'string') {
     return value;
   }
   else {
@@ -123,7 +123,7 @@ function valueToHtml(value, isCommaSeparated = false) {
     return h('div.tooltip-value', value);
   }
   //Array Comma Separated -> HTML
-  else if (value instanceof Array && isCommaSeparated){
+  else if (value instanceof Array && isCommaSeparated) {
     //Add a comma to each value
     value = value.map(value => h('div.tooltip-comma-item', value + ','));
 
@@ -294,14 +294,15 @@ function generateDatabaseList(sortedArray, trim) {
   let renderValue = sortedArray.map(item => generateIdList(item, trim), this);
 
   //If in expansion mode, append list styling
-  if(!trim) {
-    renderValue =  h('div.wrap-text', h('ul.db-list', renderValue));
+  if (!trim) {
+    renderValue = h('div.wrap-text', h('ul.db-list', renderValue));
   }
 
-  return h('div.fake-paragraph',[h('div.span-field-name', 'Database References:'), renderValue]);
+  return h('div.fake-paragraph', [h('div.span-field-name', 'Database References:'), renderValue]);
 }
 
 module.exports = {
   parseMetadata,
-  noDataWarning
+  noDataWarning,
+  sortByDatabaseId
 };

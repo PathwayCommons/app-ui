@@ -76,7 +76,7 @@ class MetadataTip {
     if (!(this.data)) { this.data = []; }
     return h('div.tooltip-image', [
       h('div.tooltip-heading', this.name),
-      h('div.tooltip-internal', h('div', (data).map(item => generate.parseMetadata(item, true), this))),
+      h('div.tooltip-internal', h('div', (data).map(item => generate.parseMetadata(item, true)), this)),
       h('div.tooltip-buttons',
         [
           h('div.tooltip-button-container',

@@ -82,6 +82,9 @@
   word-wrap: break-word;
 }
 
+.tooltip-comma-item {
+}
+
 .tooltip-comment {
   margin: 3px;
   display: inline-block;

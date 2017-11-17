@@ -9,20 +9,22 @@ const standardNameHandlerTrim = (pair) => standardNameHandler(pair);
 const displayNameHandler = (pair) => makeTooltipItem(pair[1], 'Display Name: ');
 const displayNameHandlerTrim = (pair) => displayNameHandler(pair);
 const nameHandlerTrim = (pair) => {
-  let shortArray = filterChemicalFormulas(pair[1].slice(0, 3));
-  return h('div.fake-paragraph', [h('div.field-name', 'Synonyms: '), h('div.tooltip-value', shortArray.toString())]);
+  let shortArray = filterChemicalFormulas(trimValue(pair[1], 3));
+  return h('div.fake-paragraph', [h('div.field-name', 'Synonyms: '), valueToHtml(shortArray, true)]);
 };
 const nameHandler = (pair) => {
   let shortArray = filterChemicalFormulas(pair[1]);
-  return h('div.fake-paragraph', [h('div.field-name', 'Synonyms: '), valueToHtml(shortArray)]);
+  return h('div.fake-paragraph', [h('div.field-name', 'Synonyms: '), valueToHtml(shortArray, true)]);
 };
 
 //Handle database related fields
+/*
 const dataSourceHandler = (pair) => {
   let source = pair[1].replace('http://pathwaycommons.org/pc2/', '');
   let link = generateDataSourceLink(source, 'Data Source: ');
   return h('div.fake-paragraph', link);
-};
+};*/ 
+
 const databaseHandlerTrim = (pair) => {
   if (pair[1].length < 1) { return h('div.error'); }
   return generateDatabaseList(sortByDatabaseId(pair[1]), true);
@@ -56,7 +58,6 @@ const metaDataKeyMap = new Map()
   .set('Standard NameTrim', standardNameHandlerTrim)
   .set('Display Name', displayNameHandler)
   .set('Display NameTrim', displayNameHandlerTrim)
-  .set('Data Source', dataSourceHandler)
   .set('Type', typeHandler)
   .set('Names', nameHandler)
   .set('NamesTrim', nameHandlerTrim)
@@ -87,12 +88,36 @@ function parseMetadata(pair, trim = true) {
   }
 }
 
-//Create a HTML Element for a given value
+//Trim a value to n terms
+//String or Array -> Array
+function trimValue(value, n){
+  if(typeof value === 'string'){
+    return value;
+  }
+  else {
+    return value.slice(0, n);
+  }
+}
+
+//Create a HTML Element for a given value\
+//Note : Optional isCommaSeparated parameter indicates if the list should be
+//       printed as a comma separated list. 
+//Requires a populated array
 //Anything -> HTML
-function valueToHtml(value) {
+function valueToHtml(value, isCommaSeparated = false) {
   //String -> HTML
   if (typeof value === 'string') {
     return h('div.tooltip-value', value);
+  }
+  else if (value instanceof Array && isCommaSeparated){
+    //Add a comma to each value
+    value = value.map(value => h('div.tooltip-comma-item', value + ','));
+
+    //Remove comma from the last value
+    let end = value.length - 1;
+    value[end].innerHTML = value[end].innerHTML.slice(0, -1);
+
+    return ('div.tooltip-value', value);
   }
   //Array Length 1 -> HTML
   else if (value instanceof Array && value.length === 1) {

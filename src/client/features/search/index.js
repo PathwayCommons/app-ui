@@ -7,6 +7,7 @@ const queryString = require('query-string');
 const _ = require('lodash');
 const classNames = require('classnames');
 
+const config = require('../view/config');
 const Icon = require('../../common/components').Icon;
 const PathwayCommonsService = require('../../services').PathwayCommonsService;
 
@@ -28,7 +29,9 @@ class Search extends React.Component {
       searchResults: [],
       loading: false,
       showFilters: false,
-      dataSources: []
+      dataSources: [],
+      smallScreen: false,
+      hideBranding: false
     };
 
     PathwayCommonsService.datasources()
@@ -59,6 +62,24 @@ class Search extends React.Component {
 
   componentDidMount() {
     this.getSearchResult();
+    this.setSmallScreenAndBranding();
+    window.addEventListener('resize', () => this.setSmallScreenAndBranding());
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', () => this.setSmallScreenAndBranding());
+  }
+
+  setSmallScreenAndBranding() {
+    // Must be a better pure CSS way to do this
+    const searchBarLeft = this.searchBar.getBoundingClientRect().left;
+    const searchBrandingRight = this.searchBranding.getBoundingClientRect().right;
+
+    // Since the search is very width-wise, and the scroll occurs vertically anyway,
+    // I'm only setting "smallScreen" based off of width
+    const isSmallWidth = window.innerWidth <= config.mobileUpperLimit.w;
+    const isOverlapping = searchBarLeft <= searchBrandingRight;
+    this.setState({ smallScreen: isSmallWidth, hideBranding: isOverlapping });
   }
 
   onSearchValueChange(e) {
@@ -164,7 +185,10 @@ class Search extends React.Component {
     return h('div.search', [
       h('div.search-header-container', [
         h('div.search-header', [
-          h('div.search-branding', [
+          h('div', {
+            className: classNames('search-branding', state.smallScreen || state.hideBranding ? 'search-branding-hide' : ''),
+            ref: dom => this.searchBranding = dom
+          }, [
             h('div.search-title', [
               h(Link, { className: 'search-pc-link', to: { pathname: '/' } }, [
                 h('i.search-logo')
@@ -175,7 +199,9 @@ class Search extends React.Component {
               h('h1.search-search-title', 'Search')
             ])
           ]),
-          h('div.search-searchbar-container', [
+          h('div.search-searchbar-container', {
+            ref: dom => this.searchBar = dom
+          }, [
             h('div.search-searchbar', [
               h('input', {
                 type: 'text',

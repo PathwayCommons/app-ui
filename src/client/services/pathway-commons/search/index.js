@@ -2,8 +2,10 @@ const {search, utilities} = require('pathway-commons');
 
 const getHGNCData = require('./hgnc');
 
-const removeSpaces = (token) => {
-  return token.replace(/(\s+)/g, '\\$1');
+const sanitize = (s) => {
+  // Escape (with '\'), to treat them literally, symbols, such as '*', ':', or space, 
+  // which otherwise play special roles in a Lucene query string.
+  return s.replace(/([\!\*\+\-\&\|\(\)\[\]\{\}\^\~\?\:\/\\"\s])/g, '\\$1')
 };
 
 const processPhrase = (phrase, collection) => {
@@ -19,24 +21,23 @@ const processPhrase = (phrase, collection) => {
   return tokens
     .map(token => {
       //if symbol is recognized by at least one source
-      const tokenRecognized = sourceList.some(source => utilities.sourceCheck(source, token))
-      || collection.has(token.toUpperCase());
-      const luceneToken = token.replace(/([\!\*\+\-\&\|\(\)\[\]\{\}\^\~\?\:\/\\"])/g, '\\$1');
-
-      return tokenRecognized ? ( 'xrefid:' + luceneToken ) : ( 'name:' + '*' + luceneToken + '*' );
+      const recognized = sourceList.some(source => utilities.sourceCheck(source, token))
+                              || collection.has(token.toUpperCase());
+      const sanitized = sanitize(token);
+      return recognized ? ( 'xrefid:' + sanitized ) : ( 'name:' + '*' + sanitized + '*' );
     });
 };
 
-const processQueryString =  queryString => {
+const processQueryString = (queryString) => {
   return getHGNCData('hgncSymbols.txt')
     .then(hgncSymbols => {
-      const processedTokens = processPhrase(queryString, hgncSymbols);
-
+      const keywords = processPhrase(queryString, hgncSymbols);
+      const phrase = sanitize(queryString);
       // return three query candidates to search, first query is fastest, last query slowest
       return [
-        '(name:' + removeSpaces(queryString) + ') OR (' + 'name:*' + removeSpaces(queryString) + '*) OR (' + processedTokens.join(' AND ') + ')',
-        '(' + processedTokens.join(' OR ') + ')',
-        queryString
+        '(name:' + phrase + ') OR (' + 'name:*' + phrase + '*) OR (' + keywords.join(' AND ') + ')',
+        '(' + keywords.join(' OR ') + ')',
+        queryString //"as is" (Lucene query syntax enabled)
       ];
     });
 };
@@ -48,23 +49,22 @@ const processQueryString =  queryString => {
 //  - gt: min graph size result returned
 
 const querySearch = async (query) => {
-  const processedQueries = await processQueryString(query.q.trim());
-
-  for (let pq of processedQueries) {
+  const minSize = query.gt || 250; //TODO: why 250? 
+  const maxSize = query.lt || 0;
+  
+  const queries = await processQueryString(query.q.trim());
+  for (let q of queries) {
     const searchResult = await search()
-      .query(query)
-      .q(pq)
+      .query(query) //input query string
+      .q(q)
       .format('json')
       .fetch();
 
     const searchSuccess = searchResult != null;
     if (searchSuccess && searchResult.searchHit.length > 0) {
-      const minResultSize = query.gt || 250;
-      const maxResultSize = query.lt || 0;
-
       const filteredResults = searchResult.searchHit.filter(hit => {
-        const resultSize = hit.numParticipants ? hit.numParticipants : 0;
-        return minResultSize < resultSize && resultSize < maxResultSize;
+        const size = hit.numParticipants ? hit.numParticipants : 0;
+        return minSize < size && size < maxSize;
       });
 
       if (filteredResults.length > 0) {

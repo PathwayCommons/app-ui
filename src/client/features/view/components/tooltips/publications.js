@@ -1,21 +1,5 @@
 const _ = require('lodash');
-
-//Sort Database ID's by database name
-//Requires a valid database ID array
-//Array -> Array
-function sortByDatabaseId(dbArray) {
-  //Sort by database name
-  let sorted = [];
-  let databases = _.groupBy(dbArray, entry => entry[0]);
-
-  //Remove dbName from each entry
-  _.forEach(databases, function (value, key) {
-    databases[key] = _.map(databases[key], entry => entry[1]);
-    sorted.push({ database: key, ids: databases[key] });
-  });
-
-  return sorted;
-}
+const generateContent = require('./generateContent');
 
 //Fetch Publications XML from PubMed
 //String -> JSON
@@ -69,7 +53,7 @@ function getPublications(data) {
     if (!(databaseIds)) { resolve(data); }
 
     //Get PubMed References
-    const sorted = sortByDatabaseId(databaseIds[1]);
+    const sorted = generateContent.sortByDatabaseId(databaseIds[1]);
     const pubMedReferences = sorted.filter(item => item.database.toUpperCase() === 'PUBMED');
     if (!(pubMedReferences) || pubMedReferences.length === 0) { resolve(data); }
 

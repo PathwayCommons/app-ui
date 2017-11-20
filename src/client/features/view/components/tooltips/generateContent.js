@@ -86,7 +86,7 @@ const metaDataKeyMap = new Map()
 //Optional trim parameter indicates if the data presented should be trimmed to a reasonable length
 //Data Pair -> HTML
 function parseMetadata(pair, trim = true) {
-  const doNotRender = ['Data Source', 'Data SourceTrim'];
+  const doNotRender = ['Data Source', 'Data SourceTrim', 'Display Name'];
   let key = pair[0];
 
   //Use the trim function if trim is applied

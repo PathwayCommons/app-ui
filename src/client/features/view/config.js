@@ -23,15 +23,8 @@ const databases = [
   ['CAS', 'http://identifiers.org/cas/', '']
 ];
 
-// Upper limit for mobile sizing in pixels, this is currently based off the iphone 6 plus
-const mobileUpperLimit = {
-  w: 734,
-  h: 734
-};
-
 module.exports = {
-  databases,
-  mobileUpperLimit
+  databases
 };
 
 /*

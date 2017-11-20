@@ -73,7 +73,7 @@ class Search extends React.Component {
     }
   }
 
-  setQueryState(query) {
+  setAndSubmitSearchQuery(query) {
     const state = this.state;
     if (!state.loading) {
       const newQueryState = _.assign({}, state.query, query);
@@ -105,7 +105,7 @@ class Search extends React.Component {
     let examples = exampleSearches.map(search => {
       const newQueryState = _.assign({}, state.query);
       newQueryState.q = search;
-      return h('span.search-example', { onClick: () => this.setQueryState(newQueryState) }, search);
+      return h('span.search-example', { onClick: () => this.setAndSubmitSearchQuery(newQueryState) }, search);
     });
 
     let i = 1;
@@ -141,7 +141,7 @@ class Search extends React.Component {
     ].map(searchType => {
       return h('div.search-option-item-container', [
         h('div', {
-          onClick: e => this.setQueryState({ type: searchType.value }),
+          onClick: e => this.setAndSubmitSearchQuery({ type: searchType.value }),
           className: classNames('search-option-item', state.loading ? 'search-option-item-disabled' : '', state.query.type === searchType.value ? 'search-option-item-active' : '')
         }, [
             h('a', searchType.name)
@@ -152,7 +152,7 @@ class Search extends React.Component {
     const searchResultInfo = state.showFilters ? h('div.search-filters', [
       h('select.search-datasource-filter', {
         value: state.query.datasource,
-        onChange: e => this.setQueryState({ datasource: e.target.value })
+        onChange: e => this.setAndSubmitSearchQuery({ datasource: e.target.value })
       }, [
         h('option', { value: [] }, 'Datasource: any')].concat(
           _.sortBy(state.dataSources, 'name').map(ds => h('option', { value: ds.id }, ds.name))

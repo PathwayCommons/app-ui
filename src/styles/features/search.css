@@ -9,7 +9,7 @@
   box-sizing: border-box;
   padding: 10px;
   padding-bottom: 0;
-  border-bottom: 2px solid black;
+  // border-bottom: 2px solid black;
 }
 
 .search-header {

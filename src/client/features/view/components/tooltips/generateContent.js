@@ -8,11 +8,6 @@ const config = require('../../config');
 const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Approved Name: ');
 const standardNameHandlerTrim = (pair) => standardNameHandler(pair);
 
-/*
-const displayNameHandler = (pair) => makeTooltipItem(pair[1], 'Display Name: ');
-const displayNameHandlerTrim = (pair) => displayNameHandler(pair);
-*/
-
 const nameHandlerTrim = (pair) => {
   let shortArray = filterChemicalFormulas(trimValue(pair[1], 3));
   return h('div.fake-paragraph', [
@@ -77,8 +72,6 @@ const defaultHandler = (pair) => {
 const metaDataKeyMap = new Map()
   .set('Standard Name', standardNameHandler)
   .set('Standard NameTrim', standardNameHandlerTrim)
-  //.set('Display Name', displayNameHandler)
-  //.set('Display NameTrim', displayNameHandlerTrim)
   .set('Type', typeHandler)
   .set('TypeTrim', typeHandler)
   .set('Names', nameHandler)

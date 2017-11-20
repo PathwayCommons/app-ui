@@ -96,12 +96,6 @@ class Search extends React.Component {
     this.getSearchResult();
   }
 
-  setAndSubmitSearchQuery(searchTerm) {
-    const newQueryState = _.assign({}, this.state.query);
-    newQueryState.q = searchTerm;
-    this.setState({ query: newQueryState }, () => this.submitSearchQuery());
-  }
-
   render() {
     const props = this.props;
     const state = this.state;
@@ -111,7 +105,7 @@ class Search extends React.Component {
     let examples = exampleSearches.map(search => {
       const newQueryState = _.assign({}, state.query);
       newQueryState.q = search;
-      return h('span.search-example', { onClick: () => this.setAndSubmitSearchQuery(search) }, search);
+      return h('span.search-example', { onClick: () => this.setQueryState(newQueryState) }, search);
     });
 
     let i = 1;

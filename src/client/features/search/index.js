@@ -102,11 +102,9 @@ class Search extends React.Component {
 
     const exampleSearches = ['TP53', 'Glycolysis', 'Ethanol'];
 
-    let examples = exampleSearches.map(search => {
-      const newQueryState = _.assign({}, state.query);
-      newQueryState.q = search;
-      return h('span.search-example', { onClick: () => this.setAndSubmitSearchQuery(newQueryState) }, search);
-    });
+    let examples = exampleSearches.map(search => h('span.search-example', {
+      onClick: () => this.setAndSubmitSearchQuery({q: search})
+    }, search));
 
     let i = 1;
     while (i < examples.length) {

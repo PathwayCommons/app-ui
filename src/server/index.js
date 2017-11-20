@@ -48,7 +48,6 @@ app.use(morgan('dev', {
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../..', 'public')));
 
-app.use('/api', require('./routes/rest'));
 app.use('/', require('./routes/'));
 
 // catch 404 and forward to error handler

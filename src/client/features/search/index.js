@@ -29,9 +29,7 @@ class Search extends React.Component {
       searchResults: [],
       loading: false,
       showFilters: false,
-      dataSources: [],
-      smallScreen: false,
-      hideBranding: false
+      dataSources: []
     };
 
     PathwayCommonsService.datasources()
@@ -62,24 +60,6 @@ class Search extends React.Component {
 
   componentDidMount() {
     this.getSearchResult();
-    this.setSmallScreenAndBranding();
-    window.addEventListener('resize', () => this.setSmallScreenAndBranding());
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', () => this.setSmallScreenAndBranding());
-  }
-
-  setSmallScreenAndBranding() {
-    // Must be a better pure CSS way to do this
-    const searchBarLeft = this.searchBar.getBoundingClientRect().left;
-    const searchBrandingRight = this.searchBranding.getBoundingClientRect().right;
-
-    // Since the search is very width-wise, and the scroll occurs vertically anyway,
-    // I'm only setting "smallScreen" based off of width
-    const isSmallWidth = window.innerWidth <= config.mobileUpperLimit.w;
-    const isOverlapping = searchBarLeft <= searchBrandingRight;
-    this.setState({ smallScreen: isSmallWidth, hideBranding: isOverlapping });
   }
 
   onSearchValueChange(e) {
@@ -131,7 +111,7 @@ class Search extends React.Component {
     let examples = exampleSearches.map(search => {
       const newQueryState = _.assign({}, state.query);
       newQueryState.q = search;
-      return h('span.search-example', {onClick: () => this.setAndSubmitSearchQuery(search)}, search);
+      return h('span.search-example', { onClick: () => this.setAndSubmitSearchQuery(search) }, search);
     });
 
     let i = 1;
@@ -146,9 +126,7 @@ class Search extends React.Component {
       });
 
       return h('div.search-item', [
-        h('div', {
-          className: classNames('search-item-icon', state.smallScreen ? 'search-item-icon-hide' : '')
-        }, [
+        h('div.search-item-icon', [
           h('img', { src: dsInfo.iconUrl })
         ]),
         h('div.search-item-content', [
@@ -167,19 +145,24 @@ class Search extends React.Component {
       { name: 'Reactions', value: 'Control' },
       { name: 'Transcription/Translation', value: 'TemplateReactionRegulation' }
     ].map(searchType => {
-      return h('div', {
-        onClick: e => this.setQueryState({ type: searchType.value }),
-        className: classNames('search-option-item', state.loading ? 'search-option-item-disabled' : '', state.query.type === searchType.value ? 'search-option-item-active' : '')
-      }, [
-          h('a', searchType.name)
-        ]);
+      return h('div.search-option-item-container', [
+        h('div', {
+          onClick: e => this.setQueryState({ type: searchType.value }),
+          className: classNames('search-option-item', state.loading ? 'search-option-item-disabled' : '', state.query.type === searchType.value ? 'search-option-item-active' : '')
+        }, [
+            h('a', searchType.name)
+          ])
+      ]);
     });
 
     const searchResultInfo = state.showFilters ? h('div.search-filters', [
-      h('select.search-datasource-filter', { onChange: e => this.setQueryState({ datasource: e.target.value }) }, [
-        h('option', { value: [], selected: state.query.datasource === [] }, 'datasource: any')].concat(
-        _.sortBy(state.dataSources, 'name').map(ds => h('option', { value: ds.id, selected: state.query.datasource === ds.id }, ds.name))
-        )),
+      h('select.search-datasource-filter', {
+        value: state.query.datasource,
+        onChange: e => this.setQueryState({ datasource: e.target.value })
+      }, [
+        h('option', { value: [] }, 'Datasource: any')].concat(
+          _.sortBy(state.dataSources, 'name').map(ds => h('option', { value: ds.id }, ds.name))
+          )),
     ]) :
       h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
 
@@ -187,10 +170,7 @@ class Search extends React.Component {
     return h('div.search', [
       h('div.search-header-container', [
         h('div.search-header', [
-          h('div', {
-            className: classNames('search-branding', state.smallScreen || state.hideBranding ? 'search-branding-hide' : ''),
-            ref: dom => this.searchBranding = dom
-          }, [
+          h('div.search-branding', [
             h('div.search-title', [
               h(Link, { className: 'search-pc-link', to: { pathname: '/' } }, [
                 h('i.search-logo')
@@ -204,31 +184,31 @@ class Search extends React.Component {
           h('div.search-searchbar-container', {
             ref: dom => this.searchBar = dom
           }, [
-            h('div.search-searchbar', [
-              h('input', {
-                type: 'text',
-                placeholder: 'Enter pathway name or gene names',
-                value: state.query.q,
-                onChange: e => this.onSearchValueChange(e),
-                onKeyPress: e => this.onSearchValueChange(e)
-              }),
-              h('div.search-search-button', [
-                h('button', { onClick: e => this.submitSearchQuery(e) }, [
-                  h(Icon, { icon: 'search' })
+              h('div.search-searchbar', [
+                h('input', {
+                  type: 'text',
+                  placeholder: 'Enter pathway name or gene names',
+                  value: state.query.q,
+                  onChange: e => this.onSearchValueChange(e),
+                  onKeyPress: e => this.onSearchValueChange(e)
+                }),
+                h('div.search-search-button', [
+                  h('button', { onClick: e => this.submitSearchQuery(e) }, [
+                    h(Icon, { icon: 'search' })
+                  ])
                 ])
-              ])
-            ]),
-            h('div.search-suggestions', ['e.g. '].concat(examples)),
-            h('div.search-tabs', searchTypeTabs.concat([
-              h('div', {
-                className: classNames('search-option-item', state.loading ? 'search-option-item-disabled' : '', 'search-tools', state.showFilters ? 'search-option-item-active' : ''),
-                onClick: e => this.setState({ showFilters: !state.showFilters })
-              }, [
-                  h('a', 'Tools')
-                ])
-            ]
-            ))
-          ])
+              ]),
+              h('div.search-suggestions', ['e.g. '].concat(examples)),
+              h('div.search-tabs', searchTypeTabs.concat([
+                h('div', {
+                  className: classNames('search-option-item', 'search-option-item-tools', state.showFilters ? 'search-option-item-tools-active' : ''),
+                  onClick: e => this.setState({ showFilters: !state.showFilters })
+                }, [
+                    h('a', 'Tools')
+                  ])
+              ]
+              ))
+            ])
         ])
       ]),
       h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' } }, [

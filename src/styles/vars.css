@@ -37,6 +37,10 @@
   --fadedColor: #888;
 }
 
+/* Viewport scaling sizes */
+@custom-media --small-width-viewport (width <= 768px);
+@custom-media --small-portrait-viewport (width <= 736px) and (height <= 736px) and (height > 414px);
+
 %flex-center {
   display: flex;
   justify-content: center;

@@ -133,7 +133,7 @@
 }
 
 /* Mobile scaling */
-@media (width <= 768px) {
+@media (--small-width-viewport) {
   .sidebar-select {
     top: calc(50% - ((var(--icon-size-mobile) * 3 / 2) * var(--number-of-sidebar-icons) / 2));
     left: calc(- var(--icon-size-mobile) * 3 / 2);
@@ -156,7 +156,7 @@
 }
 
 /* Portrait-specific */
-@media (width <= 768px) and (height <= 736px) and (height > 414px) {
+@media (--small-portrait-viewport) {
   .sidebar-menu {
     height: 25%;
     width: 100%;

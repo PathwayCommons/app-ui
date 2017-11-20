@@ -1,14 +1,18 @@
 const h = require('hyperscript');
+const classNames = require('classnames');
 const _ = require('lodash');
 const config = require('../../config');
-const classNames = require('classnames');
 
 
 //Handle name related metadata fields
 const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Approved Name: ');
 const standardNameHandlerTrim = (pair) => standardNameHandler(pair);
+
+/*
 const displayNameHandler = (pair) => makeTooltipItem(pair[1], 'Display Name: ');
 const displayNameHandlerTrim = (pair) => displayNameHandler(pair);
+*/
+
 const nameHandlerTrim = (pair) => {
   let shortArray = filterChemicalFormulas(trimValue(pair[1], 3));
   return h('div.fake-paragraph', [
@@ -43,6 +47,12 @@ const databaseHandler = (pair) => {
 
 };
 
+//Handle publication related fields
+const publicationHandler = (pair) => {
+  if (!pair || pair[1].length < 1) { return h('div.error'); }
+  return h('div.fake-paragraph', [h('div.field-name', pair[0] + ': '), publicationList(pair[1])]);
+};
+
 //Handle type related fields
 const typeHandler = (pair) => {
   let type = pair[1].toString().substring(3);
@@ -67,38 +77,40 @@ const defaultHandler = (pair) => {
 const metaDataKeyMap = new Map()
   .set('Standard Name', standardNameHandler)
   .set('Standard NameTrim', standardNameHandlerTrim)
-  .set('Display Name', displayNameHandler)
-  .set('Display NameTrim', displayNameHandlerTrim)
+  //.set('Display Name', displayNameHandler)
+  //.set('Display NameTrim', displayNameHandlerTrim)
   .set('Type', typeHandler)
   .set('TypeTrim', typeHandler)
   .set('Names', nameHandler)
   .set('NamesTrim', nameHandlerTrim)
   .set('Database IDs', databaseHandler)
-  .set('Database IDsTrim', databaseHandlerTrim);
+  .set('Database IDsTrim', databaseHandlerTrim)
+  .set('Publications', publicationHandler)
+  .set('PublicationsTrim', publicationHandler);
 
 
 //Generate HTML elements for a Parsed Metadata Field
 //Optional trim parameter indicates if the data presented should be trimmed to a reasonable length
 //Data Pair -> HTML
 function parseMetadata(pair, trim = true) {
-    const doNotRender = ['Data Source', 'Data SourceTrim'];
-    let key = pair[0];
+  const doNotRender = ['Data Source', 'Data SourceTrim'];
+  let key = pair[0];
 
-    //Use the trim function if trim is applied
-    if (trim) {
-      key += "Trim";
-    }
+  //Use the trim function if trim is applied
+  if (trim) {
+    key += "Trim";
+  }
 
-    let handler = metaDataKeyMap.get(key);
-    if (handler) {
-      return handler(pair);
-    }
-    else if (!(trim) && !doNotRender.includes(key)) {
-      return defaultHandler(pair);
-    }
-    else {
-      return h('div.error');
-    }
+  let handler = metaDataKeyMap.get(key);
+  if (handler) {
+    return handler(pair);
+  }
+  else if (!(trim) && !doNotRender.includes(key)) {
+    return defaultHandler(pair);
+  }
+  else {
+    return h('div.error');
+  }
 }
 
 //Trim a value to n terms
@@ -112,9 +124,9 @@ function trimValue(value, n) {
   }
 }
 
-//Create a HTML Element for a given value\
+//Create a HTML Element for a given value
 //Note : Optional isCommaSeparated parameter indicates if the list should be
-//       printed as a comma separated list. 
+//       printed as a comma separated list.
 //Requires a populated array
 //Anything -> HTML
 function valueToHtml(value, isCommaSeparated = false) {
@@ -285,10 +297,49 @@ function filterChemicalFormulas(list) {
   return list;
 }
 
+//Create a publication list
+//Process given publication data into a formatted list
+//Requires a valid publication metadata array
+//Array -> HTML
+function publicationList(data) {
+  //Get all publication title links 
+  const publicationList = data.map(publication => {
+    const id = publication.id;
+    const title = publication.title;
+    const url = config.publicationsURL + id;
+    const date = new Date(publication.date);
+    const year = date.getFullYear().toString();
 
-//Generate a list of database ids from sorted array 
+    let authors = publication.firstAuthor;
+
+    //Add author list formatting
+    if (publication.authors.length > 1) {
+      authors = authors + ' et al.';
+    }
+
+    const publicationInfo = publication.source + ' - ' + year;
+
+    return h('li.publication-item', [
+      h('a.publication-link', { href: url, target: '_blank' }, title),
+      h('div.publication-subinfo', [
+        h('div.publication-inline', authors),
+        h('div', {className : classNames('publication-divider', 'publication-inline')}, '|'),
+        h('div.publication-inline', publicationInfo)
+      ])
+    ]);
+  });
+
+  //Produce a list of items
+  return h('ul.publication-list', publicationList);
+}
+
+
+//Generate a list of database ids from sorted array
 //Array -> HTML
 function generateDatabaseList(sortedArray, trim) {
+
+  //Ignore Publication references
+  sortedArray = sortedArray.filter(databaseEntry => databaseEntry.database.toUpperCase() !== 'PUBMED');
 
   //Generate list
   let renderValue = sortedArray.map(item => generateIdList(item, trim), this);

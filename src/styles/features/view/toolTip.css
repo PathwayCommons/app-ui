@@ -157,6 +157,34 @@
   width: 100%;
 }
 
+.publication-list{
+  line-height: 1.2em;
+}
+
+.publication-item {
+  word-wrap: break-word;
+  line-height: 1.2em;
+}
+
+.publication-link {
+  color: var(--link);
+  margin: 2px;
+  font-weight: lighter;
+}
+
+.publication-subinfo {
+  padding-top: 6px;
+}
+
+.publication-inline{
+  display: inline; 
+}
+
+.publication-divider{
+  font-size: 1.19em;
+  padding: 2px;
+}
+
 .db-list {
   line-height: 0.2em;
 }

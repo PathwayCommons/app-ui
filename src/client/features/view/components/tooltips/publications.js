@@ -1,7 +1,24 @@
 const _ = require('lodash');
-const generate = require('./generateContent');
+
+//Sort Database ID's by database name
+//Requires a valid database ID array
+//Array -> Array
+function sortByDatabaseId(dbArray) {
+  //Sort by database name
+  let sorted = [];
+  let databases = _.groupBy(dbArray, entry => entry[0]);
+
+  //Remove dbName from each entry
+  _.forEach(databases, function (value, key) {
+    databases[key] = _.map(databases[key], entry => entry[1]);
+    sorted.push({ database: key, ids: databases[key] });
+  });
+
+  return sorted;
+}
 
 //Fetch Publications XML from PubMed
+//String -> JSON
 function fetchPubMedPublication(id) {
   const options = {
     method: 'GET',
@@ -14,42 +31,58 @@ function fetchPubMedPublication(id) {
 
 
 //Process an array of publication data into human readable links
-//Array -> HTML
-function processPublicationData(data){
-  const result = data.result
-  if(!(result)) { return null;}
+//Array -> Array
+function processPublicationData(data) {
+  const result = data.result;
+  if (!(result)) { return null; }
   const uids = result.uids;
 
   //Loop through a database ids
   let extractedData = uids.map(uid => {
     const publicationData = result[uid];
     return {
-      title : publicationData.title,
-      authors : publicationData.authors
+      id: uid,
+      title: publicationData.title,
+      authors: publicationData.authors,
+      firstAuthor : publicationData.sortfirstauthor,
+      date: publicationData.sortpubdate,
+      source : publicationData.source
     };
   });
 
-  console.log(extractedData);
+  return extractedData;
 }
 
 //Get publication titles and references
-//Metadata -> HTML
+//Array -> Metadata Array
 function getPublications(data) {
-  //Get Database Ids
-  const databaseIds = data.filter(pair => pair[0] == 'Database IDs')[0];
-  if (!(databaseIds)) { return null; }
 
-  //Get PubMed References
-  const sorted = generate.sortByDatabaseId(databaseIds[1]);
-  const pubMedReferences = sorted.filter(item => item.database.toUpperCase() === 'PUBMED');
-  if (!(pubMedReferences) || pubMedReferences.length === 0) { return null; }
+  return new Promise(function (resolve, reject) {
+    if (!(data)) { resolve(data); }
 
-  const pubMedIds = pubMedReferences[0].ids;
-  let promiseArray = [];
+    //Check if publication data already exists
+    const existingData = data.filter(pair => pair[0] == 'Publications');
+    if (existingData.length > 0) { resolve(data); }
 
-  //Get publication data in bulk and process publication data
-  fetchPubMedPublication(pubMedIds).then(data => processPublicationData(data));
+    //Get Database Ids
+    const databaseIds = data.filter(pair => pair[0] == 'Database IDs')[0];
+    if (!(databaseIds)) { resolve(data); }
+
+    //Get PubMed References
+    const sorted = sortByDatabaseId(databaseIds[1]);
+    const pubMedReferences = sorted.filter(item => item.database.toUpperCase() === 'PUBMED');
+    if (!(pubMedReferences) || pubMedReferences.length === 0) { resolve(data); }
+
+    const pubMedIds = pubMedReferences[0].ids;
+
+    //Get publication data in bulk and process publication data
+    return fetchPubMedPublication(pubMedIds).then(publications => {
+      data.push(['Publications', processPublicationData(publications)]);
+      resolve(data);
+    }).catch(() => resolve(data));
+  });
+
 }
- 
+
 
 module.exports = getPublications;

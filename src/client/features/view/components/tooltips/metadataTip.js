@@ -4,7 +4,7 @@ const tippy = require('tippy.js');
 const config = require('../../config');
 const generate = require('./generateContent');
 const formatArray = require('./formatArray');
-const publications = require('./publications');
+const getPublications = require('./publications');
 
 //Manage the creation and display of metadata HTML content
 //Requires a valid name, cytoscape element, and parsedMetadata array
@@ -23,34 +23,38 @@ class MetadataTip {
     let tooltip = this.tooltip;
     let tooltipExt = tooltip;
 
-    //Hide all other tooltips
-    this.hideAll(cy);
+    getPublications(this.data).then(function(data) {
+      this.data = data; 
 
-    //If no tooltip exists create one
-    if (!tooltip) {
-      //Generate HTML
-      let tooltipHTML = this.generateToolTip(callback);
-      let expandedHTML = this.generateExtendedToolTip(callback);
+      //Hide all other tooltips
+      this.hideAll(cy);
 
-      //Create tippy object
-      let refObject = this.cyElement.popperRef();
-      tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true });
-      tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true });
+      //If no tooltip exists create one
+      if (!tooltip) {
+        //Generate HTML
+        let tooltipHTML = this.generateToolTip(callback);
+        let expandedHTML = this.generateExtendedToolTip(callback);
 
-      //Resolve Reference issues
-      tooltip.selector.dim = refObject.dim;
-      tooltip.selector.cyElement = refObject.cyElement;
-      tooltipExt.selector.dim = refObject.dim;
-      tooltipExt.selector.cyElement = refObject.cyElement;
+        //Create tippy object
+        let refObject = this.cyElement.popperRef();
+        tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true });
+        tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true });
 
-      //Save tooltips
-      this.tooltip = tooltip;
-      this.tooltipExt = tooltipExt;
-    }
+        //Resolve Reference issues
+        tooltip.selector.dim = refObject.dim;
+        tooltip.selector.cyElement = refObject.cyElement;
+        tooltipExt.selector.dim = refObject.dim;
+        tooltipExt.selector.cyElement = refObject.cyElement;
 
-    //Show Tooltip
-    tooltip.show(tooltip.store[0].popper);
-    this.visible = true;
+        //Save tooltips
+        this.tooltip = tooltip;
+        this.tooltipExt = tooltipExt;
+      }
+
+      //Show Tooltip
+      tooltip.show(tooltip.store[0].popper);
+      this.visible = true;
+    }.bind(this));
   }
 
   //Validate the name of object and use Display Name as the fall back option
@@ -64,10 +68,8 @@ class MetadataTip {
   //Generate HTML Elements for tooltips
   generateToolTip() {
     //Order the data array
-    let data = formatArray.collectionToTop(this.data,['Type','Display Name', 'Standard Name', 'Names', 'Database IDs']);
-    data = formatArray.collectionToBottom(data, ['Comment']);
-
-    publications(data); 
+    let data = formatArray.collectionToTop(this.data, config.tooltipOrder);
+    data = formatArray.collectionToBottom(data, config.tooltipReverseOrder);
 
     if (!(data) || data.length === 0) {
       return generate.noDataWarning(this.name);
@@ -96,8 +98,8 @@ class MetadataTip {
   //Generate HTML Elements for the side bar
   generateExtendedToolTip() {
     //Order the data array
-    let data = formatArray.collectionToTop(this.data,['Type','Display Name', 'Standard Name', 'Names', 'Database IDs']);
-    data = formatArray.collectionToBottom(data, ['Comment']);
+    let data = formatArray.collectionToTop(this.data, config.tooltipOrder);
+    data = formatArray.collectionToBottom(data, config.tooltipReverseOrder);
     if (!(data)) data = [];
 
     //Ensure name is not blank

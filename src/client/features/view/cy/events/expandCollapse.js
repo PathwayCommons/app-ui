@@ -3,7 +3,7 @@ const siblings = (node) => {
 };
 
 const bindExpandCollapse = (cy) => {
-  cy.on('tap', 'node[class="complex"], node[class="complex multimer"]', function (evt) {
+  cy.on('expandCollapse', 'node[class="complex"], node[class="complex multimer"]', function (evt) {
     evt.preventDefault();
     const node = evt.target;
     if (node.isCollapsed()) {

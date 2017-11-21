@@ -1,4 +1,5 @@
 const h = require('hyperscript');
+const classNames = require('classnames');
 const _ = require('lodash');
 const config = require('../../config');
 
@@ -6,23 +7,30 @@ const config = require('../../config');
 //Handle name related metadata fields
 const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Approved Name: ');
 const standardNameHandlerTrim = (pair) => standardNameHandler(pair);
-const displayNameHandler = (pair) => makeTooltipItem(pair[1], 'Display Name: ');
-const displayNameHandlerTrim = (pair) => displayNameHandler(pair);
+
 const nameHandlerTrim = (pair) => {
-  let shortArray = filterChemicalFormulas(pair[1].slice(0, 3));
-  return h('div.fake-paragraph', [h('div.field-name', 'Synonyms: '), h('div.tooltip-value', shortArray.toString())]);
+  let shortArray = filterChemicalFormulas(trimValue(pair[1], 3));
+  return h('div.fake-paragraph', [
+    h('div.field-name', 'Synonyms:'),
+    valueToHtml(shortArray, true)
+  ]);
 };
 const nameHandler = (pair) => {
   let shortArray = filterChemicalFormulas(pair[1]);
-  return h('div.fake-paragraph', [h('div.field-name', 'Synonyms: '), valueToHtml(shortArray)]);
+  return h('div.fake-paragraph', [
+    h('div.field-name', 'Synonyms:'),
+    valueToHtml(shortArray, true)
+  ]);
 };
 
 //Handle database related fields
+/*
 const dataSourceHandler = (pair) => {
   let source = pair[1].replace('http://pathwaycommons.org/pc2/', '');
   let link = generateDataSourceLink(source, 'Data Source: ');
   return h('div.fake-paragraph', link);
-};
+};*/
+
 const databaseHandlerTrim = (pair) => {
   if (pair[1].length < 1) { return h('div.error'); }
   return generateDatabaseList(sortByDatabaseId(pair[1]), true);
@@ -34,44 +42,55 @@ const databaseHandler = (pair) => {
 
 };
 
+//Handle publication related fields
+const publicationHandler = (pair) => {
+  if (!pair || pair[1].length < 1) { return h('div.error'); }
+  return h('div.fake-paragraph', [h('div.field-name', pair[0] + ': '), publicationList(pair[1])]);
+};
+
 //Handle type related fields
 const typeHandler = (pair) => {
   let type = pair[1].toString().substring(3);
   let formattedType = type.replace(/([A-Z])/g, ' $1').trim();
-  return h('div.fake-paragraph', [h('div.field-name', pair[0] + ': '), formattedType]);
+  return h('div.fake-paragraph', [h('div.field-name', pair[0] + ': '), h('div.tooltip-value', formattedType)]);
 };
 
 //Default to generating a list of all items
 const defaultHandler = (pair) => {
   let key = pair[0];
-  if (key === 'Comment') { key = 'Comments'; }
+  let isCommaSeparated = true;
+  if (key === 'Comment') {
+    key = 'Comments';
+    isCommaSeparated = false;
+  }
   return h('div.fake-paragraph', [
     h('div.field-name', key + ': '),
-    valueToHtml(pair[1])
+    valueToHtml(pair[1], isCommaSeparated)
   ]);
 };
 
 const metaDataKeyMap = new Map()
   .set('Standard Name', standardNameHandler)
   .set('Standard NameTrim', standardNameHandlerTrim)
-  .set('Display Name', displayNameHandler)
-  .set('Display NameTrim', displayNameHandlerTrim)
-  .set('Data Source', dataSourceHandler)
   .set('Type', typeHandler)
+  .set('TypeTrim', typeHandler)
   .set('Names', nameHandler)
   .set('NamesTrim', nameHandlerTrim)
   .set('Database IDs', databaseHandler)
-  .set('Database IDsTrim', databaseHandlerTrim);
+  .set('Database IDsTrim', databaseHandlerTrim)
+  .set('Publications', publicationHandler)
+  .set('PublicationsTrim', publicationHandler);
 
 
 //Generate HTML elements for a Parsed Metadata Field
 //Optional trim parameter indicates if the data presented should be trimmed to a reasonable length
 //Data Pair -> HTML
 function parseMetadata(pair, trim = true) {
+  const doNotRender = ['Data Source', 'Data SourceTrim', 'Display Name'];
   let key = pair[0];
 
   //Use the trim function if trim is applied
-  if (trim){
+  if (trim) {
     key += "Trim";
   }
 
@@ -79,7 +98,7 @@ function parseMetadata(pair, trim = true) {
   if (handler) {
     return handler(pair);
   }
-  else if (!(trim)) {
+  else if (!(trim) && !doNotRender.includes(key)) {
     return defaultHandler(pair);
   }
   else {
@@ -87,12 +106,37 @@ function parseMetadata(pair, trim = true) {
   }
 }
 
+//Trim a value to n terms
+//String or Array -> Array
+function trimValue(value, n) {
+  if (typeof value === 'string') {
+    return value;
+  }
+  else {
+    return value.slice(0, n);
+  }
+}
+
 //Create a HTML Element for a given value
+//Note : Optional isCommaSeparated parameter indicates if the list should be
+//       printed as a comma separated list.
+//Requires a populated array
 //Anything -> HTML
-function valueToHtml(value) {
+function valueToHtml(value, isCommaSeparated = false) {
   //String -> HTML
   if (typeof value === 'string') {
     return h('div.tooltip-value', value);
+  }
+  //Array Comma Separated -> HTML
+  else if (value instanceof Array && isCommaSeparated) {
+    //Add a comma to each value
+    value = value.map(value => h('div.tooltip-comma-item', value + ','));
+
+    //Remove comma from the last value
+    let end = value.length - 1;
+    value[end].innerHTML = value[end].innerHTML.slice(0, -1);
+
+    return value;
   }
   //Array Length 1 -> HTML
   else if (value instanceof Array && value.length === 1) {
@@ -192,7 +236,7 @@ function generateIdList(dbIdObject, trim) {
 
   //Generate a list or a single link
   if (list.length == 1 && trim) {
-    return h('li.db-item', generateDBLink(name, list[0], true));
+    return generateDBLink(name, list[0], true);
   }
   else {
     return h('li.db-item', h('div.db-name', name + ": "), list.map(data => generateDBLink(name, data, false), this));
@@ -221,7 +265,7 @@ function generateDBLink(dbName, dbId, isDbVisible) {
   if (link.length === 1 && link[0][1]) {
     let url = link[0][1] + link[0][2] + dbId;
     dbId = isDbVisible ? dbName : dbId;
-    return h('a.db-link' + className, { href: url, target: '_blank' }, dbId);
+    return h('div.fake-spacer', h('a.db-link' + className, { href: url, target: '_blank' }, dbId));
   }
   else {
     dbId = isDbVisible ? dbName : dbId;
@@ -246,18 +290,63 @@ function filterChemicalFormulas(list) {
   return list;
 }
 
+//Create a publication list
+//Process given publication data into a formatted list
+//Requires a valid publication metadata array
+//Array -> HTML
+function publicationList(data) {
+  //Get all publication title links 
+  const publicationList = data.map(publication => {
+    const id = publication.id;
+    const title = publication.title;
+    const url = config.publicationsURL + id;
+    const date = new Date(publication.date);
+    const year = date.getFullYear().toString();
 
-//Generate a list of database ids from sorted array 
+    let authors = publication.firstAuthor;
+
+    //Add author list formatting
+    if (publication.authors.length > 1) {
+      authors = authors + ' et al.';
+    }
+
+    const publicationInfo = publication.source + ' - ' + year;
+
+    return h('li.publication-item', [
+      h('a.publication-link', { href: url, target: '_blank' }, title),
+      h('div.publication-subinfo', [
+        h('div.publication-inline', authors),
+        h('div', {className : classNames('publication-divider', 'publication-inline')}, '|'),
+        h('div.publication-inline', publicationInfo)
+      ])
+    ]);
+  });
+
+  //Produce a list of items
+  return h('ul.publication-list', publicationList);
+}
+
+
+//Generate a list of database ids from sorted array
 //Array -> HTML
 function generateDatabaseList(sortedArray, trim) {
-  return h('div.fake-paragraph',
-    [
-      h('div.field-name', 'Database References:'),
-      h('div.wrap-text', h('ul.db-list', sortedArray.map(item => generateIdList(item, trim), this)))
-    ]);
+
+  //Ignore Publication references
+  sortedArray = sortedArray.filter(databaseEntry => databaseEntry.database.toUpperCase() !== 'PUBMED');
+
+  //Generate list
+  let renderValue = sortedArray.map(item => generateIdList(item, trim), this);
+
+  //If in expansion mode, append list styling
+  if (!trim) {
+    renderValue = h('div.wrap-text', h('ul.db-list', renderValue));
+  }
+
+  return h('div.fake-paragraph', [h('div.span-field-name', 'Database References:'), renderValue]);
 }
 
 module.exports = {
   parseMetadata,
-  noDataWarning
+  noDataWarning,
+  sortByDatabaseId
 };

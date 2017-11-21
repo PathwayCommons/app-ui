@@ -11,7 +11,7 @@ class Entry extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      query: _.assign({q: '', gt: 2, lt: 250, type: 'Pathway'}, this.props.query)
+      query: _.assign({q: '', gt: 0, lt: 250, type: 'Pathway'}, this.props.query)
     };
   }
 

@@ -9,16 +9,96 @@ const cytoscape = require('cytoscape');
 const cose = require('cytoscape-cose-bilkent');
 cytoscape.use(cose);
 
-const sbgn2Json = require('sbgnml-to-cytoscape');
 const sbgnStylesheet = require('cytoscape-sbgn-stylesheet');
 
 const Icon = require('../../common/components').Icon;
-const PathwayCommonsService = require('../../services').PathwayCommonsService;
+const { CDC, PathwayCommonsService } = require('../../services');
 
-// const testData = require('./sample-enrichments');
 
-const augmentEnrichmentData = require('./enrichment-model');
 
+class OmniBar extends React.Component {
+  render() {
+    const props = this.props;
+    return h('div.paint-omnibar', [
+      h('a', { onClick: e => props.onMenuClick(e) }, [
+        h(Icon, { icon: 'menu' }, 'click')
+      ]),
+      h('h5', `${props.name} | ${props.datasource}`)
+    ]);
+  }
+}
+
+// props
+// expression table
+// cy
+class Network extends React.Component {
+  componentWillUnmount() {
+    this.state.cy.destroy();
+  }
+
+  componentDidMount() {
+    const props = this.props;
+    const container = document.getElementById('cy-container');
+    props.cy.mount(container);
+  }
+
+  colourMap(val, min, max) {
+    const distToMax = Math.abs(val - max);
+    const distToMin = Math.abs(val - min);
+
+    let hVal, lVal;
+    if (distToMax > distToMin) {
+      hVal = 240;
+      lVal = ( val / Math.abs(max) ) * 100 + 20;
+    } else {
+      hVal = 0;
+      lVal = ( val / Math.abs(max) ) * 100 - 20;
+    }
+    return color.hsl(hVal, 100, lVal).string();
+  }
+
+  percentToColour(percent) {
+    const hslValue = ( 1 - percent ) * 240;
+
+    return color.hsl(hslValue, 100, 50).string();
+  }
+
+  applyExpressionData() {
+    const props = this.props;
+    const expressionTable = props.expressionTable;
+
+    const networkNodes = _.uniq(props.cy.nodes('[class="macromolecule"]').map(node => node.data('label'))).sort();
+
+    const expressionsInNetwork = expressionTable.rows.filter(row => networkNodes.includes(row.geneName));
+    const maxVal = _.max(expressionsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
+    const minVal = _.min(expressionsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
+
+    expressionsInNetwork.forEach(expression => {
+      // probably more efficient to add the expression data to the node field instead of interating twice
+      props.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
+
+        const numSlices = expression.classValues.length > 16 ? 16 : expression.classValues.length;
+
+        const pieStyle = {
+          'pie-size': '100%'
+        };
+        for (let i = 1; i <= numSlices; i++) {
+
+          pieStyle['pie-' + i + '-background-size'] = 100 / numSlices;
+          pieStyle['pie-' + i + '-background-opacity'] = 1;
+          pieStyle['pie-' + i + '-background-color'] = this.percentToColour(expression.classValues[i-1] / maxVal);
+        }
+
+        node.style(pieStyle);
+      });
+    });
+  }
+
+  render() {
+    return h('div.paint-graph', [ h(`div.#cy-container`, {style: {width: '100vw', height: '100vh'}}) ]);
+  }
+
+}
 
 class Paint extends React.Component {
   constructor(props) {
@@ -32,11 +112,8 @@ class Paint extends React.Component {
     });
 
     this.state = {
-      enrichmentDataSets: [],
-      enrichmentClasses: [],
-      // enrichmentDataSets: testData.dataSetExpressionList,
-      // enrichmentClasses: _.get(testData.dataSetClassList, '0.classes', []),
-      enrichmentTable: {},
+      rawEnrichmentData: {},
+      expressionTable: {},
       cy: cy,
       name: '',
       datasource: '',
@@ -50,34 +127,23 @@ class Paint extends React.Component {
       fetch(enrichmentsURI)
         .then(response => response.json())
         .then(json => {
-          // console.log(augmentEnrichmentData(json.dataSetClassList, json.dataSetExpressionList));
-          this.setState({
-            enrichmentClasses: _.get(json.dataSetClassList, '0.classes', []),
-            enrichmentDataSets: json.dataSetExpressionList
-          }, () => {
-          });
+          this.setState({rawEnrichmentData: json});
+
+          const expressionClasses = _.get(json.dataSetClassList, '0.classes', []);
+          const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
+          const searchParam = query.q;
+          this.initPainter(expressions, expressionClasses, searchParam);
+
         });
     }
-
-    const expressions = _.get(this.state.dataSetExpressionList, '0.expressions', []);
-    const searchParam = query.q ? query.q : 'S Phase';
-    this.initPainter(expressions, searchParam);
-
-
   }
 
   componentWillUnmount() {
     this.state.cy.destroy();
   }
 
-  percentToColour(percent) {
-    const hslValue = ( 1 - percent ) * 240;
-
-    return color.hsl(hslValue, 100, 50).string();
-  }
-
   // only call this after you know component is mounted
-  initPainter(expressions, queryParam) {
+  initPainter(expressions, expressionClasses, queryParam) {
     const state = this.state;
     const query = {
       q: queryParam,
@@ -87,86 +153,12 @@ class Paint extends React.Component {
       datasource: 'reactome'
     };
 
-    PathwayCommonsService.querySearch(query)
-      .then(searchResults => {
-        const uri = _.get(searchResults, '0.uri', null);
-        if (uri != null) {
-          PathwayCommonsService.query(uri, 'json', 'Named/displayName')
-          .then(response => {
-            this.setState({
-              name: response ? response.traverseEntry[0].value.pop() : ''
-            });
-          });
+    const expressionTable = {};
 
-        PathwayCommonsService.query(uri, 'json', 'Entity/dataSource/displayName')
-          .then(responseObj => {
-            this.setState({
-              datasource: responseObj ? responseObj.traverseEntry[0].value.pop() : ''
-            });
-          });
+    const header = _.uniq(expressionClasses);
 
-        PathwayCommonsService.query(uri, 'SBGN')
-          .then(text => {
-            const sbgnJson = sbgn2Json(text);
-            state.cy.remove('*');
-            state.cy.add(sbgnJson);
-            state.cy.layout({
-              name: 'cose-bilkent',
-              nodeDimensionsIncludeLabels: true
-            }).run();
-
-            const enrichmentTable = this.createEnrichmentTable();
-
-            const networkNodes = state.cy.nodes().map(node => node.data('label'));
-            const enrichmentsInNetwork = enrichmentTable.rows.filter(row => networkNodes.includes(row.geneName));
-            const maxVal = _.max(enrichmentsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
-            enrichmentsInNetwork.forEach(row => {
-              // probably more efficient to add the enrichment data to the node field instead of interating twice
-              state.cy.nodes().filter(node => node.data('label') === row.geneName).forEach(node => {
-
-                const numSlices = row.classValues.length > 16 ? 16 : row.classValues.length;
-
-                const pieStyle = {
-                  'pie-size': '100%'
-                };
-                for (let i = 1; i <= numSlices; i++) {
-
-                  pieStyle['pie-' + i + '-background-size'] = 100 / numSlices;
-                  pieStyle['pie-' + i + '-background-opacity'] = 1;
-                  pieStyle['pie-' + i + '-background-color'] = this.percentToColour(row.classValues[i-1] / maxVal);
-                }
-
-                node.style(pieStyle);
-              });
-
-              this.setState({enrichmentTable: enrichmentTable});
-
-            });
-          });
-        }
-      });
-  }
-
-  componentDidMount() {
-    const props = this.props;
-    const state = this.state;
-    const container = document.getElementById('cy-container');
-    state.cy.mount(container);
-  }
-
-  toggleDrawer() {
-    this.setState({drawerOpen: !this.state.drawerOpen});
-  }
-
-  createEnrichmentTable() {
-    const state = this.state;
-    const enrichmentTable = {};
-
-    const enrichmentClasses = state.enrichmentClasses;
-    const header = _.uniq(state.enrichmentClasses);
-
-    enrichmentTable.header = header;
-    enrichmentTable.rows = _.get(state.enrichmentDataSets, '0.expressions', []).map(enrichment => {
+    expressionTable.header = header;
+    expressionTable.rows = expressions.map(enrichment => {
       const geneName = enrichment.geneName;
       const values = enrichment.values;
 
@@ -177,30 +169,63 @@ class Paint extends React.Component {
       }
 
       for (let i = 0; i < values.length; i++) {
-        class2ValuesMap.get(enrichmentClasses[i]).push(values[i]);
+        class2ValuesMap.get(expressionClasses[i]).push(values[i]);
       }
 
       return { geneName: geneName, classValues: Array.from(class2ValuesMap.entries()).map((entry =>  _.mean(entry[1]).toFixed(2))) };
     });
 
-    return enrichmentTable;
+    this.setState({
+      expressionTable: expressionTable
+    });
+
+
+    PathwayCommonsService.querySearch(query, false)
+      .then(searchResults => {
+        const uri = _.get(searchResults, '0.uri', null);
+
+        if (uri != null) {
+          CDC.getGraphAndLayout(uri, 'latest').then(response => {
+            this.setState({
+              name: _.get(response, 'graph.pathwayMetadata.title', 'N/A'),
+              datasource: _.get(response, 'graph.pathwayMetadata.dataSource.0', 'N/A'),
+            });
+
+            state.cy.remove('*');
+            state.cy.add({
+              nodes: _.get(response, 'graph.nodes', []),
+              edges: _.get(response, 'graph.edges', [])
+            });
+
+            state.cy.layout({
+              name: 'cose-bilkent',
+              nodeDimensionsIncludeLabels: true
+            }).run();
+
+          });
+        }
+    });
+  }
+
+  toggleDrawer() {
+    this.setState({drawerOpen: !this.state.drawerOpen});
   }
 
   render() {
     const state = this.state;
 
-    const enrichmentTable = state.enrichmentTable;
+    const expressionTable = state.expressionTable;
 
     const networkNodes = state.cy.nodes().map(node => node.data('label'));
-    const enrichmentsInNetwork = _.get(enrichmentTable, 'rows', []).filter(row => networkNodes.includes(row.geneName));
+    const enrichmentsInNetwork = _.get(expressionTable, 'rows', []).filter(row => networkNodes.includes(row.geneName));
 
 
     const maxVal = _.max(enrichmentsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
     const minVal = _.min(enrichmentsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
 
-    const enrichmentTableHeader = [h('th', '')].concat(_.get(enrichmentTable, 'header', []).map(column => h('th', column)));
-    const enrichmentTableRows = _.sortBy(
-      _.get(enrichmentTable, 'rows', []), (o) => o.geneName
+    const expressionTableHeader = [h('th', '')].concat(_.get(expressionTable, 'header', []).map(column => h('th', column)));
+    const expressionTableBody = _.sortBy(
+      _.get(expressionTable, 'rows', []), (o) => o.geneName
     ).map(row => h('tr',[h('td', row.geneName)].concat(row.classValues.map(cv => h('td', cv)))));
 
     return h('div.paint', [
@@ -216,21 +241,14 @@ class Paint extends React.Component {
           h('p', `columns correspond to the clockwise direction on the pie (first column starts at 12 O'Clock going clockwise)`),
           h('table', [
             h('thead', [
-              h('tr', enrichmentTableHeader)
+              h('tr', expressionTableHeader)
             ]),
-            h('tbody', enrichmentTableRows)
+            h('tbody', expressionTableBody)
           ])
 
         ]),
-        h('div.paint-omnibar', [
-          h('a', { onClick: e => this.toggleDrawer() }, [
-            h(Icon, { icon: 'menu' }, 'click')
-          ]),
-          h('h5', `${state.name} | ${state.datasource}`)
-        ]),
-        h('div.paint-graph', [
-          h(`div.#cy-container`, {style: {width: '100vw', height: '100vh'}})
-        ])
+        h(OmniBar, { name: state.name, datasource: state.datasource, onMenuClick: (e) => this.toggleDrawer() }),
+        h(Network, { cy: state.cy, expressionTable: state.expressionTable })
       ])
     ]);
   }

@@ -94,6 +94,18 @@
     background-color: var(--accent-1-colour);
   }
 
+  &.closed {
+    background-color: var(--accent-1-colour);
+  }
+
+  &.open {
+    background-color: var(--accent-1-colour);
+    z-index: 100;
+    transition: z-index 0.5s linear;
+  }
+
+
+
 }
 
 .sidebar-content {

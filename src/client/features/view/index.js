@@ -4,9 +4,8 @@ const h = require('react-hyperscript');
 const { Menu, Graph, EditWarning, Sidebar } = require('./components/');
 
 const lo = require('../../common/cy/layout/');
-const make_cytoscape = require('./cy/');
-const bindMove = require('./cy/events/move');
-const hoverStyles = require('./cy/events/hover');
+const make_cytoscape = require('../../common/cy/');
+const bindMove = require('../../common/cy/events/move');
 
 const queryString = require('query-string');
 const { CDC } = require('../../services/');
@@ -14,7 +13,7 @@ const { CDC } = require('../../services/');
 class View extends React.Component {
   constructor(props) {
     super(props);
-    const query = queryString.parse(window.location.search);
+    const query = queryString.parse(props.location.search);
     this.state = {
       query: query,
 

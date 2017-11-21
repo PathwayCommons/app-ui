@@ -23,16 +23,9 @@ const databases = [
   ['CAS', 'http://identifiers.org/cas/', '']
 ];
 
-const publicationsURL = 'http://identifiers.org/pubmed/';
-const tooltipOrder = ['Type', 'Display Name', 'Standard Name', 'Names', 'Database IDs', 'Publications'];
-const tooltipReverseOrder = ['Comment'];
-
 module.exports = {
-  databases,
-  publicationsURL,
-  tooltipOrder,
-  tooltipReverseOrder
-}
+  databases
+};
 
 /*
   ['KEGG Reaction', 'http://www.genome.jp/', 'dbget-bin/www_bget?rn:'],

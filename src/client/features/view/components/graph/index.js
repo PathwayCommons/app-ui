@@ -5,7 +5,6 @@ const _ = require('lodash');
 
 /* Props
 - updateRenderStatus(status)
-- updateLayout()
 - cy
 - graphJSON
 */
@@ -50,7 +49,6 @@ class Graph extends React.Component {
     cy.add(graphJSON);
 
     //toolTipCreator.bindTippyToElements(cy);
-    this.props.updateRenderStatus(true);
     this.setState({graphRendered: true});
 
   }

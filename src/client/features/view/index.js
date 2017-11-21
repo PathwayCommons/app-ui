@@ -22,7 +22,7 @@ class View extends React.Component {
       graphJSON: null,
       layoutJSON: null,
       layout: lo.defaultLayout,
-      availableLayouts: [],
+      availableLayouts: lo.layoutNames,
 
 
       metadata: {},
@@ -53,29 +53,6 @@ class View extends React.Component {
         bindMove(this.state.query.uri, 'latest', this.state.cy);
       }
     });
-  }
-
-  // To be called when the graph renders (since this is determined by the Graph class)
-  updateRenderStatus(status) {
-    if (status) {
-      let layout;
-      let availableLayouts = lo.layoutNames(this.state.cy.nodes().size());
-
-      if (this.state.layoutJSON) {
-        layout = lo.humanLayoutName;
-        availableLayouts.splice(0, 0, lo.humanLayoutName);
-      } else {
-        layout = lo.getDefaultLayout(this.state.cy.nodes().size());
-      }
-
-      this.setState(
-        {
-          availableLayouts: availableLayouts,
-          layout: layout
-        },
-        () => { this.performLayout(this.state.layout); }
-      );
-    }
   }
 
   performLayout(layoutName) {
@@ -117,14 +94,12 @@ class View extends React.Component {
       h(Menu, {
         name: state.metadata.name,
         datasource: state.metadata.datasource,
-        layouts: state.availableLayouts,
-        updateLayout: layout => this.performLayout(layout),
+        availableLayouts: state.availableLayouts,
+        layoutJSON: state.layoutJSON,
         cy: state.cy,
         currLayout: state.layout
       }),
       h(Graph, {
-        updateRenderStatus: status => this.updateRenderStatus(status),
-        updateLayout: () => this.performLayout(state.layout),
         cy: state.cy,
         graphJSON: state.graphJSON
       }),

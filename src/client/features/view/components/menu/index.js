@@ -2,21 +2,20 @@ const React = require('react');
 const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
 const classNames = require('classnames');
+const tippy = require('tippy.js');
+const _ = require('lodash');
 
 const layoutConf = require('../../../../common/cy/layout');
-
 const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
 
 const searchNodes = require('./search');
 
-const tippy = require('tippy.js');
-
 /* Props
 - name
 - datasource
-- layouts
-- updateLayout
+- availableLayouts
 - currLayout
+- layoutJSON
 */
 class Menu extends React.Component {
   constructor(props) {
@@ -25,6 +24,31 @@ class Menu extends React.Component {
       dropdownOpen: false
     };
   }
+
+  performLayout(layoutName) {
+    this.setState({ layout: layoutName });
+
+    const props = this.props;
+    const cy = props.cy;
+    const layoutJSON = props.layoutJSON;
+
+    let options;
+    if (!_.isEmpty(layoutJSON)) {
+      options = {
+        name: 'preset',
+        positions: node => layoutJSON[node.id()],
+        animate: true,
+        animationDuration: 500
+      };
+      cy.layout(options).run();
+
+    } else {
+      options = layoutConf.layoutMap.get(layoutName);
+    }
+
+    cy.layout(options).run();
+  }
+
 
   componentDidMount() {
     this.initTooltips();
@@ -40,17 +64,13 @@ class Menu extends React.Component {
     });
   }
   render() {
-    const layoutItems = this.props.layouts.map((layout, index) => {
+    const layoutItems = this.props.availableLayouts.map((layout, index) => {
       return (
         h(DropdownOption, {
           key: index,
           value: layout,
           description: layoutConf.layoutDescs[layout]
         })
-        // h('option', {
-        //   key: index,
-        //   value: layout
-        // }, layout)
       );
     });
 
@@ -77,7 +97,6 @@ class Menu extends React.Component {
             onClick: () => this.setState({dropdownOpen: !this.state.dropdownOpen}),
             title: 'Rearrange the entities on screen'
           }, [
-            // options include 'transform', 'share', 'call_split'
             h('i.material-icons', 'shuffle')
           ])
         ]),
@@ -86,12 +105,8 @@ class Menu extends React.Component {
         }, [
           h(Dropdown, {
             value: this.props.currLayout,
-            onChange: value => this.props.updateLayout(value)
+            onChange: value => this.performLayout(value)
           }, layoutItems)
-          // h('select', {
-          //   value: this.props.currLayout,
-          //   onChange: (e) => this.props.updateLayout(e.target.value)
-          // }, layoutItems)
         ])
       ])
     );

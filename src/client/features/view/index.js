@@ -24,8 +24,8 @@ class View extends React.Component {
       layout: lo.defaultLayout,
       availableLayouts: [],
 
-      name: '',
-      datasource: '',
+
+      metadata: {},
 
       activateWarning: this.props.admin || false,
       warningMessage: this.props.admin ? 'Be careful! Your changes are live.' : '',
@@ -35,8 +35,12 @@ class View extends React.Component {
       this.setState({
         graphJSON: graphJSON.graph,
         layoutJSON: graphJSON.layout,
-        name: graphJSON.graph.pathwayMetadata.title[0] || 'Unknown Network',
-        datasource: graphJSON.graph.pathwayMetadata.dataSource[0] || 'Unknown Data Source'
+        metadata: {
+          name: graphJSON.graph.pathwayMetadata.title[0] || 'Unknown Network',
+          datasource: graphJSON.graph.pathwayMetadata.dataSource[0] || 'Unknown Data Source',
+          comments: graphJSON.graph.pathwayMetadata.comments,
+          organism: graphJSON.graph.pathwayMetadata.organism
+        }
       });
     });
   }
@@ -107,35 +111,36 @@ class View extends React.Component {
   }
 
   render() {
-    return (
-      h('div.View', [
-        h(Menu, {
-          name: this.state.name,
-          datasource: this.state.datasource,
-          layouts: this.state.availableLayouts,
-          updateLayout: layout => this.performLayout(layout),
-          cy: this.state.cy,
-          currLayout: this.state.layout
-        }),
-        h(Graph, {
-          updateRenderStatus: status => this.updateRenderStatus(status),
-          updateLayout: () => this.performLayout(this.state.layout),
-          cy: this.state.cy,
-          graphJSON: this.state.graphJSON
-        }),
-        h(EditWarning, {
-          active: this.state.activateWarning,
-          deactivate: () => this.setState({ activateWarning: false }),
-          dur: 5000
-        }, this.state.warningMessage),
-        h(Sidebar, {
-          cy: this.state.cy,
-          uri: this.state.query.uri,
-          name: this.state.name,
-          datasource: this.state.datasource
-        })
-      ])
-    );
+    const state = this.state;
+
+    return h('div.View', [
+      h(Menu, {
+        name: state.metadata.name,
+        datasource: state.metadata.datasource,
+        layouts: state.availableLayouts,
+        updateLayout: layout => this.performLayout(layout),
+        cy: state.cy,
+        currLayout: state.layout
+      }),
+      h(Graph, {
+        updateRenderStatus: status => this.updateRenderStatus(status),
+        updateLayout: () => this.performLayout(state.layout),
+        cy: state.cy,
+        graphJSON: state.graphJSON
+      }),
+      h(EditWarning, {
+        active: state.activateWarning,
+        deactivate: () => this.setState({ activateWarning: false }),
+        dur: 5000
+      }, state.warningMessage),
+      h(Sidebar, {
+        cy: state.cy,
+        uri: state.query.uri,
+        name: state.metadata.name,
+        datasource: state.metadata.datasource,
+        comments: state.metadata.comments
+      })
+    ]);
   }
 }
 

@@ -25,6 +25,7 @@ const tooltips = [
 - uri
 - name
 - datasource
+- comments
 */
 
 class Sidebar extends React.Component {
@@ -75,7 +76,7 @@ class Sidebar extends React.Component {
     }
   }
 
-  //Receive updated props and set the state to match the desired result. 
+  //Receive updated props and set the state to match the desired result.
   componentWillReceiveProps(nextProps) {
     let node = nextProps.cy.getElementById(nextProps.nodeId);
     let tooltip = node.scratch('tooltip');
@@ -86,10 +87,11 @@ class Sidebar extends React.Component {
   }
 
   render() {
+    const props = this.props;
     const menus = {
-      'info': h(GraphInfoMenu, { 'uri': this.props.uri, 'name': this.props.name, 'datasource': this.props.datasource }),
-      'file_download': h(FileDownloadMenu, { 'cy': this.props.cy, 'uri': this.props.uri, 'name': this.props.name }),
-      'help': h(HelpMenu)
+      info: h(GraphInfoMenu, { uri: props.uri, name: props.name, datasource: props.datasource, comments: props.comments }),
+      file_download: h(FileDownloadMenu, { cy: props.cy, uri: props.uri, name: props.name }),
+      help: h(HelpMenu)
     };
 
     // Map tool buttons to actual elements with tooltips

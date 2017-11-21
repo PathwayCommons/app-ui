@@ -2,8 +2,6 @@ const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
 
-const PathwayCommonsService = require('../../../../../services/').PathwayCommonsService;
-
 const datasourceLinks = [
   ['BioGrid', 'http://identifiers.org/biogrid/', ''],
   ['DrugBank', 'https://www.drugbank.ca/', ''],
@@ -30,21 +28,6 @@ const datasourceLinks = [
 ];
 
 class GraphInfoMenu extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      comments: []
-    };
-  }
-
-  componentWillMount() {
-    PathwayCommonsService.query(this.props.uri, 'json', 'Entity/comment')
-      .then(responses => {
-        this.setState({
-          comments: responses ? responses.traverseEntry[0].value : []
-        });
-      });
-  }
 
   getDatasourceLink(datasource) {
     const link = datasourceLinks.filter(ds => ds[0].toUpperCase() === datasource.toUpperCase());
@@ -53,37 +36,28 @@ class GraphInfoMenu extends React.Component {
   }
 
   render() {
-    const datasourceLink = this.getDatasourceLink(this.props.datasource);
+    const props = this.props;
 
-    const noInfoMessage = h('span', [
-      'No additional information was found for this network!',
-      h('br'),
-      h('br'),
-      'Additional information about the network is normally found here, but we couldn\'t find any for this one.'
-    ]);
+    const datasourceLink = this.getDatasourceLink(props.datasource);
+
+    const comments = props.comments.map(comment => {
+      return h('div', [
+        comment.replace(/<p>/g, ' '),
+        h('br'),
+        h('br')
+      ]);
+    });
 
     return (
       h('div', [
-        h('h1', this.props.name),
+        h('h1', props.name),
         h('h4', [
           'Sourced from ',
-          h('a', { href: datasourceLink, target: '_blank'}, this.props.datasource)
+          h('a', { href: datasourceLink, target: '_blank'}, props.datasource)
         ]),
-        ...(this.state.comments.length ?
-          [h('h2', 'Additional Information')].concat(
-            this.state.comments.map((comment, index) => {
-              return (
-                h('div', {
-                  'key': index
-                }, [
-                    comment.replace(/<p>/g, ' '),
-                    h('br'),
-                    h('br')
-                  ])
-              );
-            })
-          ) : [noInfoMessage]
-        )
+        h('div', [
+          h('h2', 'Additional Information')
+        ].concat(comments))
       ])
     );
   }

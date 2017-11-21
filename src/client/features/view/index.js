@@ -9,7 +9,7 @@ const bindMove = require('./cy/events/move');
 const hoverStyles = require('./cy/events/hover');
 
 const queryString = require('query-string');
-const { CDC } = require('../../services/');
+const { apiCaller } = require('../../services/');
 
 class View extends React.Component {
   constructor(props) {
@@ -33,7 +33,7 @@ class View extends React.Component {
       activeDisplayedNode: ''
     };
 
-    CDC.getGraphAndLayout(query.uri, 'latest').then(graphJSON => this.setState({
+    apiCaller.getGraphAndLayout(query.uri, 'latest').then(graphJSON => this.setState({
       graphJSON: graphJSON.graph,
       layoutJSON: graphJSON.layout,
       name: graphJSON.graph.pathwayMetadata.title[0] || 'Unknown Network',
@@ -100,7 +100,7 @@ class View extends React.Component {
         cy.nodes().forEach(node => {
           posObj[node.id()] = node.position();
         });
-        CDC.submitLayoutChange(that.state.query.uri, 'latest', posObj);
+        apiCaller.submitLayoutChange(that.state.query.uri, 'latest', posObj);
       }
     });
     layout.run();

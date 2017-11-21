@@ -2,7 +2,7 @@ const io = require('socket.io-client');
 const qs = require('querystring');
 let socket = io.connect('/');
 
-const CDC = {
+const apiCaller = {
   getGraphAndLayout(uri, version) {
     return fetch(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`, {
       method: 'GET', headers: {
@@ -55,4 +55,4 @@ const CDC = {
   },
 };
 
-module.exports = CDC;
+module.exports = apiCaller;

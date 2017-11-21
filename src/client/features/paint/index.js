@@ -70,7 +70,22 @@ class Paint extends React.Component {
     this.state.cy.destroy();
   }
 
-  percentToColour(percent) {
+  percentToColour(val, min, max) {
+    const distToMax = Math.abs(val - max);
+    const distToMin = Math.abs(val - min);
+
+    let hVal, lVal;
+    if (distToMax > distToMin) {
+      hVal = 240;
+      lVal = ( val / Math.abs(max) ) * 100 + 20;
+    } else {
+      hVal = 0;
+      lVal = ( val / Math.abs(max) ) * 100 - 20;
+    }
+    return color.hsl(hVal, 100, lVal).string();
+  }
+
+  colourMap(percent) {
     const hslValue = ( 1 - percent ) * 240;
 
     return color.hsl(hslValue, 100, 50).string();
@@ -120,6 +135,8 @@ class Paint extends React.Component {
             const networkNodes = state.cy.nodes().map(node => node.data('label'));
             const enrichmentsInNetwork = enrichmentTable.rows.filter(row => networkNodes.includes(row.geneName));
             const maxVal = _.max(enrichmentsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
+            const minVal = _.min(enrichmentsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
+
             enrichmentsInNetwork.forEach(row => {
               // probably more efficient to add the enrichment data to the node field instead of interating twice
               state.cy.nodes().filter(node => node.data('label') === row.geneName).forEach(node => {

@@ -4,6 +4,7 @@ const tippy = require('tippy.js');
 const config = require('../../config');
 const generate = require('./generateContent');
 const formatArray = require('./formatArray');
+const getPublications = require('./publications');
 
 //Manage the creation and display of metadata HTML content
 //Requires a valid name, cytoscape element, and parsedMetadata array
@@ -22,34 +23,38 @@ class MetadataTip {
     let tooltip = this.tooltip;
     let tooltipExt = tooltip;
 
-    //Hide all other tooltips
-    this.hideAll(cy);
+    getPublications(this.data).then(function(data) {
+      this.data = data; 
 
-    //If no tooltip exists create one
-    if (!tooltip) {
-      //Generate HTML
-      let tooltipHTML = this.generateToolTip(callback);
-      let expandedHTML = this.generateExtendedToolTip(callback);
-      
-      //Create tippy object
-      let refObject = this.cyElement.popperRef();
-      tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true });
-      tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true });
+      //Hide all other tooltips
+      this.hideAll(cy);
 
-      //Resolve Reference issues
-      tooltip.selector.dim = refObject.dim;
-      tooltip.selector.cyElement = refObject.cyElement;
-      tooltipExt.selector.dim = refObject.dim;
-      tooltipExt.selector.cyElement = refObject.cyElement;
+      //If no tooltip exists create one
+      if (!tooltip) {
+        //Generate HTML
+        let tooltipHTML = this.generateToolTip(callback);
+        let expandedHTML = this.generateExtendedToolTip(callback);
 
-      //Save tooltips
-      this.tooltip = tooltip;
-      this.tooltipExt = tooltipExt;
-    }
+        //Create tippy object
+        let refObject = this.cyElement.popperRef();
+        tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true, trigger: 'manual' });
+        tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true, trigger: 'manual' });
 
-    //Show Tooltip
-    tooltip.show(tooltip.store[0].popper);
-    this.visible = true;
+        //Resolve Reference issues
+        tooltip.selector.dim = refObject.dim;
+        tooltip.selector.cyElement = refObject.cyElement;
+        tooltipExt.selector.dim = refObject.dim;
+        tooltipExt.selector.cyElement = refObject.cyElement;
+
+        //Save tooltips
+        this.tooltip = tooltip;
+        this.tooltipExt = tooltipExt;
+      }
+
+      //Show Tooltip
+      tooltip.show(tooltip.store[0].popper);
+      this.visible = true;
+    }.bind(this));
   }
 
   //Validate the name of object and use Display Name as the fall back option
@@ -63,7 +68,8 @@ class MetadataTip {
   //Generate HTML Elements for tooltips
   generateToolTip() {
     //Order the data array
-    let data = formatArray.collectionToBottom(this.data, ['Database IDs', 'Comment']);
+    let data = formatArray.collectionToTop(this.data, config.tooltipOrder);
+    data = formatArray.collectionToBottom(data, config.tooltipReverseOrder);
 
     if (!(data) || data.length === 0) {
       return generate.noDataWarning(this.name);
@@ -75,7 +81,7 @@ class MetadataTip {
     if (!(this.data)) { this.data = []; }
     return h('div.tooltip-image', [
       h('div.tooltip-heading', this.name),
-      h('div.tooltip-internal', h('div', (data).map(item => generate.parseMetadata(item, true), this))),
+      h('div.tooltip-internal', h('div', (data).map(item => generate.parseMetadata(item, true)), this)),
       h('div.tooltip-buttons',
         [
           h('div.tooltip-button-container',
@@ -92,7 +98,8 @@ class MetadataTip {
   //Generate HTML Elements for the side bar
   generateExtendedToolTip() {
     //Order the data array
-    let data = formatArray.collectionToBottom(this.data, ['Database IDs', 'Comment']);
+    let data = formatArray.collectionToTop(this.data, config.tooltipOrder);
+    data = formatArray.collectionToBottom(data, config.tooltipReverseOrder);
     if (!(data)) data = [];
 
     //Ensure name is not blank

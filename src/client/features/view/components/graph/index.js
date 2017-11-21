@@ -52,6 +52,7 @@ class Graph extends React.Component {
     //toolTipCreator.bindTippyToElements(cy);
     this.props.updateRenderStatus(true);
     this.setState({graphRendered: true});
+
   }
 
   render() {

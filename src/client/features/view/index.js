@@ -1,5 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
+const _ = require('lodash');
 
 const { Menu, Graph, EditWarning, Sidebar } = require('./components/');
 
@@ -28,21 +29,21 @@ class View extends React.Component {
 
       activateWarning: this.props.admin || false,
       warningMessage: this.props.admin ? 'Be careful! Your changes are live.' : '',
-
-      activeDisplayedNode: ''
     };
 
-    CDC.getGraphAndLayout(query.uri, 'latest').then(graphJSON => this.setState({
-      graphJSON: graphJSON.graph,
-      layoutJSON: graphJSON.layout,
-      name: graphJSON.graph.pathwayMetadata.title[0] || 'Unknown Network',
-      datasource: graphJSON.graph.pathwayMetadata.dataSource[0] || 'Unknown Data Source'
-    }));
+    CDC.getGraphAndLayout(query.uri, 'latest').then(graphJSON => {
+      this.setState({
+        graphJSON: graphJSON.graph,
+        layoutJSON: graphJSON.layout,
+        name: graphJSON.graph.pathwayMetadata.title[0] || 'Unknown Network',
+        datasource: graphJSON.graph.pathwayMetadata.dataSource[0] || 'Unknown Data Source'
+      });
+    });
   }
 
   componentWillMount() {
     this.setState({
-      cy: make_cytoscape({ headless: true }, nodeId => this.setState({ activeDisplayedNode: nodeId }))
+      cy: make_cytoscape({ headless: true })
     }, () => {
       if (this.props.admin) {
         bindMove(this.state.query.uri, 'latest', this.state.cy);
@@ -131,8 +132,7 @@ class View extends React.Component {
           cy: this.state.cy,
           uri: this.state.query.uri,
           name: this.state.name,
-          datasource: this.state.datasource,
-          nodeId: this.state.activeDisplayedNode
+          datasource: this.state.datasource
         })
       ])
     );

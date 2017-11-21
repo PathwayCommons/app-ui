@@ -47,10 +47,6 @@ class Menu extends React.Component {
           value: layout,
           description: layoutConf.layoutDescs[layout]
         })
-        // h('option', {
-        //   key: index,
-        //   value: layout
-        // }, layout)
       );
     });
 

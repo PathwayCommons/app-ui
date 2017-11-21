@@ -13,12 +13,14 @@ const layoutMap = new Map()
 .set('Layered', klayOpts)
 .set('Stratified', stratifiedLayeredOpts);
 
-const layoutDescs = {
+let layoutDescs = {
   'Force Directed': 'Layout algorithm for undirected compound graphs',
   'Tree': 'For DAGs and trees',
   'Layered': 'Layer-based layout for node-link diagrams',
   'Stratified': 'Vertical ordering of common cellular compartments'
 };
+
+layoutDescs[humanLayoutName] = 'Researcher-curated arrangement, the recommended option';
 
 const defaultLayout = 'Layered';
 

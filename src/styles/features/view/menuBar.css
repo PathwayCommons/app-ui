@@ -12,8 +12,8 @@
   
   background-color: var(--light-base-colour);
   border-radius: 0px 0px 3px 3px;
-  border: 2px solid black;
-  border-width: 0px 2px 2px 2px;
+  border: 1px solid var(--light-base-colour-dark);
+  border-width: 0px 1px 1px 1px;
   box-shadow: var(--box-shadow);
 }
 
@@ -40,16 +40,10 @@
   color: var(--dark-base-colour);
 
   & h4 {
+    font-weight: bold;
+    font-size: 0.9em;
     margin: 0;
   }
-}
-
-.view-search {
-  background: none;
-}
-
-.view-search-bar {
-  background-color: white;
 }
 
 .search-nodes {
@@ -57,19 +51,31 @@
   @extend %no-select;
 
   height: calc(var(--icon-size) * 3 / 2);
-  padding: 5px; 
+  padding-right: 1em;
   box-sizing: border-box;
-
-  border-color: black;
-  border-style: solid;
-  border-width: 0px 0px 0px 2px;
-  
 
   color: var(--dark-base-colour);
 
   cursor: pointer;
 
   transition: all 0.1s linear;
+}
+
+.view-search-bar {
+  background-color: white;
+  padding: 0.2em;
+  font-size: 0.9em;
+  line-height: 0.9em;
+  box-sizing: border-box;
+  border: 1px solid var(--light-base-colour-dark);
+
+  transition: box-shadow 0.15s ease-in-out;
+}
+
+.view-search {
+  height: 100%;
+  width: 100%;
+  border-width: 0px !important;
 }
 
 .layout-dropdown-button {

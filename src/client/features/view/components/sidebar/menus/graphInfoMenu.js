@@ -1,9 +1,33 @@
 const React = require('react');
 const h = require('react-hyperscript');
-
-const datasourceLinks = require('../../../config').databases;
+const _ = require('lodash');
 
 const PathwayCommonsService = require('../../../../../services/').PathwayCommonsService;
+
+const datasourceLinks = [
+  ['BioGrid', 'http://identifiers.org/biogrid/', ''],
+  ['DrugBank', 'https://www.drugbank.ca/', ''],
+  ['mirtarBase', 'http://identifiers.org/mirtarbase/', ''],
+  ['NetPath', 'http://www.netpath.org/', 'molecule?molecule_id='],
+  ['PANTHER', 'http://pantherdb.org/', 'genes/geneList.do?searchType=basic&fieldName=all&organism=all&listType=1&fieldValue='],
+  ['PID', null],
+  ['PhosphoSitePlus', null],
+  ['Reactome', 'http://identifiers.org/reactome/', ''],
+  ['SMPD', null],
+  ['Wikipathways', 'http://identifiers.org/wikipathways/' , ''],
+  ['UniProt', '	http://identifiers.org/uniprot/', ''],
+  ['HGNC Symbol', 'http://identifiers.org/hgnc.symbol/', ''],
+  ['HGNC', 'http://identifiers.org/hgnc/', ''],
+  ['ChEBI', 'http://identifiers.org/chebi/', ''],
+  ['KEGG', 'http://identifiers.org/kegg/', ''],
+  ['PubMed', 'http://identifiers.org/pubmed/', ''],
+  ['Ensembl', 'http://identifiers.org/ensembl/', ''],
+  ['Enzyme Nomenclature', 'http://identifiers.org/ec-code/', ''],
+  ['PubChem-Substance', 'http://identifiers.org/pubchem.substance/', ''],
+  ['3DMET', 'http://identifiers.org/3dmet/', ''],
+  ['Chemical Component Dictionary', 'http://identifiers.org/pdb-ccd/', ''],
+  ['CAS', 'http://identifiers.org/cas/', '']
+];
 
 class GraphInfoMenu extends React.Component {
   constructor(props) {
@@ -23,13 +47,9 @@ class GraphInfoMenu extends React.Component {
   }
 
   getDatasourceLink(datasource) {
-    let link = datasourceLinks.filter(value => datasource.toUpperCase().indexOf(value[0].toUpperCase()) !== -1);
-    if (link.length === 1 && link[0][1]) {
-      return link[0][1];
-    }
-    else {
-      return '';
-    }
+    const link = datasourceLinks.filter(ds => ds[0].toUpperCase() === datasource.toUpperCase());
+
+    return _.get(link, '0.1', '');
   }
 
   render() {
@@ -47,12 +67,7 @@ class GraphInfoMenu extends React.Component {
         h('h1', this.props.name),
         h('h4', [
           'Sourced from ',
-          ...(datasourceLink.length > 0 ?
-            h('a', {
-              href: this.getDatasourceLink(this.props.datasource),
-              target: '_blank'
-            }, this.props.datasource) : [this.props.datasource]
-          )
+          h('a', { href: datasourceLink, target: '_blank'}, this.props.datasource)
         ]),
         ...(this.state.comments.length ?
           [h('h2', 'Additional Information')].concat(

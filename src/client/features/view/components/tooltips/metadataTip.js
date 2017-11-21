@@ -37,8 +37,8 @@ class MetadataTip {
 
         //Create tippy object
         let refObject = this.cyElement.popperRef();
-        tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true, trigger: 'manual' });
-        tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true, trigger: 'manual' });
+        tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false });
+        tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false  });
 
         //Resolve Reference issues
         tooltip.selector.dim = refObject.dim;
@@ -101,6 +101,10 @@ class MetadataTip {
     let data = formatArray.collectionToTop(this.data, config.tooltipOrder);
     data = formatArray.collectionToBottom(data, config.tooltipReverseOrder);
     if (!(data)) data = [];
+
+    if (!(data) || data.length === 0) {
+      return generate.noDataWarning(this.name);
+    }
 
     //Ensure name is not blank
     this.validateName();

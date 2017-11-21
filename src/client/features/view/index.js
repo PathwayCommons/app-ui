@@ -7,6 +7,7 @@ const lo = require('../../common/cy/layout/');
 const make_cytoscape = require('./cy/');
 const bindMove = require('./cy/events/move');
 const hoverStyles = require('./cy/events/hover');
+const _ = require('lodash');
 
 const queryString = require('query-string');
 const { apiCaller } = require('../../services/');
@@ -36,8 +37,8 @@ class View extends React.Component {
     apiCaller.getGraphAndLayout(query.uri, 'latest').then(graphJSON => this.setState({
       graphJSON: graphJSON.graph,
       layoutJSON: graphJSON.layout,
-      name: graphJSON.graph.pathwayMetadata.title[0] || 'Unknown Network',
-      datasource: graphJSON.graph.pathwayMetadata.dataSource[0] || 'Unknown Data Source'
+      name: _.get(graphJSON, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
+      datasource: _.get(graphJSON, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source')
     }));
   }
 

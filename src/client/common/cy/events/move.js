@@ -1,4 +1,4 @@
-const CDC = require('../../../../services/').CDC;
+const apiCaller = require('../../../../services/').apiCaller;
 
 const bindMove = (uri, version, editkey, cy) => {
   cy.on('free', 'node', function(evt) {

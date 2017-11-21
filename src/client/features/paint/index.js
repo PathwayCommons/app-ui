@@ -12,7 +12,7 @@ cytoscape.use(cose);
 const sbgnStylesheet = require('cytoscape-sbgn-stylesheet');
 
 const Icon = require('../../common/components').Icon;
-const { CDC, PathwayCommonsService } = require('../../services');
+const { apiCaller, PathwayCommonsService } = require('../../services');
 
 
 
@@ -185,7 +185,7 @@ class Paint extends React.Component {
         const uri = _.get(searchResults, '0.uri', null);
 
         if (uri != null) {
-          CDC.getGraphAndLayout(uri, 'latest').then(response => {
+          apiCaller.getGraphAndLayout(uri, 'latest').then(response => {
             this.setState({
               name: _.get(response, 'graph.pathwayMetadata.title', 'N/A'),
               datasource: _.get(response, 'graph.pathwayMetadata.dataSource.0', 'N/A'),

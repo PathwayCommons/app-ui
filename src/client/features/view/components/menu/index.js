@@ -3,6 +3,8 @@ const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
 const classNames = require('classnames');
 
+const cfg = require('../../config');
+
 const layoutConf = require('../../../../common/cy/layout');
 
 const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
@@ -39,6 +41,12 @@ class Menu extends React.Component {
       touchHold: true
     });
   }
+
+  // Used for the panel buttons to set menus in the sidebar and dynamically change the style
+  changeMenu(menu) {
+    this.props.changeMenu(menu === this.state.activeMenu ? '' : menu);
+  }
+
   render() {
     const layoutItems = this.props.layouts.map((layout, index) => {
       return (
@@ -50,11 +58,24 @@ class Menu extends React.Component {
       );
     });
 
+    const toolButtonEls = Object.keys(cfg.toolButtons).map((button, index) => {
+      return (
+        h('div', {
+          key: index,
+          className: classNames('tool-button', this.props.activeMenu === button ? 'active' : ''),
+          onClick: () => this.changeMenu(button),
+          title: cfg.toolButtons[button]
+        }, [
+            h('i.material-icons', button)
+          ])
+      );
+    });
+
     return (
       h('div.menu-bar', [
         h('div.menu-bar-inner-container', [
           h('div.pc-logo-container', [
-            h(Link, {to: {pathname: '/search'}}, [
+            h(Link, { to: { pathname: '/search' } }, [
               h('img', {
                 src: '/img/icon.png'
               })
@@ -64,18 +85,17 @@ class Menu extends React.Component {
             h('h4', `${this.props.name} | ${this.props.datasource}`)
           ]),
           h('div.search-nodes', {
-            onChange : e => searchNodes(e.target.value, this.props.cy),
+            onChange: e => searchNodes(e.target.value, this.props.cy),
             title: 'Search for Nodes'
           }, [
-            h('div.view-search-bar', [h('input.view-search', {type : 'text', placeholder: 'Entity Search'})])
+            h('div.view-search-bar', [h('input.view-search', { type: 'text', placeholder: 'Search entities' })])
           ]),
           h('div.layout-dropdown-button', {
-            onClick: () => this.setState({dropdownOpen: !this.state.dropdownOpen}),
+            onClick: () => this.setState({ dropdownOpen: !this.state.dropdownOpen }),
             title: 'Rearrange the entities on screen'
           }, [
-            // options include 'transform', 'share', 'call_split'
-            h('i.material-icons', 'shuffle')
-          ])
+              h('i.material-icons', 'shuffle')
+            ])
         ]),
         h('div', {
           className: classNames('layout-dropdown', this.state.dropdownOpen ? 'open' : '')
@@ -84,14 +104,27 @@ class Menu extends React.Component {
             value: this.props.currLayout,
             onChange: value => this.props.updateLayout(value)
           }, layoutItems)
-          // h('select', {
-          //   value: this.props.currLayout,
-          //   onChange: (e) => this.props.updateLayout(e.target.value)
-          // }, layoutItems)
-        ])
+        ]),
+        h('div.view-toolbar', toolButtonEls)
       ])
     );
   }
 }
 
 module.exports = Menu;
+
+    // Map tool buttons to actual elements with tooltips
+    // const toolButtons = toolButtonNames.map((button, index) => {
+    //   return (
+    //     h('div', {
+    //       key: index,
+    //       className: classNames('tool-button', this.state.activeMenu === button ? 'active' : ''),
+    //       onClick: () => this.handleIconClick(button),
+    //       title: tooltips[index]
+    //     }, [
+    //         h('i.material-icons', button)
+    //       ])
+    //   );
+    // });
+
+    // h('div.sidebar-select', toolButtons),

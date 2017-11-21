@@ -26,6 +26,9 @@ class View extends React.Component {
 
       name: '',
       datasource: '',
+      comments: [],
+
+      activeMenu: '',
 
       activateWarning: this.props.admin || false,
       warningMessage: this.props.admin ? 'Be careful! Your changes are live.' : '',
@@ -37,7 +40,8 @@ class View extends React.Component {
       graphJSON: graphJSON.graph,
       layoutJSON: graphJSON.layout,
       name: graphJSON.graph.pathwayMetadata.title[0] || 'Unknown Network',
-      datasource: graphJSON.graph.pathwayMetadata.dataSource[0] || 'Unknown Data Source'
+      datasource: graphJSON.graph.pathwayMetadata.dataSource[0] || 'Unknown Data Source',
+      comments: graphJSON.graph.pathwayMetadata.comments
     }));
   }
 
@@ -115,7 +119,8 @@ class View extends React.Component {
           layouts: this.state.availableLayouts,
           updateLayout: layout => this.performLayout(layout),
           cy: this.state.cy,
-          currLayout: this.state.layout
+          currLayout: this.state.layout,
+          changeMenu: menu => this.setState({activeMenu: menu})
         }),
         h(Graph, {
           updateRenderStatus: status => this.updateRenderStatus(status),
@@ -133,7 +138,9 @@ class View extends React.Component {
           uri: this.state.query.uri,
           name: this.state.name,
           datasource: this.state.datasource,
-          nodeId: this.state.activeDisplayedNode
+          comments: this.state.comments,
+          activeMenu: this.state.activeMenu,
+          changeMenu: menu => this.setState({activeMenu: menu})
         })
       ])
     );

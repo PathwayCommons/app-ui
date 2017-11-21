@@ -65,7 +65,7 @@
   }
 }
 
-.tool-button {
+.sidebar-close-button {
   @extend %flex-center;
   @extend %no-select;
 
@@ -93,19 +93,6 @@
     z-index: 100;
     background-color: var(--accent-1-colour);
   }
-
-  &.closed {
-    background-color: var(--accent-1-colour);
-  }
-
-  &.open {
-    background-color: var(--accent-1-colour);
-    z-index: 100;
-    transition: z-index 0.5s linear;
-  }
-
-
-
 }
 
 .sidebar-content {

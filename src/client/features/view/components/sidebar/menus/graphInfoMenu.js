@@ -3,25 +3,7 @@ const h = require('react-hyperscript');
 
 const datasourceLinks = require('../../../config').databases;
 
-const PathwayCommonsService = require('../../../../../services/').PathwayCommonsService;
-
 class GraphInfoMenu extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      comments: []
-    };
-  }
-
-  componentWillMount() {
-    PathwayCommonsService.query(this.props.uri, 'json', 'Entity/comment')
-      .then(responses => {
-        this.setState({
-          comments: responses ? responses.traverseEntry[0].value : []
-        });
-      });
-  }
-
   getDatasourceLink(datasource) {
     let link = datasourceLinks.filter(value => datasource.toUpperCase().indexOf(value[0].toUpperCase()) !== -1);
     if (link.length === 1 && link[0][1]) {
@@ -54,9 +36,9 @@ class GraphInfoMenu extends React.Component {
             }, this.props.datasource) : [this.props.datasource]
           )
         ]),
-        ...(this.state.comments.length ?
+        ...(this.props.comments.length ?
           [h('h2', 'Additional Information')].concat(
-            this.state.comments.map((comment, index) => {
+            this.props.comments.map((comment, index) => {
               return (
                 h('div', {
                   'key': index

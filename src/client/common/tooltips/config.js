@@ -44,5 +44,5 @@ module.exports = {
 /*
   ['KEGG Reaction', 'http://www.genome.jp/', 'dbget-bin/www_bget?rn:'],
   ['KEGG Compound', 'http://www.genome.jp/', 'dbget-bin/www_bget?cpd:'],
-  ['KEGG Drug', 'http://www.genome.jp/', 'dbget-bin/www_bget?drg:'], 
+  ['KEGG Drug', 'http://www.genome.jp/', 'dbget-bin/www_bget?drg:'],
 */

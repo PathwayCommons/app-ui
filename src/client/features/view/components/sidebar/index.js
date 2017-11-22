@@ -11,6 +11,7 @@ const GraphInfoMenu = require('./menus/graphInfoMenu');
 - uri
 - name
 - datasource
+- comments
 */
 
 class Sidebar extends React.Component {
@@ -34,10 +35,11 @@ class Sidebar extends React.Component {
   }
 
   render() {
+    const props = this.props;
     const menus = {
-      'info': h(GraphInfoMenu, { 'uri': this.props.uri, 'name': this.props.name, 'datasource': this.props.datasource }),
-      'file_download': h(FileDownloadMenu, { 'cy': this.props.cy, 'uri': this.props.uri, 'name': this.props.name }),
-      'help': h(HelpMenu)
+      info: h(GraphInfoMenu, { uri: props.uri, name: props.name, datasource: props.datasource, comments: props.comments }),
+      file_download: h(FileDownloadMenu, { cy: props.cy, uri: props.uri, name: props.name }),
+      help: h(HelpMenu)
     };
 
     return (

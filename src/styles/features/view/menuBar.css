@@ -174,7 +174,7 @@
 
 
 /* Mobile scaling */
-@media (width <= 768px) {
+@media (--small-width-viewport) {
   .menu-bar {
     left: 0;
   }
@@ -196,7 +196,7 @@
 }
 
 /* Portrait-specific */
-@media (width <= 768px) and (height <= 736px) and (height > 414px) {
+@media (--small-portrait-viewport) {
   .menu-bar {
     flex-direction: column;
   }

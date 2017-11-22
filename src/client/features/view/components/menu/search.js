@@ -83,14 +83,8 @@ function searchNodes(query, cy) {
 
     //Animate zoom and fit
     cy.animate({
-      fit: {
-        eles: cy.elements(),
-        padding: 100
-      }
-    },
-      {
-        duration: 700
-      });
+      fit: { eles: cy.elements(),padding: 100
+      }},{ duration: 700 });
 
     updateStyling(searchStyle, matched, cy);
   }

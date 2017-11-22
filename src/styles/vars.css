@@ -17,6 +17,7 @@
   --icon-size: 3vmin;
   --icon-size-mobile: 7vmin;
   --number-of-sidebar-icons: 3;
+  --search-width: 740px;
 
   --link: #03A9F4;
   --link-visited: #7E57C2;
@@ -35,6 +36,10 @@
   --smallFontSize: 0.8em;
   --fadedColor: #888;
 }
+
+/* Viewport scaling sizes */
+@custom-media --small-width-viewport (width <= 768px);
+@custom-media --small-portrait-viewport (width <= 736px) and (height <= 736px) and (height > 414px);
 
 %flex-center {
   display: flex;

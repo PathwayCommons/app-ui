@@ -110,6 +110,7 @@
     "postcss": "^6.0.13",
     "postcss-cli": "^4.1.1",
     "postcss-cssnext": "^3.0.2",
+    "postcss-custom-media": "^6.0.0",
     "postcss-extend": "^1.0.5",
     "postcss-import": "^10.0.0",
     "postcss-url": "^7.1.2",

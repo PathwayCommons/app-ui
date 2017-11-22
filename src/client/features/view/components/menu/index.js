@@ -11,8 +11,9 @@ const searchNodes = require('./search');
 
 // Buttons for opening the sidebar, along with their descriptions
 const toolButtons = {
-  file_download: 'Download options',
-  help: 'Interpreting the display'
+  info: 'Extra information',
+  file_download: 'Download options', 
+  //help: 'Interpreting the display' // re-add to access help menu
 };
 
 /* Props
@@ -27,6 +28,7 @@ class Menu extends React.Component {
     this.state = {
       dropdownOpen: false,
       searchOpen: false,
+      complexesExpanded: true,
       selectedLayout: props.currLayout,
       initialLayoutSet: false
     };
@@ -57,6 +59,15 @@ class Menu extends React.Component {
     this.initTooltips();
   }
 
+  toggleExpansion() {
+    if (this.state.complexesExpanded) {
+      this.props.cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isExpanded()).collapse();
+    } else {
+      this.props.cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isCollapsed()).expand();
+    }
+    this.setState({ complexesExpanded: !this.state.complexesExpanded });
+  }
+
   initTooltips() {
     tippy('.layout-dropdown-button', {
       delay: [800, 400],
@@ -73,7 +84,6 @@ class Menu extends React.Component {
   }
 
   changeSearchValue(newVal) {
-    this.setState({searchValue: newVal});
     searchNodes(newVal, this.props.cy);
   }
 
@@ -116,6 +126,10 @@ class Menu extends React.Component {
           ])
         ]),
         h('div.view-toolbar', toolButtonEls.concat([
+          h('div.tool-button', {
+            onClick: () => this.toggleExpansion(),
+            title: `${this.state.complexesExpanded ? 'Collapse' : 'Expand'} complexes`
+          }, [h('i.material-icons', this.state.complexesExpanded ? 'select_all' : 'settings_overscan')]),
           h('div', {
             className: classNames('tool-button', this.state.dropdownOpen ? 'tool-button-active' : ''),
             onClick: () => this.setState({ dropdownOpen: !this.state.dropdownOpen }),
@@ -146,7 +160,7 @@ class Menu extends React.Component {
                   placeholder: 'Search entities'
                 }),
                 h('div.view-search-clear', {
-                  onClick: () => this.searchField.value = '',
+                  onClick: () => {this.searchField.value = ''; this.changeSearchValue('');},
                 }, [h('i.material-icons', 'close')])
               ])
             ])

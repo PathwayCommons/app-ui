@@ -67,7 +67,7 @@ class Menu extends React.Component {
       return (
         h('div', {
           key: index,
-          className: classNames('tool-button', this.props.activeMenu === button ? 'active' : ''),
+          className: classNames('tool-button', this.props.activeMenu === button ? 'tool-button-active' : ''),
           onClick: () => this.changeMenu(button),
           title: toolButtons[button]
         }, [
@@ -88,35 +88,33 @@ class Menu extends React.Component {
           ]),
           h('div.title-container', [
             h('h4', `${this.props.name} | ${this.props.datasource}`)
-          ]),
-          h('div.search-nodes', {
-            onChange: e => searchNodes(e.target.value, this.props.cy),
-            title: 'Search for Nodes'
-          }, [
-            h('div.view-search-bar', [h('input.view-search', { type: 'text', placeholder: 'Search entities' })])
-          ]),
-          h('div.layout-dropdown-button', {
-            onClick: () => this.setState({ dropdownOpen: !this.state.dropdownOpen }),
-            title: 'Rearrange the entities on screen'
-          }, [
-              h('i.material-icons', 'shuffle')
-            ])
-        ]),
-        h('div', {
-          className: classNames('layout-dropdown', this.state.dropdownOpen ? 'open' : '')
-        }, [
-          h(Dropdown, {
-            value: this.props.currLayout,
-            onChange: value => this.props.updateLayout(value)
-          }, layoutItems)
+          ])
         ]),
         h('div.view-toolbar', toolButtonEls.concat([
           h('div', {
-            className: classNames('tool-button', this.state.searchOpen ? 'active' : ''),
+            className: classNames('tool-button', this.state.dropdownOpen ? 'tool-button-active' : ''),
+            onClick: () => this.setState({ dropdownOpen: !this.state.dropdownOpen }),
+            title: 'Rearrange entities'
+          }, [h('i.material-icons', 'shuffle')]),
+          h('div', {
+            className: classNames('layout-dropdown', this.state.dropdownOpen ? 'layout-dropdown-open' : '')
+          }, [
+            h(Dropdown, {
+              value: this.props.currLayout,
+              onChange: value => this.props.updateLayout(value)
+            }, layoutItems)
+          ]),
+          h('div', {
+            className: classNames('tool-button', this.state.searchOpen ? 'tool-button-active' : ''),
             onClick: () => this.setState({ searchOpen: !this.state.searchOpen }),
             title: 'Search entities'
+          }, [h('i.material-icons', 'search')]),
+          h('div', {
+            className: classNames('search-nodes', this.state.searchOpen ? 'search-nodes-active' : ''),
+            onChange: e => searchNodes(e.target.value, this.props.cy),
+            title: 'Search for Nodes'
           }, [
-              h('i.material-icons', 'search')
+              h('div.view-search-bar', [h('input.view-search', { type: 'text', placeholder: 'Search entities' })])
             ])
         ]))
       ])

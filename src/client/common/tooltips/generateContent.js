@@ -138,6 +138,7 @@ function valueToHtml(value, isCommaSeparated = false) {
   //Array Comma Separated -> HTML
   else if (value instanceof Array && isCommaSeparated) {
     //Add a comma to each value
+    value = deleteDuplicatesWithoutCase(value);
     value = value.map(value => h('div.tooltip-comma-item', value + ','));
 
     //Remove comma from the last value

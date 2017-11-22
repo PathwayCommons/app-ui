@@ -22,7 +22,7 @@ const stylesheet = sbgnStyleSheet(cytoscape)
 .css({
   'width': 45,
   'height': 45,
-  'label': node => ''
+  'label': node => node.isParent() ? '' : node.data('label')
 })
 .selector('.compoundcollapse-collapsed-node')
 .css({

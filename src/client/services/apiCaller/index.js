@@ -21,6 +21,23 @@ const apiCaller = {
     }).then(res => res.json());
   },
 
+  datasources(){
+    return fetch('/pc2/datasources', {
+      method: 'GET', headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+      }
+    }).then(res => res.json());
+  },
+  
+  querySearch(query){
+    return fetch(`/pc2/querySearch?${qs.stringify(query)}`,{
+      'Content-type': 'application/json',
+      'Accept': 'application/json'
+    }).then(res => res.json());
+  },
+
+
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into
   // a layout
   submitNodeChange(uri, version, nodeId, bbox) {
@@ -53,6 +70,7 @@ const apiCaller = {
       callback(nodeDiff);
     });
   },
+
 };
 
 module.exports = apiCaller;

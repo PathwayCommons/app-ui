@@ -8,7 +8,7 @@ const _ = require('lodash');
 const classNames = require('classnames');
 
 const Icon = require('../../common/components').Icon;
-const PathwayCommonsService = require('../../services').PathwayCommonsService;
+const apiCaller = require('../../services').apiCaller;
 
 class Search extends React.Component {
 
@@ -31,7 +31,7 @@ class Search extends React.Component {
       dataSources: []
     };
 
-    PathwayCommonsService.datasources()
+    apiCaller.datasources()
       .then(result => {
         this.setState({
           dataSources: Object.values(result)
@@ -47,7 +47,7 @@ class Search extends React.Component {
       this.setState({
         loading: true
       });
-      PathwayCommonsService.querySearch(query)
+      apiCaller.querySearch(query)
         .then(searchResults => {
           this.setState({
             searchResults: searchResults,

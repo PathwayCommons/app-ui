@@ -180,7 +180,7 @@ class Paint extends React.Component {
     });
 
 
-    PathwayCommonsService.querySearch(query, false)
+    apiCaller.querySearch(query)
       .then(searchResults => {
         const uri = _.get(searchResults, '0.uri', null);
 

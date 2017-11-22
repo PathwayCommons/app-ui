@@ -4,7 +4,7 @@ const Loader = require('react-loader');
 const classNames = require('classnames');
 
 const saveAs = require('file-saver').saveAs;
-const PathwayCommonsService = require('../../../../../../services/').PathwayCommonsService;
+const apiCaller = require('../../../../../../services/').apiCaller;
 
 const downloadTypes = {
   png: 'Image (PNG)',
@@ -71,7 +71,7 @@ class DownloadOption extends React.Component {
   initiatePCDownload(format, file_ext) {
     this.setState({ loading: true });
 
-    PathwayCommonsService.query(this.props.uri, format)
+    apiCaller.query(this.props.uri, format)
       .then(content => {
         let fileContent = content;
         if (typeof content === 'object') {

@@ -67,7 +67,7 @@ const getLayouts = (presetLayoutJSON) => {
   const humanCreatedLayout = {
     name: 'preset',
     displayName: 'Human-created',
-    description: 'Only the best layouts sourced by top biologists',
+    description: '',
     options: {
       name: 'preset',
       positions: node => presetLayoutJSON[node.id()],

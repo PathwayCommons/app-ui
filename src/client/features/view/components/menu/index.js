@@ -19,7 +19,7 @@ const toolButtons = {
 - name
 - datasource
 - availableLayouts
-- initialLayout
+- currLayout
 */
 class Menu extends React.Component {
   constructor(props) {
@@ -27,16 +27,20 @@ class Menu extends React.Component {
     this.state = {
       dropdownOpen: false,
       searchOpen: false,
-      selectedLayout: props.initialLayout
+      selectedLayout: props.currLayout,
+      initialLayoutSet: false
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({
-      selectedLayout: nextProps.initialLayout
-    }, () => {
-      this.performLayout(this.state.selectedLayout);
-    });
+    if (!this.state.initialLayoutSet) {
+      this.setState({
+        selectedLayout: nextProps.currLayout,
+        initialLayoutSet: true
+      }, () => {
+        this.performLayout(this.state.selectedLayout);
+      });
+    }
   }
 
   performLayout(selectedLayoutName) {
@@ -153,19 +157,3 @@ class Menu extends React.Component {
 }
 
 module.exports = Menu;
-
-    // Map tool buttons to actual elements with tooltips
-    // const toolButtons = toolButtonNames.map((button, index) => {
-    //   return (
-    //     h('div', {
-    //       key: index,
-    //       className: classNames('tool-button', this.state.activeMenu === button ? 'active' : ''),
-    //       onClick: () => this.handleIconClick(button),
-    //       title: tooltips[index]
-    //     }, [
-    //         h('i.material-icons', button)
-    //       ])
-    //   );
-    // });
-
-    // h('div.sidebar-select', toolButtons),

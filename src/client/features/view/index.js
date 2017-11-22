@@ -66,9 +66,9 @@ class View extends React.Component {
         name: state.metadata.name,
         datasource: state.metadata.datasource,
         availableLayouts: state.availableLayouts,
-        initialLayout: state.layout,
-        cy: state.cy,
         currLayout: state.layout,
+        cy: state.cy,
+        changeLayout: layout => this.setState({layout: layout}),
         activeMenu: state.activeMenu,
         changeMenu: menu => this.setState({activeMenu: menu})
       }),

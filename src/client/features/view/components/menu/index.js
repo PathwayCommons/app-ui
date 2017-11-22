@@ -38,7 +38,11 @@ class Menu extends React.Component {
     const cy = props.cy;
 
     const layoutOpts = _.find(props.availableLayouts, (layout) => layout.displayName === selectedLayoutName).options;
-    cy.layout(layoutOpts).run();
+    let layout = cy.layout(layoutOpts).run();
+
+    layout.pon('layoutstop').then(function( event ){
+      cy.fit(100);
+    });
   }
 
 

@@ -46,7 +46,7 @@ class Graph extends React.Component {
     cy.add(graphJSON);
 
     //toolTipCreator.bindTippyToElements(cy);
-    this.setState({graphRendered: true});
+    this.setState({ graphRendered: true });
 
   }
 

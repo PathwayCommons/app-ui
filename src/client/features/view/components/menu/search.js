@@ -4,7 +4,7 @@ const _ = require('lodash');
 function updateStyling(style, matchedNodes) {
 
   matchedNodes.filter(node => !node.isParent()).forEach(node => {
-      applySearchStyle(node, style);      
+    applySearchStyle(node, style);
   });
 }
 
@@ -65,13 +65,13 @@ function searchNodes(query, cy) {
   //Define highlighting style
   const searchStyle = {
     'overlay-color': 'yellow',
-    'overlay-padding' : 0,
+    'overlay-padding': 0,
     'overlay-opacity': 0.5
   };
 
   const baseStyle = {
     'overlay-color': '#000',
-    'overlay-padding' : 0,
+    'overlay-padding': 0,
     'overlay-opacity': '0'
   };
 
@@ -80,8 +80,19 @@ function searchNodes(query, cy) {
 
   //Apply styling
   if (matched.length > 0 && isBlank) {
+
+    //Animate zoom and fit
+    cy.animate({
+      fit: {
+        eles: cy.elements(),
+        padding: 100
+      }
+    },
+      {
+        duration: 700
+      });
+
     updateStyling(searchStyle, matched, cy);
-    cy.fit();
   }
 }
 

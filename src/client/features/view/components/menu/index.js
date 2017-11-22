@@ -28,7 +28,8 @@ class Menu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      dropdownOpen: false
+      dropdownOpen: false,
+      searchOpen: false
     };
   }
 
@@ -109,7 +110,15 @@ class Menu extends React.Component {
             onChange: value => this.props.updateLayout(value)
           }, layoutItems)
         ]),
-        h('div.view-toolbar', toolButtonEls)
+        h('div.view-toolbar', toolButtonEls.concat([
+          h('div', {
+            className: classNames('tool-button', this.state.searchOpen ? 'active' : ''),
+            onClick: () => this.setState({ searchOpen: !this.state.searchOpen }),
+            title: 'Search entities'
+          }, [
+              h('i.material-icons', 'search')
+            ])
+        ]))
       ])
     );
   }

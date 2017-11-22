@@ -90,10 +90,12 @@ class View extends React.Component {
         animate: true,
         animationDuration: 500
       };
+      cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isExpanded()).collapse();
       cy.layout(options).run();
       return;
     }
-    
+
+    cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isExpanded()).collapse();
     let layout = cy.layout(lo.layoutMap.get(layoutName));
     let that = this;
     layout.pon('layoutstop').then(function () {

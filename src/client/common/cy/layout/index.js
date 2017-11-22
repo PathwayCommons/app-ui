@@ -22,13 +22,28 @@ const layoutDescs = {
 
 const defaultLayout = 'Layered';
 
-const layoutNames = () => {
+const layoutNames = (graphSize) => {
   let defaults = [...layoutMap.keys()];
+
+  if (graphSize >= coseBilkentMaxGraphSize) {
+    const index = defaults.indexOf('Force Directed 2');
+
+    if (index > -1) {
+      defaults.splice(index, 1);
+    }
+  }
+
   return defaults;
 };
 
-const getDefaultLayout = () => {
-  return 'Force Directed';
+const getDefaultLayout = (graphSize) => {
+  let layout = 'Layered';
+
+  if (graphSize<= coseBilkentMaxGraphSize) {
+    layout = 'Force Directed';
+  }
+
+  return layout;
 };
 
 module.exports = {humanLayoutName, layoutDescs, layoutMap, defaultLayout, layoutNames, getDefaultLayout};

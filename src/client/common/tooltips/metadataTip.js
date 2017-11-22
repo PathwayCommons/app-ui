@@ -1,7 +1,8 @@
 const h = require('hyperscript');
 const classNames = require('classnames');
 const tippy = require('tippy.js');
-const config = require('../../config');
+
+const config = require('./config');
 const generate = require('./generateContent');
 const formatArray = require('./formatArray');
 const getPublications = require('./publications');
@@ -24,7 +25,7 @@ class MetadataTip {
     let tooltipExt = tooltip;
 
     getPublications(this.data).then(function(data) {
-      this.data = data; 
+      this.data = data;
 
       //Hide all other tooltips
       this.hideAll(cy);
@@ -37,10 +38,9 @@ class MetadataTip {
 
         //Create tippy object
         let refObject = this.cyElement.popperRef();
-        tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true, trigger: 'manual' });
-        tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true, trigger: 'manual' });
-
-        //Resolve Reference issues
+        tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow : true });
+        tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow : true  });
+               //Resolve Reference issues
         tooltip.selector.dim = refObject.dim;
         tooltip.selector.cyElement = refObject.cyElement;
         tooltipExt.selector.dim = refObject.dim;
@@ -101,6 +101,10 @@ class MetadataTip {
     let data = formatArray.collectionToTop(this.data, config.tooltipOrder);
     data = formatArray.collectionToBottom(data, config.tooltipReverseOrder);
     if (!(data)) data = [];
+
+    if (!(data) || data.length === 0) {
+      return generate.noDataWarning(this.name);
+    }
 
     //Ensure name is not blank
     this.validateName();

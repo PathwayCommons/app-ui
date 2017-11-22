@@ -36,7 +36,7 @@ class DownloadOption extends React.Component {
           setTimeout(() => {
             saveAs(this.props.cy.png({
               output: 'blob',
-              scale: 5,
+              scale: 2,
               bg: 'white',
               full: true
             }), this.props.name + '.png');

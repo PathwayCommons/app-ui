@@ -1,7 +1,7 @@
 const h = require('hyperscript');
 const classNames = require('classnames');
 const _ = require('lodash');
-const config = require('../../config');
+const config = require('./config');
 
 
 //Handle name related metadata fields
@@ -154,7 +154,7 @@ function valueToHtml(value, isCommaSeparated = false) {
 }
 
 //Convert a generic array or string to an html list
-//Array -> HTML 
+//Array -> HTML
 function makeList(items, ulClass = 'ul.value-list', liClass = 'li.value-list-item') {
   return h(ulClass, items.map(item => h(liClass, item)));
 }
@@ -167,7 +167,7 @@ function makeTooltipItem(value, field) {
 
 //Delete duplicates and ignore case
 //Requires a valid array
-//Array -> Array 
+//Array -> Array
 function deleteDuplicatesWithoutCase(list) {
   if (!(list instanceof Array)) {
     return list;
@@ -186,7 +186,7 @@ function deleteDuplicatesWithoutCase(list) {
 //Generate a data source link based on database name
 //Requires a valid database name
 //Note : prefix is optional
-//String -> HTML 
+//String -> HTML
 function generateDataSourceLink(name, prefix = '') {
   let db = config.databases;
   let link = db.filter(value => name.toUpperCase().indexOf(value[0].toUpperCase()) !== -1);
@@ -246,7 +246,7 @@ function generateIdList(dbIdObject, trim) {
 //Generate a database link
 //Note - optional isDbVisible parameter determines
 //       if the database name should be displayed
-//Strings -> HTML 
+//Strings -> HTML
 function generateDBLink(dbName, dbId, isDbVisible) {
   //Get base url for dbid
   let db = config.databases;
@@ -295,7 +295,7 @@ function filterChemicalFormulas(list) {
 //Requires a valid publication metadata array
 //Array -> HTML
 function publicationList(data) {
-  //Get all publication title links 
+  //Get all publication title links
   const publicationList = data.map(publication => {
     const id = publication.id;
     const title = publication.title;

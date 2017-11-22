@@ -1,21 +1,19 @@
 const React = require('react');
 const h = require('react-hyperscript');
+const _ = require('lodash');
 
 const { Menu, Graph, EditWarning, Sidebar } = require('./components/');
 
 const lo = require('../../common/cy/layout/');
-const make_cytoscape = require('./cy/');
-const bindMove = require('./cy/events/move');
-const hoverStyles = require('./cy/events/hover');
-const _ = require('lodash');
-
+const make_cytoscape = require('../../common/cy/');
+const bindMove = require('../../common/cy/events/move');
 const queryString = require('query-string');
 const { apiCaller } = require('../../services/');
 
 class View extends React.Component {
   constructor(props) {
     super(props);
-    const query = queryString.parse(window.location.search);
+    const query = queryString.parse(props.location.search);
     this.state = {
       query: query,
 
@@ -25,26 +23,31 @@ class View extends React.Component {
       layout: lo.defaultLayout,
       availableLayouts: [],
 
-      name: '',
-      datasource: '',
+
+      metadata: {},
 
       activateWarning: this.props.admin || false,
       warningMessage: this.props.admin ? 'Be careful! Your changes are live.' : '',
-
-      activeDisplayedNode: ''
     };
 
-    apiCaller.getGraphAndLayout(query.uri, 'latest').then(graphJSON => this.setState({
-      graphJSON: graphJSON.graph,
-      layoutJSON: graphJSON.layout,
-      name: _.get(graphJSON, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
-      datasource: _.get(graphJSON, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source')
-    }));
+
+    apiCaller.getGraphAndLayout(query.uri, 'latest').then(graphJSON => {
+      this.setState({
+        graphJSON: graphJSON.graph,
+        layoutJSON: graphJSON.layout,
+        metadata: {
+          name: _.get(graphJSON, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
+          datasource: _.get(graphJSON, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
+          comments: graphJSON.graph.pathwayMetadata.comments,
+          organism: graphJSON.graph.pathwayMetadata.organism
+        }
+      });
+    });
   }
 
   componentWillMount() {
     this.setState({
-      cy: make_cytoscape({ headless: true }, nodeId => this.setState({ activeDisplayedNode: nodeId }))
+      cy: make_cytoscape({ headless: true })
     }, () => {
       if (this.props.admin) {
         bindMove(this.state.query.uri, 'latest', this.state.cy);
@@ -108,36 +111,36 @@ class View extends React.Component {
   }
 
   render() {
-    return (
-      h('div.View', [
-        h(Menu, {
-          name: this.state.name,
-          datasource: this.state.datasource,
-          layouts: this.state.availableLayouts,
-          updateLayout: layout => this.performLayout(layout),
-          cy: this.state.cy,
-          currLayout: this.state.layout
-        }),
-        h(Graph, {
-          updateRenderStatus: status => this.updateRenderStatus(status),
-          updateLayout: () => this.performLayout(this.state.layout),
-          cy: this.state.cy,
-          graphJSON: this.state.graphJSON
-        }),
-        h(EditWarning, {
-          active: this.state.activateWarning,
-          deactivate: () => this.setState({ activateWarning: false }),
-          dur: 5000
-        }, this.state.warningMessage),
-        h(Sidebar, {
-          cy: this.state.cy,
-          uri: this.state.query.uri,
-          name: this.state.name,
-          datasource: this.state.datasource,
-          nodeId: this.state.activeDisplayedNode
-        })
-      ])
-    );
+    const state = this.state;
+
+    return h('div.View', [
+      h(Menu, {
+        name: state.metadata.name,
+        datasource: state.metadata.datasource,
+        layouts: state.availableLayouts,
+        updateLayout: layout => this.performLayout(layout),
+        cy: state.cy,
+        currLayout: state.layout
+      }),
+      h(Graph, {
+        updateRenderStatus: status => this.updateRenderStatus(status),
+        updateLayout: () => this.performLayout(state.layout),
+        cy: state.cy,
+        graphJSON: state.graphJSON
+      }),
+      h(EditWarning, {
+        active: state.activateWarning,
+        deactivate: () => this.setState({ activateWarning: false }),
+        dur: 5000
+      }, state.warningMessage),
+      h(Sidebar, {
+        cy: state.cy,
+        uri: state.query.uri,
+        name: state.metadata.name,
+        datasource: state.metadata.datasource,
+        comments: state.metadata.comments
+      })
+    ]);
   }
 }
 

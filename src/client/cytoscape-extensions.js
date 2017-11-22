@@ -13,7 +13,6 @@ const fisheye = require('cytoscape-fisheye');
 //Tooltips
 const popper = require('cytoscape-popper');
 
-
 module.exports = () => {
   cytoscape.use(cola);
   cytoscape.use(klay, klayjs);

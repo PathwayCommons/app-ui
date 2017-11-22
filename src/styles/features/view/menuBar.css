@@ -59,6 +59,8 @@
 
   height: calc(var(--icon-size) * 3 / 2);
   //width: calc((var(--icon-size) * 3 / 2) * var(--number-of-sidebar-icons));
+  margin-left: 0.12em;
+  margin-right: 0.12em;
 
   position: absolute;
   top: calc(100% + 1px);
@@ -76,7 +78,8 @@
 
   height: calc(var(--icon-size) * 3 / 2.2);
   width: calc(var(--icon-size) * 3 / 2.2);
-  margin-right: 0.25em;
+  margin-left: 0.12em;
+  margin-right: 0.12em;
 
   position: relative;
 
@@ -90,10 +93,6 @@
 
   cursor: pointer;
 
-  &:first-child {
-    margin-left: 0.25em;
-  }
-
   &:hover {
     background-color: var(--light-base-colour-dark);
   }
@@ -106,16 +105,14 @@
 .layout-dropdown {
   @extend %flex-center;
 
+  height: calc(var(--icon-size) * 3 / 2);
   width: 0;
-  margin: 0;
+  padding: 0;
 
-  //box-sizing: border-box;
+  box-sizing: border-box;
   overflow: hidden;
 
-  // transform-origin: left center;
-  // transform: scaleX(0);
-
-  display: flex;
+  font-size: 0.9em;
 
   transition: all 0.1s ease-out;
   
@@ -126,10 +123,10 @@
   }
 
   &.layout-dropdown-open {
-    width: auto;
-    margin-left: 1em;
-    margin-right: 1em;
-    //transform: scaleX(1);
+    width: 11em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    overflow: visible;
   }
 }
 
@@ -138,38 +135,57 @@
   @extend %no-select;
 
   height: calc(var(--icon-size) * 3 / 2);
-  padding-right: 1em;
+  width: 0;
+  padding: 0;
+
   box-sizing: border-box;
+  overflow: hidden;
 
-  transform-origin: left center;
-  transform: scaleX(0);
-
-  color: var(--dark-base-colour);
-
-  cursor: pointer;
+  font-size: 0.9em;
 
   transition: all 0.1s ease-out;
 
-  &.search-nodes-active {
-    transform: scaleX(1);
+  &.search-nodes-open {
+    width: 11em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    overflow: visible;
   }
 }
 
 .view-search-bar {
+  @extend %flex-center;
+
+  height: 1.85em;
+  width: 100%;
   background-color: white;
-  padding: 0.2em;
-  font-size: 0.9em;
-  line-height: 0.9em;
+  padding: 0em 0.5em;
   box-sizing: border-box;
   border: 1px solid var(--light-base-colour-dark);
-
-  transition: box-shadow 0.15s ease-in-out;
 }
 
 .view-search {
-  height: 100%;
+  height: 100% !important;
   width: 100%;
+
+  padding: 0 0 1px 0 !important;
+
   border-width: 0px !important;
+}
+
+.view-search-clear {
+  @extend %flex-center;
+
+  height: calc(var(--icon-size) * 2 / 3);
+  cursor: pointer;
+
+  color: var(--dark-base-colour);
+
+  transition: all 0.1s linear;
+
+  &:hover {
+    color: var(--accent-1-colour);
+  }
 }
 
 

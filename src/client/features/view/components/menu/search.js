@@ -2,16 +2,9 @@ const _ = require('lodash');
 
 //Apply hover styling to a collection of nodes
 function updateStyling(style, matchedNodes) {
-  matchedNodes.forEach(node => {
-    let isCompartment = node.data('class') === 'compartment';
 
-    //Collapse Expanded Targets
-    if (node.isExpanded() && !isCompartment) { node.collapse(); }
-
-    //Apply style to the parent
-    if (node.isChild() && node.parent().data('class') !== 'compartment') { node = node.parent(); }
-
-    applySearchStyle(node, style);
+  matchedNodes.filter(node => !node.isParent()).forEach(node => {
+      applySearchStyle(node, style);      
   });
 }
 

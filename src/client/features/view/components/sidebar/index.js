@@ -17,7 +17,7 @@ const toolButtonNames = [
 const tooltips = [
   'Extra information about this network',
   'Download options',
-  'Interpreting the display'        
+  'Interpreting the display'
 ];
 
 /* Props
@@ -25,6 +25,7 @@ const tooltips = [
 - uri
 - name
 - datasource
+- comments
 */
 
 class Sidebar extends React.Component {
@@ -59,7 +60,7 @@ class Sidebar extends React.Component {
       }
     });
   }
-  
+
   // Used for the panel buttons to set menus in the sidebar and dynamically change the style
   handleIconClick(button) {
     if (button === this.state.activeMenu) {
@@ -75,21 +76,22 @@ class Sidebar extends React.Component {
     }
   }
 
-  //Receive updated props and set the state to match the desired result. 
-  componentWillReceiveProps(nextProps){
+  //Receive updated props and set the state to match the desired result.
+  componentWillReceiveProps(nextProps) {
     let node = nextProps.cy.getElementById(nextProps.nodeId);
     let tooltip = node.scratch('tooltip');
     let isChanged = nextProps.nodeId === this.state.nodeId;
-    if(tooltip && !isChanged) {
-      this.setState({open: true, activeMenu: 'bubble_chart', nodeId: nextProps.nodeId});
+    if (tooltip && !isChanged) {
+      this.setState({ open: true, activeMenu: 'bubble_chart', nodeId: nextProps.nodeId });
     }
   }
 
   render() {
+    const props = this.props;
     const menus = {
-      'info': h(GraphInfoMenu, {'uri': this.props.uri, 'name': this.props.name, 'datasource': this.props.datasource}),
-      'file_download': h(FileDownloadMenu, {'cy': this.props.cy, 'uri': this.props.uri, 'name': this.props.name}),
-      'help': h(HelpMenu)
+      info: h(GraphInfoMenu, { uri: props.uri, name: props.name, datasource: props.datasource, comments: props.comments }),
+      file_download: h(FileDownloadMenu, { cy: props.cy, uri: props.uri, name: props.name }),
+      help: h(HelpMenu)
     };
 
     // Map tool buttons to actual elements with tooltips
@@ -101,8 +103,8 @@ class Sidebar extends React.Component {
           onClick: () => this.handleIconClick(button),
           title: tooltips[index]
         }, [
-          h('i.material-icons', button)
-        ])
+            h('i.material-icons', button)
+          ])
       );
     });
 
@@ -111,23 +113,24 @@ class Sidebar extends React.Component {
         className: classNames('sidebar-menu', this.state.open ? 'open' : ''),
         ref: dom => this.sidebarContainer = dom
       }, [
-        h('div.sidebar-select', toolButtons),
-        h('div', {
-          className: classNames('sidebar-select', 'conditional', this.state.open ? 'open' : '')
-        }, [
-          h('div.tool-button', {
-            onClick: () => this.setState({open: false, activeMenu: ''}),
-            title: 'Close the sidebar'
+          h('div.sidebar-select', toolButtons),
+          h('div', {
+            className: classNames('sidebar-select', 'conditional', this.state.open ? 'open' : '')
           }, [
-            h('i.material-icons', 'close')
-          ])
-        ]),
-        h('div.sidebar-content', [
-          h('div.sidebar-text', [
-            menus[this.state.activeMenu]
+              h('div' , {
+                className: classNames('tool-button',this.state.open ? 'open' : 'closed'),
+                onClick: () => this.setState({ open: false, activeMenu: '' }),
+                title: 'Close the sidebar'
+              }, [
+                  h('i.material-icons', 'close')
+                ])
+            ]),
+          h('div.sidebar-content', [
+            h('div.sidebar-text', [
+              menus[this.state.activeMenu]
+            ])
           ])
         ])
-      ])
     );
   }
 }

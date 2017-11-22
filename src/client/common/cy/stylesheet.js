@@ -25,7 +25,6 @@ const stylesheet = sbgnStyleSheet(cytoscape)
 })
 .selector('.compoundcollapse-collapsed-node')
 .css({
-  'border-style': 'dashed',
   'font-size': 20,
   'background-color': 'rgb(44,62,80)',
   'color': 'white',

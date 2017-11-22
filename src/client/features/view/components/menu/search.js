@@ -72,11 +72,13 @@ function searchNodes(query, cy) {
   //Define highlighting style
   const searchStyle = {
     'overlay-color': 'yellow',
+    'overlay-padding' : 0,
     'overlay-opacity': 0.5
   };
 
   const baseStyle = {
     'overlay-color': '#000',
+    'overlay-padding' : 0,
     'overlay-opacity': '0'
   };
 

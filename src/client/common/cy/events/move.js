@@ -1,4 +1,4 @@
-const apiCaller = require('../../../services/apiCaller/').apiCaller;
+const apiCaller = require('../../../services/apiCaller/');
 
 const bindMove = (uri, version, cy) => {
   cy.on('free', 'node', function(evt) {

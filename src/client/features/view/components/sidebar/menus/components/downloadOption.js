@@ -4,7 +4,7 @@ const Loader = require('react-loader');
 const classNames = require('classnames');
 
 const saveAs = require('file-saver').saveAs;
-const apiCaller = require('../../../../../../services/').apiCaller;
+const apiCaller = require('../../../../../../services/');
 
 const downloadTypes = {
   png: 'Image (PNG)',

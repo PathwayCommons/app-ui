@@ -5,11 +5,7 @@ const color = require('color');
 const _ = require('lodash');
 const classNames = require('classnames');
 
-const cytoscape = require('cytoscape');
-const cose = require('cytoscape-cose-bilkent');
-cytoscape.use(cose);
-
-const sbgnStylesheet = require('cytoscape-sbgn-stylesheet');
+const make_cytoscape = require('../../common/cy');
 
 const Icon = require('../../common/components').Icon;
 const { CDC, PathwayCommonsService } = require('../../services');
@@ -104,12 +100,7 @@ class Paint extends React.Component {
   constructor(props) {
     super(props);
 
-    const cy = cytoscape({
-      style: sbgnStylesheet(cytoscape),
-      minZoom: 0.16,
-      maxZoom: 4,
-      headless: true
-    });
+    const cy = make_cytoscape({headless: true});
 
     this.state = {
       rawEnrichmentData: {},
@@ -128,6 +119,7 @@ class Paint extends React.Component {
         .then(response => response.json())
         .then(json => {
           this.setState({rawEnrichmentData: json});
+          console.log(json);
 
           const expressionClasses = _.get(json.dataSetClassList, '0.classes', []);
           const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
@@ -199,7 +191,8 @@ class Paint extends React.Component {
 
             state.cy.layout({
               name: 'cose-bilkent',
-              nodeDimensionsIncludeLabels: true
+              randomize: false
+              // nodeDimensionsIncludeLabels: true
             }).run();
 
           });

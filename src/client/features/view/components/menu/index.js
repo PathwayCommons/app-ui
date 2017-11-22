@@ -44,7 +44,7 @@ class Menu extends React.Component {
 
   // Used for the panel buttons to set menus in the sidebar and dynamically change the style
   changeMenu(menu) {
-    this.props.changeMenu(menu === this.state.activeMenu ? '' : menu);
+    this.props.changeMenu(menu === this.props.activeMenu ? '' : menu);
   }
 
   render() {

@@ -120,7 +120,8 @@ class View extends React.Component {
           updateLayout: layout => this.performLayout(layout),
           cy: this.state.cy,
           currLayout: this.state.layout,
-          changeMenu: menu => this.setState({activeMenu: menu})
+          changeMenu: menu => this.setState({activeMenu: menu}),
+          activeMenu: this.state.activeMenu
         }),
         h(Graph, {
           updateRenderStatus: status => this.updateRenderStatus(status),

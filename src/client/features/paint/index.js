@@ -59,10 +59,14 @@ class Network extends React.Component {
     return color.hsl(hslValue, 100, 50).string();
   }
 
-  applyExpressionData() {
-    const props = this.props;
-    const expressionTable = props.expressionTable;
+  componentWillReceiveProps(nextProps) {
+    if (!_.isEmpty(nextProps.expressionTable)) {
+      this.applyExpressionData(nextProps);
+    }
+  }
 
+  applyExpressionData(props) {
+    const expressionTable = props.expressionTable;
     const networkNodes = _.uniq(props.cy.nodes('[class="macromolecule"]').map(node => node.data('label'))).sort();
 
     const expressionsInNetwork = expressionTable.rows.filter(row => networkNodes.includes(row.geneName));
@@ -119,7 +123,6 @@ class Paint extends React.Component {
         .then(response => response.json())
         .then(json => {
           this.setState({rawEnrichmentData: json});
-          console.log(json);
 
           const expressionClasses = _.get(json.dataSetClassList, '0.classes', []);
           const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
@@ -145,33 +148,6 @@ class Paint extends React.Component {
       datasource: 'reactome'
     };
 
-    const expressionTable = {};
-
-    const header = _.uniq(expressionClasses);
-
-    expressionTable.header = header;
-    expressionTable.rows = expressions.map(enrichment => {
-      const geneName = enrichment.geneName;
-      const values = enrichment.values;
-
-      const class2ValuesMap = new Map();
-
-      for (let enrichmentClass of header) {
-        class2ValuesMap.set(enrichmentClass, []);
-      }
-
-      for (let i = 0; i < values.length; i++) {
-        class2ValuesMap.get(expressionClasses[i]).push(values[i]);
-      }
-
-      return { geneName: geneName, classValues: Array.from(class2ValuesMap.entries()).map((entry =>  _.mean(entry[1]).toFixed(2))) };
-    });
-
-    this.setState({
-      expressionTable: expressionTable
-    });
-
-
     PathwayCommonsService.querySearch(query, false)
       .then(searchResults => {
         const uri = _.get(searchResults, '0.uri', null);
@@ -191,10 +167,36 @@ class Paint extends React.Component {
 
             state.cy.layout({
               name: 'cose-bilkent',
-              randomize: false
-              // nodeDimensionsIncludeLabels: true
+              randomize: false,
+              nodeDimensionsIncludeLabels: true
             }).run();
 
+
+            const expressionTable = {};
+
+            const header = _.uniq(expressionClasses);
+
+            expressionTable.header = header;
+            expressionTable.rows = expressions.map(expression => {
+              const geneName = expression.geneName;
+              const values = expression.values;
+
+              const class2ValuesMap = new Map();
+
+              for (let expressionClass of header) {
+                class2ValuesMap.set(expressionClass, []);
+              }
+
+              for (let i = 0; i < values.length; i++) {
+                class2ValuesMap.get(expressionClasses[i]).push(values[i]);
+              }
+
+              return { geneName: geneName, classValues: Array.from(class2ValuesMap.entries()).map((entry =>  _.mean(entry[1]).toFixed(2))) };
+            });
+
+            this.setState({
+              expressionTable: expressionTable
+            });
           });
         }
     });

@@ -99,17 +99,9 @@ class Search extends React.Component {
     const props = this.props;
     const state = this.state;
 
-    const exampleSearches = ['TP53', 'Glycolysis', 'Ethanol'];
-
-    let examples = exampleSearches.map(search => h('span.search-example', {
-      onClick: () => this.setAndSubmitSearchQuery({q: search})
-    }, search));
-
-    let i = 1;
-    while (i < examples.length) {
-      examples.splice(i, 0, ', ');
-      i += 2;
-    }
+    let Example = props => h('span.search-example', {
+      onClick: () => this.setAndSubmitSearchQuery({q: props.search})
+    }, props.search);
 
     const searchResults = state.searchResults.map(result => {
       const dsInfo = _.find(state.dataSources, ds => {
@@ -189,7 +181,11 @@ class Search extends React.Component {
                   ])
                 ])
               ]),
-              h('div.search-suggestions', ['e.g. '].concat(examples)),
+              h('div.search-suggestions', ['e.g. ',
+              h(Example, {search: 'TP53'}), ', ',
+              h(Example, {search: 'Glycolysis'}), ', ',
+              h(Example, {search: 'Ethanol'})
+            ]),
               h('div.search-tabs', searchTypeTabs.concat([
                 h('div', {
                   className: classNames('search-option-item', 'search-option-item-tools', state.showFilters ? 'search-option-item-tools-active' : ''),

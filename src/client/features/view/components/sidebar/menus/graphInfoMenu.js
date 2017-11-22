@@ -2,7 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
 
-const datasourceLinks = require('../../../config').databases;
+const datasourceLinks = require('../../../../../common/tooltips/config').databases;
 
 class GraphInfoMenu extends React.Component {
   getDatasourceLink(datasource) {

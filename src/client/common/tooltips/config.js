@@ -27,18 +27,11 @@ const publicationsURL = 'http://identifiers.org/pubmed/';
 const tooltipOrder = ['Type', 'Display Name', 'Standard Name', 'Names', 'Database IDs', 'Publications'];
 const tooltipReverseOrder = ['Comment'];
 
-// Buttons for opening the sidebar, along with their descriptions
-const toolButtons = {
-  file_download: 'Download options',
-  help: 'Interpreting the display'
-};
-
 module.exports = {
   databases,
   publicationsURL,
   tooltipOrder,
-  tooltipReverseOrder,
-  toolButtons
+  tooltipReverseOrder
 };
 
 /*

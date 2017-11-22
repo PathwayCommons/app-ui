@@ -3,8 +3,6 @@ const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
 const classNames = require('classnames');
 
-const cfg = require('../../config');
-
 const layoutConf = require('../../../../common/cy/layout');
 
 const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
@@ -12,6 +10,12 @@ const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
 const searchNodes = require('./search');
 
 const tippy = require('tippy.js');
+
+// Buttons for opening the sidebar, along with their descriptions
+const toolButtons = {
+  file_download: 'Download options',
+  help: 'Interpreting the display'
+};
 
 /* Props
 - name
@@ -58,13 +62,13 @@ class Menu extends React.Component {
       );
     });
 
-    const toolButtonEls = Object.keys(cfg.toolButtons).map((button, index) => {
+    const toolButtonEls = Object.keys(toolButtons).map((button, index) => {
       return (
         h('div', {
           key: index,
           className: classNames('tool-button', this.props.activeMenu === button ? 'active' : ''),
           onClick: () => this.changeMenu(button),
-          title: cfg.toolButtons[button]
+          title: toolButtons[button]
         }, [
             h('i.material-icons', button)
           ])

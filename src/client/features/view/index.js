@@ -24,7 +24,11 @@ class View extends React.Component {
       layout: '',
       availableLayouts: [],
 
-      metadata: {},
+      metadata: {
+        name: '',
+        datasource: '',
+        comments: []
+      },
 
       activateWarning: this.props.admin || false,
       warningMessage: this.props.admin ? 'Be careful! Your changes are live.' : '',

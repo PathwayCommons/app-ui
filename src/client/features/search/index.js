@@ -7,7 +7,6 @@ const queryString = require('query-string');
 const _ = require('lodash');
 const classNames = require('classnames');
 
-const config = require('../view/config');
 const Icon = require('../../common/components').Icon;
 const PathwayCommonsService = require('../../services').PathwayCommonsService;
 

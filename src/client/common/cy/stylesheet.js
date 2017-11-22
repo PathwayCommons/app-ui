@@ -21,7 +21,8 @@ const stylesheet = sbgnStyleSheet(cytoscape)
 .selector('node[class="complex"]')
 .css({
   'width': 45,
-  'height': 45
+  'height': 45,
+  'label': node => ''
 })
 .selector('.compoundcollapse-collapsed-node')
 .css({

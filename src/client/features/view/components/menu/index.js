@@ -5,7 +5,6 @@ const classNames = require('classnames');
 const tippy = require('tippy.js');
 const _ = require('lodash');
 
-const layoutConf = require('../../../../common/cy/layout');
 const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
 
 const searchNodes = require('./search');
@@ -14,39 +13,32 @@ const searchNodes = require('./search');
 - name
 - datasource
 - availableLayouts
-- currLayout
-- layoutJSON
+- initialLayout
 */
 class Menu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      dropdownOpen: false
+      dropdownOpen: false,
+      selectedLayout: props.initialLayout
     };
   }
 
-  performLayout(layoutName) {
-    this.setState({ layout: layoutName });
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      selectedLayout: nextProps.initialLayout
+    }, () => {
+      this.performLayout(this.state.selectedLayout);
+    });
+  }
 
+  performLayout(selectedLayoutName) {
+    this.setState({ selectedLayout: selectedLayoutName });
     const props = this.props;
     const cy = props.cy;
-    const layoutJSON = props.layoutJSON;
 
-    let options;
-    if (!_.isEmpty(layoutJSON)) {
-      options = {
-        name: 'preset',
-        positions: node => layoutJSON[node.id()],
-        animate: true,
-        animationDuration: 500
-      };
-      cy.layout(options).run();
-
-    } else {
-      options = layoutConf.layoutMap.get(layoutName);
-    }
-
-    cy.layout(options).run();
+    const layoutOpts = _.find(props.availableLayouts, (layout) => layout.displayName === selectedLayoutName).options;
+    cy.layout(layoutOpts).run();
   }
 
 
@@ -68,8 +60,8 @@ class Menu extends React.Component {
       return (
         h(DropdownOption, {
           key: index,
-          value: layout,
-          description: layoutConf.layoutDescs[layout]
+          value: layout.displayName,
+          description: layout.description
         })
       );
     });
@@ -104,7 +96,7 @@ class Menu extends React.Component {
           className: classNames('layout-dropdown', this.state.dropdownOpen ? 'open' : '')
         }, [
           h(Dropdown, {
-            value: this.props.currLayout,
+            value: this.state.selectedLayout,
             onChange: value => this.performLayout(value)
           }, layoutItems)
         ])

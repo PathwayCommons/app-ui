@@ -4,7 +4,7 @@ const _ = require('lodash');
 
 const { Menu, Graph, EditWarning, Sidebar } = require('./components/');
 
-const lo = require('../../common/cy/layout/');
+const getLayouts = require('../../common/cy/layout/');
 const make_cytoscape = require('../../common/cy/');
 const bindMove = require('../../common/cy/events/move');
 
@@ -20,10 +20,9 @@ class View extends React.Component {
 
       cy: make_cytoscape({ headless: true }),
       graphJSON: null,
-      layoutJSON: null,
-      layout: lo.defaultLayout,
-      availableLayouts: lo.layoutNames,
 
+      layout: '',
+      availableLayouts: [],
 
       metadata: {},
 
@@ -32,9 +31,12 @@ class View extends React.Component {
     };
 
     CDC.getGraphAndLayout(query.uri, 'latest').then(graphJSON => {
+      const layoutConf = getLayouts(graphJSON.layout);
+
       this.setState({
         graphJSON: graphJSON.graph,
-        layoutJSON: graphJSON.layout,
+        layout: layoutConf.defaultLayout,
+        availableLayouts: layoutConf.layouts,
         metadata: {
           name: graphJSON.graph.pathwayMetadata.title[0] || 'Unknown Network',
           datasource: graphJSON.graph.pathwayMetadata.dataSource[0] || 'Unknown Data Source',
@@ -44,43 +46,10 @@ class View extends React.Component {
       });
     });
   }
-
   componentWillMount() {
     if (this.props.admin) {
       bindMove(this.state.query.uri, 'latest', this.state.cy);
     }
-  }
-
-  performLayout(layoutName) {
-    this.setState({ layout: layoutName });
-    const cy = this.state.cy;
-
-    if (layoutName === lo.humanLayoutName) {
-      const layoutJSON = this.state.layoutJSON;
-      let options = {
-        name: 'preset',
-        positions: node => layoutJSON[node.id()],
-        animate: true,
-        animationDuration: 500
-      };
-      cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isExpanded()).collapse();
-      cy.layout(options).run();
-      return;
-    }
-
-    cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isExpanded()).collapse();
-    let layout = cy.layout(lo.layoutMap.get(layoutName));
-    let that = this;
-    layout.pon('layoutstop').then(function () {
-      if (that.props.admin && layoutName !== lo.humanLayoutName) {
-        let posObj = {};
-        cy.nodes().forEach(node => {
-          posObj[node.id()] = node.position();
-        });
-        CDC.submitLayoutChange(that.state.query.uri, 'latest', posObj);
-      }
-    });
-    layout.run();
   }
 
   render() {
@@ -91,9 +60,8 @@ class View extends React.Component {
         name: state.metadata.name,
         datasource: state.metadata.datasource,
         availableLayouts: state.availableLayouts,
-        layoutJSON: state.layoutJSON,
+        initialLayout: state.layout,
         cy: state.cy,
-        currLayout: state.layout
       }),
       h(Graph, {
         cy: state.cy,

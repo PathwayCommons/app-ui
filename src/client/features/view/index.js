@@ -18,7 +18,7 @@ class View extends React.Component {
     this.state = {
       query: query,
 
-      cy: null, // cytoscape mounted after Graph component has mounted
+      cy: make_cytoscape({ headless: true }),
       graphJSON: null,
       layoutJSON: null,
       layout: lo.defaultLayout,
@@ -46,13 +46,9 @@ class View extends React.Component {
   }
 
   componentWillMount() {
-    this.setState({
-      cy: make_cytoscape({ headless: true })
-    }, () => {
-      if (this.props.admin) {
-        bindMove(this.state.query.uri, 'latest', this.state.cy);
-      }
-    });
+    if (this.props.admin) {
+      bindMove(this.state.query.uri, 'latest', this.state.cy);
+    }
   }
 
   performLayout(layoutName) {

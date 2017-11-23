@@ -109,7 +109,7 @@ class Menu extends React.Component {
       return (
         h('div', {
           key: index,
-          className: classNames('tool-button', this.props.activeMenu === button ? 'tool-button-active' : ''),
+          className: classNames('tool-button', 'tool-button-sidebar', this.props.activeMenu === button ? 'tool-button-active' : ''),
           onClick: () => this.changeMenu(button),
           title: toolButtons[button]
         }, [
@@ -119,7 +119,9 @@ class Menu extends React.Component {
     });
 
     return (
-      h('div.menu-bar', [
+      h('div', {
+        className: classNames('menu-bar', this.props.activeMenu ? 'menu-bar-margin' : '')
+      }, [
         h('div.menu-bar-inner-container', [
           h('div.pc-logo-container', [
             h(Link, { to: { pathname: '/search' } }, [

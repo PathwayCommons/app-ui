@@ -1,8 +1,9 @@
 .menu-bar {
   @extend %flex-center;
   
-  height: calc(var(--icon-size) * 3 / 2);
+  height: auto;
   padding: 0;
+  margin-right: 2%;
 
   position: absolute;
   justify-content: flex-start;
@@ -16,8 +17,12 @@
   border-color: var(--light-base-colour-dark);
   border-style: solid;
   border-width: 0px 1px 1px 1px;
-  // border-width: 0px 1px 1px 1px;
-  // box-shadow: var(--box-shadow);
+
+  transition: margin 0.5s ease-out;
+
+  &.menu-bar-margin {
+    margin-right: calc(25% + (var(--icon-size) * 3 / 2) + 2%);
+  }
 }
 
 .menu-bar-inner-container {
@@ -59,6 +64,7 @@
 
   height: calc(var(--icon-size) * 3 / 2);
   //width: calc((var(--icon-size) * 3 / 2) * var(--number-of-sidebar-icons));
+  max-width: 100%;
   margin-left: 0.12em;
   margin-right: 0.12em;
 
@@ -193,6 +199,7 @@
 @media (--small-width-viewport) {
   .menu-bar {
     left: 0;
+    margin-right: 0;
   }
 
   .layout-dropdown-button {
@@ -209,6 +216,10 @@
   .pc-logo-container {
     display: none;
   }
+
+  .tool-button-sidebar {
+    display: none;
+  }
 }
 
 /* Portrait-specific */
@@ -220,5 +231,9 @@
   .layout-dropdown {
     padding-top: 1em;
     padding-bottom: 1em;
+  }
+
+  .tool-button-sidebar {
+    display: none;
   }
 }

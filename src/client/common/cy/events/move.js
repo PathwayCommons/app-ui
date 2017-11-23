@@ -1,8 +1,8 @@
-const CDC = require('../../../services').CDC;
+const apiCaller = require('../../../services/apiCaller/');
 
 const bindMove = (uri, version, cy) => {
   cy.on('free', 'node', function(evt) {
-    CDC.submitNodeChange(uri, version, evt.target.id(), evt.target.position());
+    apiCaller.submitNodeChange(uri, version, evt.target.id(), evt.target.position());
   });
 };
 

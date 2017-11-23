@@ -87,6 +87,11 @@ class Menu extends React.Component {
     searchNodes(newVal, this.props.cy);
   }
 
+  clearSearchBox() {
+    this.searchField.value = '';
+    this.changeSearchValue('');
+  }
+
   render() {
     const layoutItems = this.props.availableLayouts.map((layout, index) => {
       return (
@@ -145,7 +150,10 @@ class Menu extends React.Component {
           ]),
           h('div', {
             className: classNames('tool-button', this.state.searchOpen ? 'tool-button-active' : ''),
-            onClick: () => this.setState({ searchOpen: !this.state.searchOpen }),
+            onClick: () => {
+              !this.state.searchOpen || this.clearSearchBox();
+              this.setState({ searchOpen: !this.state.searchOpen });
+            },
             title: 'Search entities'
           }, [h('i.material-icons', 'search')]),
           h('div', {
@@ -160,7 +168,7 @@ class Menu extends React.Component {
                   placeholder: 'Search entities'
                 }),
                 h('div.view-search-clear', {
-                  onClick: () => {this.searchField.value = ''; this.changeSearchValue('');},
+                  onClick: () => this.clearSearchBox(),
                 }, [h('i.material-icons', 'close')])
               ])
             ])

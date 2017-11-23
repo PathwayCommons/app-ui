@@ -27,7 +27,8 @@ const stylesheet = sbgnStyleSheet(cytoscape)
 .selector('.compoundcollapse-collapsed-node')
 .css({
   'font-size': 20,
-  'text-max-width': 175
+  'text-max-width': 175,
+  'text-wrap': 'ellipsis'
 })
 .selector('edge')
 .css({

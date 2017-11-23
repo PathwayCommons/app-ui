@@ -57,10 +57,12 @@ const bindClick = (cy) => {
 
         //Display Tooltip
         if (clicks == 1) {
+          hideTooltips(cy);
           evt.target.emit('showTooltip');
         }
         //Expand Collapse
         else if (clicks != 0) {
+          hideTooltips(cy);
           evt.target.emit('expandCollapse');
         }
 

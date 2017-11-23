@@ -27,14 +27,6 @@ const stylesheet = sbgnStyleSheet(cytoscape)
 .selector('.compoundcollapse-collapsed-node')
 .css({
   'font-size': 20,
-  'background-color': 'rgb(44,62,80)',
-  'color': 'white',
-  'text-outline-color': 'black',
-  'text-outline-width': 2,
-  'text-outline-opacity': 1,
-  'text-valign': 'center',
-  'opacity': 1,
-  'text-wrap': 'wrap',
   'text-max-width': 175
 })
 .selector('edge')

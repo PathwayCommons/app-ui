@@ -5,7 +5,9 @@ const classNames = require('classnames');
 const tippy = require('tippy.js');
 const _ = require('lodash');
 
+const { humanLayoutDisplayName } = require('../../../../common/cy/layout');
 const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
+const CDC = require('../../../../services/cdc');
 
 const searchNodes = require('./search');
 
@@ -38,11 +40,22 @@ class Menu extends React.Component {
     const cy = props.cy;
 
     const layoutOpts = _.find(props.availableLayouts, (layout) => layout.displayName === selectedLayoutName).options;
-    let layout = cy.layout(layoutOpts).run();
 
+    let layout = cy.layout(layoutOpts);
+    layout.pon('layoutstop').then(function () {
+      if (props.admin && selectedLayoutName !== humanLayoutDisplayName) {
+        let posObj = {};
+        cy.nodes().forEach(node => {
+          posObj[node.id()] = node.position();
+        });
+        CDC.submitLayoutChange(props.uri, 'latest', posObj);
+      }
+    });
+    layout.run();
     layout.pon('layoutstop').then(function( event ){
       cy.fit(100);
     });
+
   }
 
 

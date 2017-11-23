@@ -34,7 +34,7 @@ app.engine('html', function (filePath, options, callback) {
 app.set('view engine', 'html');
 
 
-app.use(favicon(path.join(__dirname, '../..', 'public', 'icon.png')));
+app.use(favicon(path.join(__dirname, '../..', 'public', 'favicon.png')));
 app.use(morgan('dev', {
   stream: new stream.Writable({
     write(chunk, encoding, next) {

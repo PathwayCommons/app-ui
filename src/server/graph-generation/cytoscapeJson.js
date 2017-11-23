@@ -1,4 +1,4 @@
-const pcServices = require('./pcServices');
+const pcServices = require('./../pathway-commons');
 const metadataMapperJson = require('./metadataMapperJson');
 const metadataMapperPC2 = require('./metadataMapperPC2');
 
@@ -8,7 +8,7 @@ function getPathwayLevelMetadata(uri) {
 
   let title, dataSource, comments, organism;
   let getValue = data => data.traverseEntry[0].value;
-  let get = path => pcServices.traversePC2(uri, path).then(getValue);
+  let get = path => pcServices.traverse({uri, path}).then(getValue);
 
   return Promise.all([
     get('Named/displayName').then(value => title = value),
@@ -16,7 +16,7 @@ function getPathwayLevelMetadata(uri) {
     get('Entity/comment').then(value => comments = value),
     get('Entity/organism/displayName').then(value => organism = value)
   ]).then(data => ({ comments, dataSource, title, organism }));
-};
+}
 
 //Get metadata enhanced cytoscape JSON
 //Requires a valid pathway uri
@@ -26,8 +26,8 @@ function getMetadataJson(uri, parseType) {
 
   //Get SBGN and Biopax Files
   return Promise.all([
-    pcServices.getPC2(uri, 'sbgn').then(file => sbgn = file),
-    pcServices.getPC2(uri, downloadType).then(file => biopax = file)
+    pcServices.get({uri, format: 'sbgn'}).then(file => sbgn = file),
+    pcServices.get({uri, format: downloadType}).then(file => biopax = file)
   ]).then(files => {
     //Map metadata
     if (parseType === 'jsonld') { return metadataMapperJson(biopax, sbgn); }
@@ -48,8 +48,8 @@ function getCytoscapeJson(uri, parseType = 'jsonld') {
       data.pathwayMetadata = pathwayMetadata;
       data.parseType = parseType;
       return data;
-    })
-  })
+    });
+  });
 }
 
 module.exports = {

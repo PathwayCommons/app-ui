@@ -7,9 +7,8 @@ const { Menu, Graph, EditWarning, Sidebar } = require('./components/');
 const { getLayouts } = require('../../common/cy/layout/');
 const make_cytoscape = require('../../common/cy/');
 const bindMove = require('../../common/cy/events/move');
-
 const queryString = require('query-string');
-const { CDC } = require('../../services/');
+const { apiCaller } = require('../../services/');
 
 class View extends React.Component {
   constructor(props) {
@@ -36,16 +35,15 @@ class View extends React.Component {
       warningMessage: this.props.admin ? 'Be careful! Your changes are live.' : '',
     };
 
-    CDC.getGraphAndLayout(query.uri, 'latest').then(graphJSON => {
+    apiCaller.getGraphAndLayout(query.uri, 'latest').then(graphJSON => {
       const layoutConf = getLayouts(graphJSON.layout);
-
       this.setState({
         graphJSON: graphJSON.graph,
         layout: layoutConf.defaultLayout,
         availableLayouts: layoutConf.layouts,
         metadata: {
-          name: graphJSON.graph.pathwayMetadata.title[0] || 'Unknown Network',
-          datasource: graphJSON.graph.pathwayMetadata.dataSource[0] || 'Unknown Data Source',
+          name: _.get(graphJSON, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
+          datasource: _.get(graphJSON, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
           comments: graphJSON.graph.pathwayMetadata.comments,
           organism: graphJSON.graph.pathwayMetadata.organism
         }

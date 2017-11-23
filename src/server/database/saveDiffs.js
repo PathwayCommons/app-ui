@@ -40,7 +40,7 @@ function createNewLayout(version, connection) {
 
   if (!numLayouts) {
     // A layout should be created earlier in the pipeline
-    return Promise.reject(new Error ('ERROR : This should not happen'));
+    return Promise.reject(new Error('Submitting diff before an initial layout was created.'));
   }
 
   let layoutID = uuid();
@@ -48,18 +48,15 @@ function createNewLayout(version, connection) {
   // add new id to list of layout ids
   version.layout_ids.push(layoutID);
 
-  let versionUpdate = r.db(dbName).table('version').get(version.id)
-    .update({ layout_ids: version.layout_ids })
-    .run(connection);
-
   // Create the layout entry in the layouts table of the database
-  let writeLayout = getLatestPositions(version, connection).then((positions) => {
+  return getLatestPositions(version, connection).then((positions) => {
     // Create a duplicate entry with the most recent poisitions so that the history of the last session
     // remains intact.
-    return db.insert('layout', { id: layoutID, positions: positions, date_added: r.now() }, connection);
+    return Promise.all([
+      r.db(dbName).table('version').get(version.id).update({ layout_ids: version.layout_ids }).run(connection),
+      db.insert('layout', { id: layoutID, positions: positions, date_added: r.now() }, connection)
+    ]);
   });
-
-  return Promise.all([versionUpdate, writeLayout]);
 }
 
 // handleUserInfo(pcID, releaseID, userID, connection [, callback])

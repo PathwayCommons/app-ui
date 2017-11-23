@@ -17,18 +17,12 @@ class GraphInfoMenu extends React.Component {
     const datasourceLink = this.getDatasourceLink(props.datasource);
 
     const noInfoMessage = h('span', [
-      'No additional information was found for this network!',
-      h('br'),
-      h('br'),
-      'Additional information about the network is normally found here, but we couldn\'t find any for this one.'
+      h('p', 'No additional information was found for this network!'),
+      h('p', 'Additional information about the network is normally found here, but we couldn\'t find any for this one.')
     ]);
 
     const comments = props.comments.map(comment => {
-      return h('div', [
-        comment.replace(/<p>/g, ' '),
-        h('br'),
-        h('br')
-      ]);
+      return h('div', [h('p', comment.replace(/<p>/g, ' '))]);
     });
 
     return (

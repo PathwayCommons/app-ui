@@ -18,7 +18,7 @@ function getGraphFallback(pcID, releaseID, connection) {
     }).then(result => {
       if (connection && result.pathwayMetadata) {
         update.updateGraph(pcID, releaseID, result, connection);
-      }
+      } 
       return result;
     });
 }

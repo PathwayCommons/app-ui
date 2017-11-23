@@ -7,9 +7,8 @@ const { Menu, Graph, EditWarning, Sidebar } = require('./components/');
 const { getLayouts } = require('../../common/cy/layout/');
 const make_cytoscape = require('../../common/cy/');
 const bindMove = require('../../common/cy/events/move');
-
 const queryString = require('query-string');
-const { CDC } = require('../../services/');
+const { apiCaller } = require('../../services/');
 
 class View extends React.Component {
   constructor(props) {
@@ -30,20 +29,21 @@ class View extends React.Component {
         comments: []
       },
 
+      activeMenu: '',
+
       activateWarning: this.props.admin || false,
       warningMessage: this.props.admin ? 'Be careful! Your changes are live.' : '',
     };
 
-    CDC.getGraphAndLayout(query.uri, 'latest').then(graphJSON => {
+    apiCaller.getGraphAndLayout(query.uri, 'latest').then(graphJSON => {
       const layoutConf = getLayouts(graphJSON.layout);
-
       this.setState({
         graphJSON: graphJSON.graph,
         layout: layoutConf.defaultLayout,
         availableLayouts: layoutConf.layouts,
         metadata: {
-          name: graphJSON.graph.pathwayMetadata.title[0] || 'Unknown Network',
-          datasource: graphJSON.graph.pathwayMetadata.dataSource[0] || 'Unknown Data Source',
+          name: _.get(graphJSON, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
+          datasource: _.get(graphJSON, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
           comments: graphJSON.graph.pathwayMetadata.comments,
           organism: graphJSON.graph.pathwayMetadata.organism
         }
@@ -67,8 +67,11 @@ class View extends React.Component {
         name: state.metadata.name,
         datasource: state.metadata.datasource,
         availableLayouts: state.availableLayouts,
-        initialLayout: state.layout,
+        currLayout: state.layout,
         cy: state.cy,
+        changeLayout: layout => this.setState({layout: layout}),
+        activeMenu: state.activeMenu,
+        changeMenu: menu => this.setState({activeMenu: menu})
       }),
       h(Graph, {
         cy: state.cy,
@@ -84,7 +87,9 @@ class View extends React.Component {
         uri: state.query.uri,
         name: state.metadata.name,
         datasource: state.metadata.datasource,
-        comments: state.metadata.comments
+        comments: state.metadata.comments,
+        activeMenu: state.activeMenu,
+        changeMenu: menu => this.setState({activeMenu: menu})
       })
     ]);
   }

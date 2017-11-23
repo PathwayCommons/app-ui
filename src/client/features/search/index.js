@@ -8,7 +8,7 @@ const _ = require('lodash');
 const classNames = require('classnames');
 
 const Icon = require('../../common/components').Icon;
-const PathwayCommonsService = require('../../services').PathwayCommonsService;
+const apiCaller = require('../../services/apiCaller');
 
 class Search extends React.Component {
 
@@ -31,7 +31,7 @@ class Search extends React.Component {
       dataSources: []
     };
 
-    PathwayCommonsService.datasources()
+    apiCaller.datasources()
       .then(result => {
         this.setState({
           dataSources: Object.values(result)
@@ -47,7 +47,7 @@ class Search extends React.Component {
       this.setState({
         loading: true
       });
-      PathwayCommonsService.querySearch(query)
+      apiCaller.querySearch(query)
         .then(searchResults => {
           this.setState({
             searchResults: searchResults,
@@ -131,7 +131,7 @@ class Search extends React.Component {
       return h('div.search-option-item-container', [
         h('div', {
           onClick: e => this.setAndSubmitSearchQuery({ type: searchType.value }),
-          className: classNames('search-option-item', state.loading ? 'search-option-item-disabled' : '', state.query.type === searchType.value ? 'search-option-item-active' : '')
+          className: classNames('search-option-item', { 'search-option-item-disabled': state.loading }, { 'search-option-item-active': state.query.type === searchType.value })
         }, [
             h('a', searchType.name)
           ])
@@ -188,7 +188,7 @@ class Search extends React.Component {
             ]),
               h('div.search-tabs', searchTypeTabs.concat([
                 h('div', {
-                  className: classNames('search-option-item', 'search-option-item-tools', state.showFilters ? 'search-option-item-tools-active' : ''),
+                  className: classNames('search-option-item', 'search-option-item-tools', { 'search-option-item-tools-active': state.showFilters }),
                   onClick: e => this.setState({ showFilters: !state.showFilters })
                 }, [
                     h('a', 'Tools')

@@ -4,7 +4,7 @@ const Loader = require('react-loader');
 const classNames = require('classnames');
 
 const saveAs = require('file-saver').saveAs;
-const PathwayCommonsService = require('../../../../../../services/').PathwayCommonsService;
+const apiCaller = require('../../../../../../services/');
 
 const downloadTypes = {
   png: 'Image (PNG)',
@@ -71,7 +71,7 @@ class DownloadOption extends React.Component {
   initiatePCDownload(format, file_ext) {
     this.setState({ loading: true });
 
-    PathwayCommonsService.query(this.props.uri, format)
+    apiCaller.query(this.props.uri, format)
       .then(content => {
         let fileContent = content;
         if (typeof content === 'object') {
@@ -96,7 +96,7 @@ class DownloadOption extends React.Component {
     return (
       h('div', {
         // for the sake of a quick fix, only one download option can be pre-shown. I'll fix this later
-        className: classNames('download-option', this.props.type === 'png' ? 'pre-shown' : ''),
+        className: classNames('download-option', { 'pre-shown' : this.props.type === 'png' }),
         onClick: (evt) => this.handleDownloadClick(evt, this.props.type)
       }, [
           h('div.download-option-header', [

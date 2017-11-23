@@ -7,7 +7,7 @@ const _ = require('lodash');
 
 const { humanLayoutDisplayName } = require('../../../../common/cy/layout');
 const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
-const CDC = require('../../../../services/cdc');
+const apiCaller = require('../../../../services/apiCaller');
 
 const searchNodes = require('./search');
 
@@ -47,7 +47,7 @@ class Menu extends React.Component {
         cy.nodes().forEach(node => {
           posObj[node.id()] = node.position();
         });
-        CDC.submitLayoutChange(props.uri, 'latest', posObj);
+        apiCaller.submitLayoutChange(props.uri, 'latest', posObj);
       }
     });
     layout.run();

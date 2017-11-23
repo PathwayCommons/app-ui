@@ -64,15 +64,15 @@
 
   height: calc(var(--icon-size) * 3 / 2);
   //width: calc((var(--icon-size) * 3 / 2) * var(--number-of-sidebar-icons));
-  margin-left: 0.12em;
-  margin-right: 0.12em;
 
   position: absolute;
   top: calc(100% + 1px);
   left: -1px;
 
   border-radius: 0px 0px 3px 3px;
-  //border: 1px solid var(--light-base-colour-dark);
+  border-color: var(--light-base-colour-dark);
+  border-style: solid;
+  border-width: 0px 1px 1px 1px;
 
   background-color: rgba(255, 255, 255, 0.5);
 }

@@ -27,7 +27,6 @@ const publicationsURL = 'http://identifiers.org/pubmed/';
 const tooltipOrder = ['Type', 'Display Name', 'Standard Name', 'Names', 'Database IDs', 'Publications'];
 const tooltipReverseOrder = ['Comment'];
 
-
 module.exports = {
   databases,
   publicationsURL,

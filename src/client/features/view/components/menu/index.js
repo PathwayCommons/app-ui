@@ -10,28 +10,42 @@ const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
 const apiCaller = require('../../../../services/apiCaller');
 
 const searchNodes = require('./search');
+let debouncedSearchNodes = _.debounce(searchNodes, 300);
+
+// Buttons for opening the sidebar, along with their descriptions
+const toolButtons = {
+  info: 'Extra information',
+  file_download: 'Download options',
+  //help: 'Interpreting the display' // re-add to access help menu
+};
 
 /* Props
 - name
 - datasource
 - availableLayouts
-- initialLayout
+- currLayout
 */
 class Menu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       dropdownOpen: false,
-      selectedLayout: props.initialLayout
+      searchOpen: false,
+      complexesExpanded: true,
+      selectedLayout: props.currLayout,
+      initialLayoutSet: false
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({
-      selectedLayout: nextProps.initialLayout
-    }, () => {
-      this.performLayout(this.state.selectedLayout);
-    });
+    if (!this.state.initialLayoutSet) {
+      this.setState({
+        selectedLayout: nextProps.currLayout,
+        initialLayoutSet: true
+      }, () => {
+        this.performLayout(this.state.selectedLayout);
+      });
+    }
   }
 
   performLayout(selectedLayoutName) {
@@ -58,8 +72,17 @@ class Menu extends React.Component {
     this.initTooltips();
   }
 
+  toggleExpansion() {
+    if (this.state.complexesExpanded) {
+      this.props.cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isExpanded()).collapse();
+    } else {
+      this.props.cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isCollapsed()).expand();
+    }
+    this.setState({ complexesExpanded: !this.state.complexesExpanded });
+  }
+
   initTooltips() {
-    tippy('.layout-dropdown-button', {
+    tippy('.tool-button', {
       delay: [800, 400],
       animation: 'scale',
       theme: 'dark',
@@ -67,6 +90,22 @@ class Menu extends React.Component {
       touchHold: true
     });
   }
+
+  // Used for the panel buttons to set menus in the sidebar and dynamically change the style
+  changeMenu(menu) {
+    this.props.changeMenu(menu === this.props.activeMenu ? '' : menu);
+  }
+
+  changeSearchValue(newVal) {
+    let cy = this.props.cy;
+    debouncedSearchNodes(newVal, cy);
+  }
+
+  clearSearchBox() {
+    this.searchField.value = '';
+    this.changeSearchValue('');
+  }
+
   render() {
     const layoutItems = this.props.availableLayouts.map((layout, index) => {
       return (
@@ -78,41 +117,79 @@ class Menu extends React.Component {
       );
     });
 
+    const toolButtonEls = Object.keys(toolButtons).map((button, index) => {
+      return (
+        h('div', {
+          key: index,
+          className: classNames('tool-button', 'tool-button-sidebar', { 'tool-button-active': this.props.activeMenu === button }),
+          onClick: () => this.changeMenu(button),
+          title: toolButtons[button]
+        }, [
+            h('i.material-icons', button)
+          ])
+      );
+    });
+
     return (
-      h('div.menu-bar', [
-        h('div.menu-bar-inner-container', [
-          h('div.pc-logo-container', [
-            h(Link, {to: {pathname: '/search'}}, [
-              h('img', {
-                src: '/img/icon.png'
-              })
+      h('div', {
+        className: classNames('menu-bar', { 'menu-bar-margin': this.props.activeMenu })
+      }, [
+          h('div.menu-bar-inner-container', [
+            h('div.pc-logo-container', [
+              h(Link, { to: { pathname: '/search' } }, [
+                h('img', {
+                  src: '/img/icon.png'
+                })
+              ])
+            ]),
+            h('div.title-container', [
+              h('h4', `${this.props.name} | ${this.props.datasource}`)
             ])
           ]),
-          h('div.title-container', [
-            h('h4', `${this.props.name} | ${this.props.datasource}`)
-          ]),
-          h('div.search-nodes', {
-            onChange : e => searchNodes(e.target.value, this.props.cy),
-            title: 'Search for Nodes'
-          }, [
-            h('div.view-search-bar', [h('input.view-search', {type : 'text', placeholder: 'Entity Search'})])
-          ]),
-          h('div.layout-dropdown-button', {
-            onClick: () => this.setState({dropdownOpen: !this.state.dropdownOpen}),
-            title: 'Rearrange the entities on screen'
-          }, [
-            h('i.material-icons', 'shuffle')
-          ])
-        ]),
-        h('div', {
-          className: classNames('layout-dropdown', this.state.dropdownOpen ? 'open' : '')
-        }, [
-          h(Dropdown, {
-            value: this.state.selectedLayout,
-            onChange: value => this.performLayout(value)
-          }, layoutItems)
+          h('div.view-toolbar', toolButtonEls.concat([
+            h('div.tool-button', {
+              onClick: () => this.toggleExpansion(),
+              title: 'Expand/collapse complexes'//`${this.state.complexesExpanded ? 'Collapse' : 'Expand'} complexes`
+            }, [h('i.material-icons', this.state.complexesExpanded ? 'select_all' : 'settings_overscan')]),
+            h('div', {
+              className: classNames('tool-button', { 'tool-button-active': this.state.dropdownOpen }),
+              onClick: () => this.setState({ dropdownOpen: !this.state.dropdownOpen }),
+              title: 'Rearrange entities'
+            }, [h('i.material-icons', 'shuffle')]),
+            h('div', {
+              className: classNames('layout-dropdown', { 'layout-dropdown-open': this.state.dropdownOpen })
+            }, [
+                h(Dropdown, {
+                  value: this.state.selectedLayout,
+                  onChange: value => this.performLayout(value)
+                }, layoutItems)
+              ]),
+            h('div', {
+              className: classNames('tool-button', { 'tool-button-active': this.state.searchOpen }),
+              onClick: () => {
+                !this.state.searchOpen || this.clearSearchBox();
+                this.setState({ searchOpen: !this.state.searchOpen });
+              },
+              title: 'Search entities'
+            }, [h('i.material-icons', 'search')]),
+            h('div', {
+              className: classNames('search-nodes', { 'search-nodes-open': this.state.searchOpen }),
+              onChange: e => this.changeSearchValue(e.target.value),
+              title: 'Search for Nodes'
+            }, [
+                h('div.view-search-bar', [
+                  h('input.view-search', {
+                    ref: dom => this.searchField = dom,
+                    type: 'search',
+                    placeholder: 'Search entities'
+                  }),
+                  h('div.view-search-clear', {
+                    onClick: () => this.clearSearchBox(),
+                  }, [h('i.material-icons', 'close')])
+                ])
+              ])
+          ]))
         ])
-      ])
     );
   }
 }

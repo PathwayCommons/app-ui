@@ -225,7 +225,7 @@ class Paint extends React.Component {
 
     return h('div.paint', [
       h('div.paint-content', [
-        h('div', { className: classNames('paint-drawer', !state.drawerOpen ? 'closed' : '') }, [
+        h('div', { className: classNames('paint-drawer', { 'closed': !state.drawerOpen }) }, [
           h('a', { onClick: e => this.toggleDrawer()}, [
             h(Icon, { icon: 'close'}),
           ]),

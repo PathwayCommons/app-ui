@@ -14,7 +14,7 @@ class Dropdown extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.value !== this.state.activeOption) {
-      this.setState({activeOption: nextProps.value});
+      this.setState({ activeOption: nextProps.value });
     }
   }
 
@@ -24,25 +24,25 @@ class Dropdown extends React.Component {
       el = el.parentElement;
     }
     const val = el.getAttribute('value');
-    this.setState({open: false, activeOption: val});
+    this.setState({ open: false, activeOption: val });
     this.props.onChange(val);
   }
 
   render() {
     return (
       h('div.dropdown', {
-        onClick: () => this.setState({open: !this.state.open})
+        onClick: () => this.setState({ open: !this.state.open })
       }, [
-        h('div.dropdown-toggle', [
-          h('div.dropdown-current-value', this.state.activeOption),
-          h('i.material-icons', 'keyboard_arrow_down')
-        ]),
-        h('div', {
-          className: classNames('dropdown-options', this.state.open ? 'active': ''),
-          onClick: evt => this.changeValFromClickedEl(evt.target),
-          ref: dom => this.optionsDom = dom
-        }, this.props.children)
-      ])
+          h('div.dropdown-toggle', [
+            h('div.dropdown-current-value', this.state.activeOption),
+            h('i.material-icons', 'keyboard_arrow_down')
+          ]),
+          h('div', {
+            className: classNames('dropdown-options', { 'active': this.state.open }),
+            onClick: evt => this.changeValFromClickedEl(evt.target),
+            ref: dom => this.optionsDom = dom
+          }, this.props.children)
+        ])
     );
   }
 }
@@ -53,11 +53,11 @@ class DropdownOption extends React.Component {
       h('div.dropdown-option', {
         value: this.props.value
       }, [
-        h('h4', this.props.value),
-        h('span', this.props.description)
-      ])
+          h('h4', this.props.value),
+          h('span', this.props.description)
+        ])
     );
   }
 }
 
-module.exports = {Dropdown, DropdownOption};
+module.exports = { Dropdown, DropdownOption };

@@ -29,6 +29,8 @@ class View extends React.Component {
         comments: []
       },
 
+      activeMenu: '',
+
       activateWarning: this.props.admin || false,
       warningMessage: this.props.admin ? 'Be careful! Your changes are live.' : '',
     };
@@ -65,8 +67,11 @@ class View extends React.Component {
         name: state.metadata.name,
         datasource: state.metadata.datasource,
         availableLayouts: state.availableLayouts,
-        initialLayout: state.layout,
+        currLayout: state.layout,
         cy: state.cy,
+        changeLayout: layout => this.setState({layout: layout}),
+        activeMenu: state.activeMenu,
+        changeMenu: menu => this.setState({activeMenu: menu})
       }),
       h(Graph, {
         cy: state.cy,
@@ -82,7 +87,9 @@ class View extends React.Component {
         uri: state.query.uri,
         name: state.metadata.name,
         datasource: state.metadata.datasource,
-        comments: state.metadata.comments
+        comments: state.metadata.comments,
+        activeMenu: state.activeMenu,
+        changeMenu: menu => this.setState({activeMenu: menu})
       })
     ]);
   }

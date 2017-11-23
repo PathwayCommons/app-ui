@@ -114,7 +114,6 @@
   padding-top: 10px;
   display: flex;
   flex-direction: row;
-  overflow-x: scroll;
 }
 
 .search-option-item-container {
@@ -274,5 +273,9 @@
 
   .search-list-container {
     padding-left: 10px;
+  }
+
+  .search-tabs {
+    overflow-x: scroll;
   }
 }

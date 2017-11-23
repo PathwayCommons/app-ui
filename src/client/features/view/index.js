@@ -4,7 +4,7 @@ const _ = require('lodash');
 
 const { Menu, Graph, EditWarning, Sidebar } = require('./components/');
 
-const getLayouts = require('../../common/cy/layout/');
+const { getLayouts } = require('../../common/cy/layout/');
 const make_cytoscape = require('../../common/cy/');
 const bindMove = require('../../common/cy/events/move');
 
@@ -60,9 +60,12 @@ class View extends React.Component {
 
   render() {
     const state = this.state;
+    const props = this.props;
 
     return h('div.View', [
       h(Menu, {
+        uri: state.query.uri,
+        admin: props.admin,
         name: state.metadata.name,
         datasource: state.metadata.datasource,
         availableLayouts: state.availableLayouts,

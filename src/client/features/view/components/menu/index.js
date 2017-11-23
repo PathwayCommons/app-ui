@@ -15,7 +15,7 @@ let debouncedSearchNodes = _.debounce(searchNodes, 300);
 // Buttons for opening the sidebar, along with their descriptions
 const toolButtons = {
   info: 'Extra information',
-  file_download: 'Download options', 
+  file_download: 'Download options',
   //help: 'Interpreting the display' // re-add to access help menu
 };
 
@@ -121,7 +121,7 @@ class Menu extends React.Component {
       return (
         h('div', {
           key: index,
-          className: classNames('tool-button', 'tool-button-sidebar', this.props.activeMenu === button ? 'tool-button-active' : ''),
+          className: classNames('tool-button', 'tool-button-sidebar', { 'tool-button-active': this.props.activeMenu === button }),
           onClick: () => this.changeMenu(button),
           title: toolButtons[button]
         }, [
@@ -132,64 +132,64 @@ class Menu extends React.Component {
 
     return (
       h('div', {
-        className: classNames('menu-bar', this.props.activeMenu ? 'menu-bar-margin' : '')
+        className: classNames('menu-bar', { 'menu-bar-margin': this.props.activeMenu })
       }, [
-        h('div.menu-bar-inner-container', [
-          h('div.pc-logo-container', [
-            h(Link, { to: { pathname: '/search' } }, [
-              h('img', {
-                src: '/img/icon.png'
-              })
-            ])
-          ]),
-          h('div.title-container', [
-            h('h4', `${this.props.name} | ${this.props.datasource}`)
-          ])
-        ]),
-        h('div.view-toolbar', toolButtonEls.concat([
-          h('div.tool-button', {
-            onClick: () => this.toggleExpansion(),
-            title: 'Expand/collapse complexes'//`${this.state.complexesExpanded ? 'Collapse' : 'Expand'} complexes`
-          }, [h('i.material-icons', this.state.complexesExpanded ? 'select_all' : 'settings_overscan')]),
-          h('div', {
-            className: classNames('tool-button', this.state.dropdownOpen ? 'tool-button-active' : ''),
-            onClick: () => this.setState({ dropdownOpen: !this.state.dropdownOpen }),
-            title: 'Rearrange entities'
-          }, [h('i.material-icons', 'shuffle')]),
-          h('div', {
-            className: classNames('layout-dropdown', this.state.dropdownOpen ? 'layout-dropdown-open' : '')
-          }, [
-            h(Dropdown, {
-              value: this.state.selectedLayout,
-              onChange: value => this.performLayout(value)
-            }, layoutItems)
-          ]),
-          h('div', {
-            className: classNames('tool-button', this.state.searchOpen ? 'tool-button-active' : ''),
-            onClick: () => {
-              !this.state.searchOpen || this.clearSearchBox();
-              this.setState({ searchOpen: !this.state.searchOpen });
-            },
-            title: 'Search entities'
-          }, [h('i.material-icons', 'search')]),
-          h('div', {
-            className: classNames('search-nodes', this.state.searchOpen ? 'search-nodes-open' : ''),
-            onChange: e => this.changeSearchValue(e.target.value),
-            title: 'Search for Nodes'
-          }, [
-              h('div.view-search-bar', [
-                h('input.view-search', {
-                  ref: dom => this.searchField = dom,
-                  type: 'search',
-                  placeholder: 'Search entities'
-                }),
-                h('div.view-search-clear', {
-                  onClick: () => this.clearSearchBox(),
-                }, [h('i.material-icons', 'close')])
+          h('div.menu-bar-inner-container', [
+            h('div.pc-logo-container', [
+              h(Link, { to: { pathname: '/search' } }, [
+                h('img', {
+                  src: '/img/icon.png'
+                })
               ])
+            ]),
+            h('div.title-container', [
+              h('h4', `${this.props.name} | ${this.props.datasource}`)
             ])
-        ]))
-      ])
+          ]),
+          h('div.view-toolbar', toolButtonEls.concat([
+            h('div.tool-button', {
+              onClick: () => this.toggleExpansion(),
+              title: 'Expand/collapse complexes'//`${this.state.complexesExpanded ? 'Collapse' : 'Expand'} complexes`
+            }, [h('i.material-icons', this.state.complexesExpanded ? 'select_all' : 'settings_overscan')]),
+            h('div', {
+              className: classNames('tool-button', { 'tool-button-active': this.state.dropdownOpen }),
+              onClick: () => this.setState({ dropdownOpen: !this.state.dropdownOpen }),
+              title: 'Rearrange entities'
+            }, [h('i.material-icons', 'shuffle')]),
+            h('div', {
+              className: classNames('layout-dropdown', { 'layout-dropdown-open': this.state.dropdownOpen })
+            }, [
+                h(Dropdown, {
+                  value: this.state.selectedLayout,
+                  onChange: value => this.performLayout(value)
+                }, layoutItems)
+              ]),
+            h('div', {
+              className: classNames('tool-button', { 'tool-button-active': this.state.searchOpen }),
+              onClick: () => {
+                !this.state.searchOpen || this.clearSearchBox();
+                this.setState({ searchOpen: !this.state.searchOpen });
+              },
+              title: 'Search entities'
+            }, [h('i.material-icons', 'search')]),
+            h('div', {
+              className: classNames('search-nodes', { 'search-nodes-open': this.state.searchOpen }),
+              onChange: e => this.changeSearchValue(e.target.value),
+              title: 'Search for Nodes'
+            }, [
+                h('div.view-search-bar', [
+                  h('input.view-search', {
+                    ref: dom => this.searchField = dom,
+                    type: 'search',
+                    placeholder: 'Search entities'
+                  }),
+                  h('div.view-search-clear', {
+                    onClick: () => this.clearSearchBox(),
+                  }, [h('i.material-icons', 'close')])
+                ])
+              ])
+          ]))
+        ])
     );
   }
 }

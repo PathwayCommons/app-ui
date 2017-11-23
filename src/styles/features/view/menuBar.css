@@ -64,7 +64,6 @@
 
   height: calc(var(--icon-size) * 3 / 2);
   //width: calc((var(--icon-size) * 3 / 2) * var(--number-of-sidebar-icons));
-  max-width: 100%;
   margin-left: 0.12em;
   margin-right: 0.12em;
 

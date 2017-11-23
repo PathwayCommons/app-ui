@@ -29,7 +29,7 @@ class EditWarning extends React.Component {
   render() {
     return (
       h('div', {
-        className: classNames('edit-warning-container', this.props.active ? '' : 'closed'),
+        className: classNames('edit-warning-container', { 'closed': !this.props.active }),
         ref: dom => this.warningDOM = dom
       }, [
         h('div.edit-warning', this.props.children)

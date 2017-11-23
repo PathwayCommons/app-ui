@@ -96,7 +96,7 @@ class DownloadOption extends React.Component {
     return (
       h('div', {
         // for the sake of a quick fix, only one download option can be pre-shown. I'll fix this later
-        className: classNames('download-option', this.props.type === 'png' ? 'pre-shown' : ''),
+        className: classNames('download-option', { 'pre-shown' : this.props.type === 'png' }),
         onClick: (evt) => this.handleDownloadClick(evt, this.props.type)
       }, [
           h('div.download-option-header', [

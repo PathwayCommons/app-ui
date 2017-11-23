@@ -63,13 +63,10 @@ class Menu extends React.Component {
           posObj[node.id()] = node.position();
         });
         apiCaller.submitLayoutChange(props.uri, 'latest', posObj);
+        cy.fit(100);
       }
     });
     layout.run();
-    layout.pon('layoutstop').then(function( event ){
-      cy.fit(100);
-    });
-
   }
 
 

@@ -125,8 +125,7 @@ function saveLayout(pcID, releaseID, layout, userID, connection, callback) {
         })
         .run(connection);
     }).catch(() => {
-
-      throw Error('Failed insertion');
+      return Promise.reject(new Error('Failed insertion'));
     });
 
   return db.handleResult(result, callback);

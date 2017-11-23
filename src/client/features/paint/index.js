@@ -5,11 +5,7 @@ const color = require('color');
 const _ = require('lodash');
 const classNames = require('classnames');
 
-const cytoscape = require('cytoscape');
-const cose = require('cytoscape-cose-bilkent');
-cytoscape.use(cose);
-
-const sbgnStylesheet = require('cytoscape-sbgn-stylesheet');
+const make_cytoscape = require('../../common/cy');
 
 const Icon = require('../../common/components').Icon;
 const { apiCaller, PathwayCommonsService } = require('../../services');
@@ -63,10 +59,14 @@ class Network extends React.Component {
     return color.hsl(hslValue, 100, 50).string();
   }
 
-  applyExpressionData() {
-    const props = this.props;
-    const expressionTable = props.expressionTable;
+  componentWillReceiveProps(nextProps) {
+    if (!_.isEmpty(nextProps.expressionTable)) {
+      this.applyExpressionData(nextProps);
+    }
+  }
 
+  applyExpressionData(props) {
+    const expressionTable = props.expressionTable;
     const networkNodes = _.uniq(props.cy.nodes('[class="macromolecule"]').map(node => node.data('label'))).sort();
 
     const expressionsInNetwork = expressionTable.rows.filter(row => networkNodes.includes(row.geneName));
@@ -104,12 +104,7 @@ class Paint extends React.Component {
   constructor(props) {
     super(props);
 
-    const cy = cytoscape({
-      style: sbgnStylesheet(cytoscape),
-      minZoom: 0.16,
-      maxZoom: 4,
-      headless: true
-    });
+    const cy = make_cytoscape({headless: true});
 
     this.state = {
       rawEnrichmentData: {},
@@ -152,34 +147,7 @@ class Paint extends React.Component {
       type: 'Pathway',
       datasource: 'reactome'
     };
-
-    const expressionTable = {};
-
-    const header = _.uniq(expressionClasses);
-
-    expressionTable.header = header;
-    expressionTable.rows = expressions.map(enrichment => {
-      const geneName = enrichment.geneName;
-      const values = enrichment.values;
-
-      const class2ValuesMap = new Map();
-
-      for (let enrichmentClass of header) {
-        class2ValuesMap.set(enrichmentClass, []);
-      }
-
-      for (let i = 0; i < values.length; i++) {
-        class2ValuesMap.get(expressionClasses[i]).push(values[i]);
-      }
-
-      return { geneName: geneName, classValues: Array.from(class2ValuesMap.entries()).map((entry =>  _.mean(entry[1]).toFixed(2))) };
-    });
-
-    this.setState({
-      expressionTable: expressionTable
-    });
-
-
+    
     apiCaller.querySearch(query)
       .then(searchResults => {
         const uri = _.get(searchResults, '0.uri', null);
@@ -199,9 +167,36 @@ class Paint extends React.Component {
 
             state.cy.layout({
               name: 'cose-bilkent',
+              randomize: false,
               nodeDimensionsIncludeLabels: true
             }).run();
 
+
+            const expressionTable = {};
+
+            const header = _.uniq(expressionClasses);
+
+            expressionTable.header = header;
+            expressionTable.rows = expressions.map(expression => {
+              const geneName = expression.geneName;
+              const values = expression.values;
+
+              const class2ValuesMap = new Map();
+
+              for (let expressionClass of header) {
+                class2ValuesMap.set(expressionClass, []);
+              }
+
+              for (let i = 0; i < values.length; i++) {
+                class2ValuesMap.get(expressionClasses[i]).push(values[i]);
+              }
+
+              return { geneName: geneName, classValues: Array.from(class2ValuesMap.entries()).map((entry =>  _.mean(entry[1]).toFixed(2))) };
+            });
+
+            this.setState({
+              expressionTable: expressionTable
+            });
           });
         }
     });

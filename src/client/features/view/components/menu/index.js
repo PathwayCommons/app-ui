@@ -8,6 +8,7 @@ const _ = require('lodash');
 const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
 
 const searchNodes = require('./search');
+let debouncedSearchNodes = _.debounce(searchNodes, 300);
 
 // Buttons for opening the sidebar, along with their descriptions
 const toolButtons = {
@@ -84,7 +85,8 @@ class Menu extends React.Component {
   }
 
   changeSearchValue(newVal) {
-    searchNodes(newVal, this.props.cy);
+    let cy = this.props.cy;
+    debouncedSearchNodes(newVal, cy);
   }
 
   clearSearchBox() {

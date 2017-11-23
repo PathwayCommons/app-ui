@@ -1,6 +1,6 @@
 const convert = require('sbgnml-to-cytoscape');
 const cyJson = require('./graph-generation/cytoscapeJson');
-const pcServices = require('./pcServices');
+const pcServices = require('./pathway-commons');
 
 // queryPC(pcID) queries pathway commons to retrieve
 // the graph object for a given pcID without retrieving

@@ -1,4 +1,4 @@
-const pcServices = require('./../pcServices');
+const pcServices = require('./../pathway-commons');
 const metadataMapperJson = require('./metadataMapperJson');
 const metadataMapperPC2 = require('./metadataMapperPC2');
 

@@ -3,7 +3,7 @@ const uuid = require('uuid/v4');
 const hash = require('object-hash');
 const config = require('./config');
 const db = require('./utilities');
-const pcServices = require('./../pcServices');
+const pcServices = require('./../pathway-commons/');
 const _ = require('lodash');
 
 

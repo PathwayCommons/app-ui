@@ -1,5 +1,5 @@
 const convert = require('sbgnml-to-cytoscape');
-const pcServices = require('./../pcServices');
+const pcServices = require('./../pathway-commons');
 let jp = require('jsonpath');
 const Promise = require('bluebird');
 

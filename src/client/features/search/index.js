@@ -8,7 +8,7 @@ const _ = require('lodash');
 const classNames = require('classnames');
 
 const Icon = require('../../common/components').Icon;
-const apiCaller = require('../../services');
+const apiCaller = require('../../services/apiCaller');
 
 class Search extends React.Component {
 

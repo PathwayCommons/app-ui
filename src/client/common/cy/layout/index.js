@@ -62,11 +62,12 @@ const layouts = [
   }
 ];
 
+const humanLayoutDisplayName = 'Human-created';
 
 const getLayouts = (presetLayoutJSON) => {
   const humanCreatedLayout = {
     name: 'preset',
-    displayName: 'Human-created',
+    displayName: humanLayoutDisplayName,
     description: '',
     options: {
       name: 'preset',
@@ -83,7 +84,7 @@ const getLayouts = (presetLayoutJSON) => {
   if (presetLayoutJSON == null) {
     layoutConfig.layouts = layouts;
   } else {
-    layoutConfig.defaultLayout = 'Human-created';
+    layoutConfig.defaultLayout = humanLayoutDisplayName;
     layoutConfig.layouts = [humanCreatedLayout].concat(layouts);
   }
 
@@ -91,4 +92,4 @@ const getLayouts = (presetLayoutJSON) => {
 };
 
 
-module.exports = getLayouts;
+module.exports = { getLayouts, humanLayoutDisplayName };

@@ -25,6 +25,12 @@ class GraphInfoMenu extends React.Component {
       return h('div', [h('p', comment.replace(/<p>/g, ' '))]);
     });
 
+    const additionalInfo = comments.length ?
+      [h('div', [
+        h('h2', 'Additional Information')
+      ].concat(comments))]
+      : [noInfoMessage];
+
     return (
       h('div', [
         h('h1', props.name),
@@ -32,12 +38,7 @@ class GraphInfoMenu extends React.Component {
           'Sourced from ',
           h('a', { href: datasourceLink, target: '_blank' }, props.datasource)
         ]),
-        ...(comments.length ?
-          [h('div', [
-            h('h2', 'Additional Information')
-          ].concat(comments))]
-          : [noInfoMessage]
-        )
+        h('div', additionalInfo)
       ])
     );
   }

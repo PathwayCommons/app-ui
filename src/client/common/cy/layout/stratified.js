@@ -1,3 +1,5 @@
+// Not currently used but might be worked on in the future
+
 const cellularVocabularyOrder = require('./cellularVocabularyOrder');
 
 const stratifiedLayout = function (cy) {

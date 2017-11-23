@@ -69,7 +69,7 @@ class Menu extends React.Component {
   }
 
   initTooltips() {
-    tippy('.layout-dropdown-button', {
+    tippy('.tool-button', {
       delay: [800, 400],
       animation: 'scale',
       theme: 'dark',
@@ -128,7 +128,7 @@ class Menu extends React.Component {
         h('div.view-toolbar', toolButtonEls.concat([
           h('div.tool-button', {
             onClick: () => this.toggleExpansion(),
-            title: `${this.state.complexesExpanded ? 'Collapse' : 'Expand'} complexes`
+            title: 'Expand/collapse complexes'//`${this.state.complexesExpanded ? 'Collapse' : 'Expand'} complexes`
           }, [h('i.material-icons', this.state.complexesExpanded ? 'select_all' : 'settings_overscan')]),
           h('div', {
             className: classNames('tool-button', this.state.dropdownOpen ? 'tool-button-active' : ''),

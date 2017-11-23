@@ -24,13 +24,16 @@ class Sidebar extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.activeMenu !== '' && (nextProps.activeMenu !== this.state.activeMenu || !this.state.open)) {
+    if (nextProps.activeMenu === '') {
+      this.setState({
+        open: false,
+        activeMenu: nextProps.activeMenu
+      });
+    } else {
       this.setState({
         open: true,
         activeMenu: nextProps.activeMenu
       });
-    } else {
-      this.setState({open: false});
     }
   }
 

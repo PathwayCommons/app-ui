@@ -55,14 +55,22 @@ const typeHandler = (pair) => {
   return h('div.fake-paragraph', [h('div.field-name', pair[0] + ': '), h('div.tooltip-value', formattedType)]);
 };
 
+//Handle comment related fields
+const commentHandler = (pair) => {
+  //Filter out replaced entries
+  let comments = removedReplacedComments(pair[1]);
+
+  //Don't print comments if there are none.
+  if(comments.length < 1) { return h('div.error');}
+
+  return h('div.fake-paragraph', [ h('div.field-name', 'Comments' + ': '), valueToHtml(comments, false)]);
+};
+
 //Default to generating a list of all items
 const defaultHandler = (pair) => {
   let key = pair[0];
   let isCommaSeparated = true;
-  if (key === 'Comment') {
-    key = 'Comments';
-    isCommaSeparated = false;
-  }
+
   return h('div.fake-paragraph', [
     h('div.field-name', key + ': '),
     valueToHtml(pair[1], isCommaSeparated)
@@ -79,8 +87,8 @@ const metaDataKeyMap = new Map()
   .set('Database IDs', databaseHandler)
   .set('Database IDsTrim', databaseHandlerTrim)
   .set('Publications', publicationHandler)
-  .set('PublicationsTrim', publicationHandler);
-
+  .set('PublicationsTrim', publicationHandler)
+  .set('Comment', commentHandler);
 
 //Generate HTML elements for a Parsed Metadata Field
 //Optional trim parameter indicates if the data presented should be trimmed to a reasonable length
@@ -130,6 +138,7 @@ function valueToHtml(value, isCommaSeparated = false) {
   //Array Comma Separated -> HTML
   else if (value instanceof Array && isCommaSeparated) {
     //Add a comma to each value
+    value = deleteDuplicatesWithoutCase(value);
     value = value.map(value => h('div.tooltip-comma-item', value + ','));
 
     //Remove comma from the last value
@@ -343,6 +352,22 @@ function generateDatabaseList(sortedArray, trim) {
   }
 
   return h('div.fake-paragraph', [h('div.span-field-name', 'Database References:'), renderValue]);
+}
+
+//Replace any instances of Replaced 
+//Anything -> Array 
+function removedReplacedComments(comments){
+  const replacedExists = comment => comment.toUpperCase().includes('REPLACED');
+
+  if(typeof comments === 'string'){
+    return replacedExists(comments) ? [] : comments;
+  }
+  else if (!(comments)){
+    return [];
+  }
+  else {
+    return comments.filter(comment => !(replacedExists(comment)));
+  }
 }
 
 module.exports = {

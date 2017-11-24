@@ -9,7 +9,7 @@ const { humanLayoutDisplayName } = require('../../../../common/cy/layout');
 const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
 const apiCaller = require('../../../../services/apiCaller');
 
-const searchNodes = require('./search');
+const searchNodes = require('../../../../common/cy/search');
 let debouncedSearchNodes = _.debounce(searchNodes, 300);
 
 // Buttons for opening the sidebar, along with their descriptions
@@ -54,6 +54,7 @@ class Menu extends React.Component {
     const cy = props.cy;
 
     const layoutOpts = _.find(props.availableLayouts, (layout) => layout.displayName === selectedLayoutName).options;
+
     let layout = cy.layout(layoutOpts);
     layout.pon('layoutstop').then(function () {
       if (props.admin && selectedLayoutName !== humanLayoutDisplayName) {
@@ -62,6 +63,7 @@ class Menu extends React.Component {
           posObj[node.id()] = node.position();
         });
         apiCaller.submitLayoutChange(props.uri, 'latest', posObj);
+        cy.fit(100);
       }
     });
     layout.run();

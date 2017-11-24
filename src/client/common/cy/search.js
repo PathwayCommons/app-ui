@@ -2,9 +2,8 @@ const _ = require('lodash');
 
 //Apply hover styling to a collection of nodes
 function updateStyling(style, matchedNodes) {
-
-  matchedNodes.filter(node => !node.isParent()).forEach(node => {
-      applySearchStyle(node, style);      
+  matchedNodes.filter(node => node.data('class') !== 'compartment').forEach(node => {
+    applySearchStyle(node, style);
   });
 }
 
@@ -30,6 +29,46 @@ function applySearchStyle(eles, style) {
   eles.style(style);
 }
 
+//Get all the names associated with a node
+//Requires a valid cytoscape node
+//Returns a list of strings
+function getNames(node) {
+  const parsedMetadata = node.data('parsedMetadata');
+  let label = [node.data('label')];
+
+
+  if (!parsedMetadata) return label;
+
+  //Get Various Names
+  const standardName = parsedMetadata.filter(pair => pair[0] === 'Standard Name');
+  const names = parsedMetadata.filter(pair => pair[0] === 'Names');
+  const displayName = parsedMetadata.filter(pair => pair[0] === 'Display Name');
+
+  //Append names to main array
+  if (standardName.length > 0) { label = label.concat(standardName[0][1]); }
+  if (names.length > 0) { label = label.concat(names[0][1]); }
+  if (displayName.length > 0) { label = label.concat(displayName[0][1]); }
+
+  return _.compact(label);
+}
+
+//Evaluate a node for a possible query match
+//Requires a valid cytoscape node
+//Returns true or false
+function evaluateNode(node, matchingFn) {
+
+  //Get a list of names
+  const namesList = getNames(node);
+
+  //Loop and find the first match
+  for (var i = 0; i < namesList.length; i++) {
+    if (matchingFn(namesList[i])) {
+      return true;
+    }
+  }
+  return false;
+}
+
 //Search for nodes that match an entered query
 function searchNodes(query, cy) {
   const isBlank = _.isString(query) ? !!_.trim(query) : false;
@@ -49,29 +88,29 @@ function searchNodes(query, cy) {
   //Search based on regular expression
   if (isRegularExp) {
     let regexObject = validateRegex(query.substring(6));
-    matched = nodes.filter(node => node.data('label').match(regexObject));
+    matched = nodes.filter(node => evaluateNode(node, name => name.match(regexObject)));
   }
   //Search for an exact match
   else if (isExact) {
     let trimmedValue = query.substring(6).toUpperCase();
-    matched = nodes.filter(node => node.data('label').toUpperCase() == trimmedValue);
+    matched = nodes.filter(node => evaluateNode(node, name => name.toUpperCase() === trimmedValue));
   }
   //Search for a partial match
   else {
     let caseInsensitiveValue = query.toUpperCase();
-    matched = nodes.filter(node => node.data('label').toUpperCase().includes(caseInsensitiveValue));
+    matched = nodes.filter(node => evaluateNode(node, name => name.toUpperCase().includes(caseInsensitiveValue)));
   }
 
   //Define highlighting style
   const searchStyle = {
     'overlay-color': 'yellow',
-    'overlay-padding' : 0,
+    'overlay-padding': 0,
     'overlay-opacity': 0.5
   };
 
   const baseStyle = {
     'overlay-color': '#000',
-    'overlay-padding' : 0,
+    'overlay-padding': 0,
     'overlay-opacity': '0'
   };
 
@@ -80,8 +119,15 @@ function searchNodes(query, cy) {
 
   //Apply styling
   if (matched.length > 0 && isBlank) {
+
+    //Animate zoom and fit
+    cy.animate({
+      fit: {
+        eles: cy.elements(), padding: 100
+      }
+    }, { duration: 700 });
+
     updateStyling(searchStyle, matched, cy);
-    cy.fit();
   }
 }
 

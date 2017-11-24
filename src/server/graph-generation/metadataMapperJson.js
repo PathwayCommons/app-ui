@@ -145,13 +145,13 @@ function removeAfterUnderscore(word, numberOfElements) {
 function getElementFromBioPax(biopaxFile, id) {
 
   //Append pc2 address, if id is not already an uri
-  if (id.indexOf('http') !== -1) {
+  if (id.indexOf('http') !== -1 || id.indexOf('/') !== -1) {
     var lastIndex = id.lastIndexOf('/');
     id = id.substring(lastIndex + 1);
   }
 
   //Get element matching the id
-  let result =  biopaxFile.get(id);
+  let result = biopaxFile.get(id);
   return result;
 }
 
@@ -185,6 +185,15 @@ function getBioPaxSubtree(nodeId, biopax) {
   let extSearch = getElementFromBioPax(biopax, fixedNodeId);
   if (extSearch) { return buildBioPaxTree(extSearch, biopax); }
 
+  //Conduct a plain search with slashes 
+  fixedNodeId = nodeId.replace(/_/g, '/');
+  let slashSearch = getElementFromBioPax(biopax, fixedNodeId);
+  if (slashSearch) { return buildBioPaxTree(slashSearch, biopax); }
+
+  //Conduct a plain search as a last resort (Only for Non Pathway URI's)
+  let regularSearch = getElementFromBioPax(biopax, nodeId);
+  if (regularSearch) { return buildBioPaxTree(regularSearch, biopax); }
+
   return null;
 }
 
@@ -196,19 +205,19 @@ function replaceAll(str, find, replace) {
 
 //Preprocess biopax file  and create a map
 //Returns a map of the biopax file
-function preProcessBioPax(biopaxFile){
+function preProcessBioPax(biopaxFile) {
   let bioMap = new Map();
 
   //Loop through all biopax entires and add them to the map
-  for(let i = 0; i < biopaxFile.length; i++){
-   //Get the biopax id
-   let biopaxElement = biopaxFile[i];
-   let id = biopaxElement['pathid'];
-   var lastIndex = id.lastIndexOf('/');
-   id = id.substring(lastIndex + 1);
+  for (let i = 0; i < biopaxFile.length; i++) {
+    //Get the biopax id
+    let biopaxElement = biopaxFile[i];
+    let id = biopaxElement['pathid'];
+    var lastIndex = id.lastIndexOf('/');
+    id = id.substring(lastIndex + 1);
 
-   //Add a new map entry
-   bioMap.set(id, biopaxElement);
+    //Add a new map entry
+    bioMap.set(id, biopaxElement);
   }
 
   return bioMap;

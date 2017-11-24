@@ -6,6 +6,7 @@ const queryString = require('query-string');
 const color = require('color');
 const _ = require('lodash');
 const classNames = require('classnames');
+const matchSorter = require('match-sorter');
 
 const make_cytoscape = require('../../common/cy');
 
@@ -241,7 +242,10 @@ class Paint extends React.Component {
     const columns = [
       {
         Header: 'Gene Name',
-        accessor: 'geneName'
+        accessor: 'geneName',
+        filterMethod: (filter, rows) =>
+        matchSorter(rows, filter.value, { keys: ["geneName"] }),
+        filterAll: true
       }
     ].concat(expressionHeader.map((className, index) => {
       return {

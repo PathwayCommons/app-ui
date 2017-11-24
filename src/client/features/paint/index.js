@@ -1,6 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
-const Table = require('react-table');
+const Table = require('react-table').default;
 
 const queryString = require('query-string');
 const color = require('color');
@@ -238,11 +238,21 @@ class Paint extends React.Component {
     const maxVal = _.max(enrichmentsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
     const minVal = _.min(enrichmentsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
 
-    const expressionTableHeader = [h('th', '')].concat(_.get(expressionTable, 'header', []).map(column => h('th', column)));
-    const expressionTableBody = _.sortBy(
-      _.get(expressionTable, 'rows', []), (o) => o.geneName
-    ).map(row => h('tr',[h('td', row.geneName)].concat(row.classValues.map(cv => h('td', cv)))));
-
+    const expressionHeader = _.get(expressionTable, 'header', []);
+    const expressionRows = _.get(expressionTable, 'rows', []);
+    
+    const columns = [
+      {
+        Header: 'Gene Name',
+        accessor: 'geneName'
+      }
+    ].concat(expressionHeader.map((className, index) => {
+      return {
+        Header: className,
+        id: className,
+        accessor: row => row.classValues[index]
+      };
+    }));
     return h('div.paint', [
       h('div.paint-content', [
         h('div', { className: classNames('paint-drawer', { 'closed': !state.drawerOpen }) }, [
@@ -254,13 +264,7 @@ class Paint extends React.Component {
             h('p', `high ${maxVal}`)
           ]),
           h('p', `columns correspond to the clockwise direction on the pie (first column starts at 12 O'Clock going clockwise)`),
-          h('table', [
-            h('thead', [
-              h('tr', expressionTableHeader)
-            ]),
-            h('tbody', expressionTableBody)
-          ])
-
+          h(Table, {data: expressionRows, columns: columns} )
         ]),
         h(OmniBar, { name: state.name, datasource: state.datasource, onMenuClick: (e) => this.toggleDrawer() }),
         h(Network, { cy: state.cy, expressionTable: state.expressionTable })

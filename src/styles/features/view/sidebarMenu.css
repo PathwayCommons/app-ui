@@ -13,7 +13,7 @@
   box-shadow: 0px;
   transform: translateX(100%);
 
-  transition: all 0.5s ease-out, box-shadow 0.75s linear;
+  transition: all 0.5s ease-out;
 
   &.open {
     transform: translateX(0%);
@@ -48,13 +48,13 @@
   // border-style: solid;
   // border-width: 0px 0px 1px 1px;
 
-  transition: z-index 0s linear 0s, left 0.5s linear, box-shadow 0.75s linear;
+  transition: z-index 0s linear 0s, left 0.5s linear;
 
   &.open {
     left: calc(- var(--icon-size) * 3 / 2);
     box-shadow: var(--box-shadow);
     z-index: 10;
-    transition: left 0.5s linear, z-index 0s linear 0.5s, box-shadow 0.75s linear;
+    transition: left 0.5s linear, z-index 0s linear 0.5s;
   }
 }
 

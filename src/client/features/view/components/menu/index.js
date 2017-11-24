@@ -8,6 +8,7 @@ const _ = require('lodash');
 const { humanLayoutDisplayName } = require('../../../../common/cy/layout');
 const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
 const apiCaller = require('../../../../services/apiCaller');
+const datasourceLinks = require('../../../../common/tooltips/config').databases;
 
 const searchNodes = require('../../../../common/cy/search');
 let debouncedSearchNodes = _.debounce(searchNodes, 300);
@@ -108,7 +109,15 @@ class Menu extends React.Component {
     this.changeSearchValue('');
   }
 
+  getDatasourceLink(datasource) {
+    const link = datasourceLinks.filter(ds => ds[0].toUpperCase() === datasource.toUpperCase());
+
+    return _.get(link, '0.1', '');
+  }
+
   render() {
+    const datasourceLink = this.getDatasourceLink(this.props.datasource);
+
     const layoutItems = this.props.availableLayouts.map((layout, index) => {
       return (
         h(DropdownOption, {
@@ -145,7 +154,11 @@ class Menu extends React.Component {
               ])
             ]),
             h('div.title-container', [
-              h('h4', `${this.props.name} | ${this.props.datasource}`)
+              h('h4', [
+                h('span', { onClick: () => this.changeMenu('info') },this.props.name),
+                ' | ',
+                h('a', { href: datasourceLink, target: '_blank' }, this.props.datasource)
+              ])
             ])
           ]),
           h('div.view-toolbar', toolButtonEls.concat([

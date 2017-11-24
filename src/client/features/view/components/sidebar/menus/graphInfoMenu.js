@@ -1,20 +1,9 @@
 const React = require('react');
 const h = require('react-hyperscript');
-const _ = require('lodash');
-
-const datasourceLinks = require('../../../../../common/tooltips/config').databases;
 
 class GraphInfoMenu extends React.Component {
-  getDatasourceLink(datasource) {
-    const link = datasourceLinks.filter(ds => ds[0].toUpperCase() === datasource.toUpperCase());
-
-    return _.get(link, '0.1', '');
-  }
-
   render() {
     const props = this.props;
-
-    const datasourceLink = this.getDatasourceLink(props.datasource);
 
     const noInfoMessage = h('span', [
       h('p', 'No additional information was found for this network!'),
@@ -33,11 +22,6 @@ class GraphInfoMenu extends React.Component {
 
     return (
       h('div', [
-        h('h1', props.name),
-        h('h4', [
-          'Sourced from ',
-          h('a', { href: datasourceLink, target: '_blank' }, props.datasource)
-        ]),
         h('div', additionalInfo)
       ])
     );

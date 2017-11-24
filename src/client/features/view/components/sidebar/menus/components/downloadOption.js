@@ -4,7 +4,7 @@ const Loader = require('react-loader');
 const classNames = require('classnames');
 
 const saveAs = require('file-saver').saveAs;
-const apiCaller = require('../../../../../../services/');
+const apiCaller = require('../../../../../../services/apiCaller');
 
 const downloadTypes = {
   png: 'Image (PNG)',
@@ -71,7 +71,7 @@ class DownloadOption extends React.Component {
   initiatePCDownload(format, file_ext) {
     this.setState({ loading: true });
 
-    apiCaller.query(this.props.uri, format)
+    apiCaller.pcQuery(this.props.uri, format)
       .then(content => {
         let fileContent = content;
         if (typeof content === 'object') {
@@ -94,9 +94,7 @@ class DownloadOption extends React.Component {
 
   render() {
     return (
-      h('div', {
-        // for the sake of a quick fix, only one download option can be pre-shown. I'll fix this later
-        className: classNames('download-option', { 'pre-shown' : this.props.type === 'png' }),
+      h('div.download-option', {
         onClick: (evt) => this.handleDownloadClick(evt, this.props.type)
       }, [
           h('div.download-option-header', [
@@ -105,7 +103,7 @@ class DownloadOption extends React.Component {
               h(Loader, {
                 loaded: !this.state.loading, options: {
                   scale: 0.5,
-                  width: 3,
+                  width: 3
                 }
               })
             ])

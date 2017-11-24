@@ -162,10 +162,7 @@ class Paint extends React.Component {
     const state = this.state;
     const query = {
       q: queryParam,
-      gt: 2,
-      lt: 100,
-      type: 'Pathway',
-      datasource: 'reactome'
+      type: 'Pathway'
     };
     
     apiCaller.querySearch(query)

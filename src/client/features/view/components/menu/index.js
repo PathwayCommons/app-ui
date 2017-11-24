@@ -9,7 +9,7 @@ const { humanLayoutDisplayName } = require('../../../../common/cy/layout');
 const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
 const apiCaller = require('../../../../services/apiCaller');
 
-const searchNodes = require('./search');
+const searchNodes = require('../../../../common/cy/search');
 let debouncedSearchNodes = _.debounce(searchNodes, 300);
 
 // Buttons for opening the sidebar, along with their descriptions

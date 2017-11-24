@@ -36,6 +36,13 @@ router.get('/get-graph-and-layout', function (req, res) {
   });
 });
 
+// Expose a rest endpoint for controller.getLayoutHistory
+router.get('/get-layout-history', function (req, res) {
+  controller.getHistory(req.query.uri, req.query.version).then((package) => {
+    res.json(package);
+  });
+});
+
 // Expose a rest endpoint for controller.endSession
 router.get('/disconnect', function (req, res) {
   controller.endSession(req.query.uri, req.query.version, req.query.user)

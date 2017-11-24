@@ -1,5 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
+const Table = require('react-table');
+
 const queryString = require('query-string');
 const color = require('color');
 const _ = require('lodash');
@@ -11,6 +13,24 @@ const Icon = require('../../common/components').Icon;
 const { apiCaller, PathwayCommonsService } = require('../../services');
 
 
+const analysisFunctions = [
+  {
+    name: 'mean',
+    func: _.mean,
+  },
+  {
+    name: 'count',
+    func: _.countBy,
+  },
+  {
+    name: 'min',
+    func: _.min
+  },
+  {
+    name: 'max',
+    func: _.max
+  }
+];
 
 class OmniBar extends React.Component {
   render() {

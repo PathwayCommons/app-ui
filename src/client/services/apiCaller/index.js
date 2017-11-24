@@ -37,6 +37,14 @@ const apiCaller = {
     }).then(res => res.json());
   },
 
+  getLayouts(uri, version) {
+    return fetch(`/api/get-layout-history?${qs.stringify({uri, version})}`, {
+      method: 'GET', headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+      }
+    }).then(res =>  res.json());
+  },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into
   // a layout

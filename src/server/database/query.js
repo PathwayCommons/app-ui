@@ -24,7 +24,6 @@ function getLayout(pcID, releaseID, connection, trimValues, callback) {
         .eqJoin((id) => { return id; }, r.db(config.databaseName).table('layout'))
         .zip()
         .orderBy(r.asc('date_added'))
-        .pluck('positions') // We're only looking for positions
         .run(connection);
     }).then((allSubmissions) => {
       // Run decision making process to amalgamate down to one layout to return

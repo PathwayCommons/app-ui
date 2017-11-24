@@ -16,6 +16,7 @@ let debouncedSearchNodes = _.debounce(searchNodes, 300);
 const toolButtons = {
   info: 'Extra information',
   file_download: 'Download options',
+  history: 'Previous layouts'
   //help: 'Interpreting the display' // re-add to access help menu
 };
 
@@ -31,7 +32,7 @@ class Menu extends React.Component {
     this.state = {
       dropdownOpen: false,
       searchOpen: false,
-      complexesExpanded: true,
+      complexesExpanded:            true,
       selectedLayout: props.currLayout,
       initialLayoutSet: false
     };

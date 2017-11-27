@@ -6,11 +6,12 @@ const tippy = require('tippy.js');
 const _ = require('lodash');
 
 const { humanLayoutDisplayName } = require('../../../../common/cy/layout');
+const searchNodes = require('../../../../common/cy/search');
+
 const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
 const apiCaller = require('../../../../services/apiCaller');
 const datasourceLinks = require('../../../../common/tooltips/config').databases;
 
-const searchNodes = require('../../../../common/cy/search');
 let debouncedSearchNodes = _.debounce(searchNodes, 300);
 
 // Buttons for opening the sidebar, along with their descriptions
@@ -101,7 +102,7 @@ class Menu extends React.Component {
 
   changeSearchValue(newVal) {
     let cy = this.props.cy;
-    debouncedSearchNodes(newVal, cy);
+    debouncedSearchNodes(newVal, cy, true);
   }
 
   clearSearchBox() {

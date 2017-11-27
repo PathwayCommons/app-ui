@@ -1,16 +1,38 @@
 const React = require('react');
 const h = require('react-hyperscript');
+const Table = require('react-table').default;
+
 const queryString = require('query-string');
 const color = require('color');
 const _ = require('lodash');
 const classNames = require('classnames');
+const matchSorter = require('match-sorter').default;
 
 const make_cytoscape = require('../../common/cy');
+const cysearch = require('../../common/cy/search');
 
 const Icon = require('../../common/components').Icon;
 const { apiCaller, PathwayCommonsService } = require('../../services');
 
 
+const analysisFunctions = [
+  {
+    name: 'mean',
+    func: _.mean,
+  },
+  {
+    name: 'count',
+    func: _.countBy,
+  },
+  {
+    name: 'min',
+    func: _.min
+  },
+  {
+    name: 'max',
+    func: _.max
+  }
+];
 
 class OmniBar extends React.Component {
   render() {
@@ -142,12 +164,9 @@ class Paint extends React.Component {
     const state = this.state;
     const query = {
       q: queryParam,
-      gt: 2,
-      lt: 100,
-      type: 'Pathway',
-      datasource: 'reactome'
+      type: 'Pathway'
     };
-    
+
     apiCaller.querySearch(query)
       .then(searchResults => {
         const uri = _.get(searchResults, '0.uri', null);
@@ -218,11 +237,25 @@ class Paint extends React.Component {
     const maxVal = _.max(enrichmentsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
     const minVal = _.min(enrichmentsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
 
-    const expressionTableHeader = [h('th', '')].concat(_.get(expressionTable, 'header', []).map(column => h('th', column)));
-    const expressionTableBody = _.sortBy(
-      _.get(expressionTable, 'rows', []), (o) => o.geneName
-    ).map(row => h('tr',[h('td', row.geneName)].concat(row.classValues.map(cv => h('td', cv)))));
+    const expressionHeader = _.get(expressionTable, 'header', []);
+    const expressionRows = _.get(expressionTable, 'rows', []);
 
+    const columns = [
+      {
+        Header: 'Gene Name',
+        accessor: 'geneName',
+        filterMethod: (filter, rows) => {
+          return matchSorter(rows, filter.value, { keys: ["geneName"] });
+        },
+        filterAll: true
+      }
+    ].concat(expressionHeader.map((className, index) => {
+      return {
+        Header: className,
+        id: className,
+        accessor: row => row.classValues[index]
+      };
+    }));
     return h('div.paint', [
       h('div.paint-content', [
         h('div', { className: classNames('paint-drawer', { 'closed': !state.drawerOpen }) }, [
@@ -233,14 +266,22 @@ class Paint extends React.Component {
             h('p', `low ${minVal}`),
             h('p', `high ${maxVal}`)
           ]),
-          h('p', `columns correspond to the clockwise direction on the pie (first column starts at 12 O'Clock going clockwise)`),
-          h('table', [
-            h('thead', [
-              h('tr', expressionTableHeader)
-            ]),
-            h('tbody', expressionTableBody)
-          ])
-
+          h(Table, {
+            className:'-striped -highlight',
+            data: expressionRows,
+            columns: columns,
+            filterable: true,
+            defaultPageSize: 150,
+            getTdProps: (state, rowInfo, column, instance) => {
+              return {
+                onMouseEnter: e => {
+                  const geneName = rowInfo.original.geneName;
+                  const debouncedSearch = _.debounce(cysearch, 300);
+                  debouncedSearch(geneName, this.state.cy);
+                }
+              };
+            }
+           })
         ]),
         h(OmniBar, { name: state.name, datasource: state.datasource, onMenuClick: (e) => this.toggleDrawer() }),
         h(Network, { cy: state.cy, expressionTable: state.expressionTable })

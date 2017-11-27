@@ -6,7 +6,7 @@ const queryString = require('query-string');
 const color = require('color');
 const _ = require('lodash');
 const classNames = require('classnames');
-const matchSorter = require('match-sorter');
+const matchSorter = require('match-sorter').default;
 
 const make_cytoscape = require('../../common/cy');
 
@@ -165,7 +165,7 @@ class Paint extends React.Component {
       q: queryParam,
       type: 'Pathway'
     };
-    
+
     apiCaller.querySearch(query)
       .then(searchResults => {
         const uri = _.get(searchResults, '0.uri', null);
@@ -238,13 +238,14 @@ class Paint extends React.Component {
 
     const expressionHeader = _.get(expressionTable, 'header', []);
     const expressionRows = _.get(expressionTable, 'rows', []);
-    
+
     const columns = [
       {
         Header: 'Gene Name',
         accessor: 'geneName',
-        filterMethod: (filter, rows) =>
-        matchSorter(rows, filter.value, { keys: ["geneName"] }),
+        filterMethod: (filter, rows) => {
+          return matchSorter(rows, filter.value, { keys: ["geneName"] });
+        },
         filterAll: true
       }
     ].concat(expressionHeader.map((className, index) => {
@@ -265,7 +266,7 @@ class Paint extends React.Component {
             h('p', `high ${maxVal}`)
           ]),
           h('p', `columns correspond to the clockwise direction on the pie (first column starts at 12 O'Clock going clockwise)`),
-          h(Table, {data: expressionRows, columns: columns} )
+          h(Table, {data: expressionRows, columns: columns, filterable: true } )
         ]),
         h(OmniBar, { name: state.name, datasource: state.datasource, onMenuClick: (e) => this.toggleDrawer() }),
         h(Network, { cy: state.cy, expressionTable: state.expressionTable })

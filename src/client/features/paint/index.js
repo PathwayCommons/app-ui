@@ -89,6 +89,9 @@ class Network extends React.Component {
 
   applyExpressionData(props) {
     const expressionTable = props.expressionTable;
+    const expressionClasses = expressionTable.header;
+
+    const selectedClassIndex = expressionClasses.indexOf(props.selectedClass);
     const networkNodes = _.uniq(props.cy.nodes('[class="macromolecule"]').map(node => node.data('label'))).sort();
 
     const expressionsInNetwork = expressionTable.rows.filter(row => networkNodes.includes(row.geneName));
@@ -98,20 +101,11 @@ class Network extends React.Component {
     expressionsInNetwork.forEach(expression => {
       // probably more efficient to add the expression data to the node field instead of interating twice
       props.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
-
-        const numSlices = expression.classValues.length > 16 ? 16 : expression.classValues.length;
-
-        const pieStyle = {
-          'pie-size': '100%'
+        const style = {
+          'background-color': this.percentToColour(expression.classValues[selectedClassIndex] / maxVal)
         };
-        for (let i = 1; i <= numSlices; i++) {
 
-          pieStyle['pie-' + i + '-background-size'] = 100 / numSlices;
-          pieStyle['pie-' + i + '-background-opacity'] = 1;
-          pieStyle['pie-' + i + '-background-color'] = this.percentToColour(expression.classValues[i-1] / maxVal);
-        }
-
-        node.style(pieStyle);
+        node.style(style);
       });
     });
   }
@@ -131,6 +125,8 @@ class Paint extends React.Component {
     this.state = {
       rawEnrichmentData: {},
       expressionTable: {},
+      selectedClass: null,
+
       cy: cy,
       name: '',
       datasource: '',
@@ -194,6 +190,9 @@ class Paint extends React.Component {
             const expressionTable = {};
 
             const header = _.uniq(expressionClasses);
+            this.setState({
+              selectedClass: _.get(header, '0', null)
+            });
 
             expressionTable.header = header;
             expressionTable.rows = expressions.map(expression => {
@@ -274,6 +273,15 @@ class Paint extends React.Component {
             columns: columns,
             filterable: true,
             defaultPageSize: 150,
+            getTheadThProps: (state, rowInfo, column, instance) => {
+              return {
+                onClick: e => {
+                  this.setState({
+                    selectedClass: column.id
+                  });
+                }
+              };
+            },
             getTdProps: (state, rowInfo, column, instance) => {
               return {
                 onMouseEnter: e => {
@@ -286,7 +294,7 @@ class Paint extends React.Component {
            })
         ]),
         h(OmniBar, { name: state.name, datasource: state.datasource, onMenuClick: (e) => this.toggleDrawer() }),
-        h(Network, { cy: state.cy, expressionTable: state.expressionTable })
+        h(Network, { cy: state.cy, expressionTable: state.expressionTable, selectedClass: state.selectedClass })
       ])
     ]);
   }

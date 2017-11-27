@@ -51,21 +51,24 @@ class Sidebar extends React.Component {
         ref: dom => this.sidebarContainer = dom
       }, [
           h('div', {
-            className: classNames('sidebar-select', 'conditional', { 'open': this.state.open })
+            className: classNames('sidebar-close-button-container', { 'open': this.state.open })
           }, [
               h('div', {
-                className: classNames('sidebar-close-button', this.state.open ? 'open' : 'closed'),
+                className: classNames('tool-button', this.state.open ? 'open' : 'closed'),
                 onClick: () => this.props.changeMenu(''),
                 title: 'Close the sidebar'
-              }, [
-                  h('i.material-icons', 'close')
-                ])
+              }, [h('i.material-icons', 'close')])
             ]),
-          h('div.sidebar-content', [
-            h('div.sidebar-text', [
-              menus[this.state.activeMenu]
+          h('div.sidebar-content', {
+            ref: dom => this.sidebarDOM = dom
+          }, [
+              h('div.sidebar-resize', {
+                ref: dom => this.sidebarResizerDOM = dom
+              }),
+              h('div.sidebar-text', [
+                menus[this.state.activeMenu]
+              ])
             ])
-          ])
         ])
     );
   }

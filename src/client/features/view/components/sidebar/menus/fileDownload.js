@@ -1,5 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
+const classNames = require('classnames');
 
 const DownloadOption = require('./components/downloadOption');
 
@@ -31,29 +32,39 @@ class FileDownloadMenu extends React.Component {
           uri: this.props.uri,
           name: this.props.name
         }, [
-          h(downloadDescriptions[option])
-        ])
+            h(downloadDescriptions[option])
+          ])
       );
     });
 
     return (
       h('div.file-download-menu', [
-        h('h1', 'Network Downloads'),
-        h(DownloadOption, {
-          cy: this.props.cy,
-          type: 'png',
-          uri: this.props.uri,
-          name: this.props.name
-        }, [
-          h(downloadDescriptions.png)
-        ]),
-        h('div.toggle-extra-downloads', {
-          onClick: () => this.setState({extrasActive: !this.state.extrasActive})
-        }, [
-          h('i.material-icons', this.state.extrasActive ? 'remove_circle_outline' : 'add_circle_outline'),
-          h('span', `${this.state.extrasActive ? 'Hide' : 'Show'} more options`)
+        h('h2', 'Network Downloads'),
+        h('div.file-download-content', [
+          h('div.file-download-main', [
+            h(DownloadOption, {
+              cy: this.props.cy,
+              type: 'png',
+              uri: this.props.uri,
+              name: this.props.name
+            }, [
+                h(downloadDescriptions.png)
+              ])
+          ]),
+          h('div.toggle-extra-downloads-container', [
+            h('div', {
+              className: classNames('toggle-extra-downloads', { 'toggle-extra-downloads-active': this.state.extrasActive }),
+              onClick: () => this.setState({ extrasActive: !this.state.extrasActive })
+            }, [
+                h('i.material-icons', this.state.extrasActive ? 'keyboard_arrow_up' : 'keyboard_arrow_down'),
+                h('span', `${this.state.extrasActive ? 'Hide' : 'Show'} more options`)
+              ])
+          ]),
+          h('div', {
+            className: classNames('file-download-extras', { 'file-download-extras-hide': !this.state.extrasActive })
+          }, extraMenuContents)
         ])
-      ].concat(this.state.extrasActive ? extraMenuContents : []))
+      ])
     );
   }
 }

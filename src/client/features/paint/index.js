@@ -229,16 +229,18 @@ class Paint extends React.Component {
     const state = this.state;
 
     const expressionTable = state.expressionTable;
+    const expressions = _.get(expressionTable, 'rows', []);
 
     const networkNodes = state.cy.nodes().map(node => node.data('label'));
-    const enrichmentsInNetwork = _.get(expressionTable, 'rows', []).filter(row => networkNodes.includes(row.geneName));
+    const expressionsInNetwork = expressions.filter(row => networkNodes.includes(row.geneName));
+    const expressionsNotInNetwork = _.difference(expressions, expressionsInNetwork);
 
 
-    const maxVal = _.max(enrichmentsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
-    const minVal = _.min(enrichmentsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
+    const maxVal = _.max(expressionsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
+    const minVal = _.min(expressionsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
 
     const expressionHeader = _.get(expressionTable, 'header', []);
-    const expressionRows = _.get(expressionTable, 'rows', []);
+    const expressionRows = expressionsInNetwork.concat(expressionsNotInNetwork);
 
     const columns = [
       {
@@ -275,8 +277,8 @@ class Paint extends React.Component {
             getTdProps: (state, rowInfo, column, instance) => {
               return {
                 onMouseEnter: e => {
-                  const geneName = rowInfo.original.geneName;
-                  const debouncedSearch = _.debounce(cysearch, 300);
+                  const geneName = _.get(rowInfo, 'original.geneName', '');
+                  const debouncedSearch = _.debounce(cysearch, 700);
                   debouncedSearch(geneName, this.state.cy);
                 }
               };

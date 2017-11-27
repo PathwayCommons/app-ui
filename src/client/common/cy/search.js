@@ -70,7 +70,7 @@ function evaluateNode(node, matchingFn) {
 }
 
 //Search for nodes that match an entered query
-function searchNodes(query, cy) {
+function searchNodes(query, cy, fit = false) {
   const isBlank = _.isString(query) ? !!_.trim(query) : false;
   const isRegularExp = _.startsWith(query, 'regex:') && validateRegex(query.substring(6));
   const isExact = _.startsWith(query, 'exact:');
@@ -118,14 +118,15 @@ function searchNodes(query, cy) {
   applySearchStyle(cy.nodes(), baseStyle);
 
   //Apply styling
-  if (matched.length > 0 && isBlank) {
+  if ( matched.length > 0 && isBlank) {
 
-    //Animate zoom and fit
-    cy.animate({
-      fit: {
-        eles: cy.elements(), padding: 100
-      }
-    }, { duration: 700 });
+    if (fit) {
+      cy.animate({
+        fit: {
+          eles: cy.elements(), padding: 100
+        }
+      }, { duration: 700 });
+    }
 
     updateStyling(searchStyle, matched, cy);
   }

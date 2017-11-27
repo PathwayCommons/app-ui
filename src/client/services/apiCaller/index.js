@@ -18,7 +18,7 @@ const apiCaller = {
         'Content-type': 'application/json',
         'Accept': 'application/json'
       }
-    }).then(res => res.json());
+    });
   },
 
   datasources(){

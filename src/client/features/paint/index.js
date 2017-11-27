@@ -9,6 +9,7 @@ const classNames = require('classnames');
 const matchSorter = require('match-sorter').default;
 
 const make_cytoscape = require('../../common/cy');
+const cysearch = require('../../common/cy/search');
 
 const Icon = require('../../common/components').Icon;
 const { apiCaller, PathwayCommonsService } = require('../../services');
@@ -265,8 +266,21 @@ class Paint extends React.Component {
             h('p', `low ${minVal}`),
             h('p', `high ${maxVal}`)
           ]),
-          h('p', `columns correspond to the clockwise direction on the pie (first column starts at 12 O'Clock going clockwise)`),
-          h(Table, {data: expressionRows, columns: columns, filterable: true } )
+          h(Table, {
+            className:'-striped -highlight',
+            data: expressionRows,
+            columns: columns,
+            filterable: true,
+            defaultPageSize: 150,
+            getTdProps: (state, rowInfo, column, instance) => {
+              return {
+                onMouseEnter: e => {
+                  const geneName = rowInfo.original.geneName;
+                  cysearch(geneName, this.state.cy);
+                }
+              };
+            }
+           })
         ]),
         h(OmniBar, { name: state.name, datasource: state.datasource, onMenuClick: (e) => this.toggleDrawer() }),
         h(Network, { cy: state.cy, expressionTable: state.expressionTable })

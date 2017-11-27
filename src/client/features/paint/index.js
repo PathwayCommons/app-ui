@@ -276,7 +276,8 @@ class Paint extends React.Component {
               return {
                 onMouseEnter: e => {
                   const geneName = rowInfo.original.geneName;
-                  cysearch(geneName, this.state.cy);
+                  const debouncedSearch = _.debounce(cysearch, 300);
+                  debouncedSearch(geneName, this.state.cy);
                 }
               };
             }

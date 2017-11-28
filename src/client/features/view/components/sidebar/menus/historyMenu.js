@@ -74,11 +74,15 @@ class HistoryMenu extends React.Component {
     let imageList = images.filter(image => image.id === id);
     let image = imageList.length > 0 ? imageList[0] : {};
 
+    //Parse Date
+    let date = new Date(image.date);
+    let dateStr = date.toString();
+
     //Render image card with required information
     return h(imageCard, {
       key: image.id,
       src: image.img,
-      children: 'Date Added : ' + image.date,
+      children: 'Date Added : ' + dateStr,
       onClick: () => that.applyLayout(layout.id, cy, that.props)
     });
   }

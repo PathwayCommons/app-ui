@@ -14,11 +14,10 @@
   overflow: hidden;
 
   & img {
-    border: 1px solid black;
-    min-height: 3em;
-    min-width: 100%;
+    max-height: 12em;
     max-width: 100%;
-    min-height: 100%;
+    width: auto;
+    height: auto;
     text-align: center;
     line-height: 3em;
     margin-bottom: 1em;

@@ -5,7 +5,7 @@ const config = require('./config');
 
 
 //Handle name related metadata fields
-const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Approved Name: ');
+const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Name: ');
 const standardNameHandlerTrim = (pair) => standardNameHandler(pair);
 
 const nameHandlerTrim = (pair) => {
@@ -351,7 +351,7 @@ function generateDatabaseList(sortedArray, trim) {
     renderValue = h('div.wrap-text', h('ul.db-list', renderValue));
   }
 
-  return h('div.fake-paragraph', [h('div.span-field-name', 'Database References:'), renderValue]);
+  return h('div.fake-paragraph', [h('div.span-field-name', 'Links :'), renderValue]);
 }
 
 //Replace any instances of Replaced 

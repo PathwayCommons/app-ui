@@ -14,25 +14,8 @@ const cysearch = require('../../common/cy/search');
 const Icon = require('../../common/components').Icon;
 const { apiCaller, PathwayCommonsService } = require('../../services');
 
+const createExpressionTable = require('./expression-model');
 
-const analysisFunctions = [
-  {
-    name: 'mean',
-    func: _.mean,
-  },
-  {
-    name: 'count',
-    func: _.countBy,
-  },
-  {
-    name: 'min',
-    func: _.min
-  },
-  {
-    name: 'max',
-    func: _.max
-  }
-];
 
 class OmniBar extends React.Component {
   render() {
@@ -187,32 +170,11 @@ class Paint extends React.Component {
             }).run();
 
 
-            const expressionTable = {};
-
-            const header = _.uniq(expressionClasses);
-            this.setState({
-              selectedClass: _.get(header, '0', null)
-            });
-
-            expressionTable.header = header;
-            expressionTable.rows = expressions.map(expression => {
-              const geneName = expression.geneName;
-              const values = expression.values;
-
-              const class2ValuesMap = new Map();
-
-              for (let expressionClass of header) {
-                class2ValuesMap.set(expressionClass, []);
-              }
-
-              for (let i = 0; i < values.length; i++) {
-                class2ValuesMap.get(expressionClasses[i]).push(values[i]);
-              }
-
-              return { geneName: geneName, classValues: Array.from(class2ValuesMap.entries()).map((entry =>  _.mean(entry[1]).toFixed(2))) };
-            });
+            const expressionTable = createExpressionTable(expressions, expressionClasses);
+            const header = expressionTable.header;
 
             this.setState({
+              selectedClass: _.get(header, '0', null),
               expressionTable: expressionTable
             });
           });
@@ -222,6 +184,27 @@ class Paint extends React.Component {
 
   toggleDrawer() {
     this.setState({drawerOpen: !this.state.drawerOpen});
+  }
+
+  getAnalysisFunctions() {
+    return [
+      {
+        name: 'mean',
+        func: _.mean,
+      },
+      {
+        name: 'count',
+        func: _.countBy,
+      },
+      {
+        name: 'min',
+        func: _.min
+      },
+      {
+        name: 'max',
+        func: _.max
+      }
+    ];
   }
 
   render() {
@@ -257,6 +240,11 @@ class Paint extends React.Component {
         accessor: row => row.classValues[index]
       };
     }));
+
+    // const analysisFunctions = this.getAnalysisFunctions.map(fn => {
+
+    // })
+
     return h('div.paint', [
       h('div.paint-content', [
         h('div', { className: classNames('paint-drawer', { 'closed': !state.drawerOpen }) }, [
@@ -266,6 +254,13 @@ class Paint extends React.Component {
           h('div.paint-legend', [
             h('p', `low ${minVal}`),
             h('p', `high ${maxVal}`)
+          ]),
+          h('select.paint-select', [
+            h('option', 'min'),
+            h('option', 'max'),
+            h('option', 'mean'),
+            h('option', 'count'),
+
           ]),
           h(Table, {
             className:'-striped -highlight',
@@ -284,10 +279,9 @@ class Paint extends React.Component {
             },
             getTdProps: (state, rowInfo, column, instance) => {
               return {
-                onMouseEnter: e => {
+                onClick: e => {
                   const geneName = _.get(rowInfo, 'original.geneName', '');
-                  const debouncedSearch = _.debounce(cysearch, 700);
-                  debouncedSearch(geneName, this.state.cy);
+                  cysearch(geneName, this.state.cy);
                 }
               };
             }

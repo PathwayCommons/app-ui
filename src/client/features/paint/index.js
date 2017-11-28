@@ -43,55 +43,6 @@ class Network extends React.Component {
     props.cy.mount(container);
   }
 
-  colourMap(val, min, max) {
-    const distToMax = Math.abs(val - max);
-    const distToMin = Math.abs(val - min);
-
-    let hVal, lVal;
-    if (distToMax > distToMin) {
-      hVal = 240;
-      lVal = ( val / Math.abs(max) ) * 100 + 20;
-    } else {
-      hVal = 0;
-      lVal = ( val / Math.abs(max) ) * 100 - 20;
-    }
-    return color.hsl(hVal, 100, lVal).string();
-  }
-
-  percentToColour(percent) {
-    const hslValue = ( 1 - percent ) * 240;
-
-    return color.hsl(hslValue, 100, 50).string();
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (!_.isEmpty(nextProps.expressionTable)) {
-      this.applyExpressionData(nextProps);
-    }
-  }
-
-  applyExpressionData(props) {
-    const expressionTable = props.expressionTable;
-    const expressionClasses = expressionTable.header;
-
-    const selectedClassIndex = expressionClasses.indexOf(props.selectedClass);
-    const networkNodes = _.uniq(props.cy.nodes('[class="macromolecule"]').map(node => node.data('label'))).sort();
-
-    const expressionsInNetwork = expressionTable.rows.filter(row => networkNodes.includes(row.geneName));
-    const maxVal = _.max(expressionsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
-    const minVal = _.min(expressionsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
-
-    expressionsInNetwork.forEach(expression => {
-      // probably more efficient to add the expression data to the node field instead of interating twice
-      props.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
-        const style = {
-          'background-color': this.percentToColour(expression.classValues[selectedClassIndex] / maxVal)
-        };
-
-        node.style(style);
-      });
-    });
-  }
 
   render() {
     return h('div.paint-graph', [ h(`div.#cy-container`, {style: {width: '100vw', height: '100vh'}}) ]);
@@ -104,6 +55,8 @@ class Paint extends React.Component {
     super(props);
 
     const cy = make_cytoscape({headless: true});
+    const query = queryString.parse(props.location.search);
+    const enrichmentsURI = query.uri ? query.uri : null;
 
     this.state = {
       rawEnrichmentData: {},
@@ -116,18 +69,15 @@ class Paint extends React.Component {
       drawerOpen: false
     };
 
-    const query = queryString.parse(props.location.search);
-    const enrichmentsURI = query.uri ? query.uri : null;
-
     if (enrichmentsURI != null) {
       fetch(enrichmentsURI)
         .then(response => response.json())
         .then(json => {
-          this.setState({rawEnrichmentData: json});
-
           const expressionClasses = _.get(json.dataSetClassList, '0.classes', []);
           const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
           const searchParam = query.q;
+
+          this.setState({rawEnrichmentData: json});
           this.initPainter(expressions, expressionClasses, searchParam);
 
         });
@@ -153,17 +103,7 @@ class Paint extends React.Component {
         const expressionTable = createExpressionTable(expressions, expressionClasses);
         const header = expressionTable.header;
 
-        this.setState({
-          selectedClass: _.get(header, '0', null),
-          expressionTable: expressionTable
-        });
-
         apiCaller.getGraphAndLayout(uri, 'latest').then(response => {
-          this.setState({
-            name: _.get(response, 'graph.pathwayMetadata.title', 'N/A'),
-            datasource: _.get(response, 'graph.pathwayMetadata.dataSource.0', 'N/A'),
-          });
-
           state.cy.remove('*');
           state.cy.add({
             nodes: _.get(response, 'graph.nodes', []),
@@ -176,8 +116,58 @@ class Paint extends React.Component {
             nodeDimensionsIncludeLabels: true
           }).run();
 
+          this.setState({
+            selectedClass: _.get(header, '0', null),
+            expressionTable: expressionTable,
+            name: _.get(response, 'graph.pathwayMetadata.title', 'N/A'),
+            datasource: _.get(response, 'graph.pathwayMetadata.dataSource.0', 'N/A'),
+          }, () => this.applyExpressionData());
         });
       }
+    });
+  }
+  colourMap(val, min, max) {
+    const distToMax = Math.abs(val - max);
+    const distToMin = Math.abs(val - min);
+
+    let hVal, lVal;
+    if (distToMax > distToMin) {
+      hVal = 240;
+      lVal = ( val / Math.abs(max) ) * 100 + 20;
+    } else {
+      hVal = 0;
+      lVal = ( val / Math.abs(max) ) * 100 - 20;
+    }
+    return color.hsl(hVal, 100, lVal).string();
+  }
+
+  percentToColour(percent) {
+    const hslValue = ( 1 - percent ) * 240;
+
+    return color.hsl(hslValue, 100, 50).string();
+  }
+
+  applyExpressionData() {
+    const state = this.state;
+    const expressionTable = state.expressionTable;
+    const expressionClasses = expressionTable.header;
+
+    const selectedClassIndex = expressionClasses.indexOf(state.selectedClass);
+    const networkNodes = _.uniq(state.cy.nodes('[class="macromolecule"]').map(node => node.data('label'))).sort();
+
+    const expressionsInNetwork = expressionTable.rows.filter(row => networkNodes.includes(row.geneName));
+    const maxVal = _.max(expressionsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
+    const minVal = _.min(expressionsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
+
+    expressionsInNetwork.forEach(expression => {
+      // probably more efficient to add the expression data to the node field instead of interating twice
+      state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
+        const style = {
+          'background-color': this.percentToColour(expression.classValues[selectedClassIndex] / maxVal)
+        };
+
+        node.style(style);
+      });
     });
   }
 

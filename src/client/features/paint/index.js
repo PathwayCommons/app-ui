@@ -146,39 +146,38 @@ class Paint extends React.Component {
       type: 'Pathway'
     };
 
-    apiCaller.querySearch(query)
-      .then(searchResults => {
-        const uri = _.get(searchResults, '0.uri', null);
+    apiCaller.querySearch(query).then(searchResults => {
+      const uri = _.get(searchResults, '0.uri', null);
 
-        if (uri != null) {
-          apiCaller.getGraphAndLayout(uri, 'latest').then(response => {
-            this.setState({
-              name: _.get(response, 'graph.pathwayMetadata.title', 'N/A'),
-              datasource: _.get(response, 'graph.pathwayMetadata.dataSource.0', 'N/A'),
-            });
+      if (uri != null) {
+        const expressionTable = createExpressionTable(expressions, expressionClasses);
+        const header = expressionTable.header;
 
-            state.cy.remove('*');
-            state.cy.add({
-              nodes: _.get(response, 'graph.nodes', []),
-              edges: _.get(response, 'graph.edges', [])
-            });
+        this.setState({
+          selectedClass: _.get(header, '0', null),
+          expressionTable: expressionTable
+        });
 
-            state.cy.layout({
-              name: 'cose-bilkent',
-              randomize: false,
-              nodeDimensionsIncludeLabels: true
-            }).run();
-
-
-            const expressionTable = createExpressionTable(expressions, expressionClasses);
-            const header = expressionTable.header;
-
-            this.setState({
-              selectedClass: _.get(header, '0', null),
-              expressionTable: expressionTable
-            });
+        apiCaller.getGraphAndLayout(uri, 'latest').then(response => {
+          this.setState({
+            name: _.get(response, 'graph.pathwayMetadata.title', 'N/A'),
+            datasource: _.get(response, 'graph.pathwayMetadata.dataSource.0', 'N/A'),
           });
-        }
+
+          state.cy.remove('*');
+          state.cy.add({
+            nodes: _.get(response, 'graph.nodes', []),
+            edges: _.get(response, 'graph.edges', [])
+          });
+
+          state.cy.layout({
+            name: 'cose-bilkent',
+            randomize: false,
+            nodeDimensionsIncludeLabels: true
+          }).run();
+
+        });
+      }
     });
   }
 

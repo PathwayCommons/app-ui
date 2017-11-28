@@ -9,6 +9,7 @@ const rearrangeGraph = require('./rearrangeGraph');
    - Graph must be a valid cytoscape json produced by cy.json();
 */
 function generateImages(layouts, graph, options) {
+
   let pngCollection = layouts.map(layout => {
     return new Promise(resolve => {
       let positions = layout.positions;
@@ -20,7 +21,7 @@ function generateImages(layouts, graph, options) {
       document.body.appendChild(container);
 
       //Make a cytoscape instance to render the png
-      const cyHeadless = makeCytoscape({ container: document.getElementById(layout.id) });
+      const cyHeadless = makeCytoscape({ container : document.getElementById(layout.id) });
       cyHeadless.add(graph);
 
 

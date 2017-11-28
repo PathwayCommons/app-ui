@@ -101,7 +101,6 @@ function getHistory(pcID, releaseID) {
   });
 }
 
-
 module.exports = {
   submitLayout,
   submitGraph,

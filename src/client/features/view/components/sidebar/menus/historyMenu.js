@@ -1,78 +1,109 @@
 const React = require('react');
 const h = require('react-hyperscript');
-const _ = require('lodash');
+const Loader = require('react-loader');
 
 const { getLayouts } = require('../../../../../common/cy/layout/');
 const apiCaller = require('../../../../../services/apiCaller');
+const revisions = require('../../../../../common/cy/revisions/');
+const imageCard = require('./components/imageCard');
 
 class HistoryMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      layouts: '',
-      loading: true
+      layouts: this.props.cy.scratch('_layoutRevisions'),
+      loading: true,
+      images: this.props.cy.scratch('_layoutImages')
     };
-    apiCaller.getLayouts(props.uri, 'latest').then(res => this.setState({
-      layouts: res,
-      loading: false
-    }));
   }
 
-  applyLayout(id) {
+  //Get layouts and images if they do not already exists
+  componentDidMount() {
+    if (!this.state.images || !this.state.layouts) {
+      //Fetch most recent layout revisions from the server
+      apiCaller.getLayouts(this.props.uri, 'latest').then(res => {
+        this.setState({ layouts: res });
+
+        //Store the revisions for future use
+        this.props.cy.scratch('_layoutRevisions', res);
+      })
+        //Obtain an image of each layout
+        .then(() => {
+          let graph = this.state.layouts.graph;
+          let layouts = this.state.layouts.layout;
+
+          revisions.generateImages(layouts, graph, this.props).then(res => {
+            this.setState({
+              images: res,
+              loading: false
+            });
+
+            //Store the images for future use
+            this.props.cy.scratch('_layoutImages', res);
+          });
+        });
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return !nextState.loading;
+  }
+
+  //Apply a previous layout to the cytoscape graph
+  //Requires a valid layout id
+  applyLayout(id, cy, props) {
+    //Obtain Layouts and positions
     const layouts = this.state.layouts.layout;
     const layout = layouts.filter(item => item.id === id)[0];
     const positions = layout.positions;
     const layoutConf = getLayouts(positions);
+
+    //Update information within other components
     this.props.changeLayout(layoutConf);
-    this.performLayout(layoutConf.layouts, positions);
+
+    //Adjust the graph to match the new new layout
+    revisions.rearrangeGraph(layoutConf.layouts, positions, cy, false, props);
   }
 
-  //Apply the previous layout to the cytoscape graph
-  //Modified the cy object and submits the changes to the server
-  performLayout(layouts, positions) {
-    const props = this.props;
-    const cy = props.cy;
+  //Generate a image card for a given layout
+  //Requires a valid layout and images object
+  renderImage(layout, images, cy) {
+    //Obtain layout information
+    let id = layout.id;
+    let that = this;
+    let imageList = images.filter(image => image.id === id);
+    let image = imageList.length > 0 ? imageList[0] : {};
 
-    //Modify positions for each layout entry
-    const layoutOpts = _.find(layouts, (layout) => layout.displayName === 'Human-created').options;
-    let layout = cy.layout(layoutOpts);
-
-    //Save positions
-    layout.pon('layoutstop').then(function () {
-      cy.nodes().forEach(element => {
-        if (positions[element.id()]) {
-          //Save local position
-          let position = element.position();
-
-          //Save remote position
-          if(props.admin) {
-            apiCaller.submitNodeChange(props.uri, 'latest', element.id(),  position);
-          }
-        }
-      });
-
-      //Animate zoom and fit
-      cy.animate({
-        fit: {
-          eles: cy.elements(), padding: 100
-        }
-      }, { duration: 700 });
+    //Render image card with required information
+    return h(imageCard, {
+      key: image.id,
+      src: image.img,
+      children: 'Date Added : ' + image.date,
+      onClick: () => that.applyLayout(layout.id, cy, that.props)
     });
-
-    layout.run();
   }
 
   render() {
-    let layouts = this.state.layouts.layout;
-    if (layouts) {
+    //Get layout information 
+    let layouts = this.state.layouts;
+    let images = this.state.images;
+
+    //Display layouts list
+    if (layouts && images) {
+
+      if (layouts.length === 0 || images.length === 0) { return h('h2', 'No Layout Revisions'); }
+
+      layouts = layouts.layout;
+
       return h('div', [
-        h('h1', 'Layout Revisions'),
-        h('ul', layouts.map(layout => h('li', { onClick: () => this.applyLayout(layout.id) }, h('a', layout.date_added))))
+        h('h2', 'Layout Revisions'),
+        layouts.map(layout => this.renderImage(layout, images, this.props.cy), this)
       ]);
     }
-    else {
-      return h('h1', 'No Saved Layouts');
-    }
+
+    //Content is loading
+    return h(Loader, { loaded: false, scale: 0.6 });
+
   }
 }
 

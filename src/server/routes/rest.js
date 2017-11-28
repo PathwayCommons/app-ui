@@ -43,6 +43,7 @@ router.get('/get-layout-history', function (req, res) {
   });
 });
 
+
 // Expose a rest endpoint for controller.endSession
 router.get('/disconnect', function (req, res) {
   controller.endSession(req.query.uri, req.query.version, req.query.user)

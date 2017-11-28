@@ -14,7 +14,7 @@ const createExpressionRow = (expression, expressionClasses) => {
       class2ValuesMap.get(expressionClasses[i]).push(values[i]);
     }
 
-    // const classValues = Array.from(class2ValuesMap.entries()).map(entry => {
+    // const cv = Array.from(class2ValuesMap.entries()).map(entry => {
     //   const className = entry[0];
     //   const values = entry[1];
     //   const ret = {};
@@ -23,7 +23,7 @@ const createExpressionRow = (expression, expressionClasses) => {
     //   return ret;
     // });
 
-    const classValues = Array.from(class2ValuesMap.entries()).map((entry =>  _.mean(entry[1]).toFixed(2)));
+    const classValues = Array.from(class2ValuesMap.entries()).map((entry =>  _.mean(entry[1]).toFixed(2)/1));
 
     return { geneName, classValues };
 };

@@ -162,11 +162,9 @@ class Paint extends React.Component {
     expressionsInNetwork.forEach(expression => {
       // probably more efficient to add the expression data to the node field instead of interating twice
       state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
-        const style = {
+        node.style({
           'background-color': this.percentToColour(expression.classValues[selectedClassIndex] / maxVal)
-        };
-
-        node.style(style);
+        });
       });
     });
   }
@@ -194,6 +192,8 @@ class Paint extends React.Component {
         func: _.max
       }
     ];
+
+    };
   }
 
   render() {
@@ -217,9 +217,7 @@ class Paint extends React.Component {
       {
         Header: 'Gene Name',
         accessor: 'geneName',
-        filterMethod: (filter, rows) => {
-          return matchSorter(rows, filter.value, { keys: ["geneName"] });
-        },
+        filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['geneName'] }),
         filterAll: true
       }
     ].concat(expressionHeader.map((className, index) => {
@@ -260,9 +258,11 @@ class Paint extends React.Component {
             getTheadThProps: (state, rowInfo, column, instance) => {
               return {
                 onClick: e => {
-                  this.setState({
-                    selectedClass: column.id
-                  });
+                  if (column.id !== 'geneName') {
+                    this.setState({
+                      selectedClass: column.id
+                    }, () => this.applyExpressionData());
+                  }
                 }
               };
             },
@@ -277,7 +277,7 @@ class Paint extends React.Component {
            })
         ]),
         h(OmniBar, { name: state.name, datasource: state.datasource, onMenuClick: (e) => this.toggleDrawer() }),
-        h(Network, { cy: state.cy, expressionTable: state.expressionTable, selectedClass: state.selectedClass })
+        h(Network, { cy: state.cy })
       ])
     ]);
   }

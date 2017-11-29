@@ -56,7 +56,6 @@ class Menu extends React.Component {
     const cy = props.cy;
 
     const layoutOpts = _.find(props.availableLayouts, (layout) => layout.displayName === selectedLayoutName).options;
-
     let layout = cy.layout(layoutOpts);
     layout.pon('layoutstop').then(function () {
       if (props.admin && selectedLayoutName !== humanLayoutDisplayName) {
@@ -169,9 +168,9 @@ class Menu extends React.Component {
             }, [h('i.material-icons', this.state.complexesExpanded ? 'select_all' : 'settings_overscan')]),
             h('div', {
               className: classNames('tool-button', { 'tool-button-active': this.state.dropdownOpen }),
-              onClick: () => this.setState({ dropdownOpen: !this.state.dropdownOpen }),
-              title: 'Rearrange entities'
-            }, [h('i.material-icons', 'shuffle')]),
+              onClick: () => this.props.admin ? this.setState({ dropdownOpen: !this.state.dropdownOpen }) : this.performLayout(this.state.selectedLayout),
+              title: this.props.admin ? 'Reset arrangement' : 'Arrange display'
+            }, [h('i.material-icons', this.props.admin ? 'shuffle' : 'replay')]),
             h('div', {
               className: classNames('layout-dropdown', { 'layout-dropdown-open': this.state.dropdownOpen })
             }, [

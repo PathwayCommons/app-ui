@@ -2,7 +2,7 @@ const process = require('process');
 const _ = require('lodash');
 
 let defaults = {
-  PORT: 2000
+  PORT: 3000
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );

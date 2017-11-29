@@ -62,7 +62,7 @@ const publicationHandler = (pair) => {
 const typeHandler = (pair) => {
   let type = pair[1].toString().substring(3);
   let formattedType = type.replace(/([A-Z])/g, ' $1').trim();
-  return h('div.fake-paragraph', [h('div.field-name', pair[0] + ': '), h('div.tooltip-value', formattedType)]);
+  return h('div.tooltip-type',  formattedType);
 };
 
 //Handle comment related fields

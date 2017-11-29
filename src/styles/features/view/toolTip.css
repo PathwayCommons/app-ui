@@ -92,6 +92,21 @@
   word-wrap: break-word;
 }
 
+.tooltip-type{
+  display: inline;
+  word-wrap: break-word;
+  line-height: 2em;
+  background-color: rgba(22, 160, 133, 0.5);
+  color: black;
+	list-style:none;
+	margin: 0 5px;
+	padding: 0 15px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+	-webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+}
+
 .tooltip-comma-item {
   padding: 2px;
   display: inline;
@@ -215,7 +230,7 @@
   color: var(--link);
   margin: 4px;
   font-weight: lighter;
-  display: inline-block;
+  display: inline;
   text-decoration: underline;
   font-style: italic;
   cursor: pointer;

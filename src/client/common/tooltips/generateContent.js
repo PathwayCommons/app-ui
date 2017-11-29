@@ -8,8 +8,8 @@ const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Name: ');
 const standardNameHandlerTrim = (pair) => standardNameHandler(pair);
 const nameHandlerTrim = (pair, expansionFunction) => {
   let revisedList = filterChemicalFormulas(pair[1]);
-  let shortArray = trimValue(revisedList, config.defaultEntry);
-  let expansionLink = revisedList.length > config.defaultEntry ?
+  let shortArray = trimValue(revisedList, config.defaultEntryLimit);
+  let expansionLink = revisedList.length > config.defaultEntryLimit ?
     h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »') : h('div.error');
 
   return h('div.fake-paragraph', [
@@ -77,15 +77,15 @@ const commentHandler = (pair, expansionFunction) => {
 const commentHandlerTrim = (pair, expansionFunction) => {
   //Filter out replaced entries
   let comments = removedReplacedComments(pair[1]);
-  let shortArray = trimValue(comments, config.config.commentEntryLimit);
+  let shortArray = trimValue(comments, config.commentEntryLimit);
   //Don't print comments if there are none.
 
   if (comments.length < 1) { return h('div.error'); }
 
   //Generate expansion link
-  let expansionLink = comments.length > config.commentEntryLimut ?
+  let expansionLink = comments.length > config.commentEntryLimit ?
     h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »') : null;
-  if (expansionLink) { shortArray[config.commentEntryLimut - 1] = [shortArray[config.commentEntryLimut - 1], expansionLink]; }
+  if (expansionLink) { shortArray[config.commentEntryLimit - 1] = [shortArray[config.commentEntryLimit - 1], expansionLink]; }
 
   return h('div.fake-paragraph', [h('div.field-name', 'Comments' + ': '), valueToHtml(shortArray, false)]);
 };

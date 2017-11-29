@@ -3,23 +3,32 @@ const classNames = require('classnames');
 const _ = require('lodash');
 const config = require('./config');
 
+//Define entry limit for trim mode
+const defaultEntryLimit = 3;
+const commentEntryLimit = 1;
 
 //Handle name related metadata fields
 const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Name: ');
 const standardNameHandlerTrim = (pair) => standardNameHandler(pair);
 
-const nameHandlerTrim = (pair) => {
-  let shortArray = filterChemicalFormulas(trimValue(pair[1], 3));
+const nameHandlerTrim = (pair, expansionFunction) => {
+  let revisedList = filterChemicalFormulas(pair[1]);
+  let shortArray = trimValue(revisedList, defaultEntryLimit);
+  let expansionLink = revisedList.length > defaultEntryLimit ?
+    h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »') : h('div.error');
+
   return h('div.fake-paragraph', [
     h('div.field-name', 'Synonyms:'),
-    valueToHtml(shortArray, true)
+    valueToHtml(shortArray, true),
+    expansionLink
   ]);
 };
-const nameHandler = (pair) => {
+const nameHandler = (pair, expansionFunction) => {
   let shortArray = filterChemicalFormulas(pair[1]);
   return h('div.fake-paragraph', [
     h('div.field-name', 'Synonyms:'),
-    valueToHtml(shortArray, true)
+    valueToHtml(shortArray, true),
+    h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less')
   ]);
 };
 
@@ -31,14 +40,15 @@ const dataSourceHandler = (pair) => {
   return h('div.fake-paragraph', link);
 };*/
 
-const databaseHandlerTrim = (pair) => {
+const databaseHandlerTrim = (pair, expansionFunction) => {
+  const expansionLink = h('div.more-link', { onClick: () => expansionFunction(pair[0]) }, 'more »');
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDatabaseList(sortByDatabaseId(pair[1]), true);
+  return generateDatabaseList(sortByDatabaseId(pair[1]), true, expansionLink);
 };
-const databaseHandler = (pair) => {
-  //Sort the array by database names
+const databaseHandler = (pair, expansionFunction) => {
+  const expansionLink = h('div.more-link', { onClick: () => expansionFunction(pair[0]) }, '« less');
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDatabaseList(sortByDatabaseId(pair[1]), false);
+  return generateDatabaseList(sortByDatabaseId(pair[1]), false, expansionLink);
 
 };
 
@@ -56,14 +66,33 @@ const typeHandler = (pair) => {
 };
 
 //Handle comment related fields
-const commentHandler = (pair) => {
+const commentHandler = (pair, expansionFunction) => {
   //Filter out replaced entries
   let comments = removedReplacedComments(pair[1]);
 
   //Don't print comments if there are none.
-  if(comments.length < 1) { return h('div.error');}
+  if (comments.length < 1) { return h('div.error'); }
 
-  return h('div.fake-paragraph', [ h('div.field-name', 'Comments' + ': '), valueToHtml(comments, false)]);
+  //Generate expansion link
+  let expansionLink = h('div.more-link', { onClick: () => expansionFunction(pair[0]) }, '« less');
+  comments[comments.length - 1] = [comments[comments.length - 1], expansionLink];
+
+  return h('div.fake-paragraph', [h('div.field-name', 'Comments' + ': '), valueToHtml(comments, false)]);
+};
+const commentHandlerTrim = (pair, expansionFunction) => {
+  //Filter out replaced entries
+  let comments = removedReplacedComments(pair[1]);
+  let shortArray = trimValue(comments, commentEntryLimit);
+  //Don't print comments if there are none.
+
+  if (comments.length < 1) { return h('div.error'); }
+
+  //Generate expansion link
+  let expansionLink = comments.length > commentEntryLimit ?
+    h('div.more-link', { onClick: () => { console.log(expansionFunction, pair); expansionFunction(pair[0]);} }, 'more »') : null;
+  if (expansionLink) { shortArray[commentEntryLimit - 1] = [shortArray[commentEntryLimit - 1], expansionLink]; }
+
+  return h('div.fake-paragraph', [h('div.field-name', 'Comments' + ': '), valueToHtml(shortArray, false)]);
 };
 
 //Default to generating a list of all items
@@ -88,12 +117,13 @@ const metaDataKeyMap = new Map()
   .set('Database IDsTrim', databaseHandlerTrim)
   .set('Publications', publicationHandler)
   .set('PublicationsTrim', publicationHandler)
-  .set('Comment', commentHandler);
+  .set('Comment', commentHandler)
+  .set('CommentTrim', commentHandlerTrim);
 
 //Generate HTML elements for a Parsed Metadata Field
 //Optional trim parameter indicates if the data presented should be trimmed to a reasonable length
 //Data Pair -> HTML
-function parseMetadata(pair, trim = true) {
+function parseMetadata(pair, trim = true, expansionFunction) {
   const doNotRender = ['Data Source', 'Data SourceTrim', 'Display Name'];
   let key = pair[0];
 
@@ -104,7 +134,7 @@ function parseMetadata(pair, trim = true) {
 
   let handler = metaDataKeyMap.get(key);
   if (handler) {
-    return handler(pair);
+    return handler(pair, expansionFunction);
   }
   else if (!(trim) && !doNotRender.includes(key)) {
     return defaultHandler(pair);
@@ -128,6 +158,7 @@ function trimValue(value, n) {
 //Create a HTML Element for a given value
 //Note : Optional isCommaSeparated parameter indicates if the list should be
 //       printed as a comma separated list.
+//       Optional expansion link parameter defines a expansion link property
 //Requires a populated array
 //Anything -> HTML
 function valueToHtml(value, isCommaSeparated = false) {
@@ -296,7 +327,7 @@ function noDataWarning(name) {
 function filterChemicalFormulas(list) {
   //Filter out Chemical formulas
   if (list instanceof Array) { return list.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig))); }
-  return list;
+  return [list];
 }
 
 //Create a publication list
@@ -325,7 +356,7 @@ function publicationList(data) {
       h('a.publication-link', { href: url, target: '_blank' }, title),
       h('div.publication-subinfo', [
         h('div.publication-inline', authors),
-        h('div', {className : classNames('publication-divider', 'publication-inline')}, '|'),
+        h('div', { className: classNames('publication-divider', 'publication-inline') }, '|'),
         h('div.publication-inline', publicationInfo)
       ])
     ]);
@@ -338,10 +369,13 @@ function publicationList(data) {
 
 //Generate a list of database ids from sorted array
 //Array -> HTML
-function generateDatabaseList(sortedArray, trim) {
+function generateDatabaseList(sortedArray, trim, expansionLink) {
 
   //Ignore Publication references
   sortedArray = sortedArray.filter(databaseEntry => databaseEntry.database.toUpperCase() !== 'PUBMED');
+
+  //Determine if there is more than one link for a database
+  var hasMultipleIds = _.find(sortedArray, databaseRef => databaseRef.ids.length > 1);
 
   //Generate list
   let renderValue = sortedArray.map(item => generateIdList(item, trim), this);
@@ -351,18 +385,24 @@ function generateDatabaseList(sortedArray, trim) {
     renderValue = h('div.wrap-text', h('ul.db-list', renderValue));
   }
 
+  //Append expansion link to render value if one exists
+  if (expansionLink && hasMultipleIds) {
+    renderValue = [renderValue, expansionLink];
+  }
+
+
   return h('div.fake-paragraph', [h('div.span-field-name', 'Links :'), renderValue]);
 }
 
 //Replace any instances of Replaced 
 //Anything -> Array 
-function removedReplacedComments(comments){
+function removedReplacedComments(comments) {
   const replacedExists = comment => comment.toUpperCase().includes('REPLACED');
 
-  if(typeof comments === 'string'){
+  if (typeof comments === 'string') {
     return replacedExists(comments) ? [] : comments;
   }
-  else if (!(comments)){
+  else if (!(comments)) {
     return [];
   }
   else {

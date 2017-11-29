@@ -211,6 +211,16 @@
   width: 100%;
 }
 
+.more-link {
+  color: var(--link);
+  margin: 4px;
+  font-weight: lighter;
+  display: inline-block;
+  text-decoration: underline;
+  font-style: italic;
+  cursor: pointer;
+}
+
 
 /* Tippy JS Style Overrides */
 

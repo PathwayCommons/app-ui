@@ -234,6 +234,7 @@
   text-decoration: underline;
   font-style: italic;
   cursor: pointer;
+  white-space: pre;
 }
 
 

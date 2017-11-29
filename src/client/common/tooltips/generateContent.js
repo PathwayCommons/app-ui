@@ -3,18 +3,15 @@ const classNames = require('classnames');
 const _ = require('lodash');
 const config = require('./config');
 
-//Define entry limit for trim mode
-const defaultEntryLimit = 3;
-const commentEntryLimit = 1;
+
 
 //Handle name related metadata fields
 const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Name: ');
 const standardNameHandlerTrim = (pair) => standardNameHandler(pair);
-
 const nameHandlerTrim = (pair, expansionFunction) => {
   let revisedList = filterChemicalFormulas(pair[1]);
-  let shortArray = trimValue(revisedList, defaultEntryLimit);
-  let expansionLink = revisedList.length > defaultEntryLimit ?
+  let shortArray = trimValue(revisedList, config.defaultEntry);
+  let expansionLink = revisedList.length > config.defaultEntry ?
     h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »') : h('div.error');
 
   return h('div.fake-paragraph', [
@@ -82,15 +79,15 @@ const commentHandler = (pair, expansionFunction) => {
 const commentHandlerTrim = (pair, expansionFunction) => {
   //Filter out replaced entries
   let comments = removedReplacedComments(pair[1]);
-  let shortArray = trimValue(comments, commentEntryLimit);
+  let shortArray = trimValue(comments, config.config.commentEntryLimut);
   //Don't print comments if there are none.
 
   if (comments.length < 1) { return h('div.error'); }
 
   //Generate expansion link
-  let expansionLink = comments.length > commentEntryLimit ?
+  let expansionLink = comments.length > config.commentEntryLimut ?
     h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »') : null;
-  if (expansionLink) { shortArray[commentEntryLimit - 1] = [shortArray[commentEntryLimit - 1], expansionLink]; }
+  if (expansionLink) { shortArray[config.commentEntryLimut - 1] = [shortArray[config.commentEntryLimut - 1], expansionLink]; }
 
   return h('div.fake-paragraph', [h('div.field-name', 'Comments' + ': '), valueToHtml(shortArray, false)]);
 };

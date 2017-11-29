@@ -171,7 +171,9 @@ class MetadataTip {
       hideOnClick: false,
       arrow: true,
       position: 'bottom',
-      animation : 'fade'});
+      animation: 'shift',
+      duration : 1
+    });
 
 
     //Resolve Reference issues

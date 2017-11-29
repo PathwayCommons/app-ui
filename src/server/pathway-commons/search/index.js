@@ -1,5 +1,5 @@
 const {search, utilities} = require('pathway-commons');
-
+const path = require('path');
 const getHGNCData = require('./hgnc');
 
 const sanitize = (s) => {
@@ -29,7 +29,7 @@ const processPhrase = (phrase, collection) => {
 };
 
 const processQueryString = (queryString) => {
-  return getHGNCData('hgncSymbols.txt')
+  return getHGNCData(path.join(__dirname,'/hgncSymbols.txt'))
     .then(hgncSymbols => {
       const keywords = processPhrase(queryString, hgncSymbols);
       const phrase = sanitize(queryString);
@@ -49,9 +49,9 @@ const processQueryString = (queryString) => {
 //  - gt: min graph size result returned
 
 const querySearch = async (query) => {
-  const minSize = query.gt || 250; //TODO: why 250? 
-  const maxSize = query.lt || 0;
-  
+  const minSize = query.gt || 0; //TODO: why 250? 
+  const maxSize = query.lt || 250;
+ 
   const queries = await processQueryString(query.q.trim());
   for (let q of queries) {
     const searchResult = await search()
@@ -59,14 +59,13 @@ const querySearch = async (query) => {
       .q(q)
       .format('json')
       .fetch();
-
+    
     const searchSuccess = searchResult != null;
     if (searchSuccess && searchResult.searchHit.length > 0) {
       const filteredResults = searchResult.searchHit.filter(hit => {
         const size = hit.numParticipants ? hit.numParticipants : 0;
         return minSize < size && size < maxSize;
       });
-
       if (filteredResults.length > 0) {
         return filteredResults;
       }

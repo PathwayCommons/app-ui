@@ -1,42 +1,115 @@
 const React = require('react');
 const h = require('react-hyperscript');
+const Table = require('react-table').default;
+
 const queryString = require('query-string');
 const color = require('color');
 const _ = require('lodash');
 const classNames = require('classnames');
+const matchSorter = require('match-sorter').default;
 
-const cytoscape = require('cytoscape');
-const cose = require('cytoscape-cose-bilkent');
-cytoscape.use(cose);
-
-const sbgn2Json = require('sbgnml-to-cytoscape');
-const sbgnStylesheet = require('cytoscape-sbgn-stylesheet');
+const make_cytoscape = require('../../common/cy');
+const cysearch = require('../../common/cy/search');
 
 const Icon = require('../../common/components').Icon;
-const PathwayCommonsService = require('../../services').PathwayCommonsService;
+const { apiCaller, PathwayCommonsService } = require('../../services');
 
-// const testData = require('./sample-enrichments');
+const createExpressionTable = require('./expression-model');
 
-const augmentEnrichmentData = require('./enrichment-model');
 
+class OmniBar extends React.Component {
+  render() {
+    const props = this.props;
+    return h('div.paint-omnibar', [
+      h('a', { onClick: e => props.onMenuClick(e) }, [
+        h(Icon, { icon: 'menu' }, 'click')
+      ]),
+      h('h5', `${props.name} | ${props.datasource}`)
+    ]);
+  }
+}
+
+// props
+// expression table
+// cy
+class Network extends React.Component {
+  componentWillUnmount() {
+    this.state.cy.destroy();
+  }
+
+  componentDidMount() {
+    const props = this.props;
+    const container = document.getElementById('cy-container');
+    props.cy.mount(container);
+  }
+
+  colourMap(val, min, max) {
+    const distToMax = Math.abs(val - max);
+    const distToMin = Math.abs(val - min);
+
+    let hVal, lVal;
+    if (distToMax > distToMin) {
+      hVal = 240;
+      lVal = ( val / Math.abs(max) ) * 100 + 20;
+    } else {
+      hVal = 0;
+      lVal = ( val / Math.abs(max) ) * 100 - 20;
+    }
+    return color.hsl(hVal, 100, lVal).string();
+  }
+
+  percentToColour(percent) {
+    const hslValue = ( 1 - percent ) * 240;
+
+    return color.hsl(hslValue, 100, 50).string();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!_.isEmpty(nextProps.expressionTable)) {
+      this.applyExpressionData(nextProps);
+    }
+  }
+
+  applyExpressionData(props) {
+    const expressionTable = props.expressionTable;
+    const expressionClasses = expressionTable.header;
+
+    const selectedClassIndex = expressionClasses.indexOf(props.selectedClass);
+    const networkNodes = _.uniq(props.cy.nodes('[class="macromolecule"]').map(node => node.data('label'))).sort();
+
+    const expressionsInNetwork = expressionTable.rows.filter(row => networkNodes.includes(row.geneName));
+    const maxVal = _.max(expressionsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
+    const minVal = _.min(expressionsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
+
+    expressionsInNetwork.forEach(expression => {
+      // probably more efficient to add the expression data to the node field instead of interating twice
+      props.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
+        const style = {
+          'background-color': this.percentToColour(expression.classValues[selectedClassIndex] / maxVal)
+        };
+
+        node.style(style);
+      });
+    });
+  }
+
+  render() {
+    return h('div.paint-graph', [ h(`div.#cy-container`, {style: {width: '100vw', height: '100vh'}}) ]);
+  }
+
+}
 
 class Paint extends React.Component {
   constructor(props) {
     super(props);
 
-    const cy = cytoscape({
-      style: sbgnStylesheet(cytoscape),
-      minZoom: 0.16,
-      maxZoom: 4,
-      headless: true
-    });
+    const cy = make_cytoscape({headless: true});
 
     this.state = {
-      enrichmentDataSets: [],
-      enrichmentClasses: [],
-      // enrichmentDataSets: testData.dataSetExpressionList,
-      // enrichmentClasses: _.get(testData.dataSetClassList, '0.classes', []),
-      enrichmentTable: {},
+      rawEnrichmentData: {},
+      expressionTable: {},
+      selectedClass: null,
+
       cy: cy,
       name: '',
       datasource: '',
@@ -50,162 +123,131 @@ class Paint extends React.Component {
       fetch(enrichmentsURI)
         .then(response => response.json())
         .then(json => {
-          // console.log(augmentEnrichmentData(json.dataSetClassList, json.dataSetExpressionList));
-          this.setState({
-            enrichmentClasses: _.get(json.dataSetClassList, '0.classes', []),
-            enrichmentDataSets: json.dataSetExpressionList
-          }, () => {
-          });
+          this.setState({rawEnrichmentData: json});
+
+          const expressionClasses = _.get(json.dataSetClassList, '0.classes', []);
+          const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
+          const searchParam = query.q;
+          this.initPainter(expressions, expressionClasses, searchParam);
+
         });
     }
-
-    const expressions = _.get(this.state.dataSetExpressionList, '0.expressions', []);
-    const searchParam = query.q ? query.q : 'S Phase';
-    this.initPainter(expressions, searchParam);
-
-
   }
 
   componentWillUnmount() {
     this.state.cy.destroy();
   }
 
-  percentToColour(percent) {
-    const hslValue = ( 1 - percent ) * 240;
-
-    return color.hsl(hslValue, 100, 50).string();
-  }
-
   // only call this after you know component is mounted
-  initPainter(expressions, queryParam) {
+  initPainter(expressions, expressionClasses, queryParam) {
     const state = this.state;
     const query = {
       q: queryParam,
-      gt: 2,
-      lt: 100,
-      type: 'Pathway',
-      datasource: 'reactome'
+      type: 'Pathway'
     };
 
-    PathwayCommonsService.querySearch(query)
+    apiCaller.querySearch(query)
       .then(searchResults => {
         const uri = _.get(searchResults, '0.uri', null);
+
         if (uri != null) {
-          PathwayCommonsService.query(uri, 'json', 'Named/displayName')
-          .then(response => {
+          apiCaller.getGraphAndLayout(uri, 'latest').then(response => {
             this.setState({
-              name: response ? response.traverseEntry[0].value.pop() : ''
+              name: _.get(response, 'graph.pathwayMetadata.title', 'N/A'),
+              datasource: _.get(response, 'graph.pathwayMetadata.dataSource.0', 'N/A'),
             });
-          });
 
-        PathwayCommonsService.query(uri, 'json', 'Entity/dataSource/displayName')
-          .then(responseObj => {
-            this.setState({
-              datasource: responseObj ? responseObj.traverseEntry[0].value.pop() : ''
-            });
-          });
-
-        PathwayCommonsService.query(uri, 'SBGN')
-          .then(text => {
-            const sbgnJson = sbgn2Json(text);
             state.cy.remove('*');
-            state.cy.add(sbgnJson);
+            state.cy.add({
+              nodes: _.get(response, 'graph.nodes', []),
+              edges: _.get(response, 'graph.edges', [])
+            });
+
             state.cy.layout({
               name: 'cose-bilkent',
+              randomize: false,
               nodeDimensionsIncludeLabels: true
             }).run();
 
-            const enrichmentTable = this.createEnrichmentTable();
 
-            const networkNodes = state.cy.nodes().map(node => node.data('label'));
-            const enrichmentsInNetwork = enrichmentTable.rows.filter(row => networkNodes.includes(row.geneName));
-            const maxVal = _.max(enrichmentsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
-            enrichmentsInNetwork.forEach(row => {
-              // probably more efficient to add the enrichment data to the node field instead of interating twice
-              state.cy.nodes().filter(node => node.data('label') === row.geneName).forEach(node => {
+            const expressionTable = createExpressionTable(expressions, expressionClasses);
+            const header = expressionTable.header;
 
-                const numSlices = row.classValues.length > 16 ? 16 : row.classValues.length;
-
-                const pieStyle = {
-                  'pie-size': '100%'
-                };
-                for (let i = 1; i <= numSlices; i++) {
-
-                  pieStyle['pie-' + i + '-background-size'] = 100 / numSlices;
-                  pieStyle['pie-' + i + '-background-opacity'] = 1;
-                  pieStyle['pie-' + i + '-background-color'] = this.percentToColour(row.classValues[i-1] / maxVal);
-                }
-
-                node.style(pieStyle);
-              });
-
-              this.setState({enrichmentTable: enrichmentTable});
-
+            this.setState({
+              selectedClass: _.get(header, '0', null),
+              expressionTable: expressionTable
             });
           });
         }
-      });
-  }
-
-  componentDidMount() {
-    const props = this.props;
-    const state = this.state;
-    const container = document.getElementById('cy-container');
-    state.cy.mount(container);
+    });
   }
 
   toggleDrawer() {
     this.setState({drawerOpen: !this.state.drawerOpen});
   }
 
-  createEnrichmentTable() {
-    const state = this.state;
-    const enrichmentTable = {};
-
-    const enrichmentClasses = state.enrichmentClasses;
-    const header = _.uniq(state.enrichmentClasses);
-
-    enrichmentTable.header = header;
-    enrichmentTable.rows = _.get(state.enrichmentDataSets, '0.expressions', []).map(enrichment => {
-      const geneName = enrichment.geneName;
-      const values = enrichment.values;
-
-      const class2ValuesMap = new Map();
-
-      for (let enrichmentClass of header) {
-        class2ValuesMap.set(enrichmentClass, []);
+  getAnalysisFunctions() {
+    return [
+      {
+        name: 'mean',
+        func: _.mean,
+      },
+      {
+        name: 'count',
+        func: _.countBy,
+      },
+      {
+        name: 'min',
+        func: _.min
+      },
+      {
+        name: 'max',
+        func: _.max
       }
-
-      for (let i = 0; i < values.length; i++) {
-        class2ValuesMap.get(enrichmentClasses[i]).push(values[i]);
-      }
-
-      return { geneName: geneName, classValues: Array.from(class2ValuesMap.entries()).map((entry =>  _.mean(entry[1]).toFixed(2))) };
-    });
-
-    return enrichmentTable;
+    ];
   }
 
   render() {
     const state = this.state;
 
-    const enrichmentTable = state.enrichmentTable;
+    const expressionTable = state.expressionTable;
+    const expressions = _.get(expressionTable, 'rows', []);
 
     const networkNodes = state.cy.nodes().map(node => node.data('label'));
-    const enrichmentsInNetwork = _.get(enrichmentTable, 'rows', []).filter(row => networkNodes.includes(row.geneName));
+    const expressionsInNetwork = expressions.filter(row => networkNodes.includes(row.geneName));
+    const expressionsNotInNetwork = _.difference(expressions, expressionsInNetwork);
 
 
-    const maxVal = _.max(enrichmentsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
-    const minVal = _.min(enrichmentsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
+    const maxVal = _.max(expressionsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
+    const minVal = _.min(expressionsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
 
-    const enrichmentTableHeader = [h('th', '')].concat(_.get(enrichmentTable, 'header', []).map(column => h('th', column)));
-    const enrichmentTableRows = _.sortBy(
-      _.get(enrichmentTable, 'rows', []), (o) => o.geneName
-    ).map(row => h('tr',[h('td', row.geneName)].concat(row.classValues.map(cv => h('td', cv)))));
+    const expressionHeader = _.get(expressionTable, 'header', []);
+    const expressionRows = expressionsInNetwork.concat(expressionsNotInNetwork);
+
+    const columns = [
+      {
+        Header: 'Gene Name',
+        accessor: 'geneName',
+        filterMethod: (filter, rows) => {
+          return matchSorter(rows, filter.value, { keys: ["geneName"] });
+        },
+        filterAll: true
+      }
+    ].concat(expressionHeader.map((className, index) => {
+      return {
+        Header: className,
+        id: className,
+        accessor: row => row.classValues[index]
+      };
+    }));
+
+    // const analysisFunctions = this.getAnalysisFunctions.map(fn => {
+
+    // })
 
     return h('div.paint', [
       h('div.paint-content', [
-        h('div', { className: classNames('paint-drawer', !state.drawerOpen ? 'closed' : '') }, [
+        h('div', { className: classNames('paint-drawer', { 'closed': !state.drawerOpen }) }, [
           h('a', { onClick: e => this.toggleDrawer()}, [
             h(Icon, { icon: 'close'}),
           ]),
@@ -213,24 +255,40 @@ class Paint extends React.Component {
             h('p', `low ${minVal}`),
             h('p', `high ${maxVal}`)
           ]),
-          h('p', `columns correspond to the clockwise direction on the pie (first column starts at 12 O'Clock going clockwise)`),
-          h('table', [
-            h('thead', [
-              h('tr', enrichmentTableHeader)
-            ]),
-            h('tbody', enrichmentTableRows)
-          ])
+          h('select.paint-select', [
+            h('option', 'min'),
+            h('option', 'max'),
+            h('option', 'mean'),
+            h('option', 'count'),
 
-        ]),
-        h('div.paint-omnibar', [
-          h('a', { onClick: e => this.toggleDrawer() }, [
-            h(Icon, { icon: 'menu' }, 'click')
           ]),
-          h('h5', `${state.name} | ${state.datasource}`)
+          h(Table, {
+            className:'-striped -highlight',
+            data: expressionRows,
+            columns: columns,
+            filterable: true,
+            defaultPageSize: 150,
+            getTheadThProps: (state, rowInfo, column, instance) => {
+              return {
+                onClick: e => {
+                  this.setState({
+                    selectedClass: column.id
+                  });
+                }
+              };
+            },
+            getTdProps: (state, rowInfo, column, instance) => {
+              return {
+                onClick: e => {
+                  const geneName = _.get(rowInfo, 'original.geneName', '');
+                  cysearch(geneName, this.state.cy);
+                }
+              };
+            }
+           })
         ]),
-        h('div.paint-graph', [
-          h(`div.#cy-container`, {style: {width: '100vw', height: '100vh'}})
-        ])
+        h(OmniBar, { name: state.name, datasource: state.datasource, onMenuClick: (e) => this.toggleDrawer() }),
+        h(Network, { cy: state.cy, expressionTable: state.expressionTable, selectedClass: state.selectedClass })
       ])
     ]);
   }

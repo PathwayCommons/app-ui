@@ -192,8 +192,6 @@ class Paint extends React.Component {
         func: _.max
       }
     ];
-
-    };
   }
 
   render() {

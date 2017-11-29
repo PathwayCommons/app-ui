@@ -41,12 +41,12 @@ const dataSourceHandler = (pair) => {
 };*/
 
 const databaseHandlerTrim = (pair, expansionFunction) => {
-  const expansionLink = h('div.more-link', { onClick: () => expansionFunction(pair[0]) }, 'more »');
+  const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »');
   if (pair[1].length < 1) { return h('div.error'); }
   return generateDatabaseList(sortByDatabaseId(pair[1]), true, expansionLink);
 };
 const databaseHandler = (pair, expansionFunction) => {
-  const expansionLink = h('div.more-link', { onClick: () => expansionFunction(pair[0]) }, '« less');
+  const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less');
   if (pair[1].length < 1) { return h('div.error'); }
   return generateDatabaseList(sortByDatabaseId(pair[1]), false, expansionLink);
 
@@ -74,7 +74,7 @@ const commentHandler = (pair, expansionFunction) => {
   if (comments.length < 1) { return h('div.error'); }
 
   //Generate expansion link
-  let expansionLink = h('div.more-link', { onClick: () => expansionFunction(pair[0]) }, '« less');
+  let expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less');
   comments[comments.length - 1] = [comments[comments.length - 1], expansionLink];
 
   return h('div.fake-paragraph', [h('div.field-name', 'Comments' + ': '), valueToHtml(comments, false)]);
@@ -89,7 +89,7 @@ const commentHandlerTrim = (pair, expansionFunction) => {
 
   //Generate expansion link
   let expansionLink = comments.length > commentEntryLimit ?
-    h('div.more-link', { onClick: () => { console.log(expansionFunction, pair); expansionFunction(pair[0]);} }, 'more »') : null;
+    h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »') : null;
   if (expansionLink) { shortArray[commentEntryLimit - 1] = [shortArray[commentEntryLimit - 1], expansionLink]; }
 
   return h('div.fake-paragraph', [h('div.field-name', 'Comments' + ': '), valueToHtml(shortArray, false)]);
@@ -380,14 +380,17 @@ function generateDatabaseList(sortedArray, trim, expansionLink) {
   //Generate list
   let renderValue = sortedArray.map(item => generateIdList(item, trim), this);
 
+   //Append expansion link to render value if one exists
+   if (expansionLink && hasMultipleIds && trim) {
+    renderValue = [renderValue, expansionLink];
+  }
+  else if (expansionLink && hasMultipleIds){
+    renderValue.push(h('li.db-item', expansionLink));
+  }
+
   //If in expansion mode, append list styling
   if (!trim) {
     renderValue = h('div.wrap-text', h('ul.db-list', renderValue));
-  }
-
-  //Append expansion link to render value if one exists
-  if (expansionLink && hasMultipleIds) {
-    renderValue = [renderValue, expansionLink];
   }
 
 

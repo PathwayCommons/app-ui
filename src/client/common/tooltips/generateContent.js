@@ -3,8 +3,6 @@ const classNames = require('classnames');
 const _ = require('lodash');
 const config = require('./config');
 
-
-
 //Handle name related metadata fields
 const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Name: ');
 const standardNameHandlerTrim = (pair) => standardNameHandler(pair);
@@ -79,7 +77,7 @@ const commentHandler = (pair, expansionFunction) => {
 const commentHandlerTrim = (pair, expansionFunction) => {
   //Filter out replaced entries
   let comments = removedReplacedComments(pair[1]);
-  let shortArray = trimValue(comments, config.config.commentEntryLimut);
+  let shortArray = trimValue(comments, config.config.commentEntryLimit);
   //Don't print comments if there are none.
 
   if (comments.length < 1) { return h('div.error'); }

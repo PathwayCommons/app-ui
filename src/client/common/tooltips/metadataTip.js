@@ -80,7 +80,7 @@ class MetadataTip {
     this.validateName();
 
     //Generate the expand field option
-    const expandFunction = this.displayMore(); 
+    const expandFunction = this.displayMore();
 
     if (!(this.data)) { this.data = []; }
     return h('div.tooltip-image', [
@@ -157,7 +157,7 @@ class MetadataTip {
     //Hide existing tooltip 
     const existingToolTip = expansionObject.tooltipExt;
     existingToolTip.hide(existingToolTip.store[0].popper);
-    
+  
     //Get tooltip objects
     let tooltip = expansionObject.tooltip;
     const expandedHTML = expansionObject.generateExtendedToolTip();

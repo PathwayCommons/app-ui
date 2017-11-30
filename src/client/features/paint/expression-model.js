@@ -14,17 +14,12 @@ const createExpressionRow = (expression, expressionClasses) => {
       class2ValuesMap.get(expressionClasses[i]).push(values[i]);
     }
 
-    // const cv = Array.from(class2ValuesMap.entries()).map(entry => {
-    //   const className = entry[0];
-    //   const values = entry[1];
-    //   const ret = {};
-    //   ret[className] = values;
-
-    //   return ret;
-    // });
-
-    const classValues = Array.from(class2ValuesMap.entries()).map((entry =>  _.mean(entry[1]).toFixed(2)/1));
-
+    const classValues = {};
+    Array.from(class2ValuesMap.entries()).forEach(entry => {
+      const className = entry[0];
+      const values = entry[1];
+      classValues[className] = values;
+    });
     return { geneName, classValues };
 };
 
@@ -36,4 +31,14 @@ const createExpressionTable = (expressions, expressionClasses) => {
   return {header, rows};
 };
 
+
+class ExpressionTable {
+  constructor(rawJsonData) {
+    const expressionClasses = _.get(rawJsonData.dataSetClassList, '0.classes', []);
+    const expressions = _.get(rawJsonData.dataSetExpressionList, '0.expressions', []);
+
+    this.header = _.uniq(expressionClasses);
+    this.rows = expressions.map(expression => createExpressionRow(expression, expressionClasses));
+  }
+}
 module.exports = createExpressionTable;

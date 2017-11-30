@@ -150,21 +150,21 @@ class Paint extends React.Component {
 
   applyExpressionData() {
     const state = this.state;
-    const expressionTable = state.expressionTable;
-    const expressionClasses = expressionTable.header;
 
-    const selectedClassIndex = expressionClasses.indexOf(state.selectedClass);
+    const selectedFunction = state.selectedFunction.func;
+    const expressionTable = state.expressionTable;
+    const selectedClass = state.selectedClass;
+
     const networkNodes = _.uniq(state.cy.nodes('[class="macromolecule"]').map(node => node.data('label'))).sort();
 
     const expressionsInNetwork = expressionTable.rows.filter(row => networkNodes.includes(row.geneName));
-    const maxVal = _.max(expressionsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
-    const minVal = _.min(expressionsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
+    const maxVal = _.max(expressionsInNetwork.map(row => _.max(Object.entries(row.classValues).map(entry => selectedFunction(entry[1])))).map((k, v) => parseFloat(k)));
 
     expressionsInNetwork.forEach(expression => {
       // probably more efficient to add the expression data to the node field instead of interating twice
       state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
         node.style({
-          'background-color': this.percentToColour(expression.classValues[selectedClassIndex] / maxVal)
+          'background-color': this.percentToColour(selectedFunction(expression.classValues[selectedClass]) / maxVal)
         });
       });
     });
@@ -187,10 +187,6 @@ class Paint extends React.Component {
       min: {
         name: 'min',
         func: _.min
-      },
-      count: {
-        name: 'count',
-        func: _.count
       }
     };
   }
@@ -198,6 +194,7 @@ class Paint extends React.Component {
   render() {
     const state = this.state;
 
+    const selectedFunction = state.selectedFunction.func;
     const expressionTable = state.expressionTable;
     const expressions = _.get(expressionTable, 'rows', []);
 
@@ -206,8 +203,8 @@ class Paint extends React.Component {
     const expressionsNotInNetwork = _.difference(expressions, expressionsInNetwork);
 
 
-    const maxVal = _.max(expressionsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
-    const minVal = _.min(expressionsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
+    // const maxVal = _.max(expressionsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
+    // const minVal = _.min(expressionsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
 
     const expressionHeader = _.get(expressionTable, 'header', []);
     const expressionRows = expressionsInNetwork.concat(expressionsNotInNetwork);
@@ -223,13 +220,23 @@ class Paint extends React.Component {
       return {
         Header: className,
         id: className,
-        accessor: row => row.classValues[index]
+        accessor: row => parseFloat(selectedFunction(_.get(row, `classValues.${className}`, [])).toFixed(2))
       };
     }));
 
-    // const analysisFunctions = this.getAnalysisFunctions.map(fn => {
-
-    // })
+    const functionSelector = h('select.paint-select',
+      {
+        value: state.selectedFunction.name,
+        onChange: e => this.setState({
+          selectedFunction: _.find(this.analysisFns(), (fn) => fn.name === e.target.value)
+        }, () => this.applyExpressionData())
+      },
+      [
+        h('option', {value: 'min'}, 'min'),
+        h('option', {value: 'max'}, 'max'),
+        h('option', {value: 'mean'}, 'mean')
+      ]
+    );
 
     return h('div.paint', [
       h('div.paint-content', [
@@ -238,23 +245,12 @@ class Paint extends React.Component {
             h(Icon, { icon: 'close'}),
           ]),
           h('div.paint-legend', [
-            h('p', `low ${minVal}`),
-            h('p', `high ${maxVal}`)
+            // h('p', `low ${minVal}`),
+            // h('p', `high ${maxVal}`)
+            h('p', `low`),
+            h('p', `high`)
           ]),
-          h('select.paint-select',
-            {
-              value: state.selectedFunction.name,
-              onChange: e => this.setState({
-                selectedFunction: _.find(this.analysisFns(), (fn) => fn.name === e.target.value)
-              })
-            },
-            [
-              h('option', {value: 'min'}, 'min'),
-              h('option', {value: 'max'}, 'max'),
-              h('option', {value: 'mean'}, 'mean'),
-              h('option', {value: 'count'}, 'count')
-            ]
-          ),
+          functionSelector,
           h(Table, {
             className:'-striped -highlight',
             data: expressionRows,

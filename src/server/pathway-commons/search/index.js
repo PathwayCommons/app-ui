@@ -15,22 +15,16 @@ const processPhrase = (phrase, collection) => {
     'smpdb',
     'refseq'
   ];
-
-  // Do NOT recognize these gene symbols
-  const symbolNameBlackList = [
-    'CELL'
-  ];  
-
   const tokens = phrase.split(/\s+/g);
 
   return tokens
     .map(token => {
       //if symbol is recognized by at least one source
-      const blackListed = symbolNameBlackList.indexOf(token.toUpperCase()) > -1;
+      // const blackListed = symbolNameBlackList.indexOf(token.toUpperCase()) > -1;
       const recognized = sourceList.some(source => utilities.sourceCheck(source, token))
                               || collection.has(token.toUpperCase());
       const sanitized = sanitize(token);
-      return !blackListed && recognized ? ( 'xrefid:' + sanitized ) : ( 'name:' + '*' + sanitized + '*' );
+      return recognized ? ( 'xrefid:' + sanitized ) : ( 'name:' + '*' + sanitized + '*' );
     });
 };
 

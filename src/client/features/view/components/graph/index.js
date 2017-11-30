@@ -1,7 +1,8 @@
 const React = require('react');
 const h = require('react-hyperscript');
-
 const _ = require('lodash');
+
+const bindContextMenu = require('./contextMenu');
 
 /* Props
 - updateRenderStatus(status)
@@ -28,6 +29,7 @@ class Graph extends React.Component {
     const container = this.graphDOM;
     this.props.cy.mount(container);
     this.checkRenderGraph(this.props.graphJSON);
+    bindContextMenu(this.props.cy);
   }
 
   componentWillReceiveProps(nextProps) {

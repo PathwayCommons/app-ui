@@ -159,6 +159,7 @@ class Paint extends React.Component {
 
     const expressionsInNetwork = expressionTable.rows.filter(row => networkNodes.includes(row.geneName));
     const maxVal = _.max(expressionsInNetwork.map(row => _.max(Object.entries(row.classValues).map(entry => selectedFunction(entry[1])))).map((k, v) => parseFloat(k)));
+    const minVal = _.min(expressionsInNetwork.map(row => _.min(Object.entries(row.classValues).map(entry => selectedFunction(entry[1])))).map((k, v) => parseFloat(k)));
 
     expressionsInNetwork.forEach(expression => {
       // probably more efficient to add the expression data to the node field instead of interating twice
@@ -203,8 +204,8 @@ class Paint extends React.Component {
     const expressionsNotInNetwork = _.difference(expressions, expressionsInNetwork);
 
 
-    // const maxVal = _.max(expressionsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
-    // const minVal = _.min(expressionsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
+    const maxVal = _.max(expressionsInNetwork.map(row => _.max(Object.entries(row.classValues).map(entry => selectedFunction(entry[1]).toFixed(2)))).map((k, v) => parseFloat(k)));
+    const minVal = _.min(expressionsInNetwork.map(row => _.min(Object.entries(row.classValues).map(entry => selectedFunction(entry[1]).toFixed(2)))).map((k, v) => parseFloat(k)));
 
     const expressionHeader = _.get(expressionTable, 'header', []);
     const expressionRows = expressionsInNetwork.concat(expressionsNotInNetwork);
@@ -245,10 +246,8 @@ class Paint extends React.Component {
             h(Icon, { icon: 'close'}),
           ]),
           h('div.paint-legend', [
-            // h('p', `low ${minVal}`),
-            // h('p', `high ${maxVal}`)
-            h('p', `low`),
-            h('p', `high`)
+            h('p', `low ${minVal}`),
+            h('p', `high ${maxVal}`)
           ]),
           functionSelector,
           h(Table, {

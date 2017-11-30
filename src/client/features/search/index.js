@@ -109,9 +109,6 @@ class Search extends React.Component {
       });
 
       return h('div.search-item', [
-        h('div.search-item-icon', [
-          h('img', { src: dsInfo.iconUrl })
-        ]),
         h('div.search-item-content', [
           h(Link, { to: { pathname: '/view', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' }, [
             h('h3.search-item-content-title', result.name || 'N/A'),
@@ -124,9 +121,9 @@ class Search extends React.Component {
 
     const searchTypeTabs = [
       { name: 'Pathways', value: 'Pathway' },
-      { name: 'Molecular Interactions', value: 'MolecularInteraction' },
-      { name: 'Reactions', value: 'Control' },
-      { name: 'Transcription/Translation', value: 'TemplateReactionRegulation' }
+      // { name: 'Molecular Interactions', value: 'MolecularInteraction' },
+      // { name: 'Reactions', value: 'Control' },
+      // { name: 'Transcription/Translation', value: 'TemplateReactionRegulation' }
     ].map(searchType => {
       return h('div.search-option-item-container', [
         h('div', {
@@ -143,8 +140,8 @@ class Search extends React.Component {
         value: state.query.datasource,
         onChange: e => this.setAndSubmitSearchQuery({ datasource: e.target.value })
       }, [
-        h('option', { value: [] }, 'Datasource: any')].concat(
-          _.sortBy(state.dataSources, 'name').map(ds => h('option', { value: ds.id }, ds.name))
+        h('option', { value: [] }, 'Any datasource')].concat(
+          _.sortBy(state.dataSources, 'name').map(ds => h('option', { value: [ds.id] }, ds.name))
           )),
     ]) :
       h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
@@ -182,9 +179,9 @@ class Search extends React.Component {
                 ])
               ]),
               h('div.search-suggestions', ['e.g. ',
-              h(Example, {search: 'TP53'}), ', ',
-              h(Example, {search: 'Glycolysis'}), ', ',
-              h(Example, {search: 'Ethanol'})
+              h(Example, {search: 'cell cycle'}), ', ',
+              h(Example, {search: 'p53 MDM2'}), ', ',
+              h(Example, {search: 'P04637'})
             ]),
               h('div.search-tabs', searchTypeTabs.concat([
                 h('div', {
@@ -193,8 +190,7 @@ class Search extends React.Component {
                 }, [
                     h('a', 'Tools')
                   ])
-              ]
-              ))
+              ]))
             ])
         ])
       ]),

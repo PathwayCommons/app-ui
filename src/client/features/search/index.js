@@ -119,22 +119,21 @@ class Search extends React.Component {
       ]);
     });
 
-    // Currently unused extra tabs. In the future, uncomment this code and include this array in search-tabs
-    // const searchTypeTabs = [
-    //   { name: 'Pathways', value: 'Pathway' },
-    //   { name: 'Molecular Interactions', value: 'MolecularInteraction' },
-    //   { name: 'Reactions', value: 'Control' },
-    //   { name: 'Transcription/Translation', value: 'TemplateReactionRegulation' }
-    // ].map(searchType => {
-    //   return h('div.search-option-item-container', [
-    //     h('div', {
-    //       onClick: e => this.setAndSubmitSearchQuery({ type: searchType.value }),
-    //       className: classNames('search-option-item', { 'search-option-item-disabled': state.loading }, { 'search-option-item-active': state.query.type === searchType.value })
-    //     }, [
-    //         h('a', searchType.name)
-    //       ])
-    //   ]);
-    // });
+    const searchTypeTabs = [
+      { name: 'Pathways', value: 'Pathway' },
+      // { name: 'Molecular Interactions', value: 'MolecularInteraction' },
+      // { name: 'Reactions', value: 'Control' },
+      // { name: 'Transcription/Translation', value: 'TemplateReactionRegulation' }
+    ].map(searchType => {
+      return h('div.search-option-item-container', [
+        h('div', {
+          onClick: e => this.setAndSubmitSearchQuery({ type: searchType.value }),
+          className: classNames('search-option-item', { 'search-option-item-disabled': state.loading }, { 'search-option-item-active': state.query.type === searchType.value })
+        }, [
+            h('a', searchType.name)
+          ])
+      ]);
+    });
 
     const searchResultInfo = state.showFilters ? h('div.search-filters', [
       h('select.search-datasource-filter', {
@@ -184,14 +183,14 @@ class Search extends React.Component {
               h(Example, {search: 'Glycolysis'}), ', ',
               h(Example, {search: 'MDM2'})
             ]),
-              h('div.search-tabs', [
+              h('div.search-tabs', searchTypeTabs.concat([
                 h('div', {
                   className: classNames('search-option-item', 'search-option-item-tools', { 'search-option-item-tools-active': state.showFilters }),
                   onClick: e => this.setState({ showFilters: !state.showFilters })
                 }, [
                     h('a', 'Tools')
                   ])
-              ])
+              ]))
             ])
         ])
       ]),

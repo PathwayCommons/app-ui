@@ -109,9 +109,6 @@ class Search extends React.Component {
       });
 
       return h('div.search-item', [
-        h('div.search-item-icon', [
-          h('img', { src: dsInfo.iconUrl })
-        ]),
         h('div.search-item-content', [
           h(Link, { to: { pathname: '/view', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' }, [
             h('h3.search-item-content-title', result.name || 'N/A'),
@@ -122,29 +119,30 @@ class Search extends React.Component {
       ]);
     });
 
-    const searchTypeTabs = [
-      { name: 'Pathways', value: 'Pathway' },
-      { name: 'Molecular Interactions', value: 'MolecularInteraction' },
-      { name: 'Reactions', value: 'Control' },
-      { name: 'Transcription/Translation', value: 'TemplateReactionRegulation' }
-    ].map(searchType => {
-      return h('div.search-option-item-container', [
-        h('div', {
-          onClick: e => this.setAndSubmitSearchQuery({ type: searchType.value }),
-          className: classNames('search-option-item', { 'search-option-item-disabled': state.loading }, { 'search-option-item-active': state.query.type === searchType.value })
-        }, [
-            h('a', searchType.name)
-          ])
-      ]);
-    });
+    // Currently unused extra tabs. In the future, uncomment this code and include this array in search-tabs
+    // const searchTypeTabs = [
+    //   { name: 'Pathways', value: 'Pathway' },
+    //   { name: 'Molecular Interactions', value: 'MolecularInteraction' },
+    //   { name: 'Reactions', value: 'Control' },
+    //   { name: 'Transcription/Translation', value: 'TemplateReactionRegulation' }
+    // ].map(searchType => {
+    //   return h('div.search-option-item-container', [
+    //     h('div', {
+    //       onClick: e => this.setAndSubmitSearchQuery({ type: searchType.value }),
+    //       className: classNames('search-option-item', { 'search-option-item-disabled': state.loading }, { 'search-option-item-active': state.query.type === searchType.value })
+    //     }, [
+    //         h('a', searchType.name)
+    //       ])
+    //   ]);
+    // });
 
     const searchResultInfo = state.showFilters ? h('div.search-filters', [
       h('select.search-datasource-filter', {
         value: state.query.datasource,
         onChange: e => this.setAndSubmitSearchQuery({ datasource: e.target.value })
       }, [
-        h('option', { value: [] }, 'Datasource: any')].concat(
-          _.sortBy(state.dataSources, 'name').map(ds => h('option', { value: ds.id }, ds.name))
+        h('option', { value: [] }, 'Any datasource')].concat(
+          _.sortBy(state.dataSources, 'name').map(ds => h('option', { value: [ds.id] }, ds.name))
           )),
     ]) :
       h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
@@ -184,17 +182,16 @@ class Search extends React.Component {
               h('div.search-suggestions', ['e.g. ',
               h(Example, {search: 'TP53'}), ', ',
               h(Example, {search: 'Glycolysis'}), ', ',
-              h(Example, {search: 'Ethanol'})
+              h(Example, {search: 'MDM2'})
             ]),
-              h('div.search-tabs', searchTypeTabs.concat([
+              h('div.search-tabs', [
                 h('div', {
                   className: classNames('search-option-item', 'search-option-item-tools', { 'search-option-item-tools-active': state.showFilters }),
                   onClick: e => this.setState({ showFilters: !state.showFilters })
                 }, [
                     h('a', 'Tools')
                   ])
-              ]
-              ))
+              ])
             ])
         ])
       ]),

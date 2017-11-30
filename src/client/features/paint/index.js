@@ -62,6 +62,7 @@ class Paint extends React.Component {
       rawEnrichmentData: {},
       expressionTable: {},
       selectedClass: null,
+      selectedFunction: this.analysisFns().mean,
 
       cy: cy,
       name: '',
@@ -173,25 +174,25 @@ class Paint extends React.Component {
     this.setState({drawerOpen: !this.state.drawerOpen});
   }
 
-  getAnalysisFunctions() {
-    return [
-      {
+  analysisFns() {
+    return {
+      mean: {
         name: 'mean',
-        func: _.mean,
+        func: _.mean
       },
-      {
-        name: 'count',
-        func: _.countBy,
+      max: {
+        name: 'max',
+        func: _.max
       },
-      {
+      min: {
         name: 'min',
         func: _.min
       },
-      {
-        name: 'max',
-        func: _.max
+      count: {
+        name: 'count',
+        func: _.count
       }
-    ];
+    };
   }
 
   render() {
@@ -240,13 +241,20 @@ class Paint extends React.Component {
             h('p', `low ${minVal}`),
             h('p', `high ${maxVal}`)
           ]),
-          h('select.paint-select', [
-            h('option', 'min'),
-            h('option', 'max'),
-            h('option', 'mean'),
-            h('option', 'count'),
-
-          ]),
+          h('select.paint-select',
+            {
+              value: state.selectedFunction.name,
+              onChange: e => this.setState({
+                selectedFunction: _.find(this.analysisFns(), (fn) => fn.name === e.target.value)
+              })
+            },
+            [
+              h('option', {value: 'min'}, 'min'),
+              h('option', {value: 'max'}, 'max'),
+              h('option', {value: 'mean'}, 'mean'),
+              h('option', {value: 'count'}, 'count')
+            ]
+          ),
           h(Table, {
             className:'-striped -highlight',
             data: expressionRows,

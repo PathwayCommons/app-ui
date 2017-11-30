@@ -318,11 +318,13 @@ function noDataWarning(name) {
 }
 
 //Filter out chemical formulas
-//Array -> Array
-function filterChemicalFormulas(list) {
+//Anything -> Array
+function filterChemicalFormulas(names) {
   //Filter out Chemical formulas
-  if (list instanceof Array) { return list.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig))); }
-  return [list];
+  if (names instanceof Array) { return names.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig))); }
+
+  //Produce an array to avoid generation functions from throwing errors. 
+  return [names];
 }
 
 //Create a publication list

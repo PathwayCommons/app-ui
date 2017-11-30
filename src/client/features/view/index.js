@@ -50,6 +50,7 @@ class View extends React.Component {
       });
     });
   }
+
   componentWillMount() {
     if (this.props.admin) {
       bindMove(this.state.query.uri, 'latest', this.state.cy);

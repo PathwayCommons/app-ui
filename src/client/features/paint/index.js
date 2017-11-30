@@ -43,6 +43,89 @@ class Network extends React.Component {
     props.cy.mount(container);
   }
 
+
+  render() {
+    return h('div.paint-graph', [ h(`div.#cy-container`, {style: {width: '100vw', height: '100vh'}}) ]);
+  }
+
+}
+
+class Paint extends React.Component {
+  constructor(props) {
+    super(props);
+
+    const cy = make_cytoscape({headless: true});
+    const query = queryString.parse(props.location.search);
+    const enrichmentsURI = query.uri ? query.uri : null;
+
+    this.state = {
+      rawEnrichmentData: {},
+      expressionTable: {},
+      selectedClass: null,
+
+      cy: cy,
+      name: '',
+      datasource: '',
+      drawerOpen: false
+    };
+
+    if (enrichmentsURI != null) {
+      fetch(enrichmentsURI)
+        .then(response => response.json())
+        .then(json => {
+          const expressionClasses = _.get(json.dataSetClassList, '0.classes', []);
+          const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
+          const searchParam = query.q;
+
+          this.setState({rawEnrichmentData: json});
+          this.initPainter(expressions, expressionClasses, searchParam);
+
+        });
+    }
+  }
+
+  componentWillUnmount() {
+    this.state.cy.destroy();
+  }
+
+  // only call this after you know component is mounted
+  initPainter(expressions, expressionClasses, queryParam) {
+    const state = this.state;
+    const query = {
+      q: queryParam,
+      type: 'Pathway'
+    };
+
+    apiCaller.querySearch(query).then(searchResults => {
+      const uri = _.get(searchResults, '0.uri', null);
+
+      if (uri != null) {
+        const expressionTable = createExpressionTable(expressions, expressionClasses);
+        const header = expressionTable.header;
+
+        apiCaller.getGraphAndLayout(uri, 'latest').then(response => {
+          state.cy.remove('*');
+          state.cy.add({
+            nodes: _.get(response, 'graph.nodes', []),
+            edges: _.get(response, 'graph.edges', [])
+          });
+
+          state.cy.layout({
+            name: 'cose-bilkent',
+            randomize: false,
+            nodeDimensionsIncludeLabels: true
+          }).run();
+
+          this.setState({
+            selectedClass: _.get(header, '0', null),
+            expressionTable: expressionTable,
+            name: _.get(response, 'graph.pathwayMetadata.title', 'N/A'),
+            datasource: _.get(response, 'graph.pathwayMetadata.dataSource.0', 'N/A'),
+          }, () => this.applyExpressionData());
+        });
+      }
+    });
+  }
   colourMap(val, min, max) {
     const distToMax = Math.abs(val - max);
     const distToMin = Math.abs(val - min);
@@ -64,18 +147,13 @@ class Network extends React.Component {
     return color.hsl(hslValue, 100, 50).string();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (!_.isEmpty(nextProps.expressionTable)) {
-      this.applyExpressionData(nextProps);
-    }
-  }
-
-  applyExpressionData(props) {
-    const expressionTable = props.expressionTable;
+  applyExpressionData() {
+    const state = this.state;
+    const expressionTable = state.expressionTable;
     const expressionClasses = expressionTable.header;
 
-    const selectedClassIndex = expressionClasses.indexOf(props.selectedClass);
-    const networkNodes = _.uniq(props.cy.nodes('[class="macromolecule"]').map(node => node.data('label'))).sort();
+    const selectedClassIndex = expressionClasses.indexOf(state.selectedClass);
+    const networkNodes = _.uniq(state.cy.nodes('[class="macromolecule"]').map(node => node.data('label'))).sort();
 
     const expressionsInNetwork = expressionTable.rows.filter(row => networkNodes.includes(row.geneName));
     const maxVal = _.max(expressionsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
@@ -83,102 +161,11 @@ class Network extends React.Component {
 
     expressionsInNetwork.forEach(expression => {
       // probably more efficient to add the expression data to the node field instead of interating twice
-      props.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
-        const style = {
+      state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
+        node.style({
           'background-color': this.percentToColour(expression.classValues[selectedClassIndex] / maxVal)
-        };
-
-        node.style(style);
-      });
-    });
-  }
-
-  render() {
-    return h('div.paint-graph', [ h(`div.#cy-container`, {style: {width: '100vw', height: '100vh'}}) ]);
-  }
-
-}
-
-class Paint extends React.Component {
-  constructor(props) {
-    super(props);
-
-    const cy = make_cytoscape({headless: true});
-
-    this.state = {
-      rawEnrichmentData: {},
-      expressionTable: {},
-      selectedClass: null,
-
-      cy: cy,
-      name: '',
-      datasource: '',
-      drawerOpen: false
-    };
-
-    const query = queryString.parse(props.location.search);
-    const enrichmentsURI = query.uri ? query.uri : null;
-
-    if (enrichmentsURI != null) {
-      fetch(enrichmentsURI)
-        .then(response => response.json())
-        .then(json => {
-          this.setState({rawEnrichmentData: json});
-
-          const expressionClasses = _.get(json.dataSetClassList, '0.classes', []);
-          const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
-          const searchParam = query.q;
-          this.initPainter(expressions, expressionClasses, searchParam);
-
         });
-    }
-  }
-
-  componentWillUnmount() {
-    this.state.cy.destroy();
-  }
-
-  // only call this after you know component is mounted
-  initPainter(expressions, expressionClasses, queryParam) {
-    const state = this.state;
-    const query = {
-      q: queryParam,
-      type: 'Pathway'
-    };
-
-    apiCaller.querySearch(query)
-      .then(searchResults => {
-        const uri = _.get(searchResults, '0.uri', null);
-
-        if (uri != null) {
-          apiCaller.getGraphAndLayout(uri, 'latest').then(response => {
-            this.setState({
-              name: _.get(response, 'graph.pathwayMetadata.title', 'N/A'),
-              datasource: _.get(response, 'graph.pathwayMetadata.dataSource.0', 'N/A'),
-            });
-
-            state.cy.remove('*');
-            state.cy.add({
-              nodes: _.get(response, 'graph.nodes', []),
-              edges: _.get(response, 'graph.edges', [])
-            });
-
-            state.cy.layout({
-              name: 'cose-bilkent',
-              randomize: false,
-              nodeDimensionsIncludeLabels: true
-            }).run();
-
-
-            const expressionTable = createExpressionTable(expressions, expressionClasses);
-            const header = expressionTable.header;
-
-            this.setState({
-              selectedClass: _.get(header, '0', null),
-              expressionTable: expressionTable
-            });
-          });
-        }
+      });
     });
   }
 
@@ -228,9 +215,7 @@ class Paint extends React.Component {
       {
         Header: 'Gene Name',
         accessor: 'geneName',
-        filterMethod: (filter, rows) => {
-          return matchSorter(rows, filter.value, { keys: ["geneName"] });
-        },
+        filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['geneName'] }),
         filterAll: true
       }
     ].concat(expressionHeader.map((className, index) => {
@@ -271,9 +256,11 @@ class Paint extends React.Component {
             getTheadThProps: (state, rowInfo, column, instance) => {
               return {
                 onClick: e => {
-                  this.setState({
-                    selectedClass: column.id
-                  });
+                  if (column.id !== 'geneName') {
+                    this.setState({
+                      selectedClass: column.id
+                    }, () => this.applyExpressionData());
+                  }
                 }
               };
             },
@@ -288,7 +275,7 @@ class Paint extends React.Component {
            })
         ]),
         h(OmniBar, { name: state.name, datasource: state.datasource, onMenuClick: (e) => this.toggleDrawer() }),
-        h(Network, { cy: state.cy, expressionTable: state.expressionTable, selectedClass: state.selectedClass })
+        h(Network, { cy: state.cy })
       ])
     ]);
   }

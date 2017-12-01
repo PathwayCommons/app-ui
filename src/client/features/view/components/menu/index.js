@@ -123,6 +123,7 @@ class Menu extends React.Component {
         h(DropdownOption, {
           key: index,
           value: layout.displayName,
+          header: layout.displayName,
           description: layout.description
         })
       );

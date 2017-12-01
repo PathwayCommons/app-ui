@@ -5,7 +5,7 @@ const classNames = require('classnames');
 /* Props
 Recommended
 - onClick() (function triggered on button press)
-- children (string for text in button)
+- children (contents of button, normally a short string)
 Optional
 - icon (string specifying icon in button)
 - iconPosition ('left', 'right', or excluded for default)

@@ -4,6 +4,7 @@ const classNames = require('classnames');
 const saveAs = require('file-saver').saveAs;
 const _ = require('lodash');
 
+const FlatButton = require('../../../../../common/flatButton');
 const AsyncButton = require('./components/asyncButton');
 const downloadDescriptions = require('./components/downloadDescriptions');
 const apiCaller = require('../../../../../services/apiCaller');
@@ -98,13 +99,10 @@ class FileDownloadMenu extends React.Component {
       h('div.file-download-content', [
         h('div.file-download-main', getMenuContents(false)),
         h('div.toggle-extra-downloads-container', [
-          h('div', {
-            className: classNames('toggle-extra-downloads', { 'toggle-extra-downloads-active': this.state.extrasActive }),
-            onClick: () => this.setState({ extrasActive: !this.state.extrasActive })
-          }, [
-              h('i.material-icons', this.state.extrasActive ? 'keyboard_arrow_up' : 'keyboard_arrow_down'),
-              h('span', `${this.state.extrasActive ? 'Hide' : 'Show'} more options`)
-            ])
+          h(FlatButton, {
+            onClick: () => this.setState({ extrasActive: !this.state.extrasActive }),
+            icon: this.state.extrasActive ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
+          }, `${this.state.extrasActive ? 'Hide' : 'Show'} more options`)
         ]),
         h('div', {
           className: classNames('file-download-extras', { 'file-download-extras-hide': !this.state.extrasActive })

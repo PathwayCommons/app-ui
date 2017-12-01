@@ -11,11 +11,11 @@ const apiCaller = require('../../../../../services/apiCaller');
 const downloadTypes = [
   { type: 'png', displayName: 'Image (PNG)', ext: 'png', hidden: false },
   { type: 'gmt', displayName: 'GMT', pc2Name: 'GSEA', ext: 'gmt', hidden: true },
-  { type: 'sif', displayName: 'SIF', pc2Name: 'BINARY_SIF', ext: 'txt', hidden: true },
+  { type: 'sif', displayName: 'SIF', pc2Name: 'SIF', ext: 'txt', hidden: true },
   { type: 'txt', displayName: 'Extended SIF', pc2Name: 'TXT', ext: 'txt', hidden: true },
   { type: 'biopax', displayName: 'BioPAX', pc2Name: 'BIOPAX', ext: 'xml', hidden: true },
   { type: 'jsonld', displayName: 'JSON-LD', pc2Name: 'JSONLD', ext: 'json', hidden: true },
-  { type: 'sbgn', displayName: 'SBGM-ML', pc2Name: 'SBGN', ext: 'xml', hidden: true }
+  { type: 'sbgn', displayName: 'SBGN-ML', pc2Name: 'SBGN', ext: 'xml', hidden: true }
 ];
 
 class FileDownloadMenu extends React.Component {

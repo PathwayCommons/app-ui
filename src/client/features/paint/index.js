@@ -14,7 +14,7 @@ const cysearch = require('../../common/cy/search');
 const Icon = require('../../common/components').Icon;
 const { apiCaller, PathwayCommonsService } = require('../../services');
 
-const createExpressionTable = require('./expression-model');
+const {createExpressionTable, minRelativeTo, maxRelativeTo} = require('./expression-model');
 
 
 class OmniBar extends React.Component {
@@ -158,8 +158,9 @@ class Paint extends React.Component {
     const networkNodes = _.uniq(state.cy.nodes('[class="macromolecule"]').map(node => node.data('label'))).sort();
 
     const expressionsInNetwork = expressionTable.rows.filter(row => networkNodes.includes(row.geneName));
-    const maxVal = _.max(expressionsInNetwork.map(row => _.max(Object.entries(row.classValues).map(entry => selectedFunction(entry[1])))).map((k, v) => parseFloat(k)));
-    const minVal = _.min(expressionsInNetwork.map(row => _.min(Object.entries(row.classValues).map(entry => selectedFunction(entry[1])))).map((k, v) => parseFloat(k)));
+
+    const maxVal = maxRelativeTo(expressionsInNetwork, selectedFunction);
+    const minVal = minRelativeTo(expressionsInNetwork, selectedFunction);
 
     expressionsInNetwork.forEach(expression => {
       // probably more efficient to add the expression data to the node field instead of interating twice
@@ -203,9 +204,8 @@ class Paint extends React.Component {
     const expressionsInNetwork = expressions.filter(row => networkNodes.includes(row.geneName));
     const expressionsNotInNetwork = _.difference(expressions, expressionsInNetwork);
 
-
-    const maxVal = _.max(expressionsInNetwork.map(row => _.max(Object.entries(row.classValues).map(entry => selectedFunction(entry[1]).toFixed(2)))).map((k, v) => parseFloat(k)));
-    const minVal = _.min(expressionsInNetwork.map(row => _.min(Object.entries(row.classValues).map(entry => selectedFunction(entry[1]).toFixed(2)))).map((k, v) => parseFloat(k)));
+    const maxVal = maxRelativeTo(expressionsInNetwork, selectedFunction);
+    const minVal = minRelativeTo(expressionsInNetwork, selectedFunction);
 
     const expressionHeader = _.get(expressionTable, 'header', []);
     const expressionRows = expressionsInNetwork.concat(expressionsNotInNetwork);

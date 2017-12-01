@@ -31,6 +31,14 @@ const createExpressionTable = (expressions, expressionClasses) => {
   return {header, rows};
 };
 
+const maxRelativeTo = (expressionRows, aggregateFn) => {
+  return _.max(expressionRows.map(row => _.max(Object.entries(row.classValues).map(entry => aggregateFn(entry[1]).toFixed(2)))).map((k, v) => parseFloat(k)));
+};
+
+const minRelativeTo = (expressionRows, aggregateFn) => {
+  return _.min(expressionRows.map(row => _.min(Object.entries(row.classValues).map(entry => aggregateFn(entry[1]).toFixed(2)))).map((k, v) => parseFloat(k)));
+};
+
 
 class ExpressionTable {
   constructor(rawJsonData) {
@@ -41,4 +49,4 @@ class ExpressionTable {
     this.rows = expressions.map(expression => createExpressionRow(expression, expressionClasses));
   }
 }
-module.exports = createExpressionTable;
+module.exports = {createExpressionTable, minRelativeTo, maxRelativeTo};

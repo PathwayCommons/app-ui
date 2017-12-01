@@ -127,25 +127,25 @@ class Paint extends React.Component {
       }
     });
   }
-  colourMap(val, min, max) {
-    const distToMax = Math.abs(val - max);
-    const distToMin = Math.abs(val - min);
 
-    let hVal, lVal;
-    if (distToMax > distToMin) {
-      hVal = 240;
-      lVal = ( val / Math.abs(max) ) * 100 + 20;
-    } else {
-      hVal = 0;
-      lVal = ( val / Math.abs(max) ) * 100 - 20;
+  expressionDataToNodeStyle(percent) {
+    const style = {};
+    if (0.26 <= percent < 0.75) {
+      style['background-color'] = 'white';
+      style['background-opacity'] = 1;
     }
-    return color.hsl(hVal, 100, lVal).string();
-  }
 
-  percentToColour(percent) {
-    const hslValue = ( 1 - percent ) * 240;
+    if (percent <= 0.25) {
+      style['background-color'] = 'green';
+      style['background-opacity'] = 1 - (percent / 0.25);
+    }
 
-    return color.hsl(hslValue, 100, 50).string();
+    if (0.75 <= percent) {
+      style['background-color'] = 'purple';
+      style['background-opacity'] = percent / 1;
+    }
+
+    return style;
   }
 
   applyExpressionData() {
@@ -159,16 +159,18 @@ class Paint extends React.Component {
 
     const expressionsInNetwork = expressionTable.rows.filter(row => networkNodes.includes(row.geneName));
 
-    const max = maxRelativeTo(expressionsInNetwork, selectedFunction);
-    const min = minRelativeTo(expressionsInNetwork, selectedFunction);
-    const mid = (max - min) / 2;
+    const max = maxRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
+    const min = minRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
+
 
     expressionsInNetwork.forEach(expression => {
       // probably more efficient to add the expression data to the node field instead of interating twice
       state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
-        node.style({
-          'background-color': this.percentToColour(applyAggregateFn(expression, selectedClass, selectedFunction) / max)
-        });
+        const aggFnVal = applyAggregateFn(expression, selectedClass, selectedFunction);
+        const percent = aggFnVal / max;
+        const style = this.expressionDataToNodeStyle(percent);
+
+        node.style(style);
       });
     });
   }
@@ -198,6 +200,7 @@ class Paint extends React.Component {
     const state = this.state;
 
     const selectedFunction = state.selectedFunction.func;
+    const selectedClass = state.selectedClass;
     const expressionTable = state.expressionTable;
     const expressions = _.get(expressionTable, 'rows', []);
 
@@ -205,8 +208,8 @@ class Paint extends React.Component {
     const expressionsInNetwork = expressions.filter(row => networkNodes.includes(row.geneName));
     const expressionsNotInNetwork = _.difference(expressions, expressionsInNetwork);
 
-    const max = maxRelativeTo(expressionsInNetwork, selectedFunction);
-    const min = minRelativeTo(expressionsInNetwork, selectedFunction);
+    const max = maxRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
+    const min = minRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
 
     const expressionHeader = _.get(expressionTable, 'header', []);
     const expressionRows = expressionsInNetwork.concat(expressionsNotInNetwork);

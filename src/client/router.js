@@ -1,5 +1,5 @@
 
-const {BrowserRouter, Route} = require('react-router-dom');
+const {HashRouter, Route} = require('react-router-dom');
 const h = require('react-hyperscript');
 const ReactGA = require('react-ga');
 const _ = require('lodash');
@@ -15,7 +15,7 @@ const Analytics = (props) => {
 
 
 module.exports = () => {
-  return h(BrowserRouter, [
+  return h(HashRouter, [
     h('div', [
       {
         path: '*',

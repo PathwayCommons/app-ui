@@ -14,7 +14,7 @@ const cysearch = require('../../common/cy/search');
 const Icon = require('../../common/components').Icon;
 const { apiCaller, PathwayCommonsService } = require('../../services');
 
-const {createExpressionTable, minRelativeTo, maxRelativeTo} = require('./expression-model');
+const {createExpressionTable, minRelativeTo, maxRelativeTo, applyAggregateFn} = require('./expression-model');
 
 
 class OmniBar extends React.Component {
@@ -159,14 +159,15 @@ class Paint extends React.Component {
 
     const expressionsInNetwork = expressionTable.rows.filter(row => networkNodes.includes(row.geneName));
 
-    const maxVal = maxRelativeTo(expressionsInNetwork, selectedFunction);
-    const minVal = minRelativeTo(expressionsInNetwork, selectedFunction);
+    const max = maxRelativeTo(expressionsInNetwork, selectedFunction);
+    const min = minRelativeTo(expressionsInNetwork, selectedFunction);
+    const mid = (max - min) / 2;
 
     expressionsInNetwork.forEach(expression => {
       // probably more efficient to add the expression data to the node field instead of interating twice
       state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
         node.style({
-          'background-color': this.percentToColour(selectedFunction(expression.classValues[selectedClass]) / maxVal)
+          'background-color': this.percentToColour(applyAggregateFn(expression, selectedClass, selectedFunction) / max)
         });
       });
     });
@@ -204,8 +205,8 @@ class Paint extends React.Component {
     const expressionsInNetwork = expressions.filter(row => networkNodes.includes(row.geneName));
     const expressionsNotInNetwork = _.difference(expressions, expressionsInNetwork);
 
-    const maxVal = maxRelativeTo(expressionsInNetwork, selectedFunction);
-    const minVal = minRelativeTo(expressionsInNetwork, selectedFunction);
+    const max = maxRelativeTo(expressionsInNetwork, selectedFunction);
+    const min = minRelativeTo(expressionsInNetwork, selectedFunction);
 
     const expressionHeader = _.get(expressionTable, 'header', []);
     const expressionRows = expressionsInNetwork.concat(expressionsNotInNetwork);
@@ -221,7 +222,7 @@ class Paint extends React.Component {
       return {
         Header: className,
         id: className,
-        accessor: row => parseFloat(selectedFunction(_.get(row, `classValues.${className}`, [])).toFixed(2))
+        accessor: row => applyAggregateFn(row, className, selectedFunction)
       };
     }));
 
@@ -246,8 +247,8 @@ class Paint extends React.Component {
             h(Icon, { icon: 'close'}),
           ]),
           h('div.paint-legend', [
-            h('p', `low ${minVal}`),
-            h('p', `high ${maxVal}`)
+            h('p', `low ${min}`),
+            h('p', `high ${max}`)
           ]),
           functionSelector,
           h(Table, {

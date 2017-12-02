@@ -63,7 +63,7 @@ const baseEdgeHoverStyle = {
   'opacity': 1
 };
 
-const bindHover = (cy) => {
+const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHoverStyle) => {
   cy.on('mouseover', 'node[class!="compartment"]', function (evt) {
     const node = evt.target;
     const currZoom = cy.zoom();
@@ -75,7 +75,7 @@ const bindHover = (cy) => {
     node.neighborhood().nodes().union(node).forEach((node) => {
       const { w, h } = scaledDimensions(node, currZoom);
 
-      const nodeHoverStyle = _.assign({}, baseNodeHoverStyle, {
+      const nodeHoverStyle = _.assign({}, nodeStyle, {
         'font-size': fontSize,
         'text-outline-width': outlineWidth,
         'width': w,
@@ -85,7 +85,7 @@ const bindHover = (cy) => {
       applyStyle(cy, node, nodeHoverStyle, '_hover-style-before');
     });
 
-    const edgeHoverStyle = _.assign({}, baseEdgeHoverStyle, {
+    const edgeHoverStyle = _.assign({}, edgeStyle, {
       'arrow-scale': arrowScale,
       'width': edgeWidth
     });
@@ -108,7 +108,7 @@ const bindHover = (cy) => {
 
     const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
 
-    const edgeHoverStyle = _.assign({}, baseEdgeHoverStyle, {
+    const edgeHoverStyle = _.assign({}, edgeStyle, {
       'arrow-scale': arrowScale,
       'width': edgeWidth
     });
@@ -117,7 +117,7 @@ const bindHover = (cy) => {
 
     edge.source().union(edge.target()).forEach((node) => {
       const { w, h } = scaledDimensions(node, currZoom);
-      const nodeHoverStyle = _.assign({}, baseNodeHoverStyle, {
+      const nodeHoverStyle = _.assign({}, nodeStyle, {
         'width': w,
         'height': h,
         'font-size': fontSize,

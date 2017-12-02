@@ -155,9 +155,11 @@ class Paint extends React.Component {
     const expressionTable = state.expressionTable;
     const selectedClass = state.selectedClass;
 
-    const networkNodes = _.uniq(state.cy.nodes('[class="macromolecule"]').map(node => node.data('label'))).sort();
+    const geneNodes = state.cy.nodes('[class="macromolecule"]');
+    const geneNodeLabels = _.uniq(geneNodes.map(node => node.data('label'))).sort();
 
-    const expressionsInNetwork = expressionTable.rows.filter(row => networkNodes.includes(row.geneName));
+    const expressionsInNetwork = expressionTable.rows.filter(row => geneNodeLabels.includes(row.geneName));
+    const expressionLabels = expressionsInNetwork.map(expression => expression.geneName);
 
     const max = maxRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
     const min = minRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
@@ -172,6 +174,12 @@ class Paint extends React.Component {
 
         node.style(style);
       });
+    });
+
+    geneNodes.filter(node => !expressionLabels.includes(node.data('label'))).style({
+      'background-color': 'grey',
+      'color': 'grey',
+      'opacity': 0.5
     });
   }
 

@@ -12,7 +12,7 @@ const parseHGNCData = text => {
 
   let parsed = textNoHeader.split(/[\s,]+/)
     .filter(symbol => {
-      return symbol.length > 0 || symbolNameBlackList.indexOf(symbol) == -1;
+      return symbol.length > 0 && symbolNameBlackList.indexOf(symbol) == -1;
     });
 
   return parsed;

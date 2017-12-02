@@ -3,7 +3,6 @@ const h = require('react-hyperscript');
 const Table = require('react-table').default;
 
 const queryString = require('query-string');
-const color = require('color');
 const _ = require('lodash');
 const classNames = require('classnames');
 const matchSorter = require('match-sorter').default;
@@ -12,7 +11,7 @@ const make_cytoscape = require('../../common/cy');
 const cysearch = require('../../common/cy/search');
 
 const Icon = require('../../common/components').Icon;
-const { apiCaller, PathwayCommonsService } = require('../../services');
+const { apiCaller } = require('../../services');
 
 const {createExpressionTable, minRelativeTo, maxRelativeTo, applyAggregateFn} = require('./expression-model');
 

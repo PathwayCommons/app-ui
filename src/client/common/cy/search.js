@@ -1,17 +1,13 @@
 const _ = require('lodash');
 
-//Apply hover styling to a collection of nodes
-function updateStyling(style, matchedNodes) {
-  matchedNodes.filter(node => node.data('class') !== 'compartment').forEach(node => {
-    applySearchStyle(node, style);
-  });
-}
+const {applyStyle, removeStyle} = require('./manage-style');
 
 //Determine if a regex pattern is valid
-function validateRegex(pattern) {
-  var parts = pattern.split('/'),
-    regex = pattern,
-    options = "";
+const validateRegex = (pattern) => {
+  let parts = pattern.split('/');
+  let regex = pattern;
+  let options = '';
+
   if (parts.length > 1) {
     regex = parts[1];
     options = parts[2];
@@ -23,16 +19,12 @@ function validateRegex(pattern) {
   catch (e) {
     return null;
   }
-}
-
-function applySearchStyle(eles, style) {
-  eles.style(style);
-}
+};
 
 //Get all the names associated with a node
 //Requires a valid cytoscape node
 //Returns a list of strings
-function getNames(node) {
+const getNames = (node) => {
   const parsedMetadata = node.data('parsedMetadata');
   let label = [node.data('label')];
 
@@ -50,12 +42,12 @@ function getNames(node) {
   if (displayName.length > 0) { label = label.concat(displayName[0][1]); }
 
   return _.compact(label);
-}
+};
 
 //Evaluate a node for a possible query match
 //Requires a valid cytoscape node
 //Returns true or false
-function evaluateNode(node, matchingFn) {
+const evaluateNode = (node, matchingFn) => {
 
   //Get a list of names
   const namesList = getNames(node);
@@ -67,10 +59,19 @@ function evaluateNode(node, matchingFn) {
     }
   }
   return false;
-}
+};
+
+const matchedStyle = {
+  'overlay-color': 'yellow',
+  'overlay-padding': 0,
+  'overlay-opacity': 0.5  
+};
+
+const matchedScratchKey = '_matched-style-before';
 
 //Search for nodes that match an entered query
-function searchNodes(query, cy, fit = false) {
+const searchNodes = (query, cy, fit = false, style = matchedStyle) => {
+  
   const isBlank = _.isString(query) ? !!_.trim(query) : false;
   const isRegularExp = _.startsWith(query, 'regex:') && validateRegex(query.substring(6));
   const isExact = _.startsWith(query, 'exact:');
@@ -101,22 +102,8 @@ function searchNodes(query, cy, fit = false) {
     matched = nodes.filter(node => evaluateNode(node, name => name.toUpperCase().includes(caseInsensitiveValue)));
   }
 
-  //Define highlighting style
-  const searchStyle = {
-    'overlay-color': 'yellow',
-    'overlay-padding': 0,
-    'overlay-opacity': 0.5
-  };
-
-  const baseStyle = {
-    'overlay-color': '#000',
-    'overlay-padding': 0,
-    'overlay-opacity': '0'
-  };
-
-  //Remove all search styling
-  applySearchStyle(cy.nodes(), baseStyle);
-
+  removeStyle(cy, cy.nodes(), matchedScratchKey);
+  console.log(style);
   //Apply styling
   if ( matched.length > 0 && isBlank) {
 
@@ -128,8 +115,10 @@ function searchNodes(query, cy, fit = false) {
       }, { duration: 700 });
     }
 
-    updateStyling(searchStyle, matched, cy);
+    console.log(cy, matched, style, matchedScratchKey);
+
+    applyStyle(cy, matched, style, matchedScratchKey);
   }
-}
+};
 
 module.exports = searchNodes;

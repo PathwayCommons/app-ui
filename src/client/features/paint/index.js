@@ -282,7 +282,7 @@ class Paint extends React.Component {
               return {
                 onClick: e => {
                   const geneName = _.get(rowInfo, 'original.geneName', '');
-                  cysearch(geneName, this.state.cy);
+                  cysearch(geneName, this.state.cy, false, {'border-width': 8, 'border-color': 'red'});
                 }
               };
             }

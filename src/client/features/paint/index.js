@@ -113,7 +113,8 @@ class Paint extends React.Component {
           state.cy.layout({
             name: 'cose-bilkent',
             randomize: false,
-            nodeDimensionsIncludeLabels: true
+            nodeDimensionsIncludeLabels: true,
+            nodeRepulsion: 5000 * state.cy.nodes().size()
           }).run();
 
           this.setState({
@@ -178,7 +179,7 @@ class Paint extends React.Component {
     geneNodes.filter(node => !expressionLabels.includes(node.data('label'))).style({
       'background-color': 'grey',
       'color': 'grey',
-      'opacity': 0.5
+      'opacity': 0.4
     });
   }
 

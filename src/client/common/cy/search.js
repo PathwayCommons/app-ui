@@ -103,7 +103,6 @@ const searchNodes = (query, cy, fit = false, style = matchedStyle) => {
   }
 
   removeStyle(cy, cy.nodes(), matchedScratchKey);
-  console.log(style);
   //Apply styling
   if ( matched.length > 0 && isBlank) {
 
@@ -114,8 +113,6 @@ const searchNodes = (query, cy, fit = false, style = matchedStyle) => {
         }
       }, { duration: 700 });
     }
-
-    console.log(cy, matched, style, matchedScratchKey);
 
     applyStyle(cy, matched, style, matchedScratchKey);
   }

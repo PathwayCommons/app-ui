@@ -19,11 +19,9 @@ class IconButton extends React.Component {
     let innerContent = h('div', {
       className: classNames('common-icon-button', { 'common-icon-button-active': props.active }),
       onClick: () => props.onClick()
-    }, [
-        h('i.material-icons', props.icon || 'info')
-      ]);
+    }, [h('i.material-icons', props.icon || 'info')]);
 
-    const content = props.desc ? h(TextTooltip, {description: props.desc}, innerContent) : innerContent;
+    const content = props.desc ? h(TextTooltip, { description: props.desc }, innerContent) : innerContent;
 
     return content;
   }

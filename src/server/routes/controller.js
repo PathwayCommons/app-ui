@@ -5,6 +5,7 @@ const update = require('./../database/update');
 const lazyLoad = require('./../lazyload');
 const logger = require('./../logger');
 const diffSaver = require('./../database/saveDiffs');
+const renderImage= require('../graph-renderer/renderImage');
 
 // getGraphFallback(pcID, releaseID, connection)
 // Retrieves the graph specified by (pcID, releaseID) if something
@@ -101,11 +102,19 @@ function getHistory(pcID, releaseID) {
   });
 }
 
+//renderPNG(pcId, releaseID) 
+//Renders a cytoscape object to PNG
+//Requires a valid cytoscape json
+function renderPNG(cyJson) {
+  return renderImage(cyJson);
+}
+
 module.exports = {
   submitLayout,
   submitGraph,
   submitDiff,
   endSession,
   getGraphAndLayout,
-  getHistory
+  getHistory,
+  renderPNG
 };

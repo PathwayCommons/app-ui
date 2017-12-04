@@ -13,6 +13,15 @@ router.post('/submit-layout', function (req, res) {
     });
 });
 
+// Expose a rest endpoint for controller.renderPN
+router.post('/render-png', function (req, res) {
+  controller.renderPNG(req.body.cyJson)
+    .then((package) => {
+      res.json(package);
+    });
+    // }).catch(e => res.json(e));
+});
+
 // Expose a rest endpoint for controller.submitGraph
 router.post('/submit-graph', function (req, res) {
   controller.submitGraph(req.body.uri, req.body.version, req.body.graph)

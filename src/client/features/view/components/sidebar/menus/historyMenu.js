@@ -31,8 +31,8 @@ class HistoryMenu extends React.Component {
         .then(() => {
           let graph = this.state.layouts.graph;
           let layouts = this.state.layouts.layout;
-
-          revisions.generateImages(layouts, graph, this.props).then(res => {
+          
+          revisions.generateImages(layouts, graph).then(res => {
             this.setState({
               images: res,
               loading: false
@@ -62,7 +62,7 @@ class HistoryMenu extends React.Component {
     this.props.changeLayout(layoutConf);
 
     //Adjust the graph to match the new new layout
-    revisions.rearrangeGraph(layoutConf.layouts, positions, cy, false, props);
+    revisions.rearrangeGraph(positions, cy, props);
   }
 
   //Generate a image card for a given layout
@@ -106,7 +106,10 @@ class HistoryMenu extends React.Component {
     }
 
     //Content is loading
-    return h(Loader, { loaded: false, scale: 0.6 });
+    return h('div', [
+      h('h2', 'Fetching Layout Revisions'),
+      h(Loader, { loaded: false, scale: 0.6 })
+    ]);
 
   }
 }

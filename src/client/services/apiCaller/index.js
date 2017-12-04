@@ -45,6 +45,17 @@ const apiCaller = {
       }
     }).then(res =>  res.json());
   },
+  renderPNG(cyJson) {
+    return fetch(`/api/render-png`, {
+      method: 'POST', headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body : JSON.stringify({
+        cyJson
+      })
+    }).then(res =>  res.json());
+  },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into
   // a layout

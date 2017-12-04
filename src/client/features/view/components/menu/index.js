@@ -10,7 +10,7 @@ const searchNodes = require('../../../../common/cy/search');
 
 const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
 const apiCaller = require('../../../../services/apiCaller');
-const datasourceLinks = require('../../../../common/tooltips/config').databases;
+const datasourceLinks = require('../../../../common/config').databases;
 
 let debouncedSearchNodes = _.debounce(searchNodes, 300);
 

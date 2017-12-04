@@ -1,11 +1,11 @@
 const r = require('rethinkdb');
 const uuid = require('uuid/v4');
 const hash = require('object-hash');
-const config = require('./config');
 const db = require('./utilities');
 const pcServices = require('./../pathway-commons/');
 const _ = require('lodash');
 
+let config = require('./config');
 
 // isExistingGraph(newGraph, connection) takes a graph object
 // and a databse connection and checks the database to see if
@@ -28,7 +28,7 @@ function isExistingGraph(newGraph, connection) {
 // This is called when the version specified for retrieval is 'latest'
 function getLatestPCVersion(pcID) {
   // Traverse queries to PC2 return the current PC2 version.
-  return pcServices.traverse({format: 'JSON', path: 'Named/name', uri: pcID}).then((json) => {
+  return pcServices.traverse({ format: 'JSON', path: 'Named/name', uri: pcID }).then((json) => {
     return json.version;
   });
 }
@@ -49,13 +49,25 @@ function saveGraph(pcID, releaseID, graphID, existingGraph, newGraph, connection
       graph_id: existingGraphID,
       layout_ids: [],
       users: []
-    }, connection);
+    },
+      config,
+      connection);
   } else {
     // create new graph
 
     return Promise.all([
-      db.insert('graph', newGraph, connection),
-      db.insert('version', { id: uuid(), pc_id: pcID, release_id: releaseID, graph_id: graphID, layout_ids: [], users: [] }, connection)
+      db.insert('graph', newGraph, config, connection),
+      db.insert('version',
+        {
+          id: uuid(),
+          pc_id: pcID,
+          release_id: releaseID,
+          graph_id: graphID,
+          layout_ids: [],
+          users: []
+        },
+        config,
+        connection)
     ]);
   }
 }
@@ -96,7 +108,7 @@ function updateGraph(pcID, releaseID, cyJson, connection, callback) {
       return getLatestPCVersion(pcID).then((versionName) => {
         return saveGraph(pcID, versionName, graphID, existingGraph, newGraph, connection);
       });
-    // Otherwise, just save the graph.
+      // Otherwise, just save the graph.
     } else {
       return saveGraph(pcID, releaseID, graphID, existingGraph, newGraph, connection);
     }
@@ -116,12 +128,21 @@ Accepts 'latest' as a valid releaseID
 function saveLayout(pcID, releaseID, layout, userID, connection, callback) {
   // Create the new layout entry in the database
   let layoutID = uuid();
-  let result = db.insert('layout', { id: layoutID, positions: layout, date_added: r.now() }, connection)
+
+  let result = db.insert('layout',
+    {
+      id: layoutID,
+      positions: layout,
+      date_added: r.now()
+    }, config, connection)
     .then(() => {
       // Find the related version row and store the layout_id so that it may be accessed.
-      db.queryRoot(pcID, releaseID).update(
+      return db.queryRoot(pcID, releaseID, config).update(
         function (layout) {
-          return { layout_ids: layout('layout_ids').append(layoutID), users: layout('users').setInsert(userID) };
+          return {
+            layout_ids: layout('layout_ids').append(layoutID),
+            users: layout('users').setInsert(userID),
+          };
         })
         .run(connection);
     }).catch(() => {
@@ -132,6 +153,7 @@ function saveLayout(pcID, releaseID, layout, userID, connection, callback) {
 }
 
 module.exports = {
+  setConfig: (conf) => config = conf,
   updateGraph,
   saveLayout
 };

@@ -8,13 +8,12 @@ const classNames = require('classnames');
 const matchSorter = require('match-sorter').default;
 
 const make_cytoscape = require('../../common/cy');
-const cysearch = require('../../common/cy/search');
+const cysearch = _.debounce(require('../../common/cy/search'), 500);
 
 const Icon = require('../../common/components').Icon;
 const { apiCaller } = require('../../services');
 
 const {createExpressionTable, minRelativeTo, maxRelativeTo, applyAggregateFn} = require('./expression-model');
-
 
 class OmniBar extends React.Component {
   render() {
@@ -60,7 +59,7 @@ class Paint extends React.Component {
     this.state = {
       rawEnrichmentData: {},
       expressionTable: {},
-      selectedClass: null,
+      selectedClass: '',
       selectedFunction: this.analysisFns().mean,
 
       cy: cy,
@@ -200,6 +199,10 @@ class Paint extends React.Component {
       min: {
         name: 'min',
         func: _.min
+      },
+      count: {
+        name: 'count',
+        func: (classValues) => classValues.map(cv => 1).reduce((acc, curr) => acc + curr)
       }
     };
   }
@@ -227,6 +230,7 @@ class Paint extends React.Component {
         Header: 'Gene Name',
         accessor: 'geneName',
         filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['geneName'] }),
+        filterable: true,
         filterAll: true
       }
     ].concat(expressionHeader.map((className, index) => {
@@ -244,12 +248,18 @@ class Paint extends React.Component {
           selectedFunction: _.find(this.analysisFns(), (fn) => fn.name === e.target.value)
         }, () => this.applyExpressionData())
       },
-      [
-        h('option', {value: 'min'}, 'min'),
-        h('option', {value: 'max'}, 'max'),
-        h('option', {value: 'mean'}, 'mean')
-      ]
+      Object.entries(this.analysisFns()).map(entry => h('option', {value: entry[0]}, entry[0]))
     );
+
+  const classSelector = h('select.paint-select',
+    {
+      value: selectedClass,
+      onChange: e => this.setState({
+        selectedClass: e.target.value
+      }, () => this.applyExpressionData())
+    },
+    expressionHeader.map(exprClass => h('option', { value: exprClass }, exprClass))
+  );
 
     return h('div.paint', [
       h('div.paint-content', [
@@ -261,31 +271,24 @@ class Paint extends React.Component {
             h('p', `low ${min}`),
             h('p', `high ${max}`)
           ]),
-          functionSelector,
+          h('div.paint-expression-controls', [
+            h('div.paint-function-selector', [
+              'function: ',
+              functionSelector
+            ]),
+            h('div.paint-class-selector', [
+              'class: ',
+              classSelector
+            ]),
+          ]),
           h(Table, {
             className:'-striped -highlight',
             data: expressionRows,
             columns: columns,
-            filterable: true,
             defaultPageSize: 150,
-            getTheadThProps: (state, rowInfo, column, instance) => {
-              return {
-                onClick: e => {
-                  if (column.id !== 'geneName') {
-                    this.setState({
-                      selectedClass: column.id
-                    }, () => this.applyExpressionData());
-                  }
-                }
-              };
-            },
-            getTdProps: (state, rowInfo, column, instance) => {
-              return {
-                onClick: e => {
-                  const geneName = _.get(rowInfo, 'original.geneName', '');
-                  cysearch(geneName, this.state.cy, false, {'border-width': 8, 'border-color': 'red'});
-                }
-              };
+            showPagination: false,
+            onFilteredChange: (column, value) => {
+              cysearch(_.get(column, '0.value', ''), this.state.cy, false, {'border-width': 8, 'border-color': 'red'});
             }
            })
         ]),

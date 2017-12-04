@@ -3,7 +3,6 @@ const h = require('react-hyperscript');
 const Table = require('react-table').default;
 
 const queryString = require('query-string');
-const color = require('color');
 const _ = require('lodash');
 const classNames = require('classnames');
 const matchSorter = require('match-sorter').default;
@@ -12,27 +11,10 @@ const make_cytoscape = require('../../common/cy');
 const cysearch = require('../../common/cy/search');
 
 const Icon = require('../../common/components').Icon;
-const { apiCaller, PathwayCommonsService } = require('../../services');
+const { apiCaller } = require('../../services');
 
+const {createExpressionTable, minRelativeTo, maxRelativeTo, applyAggregateFn} = require('./expression-model');
 
-const analysisFunctions = [
-  {
-    name: 'mean',
-    func: _.mean,
-  },
-  {
-    name: 'count',
-    func: _.countBy,
-  },
-  {
-    name: 'min',
-    func: _.min
-  },
-  {
-    name: 'max',
-    func: _.max
-  }
-];
 
 class OmniBar extends React.Component {
   render() {
@@ -60,55 +42,6 @@ class Network extends React.Component {
     props.cy.mount(container);
   }
 
-  colourMap(val, min, max) {
-    const distToMax = Math.abs(val - max);
-    const distToMin = Math.abs(val - min);
-
-    let hVal, lVal;
-    if (distToMax > distToMin) {
-      hVal = 240;
-      lVal = ( val / Math.abs(max) ) * 100 + 20;
-    } else {
-      hVal = 0;
-      lVal = ( val / Math.abs(max) ) * 100 - 20;
-    }
-    return color.hsl(hVal, 100, lVal).string();
-  }
-
-  percentToColour(percent) {
-    const hslValue = ( 1 - percent ) * 240;
-
-    return color.hsl(hslValue, 100, 50).string();
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (!_.isEmpty(nextProps.expressionTable)) {
-      this.applyExpressionData(nextProps);
-    }
-  }
-
-  applyExpressionData(props) {
-    const expressionTable = props.expressionTable;
-    const expressionClasses = expressionTable.header;
-
-    const selectedClassIndex = expressionClasses.indexOf(props.selectedClass);
-    const networkNodes = _.uniq(props.cy.nodes('[class="macromolecule"]').map(node => node.data('label'))).sort();
-
-    const expressionsInNetwork = expressionTable.rows.filter(row => networkNodes.includes(row.geneName));
-    const maxVal = _.max(expressionsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
-    const minVal = _.min(expressionsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
-
-    expressionsInNetwork.forEach(expression => {
-      // probably more efficient to add the expression data to the node field instead of interating twice
-      props.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
-        const style = {
-          'background-color': this.percentToColour(expression.classValues[selectedClassIndex] / maxVal)
-        };
-
-        node.style(style);
-      });
-    });
-  }
 
   render() {
     return h('div.paint-graph', [ h(`div.#cy-container`, {style: {width: '100vw', height: '100vh'}}) ]);
@@ -121,11 +54,14 @@ class Paint extends React.Component {
     super(props);
 
     const cy = make_cytoscape({headless: true});
+    const query = queryString.parse(props.location.search);
+    const enrichmentsURI = query.uri ? query.uri : null;
 
     this.state = {
       rawEnrichmentData: {},
       expressionTable: {},
       selectedClass: null,
+      selectedFunction: this.analysisFns().mean,
 
       cy: cy,
       name: '',
@@ -133,18 +69,15 @@ class Paint extends React.Component {
       drawerOpen: false
     };
 
-    const query = queryString.parse(props.location.search);
-    const enrichmentsURI = query.uri ? query.uri : null;
-
     if (enrichmentsURI != null) {
       fetch(enrichmentsURI)
         .then(response => response.json())
         .then(json => {
-          this.setState({rawEnrichmentData: json});
-
           const expressionClasses = _.get(json.dataSetClassList, '0.classes', []);
           const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
           const searchParam = query.q;
+
+          this.setState({rawEnrichmentData: json});
           this.initPainter(expressions, expressionClasses, searchParam);
 
         });
@@ -163,60 +96,90 @@ class Paint extends React.Component {
       type: 'Pathway'
     };
 
-    apiCaller.querySearch(query)
-      .then(searchResults => {
-        const uri = _.get(searchResults, '0.uri', null);
+    apiCaller.querySearch(query).then(searchResults => {
+      const uri = _.get(searchResults, '0.uri', null);
 
-        if (uri != null) {
-          apiCaller.getGraphAndLayout(uri, 'latest').then(response => {
-            this.setState({
-              name: _.get(response, 'graph.pathwayMetadata.title', 'N/A'),
-              datasource: _.get(response, 'graph.pathwayMetadata.dataSource.0', 'N/A'),
-            });
+      if (uri != null) {
+        const expressionTable = createExpressionTable(expressions, expressionClasses);
+        const header = expressionTable.header;
 
-            state.cy.remove('*');
-            state.cy.add({
-              nodes: _.get(response, 'graph.nodes', []),
-              edges: _.get(response, 'graph.edges', [])
-            });
-
-            state.cy.layout({
-              name: 'cose-bilkent',
-              randomize: false,
-              nodeDimensionsIncludeLabels: true
-            }).run();
-
-
-            const expressionTable = {};
-
-            const header = _.uniq(expressionClasses);
-            this.setState({
-              selectedClass: _.get(header, '0', null)
-            });
-
-            expressionTable.header = header;
-            expressionTable.rows = expressions.map(expression => {
-              const geneName = expression.geneName;
-              const values = expression.values;
-
-              const class2ValuesMap = new Map();
-
-              for (let expressionClass of header) {
-                class2ValuesMap.set(expressionClass, []);
-              }
-
-              for (let i = 0; i < values.length; i++) {
-                class2ValuesMap.get(expressionClasses[i]).push(values[i]);
-              }
-
-              return { geneName: geneName, classValues: Array.from(class2ValuesMap.entries()).map((entry =>  _.mean(entry[1]).toFixed(2))) };
-            });
-
-            this.setState({
-              expressionTable: expressionTable
-            });
+        apiCaller.getGraphAndLayout(uri, 'latest').then(response => {
+          state.cy.remove('*');
+          state.cy.add({
+            nodes: _.get(response, 'graph.nodes', []),
+            edges: _.get(response, 'graph.edges', [])
           });
-        }
+
+          state.cy.layout({
+            name: 'cose-bilkent',
+            randomize: false,
+            nodeDimensionsIncludeLabels: true,
+            nodeRepulsion: 5000 * state.cy.nodes().size()
+          }).run();
+
+          this.setState({
+            selectedClass: _.get(header, '0', null),
+            expressionTable: expressionTable,
+            name: _.get(response, 'graph.pathwayMetadata.title', 'N/A'),
+            datasource: _.get(response, 'graph.pathwayMetadata.dataSource.0', 'N/A'),
+          }, () => this.applyExpressionData());
+        });
+      }
+    });
+  }
+
+  expressionDataToNodeStyle(percent) {
+    const style = {};
+    if (0.26 <= percent < 0.75) {
+      style['background-color'] = 'white';
+      style['background-opacity'] = 1;
+    }
+
+    if (percent <= 0.25) {
+      style['background-color'] = 'green';
+      style['background-opacity'] = 1 - (percent / 0.25);
+    }
+
+    if (0.75 <= percent) {
+      style['background-color'] = 'purple';
+      style['background-opacity'] = percent / 1;
+    }
+
+    return style;
+  }
+
+  applyExpressionData() {
+    const state = this.state;
+
+    const selectedFunction = state.selectedFunction.func;
+    const expressionTable = state.expressionTable;
+    const selectedClass = state.selectedClass;
+
+    const geneNodes = state.cy.nodes('[class="macromolecule"]');
+    const geneNodeLabels = _.uniq(geneNodes.map(node => node.data('label'))).sort();
+
+    const expressionsInNetwork = expressionTable.rows.filter(row => geneNodeLabels.includes(row.geneName));
+    const expressionLabels = expressionsInNetwork.map(expression => expression.geneName);
+
+    const max = maxRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
+    const min = minRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
+
+
+    expressionsInNetwork.forEach(expression => {
+      // probably more efficient to add the expression data to the node field instead of interating twice
+      state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
+        const aggFnVal = applyAggregateFn(expression, selectedClass, selectedFunction);
+        const percent = aggFnVal / max;
+        const style = this.expressionDataToNodeStyle(percent);
+
+        node.style(style);
+      });
+    });
+
+    geneNodes.filter(node => !expressionLabels.includes(node.data('label'))).style({
+      'background-color': 'grey',
+      'color': 'grey',
+      'opacity': 0.4
     });
   }
 
@@ -224,9 +187,28 @@ class Paint extends React.Component {
     this.setState({drawerOpen: !this.state.drawerOpen});
   }
 
+  analysisFns() {
+    return {
+      mean: {
+        name: 'mean',
+        func: _.mean
+      },
+      max: {
+        name: 'max',
+        func: _.max
+      },
+      min: {
+        name: 'min',
+        func: _.min
+      }
+    };
+  }
+
   render() {
     const state = this.state;
 
+    const selectedFunction = state.selectedFunction.func;
+    const selectedClass = state.selectedClass;
     const expressionTable = state.expressionTable;
     const expressions = _.get(expressionTable, 'rows', []);
 
@@ -234,9 +216,8 @@ class Paint extends React.Component {
     const expressionsInNetwork = expressions.filter(row => networkNodes.includes(row.geneName));
     const expressionsNotInNetwork = _.difference(expressions, expressionsInNetwork);
 
-
-    const maxVal = _.max(expressionsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
-    const minVal = _.min(expressionsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
+    const max = maxRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
+    const min = minRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
 
     const expressionHeader = _.get(expressionTable, 'header', []);
     const expressionRows = expressionsInNetwork.concat(expressionsNotInNetwork);
@@ -245,18 +226,31 @@ class Paint extends React.Component {
       {
         Header: 'Gene Name',
         accessor: 'geneName',
-        filterMethod: (filter, rows) => {
-          return matchSorter(rows, filter.value, { keys: ["geneName"] });
-        },
+        filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['geneName'] }),
         filterAll: true
       }
     ].concat(expressionHeader.map((className, index) => {
       return {
         Header: className,
         id: className,
-        accessor: row => row.classValues[index]
+        accessor: row => applyAggregateFn(row, className, selectedFunction)
       };
     }));
+
+    const functionSelector = h('select.paint-select',
+      {
+        value: state.selectedFunction.name,
+        onChange: e => this.setState({
+          selectedFunction: _.find(this.analysisFns(), (fn) => fn.name === e.target.value)
+        }, () => this.applyExpressionData())
+      },
+      [
+        h('option', {value: 'min'}, 'min'),
+        h('option', {value: 'max'}, 'max'),
+        h('option', {value: 'mean'}, 'mean')
+      ]
+    );
+
     return h('div.paint', [
       h('div.paint-content', [
         h('div', { className: classNames('paint-drawer', { 'closed': !state.drawerOpen }) }, [
@@ -264,9 +258,10 @@ class Paint extends React.Component {
             h(Icon, { icon: 'close'}),
           ]),
           h('div.paint-legend', [
-            h('p', `low ${minVal}`),
-            h('p', `high ${maxVal}`)
+            h('p', `low ${min}`),
+            h('p', `high ${max}`)
           ]),
+          functionSelector,
           h(Table, {
             className:'-striped -highlight',
             data: expressionRows,
@@ -276,25 +271,26 @@ class Paint extends React.Component {
             getTheadThProps: (state, rowInfo, column, instance) => {
               return {
                 onClick: e => {
-                  this.setState({
-                    selectedClass: column.id
-                  });
+                  if (column.id !== 'geneName') {
+                    this.setState({
+                      selectedClass: column.id
+                    }, () => this.applyExpressionData());
+                  }
                 }
               };
             },
             getTdProps: (state, rowInfo, column, instance) => {
               return {
-                onMouseEnter: e => {
+                onClick: e => {
                   const geneName = _.get(rowInfo, 'original.geneName', '');
-                  const debouncedSearch = _.debounce(cysearch, 700);
-                  debouncedSearch(geneName, this.state.cy);
+                  cysearch(geneName, this.state.cy, false, {'border-width': 8, 'border-color': 'red'});
                 }
               };
             }
            })
         ]),
         h(OmniBar, { name: state.name, datasource: state.datasource, onMenuClick: (e) => this.toggleDrawer() }),
-        h(Network, { cy: state.cy, expressionTable: state.expressionTable, selectedClass: state.selectedClass })
+        h(Network, { cy: state.cy })
       ])
     ]);
   }

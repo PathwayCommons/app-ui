@@ -16,6 +16,7 @@ class MetadataTip {
     this.data = data.parsedMetadata;
     this.cyElement = cyElement;
     this.db = config.databases;
+    this.viewStatus = {};
   }
 
   //Show Tippy Tooltip
@@ -24,7 +25,7 @@ class MetadataTip {
     let tooltip = this.tooltip;
     let tooltipExt = tooltip;
 
-    getPublications(this.data).then(function(data) {
+    getPublications(this.data).then(function (data) {
       this.data = data;
 
       //Hide all other tooltips
@@ -38,9 +39,9 @@ class MetadataTip {
 
         //Create tippy object
         let refObject = this.cyElement.popperRef();
-        tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow : true });
-        tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow : true  });
-               //Resolve Reference issues
+        tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow: true, position: 'bottom' });
+        tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow: true, position: 'bottom' });
+        //Resolve Reference issues
         tooltip.selector.dim = refObject.dim;
         tooltip.selector.cyElement = refObject.cyElement;
         tooltipExt.selector.dim = refObject.dim;
@@ -78,20 +79,13 @@ class MetadataTip {
     //Ensure name is not blank
     this.validateName();
 
+    //Generate the expand field option
+    const expandFunction = this.displayMore();
+
     if (!(this.data)) { this.data = []; }
     return h('div.tooltip-image', [
       h('div.tooltip-heading', this.name),
-      h('div.tooltip-internal', h('div', (data).map(item => generate.parseMetadata(item, true)), this)),
-      h('div.tooltip-buttons',
-        [
-          h('div.tooltip-button-container',
-            [
-              h('div.tooltip-button', { onclick: this.displayMore() }, [
-                h('i', { className: classNames('material-icons', 'tooltip-button-show') }, 'fullscreen'),
-                h('div.describe-button', 'Additional Info')
-              ]),
-            ])
-        ])
+      h('div.tooltip-internal', h('div', (data).map(item => generate.parseMetadata(item, true, expandFunction)), this))
     ]);
   }
 
@@ -109,20 +103,16 @@ class MetadataTip {
     //Ensure name is not blank
     this.validateName();
 
+    //Generate expansion and collapse functions 
+    const expandFunction = this.displayMore();
+    const collapseFunction = this.displayLess();
+
+    const getExpansionFunction = item => !this.isExpanded(item[0]) ? expandFunction : collapseFunction;
+
     if (!(this.data)) { this.data = []; }
     return h('div.tooltip-image', [
       h('div.tooltip-heading', this.name),
-      h('div.tooltip-internal', h('div', (data).map(item => generate.parseMetadata(item, false), this))),
-      h('div.tooltip-buttons',
-        [
-          h('div.tooltip-button-container',
-            [
-              h('div.tooltip-button', { onclick: this.displayLess() }, [
-                h('i', { className: classNames('material-icons', 'tooltip-button-show') }, 'fullscreen_exit'),
-                h('div.describe-button', 'Less Info')
-              ]),
-            ])
-        ])
+      h('div.tooltip-internal', h('div', (data).map(item => generate.parseMetadata(item, !this.isExpanded(item[0]), getExpansionFunction(item)), this)))
     ]
     );
   }
@@ -143,12 +133,13 @@ class MetadataTip {
       this.tooltipExt.hide(this.tooltipExt.store[0].popper);
     }
     this.visible = false;
+    this.viewStatus = {};
   }
 
   //Destroy Tippy tooltip
   destroy() {
     if (this.tooltip) {
-      this.tooltip.destory(this.tooltip.store[0].popper);
+      this.tooltip.destroy(this.tooltip.store[0].popper);
       this.tooltip = null;
     }
   }
@@ -159,28 +150,59 @@ class MetadataTip {
   }
 
   //Display the expanded tooltip
-  expandToolTip(tooltip, tooltipExt) {
+  expandToolTip(expansionObject, expansionField, fieldStatus) {
+    //Modify view status
+    expansionObject.viewStatus[expansionField] = fieldStatus;
+
+    //Hide existing tooltip 
+    const existingToolTip = expansionObject.tooltipExt;
+    existingToolTip.hide(existingToolTip.store[0].popper);
+  
+    //Get tooltip objects
+    let tooltip = expansionObject.tooltip;
+    const expandedHTML = expansionObject.generateExtendedToolTip();
+
+    //Create tippy object
+    let refObject = expansionObject.cyElement.popperRef();
+    let tooltipExt = tippy(refObject, { html: expandedHTML,
+      theme: 'light',
+      interactive: true,
+      trigger: 'manual',
+      hideOnClick: false,
+      arrow: true,
+      position: 'bottom',
+      animation: 'shift',
+      duration : 1
+    });
+
+
+    //Resolve Reference issues
+    tooltipExt.selector.dim = refObject.dim;
+    tooltipExt.selector.cyElement = refObject.cyElement;
+
+    //Hide and show
     tooltip.hide(tooltip.store[0].popper);
     tooltipExt.show(tooltipExt.store[0].popper);
-  }
 
-
-  //Display the expanded tooltip
-  collapseToolTip(tooltip, tooltipExt) {
-    tooltip.show(tooltip.store[0].popper);
-    tooltipExt.hide(tooltipExt.store[0].popper);
+    //Save extended tooltip
+    expansionObject.tooltipExt = tooltipExt;
   }
 
   //Return a function that binds a tooltip to the expanded tooltip view
   displayMore() {
     let that = this;
-    return () => that.expandToolTip(that.tooltip, that.tooltipExt);
+    return (field) => that.expandToolTip(that, field, true);
   }
 
   //Return a function that binds an expanded tooltip to the minimized view.
   displayLess() {
     let that = this;
-    return () => that.collapseToolTip(that.tooltip, that.tooltipExt);
+    return (field) => that.expandToolTip(that, field, false);
+  }
+
+  //Return the expansion status of a specified field
+  isExpanded(field) {
+    return this.viewStatus[field];
   }
 
 }

@@ -9,7 +9,7 @@ const make_cytoscape = (opts) => {
   const cy = cytoscape({
     container: opts.container,
     style: stylesheet,
-    minZoom: 0.16,
+    minZoom: 0.08,
     maxZoom: 4,
     headless: opts.headless,
     zoomingEnabled: true

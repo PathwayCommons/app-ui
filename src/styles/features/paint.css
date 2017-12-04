@@ -97,3 +97,10 @@
   height: 40px;
   background-image: url('../image/pc_logo_dark.svg');
 }
+
+.paint-expression-controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px;
+}

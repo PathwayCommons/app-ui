@@ -1,14 +1,6 @@
 const _ = require('lodash');
 
-const storeStyle = (ele, keys) => {
-  const storedStyleProps = {};
-
-  for (let key of keys) {
-    storedStyleProps[key] = ele.style(key);
-  }
-
-  return storedStyleProps;
-};
+const {applyStyle, removeStyle} = require('../manage-style');
 
 const dynamicScalingfactors = (zoom) => {
   const scalingFactor = (1 / zoom);
@@ -30,28 +22,6 @@ const dynamicScalingfactors = (zoom) => {
     arrowScale: dynamicArrowScale,
     edgeWidth: dynamicEdgewidth
   };
-};
-
-const applyHoverStyle = (cy, eles, style) => {
-  const stylePropNames = Object.keys(style);
-
-  eles.forEach((ele) => {
-    ele.scratch('_hover-style-before', storeStyle(ele, stylePropNames));
-  });
-
-  cy.batch(function () {
-    eles.style(style);
-  });
-};
-
-const removeHoverStyle = (cy, eles) => {
-
-  cy.batch(function () {
-    eles.forEach((ele) => {
-      ele.style(ele.scratch('_hover-style-before'));
-      ele.removeScratch('_hover-style-before');
-    });
-  });
 };
 
 const scaledDimensions = (node, zoom) => {
@@ -93,7 +63,7 @@ const baseEdgeHoverStyle = {
   'opacity': 1
 };
 
-const bindHover = (cy) => {
+const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHoverStyle) => {
   cy.on('mouseover', 'node[class!="compartment"]', function (evt) {
     const node = evt.target;
     const currZoom = cy.zoom();
@@ -105,31 +75,31 @@ const bindHover = (cy) => {
     node.neighborhood().nodes().union(node).forEach((node) => {
       const { w, h } = scaledDimensions(node, currZoom);
 
-      const nodeHoverStyle = _.assign({}, baseNodeHoverStyle, {
+      const nodeHoverStyle = _.assign({}, nodeStyle, {
         'font-size': fontSize,
         'text-outline-width': outlineWidth,
         'width': w,
         'height': h
       });
 
-      applyHoverStyle(cy, node, nodeHoverStyle);
+      applyStyle(cy, node, nodeHoverStyle, '_hover-style-before');
     });
 
-    const edgeHoverStyle = _.assign({}, baseEdgeHoverStyle, {
+    const edgeHoverStyle = _.assign({}, edgeStyle, {
       'arrow-scale': arrowScale,
       'width': edgeWidth
     });
 
-    applyHoverStyle(cy, node.neighborhood().edges(), edgeHoverStyle);
+    applyStyle(cy, node.neighborhood().edges(), edgeHoverStyle, '_hover-style-before');
   });
 
   cy.on('mouseout', 'node[class!="compartment"]', function (evt) {
     const node = evt.target;
     const neighborhood = node.neighborhood();
 
-    removeHoverStyle(cy, neighborhood.nodes());
-    removeHoverStyle(cy, node);
-    removeHoverStyle(cy, neighborhood.edges());
+    removeStyle(cy, neighborhood.nodes(), '_hover-style-before');
+    removeStyle(cy, node, '_hover-style-before');
+    removeStyle(cy, neighborhood.edges(), '_hover-style-before');
   });
 
   cy.on('mouseover', 'edge', function (evt) {
@@ -138,16 +108,16 @@ const bindHover = (cy) => {
 
     const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
 
-    const edgeHoverStyle = _.assign({}, baseEdgeHoverStyle, {
+    const edgeHoverStyle = _.assign({}, edgeStyle, {
       'arrow-scale': arrowScale,
       'width': edgeWidth
     });
-    applyHoverStyle(cy, edge, edgeHoverStyle);
+    applyStyle(cy, edge, edgeHoverStyle, '_hover-style-before');
 
 
     edge.source().union(edge.target()).forEach((node) => {
       const { w, h } = scaledDimensions(node, currZoom);
-      const nodeHoverStyle = _.assign({}, baseNodeHoverStyle, {
+      const nodeHoverStyle = _.assign({}, nodeStyle, {
         'width': w,
         'height': h,
         'font-size': fontSize,
@@ -158,16 +128,16 @@ const bindHover = (cy) => {
         'background-color': 'blue',
         'z-compound-depth': 'top'
       });
-      applyHoverStyle(cy, node, nodeHoverStyle);
+      applyStyle(cy, node, nodeHoverStyle, '_hover-style-before');
     });
   });
 
   cy.on('mouseout', 'edge', function (evt) {
     const edge = evt.target;
 
-    removeHoverStyle(cy, edge);
-    removeHoverStyle(cy, edge.source());
-    removeHoverStyle(cy, edge.target());
+    removeStyle(cy, edge, '_hover-style-before');
+    removeStyle(cy, edge.source(), '_hover-style-before');
+    removeStyle(cy, edge.target(), '_hover-style-before');
   });
 
 

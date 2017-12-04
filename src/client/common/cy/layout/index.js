@@ -1,7 +1,7 @@
 const layouts = [
   {
     displayName: 'Force Directed',
-    description: 'Layout algorithm for undirected compound graphs',
+    description: 'For undirected compound graphs',
     options: {
       name: 'cose-bilkent',
       nodeDimensionsIncludeLabels: true,
@@ -13,7 +13,7 @@ const layouts = [
   },
   {
     displayName: 'Tree',
-    description: 'For DAGs and trees',
+    description: 'For DAGs',
     options: {
       name: 'dagre',
       rankDir: 'LR',
@@ -23,7 +23,7 @@ const layouts = [
   },
   {
     displayName: 'Layered',
-    description: 'Layer-based layout for node-link diagrams',
+    description: 'For node-link diagrams',
     options: {
       name: 'klay',
       animate: true,

@@ -3,7 +3,7 @@
 const hideTooltips = (cy) => {
   cy.elements().each(function (element) {
     var tempElement = element.scratch('_tooltip');
-    if (tempElement && tempElement.isVisible()) { tempElement.hide(); }
+    if (tempElement) { tempElement.hide(); }
   });
   incrementClicks(cy, true);
 };

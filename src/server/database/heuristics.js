@@ -8,9 +8,15 @@
 */
 
 // --------- Fake Heuristics ---------------
-function run(layouts, callback) {
+function run(layouts, trimValues, callback) {
     let layout = layouts.toArray()
       .then((result) => {
+
+        //Return last 10 layouts
+        if(trimValues){
+          return result.slice(-10);
+        }
+
         return result[result.length-1];
       });
   

@@ -3,7 +3,7 @@ const uuid = require('uuid/v4');
 const hash = require('object-hash');
 const config = require('./config');
 const db = require('./utilities');
-const fetch = require('node-fetch');
+const pcServices = require('./../pathway-commons/');
 const _ = require('lodash');
 
 
@@ -28,12 +28,7 @@ function isExistingGraph(newGraph, connection) {
 // This is called when the version specified for retrieval is 'latest'
 function getLatestPCVersion(pcID) {
   // Traverse queries to PC2 return the current PC2 version.
-  const prefix = 'http://www.pathwaycommons.org/pc2/traverse?format=JSON&path=Named/name&uri=';
-
-  let url = prefix + pcID;
-  return fetch(url, { method: 'GET' }).then((response) => {
-    return response.json();
-  }).then((json) => {
+  return pcServices.traverse({format: 'JSON', path: 'Named/name', uri: pcID}).then((json) => {
     return json.version;
   });
 }
@@ -130,8 +125,7 @@ function saveLayout(pcID, releaseID, layout, userID, connection, callback) {
         })
         .run(connection);
     }).catch(() => {
-
-      throw Error('Failed insertion');
+      return Promise.reject(new Error('Failed insertion'));
     });
 
   return db.handleResult(result, callback);

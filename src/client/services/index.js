@@ -1,4 +1,3 @@
-const PathwayCommonsService = require('./pathway-commons/');
-const CDC = require('./cdc/');
+const apiCaller = require('./apiCaller/');
 
-module.exports = {PathwayCommonsService, CDC};
+module.exports = {apiCaller};

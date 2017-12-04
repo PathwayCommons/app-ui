@@ -41,7 +41,7 @@
 }
 
 /* Portrait-specific mobile scaling */
-@media (width <= 768px) and (height <= 736px) and (height > 414px) {
+@media (--small-portrait-viewport) {
   .edit-warning-container {
     height: 100%;
     width: 2.6em;
@@ -64,7 +64,7 @@
     min-width: 20em;
     padding: 0.4em 1em 0.4em 1em;
     
-    background-color: var(--invalidColor);
+    background-color: var(--accent-1-colour);
     border-radius: 3px 3px 0px 0px;
     box-shadow: var(--box-shadow);
     

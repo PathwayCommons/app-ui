@@ -1,4 +1,6 @@
 const _ = require('lodash');
+const fs = require('fs');
+const fetch = require('node-fetch');
 const symbolNameBlackList = [
   'CELL'
 ];
@@ -10,17 +12,13 @@ const parseHGNCData = text => {
 
   let parsed = textNoHeader.split(/[\s,]+/)
     .filter(symbol => {
-      return symbol.length > 0 || symbolNameBlackList.indexOf(symbol) == -1;
+      return symbol.length > 0 && symbolNameBlackList.indexOf(symbol) == -1;
     });
 
   return parsed;
 };
 
 module.exports = _.memoize((filename) => {
-  return fetch(filename, {method: 'get', mode: 'no-cors'})
-  .then(res => res.text())
-  .then(parseHGNCData)
-  .then(hgncSymbols => {
-    return new Set(hgncSymbols);
-  });
+  let symbols = fs.readFileSync(filename, 'utf-8');
+  return new Promise ((resolve, reject) => resolve(new Set(parseHGNCData(symbols))));
 }, fname => fname);

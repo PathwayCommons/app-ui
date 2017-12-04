@@ -40,8 +40,9 @@ module.exports = () => {
       {
         path: '/edit',
         render: props => {
-          let editProps = props;
-          props.admin = true;
+          const editProps = _.assign({}, props, {
+            admin: true
+          });
           return h(Features.View, editProps);
         }
       }

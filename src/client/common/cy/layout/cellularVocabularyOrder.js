@@ -1,3 +1,5 @@
+// Not currently used but might be worked on in the future
+
 const ontologyOrderMap = new Map()
 .set('extracellular_region', 0)
 .set('plasma_membrane', 1)

@@ -47,6 +47,8 @@ class Dropdown extends React.Component {
     const nonDefSides = ['top', 'left', 'right'];
     const sideClass = `common-dropdown-options-side-${_.includes(nonDefSides, props.side) ? props.side : defSide}`;
 
+    const iconButton = props.iconButton || 'keyboard_arrow_down';
+
     return (
       h('div.common-dropdown', {
         onClick: () => !props.disabled ? this.setState({ open: !this.state.open }) : {}
@@ -55,7 +57,7 @@ class Dropdown extends React.Component {
             className: classNames('common-dropdown-toggle', { 'common-dropdown-toggle-disabled': props.disabled })
           }, [
             h('div.common-dropdown-current-value', props.value),
-            h('i.material-icons', props.iconButton || 'keyboard_arrow_down')
+            h('i.material-icons', iconButton)
           ]),
           h('div', {
             className: classNames(

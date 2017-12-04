@@ -1,10 +1,11 @@
 
-const {HashRouter, Route} = require('react-router-dom');
+const {BrowserRouter, Route} = require('react-router-dom');
 const h = require('react-hyperscript');
 const ReactGA = require('react-ga');
 const _ = require('lodash');
 
 const Features = require('./features');
+const config = require('../config');
 
 ReactGA.initialize('UA-43341809-7');
 const Analytics = (props) => {
@@ -15,7 +16,7 @@ const Analytics = (props) => {
 
 
 module.exports = () => {
-  return h(HashRouter, [
+  return h(BrowserRouter, { basename: config.baseName }, [
     h('div', [
       {
         path: '*',

@@ -1,10 +1,11 @@
 const io = require('socket.io-client');
 const qs = require('querystring');
+const config = require('../../../config');
 let socket = io.connect('/');
 
 
 const fetchWrapper = function (url, options){
-  return fetch(window.location.pathname + url, options);
+  return fetch(config.baseName + url, options);
 };
 
 const apiCaller = {

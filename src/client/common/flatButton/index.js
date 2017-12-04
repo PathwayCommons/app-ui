@@ -9,7 +9,6 @@ Recommended
 Optional
 - icon (string specifying icon in button)
 - iconPosition ('left', 'right', or excluded for default)
-- 
 */
 class FlatButton extends React.Component {
   render() {

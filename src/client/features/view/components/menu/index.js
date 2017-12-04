@@ -9,6 +9,7 @@ const { humanLayoutDisplayName } = require('../../../../common/cy/layout');
 const searchNodes = require('../../../../common/cy/search');
 
 const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
+const IconButton = require('../../../../common/iconButton');
 const apiCaller = require('../../../../services/apiCaller');
 const datasourceLinks = require('../../../../common/config').databases;
 
@@ -129,16 +130,14 @@ class Menu extends React.Component {
       );
     });
 
-    const toolButtonEls = Object.keys(toolButtons).map((button, index) => {
+    const toolButtonEls = Object.keys(toolButtons).map(button => {
       return (
-        h('div', {
-          key: index,
-          className: classNames('tool-button', 'tool-button-sidebar', { 'tool-button-active': this.props.activeMenu === button }),
+        h(IconButton, {
+          icon: button,
+          active: this.props.activeMenu === button,
           onClick: () => this.changeMenu(button),
-          title: toolButtons[button]
-        }, [
-            h('i.material-icons', button)
-          ])
+          desc: toolButtons[button]
+        })
       );
     });
 

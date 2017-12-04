@@ -5,7 +5,14 @@ const h = require('react-hyperscript');
 const Popover = require('../popover');
 const { tippyDefaults } = require('../config');
 
-class Tooltip extends React.Component {
+/* Props
+Required
+- description
+Optional
+- tippy (an object with tippy.js options)
+- popover props (props you want the popover to have, see popover)
+*/
+class TextTooltip extends React.Component {
   render() {
     let props = this.props;
 
@@ -13,7 +20,7 @@ class Tooltip extends React.Component {
       html: (() => {
         return h('div.tooltip-content', [h('span.tooltip-description', props.description)]);
       })(),
-      position: 'right',
+      position: 'bottom',
       trigger: 'mouseenter click',
       animate: 'scale',
       hideOnClick: true,
@@ -30,4 +37,4 @@ class Tooltip extends React.Component {
   }
 }
 
-module.exports = Tooltip;
+module.exports = TextTooltip;

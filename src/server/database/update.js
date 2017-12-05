@@ -40,14 +40,13 @@ function getLatestPCVersion(pcID) {
 // if false, a graph is also created
 function saveGraph(pcID, releaseID, graphID, existingGraph, newGraph, connection) {
   if (existingGraph) {
-    let existingGraphID = existingGraph.id;
     // create new pointer to existing graph
     return db.insert('version', {
       id: uuid(),
       pc_id: pcID,
       release_id: releaseID,
-      graph_id: existingGraphID,
-      layout_ids: [],
+      graph_id: existingGraph.id,
+      layout_ids: existingGraph.layout_ids,
       users: []
     },
       config,

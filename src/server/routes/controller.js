@@ -2,7 +2,6 @@
 const query = require('./../database/query');
 const db = require('./../database/utilities');
 const update = require('./../database/update');
-const lazyLoad = require('./../lazyload');
 const logger = require('./../logger');
 const diffSaver = require('./../database/saveDiffs');
 
@@ -12,15 +11,7 @@ const diffSaver = require('./../database/saveDiffs');
 // and tries to save this new information to the database to avoid the
 // issue in the future.
 function getGraphFallback(pcID, releaseID, connection) {
-  return lazyLoad.queryForGraphAndMetadata(pcID)
-    .catch(() => {
-      return lazyLoad.queryPC(pcID);
-    }).then(result => {
-      if (connection && result.pathwayMetadata) {
-        update.updateGraph(pcID, releaseID, result, connection);
-      } 
-      return result;
-    });
+  return query.getGraphFromPC(pcID, releaseID, connection);
 }
 
 // getGraphAndLayout(pcID, releaseID)

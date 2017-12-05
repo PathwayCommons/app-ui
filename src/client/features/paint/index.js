@@ -27,14 +27,22 @@ class Paint extends React.Component {
     const enrichmentsURI = query.uri ? query.uri : null;
 
     this.state = {
+      // enrichment data state
       rawEnrichmentData: {},
       expressionTable: {},
       selectedClass: '',
       selectedFunction: this.analysisFns().mean,
 
+      // sbgn / cy network state
       cy: cy,
       name: '',
       datasource: '',
+
+      // search results state
+      query: '',
+      searchResults: [],
+
+      // drawer
       drawerOpen: false
     };
 
@@ -46,11 +54,37 @@ class Paint extends React.Component {
           const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
           const searchParam = query.q;
 
-          this.setState({rawEnrichmentData: json});
+          this.setState({
+            rawEnrichmentData: json,
+            query: query.q
+          });
           this.initPainter(expressions, expressionClasses, searchParam);
 
         });
     }
+  }
+
+  loadSbgn(uri) {
+    const state = this.state;
+    apiCaller.getGraphAndLayout(uri, 'latest').then(response => {
+      state.cy.remove('*');
+      state.cy.add({
+        nodes: _.get(response, 'graph.nodes', []),
+        edges: _.get(response, 'graph.edges', [])
+      });
+
+      state.cy.layout({
+        name: 'cose-bilkent',
+        randomize: false,
+        nodeDimensionsIncludeLabels: true,
+        nodeRepulsion: 5000 * state.cy.nodes().size()
+      }).run();
+
+      this.setState({
+        name: _.get(response, 'graph.pathwayMetadata.title', 'N/A'),
+        datasource: _.get(response, 'graph.pathwayMetadata.dataSource.0', 'N/A'),
+      }, () => this.applyExpressionData());
+    });
   }
 
   // only call this after you know component is mounted
@@ -63,6 +97,7 @@ class Paint extends React.Component {
 
     apiCaller.querySearch(query).then(searchResults => {
       const uri = _.get(searchResults, '0.uri', null);
+      console.log(searchResults);
 
       if (uri != null) {
         const expressionTable = createExpressionTable(expressions, expressionClasses);
@@ -87,6 +122,7 @@ class Paint extends React.Component {
             expressionTable: expressionTable,
             name: _.get(response, 'graph.pathwayMetadata.title', 'N/A'),
             datasource: _.get(response, 'graph.pathwayMetadata.dataSource.0', 'N/A'),
+            searchResults: searchResults
           }, () => this.applyExpressionData());
         });
       }
@@ -227,8 +263,6 @@ class Paint extends React.Component {
     expressionHeader.map(exprClass => h('option', { value: exprClass }, exprClass))
   );
 
-  const searchTab = h('div', 'search');
-
   const tabs = h(Tabs, [
     h(TabList, [
       h(Tab, 'Expression Data'),
@@ -260,7 +294,14 @@ class Paint extends React.Component {
       }
      })
     ]),
-    h(TabPanel, 'searchTab')
+    h(TabPanel, state.searchResults.map(searchResult => {
+        const uri = _.get(searchResult, 'uri', null);
+        const name = _.get(searchResult, 'name', 'N/A');
+        return h('div.paint-search-result', [
+          h('a.plain-link', {onClick: e => this.loadSbgn(uri)}, name)
+        ]);
+      })
+    )
   ]);
 
     return h('div.paint', [

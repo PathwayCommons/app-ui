@@ -16,7 +16,6 @@ function renderImage(graphValues) {
   return snap.start().then(function () {
     //Create an array of images
     let images = layouts.map(layout => {
-
       //Build a render options object
       let renderJson = getRenderOptions(graph, layout.positions);
 

@@ -12,8 +12,14 @@ function run(layouts, trimValues, callback) {
     let layout = layouts.toArray()
       .then((result) => {
 
-        //Return last 10 layouts
-        if(trimValues){
+        //Return last 10 layouts\
+        if (result.length <= 1 && trimValues){
+          return [];
+        }
+        if(result.length < -10 && trimValues){
+          return result;
+        }
+        if(result.length > -10 && trimValues){
           return result.slice(-10);
         }
 

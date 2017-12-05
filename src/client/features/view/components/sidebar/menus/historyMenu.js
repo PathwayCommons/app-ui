@@ -94,7 +94,7 @@ class HistoryMenu extends React.Component {
 
     //Display layouts list
     if (layouts && images) {
-
+  
       if (layouts.length === 0 || images.length === 0) { return h('h2', 'No Layout Revisions'); }
 
       layouts = layouts.layout;

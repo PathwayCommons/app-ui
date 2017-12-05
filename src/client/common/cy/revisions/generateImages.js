@@ -5,14 +5,11 @@ const apiCaller = require('../../../services/apiCaller/');
    - Requires a valid layout list from the server and a valid cytoscape graph object
    - Layouts must be formatted as a object containing postions, dates, and ids
    - Graph must be a valid cytoscape json produced by cy.json();
+   - No images will be returned if there are no layouts. 
 */
 function generateImages(layouts, graph) {
-  //console.log(graph, JSON.stringify(graph));
-  //const cyHeadless = makeCytoscape({ headless : true });
-  //cyHeadless.add(graph);
-  //graph = cyHeadless.json().elements;
   graph = graph.nodes.concat(graph.edges);
-  return apiCaller.renderPNG({layouts, graph});
+  return apiCaller.renderImages({layouts, graph});
 }
 
 module.exports = generateImages; 

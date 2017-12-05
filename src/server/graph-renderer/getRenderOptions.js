@@ -5,7 +5,7 @@ let style = [
     "style": {
       "background-color": "#f6f6f6",
       "background-opacity": "1",
-      "border-color": "#555",
+      "border-color": "#0d0d0d",
       "border-width": "3px",
       "opacity": "1",
       "text-halign": "center",

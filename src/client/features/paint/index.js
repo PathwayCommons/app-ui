@@ -15,39 +15,8 @@ const Icon = require('../../common/components').Icon;
 const { apiCaller } = require('../../services');
 
 const {createExpressionTable, minRelativeTo, maxRelativeTo, applyAggregateFn} = require('./expression-model');
-
-class OmniBar extends React.Component {
-  render() {
-    const props = this.props;
-    return h('div.paint-omnibar', [
-      h('a', { onClick: e => props.onMenuClick(e) }, [
-        h(Icon, { icon: 'menu' }, 'click')
-      ]),
-      h('h5', `${props.name} | ${props.datasource}`)
-    ]);
-  }
-}
-
-// props
-// expression table
-// cy
-class Network extends React.Component {
-  componentWillUnmount() {
-    this.state.cy.destroy();
-  }
-
-  componentDidMount() {
-    const props = this.props;
-    const container = document.getElementById('cy-container');
-    props.cy.mount(container);
-  }
-
-
-  render() {
-    return h('div.paint-graph', [ h(`div.#cy-container`, {style: {width: '100vw', height: '100vh'}}) ]);
-  }
-
-}
+const OmniBar = require('./omnibar');
+const Network = require('./network');
 
 class Paint extends React.Component {
   constructor(props) {
@@ -82,10 +51,6 @@ class Paint extends React.Component {
 
         });
     }
-  }
-
-  componentWillUnmount() {
-    this.state.cy.destroy();
   }
 
   // only call this after you know component is mounted
@@ -306,7 +271,7 @@ class Paint extends React.Component {
           ]),
           tabs
         ]),
-        h(OmniBar, { name: state.name, datasource: state.datasource, onMenuClick: (e) => this.toggleDrawer() }),
+        h(OmniBar, { title: `${state.name} | ${state.datasource}`, onMenuClick: (e) => this.toggleDrawer() }),
         h(Network, { cy: state.cy })
       ])
     ]);

@@ -133,16 +133,19 @@ class Paint extends React.Component {
     if (0.4 <= percent < 0.6) {
       style['background-color'] = 'white';
       style['background-opacity'] = 1;
+      style['color'] = 'black';
     }
 
     if (percent <= 0.39) {
       style['background-color'] = 'green';
       style['background-opacity'] = 1 - (percent / 0.25);
+      style['color'] = 'white';
     }
 
     if (0.6 <= percent) {
       style['background-color'] = 'purple';
       style['background-opacity'] = percent / 1;
+      style['color'] = 'white';
     }
 
     return style;

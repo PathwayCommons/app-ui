@@ -46,7 +46,7 @@ function saveGraph(pcID, releaseID, graphID, existingGraph, newGraph, connection
       pc_id: pcID,
       release_id: releaseID,
       graph_id: existingGraph.id,
-      layout_ids: existingGraph.layout_ids,
+      layout_ids: existingGraph.layout_ids || [],
       users: []
     },
       config,

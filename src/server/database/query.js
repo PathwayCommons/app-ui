@@ -71,8 +71,8 @@ function getGraph(pcID, releaseID, connection, callback) {
     });
 
   let newerGraph = Promise.all([latestVersion, graph]).then(([version, graph]) => {
-    if (version !== graph.release_id) {
-      // Get new version. This is the same code as in the fallabck for get graph in the controller.
+    if (version != graph.release_id && releaseID === 'latest') {
+      // Get new version. This is the same code as in the fallback for get graph in the controller.
       return getGraphFromPC(pcID, version, connection);
     } else {
       // Just return the graph

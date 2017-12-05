@@ -1,6 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const Table = require('react-table').default;
+const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
 
 const queryString = require('query-string');
 const _ = require('lodash');
@@ -261,36 +262,49 @@ class Paint extends React.Component {
     expressionHeader.map(exprClass => h('option', { value: exprClass }, exprClass))
   );
 
+  const searchTab = h('div', 'search');
+
+  const tabs = h(Tabs, [
+    h(TabList, [
+      h(Tab, 'Expression Data'),
+      h(Tab, 'Search Results')
+    ]),
+    h(TabPanel, [
+      h('div.paint-legend', [
+        h('p', `low ${min}`),
+        h('p', `high ${max}`)
+      ]),
+      h('div.paint-expression-controls', [
+      h('div.paint-function-selector', [
+        'function: ',
+        functionSelector
+      ]),
+      h('div.paint-class-selector', [
+        'class: ',
+        classSelector
+      ]),
+    ]),
+    h(Table, {
+      className:'-striped -highlight',
+      data: expressionRows,
+      columns: columns,
+      defaultPageSize: 150,
+      showPagination: false,
+      onFilteredChange: (column, value) => {
+        cysearch(_.get(column, '0.value', ''), this.state.cy, false, {'border-width': 8, 'border-color': 'red'});
+      }
+     })
+    ]),
+    h(TabPanel, 'searchTab')
+  ]);
+
     return h('div.paint', [
       h('div.paint-content', [
         h('div', { className: classNames('paint-drawer', { 'closed': !state.drawerOpen }) }, [
           h('a', { onClick: e => this.toggleDrawer()}, [
             h(Icon, { icon: 'close'}),
           ]),
-          h('div.paint-legend', [
-            h('p', `low ${min}`),
-            h('p', `high ${max}`)
-          ]),
-          h('div.paint-expression-controls', [
-            h('div.paint-function-selector', [
-              'function: ',
-              functionSelector
-            ]),
-            h('div.paint-class-selector', [
-              'class: ',
-              classSelector
-            ]),
-          ]),
-          h(Table, {
-            className:'-striped -highlight',
-            data: expressionRows,
-            columns: columns,
-            defaultPageSize: 150,
-            showPagination: false,
-            onFilteredChange: (column, value) => {
-              cysearch(_.get(column, '0.value', ''), this.state.cy, false, {'border-width': 8, 'border-color': 'red'});
-            }
-           })
+          tabs
         ]),
         h(OmniBar, { name: state.name, datasource: state.datasource, onMenuClick: (e) => this.toggleDrawer() }),
         h(Network, { cy: state.cy })

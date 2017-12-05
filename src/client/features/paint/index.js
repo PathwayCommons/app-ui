@@ -130,17 +130,17 @@ class Paint extends React.Component {
 
   expressionDataToNodeStyle(percent) {
     const style = {};
-    if (0.26 <= percent < 0.75) {
+    if (0.4 <= percent < 0.6) {
       style['background-color'] = 'white';
       style['background-opacity'] = 1;
     }
 
-    if (percent <= 0.25) {
+    if (percent <= 0.39) {
       style['background-color'] = 'green';
       style['background-opacity'] = 1 - (percent / 0.25);
     }
 
-    if (0.75 <= percent) {
+    if (0.6 <= percent) {
       style['background-color'] = 'purple';
       style['background-opacity'] = percent / 1;
     }

@@ -86,7 +86,7 @@
 .paint-legend {
   padding: 0px 10px 0px 10px;
   color: white;
-  background: linear-gradient(to right, #0A872C, white, white, #880E7C);
+  background: linear-gradient(to right, #0A872C, white 40%, white 60%, #880E7C);
   display: flex;
   flex-direction: row;
   justify-content: space-between;

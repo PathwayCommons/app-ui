@@ -86,9 +86,9 @@ describe('Test update.js', function () {
 
 
   after(function () {
-    return connection.get().then(conn => {
-      r.dbDrop(mockConfig.databaseName).run(conn);
-    });
+    return connection.get().then(conn => 
+      r.dbDrop(mockConfig.databaseName).run(conn)
+    );
   });
 
   describe('updateGraph', function () {

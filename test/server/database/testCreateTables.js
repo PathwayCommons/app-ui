@@ -5,6 +5,12 @@ const createTables = require('./../../../src/server/database/createTables').chec
 const CONFIG = require('./mockConfig');
 
 describe('Table creation', function () {
+  after(function () {
+    return r.connect({ host: 'localhost', port: 28015 }).then(conn => 
+       r.dbDrop(CONFIG.databaseName).run(conn)
+    );
+  });
+
   this.timeout(0);
 
   it('Should return 3 resolved promises', function () {
@@ -25,9 +31,5 @@ describe('Table creation', function () {
   });
 });
 
-after(()=>{
-  r.connect({ host: 'localhost', port: 28015 }).then(conn => {
-    r.dbDrop(CONFIG.databaseName).run(conn);
-  });
-});
+
 

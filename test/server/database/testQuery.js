@@ -88,9 +88,9 @@ describe('Test query.js', function () {
   });
 
   after(function () {
-    return connection.get().then(conn => {
-      r.dbDrop(mockConfig.databaseName).run(conn);
-    });
+    return connection.get().then(conn => 
+      r.dbDrop(mockConfig.databaseName).run(conn)
+    );
   });
 
 

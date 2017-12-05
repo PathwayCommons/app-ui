@@ -97,7 +97,6 @@ class Paint extends React.Component {
 
     apiCaller.querySearch(query).then(searchResults => {
       const uri = _.get(searchResults, '0.uri', null);
-      console.log(searchResults);
 
       if (uri != null) {
         const expressionTable = createExpressionTable(expressions, expressionClasses);

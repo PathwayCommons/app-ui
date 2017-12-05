@@ -203,7 +203,7 @@ class Paint extends React.Component {
       },
       count: {
         name: 'count',
-        func: (classValues) => classValues.map(cv => 1).reduce((acc, curr) => acc + curr)
+        func: (classValues) => classValues.length
       }
     };
   }

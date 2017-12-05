@@ -31,7 +31,7 @@
     "clean": "rimraf build/*",
     "lint": "run-s lint:*",
     "watch": "run-p watch:*",
-    "test": "mocha"
+    "test": "mocha --recursive"
   },
   "dependencies": {
     "async": "^2.5.0",

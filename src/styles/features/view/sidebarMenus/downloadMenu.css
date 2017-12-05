@@ -1,5 +1,3 @@
-@import "/components/downloadOption.css";
-
 .file-download-menu {
   height: 100%;
   width: 100%;
@@ -18,32 +16,6 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-}
-
-.toggle-extra-downloads {
-  @extend %flex-center;
-
-  padding: 0.5em 0.5em;
-
-  cursor: pointer;
-
-  transition: all 0.1s linear;
-
-  &:hover {
-    background-color: var(--light-base-colour-dark);
-  }
-
-  & span {
-    margin-left: 0.5em;
-  }
-
-  & i {
-    font-size: var(--icon-size);
-  }
-
-  .toggle-extra-downloads-active i {
-    color: var(--accent-1-colour);
-  }
 }
 
 .file-download-extras {

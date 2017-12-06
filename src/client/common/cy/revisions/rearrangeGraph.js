@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const apiCaller = require('../../../services/apiCaller/');
 
 /* rearrangeGraph(layouts, positions, cy, headless, options)
@@ -8,10 +7,10 @@ Note : -Options Parameter is optional
        -Layouts is a collection of layouts
        -Positions is a collection of position objects 
 */
-function rearrangeGraph(positions, cy, options) {
-  Object.keys(positions).forEach(function (key) {
+function rearrangeGraph(nodePositions, cy, options) {
+  Object.keys(nodePositions).forEach(function (key) {
     let node = cy.getElementById(key);
-    let position = positions[key];
+    let position = nodePositions[key];
     node.position(position);
 
     if (options.admin) {

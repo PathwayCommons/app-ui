@@ -45,6 +45,7 @@ const apiCaller = {
       }
     }).then(res =>  res.json());
   },
+  
   renderImages(cyJson) {
     return fetch(`/api/render-png`, {
       method: 'POST', headers: {

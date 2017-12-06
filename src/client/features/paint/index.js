@@ -175,21 +175,28 @@ class Paint extends React.Component {
     const geneNodeLabels = _.uniq(geneNodes.map(node => node.data('label'))).sort();
 
     const expressionsInNetwork = expressionTable.rows.filter(row => geneNodeLabels.includes(row.geneName));
-    const expressionLabels = expressionsInNetwork.map(expression => expression.geneName);
 
+    const expressionLabels = expressionsInNetwork.map(expression => expression.geneName);
+    const sortedExpressionValues = expressionsInNetwork.map(expression => {
+      return {
+        geneName: expression.geneName,
+        value: applyAggregateFn(expression, selectedClass, selectedFunction)
+      };
+    }).sort((e0, e1) => e0.value - e1.value);
     const max = maxRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
     const min = minRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
 
 
     expressionsInNetwork.forEach(expression => {
-      // probably more efficient to add the expression data to the node field instead of interating twice
-      state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
-        const aggFnVal = applyAggregateFn(expression, selectedClass, selectedFunction);
-        const percent = aggFnVal / max;
-        const style = this.expressionDataToNodeStyle(percent);
+      const matchedNodes = state.cy.nodes().filter(node => node.data('label') === expression.geneName);
+      // const percentile = Math.max(_.findIndex(sortedExpressionValues, e => e.geneName === expression.geneName) - 1, 0) / sortedExpressionValues.length;
+      
+      // dumb percent calculation
+      const percentile = applyAggregateFn(expression, selectedClass, selectedFunction) / max;
+      
+      const style = this.expressionDataToNodeStyle(percentile);
 
-        node.style(style);
-      });
+      state.cy.batch(() => matchedNodes.style(style));
     });
 
     geneNodes.filter(node => !expressionLabels.includes(node.data('label'))).style({

@@ -21,7 +21,7 @@ class HistoryMenu extends React.Component {
   componentDidMount() {
     if (!this.state.images || !this.state.layouts) {
       //Fetch most recent layout revisions from the server
-      apiCaller.getLatestLayouts(this.props.uri, 'latest', -10).then(res => {
+      apiCaller.getLatestLayouts(this.props.uri, 'latest', 10).then(res => {
         this.setState({ layouts: res });
 
         //Store the revisions for future use

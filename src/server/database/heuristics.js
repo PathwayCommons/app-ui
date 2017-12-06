@@ -16,11 +16,11 @@ function run(layouts, numEntries, callback) {
         if (numEntries && result.length <= 1){
           return [];
         }
-        if(numEntries && result.length < -10){
+        if(numEntries && result.length < numEntries){
           return result;
         }
-        if(numEntries && result.length > -10){
-          return result.slice(-10);
+        if(numEntries && result.length > numEntries){
+          return result.slice(-1 * numEntries);
         }
 
         return result[result.length-1];

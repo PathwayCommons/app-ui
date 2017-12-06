@@ -1,8 +1,12 @@
 const _ = require('lodash');
 const generateContent = require('./generateContent');
 
-//Fetch Publications XML from PubMed
-//String -> JSON
+/**
+ * fetchPubMedPublication(id)
+ * @param id A publication id formatted as a string
+ * @returns Publication JSON
+ * @description Fetches Publication Json from PubMed
+ */
 function fetchPubMedPublication(id) {
   const options = {
     method: 'GET',
@@ -14,8 +18,13 @@ function fetchPubMedPublication(id) {
 }
 
 
-//Process an array of publication data into human readable links
-//Array -> Array
+/**
+ * processPublicationData(data)
+ * @param data Publication JSON
+ * @returns Array of Objects
+ * @description Parses the publication json from PubMed and extracts relevant information
+ */
+
 function processPublicationData(data) {
   const result = data.result;
   if (!(result)) { return null; }
@@ -37,8 +46,12 @@ function processPublicationData(data) {
   return extractedData;
 }
 
-//Get publication titles and references
-//Array -> Metadata Array
+/**
+ * getPublications(data)
+ * @param data A node metadata array
+ * @returns Array of Pairs
+ * @description Gets publication titles, references, and authors from PubMed
+ */
 function getPublications(data) {
 
   return new Promise(function (resolve, reject) {

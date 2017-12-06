@@ -1,6 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const Table = require('react-table').default;
+const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
 
 const queryString = require('query-string');
 const _ = require('lodash');
@@ -14,39 +15,8 @@ const Icon = require('../../common/components').Icon;
 const { apiCaller } = require('../../services');
 
 const {createExpressionTable, minRelativeTo, maxRelativeTo, applyAggregateFn} = require('./expression-model');
-
-class OmniBar extends React.Component {
-  render() {
-    const props = this.props;
-    return h('div.paint-omnibar', [
-      h('a', { onClick: e => props.onMenuClick(e) }, [
-        h(Icon, { icon: 'menu' }, 'click')
-      ]),
-      h('h5', `${props.name} | ${props.datasource}`)
-    ]);
-  }
-}
-
-// props
-// expression table
-// cy
-class Network extends React.Component {
-  componentWillUnmount() {
-    this.state.cy.destroy();
-  }
-
-  componentDidMount() {
-    const props = this.props;
-    const container = document.getElementById('cy-container');
-    props.cy.mount(container);
-  }
-
-
-  render() {
-    return h('div.paint-graph', [ h(`div.#cy-container`, {style: {width: '100vw', height: '100vh'}}) ]);
-  }
-
-}
+const OmniBar = require('./omnibar');
+const Network = require('./network');
 
 class Paint extends React.Component {
   constructor(props) {
@@ -57,14 +27,22 @@ class Paint extends React.Component {
     const enrichmentsURI = query.uri ? query.uri : null;
 
     this.state = {
+      // enrichment data state
       rawEnrichmentData: {},
       expressionTable: {},
       selectedClass: '',
       selectedFunction: this.analysisFns().mean,
 
+      // sbgn / cy network state
       cy: cy,
       name: '',
       datasource: '',
+
+      // search results state
+      query: '',
+      searchResults: [],
+
+      // drawer
       drawerOpen: false
     };
 
@@ -76,15 +54,37 @@ class Paint extends React.Component {
           const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
           const searchParam = query.q;
 
-          this.setState({rawEnrichmentData: json});
+          this.setState({
+            rawEnrichmentData: json,
+            query: query.q
+          });
           this.initPainter(expressions, expressionClasses, searchParam);
 
         });
     }
   }
 
-  componentWillUnmount() {
-    this.state.cy.destroy();
+  loadSbgn(uri) {
+    const state = this.state;
+    apiCaller.getGraphAndLayout(uri, 'latest').then(response => {
+      state.cy.remove('*');
+      state.cy.add({
+        nodes: _.get(response, 'graph.nodes', []),
+        edges: _.get(response, 'graph.edges', [])
+      });
+
+      state.cy.layout({
+        name: 'cose-bilkent',
+        randomize: false,
+        nodeDimensionsIncludeLabels: true,
+        nodeRepulsion: 5000 * state.cy.nodes().size()
+      }).run();
+
+      this.setState({
+        name: _.get(response, 'graph.pathwayMetadata.title', 'N/A'),
+        datasource: _.get(response, 'graph.pathwayMetadata.dataSource.0', 'N/A'),
+      }, () => this.applyExpressionData());
+    });
   }
 
   // only call this after you know component is mounted
@@ -121,6 +121,7 @@ class Paint extends React.Component {
             expressionTable: expressionTable,
             name: _.get(response, 'graph.pathwayMetadata.title', 'N/A'),
             datasource: _.get(response, 'graph.pathwayMetadata.dataSource.0', 'N/A'),
+            searchResults: searchResults
           }, () => this.applyExpressionData());
         });
       }
@@ -129,19 +130,22 @@ class Paint extends React.Component {
 
   expressionDataToNodeStyle(percent) {
     const style = {};
-    if (0.26 <= percent < 0.75) {
+    if (0.4 <= percent < 0.6) {
       style['background-color'] = 'white';
       style['background-opacity'] = 1;
+      style['color'] = 'black';
     }
 
-    if (percent <= 0.25) {
+    if (percent <= 0.39) {
       style['background-color'] = 'green';
       style['background-opacity'] = 1 - (percent / 0.25);
+      style['color'] = 'white';
     }
 
-    if (0.75 <= percent) {
+    if (0.6 <= percent) {
       style['background-color'] = 'purple';
       style['background-opacity'] = percent / 1;
+      style['color'] = 'white';
     }
 
     return style;
@@ -202,7 +206,7 @@ class Paint extends React.Component {
       },
       count: {
         name: 'count',
-        func: (classValues) => classValues.map(cv => 1).reduce((acc, curr) => acc + curr)
+        func: (classValues) => classValues.length
       }
     };
   }
@@ -261,38 +265,56 @@ class Paint extends React.Component {
     expressionHeader.map(exprClass => h('option', { value: exprClass }, exprClass))
   );
 
+  const tabs = h(Tabs, [
+    h(TabList, [
+      h(Tab, 'Expression Data'),
+      h(Tab, 'Search Results')
+    ]),
+    h(TabPanel, [
+      h('div.paint-legend', [
+        h('p', `low ${min}`),
+        h('p', `high ${max}`)
+      ]),
+      h('div.paint-expression-controls', [
+      h('div.paint-function-selector', [
+        'function: ',
+        functionSelector
+      ]),
+      h('div.paint-class-selector', [
+        'class: ',
+        classSelector
+      ]),
+    ]),
+    h(Table, {
+      className:'-striped -highlight',
+      data: expressionRows,
+      columns: columns,
+      defaultPageSize: 150,
+      showPagination: false,
+      onFilteredChange: (column, value) => {
+        cysearch(_.get(column, '0.value', ''), this.state.cy, false, {'border-width': 8, 'border-color': 'red'});
+      }
+     })
+    ]),
+    h(TabPanel, state.searchResults.map(searchResult => {
+        const uri = _.get(searchResult, 'uri', null);
+        const name = _.get(searchResult, 'name', 'N/A');
+        return h('div.paint-search-result', [
+          h('a.plain-link', {onClick: e => this.loadSbgn(uri)}, name)
+        ]);
+      })
+    )
+  ]);
+
     return h('div.paint', [
       h('div.paint-content', [
         h('div', { className: classNames('paint-drawer', { 'closed': !state.drawerOpen }) }, [
           h('a', { onClick: e => this.toggleDrawer()}, [
             h(Icon, { icon: 'close'}),
           ]),
-          h('div.paint-legend', [
-            h('p', `low ${min}`),
-            h('p', `high ${max}`)
-          ]),
-          h('div.paint-expression-controls', [
-            h('div.paint-function-selector', [
-              'function: ',
-              functionSelector
-            ]),
-            h('div.paint-class-selector', [
-              'class: ',
-              classSelector
-            ]),
-          ]),
-          h(Table, {
-            className:'-striped -highlight',
-            data: expressionRows,
-            columns: columns,
-            defaultPageSize: 150,
-            showPagination: false,
-            onFilteredChange: (column, value) => {
-              cysearch(_.get(column, '0.value', ''), this.state.cy, false, {'border-width': 8, 'border-color': 'red'});
-            }
-           })
+          tabs
         ]),
-        h(OmniBar, { name: state.name, datasource: state.datasource, onMenuClick: (e) => this.toggleDrawer() }),
+        h(OmniBar, { title: `${state.name} | ${state.datasource}`, onMenuClick: (e) => this.toggleDrawer() }),
         h(Network, { cy: state.cy })
       ])
     ]);

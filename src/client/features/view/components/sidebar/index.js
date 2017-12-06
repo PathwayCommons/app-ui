@@ -2,6 +2,8 @@ const React = require('react');
 const h = require('react-hyperscript');
 const classNames = require('classnames');
 
+const IconButton = require('../../../../common/iconButton');
+
 const HelpMenu = require('./menus/help');
 const FileDownloadMenu = require('./menus/fileDownload');
 const GraphInfoMenu = require('./menus/graphInfoMenu');
@@ -53,11 +55,11 @@ class Sidebar extends React.Component {
           h('div', {
             className: classNames('sidebar-close-button-container', { 'open': this.state.open })
           }, [
-              h('div', {
-                className: classNames('tool-button', this.state.open ? 'open' : 'closed'),
+              h(IconButton, {
+                icon: 'close',
                 onClick: () => this.props.changeMenu(''),
-                title: 'Close the sidebar'
-              }, [h('i.material-icons', 'close')])
+                desc: 'Close the sidebar'
+              })
             ]),
           h('div.sidebar-content', {
             ref: dom => this.sidebarDOM = dom

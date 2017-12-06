@@ -4,18 +4,18 @@ const classNames = require('classnames');
 const saveAs = require('file-saver').saveAs;
 const _ = require('lodash');
 
-const AsyncButton = require('./components/asyncButton');
-const downloadDescriptions = require('./components/downloadDescriptions');
+const FlatButton = require('../../../../../common/flatButton');
+const AsyncButton = require('../../../../../common/asyncButton');
 const apiCaller = require('../../../../../services/apiCaller');
 
 const downloadTypes = [
-  { type: 'png', displayName: 'Image (PNG)', ext: 'png', hidden: false },
-  { type: 'gmt', displayName: 'GMT', pc2Name: 'GSEA', ext: 'gmt', hidden: true },
-  { type: 'sif', displayName: 'SIF', pc2Name: 'SIF', ext: 'txt', hidden: true },
-  { type: 'txt', displayName: 'Extended SIF', pc2Name: 'TXT', ext: 'txt', hidden: true },
-  { type: 'biopax', displayName: 'BioPAX', pc2Name: 'BIOPAX', ext: 'xml', hidden: true },
-  { type: 'jsonld', displayName: 'JSON-LD', pc2Name: 'JSONLD', ext: 'json', hidden: true },
-  { type: 'sbgn', displayName: 'SBGN-ML', pc2Name: 'SBGN', ext: 'xml', hidden: true }
+  { type: 'png', displayName: 'Image (PNG)', ext: 'png', hidden: false, description: 'Download an image of the entire view.' },
+  { type: 'gmt', displayName: 'GMT', pc2Name: 'GSEA', ext: 'gmt', hidden: true, description: 'Gene Matrix Transposed format. The gene database of named gene sets (UniProt) useful for performing enrichment analysis using Gene Set Enrichment Analysis (GSEA)' },
+  { type: 'sif', displayName: 'SIF', pc2Name: 'SIF', ext: 'txt', hidden: true, description: 'Simple interaction format (SIF) is a list of interaction pairs useful for viewing, styling, and editing using Cytoscape desktop software, and for analysis with graph algorithms.' },
+  { type: 'txt', displayName: 'Extended SIF', pc2Name: 'TXT', ext: 'txt', hidden: true, description: 'Similar to the SIF output, but contains extra information on entities and interactions. See the SIF section on the PC2 formats page for more details.' },
+  { type: 'biopax', displayName: 'BioPAX', pc2Name: 'BIOPAX', ext: 'xml', hidden: true, description: 'Biological Pathways Exchange (BioPAX) format includes all details of the biological network stored in Pathway Commons. It is recommended that this format be interpreted using tools like Paxtools or Jena SPARQL.' },
+  { type: 'jsonld', displayName: 'JSON-LD', pc2Name: 'JSONLD', ext: 'json', hidden: true, description: 'JSON-LD is a human-readable linked format. This format is ideal for programming environments, REST web services, and unstructured databses.' },
+  { type: 'sbgn', displayName: 'SBGN-ML', pc2Name: 'SBGN', ext: 'xml', hidden: true, description: 'Systems Biology Graphical Notation (SBGN) is a standard visual notation for biological networks. This download provides an XML in SBGN markup language (SBGN-ML).' }
 ];
 
 class FileDownloadMenu extends React.Component {
@@ -85,9 +85,7 @@ class FileDownloadMenu extends React.Component {
             header: option.displayName,
             onClick: header => this.downloadFromDisplayName(header),
             loading: _.includes(this.state.loadingOptions, option.type)
-          }, [
-              h(downloadDescriptions[option.type])
-            ])
+          }, option.description)
         );
       }
       return result;
@@ -98,13 +96,10 @@ class FileDownloadMenu extends React.Component {
       h('div.file-download-content', [
         h('div.file-download-main', getMenuContents(false)),
         h('div.toggle-extra-downloads-container', [
-          h('div', {
-            className: classNames('toggle-extra-downloads', { 'toggle-extra-downloads-active': this.state.extrasActive }),
-            onClick: () => this.setState({ extrasActive: !this.state.extrasActive })
-          }, [
-              h('i.material-icons', this.state.extrasActive ? 'keyboard_arrow_up' : 'keyboard_arrow_down'),
-              h('span', `${this.state.extrasActive ? 'Hide' : 'Show'} more options`)
-            ])
+          h(FlatButton, {
+            onClick: () => this.setState({ extrasActive: !this.state.extrasActive }),
+            icon: this.state.extrasActive ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
+          }, `${this.state.extrasActive ? 'Hide' : 'Show'} more options`)
         ]),
         h('div', {
           className: classNames('file-download-extras', { 'file-download-extras-hide': !this.state.extrasActive })

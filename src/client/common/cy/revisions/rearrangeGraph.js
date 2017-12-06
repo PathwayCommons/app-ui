@@ -8,6 +8,11 @@ Note : -Options Parameter is optional
        -Positions is a collection of position objects 
 */
 function rearrangeGraph(nodePositions, cy, options) {
+
+  //Reset all positions to 0
+  cy.nodes().forEach(node => node.position({x : 0, y : 0}));
+
+  //Apply positions of moved nodes. 
   Object.keys(nodePositions).forEach(function (key) {
     let node = cy.getElementById(key);
     let position = nodePositions[key];

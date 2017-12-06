@@ -86,7 +86,7 @@
 .paint-legend {
   padding: 0px 10px 0px 10px;
   color: white;
-  background: linear-gradient(to right, #0A872C, white, white, #880E7C);
+  background: linear-gradient(to right, #0A872C, white 40%, white 60%, #880E7C);
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -96,4 +96,15 @@
   width: 40px;
   height: 40px;
   background-image: url('../image/pc_logo_dark.svg');
+}
+
+.paint-expression-controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.paint-search-result {
+  padding: 10px;
 }

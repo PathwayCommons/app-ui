@@ -109,12 +109,23 @@ class Paint extends React.Component {
             edges: _.get(response, 'graph.edges', [])
           });
 
-          state.cy.layout({
-            name: 'cose-bilkent',
-            randomize: false,
-            nodeDimensionsIncludeLabels: true,
-            nodeRepulsion: 5000 * state.cy.nodes().size()
-          }).run();
+
+          if (!_.isEmpty(response.layout)) {
+            state.cy.layout({
+              name: 'preset',
+              positions: node => response.layout[node.id()],
+              animate: true,
+              animationDuration: 500
+
+            }).run();
+          } else {
+            state.cy.layout({
+              name: 'cose-bilkent',
+              randomize: false,
+              nodeDimensionsIncludeLabels: true,
+              nodeRepulsion: 5000 * state.cy.nodes().size()
+            }).run();
+          }
 
           this.setState({
             selectedClass: _.get(header, '0', null),
@@ -138,14 +149,16 @@ class Paint extends React.Component {
 
     if (percent <= 0.39) {
       style['background-color'] = 'green';
-      style['background-opacity'] = 1 - (percent / 0.25);
+      style['background-opacity'] = `${1 - (percent / 0.4)}`;
       style['color'] = 'white';
+      style['text-outline-color'] = 'black';
     }
 
     if (0.6 <= percent) {
       style['background-color'] = 'purple';
-      style['background-opacity'] = percent / 1;
+      style['background-opacity'] = `${percent}`;
       style['color'] = 'white';
+      style['text-outline-color'] = 'black';
     }
 
     return style;

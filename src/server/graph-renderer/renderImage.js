@@ -2,7 +2,7 @@ const cytosnap = require('cytosnap');
 const getRenderOptions = require('./getRenderOptions');
 
 /* renderImage (graphValues)
-   Render a collection of images representing the most recent layouts
+   Render a collection of images representing cytoscape graphs
    - Requires a valid graphValues object which consists of a layouts field and a graph field
    - Returns a collection of PNGs in base64
 */

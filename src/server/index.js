@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const debug = require('debug')('app-ui:server');
 const http = require('http');
 const config = require('./config');
+const dbConfig = require('./database/config');
 const logger = require('./logger');
 const stream = require('stream');
 const fs = require('fs');
@@ -132,7 +133,7 @@ function onListening() {
 
 // Create database instance if one does not already exist. And start
 // the server once that is complete.
-checkTables.checkDatabase().then(()=>{
+checkTables.checkDatabase(dbConfig).then(()=>{
   server.listen(port);
 });
 

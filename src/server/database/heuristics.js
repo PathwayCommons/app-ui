@@ -33,6 +33,7 @@ function run(layouts, numEntries, callback) {
     }
   }
 
-  module.exports = {
-      run
-  };
+
+module.exports = {
+  run
+};

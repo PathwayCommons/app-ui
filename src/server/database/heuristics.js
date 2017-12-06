@@ -9,18 +9,18 @@
 
 // --------- Fake Heuristics ---------------
 function run(layouts, callback) {
-    let layout = layouts.toArray()
-      .then((result) => {
-        return result[result.length-1];
-      });
-  
-    if (callback) {
-      callback(layout);
-    } else {
-      return layout;
-    }
-  }
+  let layout = layouts.toArray()
+    .then((result) => {
+      return result[result.length - 1];
+    });
 
-  module.exports = {
-      run
-  };
+  if (callback) {
+    callback(layout);
+  } else {
+    return layout;
+  }
+}
+
+module.exports = {
+  run
+};

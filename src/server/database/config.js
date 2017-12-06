@@ -3,7 +3,7 @@ const _ = require('lodash');
 
 let defaults = {
   databaseName:  'metadataTestMk2',
-  ip:  '127.0.0.1',
+  host:  '127.0.0.1',
   tables:  ['version', 'graph', 'layout'],
   port: '28015'
 };

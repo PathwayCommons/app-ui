@@ -37,8 +37,8 @@ const apiCaller = {
     }).then(res => res.json());
   },
 
-  getLayouts(uri, version) {
-    return fetch(`/api/get-layout-history?${qs.stringify({uri, version})}`, {
+  getLatestLayouts(uri, version, numEntries) {
+    return fetch(`/api/get-layout-history?${qs.stringify({uri, version, numEntries})}`, {
       method: 'GET', headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json'

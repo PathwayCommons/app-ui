@@ -88,11 +88,11 @@ function endSession(pcID, releaseID, userID) {
 //getHistory(pcId, releaseID) 
 //Returns the last 10 layouts submitted 
 //Requires a valid pcID and releaseId
-function getHistory(pcID, releaseID) {
+function getHistory(pcID, releaseID, numEntries) {
   return db.connect().then((connection) => {
     return Promise.all([
       query.getGraph(pcID, releaseID, connection).catch(() => getGraphFallback(pcID, releaseID, connection)),
-      query.getLayout(pcID, releaseID, connection, true).catch(() => Promise.resolve(null))
+      query.getLayout(pcID, releaseID, connection, numEntries).catch(() => Promise.resolve(null))
     ]).then(([graph, layout]) => {
       return { graph, layout };
     }).catch((e)=>{

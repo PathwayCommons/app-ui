@@ -3,7 +3,7 @@ const classNames = require('classnames');
 const _ = require('lodash');
 const config = require('../config');
 
-//Handle name related metadata fields
+//Handle standard name related metadata fields
 const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Name: ');
 const standardNameHandlerTrim = (pair) => standardNameHandler(pair);
 const nameHandlerTrim = (pair, expansionFunction) => {
@@ -28,13 +28,6 @@ const nameHandler = (pair, expansionFunction) => {
 };
 
 //Handle database related fields
-/*
-const dataSourceHandler = (pair) => {
-  let source = pair[1].replace('http://pathwaycommons.org/pc2/', '');
-  let link = generateDataSourceLink(source, 'Data Source: ');
-  return h('div.fake-paragraph', link);
-};*/
-
 const databaseHandlerTrim = (pair, expansionFunction) => {
   const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »');
   if (pair[1].length < 1) { return h('div.error'); }
@@ -115,9 +108,16 @@ const metaDataKeyMap = new Map()
   .set('Comment', commentHandler)
   .set('CommentTrim', commentHandlerTrim);
 
-//Generate HTML elements for a Parsed Metadata Field
-//Optional trim parameter indicates if the data presented should be trimmed to a reasonable length
-//Data Pair -> HTML
+
+ /**
+  * parseMetadata(pair, trim)
+  * @param pair An array of length 2 consiting of a key and a associated value
+  * @param trim  An optional parameter that indicates if the data presented should be trimmed to a reasonable length
+  * @returns HTML Element
+  * @description Generate HTML elements for a Parsed Metadata Field
+  * Sample Input : parseMetadata(['Standard Name', 'TP53'])
+  * Sample Output : <div class='fake-paragraph'><div class='field-name'></div></div>
+*/
 function parseMetadata(pair, trim = true, expansionFunction) {
   const doNotRender = ['Data Source', 'Data SourceTrim', 'Display Name'];
   let key = pair[0];
@@ -139,8 +139,15 @@ function parseMetadata(pair, trim = true, expansionFunction) {
   }
 }
 
-//Trim a value to n terms
-//String or Array -> Array
+/**
+ * trimValue(value, n)
+ * @param value  An array of values
+ * @param n An integer representation of number of desired fields
+ * @returns JS Array
+ * @description Trims an array to n length
+ * Sample Input : trimValue([1, 2, 3, 4, 5,], 3)
+ * Sample Output : [1, 2, 3]
+ */
 function trimValue(value, n) {
   if (typeof value === 'string') {
     return value;
@@ -150,12 +157,15 @@ function trimValue(value, n) {
   }
 }
 
-//Create a HTML Element for a given value
-//Note : Optional isCommaSeparated parameter indicates if the list should be
-//       printed as a comma separated list.
-//       Optional expansion link parameter defines a expansion link property
-//Requires a populated array
-//Anything -> HTML
+/**
+ * valueToHtml(value, isCommaSeparated)
+ * @param {*} value The value to be converted to HT
+ * @param {*} isCommaSeparated Optional parameter defines if the result is a list or a comma separated list
+ * @returns HTML Element
+ * @description Creates an HTML Element for any given value
+ * Sample Input : valueToHtml('test' false)
+ * Sample Output: <div class='tooltip-value>test</div>
+ */
 function valueToHtml(value, isCommaSeparated = false) {
   //String -> HTML
   if (typeof value === 'string') {
@@ -188,21 +198,41 @@ function valueToHtml(value, isCommaSeparated = false) {
   }
 }
 
-//Convert a generic array or string to an html list
-//Array -> HTML
+/**
+ * makeList(items, ulClass, liClass)
+ * @param items A collection of values to display
+ * @param ulClass An optional variable to override the unordered list class
+ * @param liClass An optional variable to override the list item class
+ * @returns HTML Element
+ * @description Convert a generic array or string to an html list
+ * Sample Input : [test
+ * Sample Output : <ul class='value-list'><li class='value-list-item'>test</li></ul>
+ */
 function makeList(items, ulClass = 'ul.value-list', liClass = 'li.value-list-item') {
   return h(ulClass, items.map(item => h(liClass, item)));
 }
 
-//Render a standard tooltip item
-//Strings -> HTML
+/**
+ * makeTooltipItem(value, field)
+ * @param value A text value to display
+ * @param field The field name that corresponds to the value
+ * @returns HTML Element
+ * @description Create a standard tooltip item
+ * Sample Input : makeTooltipItem('Name', 'Test')
+ * Sample Output : <div class='fake-paragraph'><div class='field-name'>Name</div><div class='tooltip-value'>Test</div></div>
+ */
 function makeTooltipItem(value, field) {
   return h('div.fake-paragraph', [h('div.field-name', field), h('div.tooltip-value', value.toString())]);
 }
 
-//Delete duplicates and ignore case
-//Requires a valid array
-//Array -> Array
+/**
+ * deleteDuplicatesWithoutCase(list)
+ * @param list An array of elements
+ * @returns Array
+ * @description Delete duplicates and ignore case
+ * Sample Input : deleteDuplicatesWithoutCase(['hi', 'HI'])
+ * Sample Output : ['hi']
+ */
 function deleteDuplicatesWithoutCase(list) {
   if (!(list instanceof Array)) {
     return list;
@@ -217,28 +247,14 @@ function deleteDuplicatesWithoutCase(list) {
   }, []);
 }
 
-
-//Generate a data source link based on database name
-//Requires a valid database name
-//Note : prefix is optional
-//String -> HTML
-function generateDataSourceLink(name, prefix = '') {
-  let db = config.databases;
-  let link = db.filter(value => name.toUpperCase().indexOf(value[0].toUpperCase()) !== -1);
-  if (link.length === 1 && link[0][1]) {
-    return h('div', h('div.field-name', prefix), h('a.plain-link', { href: link[0][1], target: '_blank' }, link[0][0]));
-  }
-  else if (link.length === 1) {
-    return h('div', h('div.field-name', prefix), h('a.plain-link', link[0][1]));
-  }
-  else {
-    return h('div', h('div.field-name', prefix), h('a.plain-link', name));
-  }
-}
-
-//Sort Database ID's by database name
-//Requires a valid database ID array
-//Array -> Array
+/**
+ * sortByDataBaseId(dbArray)
+ * @param dbArray An array of database ids, formatted as pairs of ids and database names
+ * @returns Array
+ * @description Sorts database id's by database names
+ * Sample Input : sortByDatabaseId([[Reactome, id1], [Reactome, id2]])
+ * Sample Output : [{database : 'Reactome', ids: [id1, id2]}]
+ */
 function sortByDatabaseId(dbArray) {
   //Sort by database name
   let sorted = [];
@@ -252,10 +268,15 @@ function sortByDatabaseId(dbArray) {
 
   return sorted;
 }
-
-//Generate list of all given database id's
-//Requires a valid database Id Object
-//Array -> HTML
+/**
+ * generateIdList(dbIdObject, trim)
+ * @param dbIdObject An entry from the sorted database list
+ * @param trim An optional paramter that indicates if the list should be shortened
+ * @returns HTML Element
+ * @description Generates a list of all given database ids
+ * Sample Input : generateIdList({'Reactome' : 'R-HSA-59544'})
+ * Sample Output : <div class="fake-spacer"><a class="db-link-single-ref" href="http://identifiers.org/reactome/R-HSA-59544" target="_blank">Reactome</a></div>
+ */
 function generateIdList(dbIdObject, trim) {
   //get name and trim ID list to 5 items
   let name = dbIdObject.database;
@@ -278,10 +299,16 @@ function generateIdList(dbIdObject, trim) {
   }
 }
 
-//Generate a database link
-//Note - optional isDbVisible parameter determines
-//       if the database name should be displayed
-//Strings -> HTML
+/**
+ * generateDBLink(dbname, dbId, isDbVisible)
+ * @param dbName A Database name formatted as a string
+ * @param dbId  A Database Id formatted as a string
+ * @param isDbVisible An optional variable that indicates if the ids or dbName should be displayed as the link
+ * @returns HTML Element
+ * @description Generates a database reference link based on names, ids, and additional parameters
+ * Sample Input : generateDBLink('Reactome', 'R-HSA-59544', true)
+ * Sample Output : <div class="fake-spacer"><a class="db-link-single-ref" href="http://identifiers.org/reactome/R-HSA-59544" target="_blank">Reactome</a></div>
+ */
 function generateDBLink(dbName, dbId, isDbVisible) {
   //Get base url for dbid
   let db = config.databases;
@@ -308,8 +335,20 @@ function generateDBLink(dbName, dbId, isDbVisible) {
   }
 }
 
-//Generate HTML Element for no data
-// () -> HTML
+/**
+ * noDateWarning(name)
+ * @param name A node name formatted as a string
+ * @returns HTMl Element
+ * @description Generates an HTML Element for no data
+ * Sample Input : noDataWarning('nucleoplasm')
+ * Sample Output :
+ * <div class="tooltip-image">
+ *    <div class="tooltip-heading">nucleoplasm</div>
+ *    <div class="tooltip-internal">
+ *        <div class="tooltip-warning">No Additional Information</div>
+ *    </div>
+ * </div>
+ */
 function noDataWarning(name) {
   return h('div.tooltip-image', [
     h('div.tooltip-heading', name),
@@ -317,8 +356,14 @@ function noDataWarning(name) {
   ]);
 }
 
-//Filter out chemical formulas
-//Anything -> Array
+/**
+ * filterChemicalFormula(names)
+ * @param names An array of strings
+ * @returns Array
+ * @description Filters out any strings that contain chemical formulas
+ * Sample Input : filterChemicalFormula(['C1CCCCC1C2CCCCC2'])
+ * Sample Output : []
+ */
 function filterChemicalFormulas(names) {
   //Filter out Chemical formulas
   if (names instanceof Array) { return names.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig))); }
@@ -327,10 +372,24 @@ function filterChemicalFormulas(names) {
   return [names];
 }
 
-//Create a publication list
-//Process given publication data into a formatted list
-//Requires a valid publication metadata array
-//Array -> HTML
+/**
+ * publicationList(data)
+ * @param data An array of publication objects consisting of titles, authors, and dates
+ * @returns HTMl Element
+ * @description Processes given publication data into a formatted list
+ * Sample Input : publicationList([{id, authors, date, title}])
+ * Sample Output:
+ * <ul class='publication-list'>
+ *    <li class="publication-item">
+ *      <a class="publication-link" href="http://identifiers.org/pubmed/16427009" target="_blank">
+ *      MDC1 maintains genomic stability by participating in the amplification of ATM-dependent DNA damage signals.</a>
+ *      <div class="publication-subinfo">
+ *        <div class="publication-inline">Lou Z et al.</div>
+ *        <div class="publication-divider publication-inline">|</div>
+ *        <div class="publication-inline">Mol Cell - 2006</div></div>
+ *    </li>
+ * </ul>
+ */
 function publicationList(data) {
   //Get all publication title links
   const publicationList = data.map(publication => {
@@ -364,8 +423,22 @@ function publicationList(data) {
 }
 
 
-//Generate a list of database ids from sorted array
-//Array -> HTML
+/**
+ * generateDatabaseList(sortedArray, trim, expansionLink)
+ * @param sortedArray A sorted database id list
+ * @param trim Boolean value which indicates if the values should be trimmed
+ * @param expansionLink An optional function which defines the action that should occur upon tooltip expansion
+ * @returns HTML Element
+ * @description Generates a list of database ids from a sorted array
+ * Sample Input : generateDatabaseList([{database : 'Reactome', ids : [id1] }])
+ * Sample Output :
+ * <div class="fake-paragraph">
+ *    <div class="span-field-name">Links :</div>
+ *    <div class="fake-spacer">
+ *        <a class="db-link-single-ref" href="http://identifiers.org/reactome/R-HSA-5683930" target="_blank">Reactome</a>
+ *    </div>
+ * </div>
+ */
 function generateDatabaseList(sortedArray, trim, expansionLink) {
 
   //Ignore Publication references
@@ -394,8 +467,14 @@ function generateDatabaseList(sortedArray, trim, expansionLink) {
   return h('div.fake-paragraph', [h('div.span-field-name', 'Links :'), renderValue]);
 }
 
-//Replace any instances of Replaced 
-//Anything -> Array 
+/**
+ * removeReplacedComments(comments)
+ * @param comments A string or an array of string
+ * @returns Array
+ * @description Filters out any strings that contain the pc2 'REPLACED' indicator
+ * Sample Input : ['Replaced http://pathwaycommons.org/pc2/id23']
+ * Sample Output : []
+ */
 function removedReplacedComments(comments) {
   const replacedExists = comment => comment.toUpperCase().includes('REPLACED');
 

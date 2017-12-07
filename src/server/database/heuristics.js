@@ -12,6 +12,8 @@ function run(layouts, numEntries, callback) {
     let layout = layouts.toArray()
       .then((result) => {
 
+        result.reverse();
+
         //Return n most recent layouts
         if (numEntries && result.length <= 1){
           return [];
@@ -20,10 +22,10 @@ function run(layouts, numEntries, callback) {
           return result;
         }
         if(numEntries && result.length > numEntries){
-          return result.slice(-1 * numEntries);
+          return result.slice(0, numEntries);
         }
 
-        return result[result.length-1];
+        return result[0];
       });
   
     if (callback) {

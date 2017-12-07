@@ -12,6 +12,8 @@ function renderImage(graphValues) {
   var layouts = graphValues.layouts;
   var graph = graphValues.graph;
 
+  if(!layouts || layouts.length <= 1) {return new Promise(r => r([]));}
+
   //Start Cytosnap Instance
   return snap.start().then(function () {
     //Create an array of images

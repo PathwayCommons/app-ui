@@ -8,18 +8,33 @@
 */
 
 // --------- Fake Heuristics ---------------
-function run(layouts, callback) {
-  let layout = layouts.toArray()
-    .then((result) => {
-      return result[result.length - 1];
-    });
+function run(layouts, numEntries, callback) {
+    let layout = layouts.toArray()
+      .then((result) => {
 
-  if (callback) {
-    callback(layout);
-  } else {
-    return layout;
+        result.reverse();
+
+        //Return n most recent layouts
+        if (numEntries && result.length <= 1){
+          return [];
+        }
+        if(numEntries && result.length < numEntries){
+          return result;
+        }
+        if(numEntries && result.length > numEntries){
+          return result.slice(0, numEntries);
+        }
+
+        return result[0];
+      });
+  
+    if (callback) {
+      callback(layout);
+    } else {
+      return layout;
+    }
   }
-}
+
 
 module.exports = {
   run

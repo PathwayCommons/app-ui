@@ -91,7 +91,12 @@ class View extends React.Component {
         datasource: state.metadata.datasource,
         comments: state.metadata.comments,
         activeMenu: state.activeMenu,
-        changeMenu: menu => this.setState({activeMenu: menu})
+        changeMenu: menu => this.setState({activeMenu: menu}),
+        changeLayout: layoutConf => this.setState({
+          layout: layoutConf.defaultLayout,
+          availableLayouts: layoutConf.layouts
+        }),
+        admin: props.admin
       })
     ]);
   }

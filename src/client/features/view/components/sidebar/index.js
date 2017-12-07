@@ -7,6 +7,7 @@ const IconButton = require('../../../../common/iconButton');
 const HelpMenu = require('./menus/help');
 const FileDownloadMenu = require('./menus/fileDownload');
 const GraphInfoMenu = require('./menus/graphInfoMenu');
+const historyMenu = require('./menus/historyMenu');
 
 /* Props
 - cy
@@ -42,9 +43,25 @@ class Sidebar extends React.Component {
   render() {
     const props = this.props;
     const menus = {
-      info: h(GraphInfoMenu, { uri: props.uri, name: props.name, datasource: props.datasource, comments: props.comments }),
-      file_download: h(FileDownloadMenu, { cy: props.cy, uri: props.uri, name: props.name }),
-      help: h(HelpMenu)
+      info: h(GraphInfoMenu, {
+        uri: props.uri,
+        name: props.name,
+        datasource: props.datasource,
+        comments: props.comments }),
+      file_download: h(FileDownloadMenu, {
+        cy: props.cy,
+        uri: props.uri,
+        name: props.name }),
+      help: h(HelpMenu),
+      history: h(historyMenu, {
+        uri: props.uri,
+        name: props.name,
+        datasource: props.datasource,
+        comments: props.comments,
+        changeLayout: props.changeLayout,
+        cy: props.cy,
+        admin: props.admin
+      }),
     };
 
     return (

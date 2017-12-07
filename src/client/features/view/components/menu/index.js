@@ -18,6 +18,7 @@ let debouncedSearchNodes = _.debounce(searchNodes, 300);
 const toolButtons = {
   info: 'Extra information',
   file_download: 'Download options',
+  history: 'Layout Revisions'
   //help: 'Interpreting the display' // re-add to access help menu
 };
 
@@ -102,6 +103,7 @@ class Menu extends React.Component {
 
   render() {
     const datasourceLink = this.getDatasourceLink(this.props.datasource);
+    const isAdmin = this.props.admin; 
 
     const layoutItems = this.props.availableLayouts.map((layout, index) => {
       return (
@@ -114,7 +116,11 @@ class Menu extends React.Component {
       );
     });
 
-    const toolButtonEls = Object.keys(toolButtons).map(button => {
+    const toolButtonEls = Object.keys(toolButtons).map((button, index) => {
+      if(button === 'history' && !isAdmin) {
+        return;
+      }
+
       return (
         h(IconButton, {
           icon: button,

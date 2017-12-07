@@ -5,6 +5,7 @@ const update = require('./../database/update');
 const lazyLoad = require('./../lazyload');
 const logger = require('./../logger');
 const diffSaver = require('./../database/saveDiffs');
+const renderImage= require('../graph-renderer/renderImage');
 
 // getGraphFallback(pcID, releaseID, connection)
 // Retrieves the graph specified by (pcID, releaseID) if something
@@ -84,10 +85,36 @@ function endSession(pcID, releaseID, userID) {
   });
 }
 
+//getHistory(pcId, releaseID) 
+//Returns the last 10 layouts submitted 
+//Requires a valid pcID and releaseId
+function getHistory(pcID, releaseID, numEntries) {
+  return db.connect().then((connection) => {
+    return Promise.all([
+      query.getGraph(pcID, releaseID, connection).catch(() => getGraphFallback(pcID, releaseID, connection)),
+      query.getLayout(pcID, releaseID, connection, numEntries).catch(() => Promise.resolve(null))
+    ]).then(([graph, layout]) => {
+      return { graph, layout };
+    }).catch((e)=>{
+      logger.error(e);
+      return `ERROR : could not retrieve layouts  for ${pcID}`;
+    });
+  });
+}
+
+//renderPNG(pcId, releaseID) 
+//Renders a cytoscape object to PNG
+//Requires a valid cytoscape json
+function renderPNG(cyJson) {
+  return renderImage(cyJson);
+}
+
 module.exports = {
   submitLayout,
   submitGraph,
   submitDiff,
   endSession,
-  getGraphAndLayout
+  getGraphAndLayout,
+  getHistory,
+  renderPNG
 };

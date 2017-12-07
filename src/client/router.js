@@ -23,7 +23,7 @@ module.exports = () => {
       },
       {
         path: '/',
-        render: props => h(Features.Entry, props)
+        render: props => h(Features.Search, props)
       },
       {
         path: '/search',

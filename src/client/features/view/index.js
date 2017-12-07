@@ -2,7 +2,8 @@ const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
 
-const { Menu, Graph, EditWarning, Sidebar } = require('./components/');
+const { Menu, Graph, Sidebar } = require('./components/');
+const Popup = require('../../common/popup');
 
 const { getLayouts } = require('../../common/cy/layout/');
 const make_cytoscape = require('../../common/cy/');
@@ -78,7 +79,7 @@ class View extends React.Component {
         cy: state.cy,
         graphJSON: state.graphJSON
       }),
-      h(EditWarning, {
+      h(Popup, {
         active: state.activateWarning,
         deactivate: () => this.setState({ activateWarning: false }),
         dur: 5000

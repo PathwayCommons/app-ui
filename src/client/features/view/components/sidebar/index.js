@@ -66,11 +66,11 @@ class Sidebar extends React.Component {
 
     return (
       h('div', {
-        className: classNames('sidebar-menu', { 'open': this.state.open }),
+        className: classNames('sidebar-menu', { 'sidebar-menu-open': this.state.open }),
         ref: dom => this.sidebarContainer = dom
       }, [
           h('div', {
-            className: classNames('sidebar-close-button-container', { 'open': this.state.open })
+            className: classNames('sidebar-close-button-container', { 'sidebar-close-button-container-open': this.state.open })
           }, [
               h(IconButton, {
                 icon: 'close',

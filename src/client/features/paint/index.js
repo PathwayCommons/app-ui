@@ -175,21 +175,28 @@ class Paint extends React.Component {
     const geneNodeLabels = _.uniq(geneNodes.map(node => node.data('label'))).sort();
 
     const expressionsInNetwork = expressionTable.rows.filter(row => geneNodeLabels.includes(row.geneName));
-    const expressionLabels = expressionsInNetwork.map(expression => expression.geneName);
 
+    const expressionLabels = expressionsInNetwork.map(expression => expression.geneName);
+    const sortedExpressionValues = expressionsInNetwork.map(expression => {
+      return {
+        geneName: expression.geneName,
+        value: applyAggregateFn(expression, selectedClass, selectedFunction)
+      };
+    }).sort((e0, e1) => e0.value - e1.value);
     const max = maxRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
     const min = minRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
 
 
     expressionsInNetwork.forEach(expression => {
-      // probably more efficient to add the expression data to the node field instead of interating twice
-      state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
-        const aggFnVal = applyAggregateFn(expression, selectedClass, selectedFunction);
-        const percent = aggFnVal / max;
-        const style = this.expressionDataToNodeStyle(percent);
+      const matchedNodes = state.cy.nodes().filter(node => node.data('label') === expression.geneName);
+      // const percentile = Math.max(_.findIndex(sortedExpressionValues, e => e.geneName === expression.geneName) - 1, 0) / sortedExpressionValues.length;
+      
+      // dumb percent calculation
+      const percentile = applyAggregateFn(expression, selectedClass, selectedFunction) / max;
+      
+      const style = this.expressionDataToNodeStyle(percentile);
 
-        node.style(style);
-      });
+      state.cy.batch(() => matchedNodes.style(style));
     });
 
     geneNodes.filter(node => !expressionLabels.includes(node.data('label'))).style({
@@ -268,64 +275,66 @@ class Paint extends React.Component {
       Object.entries(this.analysisFns()).map(entry => h('option', {value: entry[0]}, entry[0]))
     );
 
-  const classSelector = h('select.paint-select',
-    {
-      value: selectedClass,
-      onChange: e => this.setState({
-        selectedClass: e.target.value
-      }, () => this.applyExpressionData())
-    },
-    expressionHeader.map(exprClass => h('option', { value: exprClass }, exprClass))
-  );
+    const classSelector = h('select.paint-select',
+      {
+        value: selectedClass,
+        onChange: e => this.setState({
+          selectedClass: e.target.value
+        }, () => this.applyExpressionData())
+      },
+      expressionHeader.map(exprClass => h('option', { value: exprClass }, exprClass))
+    );
 
-  const tabs = h(Tabs, [
-    h(TabList, [
-      h(Tab, 'Expression Data'),
-      h(Tab, 'Search Results')
-    ]),
-    h(TabPanel, [
-      h('div.paint-legend', [
-        h('p', `low ${min}`),
-        h('p', `high ${max}`)
+    const tabbedContent = h(Tabs, [
+      h('div.paint-drawer-header', [
+        h(TabList, [
+          h(Tab, 'Expression Data'),
+          h(Tab, 'Search Results')
+        ]),
+        h('a', { onClick: e => this.toggleDrawer()}, [
+          h(Icon, { icon: 'close'}),
+        ])
       ]),
-      h('div.paint-expression-controls', [
-      h('div.paint-function-selector', [
-        'function: ',
-        functionSelector
+      h(TabPanel, [
+        h('div.paint-legend', [
+          h('p', `low ${min}`),
+          h('p', `high ${max}`)
+        ]),
+        h('div.paint-expression-controls', [
+        h('div.paint-function-selector', [
+          'function: ',
+          functionSelector
+        ]),
+        h('div.paint-class-selector', [
+          'class: ',
+          classSelector
+        ]),
       ]),
-      h('div.paint-class-selector', [
-        'class: ',
-        classSelector
-      ]),
-    ]),
-    h(Table, {
-      className:'-striped -highlight',
-      data: expressionRows,
-      columns: columns,
-      defaultPageSize: 150,
-      showPagination: false,
-      onFilteredChange: (column, value) => {
-        cysearch(_.get(column, '0.value', ''), this.state.cy, false, {'border-width': 8, 'border-color': 'red'});
-      }
-     })
-    ]),
-    h(TabPanel, state.searchResults.map(searchResult => {
-        const uri = _.get(searchResult, 'uri', null);
-        const name = _.get(searchResult, 'name', 'N/A');
-        return h('div.paint-search-result', [
-          h('a.plain-link', {onClick: e => this.loadSbgn(uri)}, name)
-        ]);
+      h(Table, {
+        className:'-striped -highlight',
+        data: expressionRows,
+        columns: columns,
+        defaultPageSize: 150,
+        showPagination: false,
+        onFilteredChange: (column, value) => {
+          cysearch(_.get(column, '0.value', ''), this.state.cy, false, {'border-width': 8, 'border-color': 'red'});
+        }
       })
-    )
-  ]);
+      ]),
+      h(TabPanel, state.searchResults.map(searchResult => {
+          const uri = _.get(searchResult, 'uri', null);
+          const name = _.get(searchResult, 'name', 'N/A');
+          return h('div.paint-search-result', [
+            h('a.plain-link', {onClick: e => this.loadSbgn(uri)}, name)
+          ]);
+        })
+      )
+    ]);
 
     return h('div.paint', [
       h('div.paint-content', [
         h('div', { className: classNames('paint-drawer', { 'closed': !state.drawerOpen }) }, [
-          h('a', { onClick: e => this.toggleDrawer()}, [
-            h(Icon, { icon: 'close'}),
-          ]),
-          tabs
+          tabbedContent
         ]),
         h(OmniBar, { title: `${state.name} | ${state.datasource}`, onMenuClick: (e) => this.toggleDrawer() }),
         h(Network, { cy: state.cy })

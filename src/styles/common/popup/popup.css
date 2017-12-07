@@ -1,7 +1,4 @@
-@import "./animations/bounce.css";
-
-/* change someday to global "snackbar" component, like in react material-ui */
-.edit-warning-container {
+.common-popup-container {
   @extend %flex-center;
   @extend %no-select;
 
@@ -11,38 +8,32 @@
   position: fixed;
   bottom: 0;
   left: 0;
-
-  pointer-events: none;
   
-  transform: translateY(0%);
+  opacity: 0;
+  transform: translateY(100%);
 
-  animation-name: bounce;
-  animation-duration: 1s;
-  animation-iteration-count: 5; /* should be set to floor(editWarningDuration / animationDuration) */
-  transition: transform 1s ease 0s, opacity 1s ease 1s;
+  transition: transform 0.25s ease 0s, opacity 0.25s ease 0.25s;
 
-  &.closed {
-    box-shadow: 0px;
-    opacity: 0;
-    transform: translateY(100%);
+  &.common-popup-container-open {
+    transform: translateY(-1em);
+    opacity: 1;
   }
 }
 
-
-.edit-warning {
+.common-popup {
   @extend %flex-center;
 
-  height: 1.8em;
   padding: 0.4em 1em 0.4em 1em;
 
-  background-color: var(--accent-1-colour);
-  border-radius: 3px 3px 0px 0px;
-  box-shadow: var(--box-shadow);
+  background-color: var(--light-base-colour);
+  border: 1px solid var(--light-base-colour-dark);
+  border-radius: 3px;
 }
 
 /* Portrait-specific mobile scaling */
+/*
 @media (--small-portrait-viewport) {
-  .edit-warning-container {
+  .common-popup-container {
     height: 100%;
     width: 2.6em;
 
@@ -59,7 +50,7 @@
     }
   }
 
-  .edit-warning {
+  .common-popup {
     height: 1.8em;
     min-width: 20em;
     padding: 0.4em 1em 0.4em 1em;
@@ -71,3 +62,4 @@
     transform: rotate(-90deg);
   }
 }
+*/

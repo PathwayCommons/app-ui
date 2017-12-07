@@ -65,6 +65,7 @@ class View extends React.Component {
     return h('div.View', [
       h(Menu, {
         uri: state.query.uri,
+        snapshotId : state.query.snapshot,
         admin: props.admin,
         name: state.metadata.name,
         datasource: state.metadata.datasource,

@@ -17,6 +17,7 @@
   &.common-popup-container-open {
     transform: translateY(-1em);
     opacity: 1;
+    transition: opacity 0s ease 0s, transform 0.25s ease 0s;
   }
 }
 

@@ -275,64 +275,66 @@ class Paint extends React.Component {
       Object.entries(this.analysisFns()).map(entry => h('option', {value: entry[0]}, entry[0]))
     );
 
-  const classSelector = h('select.paint-select',
-    {
-      value: selectedClass,
-      onChange: e => this.setState({
-        selectedClass: e.target.value
-      }, () => this.applyExpressionData())
-    },
-    expressionHeader.map(exprClass => h('option', { value: exprClass }, exprClass))
-  );
+    const classSelector = h('select.paint-select',
+      {
+        value: selectedClass,
+        onChange: e => this.setState({
+          selectedClass: e.target.value
+        }, () => this.applyExpressionData())
+      },
+      expressionHeader.map(exprClass => h('option', { value: exprClass }, exprClass))
+    );
 
-  const tabs = h(Tabs, [
-    h(TabList, [
-      h(Tab, 'Expression Data'),
-      h(Tab, 'Search Results')
-    ]),
-    h(TabPanel, [
-      h('div.paint-legend', [
-        h('p', `low ${min}`),
-        h('p', `high ${max}`)
+    const tabbedContent = h(Tabs, [
+      h('div.paint-drawer-header', [
+        h(TabList, [
+          h(Tab, 'Expression Data'),
+          h(Tab, 'Search Results')
+        ]),
+        h('a', { onClick: e => this.toggleDrawer()}, [
+          h(Icon, { icon: 'close'}),
+        ])
       ]),
-      h('div.paint-expression-controls', [
-      h('div.paint-function-selector', [
-        'function: ',
-        functionSelector
+      h(TabPanel, [
+        h('div.paint-legend', [
+          h('p', `low ${min}`),
+          h('p', `high ${max}`)
+        ]),
+        h('div.paint-expression-controls', [
+        h('div.paint-function-selector', [
+          'function: ',
+          functionSelector
+        ]),
+        h('div.paint-class-selector', [
+          'class: ',
+          classSelector
+        ]),
       ]),
-      h('div.paint-class-selector', [
-        'class: ',
-        classSelector
-      ]),
-    ]),
-    h(Table, {
-      className:'-striped -highlight',
-      data: expressionRows,
-      columns: columns,
-      defaultPageSize: 150,
-      showPagination: false,
-      onFilteredChange: (column, value) => {
-        cysearch(_.get(column, '0.value', ''), this.state.cy, false, {'border-width': 8, 'border-color': 'red'});
-      }
-     })
-    ]),
-    h(TabPanel, state.searchResults.map(searchResult => {
-        const uri = _.get(searchResult, 'uri', null);
-        const name = _.get(searchResult, 'name', 'N/A');
-        return h('div.paint-search-result', [
-          h('a.plain-link', {onClick: e => this.loadSbgn(uri)}, name)
-        ]);
+      h(Table, {
+        className:'-striped -highlight',
+        data: expressionRows,
+        columns: columns,
+        defaultPageSize: 150,
+        showPagination: false,
+        onFilteredChange: (column, value) => {
+          cysearch(_.get(column, '0.value', ''), this.state.cy, false, {'border-width': 8, 'border-color': 'red'});
+        }
       })
-    )
-  ]);
+      ]),
+      h(TabPanel, state.searchResults.map(searchResult => {
+          const uri = _.get(searchResult, 'uri', null);
+          const name = _.get(searchResult, 'name', 'N/A');
+          return h('div.paint-search-result', [
+            h('a.plain-link', {onClick: e => this.loadSbgn(uri)}, name)
+          ]);
+        })
+      )
+    ]);
 
     return h('div.paint', [
       h('div.paint-content', [
         h('div', { className: classNames('paint-drawer', { 'closed': !state.drawerOpen }) }, [
-          h('a', { onClick: e => this.toggleDrawer()}, [
-            h(Icon, { icon: 'close'}),
-          ]),
-          tabs
+          tabbedContent
         ]),
         h(OmniBar, { title: `${state.name} | ${state.datasource}`, onMenuClick: (e) => this.toggleDrawer() }),
         h(Network, { cy: state.cy })

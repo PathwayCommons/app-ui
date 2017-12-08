@@ -1,16 +1,10 @@
 const io = require('socket.io-client');
 const qs = require('querystring');
-const config = require('../../../config');
 let socket = io.connect('/');
-
-
-const fetchWrapper = function (url, options){
-  return fetch(config.baseName + url, options);
-};
 
 const apiCaller = {
   getGraphAndLayout(uri, version) {
-    return fetchWrapper(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`, {
+    return fetch(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`, {
       method: 'GET', headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json'
@@ -19,7 +13,7 @@ const apiCaller = {
   },
 
   pcQuery(method, params){
-    return fetchWrapper(`/pc2/${method}?${qs.stringify(params)}`, {
+    return fetch(`/pc2/${method}?${qs.stringify(params)}`, {
       method: 'GET', headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json'
@@ -28,7 +22,7 @@ const apiCaller = {
   },
 
   datasources(){
-    return fetchWrapper('/pc2/datasources', {
+    return fetch('/pc2/datasources', {
       method: 'GET', headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json'
@@ -37,14 +31,14 @@ const apiCaller = {
   },
   
   querySearch(query){
-    return fetchWrapper(`/pc2/querySearch?${qs.stringify(query)}`,{
+    return fetch(`/pc2/querySearch?${qs.stringify(query)}`,{
       'Content-type': 'application/json',
       'Accept': 'application/json'
     }).then(res => res.json());
   },
 
   getLatestLayouts(uri, version, numEntries) {
-    return fetchWrapper(`/api/get-layout-history?${qs.stringify({uri, version, numEntries})}`, {
+    return fetch(`/api/get-layout-history?${qs.stringify({uri, version, numEntries})}`, {
       method: 'GET', headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json'
@@ -53,7 +47,7 @@ const apiCaller = {
   },
   
   renderImages(cyJson) {
-    return fetchWrapper(`/api/render-png`, {
+    return fetch(`/api/render-png`, {
       method: 'POST', headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json'

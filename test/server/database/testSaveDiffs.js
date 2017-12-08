@@ -195,7 +195,7 @@ describe('Test saveDiffs.js', function () {
 
       conn.then(conn =>
         saveDiffs.saveDiff(version.pc_id, version.release_id, newPos, user, conn, function () {
-          return query.getLayout(version.pc_id, version.release_id, conn, function (res) {
+          return query.getLayout(version.pc_id, version.release_id, conn, null,function (res) {
             expect(res).to.deep.equal(mergeDiff(layout.positions, newPos));
             done();
           });

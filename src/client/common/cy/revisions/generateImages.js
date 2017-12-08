@@ -13,7 +13,26 @@ const apiCaller = require('../../../services/apiCaller/');
 */
 
 function generateImages(layouts, graph) {
+  //Gather all elements in one array
   graph = graph.nodes.concat(graph.edges);
+
+  /* Reconstruct array with only bounding box, id, source, and target for each element
+  - This is needed as other data fields are not needed and tend to cause server side
+    parse errors
+  */
+  graph = graph.map(item => ({
+    data : {
+      id : item.data.id,
+      bbox : item.data.bbox,
+      parent : item.data.parent,
+      class : item.data.class,
+      portSource : item.data.portSource,
+      portTarget : item.data.portTarget,
+      source : item.data.source,
+      target : item.data.target
+    }
+  }));
+
   return apiCaller.renderImages({layouts, graph});
 }
 

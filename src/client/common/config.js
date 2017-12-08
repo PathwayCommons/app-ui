@@ -30,13 +30,30 @@ const tooltipReverseOrder = ['Comment'];
 const defaultEntryLimit = 3;
 const commentEntryLimit = 1;
 
+const tippyDefaults = {
+  theme: 'dark',
+  position: 'right',
+  animation: 'scale',
+  animateFill: false,
+  duration: [ 500, 0 ],
+  delay: [ 0, 0 ],
+  hideDuration: 0,
+  arrow: true,
+  trigger: 'mouseenter',
+  interactive: true,
+  multiple: true,
+  hideOnClick: true,
+  sticky: true
+};
+
 module.exports = {
   databases,
   publicationsURL,
   tooltipOrder,
   tooltipReverseOrder,
   defaultEntryLimit,
-  commentEntryLimit
+  commentEntryLimit,
+  tippyDefaults
 };
 
 /*

@@ -1,54 +1,22 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const Table = require('react-table').default;
+const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
 
 const queryString = require('query-string');
-const color = require('color');
 const _ = require('lodash');
 const classNames = require('classnames');
 const matchSorter = require('match-sorter').default;
 
 const make_cytoscape = require('../../common/cy');
-const cysearch = require('../../common/cy/search');
+const cysearch = _.debounce(require('../../common/cy/search'), 500);
 
 const Icon = require('../../common/components').Icon;
-const { apiCaller, PathwayCommonsService } = require('../../services');
+const { apiCaller } = require('../../services');
 
-const createExpressionTable = require('./expression-model');
-
-
-class OmniBar extends React.Component {
-  render() {
-    const props = this.props;
-    return h('div.paint-omnibar', [
-      h('a', { onClick: e => props.onMenuClick(e) }, [
-        h(Icon, { icon: 'menu' }, 'click')
-      ]),
-      h('h5', `${props.name} | ${props.datasource}`)
-    ]);
-  }
-}
-
-// props
-// expression table
-// cy
-class Network extends React.Component {
-  componentWillUnmount() {
-    this.state.cy.destroy();
-  }
-
-  componentDidMount() {
-    const props = this.props;
-    const container = document.getElementById('cy-container');
-    props.cy.mount(container);
-  }
-
-
-  render() {
-    return h('div.paint-graph', [ h(`div.#cy-container`, {style: {width: '100vw', height: '100vh'}}) ]);
-  }
-
-}
+const {createExpressionTable, minRelativeTo, maxRelativeTo, applyAggregateFn} = require('./expression-model');
+const OmniBar = require('./omnibar');
+const Network = require('./network');
 
 class Paint extends React.Component {
   constructor(props) {
@@ -59,13 +27,22 @@ class Paint extends React.Component {
     const enrichmentsURI = query.uri ? query.uri : null;
 
     this.state = {
+      // enrichment data state
       rawEnrichmentData: {},
       expressionTable: {},
-      selectedClass: null,
+      selectedClass: '',
+      selectedFunction: this.analysisFns().mean,
 
+      // sbgn / cy network state
       cy: cy,
       name: '',
       datasource: '',
+
+      // search results state
+      query: '',
+      searchResults: [],
+
+      // drawer
       drawerOpen: false
     };
 
@@ -77,15 +54,37 @@ class Paint extends React.Component {
           const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
           const searchParam = query.q;
 
-          this.setState({rawEnrichmentData: json});
+          this.setState({
+            rawEnrichmentData: json,
+            query: query.q
+          });
           this.initPainter(expressions, expressionClasses, searchParam);
 
         });
     }
   }
 
-  componentWillUnmount() {
-    this.state.cy.destroy();
+  loadSbgn(uri) {
+    const state = this.state;
+    apiCaller.getGraphAndLayout(uri, 'latest').then(response => {
+      state.cy.remove('*');
+      state.cy.add({
+        nodes: _.get(response, 'graph.nodes', []),
+        edges: _.get(response, 'graph.edges', [])
+      });
+
+      state.cy.layout({
+        name: 'cose-bilkent',
+        randomize: false,
+        nodeDimensionsIncludeLabels: true,
+        nodeRepulsion: 5000 * state.cy.nodes().size()
+      }).run();
+
+      this.setState({
+        name: _.get(response, 'graph.pathwayMetadata.title', 'N/A'),
+        datasource: _.get(response, 'graph.pathwayMetadata.dataSource.0', 'N/A'),
+      }, () => this.applyExpressionData());
+    });
   }
 
   // only call this after you know component is mounted
@@ -110,62 +109,100 @@ class Paint extends React.Component {
             edges: _.get(response, 'graph.edges', [])
           });
 
-          state.cy.layout({
-            name: 'cose-bilkent',
-            randomize: false,
-            nodeDimensionsIncludeLabels: true
-          }).run();
+
+          if (!_.isEmpty(response.layout)) {
+            state.cy.layout({
+              name: 'preset',
+              positions: node => response.layout[node.id()],
+              animate: true,
+              animationDuration: 500
+
+            }).run();
+          } else {
+            state.cy.layout({
+              name: 'cose-bilkent',
+              randomize: false,
+              nodeDimensionsIncludeLabels: true,
+              nodeRepulsion: 5000 * state.cy.nodes().size()
+            }).run();
+          }
 
           this.setState({
             selectedClass: _.get(header, '0', null),
             expressionTable: expressionTable,
             name: _.get(response, 'graph.pathwayMetadata.title', 'N/A'),
             datasource: _.get(response, 'graph.pathwayMetadata.dataSource.0', 'N/A'),
+            searchResults: searchResults
           }, () => this.applyExpressionData());
         });
       }
     });
   }
-  colourMap(val, min, max) {
-    const distToMax = Math.abs(val - max);
-    const distToMin = Math.abs(val - min);
 
-    let hVal, lVal;
-    if (distToMax > distToMin) {
-      hVal = 240;
-      lVal = ( val / Math.abs(max) ) * 100 + 20;
-    } else {
-      hVal = 0;
-      lVal = ( val / Math.abs(max) ) * 100 - 20;
+  expressionDataToNodeStyle(percent) {
+    const style = {};
+    if (0.4 <= percent < 0.6) {
+      style['background-color'] = 'white';
+      style['background-opacity'] = 1;
+      style['color'] = 'black';
     }
-    return color.hsl(hVal, 100, lVal).string();
-  }
 
-  percentToColour(percent) {
-    const hslValue = ( 1 - percent ) * 240;
+    if (percent <= 0.39) {
+      style['background-color'] = 'green';
+      style['background-opacity'] = `${1 - (percent / 0.4)}`;
+      style['color'] = 'white';
+      style['text-outline-color'] = 'black';
+    }
 
-    return color.hsl(hslValue, 100, 50).string();
+    if (0.6 <= percent) {
+      style['background-color'] = 'purple';
+      style['background-opacity'] = `${percent}`;
+      style['color'] = 'white';
+      style['text-outline-color'] = 'black';
+    }
+
+    return style;
   }
 
   applyExpressionData() {
     const state = this.state;
+
+    const selectedFunction = state.selectedFunction.func;
     const expressionTable = state.expressionTable;
-    const expressionClasses = expressionTable.header;
+    const selectedClass = state.selectedClass;
 
-    const selectedClassIndex = expressionClasses.indexOf(state.selectedClass);
-    const networkNodes = _.uniq(state.cy.nodes('[class="macromolecule"]').map(node => node.data('label'))).sort();
+    const geneNodes = state.cy.nodes('[class="macromolecule"]');
+    const geneNodeLabels = _.uniq(geneNodes.map(node => node.data('label'))).sort();
 
-    const expressionsInNetwork = expressionTable.rows.filter(row => networkNodes.includes(row.geneName));
-    const maxVal = _.max(expressionsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
-    const minVal = _.min(expressionsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
+    const expressionsInNetwork = expressionTable.rows.filter(row => geneNodeLabels.includes(row.geneName));
+
+    const expressionLabels = expressionsInNetwork.map(expression => expression.geneName);
+    const sortedExpressionValues = expressionsInNetwork.map(expression => {
+      return {
+        geneName: expression.geneName,
+        value: applyAggregateFn(expression, selectedClass, selectedFunction)
+      };
+    }).sort((e0, e1) => e0.value - e1.value);
+    const max = maxRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
+    const min = minRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
+
 
     expressionsInNetwork.forEach(expression => {
-      // probably more efficient to add the expression data to the node field instead of interating twice
-      state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
-        node.style({
-          'background-color': this.percentToColour(expression.classValues[selectedClassIndex] / maxVal)
-        });
-      });
+      const matchedNodes = state.cy.nodes().filter(node => node.data('label') === expression.geneName);
+      // const percentile = Math.max(_.findIndex(sortedExpressionValues, e => e.geneName === expression.geneName) - 1, 0) / sortedExpressionValues.length;
+      
+      // dumb percent calculation
+      const percentile = applyAggregateFn(expression, selectedClass, selectedFunction) / max;
+      
+      const style = this.expressionDataToNodeStyle(percentile);
+
+      state.cy.batch(() => matchedNodes.style(style));
+    });
+
+    geneNodes.filter(node => !expressionLabels.includes(node.data('label'))).style({
+      'background-color': 'grey',
+      'color': 'grey',
+      'opacity': 0.4
     });
   }
 
@@ -173,30 +210,32 @@ class Paint extends React.Component {
     this.setState({drawerOpen: !this.state.drawerOpen});
   }
 
-  getAnalysisFunctions() {
-    return [
-      {
+  analysisFns() {
+    return {
+      mean: {
         name: 'mean',
-        func: _.mean,
+        func: _.mean
       },
-      {
-        name: 'count',
-        func: _.countBy,
+      max: {
+        name: 'max',
+        func: _.max
       },
-      {
+      min: {
         name: 'min',
         func: _.min
       },
-      {
-        name: 'max',
-        func: _.max
+      count: {
+        name: 'count',
+        func: (classValues) => classValues.length
       }
-    ];
+    };
   }
 
   render() {
     const state = this.state;
 
+    const selectedFunction = state.selectedFunction.func;
+    const selectedClass = state.selectedClass;
     const expressionTable = state.expressionTable;
     const expressions = _.get(expressionTable, 'rows', []);
 
@@ -204,9 +243,8 @@ class Paint extends React.Component {
     const expressionsInNetwork = expressions.filter(row => networkNodes.includes(row.geneName));
     const expressionsNotInNetwork = _.difference(expressions, expressionsInNetwork);
 
-
-    const maxVal = _.max(expressionsInNetwork.map(row => _.max(row.classValues)).map((k, v) => parseFloat(k)));
-    const minVal = _.min(expressionsInNetwork.map(row => _.min(row.classValues)).map((k, v) => parseFloat(k)));
+    const max = maxRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
+    const min = minRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
 
     const expressionHeader = _.get(expressionTable, 'header', []);
     const expressionRows = expressionsInNetwork.concat(expressionsNotInNetwork);
@@ -216,65 +254,89 @@ class Paint extends React.Component {
         Header: 'Gene Name',
         accessor: 'geneName',
         filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['geneName'] }),
+        filterable: true,
         filterAll: true
       }
     ].concat(expressionHeader.map((className, index) => {
       return {
         Header: className,
         id: className,
-        accessor: row => row.classValues[index]
+        accessor: row => applyAggregateFn(row, className, selectedFunction)
       };
     }));
 
-    // const analysisFunctions = this.getAnalysisFunctions.map(fn => {
+    const functionSelector = h('select.paint-select',
+      {
+        value: state.selectedFunction.name,
+        onChange: e => this.setState({
+          selectedFunction: _.find(this.analysisFns(), (fn) => fn.name === e.target.value)
+        }, () => this.applyExpressionData())
+      },
+      Object.entries(this.analysisFns()).map(entry => h('option', {value: entry[0]}, entry[0]))
+    );
 
-    // })
+    const classSelector = h('select.paint-select',
+      {
+        value: selectedClass,
+        onChange: e => this.setState({
+          selectedClass: e.target.value
+        }, () => this.applyExpressionData())
+      },
+      expressionHeader.map(exprClass => h('option', { value: exprClass }, exprClass))
+    );
+
+    const tabbedContent = h(Tabs, [
+      h('div.paint-drawer-header', [
+        h(TabList, [
+          h(Tab, 'Expression Data'),
+          h(Tab, 'Search Results')
+        ]),
+        h('a', { onClick: e => this.toggleDrawer()}, [
+          h(Icon, { icon: 'close'}),
+        ])
+      ]),
+      h(TabPanel, [
+        h('div.paint-legend', [
+          h('p', `low ${min}`),
+          h('p', `high ${max}`)
+        ]),
+        h('div.paint-expression-controls', [
+        h('div.paint-function-selector', [
+          'function: ',
+          functionSelector
+        ]),
+        h('div.paint-class-selector', [
+          'class: ',
+          classSelector
+        ]),
+      ]),
+      h(Table, {
+        className:'-striped -highlight',
+        data: expressionRows,
+        columns: columns,
+        defaultPageSize: 150,
+        showPagination: false,
+        onFilteredChange: (column, value) => {
+          cysearch(_.get(column, '0.value', ''), this.state.cy, false, {'border-width': 8, 'border-color': 'red'});
+        }
+      })
+      ]),
+      h(TabPanel, state.searchResults.map(searchResult => {
+          const uri = _.get(searchResult, 'uri', null);
+          const name = _.get(searchResult, 'name', 'N/A');
+          return h('div.paint-search-result', [
+            h('a.plain-link', {onClick: e => this.loadSbgn(uri)}, name)
+          ]);
+        })
+      )
+    ]);
 
     return h('div.paint', [
       h('div.paint-content', [
         h('div', { className: classNames('paint-drawer', { 'closed': !state.drawerOpen }) }, [
-          h('a', { onClick: e => this.toggleDrawer()}, [
-            h(Icon, { icon: 'close'}),
-          ]),
-          h('div.paint-legend', [
-            h('p', `low ${minVal}`),
-            h('p', `high ${maxVal}`)
-          ]),
-          h('select.paint-select', [
-            h('option', 'min'),
-            h('option', 'max'),
-            h('option', 'mean'),
-            h('option', 'count'),
-
-          ]),
-          h(Table, {
-            className:'-striped -highlight',
-            data: expressionRows,
-            columns: columns,
-            filterable: true,
-            defaultPageSize: 150,
-            getTheadThProps: (state, rowInfo, column, instance) => {
-              return {
-                onClick: e => {
-                  if (column.id !== 'geneName') {
-                    this.setState({
-                      selectedClass: column.id
-                    }, () => this.applyExpressionData());
-                  }
-                }
-              };
-            },
-            getTdProps: (state, rowInfo, column, instance) => {
-              return {
-                onClick: e => {
-                  const geneName = _.get(rowInfo, 'original.geneName', '');
-                  cysearch(geneName, this.state.cy);
-                }
-              };
-            }
-           })
+          tabbedContent
         ]),
-        h(OmniBar, { name: state.name, datasource: state.datasource, onMenuClick: (e) => this.toggleDrawer() }),
+        h(OmniBar, { title: `${state.name} | ${state.datasource}`, onMenuClick: (e) => this.toggleDrawer() }),
         h(Network, { cy: state.cy })
       ])
     ]);

@@ -1,4 +1,4 @@
-.download-option {
+.common-async-button {
   width: 100%;
   padding: 1em;
 
@@ -17,10 +17,7 @@
   transition: all 0.1s linear;
 
   &:hover {
-    //transform: scale(1.025);
     background-color: var(--light-base-colour-dark);
-    //box-shadow: var(--box-shadow);
-    //border-width: 2px 2px 2px 2px;
   }
 
   &:last-of-type {
@@ -28,8 +25,8 @@
   }
 }
 
-.download-option-header {
-  margin-bottom: 0.5em;
+.common-async-button-header {
+  margin-bottom: 0.25em;
 
   display: flex;
   justify-content: flex-start;
@@ -38,14 +35,13 @@
   & h3 {
     margin: 0;
     margin-right: 1em;
-    font-size: 1em;
 
     cursor: pointer;
   }
 
 }
 
-.download-loader-container {
+.common-async-button-loader-container {
   @extend %flex-center;
   @extend %no-select;
 
@@ -60,24 +56,9 @@
   & .loader {
     position: relative;
   }
-
-  & i {
-
-    font-size: 1.5em;
-    color: var(--dark-base-colour);
-
-    &.loading-spin {
-      color: var(--accent-1-colour);
-
-      animation-name: loading-spin;
-      animation-duration: 1s;
-      animation-timing-function: ease;
-      animation-iteration-count: infinite;
-    }
-  }
 }
 
-.download-option-description {
+.common-async-button-description {
   @extend %no-select;
 
   width: 100%;

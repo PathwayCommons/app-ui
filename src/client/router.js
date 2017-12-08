@@ -24,7 +24,7 @@ module.exports = () => {
       },
       {
         path: '/',
-        render: props => h(Features.Entry, props)
+        render: props => h(Features.Search, props)
       },
       {
         path: '/search',
@@ -41,8 +41,9 @@ module.exports = () => {
       {
         path: '/edit',
         render: props => {
-          let editProps = props;
-          props.admin = true;
+          const editProps = _.assign({}, props, {
+            admin: true
+          });
           return h(Features.View, editProps);
         }
       }

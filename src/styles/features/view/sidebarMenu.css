@@ -15,7 +15,7 @@
 
   transition: all 0.5s ease-out;
 
-  &.open {
+  &.sidebar-menu-open {
     transform: translateX(0%);
     box-shadow: var(--box-shadow);
   }
@@ -44,13 +44,10 @@
   background-color: rgba(255, 255, 255, 0.5);
   background-color: var(--light-base-colour);
   border-radius: 0px 0px 0px 3px;
-  // border-color: var(--light-base-colour-dark);
-  // border-style: solid;
-  // border-width: 0px 0px 1px 1px;
 
   transition: z-index 0s linear 0s, left 0.5s linear;
 
-  &.open {
+  &.sidebar-close-button-container-open {
     left: calc(- var(--icon-size) * 3 / 2);
     box-shadow: var(--box-shadow);
     z-index: 10;

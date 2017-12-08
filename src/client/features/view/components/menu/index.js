@@ -2,15 +2,15 @@ const React = require('react');
 const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
 const classNames = require('classnames');
-const tippy = require('tippy.js');
 const _ = require('lodash');
 
 const { humanLayoutDisplayName } = require('../../../../common/cy/layout');
 const searchNodes = require('../../../../common/cy/search');
 
 const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
+const IconButton = require('../../../../common/iconButton');
 const apiCaller = require('../../../../services/apiCaller');
-const datasourceLinks = require('../../../../common/tooltips/config').databases;
+const datasourceLinks = require('../../../../common/config').databases;
 
 let debouncedSearchNodes = _.debounce(searchNodes, 300);
 
@@ -18,6 +18,7 @@ let debouncedSearchNodes = _.debounce(searchNodes, 300);
 const toolButtons = {
   info: 'Extra information',
   file_download: 'Download options',
+  history: 'Layout Revisions'
   //help: 'Interpreting the display' // re-add to access help menu
 };
 
@@ -70,11 +71,6 @@ class Menu extends React.Component {
     layout.run();
   }
 
-
-  componentDidMount() {
-    this.initTooltips();
-  }
-
   toggleExpansion() {
     if (this.state.complexesExpanded) {
       this.props.cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isExpanded()).collapse();
@@ -82,16 +78,6 @@ class Menu extends React.Component {
       this.props.cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isCollapsed()).expand();
     }
     this.setState({ complexesExpanded: !this.state.complexesExpanded });
-  }
-
-  initTooltips() {
-    tippy('.tool-button', {
-      delay: [800, 400],
-      animation: 'scale',
-      theme: 'dark',
-      arrow: true,
-      touchHold: true
-    });
   }
 
   // Used for the panel buttons to set menus in the sidebar and dynamically change the style
@@ -117,27 +103,31 @@ class Menu extends React.Component {
 
   render() {
     const datasourceLink = this.getDatasourceLink(this.props.datasource);
+    const isAdmin = this.props.admin; 
 
     const layoutItems = this.props.availableLayouts.map((layout, index) => {
       return (
         h(DropdownOption, {
           key: index,
           value: layout.displayName,
+          header: layout.displayName,
           description: layout.description
         })
       );
     });
 
     const toolButtonEls = Object.keys(toolButtons).map((button, index) => {
+      if(button === 'history' && !isAdmin) {
+        return;
+      }
+
       return (
-        h('div', {
-          key: index,
-          className: classNames('tool-button', 'tool-button-sidebar', { 'tool-button-active': this.props.activeMenu === button }),
+        h(IconButton, {
+          icon: button,
+          active: this.props.activeMenu === button,
           onClick: () => this.changeMenu(button),
-          title: toolButtons[button]
-        }, [
-            h('i.material-icons', button)
-          ])
+          desc: toolButtons[button]
+        })
       );
     });
 
@@ -155,42 +145,42 @@ class Menu extends React.Component {
             ]),
             h('div.title-container', [
               h('h4', [
-                h('span', { onClick: () => this.changeMenu('info') },this.props.name),
+                h('span', { onClick: () => this.changeMenu('info') }, this.props.name),
                 ' | ',
                 h('a', { href: datasourceLink, target: '_blank' }, this.props.datasource)
               ])
             ])
           ]),
           h('div.view-toolbar', toolButtonEls.concat([
-            h('div.tool-button', {
+            h(IconButton, {
+              icon: this.state.complexesExpanded ? 'select_all' : 'settings_overscan',
               onClick: () => this.toggleExpansion(),
-              title: 'Expand/collapse complexes'//`${this.state.complexesExpanded ? 'Collapse' : 'Expand'} complexes`
-            }, [h('i.material-icons', this.state.complexesExpanded ? 'select_all' : 'settings_overscan')]),
-            h('div', {
-              className: classNames('tool-button', { 'tool-button-active': this.state.dropdownOpen }),
+              desc: `${this.state.complexesExpanded ? 'Collapse' : 'Expand'} complexes`
+            }),
+            h(IconButton, {
+              active: this.state.dropdownOpen,
+              icon: this.props.admin ? 'shuffle' : 'replay',
               onClick: () => this.props.admin ? this.setState({ dropdownOpen: !this.state.dropdownOpen }) : this.performLayout(this.state.selectedLayout),
-              title: this.props.admin ? 'Reset arrangement' : 'Arrange display'
-            }, [h('i.material-icons', this.props.admin ? 'shuffle' : 'replay')]),
+              desc: this.props.admin ? 'Arrange display' : 'Reset arrangement'
+            }),
             h('div', {
               className: classNames('layout-dropdown', { 'layout-dropdown-open': this.state.dropdownOpen })
-            }, [
-                h(Dropdown, {
-                  value: this.state.selectedLayout,
-                  onChange: value => this.performLayout(value)
-                }, layoutItems)
-              ]),
-            h('div', {
-              className: classNames('tool-button', { 'tool-button-active': this.state.searchOpen }),
+            }, [h(Dropdown, {
+              value: this.state.selectedLayout,
+              onChange: value => this.performLayout(value)
+            }, layoutItems)]),
+            h(IconButton, {
+              icon: 'search',
+              active: this.state.searchOpen,
               onClick: () => {
                 !this.state.searchOpen || this.clearSearchBox();
                 this.setState({ searchOpen: !this.state.searchOpen });
               },
-              title: 'Search entities'
-            }, [h('i.material-icons', 'search')]),
+              desc: 'Search entities'
+            }),
             h('div', {
               className: classNames('search-nodes', { 'search-nodes-open': this.state.searchOpen }),
-              onChange: e => this.changeSearchValue(e.target.value),
-              title: 'Search for Nodes'
+              onChange: e => this.changeSearchValue(e.target.value)
             }, [
                 h('div.view-search-bar', [
                   h('input.view-search', {

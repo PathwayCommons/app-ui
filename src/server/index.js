@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const debug = require('debug')('app-ui:server');
 const http = require('http');
 const config = require('./config');
+const dbConfig = require('./database/config');
 const logger = require('./logger');
 const stream = require('stream');
 const fs = require('fs');
@@ -18,8 +19,8 @@ const server = http.createServer(app);
 require('./io').set(server);
 require('./routes/sockets');
 
-app.use(bodyParser.urlencoded({ extended: true}));
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '5mb'}));
+app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
 
 // view engine setup
 app.set('views', path.join(__dirname, '../', 'views'));
@@ -132,7 +133,7 @@ function onListening() {
 
 // Create database instance if one does not already exist. And start
 // the server once that is complete.
-checkTables.checkDatabase().then(()=>{
+checkTables.checkDatabase(dbConfig).then(()=>{
   server.listen(port);
 });
 

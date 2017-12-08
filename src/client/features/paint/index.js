@@ -271,10 +271,6 @@ class Paint extends React.Component {
       min: {
         name: 'min',
         func: _.min
-      },
-      count: {
-        name: 'count',
-        func: (classValues) => classValues.length
       }
     };
   }

@@ -4,15 +4,15 @@ let socket = io.connect('/');
 
 const apiCaller = {
   getGraphAndLayout(uri, version) {
-    return fetch(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`, {
+    return fetch(`/api/get-graph-and-layout?${qs.stringify({ uri, version })}`, {
       method: 'GET', headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json'
       }
-    }).then(res =>  res.json());
+    }).then(res => res.json());
   },
 
-  pcQuery(method, params){
+  pcQuery(method, params) {
     return fetch(`/pc2/${method}?${qs.stringify(params)}`, {
       method: 'GET', headers: {
         'Content-type': 'application/json',
@@ -21,7 +21,7 @@ const apiCaller = {
     });
   },
 
-  datasources(){
+  datasources() {
     return fetch('/pc2/datasources', {
       method: 'GET', headers: {
         'Content-type': 'application/json',
@@ -29,33 +29,53 @@ const apiCaller = {
       }
     }).then(res => res.json());
   },
-  
-  querySearch(query){
-    return fetch(`/pc2/querySearch?${qs.stringify(query)}`,{
+
+  querySearch(query) {
+    return fetch(`/pc2/querySearch?${qs.stringify(query)}`, {
       'Content-type': 'application/json',
       'Accept': 'application/json'
     }).then(res => res.json());
   },
 
   getLatestLayouts(uri, version, numEntries) {
-    return fetch(`/api/get-layout-history?${qs.stringify({uri, version, numEntries})}`, {
+    return fetch(`/api/get-layout-history?${qs.stringify({ uri, version, numEntries })}`, {
       method: 'GET', headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json'
       }
-    }).then(res =>  res.json());
+    }).then(res => res.json());
   },
-  
+
   renderImages(cyJson) {
     return fetch(`/api/render-png`, {
       method: 'POST', headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json'
       },
-      body : JSON.stringify({
+      body: JSON.stringify({
         cyJson
       })
-    }).then(res =>  res.json());
+    }).then(res => res.json());
+  },
+
+  addSnapshot(snapshot) {
+    return fetchWrapper(`/api/snapshot/add`, {
+      method: 'POST', headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        snapshot
+      })
+    }).then(res => res.json());
+  },
+  getSnapshot(id) {
+    return fetchWrapper(`/api/snapshot/get?${qs.stringify({ id })}`, {
+      method: 'GET', headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+      }
+    }).then(res => res.json());
   },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into

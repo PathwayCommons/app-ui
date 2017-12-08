@@ -86,6 +86,7 @@ class View extends React.Component {
       h(Loader, { loaded: this.state.graphRendered }),
       h(Menu, {
         uri: state.query.uri,
+        snapshotId : state.query.snapshot,
         admin: props.admin,
         name: state.metadata.name,
         datasource: state.metadata.datasource,

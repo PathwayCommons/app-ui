@@ -11,7 +11,12 @@ const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
 const IconButton = require('../../../../common/iconButton');
 const apiCaller = require('../../../../services/apiCaller');
 const datasourceLinks = require('../../../../common/config').databases;
+const Popup = require('../../../../common/popup/');
+const CopyField = require('../../../../common/copyField/');
+const getShareLink = require('./share');
+const rearrangeGraph = require('../../../../common/cy/revisions/rearrangeGraph');
 const datasourceHomes = require ('../../../../common/config').databasesHomePages;
+
 
 let debouncedSearchNodes = _.debounce(searchNodes, 300);
 
@@ -34,10 +39,12 @@ class Menu extends React.Component {
     super(props);
     this.state = {
       dropdownOpen: false,
+      showPopup: false,
       searchOpen: false,
       complexesExpanded: true,
       selectedLayout: props.currLayout,
-      initialLayoutSet: false
+      initialLayoutSet: false,
+      renderedSnap : false,
     };
   }
 
@@ -59,7 +66,22 @@ class Menu extends React.Component {
 
     const layoutOpts = _.find(props.availableLayouts, (layout) => layout.displayName === selectedLayoutName).options;
     let layout = cy.layout(layoutOpts);
+
+    let snapshotId = this.props.snapshotId;
+    let renderedSnap = this.state.renderedSnap;
+    let that = this;
+    //let changeState = () => this.setState({renderedSnap : true});
+
     layout.pon('layoutstop').then(function () {
+      //Render Snapshot
+      if(!renderedSnap && snapshotId){
+        apiCaller.getSnapshot(snapshotId).then(res => {
+          that.setState({renderedSnap : true});
+          rearrangeGraph(res.positions, cy, {}, res.zoom, res.pan);
+        });
+        return;
+      }
+
       if (props.admin && selectedLayoutName !== humanLayoutDisplayName) {
         let posObj = {};
         cy.nodes().forEach(node => {
@@ -165,6 +187,18 @@ class Menu extends React.Component {
               onClick: () => this.toggleExpansion(),
               desc: `${this.state.complexesExpanded ? 'Collapse' : 'Expand'} complexes`
             }),
+            h(IconButton, {
+              icon: 'share',
+              active: this.state.searchOpen,
+              onClick: () => {
+                getShareLink(this.props.cy, this.props.uri).then(res => this.setState({snapshotURL : res, showPopup: true}));
+              },
+              desc: 'Get Shareable Link'
+            }),
+            h(Popup, 
+              {active : this.state.showPopup, deactivate: () => this.setState({showPopup : false })},
+              [h(CopyField, {text : this.state.snapshotURL})] 
+            ),
             h(IconButton, {
               active: this.state.dropdownOpen,
               icon: this.props.admin ? 'shuffle' : 'replay',

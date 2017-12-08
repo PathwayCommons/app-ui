@@ -16,6 +16,7 @@ const CopyField = require('../../../../common/copyField/');
 const getShareLink = require('./share');
 const rearrangeGraph = require('../../../../common/cy/revisions/rearrangeGraph');
 const datasourceHomes = require ('../../../../common/config').databasesHomePages;
+const globalConfig = require('../../../../../config');
 
 
 let debouncedSearchNodes = _.debounce(searchNodes, 300);
@@ -169,7 +170,7 @@ class Menu extends React.Component {
             h('div.pc-logo-container', [
               h(Link, { to: { pathname: '/search' } }, [
                 h('img', {
-                  src: '/img/icon.png'
+                  src: globalConfig.baseName + '/img/icon.png'
                 })
               ])
             ]),

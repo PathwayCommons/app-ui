@@ -28,7 +28,7 @@ let conf = {
   plugins: [
     isProfile ? new BundleAnalyzerPlugin() : null,
 
-    new webpack.EnvironmentPlugin(['NODE_ENV']),
+    new webpack.EnvironmentPlugin(['NODE_ENV', 'BASE_NAME']),
 
     new webpack.optimize.CommonsChunkPlugin({
       name: 'deps',

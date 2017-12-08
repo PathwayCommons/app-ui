@@ -115,10 +115,21 @@ describe('Test update.js', function () {
       let count = saveProm.then(() => conn).then(conn =>
         r.db(mockConfig.databaseName).table('graph').filter({ hash: hash(existingG) }).count().run(conn));
 
-      let lookup = saveProm.then(() => conn).then((conn) => query.getGraph(newId, newVersion, conn));
-
-      expect(lookup).to.eventually.deep.equal(existingG);
       return expect(count).to.eventually.equal(1);
+    });
+
+    it('Doesn\'t duplicate graphs but graphs can be retrieved', function () {
+      let existingG = preexisitingData[0].value.graph;
+      const newId = 10, newVersion = 10;
+      let conn = connection.get();
+
+      let saveProm = conn.then(connection =>
+        update.updateGraph(newId, newVersion, existingG, connection)
+      );
+
+      let lookup = saveProm.then(() => conn).then((conn) => query.getGraph(newId, newVersion, conn));
+      
+      return expect(lookup).to.eventually.deep.equal(existingG);
     });
 
     it('Optionally accepts a callback', function (done) {

@@ -1,4 +1,4 @@
-const bindExpandCollapse = (cy) => {
+const bindExpandCollapse = (cy, callback) => {
   cy.on('expandCollapse', 'node[class="complex"], node[class="complex multimer"]', function (evt) {
     evt.preventDefault();
     const node = evt.target;

@@ -8,6 +8,7 @@ const Popup = require('../../common/popup');
 const { getLayouts } = require('../../common/cy/layout/');
 const make_cytoscape = require('../../common/cy/');
 const bindMove = require('../../common/cy/events/move');
+const bindListenAndChange = require('../../common/cy/events/listenAndChange');
 const queryString = require('query-string');
 const { apiCaller } = require('../../services/');
 
@@ -30,10 +31,11 @@ class View extends React.Component {
         comments: []
       },
 
+      graphRendered: false,
       activeMenu: '',
 
-      activateWarning: this.props.admin || false,
-      warningMessage: this.props.admin ? 'Be careful! Your changes are live.' : '',
+      activateWarning: false,
+      warningMessage: '',
     };
 
     apiCaller.getGraphAndLayout(query.uri, 'latest').then(graphJSON => {
@@ -58,6 +60,23 @@ class View extends React.Component {
     }
   }
 
+  updateGraphRenderStatus(bool) {
+    let activateWarning = false;
+    let warningMessage = '';
+
+    if (bool && this.props.admin) {
+      bindListenAndChange(this.state.cy);
+      activateWarning = true;
+      warningMessage = 'Be careful! Your changes will be live.';
+    }
+
+    this.setState({
+      graphRendered: true,
+      activateWarning: activateWarning,
+      warningMessage: warningMessage
+    });
+  }
+
   render() {
     const state = this.state;
     const props = this.props;
@@ -77,7 +96,8 @@ class View extends React.Component {
       }),
       h(Graph, {
         cy: state.cy,
-        graphJSON: state.graphJSON
+        graphJSON: state.graphJSON,
+        updateGraphRenderStatus: bool => this.updateGraphRenderStatus(bool)
       }),
       h(Popup, {
         active: state.activateWarning,

@@ -15,6 +15,8 @@ const Popup = require('../../../../common/popup/');
 const CopyField = require('../../../../common/copyField/');
 const getShareLink = require('./share');
 const rearrangeGraph = require('../../../../common/cy/revisions/rearrangeGraph');
+const datasourceHomes = require ('../../../../common/config').databasesHomePages;
+
 
 let debouncedSearchNodes = _.debounce(searchNodes, 300);
 
@@ -122,8 +124,15 @@ class Menu extends React.Component {
     return _.get(link, '0.1', '');
   }
 
+  getDatasourceHome(datasource) {
+    const link = datasourceHomes.filter(ds => ds[0].toUpperCase() === datasource.toUpperCase());
+
+    return _.get(link, '0.1', '');
+  }
+
   render() {
     const datasourceLink = this.getDatasourceLink(this.props.datasource);
+    const datasourceHome = this.getDatasourceHome(this.props.datasource);
     const isAdmin = this.props.admin; 
 
     const layoutItems = this.props.availableLayouts.map((layout, index) => {
@@ -166,9 +175,9 @@ class Menu extends React.Component {
             ]),
             h('div.title-container', [
               h('h4', [
-                h('span', { onClick: () => this.changeMenu('info') }, this.props.name),
+                h('a', { href: datasourceLink, target: '_blank' }, this.props.name),
                 ' | ',
-                h('a', { href: datasourceLink, target: '_blank' }, this.props.datasource)
+                h('a', { href: datasourceHome, target: '_blank' }, this.props.datasource)
               ])
             ])
           ]),

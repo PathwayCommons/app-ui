@@ -5,6 +5,12 @@ const qs = require('querystring');
 const io = require('./../io').get();
 
 io.on('connection', function (socket) {
+  let referer = socket.handshake.headers.referer;
+  let params = referer.match(/(edit|view)\?(.*)/);
+  if (params){
+    let uri = qs.parse(params[2]).uri;
+    socket.join(uri);
+  }
   // create socket.io endpoint for controller.getGraphAndLayout
   socket.on('getGraphAndLayout', function (ioPackage) {
     // Add socketID/userID to User table.
@@ -20,6 +26,8 @@ io.on('connection', function (socket) {
     .then((package) => {
       io.emit('updated', package);
     });
+
+    io.to(ioPackage.uri).emit('layoutChange', ioPackage.layout);
   });
 
   // create socket.io endpoint for controller.submitDiff
@@ -28,6 +36,8 @@ io.on('connection', function (socket) {
     .then((package) => {
       io.emit('updated', package);
     });
+
+    io.to(ioPackage.uri).emit('nodeChange', ioPackage.diff);
   });
 
   // On disconnect, determine which pathway the user was viewing

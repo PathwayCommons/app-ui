@@ -7,7 +7,7 @@ Note : -Options Parameter is optional
        -Layouts is a collection of layouts
        -Positions is a collection of position objects 
 */
-function rearrangeGraph(nodePositions, cy, options, zoom, pan) {
+function rearrangeGraph(nodePositions, cy, options = {} , zoom, pan) {
 
   //Reset all positions to 0
   if(!zoom && !pan) { cy.nodes().forEach(node => node.position({ x: 0, y: 0 })); }
@@ -26,22 +26,25 @@ function rearrangeGraph(nodePositions, cy, options, zoom, pan) {
     }
   });
 
+  const duration = options.duration || 700;
+
   //Animate zoom and fit
   if (!zoom && !pan) {
     cy.animate({
       fit: {
         eles: cy.elements(), padding: 100
       }
-    }, { duration: 700 });
+    }, { duration: duration });
   }
   else {
     cy.animate({
       pan: pan,
       zoom: zoom,
     }, {
-      duration: 1000
+      duration: duration
     });
   }
+
 }
 
 module.exports = rearrangeGraph; 

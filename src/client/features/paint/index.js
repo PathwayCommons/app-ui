@@ -95,6 +95,48 @@ class Paint extends React.Component {
       type: 'Pathway'
     };
 
+
+    // const uri = 'http://identifiers.org/reactome/R-HSA-5389840';
+
+    // if (uri != null) {
+    //   const expressionTable = createExpressionTable(expressions, expressionClasses);
+    //   const header = expressionTable.header;
+
+    //   apiCaller.getGraphAndLayout(uri, 'latest').then(response => {
+    //     state.cy.remove('*');
+    //     state.cy.add({
+    //       nodes: _.get(response, 'graph.nodes', []),
+    //       edges: _.get(response, 'graph.edges', [])
+    //     });
+
+
+    //     if (!_.isEmpty(response.layout)) {
+    //       state.cy.layout({
+    //         name: 'preset',
+    //         positions: node => response.layout[node.id()],
+    //         animate: true,
+    //         animationDuration: 500
+
+    //       }).run();
+    //     } else {
+    //       state.cy.layout({
+    //         name: 'cose-bilkent',
+    //         randomize: false,
+    //         nodeDimensionsIncludeLabels: true,
+    //         nodeRepulsion: 5000 * state.cy.nodes().size()
+    //       }).run();
+    //     }
+
+    //     this.setState({
+    //       selectedClass: _.get(header, '0', null),
+    //       expressionTable: expressionTable,
+    //       name: _.get(response, 'graph.pathwayMetadata.title', 'N/A'),
+    //       datasource: _.get(response, 'graph.pathwayMetadata.dataSource.0', 'N/A'),
+    //       // searchResults: searchResults
+    //     }, () => this.applyExpressionData());
+    //   });
+    // }
+
     apiCaller.querySearch(query).then(searchResults => {
       const uri = _.get(searchResults, '0.uri', null);
 
@@ -109,12 +151,23 @@ class Paint extends React.Component {
             edges: _.get(response, 'graph.edges', [])
           });
 
-          state.cy.layout({
-            name: 'cose-bilkent',
-            randomize: false,
-            nodeDimensionsIncludeLabels: true,
-            nodeRepulsion: 5000 * state.cy.nodes().size()
-          }).run();
+
+          if (!_.isEmpty(response.layout)) {
+            state.cy.layout({
+              name: 'preset',
+              positions: node => response.layout[node.id()],
+              animate: true,
+              animationDuration: 500
+
+            }).run();
+          } else {
+            state.cy.layout({
+              name: 'cose-bilkent',
+              randomize: false,
+              nodeDimensionsIncludeLabels: true,
+              nodeRepulsion: 5000 * state.cy.nodes().size()
+            }).run();
+          }
 
           this.setState({
             selectedClass: _.get(header, '0', null),
@@ -128,27 +181,45 @@ class Paint extends React.Component {
     });
   }
 
-  expressionDataToNodeStyle(percent) {
+  expressionDataToNodeStyle(value, range) {
+    const [, max] = range;
     const style = {};
-    if (0.4 <= percent < 0.6) {
+
+    if ((0 - max / 3) <= value < (0 + max / 3)) {
       style['background-color'] = 'white';
       style['background-opacity'] = 1;
       style['color'] = 'black';
     }
 
-    if (percent <= 0.39) {
+    if (value < (0 - max / 3)) {
+      style['background-opacity'] = `${1 + (value / max)}`;
       style['background-color'] = 'green';
-      style['background-opacity'] = 1 - (percent / 0.25);
       style['color'] = 'white';
+      style['text-outline-color'] = 'black';
     }
 
-    if (0.6 <= percent) {
+    if ((0 + max / 3) <= value ) {
       style['background-color'] = 'purple';
-      style['background-opacity'] = percent / 1;
+      style['background-opacity'] = `${value / max}`;
       style['color'] = 'white';
-    }
+      style['text-outline-color'] = 'black';
 
+    }
     return style;
+  }
+
+  computeFoldChange(expression, selectedFunction) {
+    const classValues = Object.entries(expression.classValues);
+    const c1Val = selectedFunction(classValues[0][1]);
+    const c2Val = selectedFunction(classValues[1][1]);
+
+    let foldChange = Math.log2(c1Val / c2Val);
+    if (foldChange === -Infinity || foldChange === Infinity ) { foldChange = null; }
+
+    return {
+      geneName: expression.geneName,
+      value: foldChange
+    };
   }
 
   applyExpressionData() {
@@ -156,34 +227,30 @@ class Paint extends React.Component {
 
     const selectedFunction = state.selectedFunction.func;
     const expressionTable = state.expressionTable;
-    const selectedClass = state.selectedClass;
 
     const geneNodes = state.cy.nodes('[class="macromolecule"]');
     const geneNodeLabels = _.uniq(geneNodes.map(node => node.data('label'))).sort();
 
     const expressionsInNetwork = expressionTable.rows.filter(row => geneNodeLabels.includes(row.geneName));
+
     const expressionLabels = expressionsInNetwork.map(expression => expression.geneName);
-
-    const max = maxRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
-    const min = minRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
-
-
-    expressionsInNetwork.forEach(expression => {
-      // probably more efficient to add the expression data to the node field instead of interating twice
-      state.cy.nodes().filter(node => node.data('label') === expression.geneName).forEach(node => {
-        const aggFnVal = applyAggregateFn(expression, selectedClass, selectedFunction);
-        const percent = aggFnVal / max;
-        const style = this.expressionDataToNodeStyle(percent);
-
-        node.style(style);
-      });
-    });
-
     geneNodes.filter(node => !expressionLabels.includes(node.data('label'))).style({
       'background-color': 'grey',
       'color': 'grey',
       'opacity': 0.4
     });
+
+    const foldValues = expressionsInNetwork.map(expression => this.computeFoldChange(expression, selectedFunction));
+    const fvs = foldValues.map(fv => fv.value);
+    const maxMagnitude = Math.max(Math.max(...fvs), Math.abs(Math.min(...fvs)));
+    const range = [-maxMagnitude, maxMagnitude];
+    foldValues.forEach(fv => {
+      const matchedNodes = state.cy.nodes().filter(node => node.data('label') === fv.geneName);
+      const style = this.expressionDataToNodeStyle(fv.value, range);
+
+      state.cy.batch(() => matchedNodes.style(style));
+    });
+
   }
 
   toggleDrawer() {
@@ -223,8 +290,13 @@ class Paint extends React.Component {
     const expressionsInNetwork = expressions.filter(row => networkNodes.includes(row.geneName));
     const expressionsNotInNetwork = _.difference(expressions, expressionsInNetwork);
 
-    const max = maxRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
-    const min = minRelativeTo(expressionsInNetwork, selectedClass, selectedFunction);
+
+    const foldValues = expressionsInNetwork.map(expression => this.computeFoldChange(expression, selectedFunction));
+    const fvs = foldValues.map(fv => fv.value);
+    const maxMagnitude = Math.max(Math.max(...fvs), Math.abs(Math.min(...fvs)));
+    const max =  maxMagnitude;
+    const min = -maxMagnitude;
+
 
     const expressionHeader = _.get(expressionTable, 'header', []);
     const expressionRows = expressionsInNetwork.concat(expressionsNotInNetwork);
@@ -236,14 +308,13 @@ class Paint extends React.Component {
         filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['geneName'] }),
         filterable: true,
         filterAll: true
+      },
+      {
+        Header: 'log2 Fold-Change',
+        id: 'foldChange',
+        accessor: row => this.computeFoldChange(row, selectedFunction).value
       }
-    ].concat(expressionHeader.map((className, index) => {
-      return {
-        Header: className,
-        id: className,
-        accessor: row => applyAggregateFn(row, className, selectedFunction)
-      };
-    }));
+    ];
 
     const functionSelector = h('select.paint-select',
       {
@@ -255,64 +326,65 @@ class Paint extends React.Component {
       Object.entries(this.analysisFns()).map(entry => h('option', {value: entry[0]}, entry[0]))
     );
 
-  const classSelector = h('select.paint-select',
-    {
-      value: selectedClass,
-      onChange: e => this.setState({
-        selectedClass: e.target.value
-      }, () => this.applyExpressionData())
-    },
-    expressionHeader.map(exprClass => h('option', { value: exprClass }, exprClass))
-  );
+    const classSelector = h('select.paint-select',
+      {
+        value: selectedClass,
+        onChange: e => this.setState({
+          selectedClass: e.target.value
+        }, () => this.applyExpressionData())
+      },
+      expressionHeader.map(exprClass => h('option', { value: exprClass }, exprClass))
+    );
 
-  const tabs = h(Tabs, [
-    h(TabList, [
-      h(Tab, 'Expression Data'),
-      h(Tab, 'Search Results')
-    ]),
-    h(TabPanel, [
-      h('div.paint-legend', [
-        h('p', `low ${min}`),
-        h('p', `high ${max}`)
+    const tabbedContent = h(Tabs, [
+      h('div.paint-drawer-header', [
+        h(TabList, [
+          h(Tab, 'Expression Data'),
+          h(Tab, 'Search Results')
+        ]),
+        h('a', { onClick: e => this.toggleDrawer()}, [
+          h(Icon, { icon: 'close'}),
+        ])
       ]),
-      h('div.paint-expression-controls', [
-      h('div.paint-function-selector', [
-        'function: ',
-        functionSelector
+      h(TabPanel, [
+        h('div.paint-legend', [
+          h('p', `low ${min}`),
+          h('p', `high ${max}`)
+        ]),
+        h('div.paint-expression-controls', [
+        h('div.paint-function-selector', [
+          'class: ',
+          functionSelector
+        ]),
+        h('div.paint-compare-selector', [
+          `compare: ${expressionHeader[0]} vs ${expressionHeader[1]}`,
+        ]),
       ]),
-      h('div.paint-class-selector', [
-        'class: ',
-        classSelector
-      ]),
-    ]),
-    h(Table, {
-      className:'-striped -highlight',
-      data: expressionRows,
-      columns: columns,
-      defaultPageSize: 150,
-      showPagination: false,
-      onFilteredChange: (column, value) => {
-        cysearch(_.get(column, '0.value', ''), this.state.cy, false, {'border-width': 8, 'border-color': 'red'});
-      }
-     })
-    ]),
-    h(TabPanel, state.searchResults.map(searchResult => {
-        const uri = _.get(searchResult, 'uri', null);
-        const name = _.get(searchResult, 'name', 'N/A');
-        return h('div.paint-search-result', [
-          h('a.plain-link', {onClick: e => this.loadSbgn(uri)}, name)
-        ]);
+      h(Table, {
+        className:'-striped -highlight',
+        data: expressionRows,
+        columns: columns,
+        defaultPageSize: 150,
+        showPagination: false,
+        onFilteredChange: (column, value) => {
+          cysearch(_.get(column, '0.value', ''), this.state.cy, false, {'border-width': 8, 'border-color': 'red'});
+        }
       })
-    )
-  ]);
+      ]),
+      h(TabPanel, state.searchResults.map(searchResult => {
+          const uri = _.get(searchResult, 'uri', null);
+          const name = _.get(searchResult, 'name', 'N/A');
+          return h('div.paint-search-result', [
+            h('a.plain-link', {onClick: e => this.loadSbgn(uri)}, name)
+          ]);
+        })
+      )
+    ]);
 
     return h('div.paint', [
       h('div.paint-content', [
         h('div', { className: classNames('paint-drawer', { 'closed': !state.drawerOpen }) }, [
-          h('a', { onClick: e => this.toggleDrawer()}, [
-            h(Icon, { icon: 'close'}),
-          ]),
-          tabs
+          tabbedContent
         ]),
         h(OmniBar, { title: `${state.name} | ${state.datasource}`, onMenuClick: (e) => this.toggleDrawer() }),
         h(Network, { cy: state.cy })

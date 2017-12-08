@@ -2,6 +2,14 @@ const cytoscape = require('cytoscape');
 const sbgnStyleSheet = require('cytoscape-sbgn-stylesheet');
 
 const stylesheet = sbgnStyleSheet(cytoscape)
+.selector('node')
+.css({
+  'background-opacity': '0.4'
+})
+.selector('node:active')
+.css({
+  'background-opacity': '0.7',
+})
 .selector('node[class!="compartment"]')
 .css({
   'font-size': 20,

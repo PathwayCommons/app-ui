@@ -37,6 +37,26 @@ const apiCaller = {
     }).then(res => res.json());
   },
 
+  getLatestLayouts(uri, version, numEntries) {
+    return fetch(`/api/get-layout-history?${qs.stringify({uri, version, numEntries})}`, {
+      method: 'GET', headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+      }
+    }).then(res =>  res.json());
+  },
+  
+  renderImages(cyJson) {
+    return fetch(`/api/render-png`, {
+      method: 'POST', headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body : JSON.stringify({
+        cyJson
+      })
+    }).then(res =>  res.json());
+  },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into
   // a layout

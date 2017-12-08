@@ -11,13 +11,20 @@ Required
 Optional
 - desc (string to display in tooltip or blank for no tooltip)
 - active (false - default, or true)
+- theme (specify 'light' to get a light button)
 */
 class IconButton extends React.Component {
   render() {
     const props = this.props;
 
+    const theme = props.theme === 'light' ? props.theme : 'dark';
+
     let innerContent = h('div', {
-      className: classNames('common-icon-button', { 'common-icon-button-active': props.active }),
+      className: classNames(
+        'common-icon-button',
+        { 'common-icon-button-active': props.active },
+        { 'common-icon-button-light': theme === 'light' }
+      ),
       onClick: () => props.onClick()
     }, [h('i.material-icons', props.icon || 'info')]);
 

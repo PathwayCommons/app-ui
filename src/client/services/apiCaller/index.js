@@ -44,7 +44,7 @@ const apiCaller = {
   },
 
   getLatestLayouts(uri, version, numEntries) {
-    return fetch(`/api/get-layout-history?${qs.stringify({uri, version, numEntries})}`, {
+    return fetchWrapper(`/api/get-layout-history?${qs.stringify({uri, version, numEntries})}`, {
       method: 'GET', headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json'
@@ -53,7 +53,7 @@ const apiCaller = {
   },
   
   renderImages(cyJson) {
-    return fetch(`/api/render-png`, {
+    return fetchWrapper(`/api/render-png`, {
       method: 'POST', headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json'

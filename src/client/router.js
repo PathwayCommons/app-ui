@@ -14,7 +14,6 @@ const Analytics = (props) => {
   return null;
 };
 
-
 module.exports = () => {
   return h(BrowserRouter, { basename: config.baseName }, [
     h('div', [

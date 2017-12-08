@@ -16,6 +16,9 @@ function rearrangeGraph(nodePositions, cy, options) {
   Object.keys(nodePositions).forEach(function (key) {
     let node = cy.getElementById(key);
     let position = nodePositions[key];
+
+    if(node.isParent()) {return;}
+
     node.position(position);
 
     if (options.admin) {

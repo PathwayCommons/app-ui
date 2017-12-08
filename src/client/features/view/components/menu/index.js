@@ -11,6 +11,7 @@ const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
 const IconButton = require('../../../../common/iconButton');
 const apiCaller = require('../../../../services/apiCaller');
 const datasourceLinks = require('../../../../common/config').databases;
+const globalConfig = require('../../../../../config');
 
 let debouncedSearchNodes = _.debounce(searchNodes, 300);
 
@@ -139,7 +140,7 @@ class Menu extends React.Component {
             h('div.pc-logo-container', [
               h(Link, { to: { pathname: '/search' } }, [
                 h('img', {
-                  src: '/img/icon.png'
+                  src: globalConfig.baseName + '/img/icon.png'
                 })
               ])
             ]),

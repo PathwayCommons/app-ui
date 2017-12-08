@@ -5,6 +5,7 @@ const ReactGA = require('react-ga');
 const _ = require('lodash');
 
 const Features = require('./features');
+const config = require('../config');
 
 ReactGA.initialize('UA-43341809-7');
 const Analytics = (props) => {
@@ -13,9 +14,8 @@ const Analytics = (props) => {
   return null;
 };
 
-
 module.exports = () => {
-  return h(BrowserRouter, [
+  return h(BrowserRouter, { basename: config.baseName }, [
     h('div', [
       {
         path: '*',

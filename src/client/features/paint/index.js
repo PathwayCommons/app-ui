@@ -341,7 +341,7 @@ class Paint extends React.Component {
       h('div.paint-drawer-header', [
         h(TabList, [
           h(Tab, 'Expression Data'),
-          h(Tab, 'Search Results')
+          // h(Tab, 'Search Results')
         ]),
         h('a', { onClick: e => this.toggleDrawer()}, [
           h(Icon, { icon: 'close'}),
@@ -372,14 +372,14 @@ class Paint extends React.Component {
         }
       })
       ]),
-      h(TabPanel, state.searchResults.map(searchResult => {
-          const uri = _.get(searchResult, 'uri', null);
-          const name = _.get(searchResult, 'name', 'N/A');
-          return h('div.paint-search-result', [
-            h('a.plain-link', {onClick: e => this.loadSbgn(uri)}, name)
-          ]);
-        })
-      )
+      // h(TabPanel, state.searchResults.map(searchResult => {
+      //     const uri = _.get(searchResult, 'uri', null);
+      //     const name = _.get(searchResult, 'name', 'N/A');
+      //     return h('div.paint-search-result', [
+      //       h('a.plain-link', {onClick: e => this.loadSbgn(uri)}, name)
+      //     ]);
+      //   })
+      // )
     ]);
 
     return h('div.paint', [

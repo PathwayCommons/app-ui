@@ -192,7 +192,7 @@ class Paint extends React.Component {
     }
 
     if (value < (0 - max / 3)) {
-      style['background-opacity'] = `${1 + (value / max)}`;
+      style['background-opacity'] = `${Math.abs(value / max)}`;
       style['background-color'] = 'green';
       style['color'] = 'white';
       style['text-outline-color'] = 'black';

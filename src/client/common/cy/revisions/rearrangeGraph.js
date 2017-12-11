@@ -7,7 +7,7 @@ Note : -Options Parameter is optional
        -Layouts is a collection of layouts
        -Positions is a collection of position objects 
 */
-function rearrangeGraph(nodePositions, cy, options) {
+function rearrangeGraph(nodePositions, cy, options = {}) {
 
   //Reset all positions to 0
   cy.nodes().forEach(node => node.position({x : 0, y : 0}));
@@ -16,6 +16,9 @@ function rearrangeGraph(nodePositions, cy, options) {
   Object.keys(nodePositions).forEach(function (key) {
     let node = cy.getElementById(key);
     let position = nodePositions[key];
+
+    if(node.isParent()) {return;}
+
     node.position(position);
 
     if (options.admin) {
@@ -23,12 +26,14 @@ function rearrangeGraph(nodePositions, cy, options) {
     }
   });
 
+  const duration = options.duration || 700;
+
   //Animate zoom and fit
   cy.animate({
     fit: {
       eles: cy.elements(), padding: 100
     }
-  }, { duration: 700 });
+  }, { duration: duration });
 }
 
 module.exports = rearrangeGraph; 

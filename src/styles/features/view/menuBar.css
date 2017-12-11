@@ -95,36 +95,6 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
 
 }
 
-.tool-button {
-  @extend %flex-center;
-  @extend %no-select;
-
-  height: calc(var(--icon-size) * 3 / 2.2);
-  width: calc(var(--icon-size) * 3 / 2.2);
-  margin-left: 0.12em;
-  margin-right: 0.12em;
-
-  position: relative;
-
-  //border: 1px solid var(--light-base-colour-dark);
-  border-radius: 50%;
-  transition: all 0.1s linear;
-
-  
-  font-size: var(--icon-size);
-  color: var(--dark-base-colour);
-
-  cursor: pointer;
-
-  &:hover {
-    background-color: var(--light-base-colour-dark);
-  }
-
-  &.tool-button-active {
-    color: var(--accent-1-colour);
-  }
-}
-
 .layout-dropdown {
   @extend %flex-center;
 
@@ -189,7 +159,7 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
 
 .view-search {
   height: 100% !important;
-  width: 100%;
+  width: 90%;
 
   padding: 0 0 1px 0 !important;
 

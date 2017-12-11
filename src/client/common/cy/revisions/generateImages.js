@@ -1,7 +1,5 @@
 const apiCaller = require('../../../services/apiCaller/');
 
-
-
 /* generateImages(layout, graph)
    Generate a collection of cytoscape images that represent the different applied layouts
    - Requires a valid layout list from the server and a valid cytoscape graph object

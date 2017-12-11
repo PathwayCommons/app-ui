@@ -11,11 +11,11 @@ const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
 const IconButton = require('../../../../common/iconButton');
 const apiCaller = require('../../../../services/apiCaller');
 const datasourceLinks = require('../../../../common/config').databases;
+const TextField = require('../../../../common/textField/');
 const Popup = require('../../../../common/popup/');
-const CopyField = require('../../../../common/copyField/');
 const getShareLink = require('./share');
 const rearrangeGraph = require('../../../../common/cy/revisions/rearrangeGraph');
-const datasourceHomes = require ('../../../../common/config').databasesHomePages;
+const datasourceHomes = require('../../../../common/config').databasesHomePages;
 const globalConfig = require('../../../../../config');
 
 
@@ -45,7 +45,9 @@ class Menu extends React.Component {
       complexesExpanded: true,
       selectedLayout: props.currLayout,
       initialLayoutSet: false,
-      renderedSnap : false,
+      renderedSnap: false,
+      snapshotURL: '',
+      linkCopiedActive: false
     };
   }
 
@@ -75,9 +77,9 @@ class Menu extends React.Component {
 
     layout.pon('layoutstop').then(function () {
       //Render Snapshot
-      if(!renderedSnap && snapshotId){
+      if (!renderedSnap && snapshotId) {
         apiCaller.getSnapshot(snapshotId).then(res => {
-          that.setState({renderedSnap : true});
+          that.setState({ renderedSnap: true });
           rearrangeGraph(res.positions, cy, {}, res.zoom, res.pan);
         });
         return;
@@ -131,10 +133,18 @@ class Menu extends React.Component {
     return _.get(link, '0.1', '');
   }
 
+  getShareLinkAndToggle() {
+    const props = this.props;
+    const state = this.state;
+    const snapshotOpen = state.snapshotOpen;
+    if (snapshotOpen) { this.setState({ snapshotOpen: false }); }
+    else { getShareLink(props.cy, props.uri).then(res => this.setState({ snapshotURL: res, snapshotOpen: true })); }
+  }
+
   render() {
     const datasourceLink = this.getDatasourceLink(this.props.datasource);
     const datasourceHome = this.getDatasourceHome(this.props.datasource);
-    const isAdmin = this.props.admin; 
+    const isAdmin = this.props.admin;
 
     const layoutItems = this.props.availableLayouts.map((layout, index) => {
       return (
@@ -148,7 +158,7 @@ class Menu extends React.Component {
     });
 
     const toolButtonEls = Object.keys(toolButtons).map((button, index) => {
-      if(button === 'history' && !isAdmin) {
+      if (button === 'history' && !isAdmin) {
         return;
       }
 
@@ -190,16 +200,18 @@ class Menu extends React.Component {
             }),
             h(IconButton, {
               icon: 'share',
-              active: this.state.searchOpen,
-              onClick: () => {
-                getShareLink(this.props.cy, this.props.uri).then(res => this.setState({snapshotURL : res, showPopup: true}));
-              },
-              desc: 'Get Shareable Link'
+              active: this.state.snapshotOpen,
+              onClick: () => this.getShareLinkAndToggle(),
+              desc: 'Get shareable link'
             }),
-            h(Popup, 
-              {active : this.state.showPopup, deactivate: () => this.setState({showPopup : false })},
-              [h(CopyField, {text : this.state.snapshotURL})] 
-            ),
+            h('div', {
+              className: classNames('snapshot-container', { 'snapshot-container-open': this.state.snapshotOpen })
+            }, [h(TextField, { text: this.state.snapshotURL, copy: true, copyCallback: () => this.setState({ linkCopiedActive: true, snapshotOpen: false }) })]),
+            h(Popup, {
+              active: this.state.linkCopiedActive,
+              deactivate: () => this.setState({ linkCopiedActive: false }),
+              dur: 2000
+            }, 'Link copied'),
             h(IconButton, {
               active: this.state.dropdownOpen,
               icon: this.props.admin ? 'shuffle' : 'replay',
@@ -224,18 +236,16 @@ class Menu extends React.Component {
             h('div', {
               className: classNames('search-nodes', { 'search-nodes-open': this.state.searchOpen }),
               onChange: e => this.changeSearchValue(e.target.value)
-            }, [
-                h('div.view-search-bar', [
-                  h('input.view-search', {
-                    ref: dom => this.searchField = dom,
-                    type: 'search',
-                    placeholder: 'Search entities'
-                  }),
-                  h('div.view-search-clear', {
-                    onClick: () => this.clearSearchBox(),
-                  }, [h('i.material-icons', 'close')])
-                ])
-              ])
+            }, [h('div.view-search-bar', [
+              h('input.view-search', {
+                ref: dom => this.searchField = dom,
+                type: 'search',
+                placeholder: 'Search entities'
+              }),
+              h('div.view-search-clear', {
+                onClick: () => this.clearSearchBox(),
+              }, [h('i.material-icons', 'close')])
+            ])])
           ]))
         ])
     );

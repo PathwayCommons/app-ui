@@ -1,0 +1,27 @@
+.common-text-field-container{
+  @extend %flex-center;
+
+  height: 1.85em;
+  width: 100%;
+  background-color: white;
+  padding: 0em 0.5em;
+  box-sizing: border-box;
+  border: 1px solid var(--light-base-colour-dark);
+}
+
+.common-text-field{
+  height: 100% !important;
+  width: 90%;
+  padding: 0 0.5em 1px 0 !important;
+  border-width: 0px !important;
+}
+
+.common-text-field-copy-container {
+  @extend %flex-center;
+  
+  height: 100%;
+  padding-left: 0.5em;
+  border-color: var(--light-base-colour-dark);
+  border-style: solid;
+  border-width: 0 0 0 1px;
+}

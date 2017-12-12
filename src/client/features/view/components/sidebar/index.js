@@ -4,9 +4,9 @@ const classNames = require('classnames');
 
 const {IconButton} = require('../../../../common/components');
 
-const FileDownloadMenu = require('./fileDownload');
-const GraphInfoMenu = require('./graphInfoMenu');
-const historyMenu = require('./historyMenu');
+const FileDownloadMenu = require('./file-download-menu');
+const GraphInfoMenu = require('./graph-info-menu');
+const HistoryMenu = require('./history-menu');
 
 /* Props
 - cy
@@ -51,7 +51,7 @@ class Sidebar extends React.Component {
         cy: props.cy,
         uri: props.uri,
         name: props.name }),
-      history: h(historyMenu, {
+      history: h(HistoryMenu, {
         uri: props.uri,
         name: props.name,
         datasource: props.datasource,

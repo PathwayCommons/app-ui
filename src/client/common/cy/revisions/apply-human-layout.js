@@ -1,12 +1,5 @@
 const { ServerAPI } = require('../../../services/');
 
-/* rearrangeGraph(layouts, positions, cy, headless, options)
-Apply a human created layout and submit the changes to the server
-Returns a PNG of the modified graph
-Note : -Options Parameter is optional
-       -Layouts is a collection of layouts
-       -Positions is a collection of position objects 
-*/
 function applyHumanLayout(nodePositions, cy, options = {}) {
 
   //Reset all positions to 0

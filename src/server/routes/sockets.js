@@ -5,6 +5,9 @@ const qs = require('querystring');
 const io = require('./../io').get();
 
 io.on('connection', function (socket) {
+
+  // hack to see which uri (pathway) is being edited
+  // todo find a better way.  best would be to send uri as a param
   let referer = socket.handshake.headers.referer;
   let params = referer.match(/(edit|view)\?(.*)/);
   if (params){
@@ -45,16 +48,16 @@ io.on('connection', function (socket) {
   socket.on('disconnect', function () {
     let userURL = socket.handshake.headers.referer;
     
-      let editParams = userURL.match(/edit\?(.*)/);
-    
-      if (editParams) {
-    
-        let params = qs.parse(editParams[1]);
-        let pcID = params.uri;
-        let releaseID = params.releaseID || 'latest';
-    
-        controller.endSession(pcID, releaseID, socket.id);
-      }
+    let editParams = userURL.match(/edit\?(.*)/);
+  
+    if (editParams) {
+  
+      let params = qs.parse(editParams[1]);
+      let pcID = params.uri;
+      let releaseID = params.releaseID || 'latest';
+  
+      controller.endSession(pcID, releaseID, socket.id);
+    }
   });
 });
 

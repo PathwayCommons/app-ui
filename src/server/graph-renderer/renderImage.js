@@ -1,4 +1,6 @@
 const cytosnap = require('cytosnap');
+const _ = require('lodash');
+
 const getRenderOptions = require('./getRenderOptions');
 
 /* renderImage (graphValues)
@@ -6,22 +8,19 @@ const getRenderOptions = require('./getRenderOptions');
    - Requires a valid graphValues object which consists of a layouts field and a graph field
    - Returns a collection of PNGs in base64
 */
-function renderImage(graphValues) {
+function renderImage(graph, layouts) {
   //Create a cytosnap object
-  var snap = cytosnap();
-  var layouts = graphValues.layouts;
-  var graph = graphValues.graph;
+  const snap = cytosnap();
 
   if(!layouts || layouts.length <= 1) {return new Promise(r => r([]));}
 
-  //Start Cytosnap Instance
-  return snap.start().then(function () {
-    //Create an array of images
-    let images = layouts.map(layout => {
-      //Build a render options object
-      let renderJson = getRenderOptions(graph, layout.positions);
+  const parents = _.uniq(_.compact(graph.map(element => element.data.parent)));
 
-      //Generate an image of a layout. 
+  return snap.start().then(function () {
+    const images = layouts.map(layout => {
+      const layoutPositions = _.pickBy(layout.positions, (val, key) => !parents.includes(key));
+
+      const renderJson = getRenderOptions(graph, layoutPositions);
       return snap.shot(renderJson).then(res => ({
         id: layout.id,
         date: layout.date_added,

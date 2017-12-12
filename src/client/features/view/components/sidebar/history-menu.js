@@ -2,8 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const Loader = require('react-loader');
 
-const { getLayouts } = require('../../../../common/cy/layout/');
-const revisions = require('../../../../common/cy/revisions/');
+const { getLayouts, applyHumanLayout } = require('../../../../common/cy/layout/');
 
 const { ServerAPI } = require('../../../../services/');
 
@@ -19,31 +18,41 @@ class HistoryMenu extends React.Component {
     };
   }
 
-  //Get layouts and images if they do not already exists
   componentDidMount() {
     if (!this.state.images || !this.state.layouts) {
-      //Fetch most recent layout revisions from the server
       ServerAPI.getLatestLayouts(this.props.uri, 'latest', 10).then(res => {
         this.setState({ layouts: res });
 
-        //Store the revisions for future use
         this.props.cy.scratch('_layoutRevisions', res);
       })
+      .then(() => {
         //Obtain an image of each layout
-        .then(() => {
-          let graph = this.state.layouts.graph;
-          let layouts = this.state.layouts.layout;
-          
-          revisions.generateImages(layouts, graph).then(res => {
-            this.setState({
-              images: res,
-              loading: false
-            });
+        const graph = this.state.layouts.graph;
+        const layouts = this.state.layouts.layout;
 
-            //Store the images for future use
-            this.props.cy.scratch('_layoutImages', res);
+        const g = graph.nodes.concat(graph.edges).map(item => ({
+          data : {
+            id : item.data.id,
+            bbox : item.data.bbox,
+            parent : item.data.parent,
+            class : item.data.class,
+            portSource : item.data.portSource,
+            portTarget : item.data.portTarget,
+            source : item.data.source,
+            target : item.data.target
+          }
+        }));
+
+        ServerAPI.renderImages(g, layouts).then(res => {
+          this.setState({
+            images: res,
+            loading: false
           });
+
+          // cache images
+          this.props.cy.scratch('_layoutImages', res);
         });
+      });
     }
   }
 
@@ -64,7 +73,7 @@ class HistoryMenu extends React.Component {
     this.props.changeLayout(layoutConf);
 
     //Adjust the graph to match the new new layout
-    revisions.applyHumanLayout(positions, cy, props);
+    applyHumanLayout(cy, positions, props);
   }
 
   //Generate a image card for a given layout
@@ -85,7 +94,7 @@ class HistoryMenu extends React.Component {
       key: image.id,
       src: image.img,
       children: 'Date Added : ' + dateStr,
-      onClick: () => that.applyLayout(layout.id, cy, that.props)
+      onClick: () => this.applyLayout(layout.id, cy, that.props)
     });
   }
 

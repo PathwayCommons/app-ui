@@ -93,11 +93,11 @@ function getHistory(pcID, releaseID, numEntries) {
   });
 }
 
-//renderPNG(pcId, releaseID) 
-//Renders a cytoscape object to PNG
-//Requires a valid cytoscape json
-function renderPNG(cyJson) {
-  return renderImage(cyJson);
+
+// for a given graph and a list of layouts generate images of the 
+// graph with the layout applied
+function renderPNG(graph, layouts) {
+  return renderImage(graph, layouts);
 }
 
 module.exports = {

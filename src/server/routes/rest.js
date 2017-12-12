@@ -15,7 +15,8 @@ router.post('/submit-layout', function (req, res) {
 
 // Expose a rest endpoint for controller.renderPN
 router.post('/render-png', function (req, res) {
-  controller.renderPNG(req.body.cyJson)
+  const { graph, layouts } = req.body; 
+  controller.renderPNG(graph, layouts)
     .then((package) => {
       res.json(package);
     });

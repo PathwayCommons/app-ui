@@ -91,5 +91,19 @@ const getLayouts = (presetLayoutJSON) => {
   return layoutConfig;
 };
 
+const applyHumanLayout = (cy, layoutJSON, animateOpts = {}) => {
+  const nodeIds = Object.keys(layoutJSON);
 
-module.exports = { getLayouts, humanLayoutDisplayName };
+  nodeIds.forEach(id => {
+    const node = cy.getElementById(id);
+    const pos = layoutJSON[id];
+
+    if (!node.isParent()) {
+      node.position(pos);
+    }
+  });
+  
+  cy.animate(animateOpts);
+};
+
+module.exports = { getLayouts, humanLayoutDisplayName, applyHumanLayout };

@@ -1,5 +1,5 @@
 const { ServerAPI } = require('../../../services/');
-const { applyHumanLayout } = require('../revisions/');
+const { applyHumanLayout } = require('../layout/');
 
 const bindListenAndChange = cy => {
   ServerAPI.initReceiveNodeChange(nodeDiff => {
@@ -12,7 +12,7 @@ const bindListenAndChange = cy => {
   });
 
   ServerAPI.initReceiveLayoutChange(layoutJSON => {
-    applyHumanLayout(layoutJSON, cy, { duration: 250 });
+    applyHumanLayout(cy, layoutJSON, { duration: 250 });
   });
 };
 

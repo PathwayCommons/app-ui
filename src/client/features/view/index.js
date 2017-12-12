@@ -3,7 +3,7 @@ const h = require('react-hyperscript');
 const _ = require('lodash');
 const queryString = require('query-string');
 
-const { Menu, Graph, Sidebar } = require('./components/');
+const { Menu, Network, Sidebar } = require('./components/');
 const { Popup } = require('../../common/components');
 
 const { getLayouts } = require('../../common/cy/layout/');
@@ -32,7 +32,7 @@ class View extends React.Component {
         comments: []
       },
 
-      graphRendered: false,
+      networkRendered: false,
       activeMenu: '',
 
       activateWarning: false,
@@ -61,18 +61,18 @@ class View extends React.Component {
     }
   }
 
-  updateGraphRenderStatus(bool) {
+  updateNetworkRenderStatus(rendered) {
     let activateWarning = false;
     let warningMessage = '';
 
-    if (bool && this.props.admin) {
+    if (rendered && this.props.admin) {
       bindListenAndChange(this.state.cy);
       activateWarning = true;
       warningMessage = 'Be careful! Your changes will be live.';
     }
 
     this.setState({
-      graphRendered: true,
+      networkRendered: true,
       activateWarning: activateWarning,
       warningMessage: warningMessage
     });
@@ -95,15 +95,15 @@ class View extends React.Component {
         activeMenu: state.activeMenu,
         changeMenu: menu => this.setState({activeMenu: menu})
       }),
-      h(Graph, {
+      h(Network, {
         cy: state.cy,
         graphJSON: state.graphJSON,
-        updateGraphRenderStatus: bool => this.updateGraphRenderStatus(bool)
+        updateNetworkRenderStatus: rendered => this.updateNetworkRenderStatus(rendered)
       }),
       h(Popup, {
         active: state.activateWarning,
         deactivate: () => this.setState({ activateWarning: false }),
-        dur: 5000
+        duration: 5000
       }, state.warningMessage),
       h(Sidebar, {
         cy: state.cy,

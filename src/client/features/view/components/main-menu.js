@@ -4,16 +4,16 @@ const Link = require('react-router-dom').Link;
 const classNames = require('classnames');
 const _ = require('lodash');
 
-const { humanLayoutDisplayName } = require('../../../../common/cy/layout');
-const searchNodes = require('../../../../common/cy/search');
+const { humanLayoutDisplayName } = require('../../../common/cy/layout');
+const searchNodes = require('../../../common/cy/search');
 
-const IconButton = require('../../../../common/components').IconButton;
-const Dropdown = require('../../../../common/components').Dropdown.Dropdown;
-const DropdownOption = require('../../../../common/components').Dropdown.DropdownOption;
+const IconButton = require('../../../common/components').IconButton;
+const Dropdown = require('../../../common/components').Dropdown.Dropdown;
+const DropdownOption = require('../../../common/components').Dropdown.DropdownOption;
 
 
-const { ServerAPI } = require('../../../../services/');
-const datasourceLinks = require('../../../../common/config').databases;
+const { ServerAPI } = require('../../../services/');
+const datasourceLinks = require('../../../common/config').databases;
 
 let debouncedSearchNodes = _.debounce(searchNodes, 300);
 

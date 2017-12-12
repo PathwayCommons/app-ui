@@ -9,12 +9,12 @@ const _ = require('lodash');
 - graphJSON
 */
 
-class Graph extends React.Component {
+class Network extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      graphId: Math.floor(Math.random() * Math.pow(10, 8)) + 1,
-      graphRendered: false,
+      networkId: Math.floor(Math.random() * Math.pow(10, 8)) + 1,
+      networkRendered: false,
       width: '100vw',
       height: '100vh'
     };
@@ -27,34 +27,34 @@ class Graph extends React.Component {
   componentDidMount() {
     const container = this.graphDOM;
     this.props.cy.mount(container);
-    this.checkRenderGraph(this.props.graphJSON);
+    this.checkRenderNetwork(this.props.graphJSON);
   }
 
   componentWillReceiveProps(nextProps) {
-    this.checkRenderGraph(nextProps.graphJSON);
+    this.checkRenderNetwork(nextProps.graphJSON);
   }
 
-  checkRenderGraph(graphJSON) {
-    if (!this.state.graphRendered && !_.isEmpty(graphJSON)) { this.renderGraph(graphJSON); }
+  checkRenderNetwork(graphJSON) {
+    if (!this.state.networkRendered && !_.isEmpty(graphJSON)) { this.renderNetwork(graphJSON); }
   }
 
   // Graph rendering is not tracked by React
-  renderGraph(graphJSON) {
+  renderNetwork(graphJSON) {
     const cy = this.props.cy;
 
     cy.remove('*');
     cy.add(graphJSON);
 
-    this.props.updateGraphRenderStatus(true);
+    this.props.updateNetworkRenderStatus(true);
     //toolTipCreator.bindTippyToElements(cy);
-    this.setState({ graphRendered: true });
+    this.setState({ networkRendered: true });
 
   }
 
   render() {
     return h('div.Graph', [
       h('div', {
-        id: this.state.graphId,
+        id: this.state.networkId,
         ref: dom => this.graphDOM = dom,
         style: {
           width: this.state.width,
@@ -65,4 +65,4 @@ class Graph extends React.Component {
   }
 }
 
-module.exports = Graph;
+module.exports = Network;

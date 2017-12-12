@@ -1,5 +1,5 @@
-const Graph = require('./graph/');
-const Menu = require('./menu/');
+const Network = require('./network');
+const Menu = require('./main-menu');
 const Sidebar = require('./sidebar/');
 
-module.exports = {Graph, Menu, Sidebar};
+module.exports = {Network, Menu, Sidebar};

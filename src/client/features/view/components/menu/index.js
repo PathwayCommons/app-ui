@@ -199,7 +199,7 @@ class Menu extends React.Component {
               desc: `${this.state.complexesExpanded ? 'Collapse' : 'Expand'} complexes`
             }),
             h(IconButton, {
-              icon: 'share',
+              icon: 'link',
               active: this.state.snapshotOpen,
               onClick: () => this.getShareLinkAndToggle(),
               desc: 'Get shareable link'

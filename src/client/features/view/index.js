@@ -8,7 +8,7 @@ const { Popup } = require('../../common/components');
 const { getLayouts } = require('../../common/cy/layout/');
 const make_cytoscape = require('../../common/cy/');
 const bindMove = require('../../common/cy/events/move');
-const bindListenAndChange = require('../../common/cy/events/listenAndChange');
+const bindListenAndChange = require('../../common/cy/events/listen-and-change');
 const queryString = require('query-string');
 const { apiCaller } = require('../../services/');
 

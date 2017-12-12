@@ -4,8 +4,8 @@ const classNames = require('classnames');
 const saveAs = require('file-saver').saveAs;
 const _ = require('lodash');
 
-const FlatButton = require('../../../../../common/flatButton');
-const AsyncButton = require('../../../../../common/asyncButton');
+const {FlatButton, AsyncButton} = require('../../../../../common/components');
+
 const apiCaller = require('../../../../../services/apiCaller');
 
 const downloadTypes = [

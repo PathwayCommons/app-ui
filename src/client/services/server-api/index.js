@@ -1,61 +1,39 @@
 const io = require('socket.io-client');
 const qs = require('querystring');
-let socket = io.connect('/');
+const _ = require('lodash');
+
+const socket = io.connect('/');
+
+const defaultFetchOpts = {
+  method: 'GET', headers: {
+    'Content-type': 'application/json',
+    'Accept': 'application/json'
+  }
+};
 
 const ServerAPI = {
   getGraphAndLayout(uri, version) {
-    return fetch(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`, {
-      method: 'GET', headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      }
-    }).then(res =>  res.json());
+    return fetch(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`, defaultFetchOpts).then(res =>  res.json());
   },
 
   pcQuery(method, params){
-    return fetch(`/pc2/${method}?${qs.stringify(params)}`, {
-      method: 'GET', headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      }
-    });
+    return fetch(`/pc2/${method}?${qs.stringify(params)}`, defaultFetchOpts);
   },
 
   datasources(){
-    return fetch('/pc2/datasources', {
-      method: 'GET', headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      }
-    }).then(res => res.json());
+    return fetch('/pc2/datasources', defaultFetchOpts).then(res => res.json());
   },
   
   querySearch(query){
-    return fetch(`/pc2/querySearch?${qs.stringify(query)}`,{
-      'Content-type': 'application/json',
-      'Accept': 'application/json'
-    }).then(res => res.json());
+    return fetch(`/pc2/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },
 
   getLatestLayouts(uri, version, numEntries) {
-    return fetch(`/api/get-layout-history?${qs.stringify({uri, version, numEntries})}`, {
-      method: 'GET', headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      }
-    }).then(res =>  res.json());
+    return fetch(`/api/get-layout-history?${qs.stringify({uri, version, numEntries})}`, defaultFetchOpts).then(res =>  res.json());
   },
   
   renderImages(cyJson) {
-    return fetch(`/api/render-png`, {
-      method: 'POST', headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body : JSON.stringify({
-        cyJson
-      })
-    }).then(res =>  res.json());
+    return fetch(`/api/render-png`, _.assign({}, { method: 'POST', body: JSON.stringify(cyJson) }, defaultFetchOpts)).then(res =>  res.json());
   },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into

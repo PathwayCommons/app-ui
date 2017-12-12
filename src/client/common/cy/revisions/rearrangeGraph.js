@@ -1,4 +1,4 @@
-const apiCaller = require('../../../services/apiCaller/');
+const { ServerAPI } = require('../../../services/');
 
 /* rearrangeGraph(layouts, positions, cy, headless, options)
 Apply a human created layout and submit the changes to the server
@@ -22,7 +22,7 @@ function rearrangeGraph(nodePositions, cy, options = {}) {
     node.position(position);
 
     if (options.admin) {
-      apiCaller.submitNodeChange(options.uri, 'latest', key, position);
+      ServerAPI.submitNodeChange(options.uri, 'latest', key, position);
     }
   });
 

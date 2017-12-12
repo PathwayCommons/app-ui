@@ -3,7 +3,7 @@ const h = require('react-hyperscript');
 const Loader = require('react-loader');
 
 const { getLayouts } = require('../../../../../common/cy/layout/');
-const apiCaller = require('../../../../../services/apiCaller');
+const { ServerAPI } = require('../../../../../services/');
 const revisions = require('../../../../../common/cy/revisions/');
 const imageCard = require('./components/imageCard');
 
@@ -21,7 +21,7 @@ class HistoryMenu extends React.Component {
   componentDidMount() {
     if (!this.state.images || !this.state.layouts) {
       //Fetch most recent layout revisions from the server
-      apiCaller.getLatestLayouts(this.props.uri, 'latest', 10).then(res => {
+      ServerAPI.getLatestLayouts(this.props.uri, 'latest', 10).then(res => {
         this.setState({ layouts: res });
 
         //Store the revisions for future use

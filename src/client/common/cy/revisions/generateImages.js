@@ -1,4 +1,4 @@
-const apiCaller = require('../../../services/apiCaller/');
+const { ServerAPI } = require('../../../services/');
 
 
 
@@ -33,7 +33,7 @@ function generateImages(layouts, graph) {
     }
   }));
 
-  return apiCaller.renderImages({layouts, graph});
+  return ServerAPI.renderImages({layouts, graph});
 }
 
 module.exports = generateImages; 

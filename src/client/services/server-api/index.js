@@ -2,7 +2,7 @@ const io = require('socket.io-client');
 const qs = require('querystring');
 let socket = io.connect('/');
 
-const apiCaller = {
+const ServerAPI = {
   getGraphAndLayout(uri, version) {
     return fetch(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`, {
       method: 'GET', headers: {
@@ -93,4 +93,4 @@ const apiCaller = {
 
 };
 
-module.exports = apiCaller;
+module.exports = ServerAPI;

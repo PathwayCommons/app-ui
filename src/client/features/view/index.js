@@ -1,6 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
+const queryString = require('query-string');
 
 const { Menu, Graph, Sidebar } = require('./components/');
 const { Popup } = require('../../common/components');
@@ -9,8 +10,8 @@ const { getLayouts } = require('../../common/cy/layout/');
 const make_cytoscape = require('../../common/cy/');
 const bindMove = require('../../common/cy/events/move');
 const bindListenAndChange = require('../../common/cy/events/listen-and-change');
-const queryString = require('query-string');
-const { apiCaller } = require('../../services/');
+
+const { ServerAPI } = require('../../services/');
 
 class View extends React.Component {
   constructor(props) {
@@ -38,7 +39,7 @@ class View extends React.Component {
       warningMessage: '',
     };
 
-    apiCaller.getGraphAndLayout(query.uri, 'latest').then(graphJSON => {
+    ServerAPI.getGraphAndLayout(query.uri, 'latest').then(graphJSON => {
       const layoutConf = getLayouts(graphJSON.layout);
       this.setState({
         graphJSON: graphJSON.graph,

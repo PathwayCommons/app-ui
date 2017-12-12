@@ -6,7 +6,7 @@ const _ = require('lodash');
 
 const {FlatButton, AsyncButton} = require('../../../../../common/components');
 
-const apiCaller = require('../../../../../services/apiCaller');
+const { ServerAPI } = require('../../../../../services/');
 
 const downloadTypes = [
   { type: 'png', displayName: 'Image (PNG)', ext: 'png', hidden: false, description: 'Download an image of the entire view.' },
@@ -55,7 +55,7 @@ class FileDownloadMenu extends React.Component {
   initiatePCDownload(format, fileExt, fileType) {
     this.setState({ loadingOptions: this.state.loadingOptions.concat(fileType) });
 
-    apiCaller.pcQuery('get', { uri: this.props.uri, format: format })
+    ServerAPI.pcQuery('get', { uri: this.props.uri, format: format })
       .then(res => res.text()
         .then(content => {
           let fileContent = content;

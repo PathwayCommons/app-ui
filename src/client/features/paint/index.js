@@ -12,7 +12,7 @@ const make_cytoscape = require('../../common/cy');
 const cysearch = _.debounce(require('../../common/cy/search'), 500);
 
 const Icon = require('../../common/components').Icon;
-const { apiCaller } = require('../../services');
+const { ServerAPI } = require('../../services');
 
 const {createExpressionTable, minRelativeTo, maxRelativeTo, applyAggregateFn} = require('./expression-model');
 const OmniBar = require('./omnibar');
@@ -66,7 +66,7 @@ class Paint extends React.Component {
 
   loadSbgn(uri) {
     const state = this.state;
-    apiCaller.getGraphAndLayout(uri, 'latest').then(response => {
+    ServerAPI.getGraphAndLayout(uri, 'latest').then(response => {
       state.cy.remove('*');
       state.cy.add({
         nodes: _.get(response, 'graph.nodes', []),
@@ -102,7 +102,7 @@ class Paint extends React.Component {
     //   const expressionTable = createExpressionTable(expressions, expressionClasses);
     //   const header = expressionTable.header;
 
-    //   apiCaller.getGraphAndLayout(uri, 'latest').then(response => {
+    //   ServerAPI.getGraphAndLayout(uri, 'latest').then(response => {
     //     state.cy.remove('*');
     //     state.cy.add({
     //       nodes: _.get(response, 'graph.nodes', []),
@@ -137,14 +137,14 @@ class Paint extends React.Component {
     //   });
     // }
 
-    apiCaller.querySearch(query).then(searchResults => {
+    ServerAPI.querySearch(query).then(searchResults => {
       const uri = _.get(searchResults, '0.uri', null);
 
       if (uri != null) {
         const expressionTable = createExpressionTable(expressions, expressionClasses);
         const header = expressionTable.header;
 
-        apiCaller.getGraphAndLayout(uri, 'latest').then(response => {
+        ServerAPI.getGraphAndLayout(uri, 'latest').then(response => {
           state.cy.remove('*');
           state.cy.add({
             nodes: _.get(response, 'graph.nodes', []),

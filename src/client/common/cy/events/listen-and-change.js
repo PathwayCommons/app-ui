@@ -1,8 +1,8 @@
-const apiCaller = require('../../../services/apiCaller/');
+const { ServerAPI } = require('../../../services/');
 const rearrangeGraph = require('../revisions/rearrangeGraph.js');
 
 const bindListenAndChange = cy => {
-  apiCaller.initReceiveNodeChange(nodeDiff => {
+  ServerAPI.initReceiveNodeChange(nodeDiff => {
     let node = cy.elements('node[id = "'+nodeDiff.nodeID+'"]');
     if (node.isChildless()) {
       node.animate({
@@ -11,7 +11,7 @@ const bindListenAndChange = cy => {
     }
   });
 
-  apiCaller.initReceiveLayoutChange(layoutJSON => {
+  ServerAPI.initReceiveLayoutChange(layoutJSON => {
     rearrangeGraph(layoutJSON, cy, { duration: 250 });
   });
 };

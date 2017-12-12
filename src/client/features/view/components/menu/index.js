@@ -12,7 +12,7 @@ const Dropdown = require('../../../../common/components').Dropdown.Dropdown;
 const DropdownOption = require('../../../../common/components').Dropdown.DropdownOption;
 
 
-const apiCaller = require('../../../../services/apiCaller');
+const { ServerAPI } = require('../../../../services/');
 const datasourceLinks = require('../../../../common/config').databases;
 
 let debouncedSearchNodes = _.debounce(searchNodes, 300);
@@ -67,7 +67,7 @@ class Menu extends React.Component {
         cy.nodes().forEach(node => {
           posObj[node.id()] = node.position();
         });
-        apiCaller.submitLayoutChange(props.uri, 'latest', posObj);
+        ServerAPI.submitLayoutChange(props.uri, 'latest', posObj);
         cy.fit(100);
       }
     });

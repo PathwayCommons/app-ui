@@ -8,7 +8,7 @@ const _ = require('lodash');
 const classNames = require('classnames');
 
 const Icon = require('../../common/components').Icon;
-const { apiCaller } = require('../../services');
+const { ServerAPI } = require('../../services');
 
 class Search extends React.Component {
 
@@ -31,7 +31,7 @@ class Search extends React.Component {
       dataSources: []
     };
 
-    apiCaller.datasources()
+    ServerAPI.datasources()
       .then(result => {
         this.setState({
           dataSources: Object.values(result)
@@ -47,7 +47,7 @@ class Search extends React.Component {
       this.setState({
         loading: true
       });
-      apiCaller.querySearch(query)
+      ServerAPI.querySearch(query)
         .then(searchResults => {
           this.setState({
             searchResults: searchResults,

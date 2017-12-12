@@ -1,7 +1,7 @@
 const h = require('hyperscript');
 const classNames = require('classnames');
 const _ = require('lodash');
-const config = require('../config');
+const config = require('../../config');
 
 //Handle standard name related metadata fields
 const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Name: ');

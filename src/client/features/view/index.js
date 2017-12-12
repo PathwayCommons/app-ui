@@ -3,7 +3,7 @@ const h = require('react-hyperscript');
 const _ = require('lodash');
 
 const { Menu, Graph, Sidebar } = require('./components/');
-const Popup = require('../../common/popup');
+const { Popup } = require('../../common/components');
 
 const { getLayouts } = require('../../common/cy/layout/');
 const make_cytoscape = require('../../common/cy/');

@@ -2,7 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const classNames = require('classnames');
 
-const IconButton = require('../../../../common/iconButton');
+const {IconButton} = require('../../../../common/components');
 
 const HelpMenu = require('./menus/help');
 const FileDownloadMenu = require('./menus/fileDownload');

@@ -1,7 +1,8 @@
 const h = require('hyperscript');
 const tippy = require('tippy.js');
 
-const config = require('../config');
+const config = require('../../config');
+
 const generate = require('./generateContent');
 const formatArray = require('./formatArray');
 const getPublications = require('./publications');

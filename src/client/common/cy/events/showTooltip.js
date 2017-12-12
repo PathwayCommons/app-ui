@@ -1,5 +1,5 @@
 
-const MetadataTip = require('../../tooltips/metadataTip');
+const MetadataTip = require('../tooltips/');
 
 const bindShowTooltip = (cy) => {
   cy.on('showTooltip', 'node', function (evt) {

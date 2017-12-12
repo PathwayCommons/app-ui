@@ -178,11 +178,12 @@ class Search extends React.Component {
                   ])
                 ])
               ]),
-              h('div.search-suggestions', ['e.g. ',
-              h(Example, {search: 'cell cycle'}), ', ',
-              h(Example, {search: 'p53 MDM2'}), ', ',
-              h(Example, {search: 'P04637'})
-            ]),
+              h('div.search-suggestions', [
+                'e.g. ',
+                h(Example, {search: 'cell cycle'}), ', ',
+                h(Example, {search: 'p53 MDM2'}), ', ',
+                h(Example, {search: 'P04637'})
+              ]),
               h('div.search-tabs', searchTypeTabs.concat([
                 h('div', {
                   className: classNames('search-option-item', 'search-option-item-tools', { 'search-option-item-tools-active': state.showFilters }),

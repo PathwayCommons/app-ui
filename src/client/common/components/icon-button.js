@@ -2,7 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const classNames = require('classnames');
 
-const TextTooltip = require('../textTooltip');
+const TextTooltip = require('./text-tooltip');
 
 /* Props
 Required

@@ -7,8 +7,11 @@ const _ = require('lodash');
 const { humanLayoutDisplayName } = require('../../../../common/cy/layout');
 const searchNodes = require('../../../../common/cy/search');
 
-const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
-const IconButton = require('../../../../common/iconButton');
+const IconButton = require('../../../../common/components').IconButton;
+const Dropdown = require('../../../../common/components').Dropdown.Dropdown;
+const DropdownOption = require('../../../../common/components').Dropdown.DropdownOption;
+
+
 const apiCaller = require('../../../../services/apiCaller');
 const datasourceLinks = require('../../../../common/config').databases;
 

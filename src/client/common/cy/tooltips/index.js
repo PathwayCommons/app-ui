@@ -3,8 +3,8 @@ const tippy = require('tippy.js');
 
 const config = require('../../config');
 
-const generate = require('./generateContent');
-const formatArray = require('./formatArray');
+const formatContent = require('./format-content');
+const collection = require('./collection');
 const getPublications = require('./publications');
 
 //Manage the creation and display of metadata HTML content
@@ -69,11 +69,11 @@ class MetadataTip {
   //Generate HTML Elements for tooltips
   generateToolTip() {
     //Order the data array
-    let data = formatArray.collectionToTop(this.data, config.tooltipOrder);
-    data = formatArray.collectionToBottom(data, config.tooltipReverseOrder);
+    let data = collection.toTop(this.data, config.tooltipOrder);
+    data = collection.toBottom(data, config.tooltipReverseOrder);
 
     if (!(data) || data.length === 0) {
-      return generate.noDataWarning(this.name);
+      return formatContent.noDataWarning(this.name);
     }
 
     //Ensure name is not blank
@@ -85,19 +85,19 @@ class MetadataTip {
     if (!(this.data)) { this.data = []; }
     return h('div.tooltip-image', [
       h('div.tooltip-heading', this.name),
-      h('div.tooltip-internal', h('div', (data).map(item => generate.parseMetadata(item, true, expandFunction)), this))
+      h('div.tooltip-internal', h('div', (data).map(item => formatContent.parseMetadata(item, true, expandFunction)), this))
     ]);
   }
 
   //Generate HTML Elements for the side bar
   generateExtendedToolTip() {
     //Order the data array
-    let data = formatArray.collectionToTop(this.data, config.tooltipOrder);
-    data = formatArray.collectionToBottom(data, config.tooltipReverseOrder);
+    let data = collection.toTop(this.data, config.tooltipOrder);
+    data = collection.toBottom(data, config.tooltipReverseOrder);
     if (!(data)) data = [];
 
     if (!(data) || data.length === 0) {
-      return generate.noDataWarning(this.name);
+      return formatContent.noDataWarning(this.name);
     }
 
     //Ensure name is not blank
@@ -112,7 +112,7 @@ class MetadataTip {
     if (!(this.data)) { this.data = []; }
     return h('div.tooltip-image', [
       h('div.tooltip-heading', this.name),
-      h('div.tooltip-internal', h('div', (data).map(item => generate.parseMetadata(item, !this.isExpanded(item[0]), getExpansionFunction(item)), this)))
+      h('div.tooltip-internal', h('div', (data).map(item => formatContent.parseMetadata(item, !this.isExpanded(item[0]), getExpansionFunction(item)), this)))
     ]
     );
   }

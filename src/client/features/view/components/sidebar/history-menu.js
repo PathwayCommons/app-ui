@@ -64,7 +64,7 @@ class HistoryMenu extends React.Component {
     this.props.changeLayout(layoutConf);
 
     //Adjust the graph to match the new new layout
-    revisions.rearrangeGraph(positions, cy, props);
+    revisions.applyHumanLayout(positions, cy, props);
   }
 
   //Generate a image card for a given layout

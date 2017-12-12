@@ -1,7 +1,7 @@
-const rearrangeGraph = require('./rearrangeGraph');
-const generateImages = require('./generateImages');
+const applyHumanLayout = require('./apply-human-layout');
+const generateImages = require('./generate-images');
 
 module.exports = {
-  rearrangeGraph,
+  applyHumanLayout,
   generateImages
 };

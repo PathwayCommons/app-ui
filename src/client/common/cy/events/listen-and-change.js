@@ -1,5 +1,5 @@
 const { ServerAPI } = require('../../../services/');
-const rearrangeGraph = require('../revisions/rearrangeGraph.js');
+const { applyHumanLayout } = require('../revisions/');
 
 const bindListenAndChange = cy => {
   ServerAPI.initReceiveNodeChange(nodeDiff => {
@@ -12,7 +12,7 @@ const bindListenAndChange = cy => {
   });
 
   ServerAPI.initReceiveLayoutChange(layoutJSON => {
-    rearrangeGraph(layoutJSON, cy, { duration: 250 });
+    applyHumanLayout(layoutJSON, cy, { duration: 250 });
   });
 };
 

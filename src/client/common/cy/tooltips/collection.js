@@ -1,15 +1,15 @@
 const _ = require('lodash');
 
 /**
- * collectionToBottom(data, criteriaList)
+ * toBottom(data, criteriaList)
  * @param data An array of keyed pairs
  * @param criteriaList An array of keys that need to be push to the bottom
  * @returns Array
  * @description Pushes a collection of pairs to the bottom of the list
- * Sample Input : collectionToBottom([['1', 'a'], ['2', 'b']], ['1'])
+ * Sample Input : toBottom([['1', 'a'], ['2', 'b']], ['1'])
  * Sample Output : [['2', 'b'], ['1', 'a']]
  */
-function collectionToBottom(data, criteriaList) {
+function toBottom(data, criteriaList) {
   if(!(data)) {return [];}
   const matched = data.filter(pair => criteriaList.includes(pair[0]));
   const notMatched = _.difference(data, matched);
@@ -22,10 +22,10 @@ function collectionToBottom(data, criteriaList) {
  * @param criteriaList An array of keys that need to be push to the bottom
  * @returns Array
  * @description Pushes a collection of pairs to the top of the list
- * Sample Input : collectionToBottom([['1', 'a'], ['2', 'b']], ['2'])
+ * Sample Input : toBottom([['1', 'a'], ['2', 'b']], ['2'])
  * Sample Output : [['2', 'b'], ['1', 'a']]
  */
-function collectionToTop(data, criteriaList) {
+function toTop(data, criteriaList) {
   if(!(data)) {return [];}
   const matched = data.filter(pair => criteriaList.includes(pair[0]));
   const notMatched = _.difference(data, matched);
@@ -33,6 +33,6 @@ function collectionToTop(data, criteriaList) {
 }
 
 module.exports = {
-  collectionToBottom,
-  collectionToTop
+  toBottom,
+  toTop
 };

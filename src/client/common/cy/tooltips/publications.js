@@ -1,5 +1,4 @@
-const _ = require('lodash');
-const generateContent = require('./generateContent');
+const formatContent = require('./format-content');
 
 /**
  * fetchPubMedPublication(id)
@@ -66,7 +65,7 @@ function getPublications(data) {
     if (!(databaseIds)) { resolve(data); }
 
     //Get PubMed References
-    const sorted = generateContent.sortByDatabaseId(databaseIds[1]);
+    const sorted = formatContent.sortByDatabaseId(databaseIds[1]);
     const pubMedReferences = sorted.filter(item => item.database.toUpperCase() === 'PUBMED');
     if (!(pubMedReferences) || pubMedReferences.length === 0) { resolve(data); }
 

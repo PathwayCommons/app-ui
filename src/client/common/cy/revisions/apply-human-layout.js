@@ -7,7 +7,7 @@ Note : -Options Parameter is optional
        -Layouts is a collection of layouts
        -Positions is a collection of position objects 
 */
-function rearrangeGraph(nodePositions, cy, options = {}) {
+function applyHumanLayout(nodePositions, cy, options = {}) {
 
   //Reset all positions to 0
   cy.nodes().forEach(node => node.position({x : 0, y : 0}));
@@ -36,4 +36,4 @@ function rearrangeGraph(nodePositions, cy, options = {}) {
   }, { duration: duration });
 }
 
-module.exports = rearrangeGraph; 
+module.exports = applyHumanLayout; 

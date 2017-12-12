@@ -33,7 +33,7 @@ const ServerAPI = {
   },
   
   renderImages(cyJson) {
-    return fetch(`/api/render-png`, _.assign({}, defaultFetchOpts, { method: 'POST', body: JSON.stringify(cyJson) })).then(res =>  res.json());
+    return fetch(`/api/render-png`, _.assign({}, defaultFetchOpts, { method: 'POST', body: JSON.stringify({cyJson}) })).then(res =>  res.json());
   },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into

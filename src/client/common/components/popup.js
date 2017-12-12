@@ -7,7 +7,7 @@ const IconButton = require('./icon-button');
 /* Props
 - active
 - deactivate()
-- dur
+- duration
 */
 class Popup extends React.Component {
   constructor(props){
@@ -21,7 +21,7 @@ class Popup extends React.Component {
     if (nextProps.active) {
       let timeout = setTimeout(() => {
         this.props.deactivate();
-      }, this.props.dur);
+      }, this.props.duration);
       this.setState({ timeout: timeout });
     }
   }

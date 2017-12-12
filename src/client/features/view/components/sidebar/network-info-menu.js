@@ -1,7 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 
-class GraphInfoMenu extends React.Component {
+class NetworkInfoMenu extends React.Component {
   render() {
     const props = this.props;
 
@@ -28,4 +28,4 @@ class GraphInfoMenu extends React.Component {
   }
 }
 
-module.exports = GraphInfoMenu;
+module.exports = NetworkInfoMenu;

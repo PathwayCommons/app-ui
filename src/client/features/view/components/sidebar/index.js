@@ -5,7 +5,7 @@ const classNames = require('classnames');
 const {IconButton} = require('../../../../common/components');
 
 const FileDownloadMenu = require('./file-download-menu');
-const GraphInfoMenu = require('./graph-info-menu');
+const NetworkInfoMenu = require('./network-info-menu');
 const HistoryMenu = require('./history-menu');
 
 /* Props
@@ -42,7 +42,7 @@ class Sidebar extends React.Component {
   render() {
     const props = this.props;
     const menus = {
-      info: h(GraphInfoMenu, {
+      info: h(NetworkInfoMenu, {
         uri: props.uri,
         name: props.name,
         datasource: props.datasource,

@@ -4,9 +4,9 @@ const classNames = require('classnames');
 const saveAs = require('file-saver').saveAs;
 const _ = require('lodash');
 
-const {FlatButton, AsyncButton} = require('../../../../../common/components');
+const {FlatButton, AsyncButton} = require('../../../../common/components');
 
-const { ServerAPI } = require('../../../../../services/');
+const { ServerAPI } = require('../../../../services/');
 
 const downloadTypes = [
   { type: 'png', displayName: 'Image (PNG)', ext: 'png', hidden: false, description: 'Download an image of the entire view.' },

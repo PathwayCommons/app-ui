@@ -2,10 +2,10 @@ const React = require('react');
 const h = require('react-hyperscript');
 const Loader = require('react-loader');
 
-const { getLayouts } = require('../../../../../common/cy/layout/');
-const { ServerAPI } = require('../../../../../services/');
-const revisions = require('../../../../../common/cy/revisions/');
-const imageCard = require('./components/imageCard');
+const { getLayouts } = require('../../../../common/cy/layout/');
+const { ServerAPI } = require('../../../../services/');
+const revisions = require('../../../../common/cy/revisions/');
+const imageCard = require('./imageCard');
 
 class HistoryMenu extends React.Component {
   constructor(props) {

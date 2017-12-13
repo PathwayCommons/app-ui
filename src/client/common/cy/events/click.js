@@ -32,7 +32,7 @@ const bindClick = (cy) => {
     const cy = evt.cy;
     const target = evt.target;
     const timeout = 300;
-
+    
     //Click executed on core
     //Hide all tool tips
     if (evt.target == evt.cy) {

@@ -4,31 +4,31 @@ const bindCredits = cy => {
   const creditsKey = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
 
   const pathwayCommonsDevTeam = [
-    "Dylan Fong",
-    "Augustin Luna",
-    "B.Arman Aksoy",
-    "Chris Pax",
-    "Chris Sander",
-    "Christian Dallago",
-    "Christian Lopes",
-    "Emek",
-    "Ethan Cerami",
-    "Funda Durupinar",
-    "Gary Bader",
-    "Geoffrey Elder",
-    "Harsh Mistry",
-    "Igor Rodchenkov",
+    "Dylan Fong ",
+    "Augustin Luna ",
+    "B.Arman Aksoy ",
+    "Chris Pax ",
+    "Chris Sander ",
+    "Christian Dallago ",
+    "Christian Lopes ",
+    "Emek ",
+    "Ethan Cerami ",
+    "Funda Durupinar ",
+    "Gary Bader ",
+    "Geoffrey Elder ",
+    "Harsh Mistry ",
+    "Igor Rodchenkov ",
     "Istemi Bahçeci ",
-    "Jeff Wong",
-    "Jianjiong Gao",
-    "Jonah Dlin",
-    "Khalid Zuberi",
-    "Mandred Cheung",
-    "Max Franz",
-    "Onur Sumer",
-    "Ozgun",
+    "Jeff Wong ",
+    "Jianjiong Gao ",
+    "Jonah Dlin ",
+    "Khalid Zuberi ",
+    "Mandred Cheung ",
+    "Max Franz ",
+    "Onur Sumer ",
+    "Ozgun ",
     "Peter Smith ",
-    "Ugur Dogrusoz",
+    "Ugur Dogrusoz ",
   ];
 
   const credits = [
@@ -42,10 +42,10 @@ const bindCredits = cy => {
   //Node to add to cytoscape object if credit code is entered
   const creditsNode = {
     group: 'nodes',
-    position: { x: 55, y: 66 },
+    position: { x: 0, y: 0 },
     data: {
-      "bbox": { "h": 611, "w": 728, "x": 50, "y": 50 },
-      "class": "macromolecule",
+      "bbox": { "h": 611, "w": 728, "x": 0, "y": 0 },
+      "class": "complex",
       "clonemarker": false,
       "id": "do-not-submit",
       "label": nodeNames[0],
@@ -56,7 +56,7 @@ const bindCredits = cy => {
       ["Names", nodeNames],
       ["Cellular Location", ["Donnelly Centre"]],
       ["Database IDs", [["Bader Lab", "2017"]]],
-      ["Standard Name", "Pathway Commons 53"]],
+      ["Standard Name", "Pathway Commons 25"]],
       "stateVariables": [
         {
           "class": "state variable",
@@ -90,10 +90,15 @@ const bindCredits = cy => {
         //Create a new node
         setNewPosition(0);
         cy.add(creditsNode);
+        
+        let creditsNodeObject = cy.getElementById('do-not-submit');
+        cy.center(creditsNodeObject);
+   
         cy.style().selector('#do-not-submit')
         .style('width', '611px')
         .style('height', '728px')
-        .style('background-image', 'img/icon.png');
+        .style('background-image', 'img/icon.png')
+        .style('background-fit', 'cover cover');
       }
     }
     else {

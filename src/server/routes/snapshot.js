@@ -3,8 +3,10 @@ const express = require('express');
 const router = express.Router();
 const controller = require('./controller');
 
+const daysBeforePurge = 10;
+
 router.get('/purge', function (req, res) {
-  return controller.purgeSnapshot()
+  return controller.purgeSnapshot(daysBeforePurge)
     .then(numDeleted => res.json(numDeleted));
 });
 

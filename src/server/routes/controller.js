@@ -104,15 +104,15 @@ function renderPNG(cyJson) {
   return renderImage(cyJson);
 }
 
-function purgeSnapshot() {
-  const tenDays = 10 * 60 * 60 * 24;
+function purgeSnapshot(numDays) {
+  const numSeconds = numDays * 60 * 60 * 24;
 
   return db.connect()
     .then(connection => {
      db.insert('fake', {test: r.now()}, config, connection);
       return r.db(config.databaseName)
         .table('snapshot')
-        .filter(r.row('date').lt(r.now().sub(tenDays)))
+        .filter(r.row('date').lt(r.now().sub(numSeconds)))
         .delete()
         .run(connection)
         .then(res => res.deleted);

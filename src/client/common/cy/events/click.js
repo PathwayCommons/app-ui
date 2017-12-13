@@ -12,7 +12,7 @@ const hideTooltips = (cy) => {
 //Requires a valid cytoscape element
 //Note : Optional reset parameter set the counter to 0
 const incrementClicks = (cy, reset) => {
-  if (reset){
+  if (reset) {
     cy.scratch('_clicks', 0);
     return 0;
   }
@@ -77,6 +77,11 @@ const bindClick = (cy) => {
   cy.on('drag', evt => hideTooltips(evt.cy));
   cy.on('pan', evt => hideTooltips(evt.cy));
   cy.on('zoom', evt => hideTooltips(evt.cy));
+
+  //Custom hide all tooltip event
+  cy.on('hideTooltips', evt => hideTooltips(evt.cy));
+
+  
 };
 
 module.exports = bindClick;

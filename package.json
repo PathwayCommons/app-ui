@@ -45,6 +45,7 @@
     "cytoscape": "git+https://github.com/cytoscape/cytoscape.js.git#unstable",
     "cytoscape-cola": "^2.0.0",
     "cytoscape-compound-collapse": "git+https://github.com/d2fong/cytoscape.js-compound-collapse.git",
+    "cytoscape-context-menus": "^3.0.5",
     "cytoscape-cose-bilkent": "^3.0.2",
     "cytoscape-cxtmenu": "^2.10.3",
     "cytoscape-dagre": "^2.0.0",

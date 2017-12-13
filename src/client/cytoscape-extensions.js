@@ -12,6 +12,7 @@ const fisheye = require('cytoscape-fisheye');
 
 //Tooltips
 const popper = require('cytoscape-popper');
+const cxtmenu = require('cytoscape-cxtmenu');
 
 module.exports = () => {
   cytoscape.use(cola);
@@ -21,5 +22,6 @@ module.exports = () => {
   cytoscape.use(compoundCollapse);
   cytoscape.use(fisheye);
   cytoscape.use(popper);
+  cytoscape.use(cxtmenu);
   // cytoscape.use(tippy);
 };

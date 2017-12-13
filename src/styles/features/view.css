@@ -2,6 +2,7 @@
 @import "./view/graph.css";
 @import "./view/sidebarMenu.css";
 @import "./view/toolTip.css";
+@import "./view/contextMenu.css";
 
 .View {
   width: 100vw;

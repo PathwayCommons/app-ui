@@ -43,7 +43,7 @@ module.exports = () => {
           const editProps = _.assign({}, props, {
             admin: true
           });
-          return h(Features.View, editProps);
+          return h(Features.Edit, editProps);
         }
       }
     ].map( spec => h(Route, _.assign({ exact: true }, spec)) ))

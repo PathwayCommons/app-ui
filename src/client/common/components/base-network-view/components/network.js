@@ -31,14 +31,6 @@ class Network extends React.Component {
     this.renderNetwork(this.props.networkJSON);
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.checkRenderNetwork(nextProps.networkJSON);
-  }
-
-  checkRenderNetwork(networkJSON) {
-    if (!this.state.networkRendered && !_.isEmpty(networkJSON)) { this.renderNetwork(networkJSON); }
-  }
-
   // Graph rendering is not tracked by React
   renderNetwork(networkJSON) {
     const props = this.props;
@@ -48,7 +40,7 @@ class Network extends React.Component {
     cy.add(networkJSON);
     cy.layout(props.initialLayout).run();
 
-    // this.props.updateNetworkRenderStatus(true);
+    // this.props.updateNetworkRenderStatus(tre);
 
     this.setState({ networkRendered: true });
 

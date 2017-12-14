@@ -2,6 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const ImageCard = require('./components/imageCard');
 
+// Deprecated. Left in in case it is ever revamped and readded
 class HelpMenu extends React.Component {
   render() {
     return (

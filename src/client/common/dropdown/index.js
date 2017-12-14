@@ -5,15 +5,15 @@ const _ = require('lodash');
 
 /* Props
 Required
-- value
-- onChange()
-- children (should be an array of dropdownOptions or something else with a value field)
+- value - the current displayed value
+- onChange() - called when a new value is selected
+- children - should be an array of components with value field (DropdownOptions recommended)
 Optional
-- anchor ('start' - default, 'middle', 'end')
-- side ('bottom' - default, 'top', 'left', 'right')
-- disabled (false - default, true)
-- openByDefault (false - default, true)
-- iconButton (material-icon string, by default 'keyboard_arrow_down')
+- anchor - 'start' (default), 'middle', 'end'
+- side - 'bottom' (default), 'top', 'left', 'right'
+- disabled - false (default), true
+- openByDefault - false (default), true
+- iconButton - material-icon string, by default 'keyboard_arrow_down'
 */
 class Dropdown extends React.Component {
   constructor(props) {

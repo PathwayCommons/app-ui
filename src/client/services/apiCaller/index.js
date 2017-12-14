@@ -3,6 +3,9 @@ const qs = require('querystring');
 let socket = io.connect('/');
 
 const apiCaller = {
+  /*-------------------
+  Regular fetches
+  -------------------*/
   getGraphAndLayout(uri, version) {
     return fetch(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`, {
       method: 'GET', headers: {
@@ -58,6 +61,9 @@ const apiCaller = {
     }).then(res =>  res.json());
   },
 
+  /*-------------------
+  Socket calls
+  -------------------*/
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into
   // a layout
   submitNodeChange(uri, version, nodeId, bbox) {

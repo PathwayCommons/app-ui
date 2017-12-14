@@ -5,9 +5,9 @@ const classNames = require('classnames');
 const IconButton = require('../iconButton');
 
 /* Props
-- active
-- deactivate()
-- dur
+- active - bool that specifies whether the popup is active or not
+- deactivate() - a function called when the popup dur is over, usually used to deactivate the popup
+- dur - duration in ms for the popup to autohide (if unspecified, it will not autohide)
 */
 class Popup extends React.Component {
   constructor(props){

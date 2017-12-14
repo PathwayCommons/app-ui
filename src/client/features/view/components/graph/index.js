@@ -8,7 +8,6 @@ const _ = require('lodash');
 - cy
 - graphJSON
 */
-
 class Graph extends React.Component {
   constructor(props) {
     super(props);
@@ -25,6 +24,7 @@ class Graph extends React.Component {
   }
 
   componentDidMount() {
+    // After mount, grab the intended graph container and mount the headless cy instance into it
     const container = this.graphDOM;
     this.props.cy.mount(container);
     this.checkRenderGraph(this.props.graphJSON);
@@ -45,9 +45,8 @@ class Graph extends React.Component {
     cy.remove('*');
     cy.add(graphJSON);
 
-    this.props.updateGraphRenderStatus(true);
-    //toolTipCreator.bindTippyToElements(cy);
-    this.setState({ graphRendered: true });
+    this.props.updateGraphRenderStatus(true); // Update external render status so the edit warning can appear
+    this.setState({ graphRendered: true }); // Update internal render status so the graph isn't rendered twice
 
   }
 

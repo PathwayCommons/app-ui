@@ -6,12 +6,12 @@ const TextTooltip = require('../textTooltip');
 
 /* Props
 Required
-- icon (string relating to a material icon, defaults to info)
+- icon - string relating to a material icon, defaults to info
 - onClick()
 Optional
-- desc (string to display in tooltip or blank for no tooltip)
-- active (false - default, or true)
-- theme (specify 'light' to get a light button)
+- desc - string to display in tooltip or blank for no tooltip
+- active - false (default), or true
+- theme - specify 'light' to get a light button
 */
 class IconButton extends React.Component {
   render() {

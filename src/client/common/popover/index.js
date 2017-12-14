@@ -8,9 +8,9 @@ const _ = require('lodash');
 const { tippyDefaults } = require('../config');
 
 /* Props
-- tippy (tippy options object)
-- target (ref to target, defaults to first child)
-- show() and/or hide() (functions called on show and hide, are passed in tippy.show()/tippy.hide())
+- tippy - tippy options object
+- target - ref to target, defaults to first child
+- show() and/or hide() - functions called on show and hide, are passed in tippy.show()/tippy.hide()
 */
 class Popover extends React.Component {
   constructor(props) {

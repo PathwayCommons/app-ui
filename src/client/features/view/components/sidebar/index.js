@@ -27,6 +27,7 @@ class Sidebar extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    // If the sidebar is closed, the active menu is set to nothing
     if (nextProps.activeMenu === '') {
       this.setState({
         open: false,
@@ -42,6 +43,7 @@ class Sidebar extends React.Component {
 
   render() {
     const props = this.props;
+    // Menu content is stored elsewhere, so here is where those components are specified
     const menus = {
       info: h(GraphInfoMenu, {
         uri: props.uri,

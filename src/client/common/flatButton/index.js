@@ -4,11 +4,11 @@ const classNames = require('classnames');
 
 /* Props
 Recommended
-- onClick() (function triggered on button press)
-- children (contents of button, normally a short string)
+- onClick() - function triggered on button press
+- children - contents of button, normally a short string
 Optional
-- icon (string specifying icon in button)
-- iconPosition ('left', 'right', or excluded for default)
+- icon - string specifying icon in button
+- iconPosition - 'left', 'right', or excluded for default
 */
 class FlatButton extends React.Component {
   render() {

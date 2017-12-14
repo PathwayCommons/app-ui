@@ -8,6 +8,14 @@ const FlatButton = require('../../../../../common/flatButton');
 const AsyncButton = require('../../../../../common/asyncButton');
 const apiCaller = require('../../../../../services/apiCaller');
 
+/* Specify download details here.
+- type is used as a unique identifier internally and is never shown to the user
+- displayName is the name displayed as a title in the download card
+- pc2Name is the name used in PC2, used here to specify the download type to the server
+- ext is the file extension when downloaded
+- hidden is a bool, whether or not the button is hidden by default
+- description is the text displayed underneath the title in the download card
+*/
 const downloadTypes = [
   { type: 'png', displayName: 'Image (PNG)', ext: 'png', hidden: false, description: 'Download an image of the entire view.' },
   { type: 'gmt', displayName: 'GMT', pc2Name: 'GSEA', ext: 'gmt', hidden: true, description: 'Gene Matrix Transposed format. The gene database of named gene sets (UniProt) useful for performing enrichment analysis using Gene Set Enrichment Analysis (GSEA)' },
@@ -27,10 +35,12 @@ class FileDownloadMenu extends React.Component {
     };
   }
 
+  // Initiates download of a file using displayName, should eventually be changed to type
   downloadFromDisplayName(displayName) {
     const optionObj = _.find(downloadTypes, ['displayName', displayName]);
     const type = optionObj.type;
 
+    // png is the only type generated locally. The rest are retrieved from PC
     if (type === 'png') {
       // The setTimeout triggers a rerender so that the loader appears on screen
       this.setState({ loadingOptions: this.state.loadingOptions.concat('png') }, () => {
@@ -52,6 +62,9 @@ class FileDownloadMenu extends React.Component {
 
   }
 
+  // Downloads graph and saves to user's computer. Download type is specified by format (a pc2 name like 'JSONLD'),
+  // the extension fileExt the file should have.
+  // fileType is a unique identifier (like 'png' or 'txt') that is used to determine what files are loading
   initiatePCDownload(format, fileExt, fileType) {
     this.setState({ loadingOptions: this.state.loadingOptions.concat(fileType) });
 
@@ -71,6 +84,7 @@ class FileDownloadMenu extends React.Component {
     saveAs(new File([content], this.generatePathwayName() + '.' + file_ext, { type: 'text/plain;charset=utf-8' }));
   }
 
+  // generatePathwayName generates a file name for a download based off of props.name
   generatePathwayName() {
     const FILENAME_CUTOFF = 20;
     let filename = this.props.name || 'network';
@@ -78,6 +92,8 @@ class FileDownloadMenu extends React.Component {
   }
 
   render() {
+    // Converts the downloadTypes object into an array of AsyncButtons, used for downloads, based off whether or not
+    // they are hidden (a bool specified)
     let getMenuContents = hidden => downloadTypes.reduce((result, option) => {
       if (option.hidden === hidden) {
         result.push(
@@ -90,7 +106,7 @@ class FileDownloadMenu extends React.Component {
       }
       return result;
     }, []);
-
+    
     return h('div.file-download-menu', [
       h('h2', 'Network Downloads'),
       h('div.file-download-content', [

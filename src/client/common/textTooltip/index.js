@@ -7,10 +7,10 @@ const { tippyDefaults } = require('../config');
 
 /* Props
 Required
-- description
+- description - text in tooltip
 Optional
-- tippy (an object with tippy.js options)
-- popover props (props you want the popover to have, see popover)
+- tippy - an object with tippy.js options
+- popover props - props you want the popover to have, see popover
 */
 class TextTooltip extends React.Component {
   render() {

@@ -4,13 +4,13 @@ const Loader = require('react-loader');
 
 /* Props
 Required
-- onClick(header)
-- header
+- onClick(header) - called when the button is clicked, fed in the button header
+- header - the displayed header on the button
 Optional
-- children
-- loading
-- loaderScale
-- loaderWidth
+- children - contents of button
+- loading - whether the button is loading or not
+- loaderScale - scale of loader
+- loaderWidth - width of loader bars
 */
 class AsyncButton extends React.Component {
   render() {

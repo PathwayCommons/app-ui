@@ -15,11 +15,12 @@ const { apiCaller } = require('../../services/');
 class View extends React.Component {
   constructor(props) {
     super(props);
+    // Query retrieved through props from React Router
     const query = queryString.parse(props.location.search);
     this.state = {
       query: query,
 
-      cy: make_cytoscape({ headless: true }),
+      cy: make_cytoscape({ headless: true }), // cy object is created here so it's accessible to all components
       graphJSON: null,
 
       layout: '',
@@ -38,6 +39,8 @@ class View extends React.Component {
       warningMessage: '',
     };
 
+    // Retrieve graphJSON and layoutJSON from databse, then populate metadata fields
+    // and retrieve graph layout options
     apiCaller.getGraphAndLayout(query.uri, 'latest').then(graphJSON => {
       const layoutConf = getLayouts(graphJSON.layout);
       this.setState({
@@ -55,11 +58,14 @@ class View extends React.Component {
   }
 
   componentWillMount() {
+    // Conditionally bind the move event, since there's no reason to listen for it unless in edit mode
     if (this.props.admin) {
       bindMove(this.state.query.uri, 'latest', this.state.cy);
     }
   }
 
+  // Takes in true or false and sets the graph rendered state accordingly, and displays the edit warning
+  // if the user is in edit mode
   updateGraphRenderStatus(bool) {
     let activateWarning = false;
     let warningMessage = '';

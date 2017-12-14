@@ -1,9 +1,10 @@
 const React = require('react');
 const h = require('react-hyperscript');
+const _ = require('lodash');
 
 const { Menu, Network, Sidebar } = require('./components/');
 
-// props
+const { getLayouts, humanLayoutDisplayName, applyHumanLayout } = require('../../cy/layout');
 // cytoscape
 // grapjson
 // metadata
@@ -22,9 +23,11 @@ class BaseNetworkView extends React.Component {
   constructor(props) {
     super(props);
 
+    const layoutConfig = getLayouts(props.networkLayoutJSON);
+
     this.state = {
-      currentLayout: props.initialLayout,
-      availableLayouts: props.availableLayouts,
+      currentLayout: layoutConfig.defaultLayout,
+      availableLayouts: layoutConfig.layouts,
       activeMenu: ''
     };
   }
@@ -33,11 +36,13 @@ class BaseNetworkView extends React.Component {
     const props = this.props;
     const state = this.state;
 
+    const initialLayout =  _.find(state.availableLayouts, layout => layout.displayName === state.currentLayout).options;
+
     return h('div.View', [
       h(Menu, {
         name: props.networkMetadata.name,
         datasource: props.networkMetadata.datasource,
-        availableLayouts: props.availableLayouts,
+        availableLayouts: state.availableLayouts,
         currentLayout: state.currentLayout,
         cy: props.cy,
         changeLayout: layout => this.setState({currentLayout: layout}),
@@ -47,19 +52,14 @@ class BaseNetworkView extends React.Component {
       h(Network, {
         cy: props.cy,
         networkJSON: props.networkJSON,
-        updateNetworkRenderStatus: rendered => null
+        initialLayout: initialLayout
       }),
       h(Sidebar, {
         cy: props.cy,
         name: props.networkMetadata.name,
         datasource: props.networkMetadata.datasource,
         comments: props.networkMetadata.comments,
-        activeMenu: state.activeMenu,
-        changeMenu: menu => this.setState({activeMenu: menu}),
-        changeLayout: layoutConf => this.setState({
-          layout: layoutConf.defaultLayout,
-          availableLayouts: layoutConf.layouts
-        }),
+        activeMenu: state.activeMenu
       })
     ]);
   }

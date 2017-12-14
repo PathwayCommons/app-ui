@@ -7,6 +7,7 @@ const _ = require('lodash');
 - updateNetworkRenderStatus(status)
 - cy
 - networkJSON
+- networkLayoutJSON
 */
 
 class Network extends React.Component {
@@ -27,7 +28,7 @@ class Network extends React.Component {
   componentDidMount() {
     const container = this.graphDOM;
     this.props.cy.mount(container);
-    this.checkRenderNetwork(this.props.networkJSON);
+    this.renderNetwork(this.props.networkJSON);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -40,12 +41,14 @@ class Network extends React.Component {
 
   // Graph rendering is not tracked by React
   renderNetwork(networkJSON) {
-    const cy = this.props.cy;
+    const props = this.props;
+    const cy = props.cy;
 
     cy.remove('*');
     cy.add(networkJSON);
+    cy.layout(props.initialLayout).run();
 
-    this.props.updateNetworkRenderStatus(true);
+    // this.props.updateNetworkRenderStatus(true);
 
     this.setState({ networkRendered: true });
 

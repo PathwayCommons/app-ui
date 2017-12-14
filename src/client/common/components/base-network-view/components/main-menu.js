@@ -37,19 +37,7 @@ class Menu extends React.Component {
       searchOpen: false,
       complexesExpanded: true,
       selectedLayout: props.currentLayout,
-      initialLayoutSet: false
     };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (!this.state.initialLayoutSet) {
-      this.setState({
-        selectedLayout: nextProps.currentLayout,
-        initialLayoutSet: true
-      }, () => {
-        this.performLayout(this.state.selectedLayout);
-      });
-    }
   }
 
   performLayout(selectedLayoutName) {
@@ -58,11 +46,7 @@ class Menu extends React.Component {
     const cy = props.cy;
 
     const layoutOpts = _.find(props.availableLayouts, (layout) => layout.displayName === selectedLayoutName).options;
-    let layout = cy.layout(layoutOpts);
-    layout.pon('layoutstop').then(function () {
-        // cy.fit(100);
-    });
-    layout.run();
+    cy.layout(layoutOpts).run();
   }
 
   toggleExpansion() {

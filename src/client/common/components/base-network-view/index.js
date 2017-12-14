@@ -4,7 +4,7 @@ const _ = require('lodash');
 
 const { Menu, Network, Sidebar } = require('./components/');
 
-const { getLayouts, humanLayoutDisplayName, applyHumanLayout } = require('../../cy/layout');
+const { getLayouts } = require('../../cy/layout');
 // cytoscape
 // grapjson
 // metadata
@@ -23,6 +23,10 @@ class BaseNetworkView extends React.Component {
   constructor(props) {
     super(props);
 
+    if( process.env.NODE_ENV !== 'production' ){
+      window.cy = props.cy;
+    }
+
     const layoutConfig = getLayouts(props.networkLayoutJSON);
 
     this.state = {
@@ -36,7 +40,7 @@ class BaseNetworkView extends React.Component {
     const props = this.props;
     const state = this.state;
 
-    const initialLayout =  _.find(state.availableLayouts, layout => layout.displayName === state.currentLayout).options;
+    const initialLayoutOpts =  _.find(state.availableLayouts, layout => layout.displayName === state.currentLayout).options;
 
     return h('div.View', [
       h(Menu, {
@@ -52,7 +56,7 @@ class BaseNetworkView extends React.Component {
       h(Network, {
         cy: props.cy,
         networkJSON: props.networkJSON,
-        initialLayout: initialLayout
+        initialLayoutOpts: initialLayoutOpts
       }),
       h(Sidebar, {
         cy: props.cy,

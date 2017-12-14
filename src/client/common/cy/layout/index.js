@@ -73,7 +73,8 @@ const getLayouts = (presetLayoutJSON) => {
       name: 'preset',
       positions: node => presetLayoutJSON[node.id()],
       animate: true,
-      animationDuration: 500
+      animationDuration: 500,
+      fit: true
     }
   };
 
@@ -102,7 +103,7 @@ const applyHumanLayout = (cy, layoutJSON, animateOpts = {}) => {
       node.position(pos);
     }
   });
-  
+
   cy.animate(animateOpts);
 };
 

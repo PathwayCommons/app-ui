@@ -11,29 +11,6 @@ const make_cytoscape = require('../../common/cy/');
 const { ServerAPI } = require('../../services/');
 
 
-const updateOnMove = (cy, uri, version) => {
-  cy.on('free', 'node', function(evt) {
-    ServerAPI.submitNodeChange(uri, version, evt.target.id(), evt.target.position());
-  });
-};
-
-const listenAndChange = (cy) => {
-  ServerAPI.initReceiveNodeChange(nodePosition => {
-    const node = cy.getElementById(nodePosition.nodeId);
-
-    if (node.isChildless()) {
-      node.animate({position: nodePosition.bbox}, { duration: 250 });
-    }
-
-    ServerAPI.initReceiveLayoutChange(layoutJSON => {
-      applyHumanLayout(cy, layoutJSON, { duration: 250 });
-    });
-  });
-};
-
-const editEvents = [updateOnMove, listenAndChange];
-
-
 
 class Edit extends React.Component {
   constructor(props) {
@@ -62,9 +39,22 @@ class Edit extends React.Component {
       warningMessage: '',
     };
 
-    for (const bindEditEvent of editEvents) {
-      bindEditEvent(this.state.cy);
-    }
+    const cy = this.state.cy;
+    cy.on('free', 'node', function(evt) {
+      ServerAPI.submitNodeChange(query.uri, 'latest', evt.target.id(), evt.target.position());
+    });
+
+    ServerAPI.initReceiveNodeChange(nodePosition => {
+      const node = cy.getElementById(nodePosition.nodeId);
+
+      if (node.isChildless()) {
+        node.animate({position: nodePosition.bbox}, { duration: 250 });
+      }
+
+      ServerAPI.initReceiveLayoutChange(layoutJSON => {
+        applyHumanLayout(cy, layoutJSON, { duration: 250 });
+      });
+    });
 
     ServerAPI.getGraphAndLayout(query.uri, 'latest').then(graphJSON => {
       const layoutConf = getLayouts(graphJSON.layout);

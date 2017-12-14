@@ -12,13 +12,6 @@ const datasourceLinks = require('../../../config').databases;
 
 let debouncedSearchNodes = _.debounce(searchNodes, 300);
 
-// Buttons for opening the sidebar, along with their descriptions
-const toolButtons = {
-  info: 'Extra information',
-  file_download: 'Download options',
-  // history: 'Layout Revisions'
-  //help: 'Interpreting the display' // re-add to access help menu
-};
 
 /* Props
 - name
@@ -80,22 +73,33 @@ class Menu extends React.Component {
   }
 
   render() {
-    const datasourceLink = this.getDatasourceLink(this.props.datasource);
+    const props = this.props;
 
-    const toolButtonEls = Object.keys(toolButtons).map((button, index) => {
+    const datasourceLink = this.getDatasourceLink(props.datasource);
+    const toolButtonEls = Object.keys(props.menuButtons).map((button, index) => {
       return (
         h(IconButton, {
           icon: button,
-          active: this.props.activeMenu === button,
+          active: props.activeMenu === button,
           onClick: () => this.changeMenu(button),
-          desc: toolButtons[button]
+          desc: props.menuButtons[button]
         })
       );
     });
 
+    const networkButtonEls = Object.keys(props.networkButtons).map(button => {
+      const b = props.networkButtons[button];
+      return h(IconButton, {
+        icon: button,
+        onClick: e => b.func(props),
+        desc: b.description
+      });
+    });
+
+
     return (
       h('div', {
-        className: classNames('menu-bar', { 'menu-bar-margin': this.props.activeMenu })
+        className: classNames('menu-bar', { 'menu-bar-margin': props.activeMenu })
       }, [
           h('div.menu-bar-inner-container', [
             h('div.pc-logo-container', [
@@ -107,13 +111,13 @@ class Menu extends React.Component {
             ]),
             h('div.title-container', [
               h('h4', [
-                h('span', { onClick: () => this.changeMenu('info') }, this.props.name),
+                h('span', { onClick: () => this.changeMenu('info') }, props.name),
                 ' | ',
-                h('a', { href: datasourceLink, target: '_blank' }, this.props.datasource)
+                h('a', { href: datasourceLink, target: '_blank' }, props.datasource)
               ])
             ])
           ]),
-          h('div.view-toolbar', toolButtonEls.concat([
+          h('div.view-toolbar', toolButtonEls.concat([...networkButtonEls,
             h(IconButton, {
               icon: this.state.complexesExpanded ? 'select_all' : 'settings_overscan',
               onClick: () => this.toggleExpansion(),

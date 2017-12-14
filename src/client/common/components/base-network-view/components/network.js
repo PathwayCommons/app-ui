@@ -4,10 +4,9 @@ const h = require('react-hyperscript');
 const _ = require('lodash');
 
 /* Props
-- updateNetworkRenderStatus(status)
 - cy
 - networkJSON
-- networkLayoutJSON
+- initialLayoutOpts
 */
 
 class Network extends React.Component {
@@ -38,12 +37,9 @@ class Network extends React.Component {
 
     cy.remove('*');
     cy.add(networkJSON);
-    cy.layout(props.initialLayout).run();
-
-    // this.props.updateNetworkRenderStatus(tre);
+    cy.layout(props.initialLayoutOpts).run();
 
     this.setState({ networkRendered: true });
-
   }
 
   render() {

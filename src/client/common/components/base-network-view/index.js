@@ -19,6 +19,21 @@ const { getLayouts } = require('../../cy/layout');
 // availableLayouts
 // activeMenu
 
+const menuButtons = {
+  info: 'Extra information',
+  file_download: 'Download options',
+};
+
+const networkButtons = {
+  // select_all: {
+  //   func: props => props.cy.
+  // },
+  fullscreen: {
+    func: props => props.cy.fit(),
+    description: 'Fit network to screen'
+  }
+};
+
 class BaseNetworkView extends React.Component {
   constructor(props) {
     super(props);
@@ -44,6 +59,8 @@ class BaseNetworkView extends React.Component {
 
     return h('div.View', [
       h(Menu, {
+        networkButtons: networkButtons,
+        menuButtons: menuButtons,
         name: props.networkMetadata.name,
         datasource: props.networkMetadata.datasource,
         availableLayouts: state.availableLayouts,

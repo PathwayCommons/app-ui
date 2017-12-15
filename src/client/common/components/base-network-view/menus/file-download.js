@@ -4,20 +4,13 @@ const classNames = require('classnames');
 const saveAs = require('file-saver').saveAs;
 const _ = require('lodash');
 
-const FlatButton = require('../../../flat-button');
-const AsyncButton = require('../../../async-button');
+const FlatButton = require('../../flat-button');
+const AsyncButton = require('../../async-button');
 
-const { ServerAPI } = require('../../../../../services/');
+const { ServerAPI } = require('../../../../services/');
 
-const downloadTypes = [
-  { type: 'png', displayName: 'Image (PNG)', ext: 'png', hidden: false, description: 'Download an image of the entire view.' },
-  { type: 'gmt', displayName: 'GMT', pc2Name: 'GSEA', ext: 'gmt', hidden: true, description: 'Gene Matrix Transposed format. The gene database of named gene sets (UniProt) useful for performing enrichment analysis using Gene Set Enrichment Analysis (GSEA)' },
-  { type: 'sif', displayName: 'SIF', pc2Name: 'SIF', ext: 'txt', hidden: true, description: 'Simple interaction format (SIF) is a list of interaction pairs useful for viewing, styling, and editing using Cytoscape desktop software, and for analysis with graph algorithms.' },
-  { type: 'txt', displayName: 'Extended SIF', pc2Name: 'TXT', ext: 'txt', hidden: true, description: 'Similar to the SIF output, but contains extra information on entities and interactions. See the SIF section on the PC2 formats page for more details.' },
-  { type: 'biopax', displayName: 'BioPAX', pc2Name: 'BIOPAX', ext: 'xml', hidden: true, description: 'Biological Pathways Exchange (BioPAX) format includes all details of the biological network stored in Pathway Commons. It is recommended that this format be interpreted using tools like Paxtools or Jena SPARQL.' },
-  { type: 'jsonld', displayName: 'JSON-LD', pc2Name: 'JSONLD', ext: 'json', hidden: true, description: 'JSON-LD is a human-readable linked format. This format is ideal for programming environments, REST web services, and unstructured databses.' },
-  { type: 'sbgn', displayName: 'SBGN-ML', pc2Name: 'SBGN', ext: 'xml', hidden: true, description: 'Systems Biology Graphical Notation (SBGN) is a standard visual notation for biological networks. This download provides an XML in SBGN markup language (SBGN-ML).' }
-];
+const downloadTypes = require('../../../config').downloadTypes;
+
 
 class FileDownloadMenu extends React.Component {
   constructor(props) {

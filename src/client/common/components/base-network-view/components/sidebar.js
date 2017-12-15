@@ -2,11 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const classNames = require('classnames');
 
-const IconButton = require('../../../icon-button');
-
-const FileDownloadMenu = require('./file-download-menu');
-const NetworkInfoMenu = require('./network-info-menu');
-
+const IconButton = require('../../icon-button');
 /* Props
 - cy
 - uri
@@ -40,17 +36,8 @@ class Sidebar extends React.Component {
 
   render() {
     const props = this.props;
-    const menus = {
-      info: h(NetworkInfoMenu, {
-        uri: props.uri,
-        name: props.name,
-        datasource: props.datasource,
-        comments: props.comments }),
-      file_download: h(FileDownloadMenu, {
-        cy: props.cy,
-        uri: props.uri,
-        name: props.name })
-    };
+    const menus = props.menus;
+
 
     return (
       h('div', {
@@ -73,7 +60,7 @@ class Sidebar extends React.Component {
                 ref: dom => this.sidebarResizerDOM = dom
               }),
               h('div.sidebar-text', [
-                menus[this.state.activeMenu]
+                menus[this.state.activeMenu](props)
               ])
             ])
         ])

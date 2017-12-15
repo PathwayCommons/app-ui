@@ -35,14 +35,14 @@ class Menu extends React.Component {
     this.props.changeMenu(menu === this.props.activeMenu ? '' : menu);
   }
 
-  changeSearchValue(newVal) {
+  searchCyNodes(newVal) {
     let cy = this.props.cy;
     debouncedSearchNodes(newVal, cy, true);
   }
 
   clearSearchBox() {
     this.searchField.value = '';
-    this.changeSearchValue('');
+    this.searchCyNodes('');
   }
 
   getDatasourceLink(datasource) {
@@ -55,7 +55,8 @@ class Menu extends React.Component {
     const props = this.props;
 
     const datasourceLink = this.getDatasourceLink(props.datasource);
-    const toolButtonEls = Object.keys(props.menuButtons).map((button, index) => {
+
+    const menuButtonEls = Object.keys(props.menuButtons).map((button, index) => {
       return (
         h(IconButton, {
           icon: button,
@@ -75,55 +76,57 @@ class Menu extends React.Component {
       });
     });
 
-
-    return (
+  
+    const nodeSearchBar = [
+      h(IconButton, {
+        icon: 'search',
+        active: this.state.searchOpen,
+        onClick: () => {
+          !this.state.searchOpen || this.clearSearchBox();
+          this.setState({ searchOpen: !this.state.searchOpen });
+        },
+        desc: 'Search entities'
+      }),
       h('div', {
-        className: classNames('menu-bar', { 'menu-bar-margin': props.activeMenu })
+        className: classNames('search-nodes', { 'search-nodes-open': this.state.searchOpen }),
+        onChange: e => this.searchCyNodes(e.target.value)
       }, [
-          h('div.menu-bar-inner-container', [
-            h('div.pc-logo-container', [
-              h(Link, { to: { pathname: '/search' } }, [
-                h('img', {
-                  src: '/img/icon.png'
-                })
-              ])
-            ]),
-            h('div.title-container', [
-              h('h4', [
-                h('span', { onClick: () => this.changeMenu('info') }, props.name),
-                ' | ',
-                h('a', { href: datasourceLink, target: '_blank' }, props.datasource)
-              ])
-            ])
-          ]),
-          h('div.view-toolbar', toolButtonEls.concat([...networkButtonEls,
-            h(IconButton, {
-              icon: 'search',
-              active: this.state.searchOpen,
-              onClick: () => {
-                !this.state.searchOpen || this.clearSearchBox();
-                this.setState({ searchOpen: !this.state.searchOpen });
-              },
-              desc: 'Search entities'
+          h('div.view-search-bar', [
+            h('input.view-search', {
+              ref: dom => this.searchField = dom,
+              type: 'search',
+              placeholder: 'Search entities'
             }),
-            h('div', {
-              className: classNames('search-nodes', { 'search-nodes-open': this.state.searchOpen }),
-              onChange: e => this.changeSearchValue(e.target.value)
-            }, [
-                h('div.view-search-bar', [
-                  h('input.view-search', {
-                    ref: dom => this.searchField = dom,
-                    type: 'search',
-                    placeholder: 'Search entities'
-                  }),
-                  h('div.view-search-clear', {
-                    onClick: () => this.clearSearchBox(),
-                  }, [h('i.material-icons', 'close')])
-                ])
-              ])
-          ]))
+            h('div.view-search-clear', {
+              onClick: () => this.clearSearchBox(),
+            }, [h('i.material-icons', 'close')])
+          ])
         ])
-    );
+    ];
+
+
+    const toolBar = [...menuButtonEls, ...networkButtonEls, ...nodeSearchBar];
+
+
+    return h('div', { className: classNames('menu-bar', { 'menu-bar-margin': props.activeMenu }) }, [
+      h('div.menu-bar-inner-container', [
+        h('div.pc-logo-container', [
+          h(Link, { to: { pathname: '/search' } }, [
+            h('img', {
+              src: '/img/icon.png'
+            })
+          ])
+        ]),
+        h('div.title-container', [
+          h('h4', [
+            h('span', { onClick: () => this.changeMenu('info') }, props.name),
+            ' | ',
+            h('a', { href: datasourceLink, target: '_blank' }, props.datasource)
+          ])
+        ])
+      ]),
+      h('div.view-toolbar', toolBar)
+    ]);
   }
 }
 

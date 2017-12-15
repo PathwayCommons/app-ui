@@ -1,6 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 
+
 class NetworkInfoMenu extends React.Component {
   render() {
     const props = this.props;

@@ -4,6 +4,7 @@ const _ = require('lodash');
 
 const { Menu, Network, Sidebar } = require('./components/');
 const { menuButtons, networkButtons } = require('./buttons');
+const menus = require('./menus');
 
 const { getLayoutConfig } = require('../../cy/layout');
 // cytoscape
@@ -16,8 +17,7 @@ const { getLayoutConfig } = require('../../cy/layout');
 // sidebar menus
 
 // state
-// currentLayout
-// availableLayouts
+// layout config
 // activeMenu
 
 class BaseNetworkView extends React.Component {
@@ -64,7 +64,9 @@ class BaseNetworkView extends React.Component {
         name: props.networkMetadata.name,
         datasource: props.networkMetadata.datasource,
         comments: props.networkMetadata.comments,
-        activeMenu: state.activeMenu
+        activeMenu: state.activeMenu,
+        changeMenu: menu => this.setState({activeMenu: menu}),        
+        menus: menus
       })
     ]);
   }

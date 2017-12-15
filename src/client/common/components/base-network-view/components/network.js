@@ -25,21 +25,18 @@ class Network extends React.Component {
   }
 
   componentDidMount() {
-    const container = this.graphDOM;
-    this.props.cy.mount(container);
-    this.renderNetwork(this.props.networkJSON);
-  }
-
-  // Graph rendering is not tracked by React
-  renderNetwork(networkJSON) {
     const props = this.props;
-    const cy = props.cy;
+    const initialLayoutOpts = props.initialLayoutOpts;
+    const container = this.graphDOM;
 
+    const cy = props.cy;    
+    cy.mount(container);
     cy.remove('*');
-    cy.add(networkJSON);
-    cy.layout(props.initialLayoutOpts).run();
-
-    this.setState({ networkRendered: true });
+    cy.add(props.networkJSON);
+    
+    const layout = cy.layout(initialLayoutOpts);
+    layout.on('layoutstop', () => this.setState({ networkRendered: true}));
+    layout.run();
   }
 
   render() {

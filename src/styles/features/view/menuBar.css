@@ -111,6 +111,18 @@
   }
 }
 
+.snapshot-container {
+  @extend %flex-center;
+  @extend %no-select;
+
+  height: calc(var(--icon-size) * 3 / 2);
+  width: 100%;
+
+  box-sizing: border-box;
+
+  font-size: 0.9em;
+}
+
 .layout-dropdown {
   @extend %flex-center;
 

@@ -16,8 +16,7 @@ let debouncedSearchNodes = _.debounce(searchNodes, 300);
 /* Props
 - name
 - datasource
-- availableLayouts
-- currentLayout
+- layoutConfig
 - cy
 - changeLayout
 - changeMenu
@@ -28,27 +27,7 @@ class Menu extends React.Component {
 
     this.state = {
       searchOpen: false,
-      complexesExpanded: true,
-      selectedLayout: props.currentLayout,
     };
-  }
-
-  performLayout(selectedLayoutName) {
-    this.setState({ selectedLayout: selectedLayoutName });
-    const props = this.props;
-    const cy = props.cy;
-
-    const layoutOpts = _.find(props.availableLayouts, (layout) => layout.displayName === selectedLayoutName).options;
-    cy.layout(layoutOpts).run();
-  }
-
-  toggleExpansion() {
-    if (this.state.complexesExpanded) {
-      this.props.cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isExpanded()).collapse();
-    } else {
-      this.props.cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isCollapsed()).expand();
-    }
-    this.setState({ complexesExpanded: !this.state.complexesExpanded });
   }
 
   // Used for the panel buttons to set menus in the sidebar and dynamically change the style
@@ -118,16 +97,6 @@ class Menu extends React.Component {
             ])
           ]),
           h('div.view-toolbar', toolButtonEls.concat([...networkButtonEls,
-            h(IconButton, {
-              icon: this.state.complexesExpanded ? 'select_all' : 'settings_overscan',
-              onClick: () => this.toggleExpansion(),
-              desc: `${this.state.complexesExpanded ? 'Collapse' : 'Expand'} complexes`
-            }),
-            h(IconButton, {
-              icon: 'replay',
-              onClick: () => this.performLayout(this.state.selectedLayout),
-              desc: 'Reset arrangement'
-            }),
             h(IconButton, {
               icon: 'search',
               active: this.state.searchOpen,

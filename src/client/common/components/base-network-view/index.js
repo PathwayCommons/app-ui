@@ -3,8 +3,9 @@ const h = require('react-hyperscript');
 const _ = require('lodash');
 
 const { Menu, Network, Sidebar } = require('./components/');
+const { menuButtons, networkButtons } = require('./buttons');
 
-const { getLayouts } = require('../../cy/layout');
+const { getLayoutConfig } = require('../../cy/layout');
 // cytoscape
 // grapjson
 // metadata
@@ -19,21 +20,6 @@ const { getLayouts } = require('../../cy/layout');
 // availableLayouts
 // activeMenu
 
-const menuButtons = {
-  info: 'Extra information',
-  file_download: 'Download options',
-};
-
-const networkButtons = {
-  // select_all: {
-  //   func: props => props.cy.
-  // },
-  fullscreen: {
-    func: props => props.cy.fit(),
-    description: 'Fit network to screen'
-  }
-};
-
 class BaseNetworkView extends React.Component {
   constructor(props) {
     super(props);
@@ -42,11 +28,11 @@ class BaseNetworkView extends React.Component {
       window.cy = props.cy;
     }
 
-    const layoutConfig = getLayouts(props.networkLayoutJSON);
+    const layoutConfig = getLayoutConfig(props.networkLayoutJSON);
 
     this.state = {
+      layoutConfig: layoutConfig,
       currentLayout: layoutConfig.defaultLayout,
-      availableLayouts: layoutConfig.layouts,
       activeMenu: ''
     };
   }
@@ -55,7 +41,7 @@ class BaseNetworkView extends React.Component {
     const props = this.props;
     const state = this.state;
 
-    const initialLayoutOpts =  _.find(state.availableLayouts, layout => layout.displayName === state.currentLayout).options;
+    const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
 
     return h('div.View', [
       h(Menu, {
@@ -63,10 +49,8 @@ class BaseNetworkView extends React.Component {
         menuButtons: menuButtons,
         name: props.networkMetadata.name,
         datasource: props.networkMetadata.datasource,
-        availableLayouts: state.availableLayouts,
-        currentLayout: state.currentLayout,
+        layoutConfig: state.layoutConfig,
         cy: props.cy,
-        changeLayout: layout => this.setState({currentLayout: layout}),
         activeMenu: state.activeMenu,
         changeMenu: menu => this.setState({activeMenu: menu})
       }),

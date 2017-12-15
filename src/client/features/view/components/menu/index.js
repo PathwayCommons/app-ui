@@ -11,6 +11,7 @@ const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
 const IconButton = require('../../../../common/iconButton');
 const apiCaller = require('../../../../services/apiCaller');
 const datasourceLinks = require('../../../../common/config').databases;
+const Popover = require('../../../../common/popover/');
 const TextField = require('../../../../common/textField/');
 const Popup = require('../../../../common/popup/');
 const getShareLink = require('./share');
@@ -198,15 +199,32 @@ class Menu extends React.Component {
               onClick: () => this.toggleExpansion(),
               desc: `${this.state.complexesExpanded ? 'Collapse' : 'Expand'} complexes`
             }),
-            h(IconButton, {
-              icon: 'link',
-              active: this.state.snapshotOpen,
-              onClick: () => this.getShareLinkAndToggle(),
-              desc: 'Get shareable link'
-            }),
-            h('div', {
-              className: classNames('snapshot-container', { 'snapshot-container-open': this.state.snapshotOpen })
-            }, [h(TextField, { text: this.state.snapshotURL, copy: true, copyCallback: () => this.setState({ linkCopiedActive: true, snapshotOpen: false }) })]),
+            h(Popover, {
+              tippy: {
+                position: 'bottom',
+                trigger: 'click',
+                interactive: true,
+                theme: 'light',
+                html: h('div.snapshot-tooltip-content', [
+                  h('div.snapshot-description', 'Share current network view:'),
+                  h('div.snapshot-container', [
+                    h(TextField, {
+                      text: this.state.snapshotURL,
+                      copy: true,
+                      copyCallback: () => this.setState({ linkCopiedActive: true })
+                    })
+                  ])
+                ]),
+                onHide: () => this.setState({ snapshotOpen: false })
+              }
+            }, [
+                h('div', [h(IconButton, {
+                  icon: 'link',
+                  active: this.state.snapshotOpen,
+                  onClick: () => this.getShareLinkAndToggle(),
+                  desc: this.state.snapshotOpen ? '' : 'Get shareable link'
+                })])
+              ]),
             h(Popup, {
               active: this.state.linkCopiedActive,
               deactivate: () => this.setState({ linkCopiedActive: false }),

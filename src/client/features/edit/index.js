@@ -25,6 +25,28 @@ const EditViewConfig = {
   })
 };
 
+
+const bindMove = (cy, uri)  => {
+  cy.on('free', 'node', function(evt) {
+    ServerAPI.submitNodeChange(uri, 'latest', evt.target.id(), evt.target.position());
+  });
+};
+
+const bindSyncEditChanges = cy => {
+  ServerAPI.initReceiveNodeChange(nodePosition => {
+    const node = cy.getElementById(nodePosition.nodeId);
+
+    if (node.isChildless()) {
+      node.animate({position: nodePosition.bbox}, { duration: 250 });
+    }
+
+    ServerAPI.initReceiveLayoutChange(layoutJSON => {
+      applyHumanLayout(cy, layoutJSON, { duration: 250 });
+    });
+  });
+};
+
+
 class Edit extends React.Component {
   constructor(props) {
     super(props);
@@ -45,26 +67,13 @@ class Edit extends React.Component {
     };
 
     const query = queryString.parse(props.location.search);
-    
     const cy = this.state.cy;
-    cy.on('free', 'node', function(evt) {
-      ServerAPI.submitNodeChange(query.uri, 'latest', evt.target.id(), evt.target.position());
-    });
-
-    ServerAPI.initReceiveNodeChange(nodePosition => {
-      const node = cy.getElementById(nodePosition.nodeId);
-
-      if (node.isChildless()) {
-        node.animate({position: nodePosition.bbox}, { duration: 250 });
-      }
-
-      ServerAPI.initReceiveLayoutChange(layoutJSON => {
-        applyHumanLayout(cy, layoutJSON, { duration: 250 });
-      });
-    });
 
     ServerAPI.getGraphAndLayout(query.uri, 'latest').then(networkJSON => {
       const layoutConfig = getLayoutConfig(networkJSON.layout);
+
+      bindMove(cy, query.uri);
+      bindSyncEditChanges(cy);      
 
       this.setState({
         componentConfig: EditViewConfig,

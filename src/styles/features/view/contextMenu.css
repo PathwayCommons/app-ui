@@ -1,0 +1,11 @@
+/* Insert Styling for Context Menu Here */
+/* This Should be used when Context Menus are added */ 
+
+.cxt-info {
+  font-size: 0.45em;
+  padding: 2px;
+}
+
+.cxt-icon {
+  font-size: 1.4em;
+}

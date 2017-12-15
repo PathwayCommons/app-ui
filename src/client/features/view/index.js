@@ -16,6 +16,8 @@ class View extends React.Component {
     super(props);
     this.state = {
       cy: make_cytoscape({ headless: true }),
+      componentConfig: {},
+      layoutConfig: {},
       networkJSON: {},
       networkLayoutJSON: {},
       networkMetadata: {
@@ -30,7 +32,12 @@ class View extends React.Component {
     const query = queryString.parse(props.location.search);
 
     ServerAPI.getGraphAndLayout(query.uri, 'latest').then(networkJSON => {
+      const layoutConfig = getLayoutConfig(networkJSON.layout);
+      const componentConfig = BaseNetworkView.config;
+  
       this.setState({
+        componentConfig: componentConfig,
+        layoutConfig: layoutConfig,
         networkJSON: networkJSON.graph,
         networkLayoutJSON: networkJSON.layout,
         networkMetadata: {
@@ -48,12 +55,9 @@ class View extends React.Component {
   render() {
     const state = this.state;
 
-    const layoutConfig = getLayoutConfig(state.networkLayoutJSON);
-    const componentConfig = BaseNetworkView.config;
-
     const baseView = h(BaseNetworkView.component, {
-      layoutConfig: layoutConfig,
-      componentConfig: componentConfig,
+      layoutConfig: state.layoutConfig,
+      componentConfig: state.componentConfig,
       cy: state.cy,
       networkJSON: state.networkJSON,
       networkLayoutJSON: state.networkLayoutJSON,

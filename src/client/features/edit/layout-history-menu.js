@@ -2,11 +2,22 @@ const React = require('react');
 const h = require('react-hyperscript');
 const Loader = require('react-loader');
 
-const { getLayouts, applyHumanLayout } = require('../../../../common/cy/layout/');
+const { getLayoutConfig } = require('../../common/cy/layout/');
 
-const { ServerAPI } = require('../../../../services/');
+const { ServerAPI } = require('../../services/');
 
-const imageCard = require('./image-card');
+
+const ImageCard = props => {
+  return (
+    h('div.image-card', {onClick : props.onClick}, [
+      h('img', {
+        'src': props.src,
+        'alt': 'Image not found',
+      }),
+      h('span', props.children)
+    ])
+  );
+};
 
 class HistoryMenu extends React.Component {
   constructor(props) {
@@ -20,7 +31,7 @@ class HistoryMenu extends React.Component {
 
   componentDidMount() {
     if (!this.state.images || !this.state.layouts) {
-      ServerAPI.getLatestLayouts(this.props.uri, 'latest', 10).then(res => {
+      ServerAPI.getLatestLayouts(this.props.networkMetadata.uri, 'latest', 10).then(res => {
         this.setState({ layouts: res });
 
         this.props.cy.scratch('_layoutRevisions', res);
@@ -60,6 +71,8 @@ class HistoryMenu extends React.Component {
     return !nextState.loading;
   }
 
+
+  //TODO rewrite this
   //Apply a previous layout to the cytoscape graph
   //Requires a valid layout id
   applyLayout(id, cy, props) {
@@ -67,21 +80,21 @@ class HistoryMenu extends React.Component {
     const layouts = this.state.layouts.layout;
     const layout = layouts.filter(item => item.id === id)[0];
     const positions = layout.positions;
-    const layoutConf = getLayouts(positions);
+    const layoutConfig = getLayoutConfig(positions);
 
-    //Update information within other components
-    this.props.changeLayout(layoutConf);
+    const layoutOpts = layoutConfig.defaultLayout.options;
 
-    //Adjust the graph to match the new new layout
-    applyHumanLayout(cy, positions, props);
+    cy.layout(layoutOpts).run();
   }
 
   //Generate a image card for a given layout
   //Requires a valid layout and images object
   renderImage(layout, images, cy) {
     //Obtain layout information
+
+    const props = this.props;
+
     let id = layout.id;
-    let that = this;
     let imageList = images.filter(image => image.id === id);
     let image = imageList.length > 0 ? imageList[0] : {};
 
@@ -90,11 +103,11 @@ class HistoryMenu extends React.Component {
     let dateStr = date.toString();
 
     //Render image card with required information
-    return h(imageCard, {
+    return h(ImageCard, {
       key: image.id,
       src: image.img,
       children: 'Date Added : ' + dateStr,
-      onClick: () => this.applyLayout(layout.id, cy, that.props)
+      onClick: () => this.applyLayout(layout.id, cy, props)
     });
   }
 

@@ -3,42 +3,49 @@ const h = require('react-hyperscript');
 const _ = require('lodash');
 const queryString = require('query-string');
 
-const { Menu, Network, Sidebar } = require('./components/');
-const { Popup } = require('../../common/components');
-
-const { getLayouts, applyHumanLayout } = require('../../common/cy/layout/');
+const { BaseNetworkView, Popup } = require('../../common/components');
+const { getLayoutConfig, applyHumanLayout } = require('../../common/cy/layout');
 const make_cytoscape = require('../../common/cy/');
+
 const { ServerAPI } = require('../../services/');
 
+const LayoutHistoryMenu = require('./layout-history-menu');
 
+const EditViewConfig = {
+  menus: BaseNetworkView.config.menus.concat({
+    id: 'layoutHistoryMenu',
+    func: props => h(LayoutHistoryMenu, props)
+  }),
+  toolbarButtons: BaseNetworkView.config.toolbarButtons.concat({
+      id: 'showLayoutHistory',
+      icon: 'history',
+      type: 'activateMenu',
+      menuId: 'layoutHistoryMenu',
+      description: 'Network Arrangment history'
+  })
+};
 
 class Edit extends React.Component {
   constructor(props) {
     super(props);
-    const query = queryString.parse(props.location.search);
-
     this.state = {
-      query: query,
-
       cy: make_cytoscape({ headless: true }),
-      graphJSON: null,
-
-      layout: '',
-      availableLayouts: [],
-
-      metadata: {
+      networkJSON: {},
+      networkLayoutJSON: {},
+      networkMetadata: {
         name: '',
         datasource: '',
         comments: []
       },
 
-      networkRendered: false,
-      activeMenu: '',
-
-      activateWarning: false,
-      warningMessage: '',
+      activateWarning: true,
+      warningMessage: 'Be careful! Your changes will be live.',
+    
+      loading: true
     };
 
+    const query = queryString.parse(props.location.search);
+    
     const cy = this.state.cy;
     cy.on('free', 'node', function(evt) {
       ServerAPI.submitNodeChange(query.uri, 'latest', evt.target.id(), evt.target.position());
@@ -56,79 +63,47 @@ class Edit extends React.Component {
       });
     });
 
-    ServerAPI.getGraphAndLayout(query.uri, 'latest').then(graphJSON => {
-      const layoutConf = getLayouts(graphJSON.layout);
+    ServerAPI.getGraphAndLayout(query.uri, 'latest').then(networkJSON => {
+      const layoutConfig = getLayoutConfig(networkJSON.layout);
+
       this.setState({
-        graphJSON: graphJSON.graph,
-        layout: layoutConf.defaultLayout,
-        availableLayouts: layoutConf.layouts,
-        metadata: {
-          name: _.get(graphJSON, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
-          datasource: _.get(graphJSON, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
-          comments: graphJSON.graph.pathwayMetadata.comments,
-          organism: graphJSON.graph.pathwayMetadata.organism
-        }
+        componentConfig: EditViewConfig,
+        layoutConfig: layoutConfig,
+        networkJSON: networkJSON.graph,
+        networkLayoutJSON: networkJSON.layout,
+        networkMetadata: {
+          uri: query.uri,
+          name: _.get(networkJSON, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
+          datasource: _.get(networkJSON, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
+          comments: networkJSON.graph.pathwayMetadata.comments,
+          organism: networkJSON.graph.pathwayMetadata.organism
+        },
+        loading: false
       });
-    });
-  }
-
-  updateNetworkRenderStatus(rendered) {
-    let activateWarning = false;
-    let warningMessage = '';
-
-    if (rendered) {
-      activateWarning = true;
-      warningMessage = 'Be careful! Your changes will be live.';
-    }
-
-    this.setState({
-      networkRendered: true,
-      activateWarning: activateWarning,
-      warningMessage: warningMessage
     });
   }
 
   render() {
     const state = this.state;
-    const props = this.props;
 
-    return h('div.Edit', [
-      h(Menu, {
-        uri: state.query.uri,
-        admin: props.admin,
-        name: state.metadata.name,
-        datasource: state.metadata.datasource,
-        availableLayouts: state.availableLayouts,
-        currLayout: state.layout,
-        cy: state.cy,
-        changeLayout: layout => this.setState({layout: layout}),
-        activeMenu: state.activeMenu,
-        changeMenu: menu => this.setState({activeMenu: menu})
-      }),
-      h(Network, {
-        cy: state.cy,
-        graphJSON: state.graphJSON,
-        updateNetworkRenderStatus: rendered => this.updateNetworkRenderStatus(rendered)
-      }),
+    const baseView = h(BaseNetworkView.component, {
+      layoutConfig: state.layoutConfig,
+      componentConfig: state.componentConfig,
+      cy: state.cy,
+      networkJSON: state.networkJSON,
+      networkLayoutJSON: state.networkLayoutJSON,
+      networkMetadata: state.networkMetadata
+    }, [    ]);
+
+    const content = state.loading ? h('div', 'Loading') : baseView;
+
+    return h('div', [
+      content,
       h(Popup, {
         active: state.activateWarning,
         deactivate: () => this.setState({ activateWarning: false }),
         duration: 5000
-      }, state.warningMessage),
-      h(Sidebar, {
-        cy: state.cy,
-        uri: state.query.uri,
-        name: state.metadata.name,
-        datasource: state.metadata.datasource,
-        comments: state.metadata.comments,
-        activeMenu: state.activeMenu,
-        changeMenu: menu => this.setState({activeMenu: menu}),
-        changeLayout: layoutConf => this.setState({
-          layout: layoutConf.defaultLayout,
-          availableLayouts: layoutConf.layouts
-        }),
-        admin: props.admin
-      })
+      }, state.warningMessage)
     ]);
   }
 }

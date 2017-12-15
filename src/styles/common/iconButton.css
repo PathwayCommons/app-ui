@@ -30,4 +30,15 @@
   &.common-icon-button-active {
     color: var(--accent-1-colour);
   }
+
+  &.common-icon-button-small {
+    height: calc(var(--icon-size) * 2 / 3);
+    width: auto;
+    font-size: 0.9em;
+
+    &:hover {
+      background-color: transparent;
+      color: var(--accent-1-colour);
+    }
+  }
 }

@@ -29,11 +29,11 @@ class View extends React.Component {
     const query = queryString.parse(props.location.search);
 
     ServerAPI.getGraphAndLayout(query.uri, 'latest').then(networkJSON => {
-
       this.setState({
         networkJSON: networkJSON.graph,
         networkLayoutJSON: networkJSON.layout,
         networkMetadata: {
+          uri: query.uri,
           name: _.get(networkJSON, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
           datasource: _.get(networkJSON, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
           comments: networkJSON.graph.pathwayMetadata.comments,

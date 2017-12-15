@@ -55,14 +55,6 @@
     & span {
       cursor: pointer;
     }
-
-    & a {
-      color: var(--link);
-
-      &:visited {
-        color: var(--link-visited);
-      }
-    }
   }
 }
 

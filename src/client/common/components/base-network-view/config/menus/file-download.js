@@ -4,12 +4,12 @@ const classNames = require('classnames');
 const saveAs = require('file-saver').saveAs;
 const _ = require('lodash');
 
-const FlatButton = require('../../flat-button');
-const AsyncButton = require('../../async-button');
+const FlatButton = require('../../../flat-button');
+const AsyncButton = require('../../../async-button');
 
-const { ServerAPI } = require('../../../../services/');
+const { ServerAPI } = require('../../../../../services/');
 
-const downloadTypes = require('../../../config').downloadTypes;
+const downloadTypes = require('../../../../config').downloadTypes;
 
 
 class FileDownloadMenu extends React.Component {
@@ -34,7 +34,7 @@ class FileDownloadMenu extends React.Component {
             scale: 2,
             bg: 'white',
             full: true
-          }), `${this.props.name}.${optionObj.ext}`);
+          }), `${this.props.networkMetadata.name}.${optionObj.ext}`);
           this.setState({ loadingOptions: _.filter(this.state.loadingOptions, item => item !== 'png') });
         }, 1);
       });
@@ -49,7 +49,7 @@ class FileDownloadMenu extends React.Component {
   initiatePCDownload(format, fileExt, fileType) {
     this.setState({ loadingOptions: this.state.loadingOptions.concat(fileType) });
 
-    ServerAPI.pcQuery('get', { uri: this.props.uri, format: format })
+    ServerAPI.pcQuery('get', { uri: this.props.networkMetadata.uri, format: format })
       .then(res => res.text()
         .then(content => {
           let fileContent = content;
@@ -67,7 +67,7 @@ class FileDownloadMenu extends React.Component {
 
   generatePathwayName() {
     const FILENAME_CUTOFF = 20;
-    let filename = this.props.name || 'network';
+    let filename = this.props.networkMetadata.name || 'network';
     return filename.substr(0, filename.length < FILENAME_CUTOFF ? filename.length : FILENAME_CUTOFF).replace(/ /g, '_');
   }
 

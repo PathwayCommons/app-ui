@@ -8,6 +8,7 @@ const make_cytoscape = require('../../common/cy/');
 const { ServerAPI } = require('../../services/');
 
 const {BaseNetworkView} = require('../../common/components');
+const { getLayoutConfig } = require('../../common/cy/layout');
 
 
 class View extends React.Component {
@@ -47,7 +48,12 @@ class View extends React.Component {
   render() {
     const state = this.state;
 
-    const baseView = h(BaseNetworkView, {
+    const layoutConfig = getLayoutConfig(state.networkLayoutJSON);
+    const componentConfig = BaseNetworkView.config;
+
+    const baseView = h(BaseNetworkView.component, {
+      layoutConfig: layoutConfig,
+      componentConfig: componentConfig,
       cy: state.cy,
       networkJSON: state.networkJSON,
       networkLayoutJSON: state.networkLayoutJSON,

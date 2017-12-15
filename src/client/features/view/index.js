@@ -19,7 +19,6 @@ class View extends React.Component {
       componentConfig: {},
       layoutConfig: {},
       networkJSON: {},
-      networkLayoutJSON: {},
       networkMetadata: {
         name: '',
         datasource: '',
@@ -39,7 +38,6 @@ class View extends React.Component {
         componentConfig: componentConfig,
         layoutConfig: layoutConfig,
         networkJSON: networkJSON.graph,
-        networkLayoutJSON: networkJSON.layout,
         networkMetadata: {
           uri: query.uri,
           name: _.get(networkJSON, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
@@ -60,7 +58,6 @@ class View extends React.Component {
       componentConfig: state.componentConfig,
       cy: state.cy,
       networkJSON: state.networkJSON,
-      networkLayoutJSON: state.networkLayoutJSON,
       networkMetadata: state.networkMetadata
     });
 

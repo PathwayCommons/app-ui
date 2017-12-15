@@ -25,7 +25,6 @@ const EditViewConfig = {
   })
 };
 
-
 const bindMove = (cy, uri)  => {
   cy.on('free', 'node', function(evt) {
     ServerAPI.submitNodeChange(uri, 'latest', evt.target.id(), evt.target.position());
@@ -53,7 +52,6 @@ class Edit extends React.Component {
     this.state = {
       cy: make_cytoscape({ headless: true }),
       networkJSON: {},
-      networkLayoutJSON: {},
       networkMetadata: {
         name: '',
         datasource: '',
@@ -79,7 +77,6 @@ class Edit extends React.Component {
         componentConfig: EditViewConfig,
         layoutConfig: layoutConfig,
         networkJSON: networkJSON.graph,
-        networkLayoutJSON: networkJSON.layout,
         networkMetadata: {
           uri: query.uri,
           name: _.get(networkJSON, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
@@ -100,7 +97,6 @@ class Edit extends React.Component {
       componentConfig: state.componentConfig,
       cy: state.cy,
       networkJSON: state.networkJSON,
-      networkLayoutJSON: state.networkLayoutJSON,
       networkMetadata: state.networkMetadata
     }, [    ]);
 

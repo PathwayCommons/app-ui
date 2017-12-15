@@ -2,7 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
 
-const bindContextMenu = require('./contextMenu');
+const bindContextMenu = require('../../../../common/cy/events/contextMenu');
 
 /* Props
 - updateRenderStatus(status)

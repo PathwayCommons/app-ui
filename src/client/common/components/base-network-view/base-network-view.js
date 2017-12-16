@@ -29,24 +29,13 @@ class BaseNetworkView extends React.Component {
       window.cy = props.cy;
     }
 
-    // todo inject both of the configs from the calling top level component
-    // e.g admin gets layoutconfig, componentconfig from view/paint/edit
+    this.state = _.merge({}, 
+      {
+        activeMenu: 'closeMenu',
+        open: false
+      }, props);
 
-    this.state = {
-      cy: props.cy,
-      networkJSON: props.networkJSON,
-      networkMetadata: props.networkMetadata,
 
-      layoutConfig: props.layoutConfig,
-      componentConfig: props.componentConfig,
-
-      //node searchbar
-      searchOpen: false,
-      
-      //sidebar
-      activeMenu: 'closeMenu',
-      open: false
-    };
   }
 
   componentWillUnmount() {

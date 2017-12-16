@@ -33,7 +33,7 @@ const bindMove = (cy, uri)  => {
 
 const bindSyncEditChanges = cy => {
   ServerAPI.initReceiveNodeChange(nodePosition => {
-    const node = cy.getElementById(nodePosition.nodeId);
+    const node = cy.getElementById(nodePosition.nodeID);
 
     if (node.isChildless()) {
       node.animate({position: nodePosition.bbox}, { duration: 250 });
@@ -58,7 +58,7 @@ class Edit extends React.Component {
         comments: []
       },
 
-      activateWarning: true,
+      activateWarning: false,
       warningMessage: 'Be careful! Your changes will be live.',
     
       loading: true
@@ -67,12 +67,16 @@ class Edit extends React.Component {
     const query = queryString.parse(props.location.search);
     const cy = this.state.cy;
 
+    cy.on('network-loaded', () => {
+      bindMove(cy, query.uri);
+      bindSyncEditChanges(cy);
+      this.setState({
+        activateWarning: true
+      });
+    });
+
     ServerAPI.getGraphAndLayout(query.uri, 'latest').then(networkJSON => {
       const layoutConfig = getLayoutConfig(networkJSON.layout);
-
-      bindMove(cy, query.uri);
-      bindSyncEditChanges(cy);      
-
       this.setState({
         componentConfig: EditViewConfig,
         layoutConfig: layoutConfig,

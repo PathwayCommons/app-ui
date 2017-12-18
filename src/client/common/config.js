@@ -24,7 +24,7 @@ const databases = [
 ];
 
 const publicationsURL = 'http://identifiers.org/pubmed/';
-const tooltipOrder = ['Type', 'Display Name', 'Standard Name', 'Names', 'Database IDs', 'Publications'];
+const tooltipOrder = ['Type', 'Standard Name', 'Display Name', 'Names', 'Database IDs', 'Publications'];
 const tooltipReverseOrder = ['Comment'];
 
 const defaultEntryLimit = 3;

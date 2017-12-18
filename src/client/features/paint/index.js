@@ -2,7 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const queryString = require('query-string');
 const _ = require('lodash');
-const classNames = require('classnames');
+const Loader = require('react-loader');
 
 const { BaseNetworkView } = require('../../common/components');
 const { getLayoutConfig } = require('../../common/cy/layout');
@@ -25,8 +25,8 @@ const PaintViewConfig = {
   menus: BaseNetworkView.config.menus.concat({
     id: 'paintMenu',
     func: props => h(PaintMenu, props)
-
-  })
+  }),
+  useSearchBar: false
 };
 
 
@@ -66,7 +66,7 @@ class Paint extends React.Component {
     const query = queryString.parse(props.location.search);
     const searchParam = query.q;
     const enrichmentsURI = query.uri;
-    
+
     ServerAPI.querySearch({q: searchParam}).then(results => {
       const uri = _.get(results, '0.uri', null);
 
@@ -85,7 +85,7 @@ class Paint extends React.Component {
             comments: networkJSON.graph.pathwayMetadata.comments,
             organism: networkJSON.graph.pathwayMetadata.organism
           },
-          networkLoading: false  
+          networkLoading: false
         });
       });
     });
@@ -105,7 +105,7 @@ class Paint extends React.Component {
     const expressionTable = createExpressionTable(expressions, expressionClasses);
     this.setState({
       expressionTable: expressionTable,
-      expressionsLoading: false      
+      expressionsLoading: false
     });
 
 
@@ -131,8 +131,10 @@ class Paint extends React.Component {
 
     });
 
+    const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
+
     // create a view shell loading view e.g looks like the view but its not
-    const content = state.expressionsLoading || state.networkLoading ? h('div', 'Loading') : baseView;
+    const content = state.expressionsLoading || state.networkLoading ? loadingView : baseView;
 
     return h('div', [content]);
   }

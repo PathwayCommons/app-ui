@@ -2,6 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const classNames = require('classnames');
 const Link = require('react-router-dom').Link;
+const Loader = require('react-loader');
 const _ = require('lodash');
 
 const IconButton = require('../icon-button');
@@ -29,12 +30,12 @@ class BaseNetworkView extends React.Component {
       window.cy = props.cy;
     }
 
-    this.state = _.merge({}, 
+    this.state = _.merge({},
       {
         activeMenu: 'closeMenu',
-        open: false
+        open: false,
+        networkLoading: true
       }, props);
-
 
   }
 
@@ -47,15 +48,15 @@ class BaseNetworkView extends React.Component {
     const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
     const container = this.graphDOM;
 
-    const cy = state.cy;    
+    const cy = state.cy;
     cy.mount(container);
     cy.remove('*');
     cy.add(state.networkJSON);
-    
+
     const layout = cy.layout(initialLayoutOpts);
     layout.on('layoutstop', () => {
-      this.setState({ loading: false});
       cy.emit('network-loaded');
+      this.setState({networkLoading: false});
     });
     layout.run();
   }
@@ -87,13 +88,13 @@ class BaseNetworkView extends React.Component {
 
   render() {
     const state = this.state;
+    const componentConfig = state.componentConfig;
 
-    const toolbarButtons = state.componentConfig.toolbarButtons;
+    const toolbarButtons = componentConfig.toolbarButtons;
     const menus = state.componentConfig.menus;
 
-    // state.componentConfig.activemenu...
     const activeMenu = menus.filter(menu => menu.id === state.activeMenu)[0].func(state);
-    
+
     const menuButtons = toolbarButtons.filter(btn => btn.type === 'activateMenu').map(btn => {
       return (
         h(IconButton, {
@@ -114,7 +115,7 @@ class BaseNetworkView extends React.Component {
         })
       );
     });
-  
+
     const nodeSearchBar = [
       h(IconButton, {
         icon: 'search',
@@ -143,7 +144,11 @@ class BaseNetworkView extends React.Component {
     ];
 
 
-    const toolBar = [...menuButtons, ...networkButtons, ...nodeSearchBar];
+    const toolBar = [...menuButtons, ...networkButtons];
+
+    if (componentConfig.useSearchBar) {
+      toolBar.push(nodeSearchBar);
+    }
 
 
     return h('div.View', [
@@ -166,12 +171,17 @@ class BaseNetworkView extends React.Component {
         ]),
         h('div.view-toolbar', toolBar)
       ]),
+      h(Loader, {
+        loaded: !this.state.networkLoading,
+        options: { left: '50%', color: '#16A085' },
+      }),
       h('div.Graph', [
         h('div', {
           ref: dom => this.graphDOM = dom,
           style: {
             width: '100vw',
-            height: '100vh'
+            height: '100vh',
+            visibility: this.state.networkLoading ? 'hidden' : undefined
           }
         })
       ]),

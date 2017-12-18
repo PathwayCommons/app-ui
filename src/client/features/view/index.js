@@ -2,12 +2,13 @@ const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
 const queryString = require('query-string');
+const Loader = require('react-loader');
 
 const make_cytoscape = require('../../common/cy/');
 
 const { ServerAPI } = require('../../services/');
 
-const {BaseNetworkView} = require('../../common/components');
+const { BaseNetworkView } = require('../../common/components');
 const { getLayoutConfig } = require('../../common/cy/layout');
 
 
@@ -24,7 +25,6 @@ class View extends React.Component {
         datasource: '',
         comments: []
       },
-
       loading: true
     };
 
@@ -32,8 +32,8 @@ class View extends React.Component {
 
     ServerAPI.getGraphAndLayout(query.uri, 'latest').then(networkJSON => {
       const layoutConfig = getLayoutConfig(networkJSON.layout);
-      const componentConfig = BaseNetworkView.config;
-  
+      const componentConfig = _.merge({}, BaseNetworkView.config, { useSearchBar: true});
+
       this.setState({
         componentConfig: componentConfig,
         layoutConfig: layoutConfig,
@@ -61,8 +61,10 @@ class View extends React.Component {
       networkMetadata: state.networkMetadata
     });
 
+    const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
+
     // create a view shell loading view e.g looks like the view but its not
-    const content = state.loading ? h('div', 'Loading') : baseView;
+    const content = state.loading ? loadingView : baseView;
 
     return h('div', [content]);
   }

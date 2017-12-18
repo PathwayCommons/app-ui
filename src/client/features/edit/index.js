@@ -2,6 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
 const queryString = require('query-string');
+const Loader = require('react-loader');
 
 const { BaseNetworkView, Popup } = require('../../common/components');
 const { getLayoutConfig, applyHumanLayout } = require('../../common/cy/layout');
@@ -22,7 +23,8 @@ const EditViewConfig = {
       type: 'activateMenu',
       menuId: 'layoutHistoryMenu',
       description: 'Network Arrangment history'
-  })
+  }),
+  useSearchBar: true
 };
 
 const bindMove = (cy, uri)  => {
@@ -60,7 +62,7 @@ class Edit extends React.Component {
 
       activateWarning: false,
       warningMessage: 'Be careful! Your changes will be live.',
-    
+
       loading: true
     };
 
@@ -102,9 +104,11 @@ class Edit extends React.Component {
       cy: state.cy,
       networkJSON: state.networkJSON,
       networkMetadata: state.networkMetadata
-    }, [    ]);
+    });
 
-    const content = state.loading ? h('div', 'Loading') : baseView;
+    const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
+
+    const content = state.loading ? loadingView : baseView;
 
     return h('div', [
       content,

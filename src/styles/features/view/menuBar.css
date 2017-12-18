@@ -51,18 +51,6 @@
     font-weight: bold;
     font-size: 0.9em;
     margin: 0;
-
-    & span {
-      cursor: pointer;
-    }
-
-    & a {
-      color: var(--link);
-
-      &:visited {
-        color: var(--link-visited);
-      }
-    }
   }
 }
 

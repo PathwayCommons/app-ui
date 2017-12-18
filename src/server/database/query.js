@@ -2,7 +2,6 @@
 const r = require('rethinkdb');
 const heuristics = require('./heuristics');
 const db = require('./utilities');
-const pcServices = require('./../pathway-commons');
 const lazyload = require('../lazyload');
 const update = require('./update');
 
@@ -52,16 +51,8 @@ Entry specficed by the tuple of pcID and releaseID.
 Accepts 'latest' as a valid releaseID
 */
 
-function getLatestPCVersion(pcID) {
-  // Traverse queries to PC2 return the current PC2 version.
-  return pcServices.traverse({ format: 'JSON', path: 'Named/name', uri: pcID }).then((json) => {
-    return json.version;
-  });
-}
-
-
 function getGraph(pcID, releaseID, connection, callback) {
-  let latestVersion = getLatestPCVersion(pcID);
+  let latestVersion = db.getLatestPCVersion(pcID);
 
   let graph = db.queryRoot(pcID, releaseID, config)
     .eqJoin('graph_id', r.db(config.databaseName).table('graph'))

@@ -29,6 +29,7 @@ const bindClick = (cy) => {
   //Click Handler
   //Manage Single and Double Click Events
   cy.on('tap', evt => {
+
     const cy = evt.cy;
     const target = evt.target;
     const timeout = 300;

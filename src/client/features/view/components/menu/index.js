@@ -149,13 +149,7 @@ class Menu extends React.Component {
                 })
               ])
             ]),
-            h('div.title-container', [
-              h('h4', [
-                h('span', { onClick: () => this.changeMenu('info') }, this.props.name),
-                ' | ',
-                h('a', { href: datasourceLink, target: '_blank' }, this.props.datasource)
-              ])
-            ])
+            h('div.title-container', [h('h4', `${this.props.name} | ${this.props.datasource}`)])
           ]),
           h('div.view-toolbar', toolButtonEls.concat([
             h(IconButton, {

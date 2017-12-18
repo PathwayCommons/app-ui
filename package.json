@@ -31,23 +31,26 @@
     "clean": "rimraf build/*",
     "lint": "run-s lint:*",
     "watch": "run-p watch:*",
-    "test": "mocha"
+    "test": "mocha --recursive"
   },
   "dependencies": {
     "async": "^2.5.0",
     "body-parser": "^1.18.2",
     "btoa": "^1.1.2",
+    "chai-as-promised": "^7.1.1",
     "classnames": "^2.2.5",
     "color": "^2.0.0",
     "cookie-parser": "^1.4.3",
-    "cytoscape": "git+https://github.com/d2fong/cytoscape.js.git#unstable-build",
+    "cytoscape": "git+https://github.com/cytoscape/cytoscape.js.git#295f66f7db85681670b03937a8dc6da2130a1f2e",
     "cytoscape-cola": "^2.0.0",
     "cytoscape-compound-collapse": "git+https://github.com/d2fong/cytoscape.js-compound-collapse.git",
-    "cytoscape-cose-bilkent": "git+https://github.com/d2fong/cytoscape.js-cose-bilkent.git#simple-label-dimensions",
+    "cytoscape-cose-bilkent": "^3.0.2",
+    "cytoscape-cxtmenu": "^2.10.3",
     "cytoscape-dagre": "^2.0.0",
     "cytoscape-fisheye": "git+https://github.com/d2fong/cytoscape.js-fisheye.git",
     "cytoscape-klay": "^3.0.0",
-    "cytoscape-sbgn-stylesheet": "^3.0.1",
+    "cytoscape-sbgn-stylesheet": "^4.0.0",
+    "cytosnap": "^2.0.1",
     "express": "^4.16.2",
     "file-saver": "^1.3.3",
     "fready": "^1.0.0",
@@ -58,6 +61,7 @@
     "jsonpath": "^0.2.12",
     "klayjs": "^0.4.1",
     "lodash": "^4.17.4",
+    "match-sorter": "^2.2.0",
     "morgan": "^1.9.0",
     "multispinner": "^0.2.1",
     "node-fetch": "^1.7.3",
@@ -70,6 +74,8 @@
     "react-hyperscript": "^3.0.0",
     "react-loader": "^2.4.2",
     "react-router-dom": "^4.2.2",
+    "react-table": "^6.7.4",
+    "react-tabs": "^2.1.1",
     "rethinkdb": "^2.3.3",
     "sbgnml-to-cytoscape": "^4.0.1",
     "serve-favicon": "^2.4.5",
@@ -109,6 +115,7 @@
     "postcss": "^6.0.13",
     "postcss-cli": "^4.1.1",
     "postcss-cssnext": "^3.0.2",
+    "postcss-custom-media": "^6.0.0",
     "postcss-extend": "^1.0.5",
     "postcss-import": "^10.0.0",
     "postcss-url": "^7.1.2",
@@ -120,7 +127,7 @@
     "webpack-bundle-analyzer": "^2.9.0"
   },
   "engines": {
-    "node": ">=6.3.0"
+    "node": ">=7.6.0"
   },
   "browserslist": "last 3 versions, >1%",
   "contributors": [

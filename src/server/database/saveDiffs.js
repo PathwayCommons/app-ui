@@ -1,16 +1,15 @@
 
 const r = require('rethinkdb');
 const uuid = require('uuid/v4');
-const config = require('./config');
+let config = require('./config');
 const db = require('./utilities');
 
-const dbName = config.databaseName;
 
 // getLatestPoistions(version, connection) returns the
 // most recent position data stored in the database
 // for the given version
 function getLatestPositions(version, connection) {
-  return r.db(dbName)
+  return r.db(config.databaseName)
     .table('layout')
     .getAll(r.args(version.layout_ids))
     .orderBy(r.desc('date_added'))
@@ -27,7 +26,7 @@ function getLatestPositions(version, connection) {
 // database.
 // Optionally returns a promise or executes a callback if one is provided
 function addUser(version, userID, connection, callback) {
-  return r.db(dbName).table('version').get(version.id).update(() => {
+  return r.db(config.databaseName).table('version').get(version.id).update(() => {
     version.users.push(userID);
     return { users: version.users };
   }).run(connection, callback);
@@ -40,7 +39,7 @@ function createNewLayout(version, connection) {
 
   if (!numLayouts) {
     // A layout should be created earlier in the pipeline
-    return Promise.reject(new Error ('ERROR : This should not happen'));
+    return Promise.reject(new Error('Submitting diff before an initial layout was created.'));
   }
 
   let layoutID = uuid();
@@ -48,18 +47,18 @@ function createNewLayout(version, connection) {
   // add new id to list of layout ids
   version.layout_ids.push(layoutID);
 
-  let versionUpdate = r.db(dbName).table('version').get(version.id)
-    .update({ layout_ids: version.layout_ids })
-    .run(connection);
-
   // Create the layout entry in the layouts table of the database
-  let writeLayout = getLatestPositions(version, connection).then((positions) => {
+  return getLatestPositions(version, connection).then((positions) => {
     // Create a duplicate entry with the most recent poisitions so that the history of the last session
     // remains intact.
-    return db.insert('layout', { id: layoutID, positions: positions, date_added: r.now() }, connection);
+    return Promise.all([
+      r.db(config.databaseName)
+        .table('version')
+        .get(version.id)
+        .update({ layout_ids: version.layout_ids }).run(connection),
+      db.insert('layout', { id: layoutID, positions: positions, date_added: r.now() },config, connection)
+    ]);
   });
-
-  return Promise.all([versionUpdate, writeLayout]);
 }
 
 // handleUserInfo(pcID, releaseID, userID, connection [, callback])
@@ -69,7 +68,7 @@ function createNewLayout(version, connection) {
 // Optionally returns a promise or executes a callback if one is provided
 function handleUserInfo(pcID, releaseID, userID, connection, callback) {
 
-  let result = db.queryRoot(pcID, releaseID).run(connection)
+  let result = db.queryRoot(pcID, releaseID, config).run(connection)
     .then((cursor) => {
       return cursor.next();
     }).then((version) => {
@@ -98,9 +97,9 @@ function handleUserInfo(pcID, releaseID, userID, connection, callback) {
 // Applies diff to the layout specified by (pcID, releaseID)
 // Returns a promise unless a callback is provided to be executed
 function updateLayout(pcID, releaseID, diff, connection, callback) {
-  let result = db.queryRoot(pcID, releaseID)
+  let result = db.queryRoot(pcID, releaseID, config)
     .concatMap(function (version) { return version('layout_ids'); })
-    .eqJoin(function (id) { return id; }, r.db(dbName).table('layout'))
+    .eqJoin(function (id) { return id; }, r.db(config.databaseName).table('layout'))
     .zip()
     .orderBy(r.desc('date_added'))
     .pluck('id')
@@ -108,7 +107,7 @@ function updateLayout(pcID, releaseID, diff, connection, callback) {
     .then((cursor) => {
       return cursor.next(); // returns the most recent layout
     }).then((activeLayout) => {
-      return r.db(dbName).table('layout').get(activeLayout.id)
+      return r.db(config.databaseName).table('layout').get(activeLayout.id)
         .update({ positions: { [diff.nodeID]: diff.bbox } })
         .run(connection);
 
@@ -135,7 +134,7 @@ function saveDiff(pcID, releaseID, diff, userID, connection, callback) {
 // (pcID, releaseID).
 // Returns a promise unless a callback is provided to be executed
 function popUser(pcID, releaseID, userID, connection, callback) {
-  return db.queryRoot(pcID, releaseID).update((row) => {
+  return db.queryRoot(pcID, releaseID, config).update((row) => {
     return {
       users: row('users').filter(user => user.ne(userID))
     };
@@ -143,6 +142,7 @@ function popUser(pcID, releaseID, userID, connection, callback) {
 }
 
 module.exports = {
+  setConfig: conf => config = conf,
   saveDiff,
   popUser
 };

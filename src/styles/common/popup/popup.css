@@ -1,0 +1,65 @@
+.common-popup-container {
+  @extend %flex-center;
+  @extend %no-select;
+
+  height: 2.6em;
+  width: 100%;
+
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  
+  opacity: 0;
+  transform: translateY(100%);
+
+  transition: transform 0.25s ease 0s, opacity 0.25s ease 0.25s;
+
+  &.common-popup-container-open {
+    transform: translateY(-1em);
+    opacity: 1;
+  }
+}
+
+.common-popup {
+  @extend %flex-center;
+
+  padding: 0.4em 1em 0.4em 1em;
+
+  background-color: var(--light-base-colour);
+  border: 1px solid var(--light-base-colour-dark);
+  border-radius: 3px;
+}
+
+/* Portrait-specific mobile scaling */
+/*
+@media (--small-portrait-viewport) {
+  .common-popup-container {
+    height: 100%;
+    width: 2.6em;
+
+    bottom: 0;
+    left: calc(100% - 2.6em);
+
+    animation-name: none;
+    transition: transform 1s ease 0s, opacity 1s ease 1s;
+
+    &.closed {
+      box-shadow: 0px;
+      opacity: 0;
+      transform: translateX(100%);
+    }
+  }
+
+  .common-popup {
+    height: 1.8em;
+    min-width: 20em;
+    padding: 0.4em 1em 0.4em 1em;
+    
+    background-color: var(--accent-1-colour);
+    border-radius: 3px 3px 0px 0px;
+    box-shadow: var(--box-shadow);
+    
+    transform: rotate(-90deg);
+  }
+}
+*/

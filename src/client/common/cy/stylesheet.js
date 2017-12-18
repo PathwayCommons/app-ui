@@ -2,6 +2,14 @@ const cytoscape = require('cytoscape');
 const sbgnStyleSheet = require('cytoscape-sbgn-stylesheet');
 
 const stylesheet = sbgnStyleSheet(cytoscape)
+.selector('node')
+.css({
+  'background-opacity': '0.4'
+})
+.selector('node:active')
+.css({
+  'background-opacity': '0.7',
+})
 .selector('node[class!="compartment"]')
 .css({
   'font-size': 20,
@@ -21,20 +29,12 @@ const stylesheet = sbgnStyleSheet(cytoscape)
 .selector('node[class="complex"]')
 .css({
   'width': 45,
-  'height': 45
+  'height': 45,
+  'label': node => node.isParent() ? '' : node.data('label')
 })
 .selector('.compoundcollapse-collapsed-node')
 .css({
-  'border-style': 'dashed',
   'font-size': 20,
-  'background-color': 'rgb(44,62,80)',
-  'color': 'white',
-  'text-outline-color': 'black',
-  'text-outline-width': 2,
-  'text-outline-opacity': 1,
-  'text-valign': 'center',
-  'opacity': 1,
-  'text-wrap': 'wrap',
   'text-max-width': 175
 })
 .selector('edge')

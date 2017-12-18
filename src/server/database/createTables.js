@@ -5,7 +5,6 @@ To be run on server startup.
 */
 
 const r = require('rethinkdb');
-const config = require('./config');
 const Promise = require('bluebird');
 const logger = require('./../logger');
 const db = require('./utilities');
@@ -35,7 +34,7 @@ function createTables(dbName, tables, connection) {
 function checkTable(dbName, tableName) {
   let connection;
   
-  db.connect().then((conn)=>{
+  return db.connect().then((conn)=>{
     connection = conn;
     return r.db(dbName).tableList().run(connection);
   }).then((tableList)=>{
@@ -60,7 +59,7 @@ function checkTables(databaseName, tables) {
 // CheckDatbase() guarantees that the database described in ./config
 // exists with rethinkdb. It ensures that the database exists and that
 // it contains all the correct tables.
-function checkDatabase() {
+function checkDatabase(config) {
   let connection;
   return db.connect()
     .then((conn) => {

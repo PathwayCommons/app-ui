@@ -1,5 +1,5 @@
 const convert = require('sbgnml-to-cytoscape');
-const pcServices = require('./pcServices');
+const pcServices = require('./../pathway-commons');
 let jp = require('jsonpath');
 const Promise = require('bluebird');
 
@@ -13,7 +13,7 @@ module.exports = function (biopax, sbgn) {
   //Get mapped node list
   let nodes = cyGraph.nodes;
   return processBioPax(biopax, nodes).then(data => {cyGraph.nodes = data; return cyGraph});
-}
+};
 
 //Get data from pc2 via traverse
 //Returns either null or a data object
@@ -24,7 +24,7 @@ function getData(id, path) {
     id = 'http://pathwaycommons.org/pc2/' + id;
   }
 
-  return pcServices.traversePC2(id, path).then(data => data.traverseEntry[0].value);
+  return pcServices.traverse({uri: id, path}).then(data => data.traverseEntry[0].value);
 
 }
 
@@ -81,7 +81,7 @@ function buildBioPaxTree(id) {
 
     //Return subtree
     return result;
-  })
+  });
 
 }
 
@@ -180,7 +180,7 @@ function processBioPax(data, nodes) {
   }, { concurrency: 8 }).then(function (data) {
     return Promise.map(promises, function(el) {}, { concurrency: 8 }).then(
       value => result
-    )
+    );
   });
 }
 

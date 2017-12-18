@@ -1,42 +1,9 @@
-const siblings = (node) => {
-  return node.isChild() ? node.siblings().union(node.siblings().descendants()) : node._private.cy.nodes();
-};
-
-const bindExpandCollapse = (cy) => {
-  cy.on('tap', 'node[class="complex"], node[class="complex multimer"]', function (evt) {
+const bindExpandCollapse = (cy, callback) => {
+  cy.on('expandCollapse', 'node[class="complex"], node[class="complex multimer"]', function (evt) {
     evt.preventDefault();
     const node = evt.target;
-    if (node.isCollapsed()) {
-      node.expand();
-    } else {
-      const s = siblings(node);
-      s.forEach(sibling => {
-        sibling.animate({
-          position: sibling.scratch('_fisheye-pos-before'),
-          complete: () => {
-            sibling.removeScratch('_fisheye-pos-before');
-          }
-        });
-      });
 
-      node.collapse();
-    }
-  });
-
-  cy.on('compoundCollapse.beforeExpand', function (evt) {
-    const node = evt.target;
-    const s = siblings(node);
-
-    s.forEach(sibling => {
-      sibling.scratch('_fisheye-pos-before', {x: sibling.position('x'), y: sibling.position('y')});
-    });
-
-    s.layout({
-      name: 'fisheye',
-      focus: node.position(),
-      animate: true,
-      distortionFactor: 0.5
-    }).run();
+    node.isCollapsed() ? node.expand() : node.collapse();
   });
 
   cy.on('compoundCollapse.afterExpand', function (evt) {
@@ -55,7 +22,7 @@ const bindExpandCollapse = (cy) => {
       })
     }).run();
     cy.zoomingEnabled(true);
-    
+
   });
 
 };

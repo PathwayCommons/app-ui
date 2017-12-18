@@ -1,37 +1,37 @@
-@import "/components/downloadOption.css";
-
 .file-download-menu {
   height: 100%;
   width: 100%;
 }
 
-.toggle-extra-downloads {
+.file-download-content {
+  margin-bottom: 1em;
+}
+
+.toggle-extra-downloads-container {
   @extend %no-select;
 
-  height: 2em;
   width: 100%;
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
+  margin: 0.5em 0;
 
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  box-sizing: border-box;
+}
 
-  background-color: var(--light-base-colour-dark);
+.file-download-extras {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
 
-  cursor: pointer;
+  transform-origin: top center;
+  transform: scaleY(100%);
+  overflow: hidden;
 
-  transition: all 0.1s linear;
+  transition: max-height 0s linear 0s, transform 0.25s ease-out;
 
-  &:hover {
-    background-color: var(--light-base-colour-darker);
-  }
-
-  & i {
-    margin-left: 0.5em;
-    margin-right: 0.5em;
-
-    font-size: 1.5em;
+  &.file-download-extras-hide {
+    max-height: 0;
+    transform: scaleY(0);
+    transition: transform 0.25s ease-out, max-height 0s linear 0.25s;
   }
 }

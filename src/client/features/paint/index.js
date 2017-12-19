@@ -192,7 +192,7 @@ class Paint extends React.Component {
     }
 
     if (value < (0 - max / 3)) {
-      style['background-opacity'] = `${1 + (value / max)}`;
+      style['background-opacity'] = `${Math.abs(value / max)}`;
       style['background-color'] = 'green';
       style['color'] = 'white';
       style['text-outline-color'] = 'black';
@@ -211,14 +211,15 @@ class Paint extends React.Component {
   computeFoldChange(expression, selectedFunction) {
     const classValues = Object.entries(expression.classValues);
     const c1Val = selectedFunction(classValues[0][1]);
-    const c2Val = selectedFunction(classValues[1][1]);
+
+    let c2Val = selectedFunction(classValues[1][1]);
+    c2Val = c2Val === 0 ? c2Val = 1 : c2Val;
 
     let foldChange = Math.log2(c1Val / c2Val);
-    if (foldChange === -Infinity || foldChange === Infinity ) { foldChange = null; }
 
     return {
       geneName: expression.geneName,
-      value: foldChange
+      value: parseFloat(foldChange.toFixed(2))
     };
   }
 
@@ -270,10 +271,6 @@ class Paint extends React.Component {
       min: {
         name: 'min',
         func: _.min
-      },
-      count: {
-        name: 'count',
-        func: (classValues) => classValues.length
       }
     };
   }
@@ -303,7 +300,7 @@ class Paint extends React.Component {
 
     const columns = [
       {
-        Header: 'Gene Name',
+        Header: 'Gene',
         accessor: 'geneName',
         filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['geneName'] }),
         filterable: true,
@@ -340,7 +337,7 @@ class Paint extends React.Component {
       h('div.paint-drawer-header', [
         h(TabList, [
           h(Tab, 'Expression Data'),
-          h(Tab, 'Search Results')
+          // h(Tab, 'Search Results')
         ]),
         h('a', { onClick: e => this.toggleDrawer()}, [
           h(Icon, { icon: 'close'}),
@@ -353,11 +350,11 @@ class Paint extends React.Component {
         ]),
         h('div.paint-expression-controls', [
         h('div.paint-function-selector', [
-          'class: ',
+          'Class: ',
           functionSelector
         ]),
         h('div.paint-compare-selector', [
-          `compare: ${expressionHeader[0]} vs ${expressionHeader[1]}`,
+          `Compare: ${expressionHeader[0]} vs ${expressionHeader[1]}`,
         ]),
       ]),
       h(Table, {
@@ -371,14 +368,14 @@ class Paint extends React.Component {
         }
       })
       ]),
-      h(TabPanel, state.searchResults.map(searchResult => {
-          const uri = _.get(searchResult, 'uri', null);
-          const name = _.get(searchResult, 'name', 'N/A');
-          return h('div.paint-search-result', [
-            h('a.plain-link', {onClick: e => this.loadSbgn(uri)}, name)
-          ]);
-        })
-      )
+      // h(TabPanel, state.searchResults.map(searchResult => {
+      //     const uri = _.get(searchResult, 'uri', null);
+      //     const name = _.get(searchResult, 'name', 'N/A');
+      //     return h('div.paint-search-result', [
+      //       h('a.plain-link', {onClick: e => this.loadSbgn(uri)}, name)
+      //     ]);
+      //   })
+      // )
     ]);
 
     return h('div.paint', [

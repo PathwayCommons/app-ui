@@ -6,6 +6,7 @@ const config = require('../config');
 //Handle standard name related metadata fields
 const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Name: ');
 const standardNameHandlerTrim = (pair) => standardNameHandler(pair);
+const displayNameHandler = (pair) => makeTooltipItem(pair[1], 'Display Name: ');
 const nameHandlerTrim = (pair, expansionFunction) => {
   let revisedList = filterChemicalFormulas(pair[1]);
   let shortArray = trimValue(revisedList, config.defaultEntryLimit);
@@ -97,6 +98,8 @@ const defaultHandler = (pair) => {
 const metaDataKeyMap = new Map()
   .set('Standard Name', standardNameHandler)
   .set('Standard NameTrim', standardNameHandlerTrim)
+  .set('Display Name', displayNameHandler)
+  .set('Display NameTrim', displayNameHandler)
   .set('Type', typeHandler)
   .set('TypeTrim', typeHandler)
   .set('Names', nameHandler)

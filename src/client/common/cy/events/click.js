@@ -79,4 +79,4 @@ const bindClick = (cy) => {
   cy.on('zoom', evt => hideTooltips(evt.cy));
 };
 
-module.exports = bindClick;
+module.exports = { bindClick, hideTooltips };

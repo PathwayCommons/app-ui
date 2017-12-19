@@ -18,7 +18,7 @@ class Popup extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.active) {
+    if (nextProps.active && nextProps.dur) {
       let timeout = setTimeout(() => {
         this.props.deactivate();
       }, this.props.dur);

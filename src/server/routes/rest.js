@@ -2,7 +2,9 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('./controller');
-
+const snapshot = require('./snapshot');
+ 
+router.use('/snapshot', snapshot);
 
 
 // Expose a rest endpoint for controller.submitLayout

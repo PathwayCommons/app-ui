@@ -1,11 +1,6 @@
 const io = require('socket.io-client');
 const qs = require('querystring');
 let socket = io.connect('/');
-const config = require('../../../config');
-
-const fetchWrapper = function (url, options){
-  return fetch(config.baseName + url, options);
-};
 
 const apiCaller = {
   getGraphAndLayout(uri, version) {

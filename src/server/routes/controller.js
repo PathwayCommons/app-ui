@@ -4,11 +4,7 @@ const db = require('./../database/utilities');
 const update = require('./../database/update');
 const logger = require('./../logger');
 const diffSaver = require('./../database/saveDiffs');
-const renderImage = require('../graph-renderer/renderImage');
-const r = require('rethinkdb');
-const config = require('../database/config');
-const uuid = require('uuid/v4');
-const _ = require('lodash');
+const renderImage= require('../graph-renderer/renderImage');
 
 // getGraphFallback(pcID, releaseID, connection)
 // Retrieves the graph specified by (pcID, releaseID) if something
@@ -30,7 +26,7 @@ function getGraphAndLayout(pcID, releaseID) {
       query.getLayout(pcID, releaseID, connection).catch(() => Promise.resolve(null))
     ]).then(([graph, layout]) => {
       return { graph, layout };
-    }).catch((e) => {
+    }).catch((e)=>{
       logger.error(e);
       return `ERROR : could not retrieve graph for ${pcID}`;
     });
@@ -90,7 +86,7 @@ function getHistory(pcID, releaseID, numEntries) {
       query.getLayout(pcID, releaseID, connection, numEntries).catch(() => Promise.resolve(null))
     ]).then(([graph, layout]) => {
       return { graph, layout };
-    }).catch((e) => {
+    }).catch((e)=>{
       logger.error(e);
       return `ERROR : could not retrieve layouts  for ${pcID}`;
     });
@@ -104,41 +100,6 @@ function renderPNG(cyJson) {
   return renderImage(cyJson);
 }
 
-function purgeSnapshot(numDays) {
-  const numSeconds = numDays * 60 * 60 * 24;
-
-  return db.connect()
-    .then(connection => {
-     db.insert('fake', {test: r.now()}, config, connection);
-      return r.db(config.databaseName)
-        .table('snapshot')
-        .filter(r.row('date').lt(r.now().sub(numSeconds)))
-        .delete()
-        .run(connection)
-        .then(res => res.deleted);
-    });
-}
-
-function addSnapshot(snapshot) {
-  let id = uuid();
-
-  return db.connect().then(connection => {
-    return db.insert('snapshot', { id, snapshot, date: r.now() }, config, connection)
-      .then(() => id);
-  });
-
-}
-
-function getSnapshot(id) {
-  return db.connect().then(connection => {
-    return r.db(config.databaseName)
-      .table('snapshot').get(id)
-      .update({ date: r.now() }, { returnChanges: true })
-      .run(connection)
-      .then(res => _.get(res, 'changes.[0].new_val.snapshot', undefined));
-  });
-}
-
 module.exports = {
   submitLayout,
   submitGraph,
@@ -146,8 +107,5 @@ module.exports = {
   endSession,
   getGraphAndLayout,
   getHistory,
-  renderPNG,
-  purgeSnapshot,
-  addSnapshot,
-  getSnapshot
+  renderPNG
 };

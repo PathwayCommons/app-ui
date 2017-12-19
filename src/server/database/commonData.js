@@ -2,6 +2,7 @@ const r = require('rethinkdb');
 const db = require('./utilities');
 const fetch = require('node-fetch');
 const Promise = require('bluebird');
+const _ = require('lodash');
 let config = require('./config');
 
 const fetchOptions = {
@@ -24,11 +25,12 @@ function saveCommonData(data, releaseID, pcID) {
         pcResult = datum; 
       }
 
-      return db.insert('common', { id: datum.id, data: datum, release_id: releaseID }, config, conn);
+      datum.release_id = releaseID;
+      return db.insert('common', datum, config, conn);
     });
 
     if (pcID) {
-      return map.then(() => pcResult);
+      return map.then(() => _.omit(pcResult, 'release_id'));
     } else {
       return map;
     }
@@ -59,7 +61,7 @@ function getCommonData(pcID) {
     if (!data || data.release_id != releaseID) {
       return fetchCommonData(pcID, releaseID);
     } else {
-      return data.data;
+      return _.omit(data, 'release_id');
     }
   }).catch(() => null);
 }
@@ -68,3 +70,4 @@ module.exports = {
   getCommonData,
   setConfig: (conf) => config = conf
 };
+

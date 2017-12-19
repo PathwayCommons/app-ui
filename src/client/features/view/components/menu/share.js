@@ -16,7 +16,7 @@ function getShareLink(cy, uri) {
   let baseUrl = window.location.href;
   //baseUrl = baseUrl.split("?")[0];
   baseUrl = baseUrl.substring(0, baseUrl.lastIndexOf('/'));
-  baseUrl = baseUrl + 'view?uri=' + encodeURIComponent(uri) + '&snapshot='; 
+  baseUrl = baseUrl + '/view?uri=' + encodeURIComponent(uri) + '&snapshot='; 
 
   //Produce a positions object
   let positions = {};

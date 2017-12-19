@@ -9,7 +9,6 @@ const hash = require('object-hash');
 
 const query = require('../../../src/server/database/query');
 const update = require('../../../src/server/database/update');
-const db = require('../../../src/server/database/utilities');
 const createDB = require('../../../src/server/database/createTables').checkDatabase;
 const mockConfig = require('./mockConfig.js');
 let connection = require('./connection');
@@ -161,7 +160,7 @@ describe('Test update.js', function () {
       let conn = connection.get();
 
       conn.then(connection => update.saveLayout(pc_id, version, newLayout, userID, connection, function () {
-        conn.then(conn => query.getLayout(pc_id, version, conn, function (res) {
+        conn.then(conn => query.getLayout(pc_id, version, conn, null, function (res) {
           expect(res).to.deep.equal(newLayout);
           done();
         }));
@@ -176,6 +175,35 @@ describe('Test update.js', function () {
         .then(() => conn).then(conn => query.getLayout(pc_id, version, conn));
 
       return expect(prom).to.eventually.be.rejected;
+    });
+
+    it('Adds the submitter to the list of editors', function () {
+      const version = preexisitingData[1].value;
+      let conn = connection.get();
+
+      let prom = conn.then(conn =>
+        update.saveLayout(version.pc_id, version.release_id, newLayout, userID, conn))
+        .then(() => conn)
+        .then(conn => r.db(mockConfig.databaseName).table('version').get(version.id).run(conn))
+        .then(res => res.users);
+
+      return expect(prom).to.eventually.deep.equal([userID]);
+    });
+
+    it('Does not duplicate user tags in edit list', function () {
+      const version = preexisitingData[1].value;
+      let conn = connection.get();
+
+      let prom = conn.then(conn =>
+        update.saveLayout(version.pc_id, version.release_id, newLayout, userID, conn))
+        .then(() => conn)
+        .then(conn =>
+          update.saveLayout(version.pc_id, version.release_id, newLayout, userID, conn))
+        .then(() => conn)
+        .then(conn => r.db(mockConfig.databaseName).table('version').get(version.id).run(conn))
+        .then(res => res.users);
+
+      return expect(prom).to.eventually.deep.equal([userID]);
     });
   });
 });

@@ -64,7 +64,7 @@ const apiCaller = {
   },
 
   addSnapshot(snapshot) {
-    return fetchWrapper(`/api/snapshot/add`, {
+    return fetch(`/api/snapshot/add`, {
       method: 'POST', headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json'
@@ -75,7 +75,7 @@ const apiCaller = {
     }).then(res => res.json());
   },
   getSnapshot(id) {
-    return fetchWrapper(`/api/snapshot/get?${qs.stringify({ id })}`, {
+    return fetch(`/api/snapshot/get?${qs.stringify({ id })}`, {
       method: 'GET', headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json'

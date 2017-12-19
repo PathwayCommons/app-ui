@@ -1,3 +1,45 @@
+const pcGraphLayoutHack = (cy, layoutOpts) => {
+  const complexes = cy.nodes().filter(node => node.isParent() && node.data('class') === 'complex');
+  complexes.forEach(node => {
+    if (!node.isParent()) { return; }
+    node.children().layout({
+      name: 'grid',
+      fit: false,
+      avoidOverlap: true,
+      condense: true,
+      rows: Math.floor(Math.sqrt(node.children().size())),
+      cols: Math.floor(Math.sqrt(node.children().size()))}).run();
+    node.scratch('_bb', node.boundingBox());
+    node.scratch('_children', node.children());
+    node.children().remove();
+    node.style({width: node.scratch('_bb').w, height: node.scratch('_bb').h});
+  });
+  const layout = cy.layout(layoutOpts);
+  layout.pon('layoutstop', () => {
+    complexes.forEach(node => {
+      node.scratch('_children').position(node.position());
+      node.scratch('_children').restore();
+      cy.zoomingEnabled(false);
+      node.children().layout({
+        name:'grid',
+        fit: 'false',
+        avoidOverlap: true,
+        condense: true,
+        animate: true,
+        rows: Math.floor(Math.sqrt(node.children().size())),
+        cols: Math.floor(Math.sqrt(node.children().size())),
+        boundingBox: node.boundingBox({
+          includeLabels: false
+        })
+      }).run();
+      cy.zoomingEnabled(true);
+    });
+
+  });
+  layout.run();
+};
+
+
 const defaultLayout = {
   displayName: 'Force Directed',
   description: 'For undirected compound graphs',

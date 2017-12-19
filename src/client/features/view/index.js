@@ -1,6 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
+const Loader = require('react-loader');
 
 const { Menu, Graph, Sidebar } = require('./components/');
 const Popup = require('../../common/popup');
@@ -21,6 +22,7 @@ class View extends React.Component {
 
       cy: make_cytoscape({ headless: true }),
       graphJSON: null,
+      graphRendered: false,
 
       layout: '',
       availableLayouts: [],
@@ -30,8 +32,7 @@ class View extends React.Component {
         datasource: '',
         comments: []
       },
-
-      graphRendered: false,
+      
       activeMenu: '',
 
       activateWarning: false,
@@ -82,8 +83,10 @@ class View extends React.Component {
     const props = this.props;
 
     return h('div.View', [
+      h(Loader, { loaded: this.state.graphRendered }),
       h(Menu, {
         uri: state.query.uri,
+        snapshotId : state.query.snapshot,
         admin: props.admin,
         name: state.metadata.name,
         datasource: state.metadata.datasource,

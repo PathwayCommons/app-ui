@@ -23,6 +23,31 @@ const databases = [
   ['CAS', 'http://identifiers.org/cas/', '']
 ];
 
+const databasesHomePages = [
+  ['BioGrid', 'https://thebiogrid.org/'],
+  ['DrugBank', 'https://www.drugbank.ca/'],
+  ['mirtarBase', 'http://mirtarbase.mbc.nctu.edu.tw/php/index.php'],
+  ['NetPath', 'http://www.netpath.org'],
+  ['Panther', 'http://www.pantherdb.org/'],
+  ['PID', 'http://www.ndexbio.org/#/'],
+  ['PhosphoSitePlus', 'https://www.phosphosite.org/homeAction.action'],
+  ['Reactome', 'https://reactome.org/'],
+  ['SMPD', 'http://smpdb.ca/'],
+  ['Wikipathways', 'https://www.wikipathways.org/index.php/WikiPathways'],
+  ['UniProt', 'http://www.uniprot.org/'],
+  ['HGNC Symbol', 'https://www.genenames.org/'],
+  ['HGNC', 'https://www.genenames.org/'],
+  ['ChEBI', 'https://www.ebi.ac.uk/chebi/'],
+  ['KEGG', 'http://www.genome.jp/kegg/'],
+  ['PubMed', 'https://www.ncbi.nlm.nih.gov/pubmed/'],
+  ['Ensembl', 'https://www.ensembl.org/index.html'],
+  ['Enzyme Nomenclature', 'http://www.sbcs.qmul.ac.uk/iubmb/enzyme/'],
+  ['PubChem-Substance', 'https://pubchem.ncbi.nlm.nih.gov/'],
+  ['3DMET', 'http://www.3dmet.dna.affrc.go.jp/'],
+  ['Chemical Component Dictionary', 'https://www.wwpdb.org/data/ccd'],
+  ['CAS', 'https://www.cas.org/']
+];
+
 const publicationsURL = 'http://identifiers.org/pubmed/';
 const tooltipOrder = ['Type', 'Standard Name', 'Display Name', 'Names', 'Database IDs', 'Publications'];
 const tooltipReverseOrder = ['Comment'];
@@ -48,6 +73,7 @@ const tippyDefaults = {
 
 module.exports = {
   databases,
+  databasesHomePages,
   publicationsURL,
   tooltipOrder,
   tooltipReverseOrder,

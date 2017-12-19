@@ -1,0 +1,9 @@
+.common-copy-field-container{
+  display: flex;
+  width: 11em; 
+}
+.common-copy-field{
+  resize: none;
+  white-space: nowrap;
+  overflow: hidden;
+}

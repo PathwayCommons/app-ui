@@ -12,21 +12,25 @@ Optional
 - desc (string to display in tooltip or blank for no tooltip)
 - active (false - default, or true)
 - theme (specify 'light' to get a light button)
+- size (specify 'small' to get a small button)
 */
 class IconButton extends React.Component {
   render() {
     const props = this.props;
 
     const theme = props.theme === 'light' ? props.theme : 'dark';
+    const size = props.size === 'small' ? props.size : 'regular';
+    const icon = props.icon || 'info';
 
     let innerContent = h('div', {
       className: classNames(
         'common-icon-button',
-        { 'common-icon-button-active': props.active },
-        { 'common-icon-button-light': theme === 'light' }
+        { 'common-icon-button-light': theme === 'light' },
+        { 'common-icon-button-small': size === 'small' },
+        { 'common-icon-button-active': props.active }
       ),
       onClick: () => props.onClick()
-    }, [h('i.material-icons', props.icon || 'info')]);
+    }, [h('i.material-icons', icon)]);
 
     const content = props.desc ? h(TextTooltip, { description: props.desc }, innerContent) : innerContent;
 

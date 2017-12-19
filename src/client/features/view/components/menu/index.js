@@ -13,7 +13,8 @@ const IconButton = require('../../../../common/iconButton');
 const apiCaller = require('../../../../services/apiCaller');
 const datasourceLinks = require('../../../../common/config').databases;
 const Popup = require('../../../../common/popup/');
-const CopyField = require('../../../../common/copyField/');
+const TextField = require('../../../../common/textField/');
+const Popover = require('../../../../common/popover');
 const getShareLink = require('./share');
 const rearrangeGraph = require('../../../../common/cy/revisions/rearrangeGraph');
 const datasourceHomes = require ('../../../../common/config').databasesHomePages;
@@ -137,6 +138,14 @@ class Menu extends React.Component {
     return _.get(link, '0.1', '');
   }
 
+  getShareLinkAndToggle() {
+    const props = this.props;
+    const state = this.state;
+    const snapshotOpen = state.snapshotOpen;
+    if (snapshotOpen) { this.setState({ snapshotOpen: false }); }
+    else { getShareLink(props.cy, props.uri).then(res => this.setState({ snapshotURL: res, snapshotOpen: true })); }
+  }
+
   render() {
     const datasourceLink = this.getDatasourceLink(this.props.datasource);
     const datasourceHome = this.getDatasourceHome(this.props.datasource);
@@ -187,18 +196,37 @@ class Menu extends React.Component {
               onClick: () => this.toggleExpansion(),
               desc: `${this.state.complexesExpanded ? 'Collapse' : 'Expand'} complexes`
             }),
-            h(IconButton, {
-              icon: 'share',
-              active: this.state.searchOpen,
-              onClick: () => {
-                getShareLink(this.props.cy, this.props.uri).then(res => this.setState({snapshotURL : res, showPopup: true}));
-              },
-              desc: 'Get Shareable Link'
-            }),
-            h(Popup, 
-              {active : this.state.showPopup, deactivate: () => this.setState({showPopup : false })},
-              [h(CopyField, {text : this.state.snapshotURL})] 
-            ),
+            h(Popover, {
+              tippy: {
+                position: 'bottom',
+                trigger: 'click',
+                interactive: true,
+                theme: 'light',
+                html: h('div.snapshot-tooltip-content', [
+                  h('div.snapshot-description', 'Share current network view:'),
+                  h('div.snapshot-container', [
+                    h(TextField, {
+                      text: this.state.snapshotURL || '',
+                      copy: true,
+                      copyCallback: () => this.setState({ linkCopiedActive: true })
+                    })
+                  ])
+                ]),
+                onHide: () => this.setState({ snapshotOpen: false })
+              }
+            }, [
+                h('div', [h(IconButton, {
+                  icon: 'link',
+                  active: this.state.snapshotOpen,
+                  onClick: () => this.getShareLinkAndToggle(),
+                  desc: this.state.snapshotOpen ? '' : 'Get shareable link'
+                })])
+              ]),
+            h(Popup, {
+              active: this.state.linkCopiedActive,
+              deactivate: () => this.setState({ linkCopiedActive: false }),
+              dur: 2000
+            }, 'Link copied'),
             h(IconButton, {
               active: this.state.dropdownOpen,
               icon: this.props.admin ? 'shuffle' : 'replay',

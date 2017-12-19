@@ -6,6 +6,7 @@ const _ = require('lodash');
 
 const { humanLayoutDisplayName } = require('../../../../common/cy/layout');
 const searchNodes = require('../../../../common/cy/search');
+const { hideTooltips } = require('../../../../common/cy/events/click');
 
 const { Dropdown, DropdownOption } = require('../../../../common/dropdown');
 const IconButton = require('../../../../common/iconButton');
@@ -51,6 +52,10 @@ class Menu extends React.Component {
     }
   }
 
+  clearGraphTooltips() {
+    hideTooltips(this.props.cy);
+  }
+
   performLayout(selectedLayoutName) {
     this.setState({ selectedLayout: selectedLayoutName });
     const props = this.props;
@@ -72,6 +77,7 @@ class Menu extends React.Component {
   }
 
   toggleExpansion() {
+    this.clearGraphTooltips();
     if (this.state.complexesExpanded) {
       this.props.cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isExpanded()).collapse();
     } else {
@@ -82,6 +88,7 @@ class Menu extends React.Component {
 
   // Used for the panel buttons to set menus in the sidebar and dynamically change the style
   changeMenu(menu) {
+    this.clearGraphTooltips();
     this.props.changeMenu(menu === this.props.activeMenu ? '' : menu);
   }
 
@@ -116,10 +123,8 @@ class Menu extends React.Component {
       );
     });
 
-    const toolButtonEls = Object.keys(toolButtons).map((button, index) => {
-      if(button === 'history' && !isAdmin) {
-        return;
-      }
+    const toolButtonEls = [h('div.sidebar-tool-button-container', Object.keys(toolButtons).map((button, index) => {
+      if (button === 'history' && !isAdmin) { return; }
 
       return (
         h(IconButton, {
@@ -129,7 +134,8 @@ class Menu extends React.Component {
           desc: toolButtons[button]
         })
       );
-    });
+    })
+  )];
 
     return (
       h('div', {
@@ -154,7 +160,10 @@ class Menu extends React.Component {
             h(IconButton, {
               active: this.state.dropdownOpen,
               icon: this.props.admin ? 'shuffle' : 'replay',
-              onClick: () => this.props.admin ? this.setState({ dropdownOpen: !this.state.dropdownOpen }) : this.performLayout(this.state.selectedLayout),
+              onClick: () => {
+                this.clearGraphTooltips();
+                this.props.admin ? this.setState({ dropdownOpen: !this.state.dropdownOpen }) : this.performLayout(this.state.selectedLayout);
+              },
               desc: this.props.admin ? 'Arrange display' : 'Reset arrangement'
             }),
             h('div', {
@@ -167,6 +176,7 @@ class Menu extends React.Component {
               icon: 'search',
               active: this.state.searchOpen,
               onClick: () => {
+                this.clearGraphTooltips();
                 !this.state.searchOpen || this.clearSearchBox();
                 this.setState({ searchOpen: !this.state.searchOpen });
               },

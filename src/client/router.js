@@ -3,7 +3,6 @@ const {BrowserRouter, Route} = require('react-router-dom');
 const h = require('react-hyperscript');
 const ReactGA = require('react-ga');
 const _ = require('lodash');
-const config = require('../config');
 
 const Features = require('./features');
 
@@ -16,7 +15,7 @@ const Analytics = (props) => {
 
 
 module.exports = () => {
-  return h(BrowserRouter,{ basename: config.baseName }, [
+  return h(BrowserRouter, [
     h('div', [
       {
         path: '*',

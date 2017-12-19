@@ -45,11 +45,11 @@ class Popover extends React.Component {
 
     let popper = tippy.getPopperElement(target);
 
-    let show = () => tippy.onShow(popper);
-    let hide = () => tippy.onHide(popper);
+    let show = () => tippy.show(popper);
+    let hide = () => tippy.hide(popper);
 
-    if (props.onShow) { props.onShow(show); }
-    if (props.onHide) { props.onHide(hide); }
+    if (props.show) { props.show(show); }
+    if (props.hide) { props.hide(hide); }
   }
 
   componentDidUpdate() {

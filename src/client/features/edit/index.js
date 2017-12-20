@@ -72,6 +72,17 @@ class Edit extends React.Component {
     cy.on('network-loaded', () => {
       bindMove(cy, query.uri);
       bindSyncEditChanges(cy);
+
+      // if there is no layout from the repsonse, assume that this is the first time editing the 
+      // network and submit the results of the default layout after the network has been loaded
+      if (this.state.networkLayoutJSON == null) {
+        const layoutPositions = {};
+        cy.nodes().forEach(node => {
+          layoutPositions[node.id()] = node.position();
+        });
+        ServerAPI.submitLayoutChange(this.state.networkMetadata.uri, 'latest', layoutPositions);
+      }
+
       this.setState({
         activateWarning: true
       });
@@ -83,6 +94,7 @@ class Edit extends React.Component {
         componentConfig: EditViewConfig,
         layoutConfig: layoutConfig,
         networkJSON: networkJSON.graph,
+        networkLayoutJSON: networkJSON.layout,
         networkMetadata: {
           uri: query.uri,
           name: _.get(networkJSON, 'graph.pathwayMetadata.title.0', 'Unknown Network'),

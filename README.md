@@ -3,7 +3,7 @@
 
 ## Required software
 
-- [Node.js](https://nodejs.org/en/) >=6.3.0
+- [Node.js](https://nodejs.org/en/) >=8.6.0
 
 
 
@@ -85,3 +85,6 @@ All files `/test` will be run by [Mocha](https://mochajs.org/).  You can `npm te
 An untested but functional implementation of shareable links can be found on the shareable-links branch. If this feature is deemed desirable and is merged into master a cronjob should be set up on the server to handle purging of the snapshots after a 10 days. This can be done by:
 1. opening the crontab to edit `crontab -e`.
 1. adding the command `curl host:port/api/snapshot/purge` to the crontab.
+
+## Pathway Commons Release Versioning
+![Control flow of versioning in App-ui](resources/Versioning.png)

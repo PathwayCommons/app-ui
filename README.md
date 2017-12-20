@@ -81,3 +81,7 @@ All files `/test` will be run by [Mocha](https://mochajs.org/).  You can `npm te
   1. For a specific version number (e.g. 1.2.3), run `npm version 1.2.3`.
 1. Push the release: `git push origin --tags`
 
+## Shareable links
+An untested but functional implementation of shareable links can be found on the shareable-links branch. If this feature is deemed desirable and is merged into master a cronjob should be set up on the server to handle purging of the snapshots after a 10 days. This can be done by:
+1. opening the crontab to edit `crontab -e`.
+1. adding the command `curl host:port/api/snapshot/purge` to the crontab.

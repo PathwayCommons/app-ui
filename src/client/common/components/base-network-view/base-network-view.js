@@ -8,6 +8,7 @@ const _ = require('lodash');
 const IconButton = require('../icon-button');
 
 const debouncedSearchNodes = _.debounce(require('../../cy/search'), 300);
+const { hideTooltips } = require('../../cy/events/click');
 
 // cytoscape
 // grapjson
@@ -97,12 +98,17 @@ class BaseNetworkView extends React.Component {
 
     const menuButtons = toolbarButtons.filter(btn => btn.type === 'activateMenu').map(btn => {
       return (
-        h(IconButton, {
-          icon: btn.icon,
-          active: state.activeMenu === btn.menuId,
-          onClick: () => this.changeMenu(btn.menuId),
-          desc: btn.description
-        })
+        h('div.sidebar-tool-button-container', [
+          h(IconButton, {
+            icon: btn.icon,
+            active: state.activeMenu === btn.menuId,
+            onClick: () => {
+              hideTooltips(state.cy);
+              this.changeMenu(btn.menuId);
+            },
+            desc: btn.description
+          })
+        ])
       );
     });
 
@@ -110,7 +116,10 @@ class BaseNetworkView extends React.Component {
       return (
         h(IconButton, {
           icon: btn.icon,
-          onClick: () => btn.func(state),
+          onClick: () => {
+            hideTooltips(state.cy);
+            btn.func(state);
+          },
           desc: btn.description
         })
       );

@@ -58,9 +58,8 @@
   }
 }
 
-.sidebar-buttons-container {
-  height: calc(var(--icon-size) * 3 / 2);
-  width: calc((var(--icon-size) * 3 / 2) * var(--number-of-sidebar-icons));
+.sidebar-tool-button-container {
+  @extend %flex-center;
 }
 
 .view-toolbar {
@@ -186,13 +185,6 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
     }
   }
 
-  .layout-dropdown-button {
-    height: calc(var(--icon-size-mobile) * 3 / 2);
-    width: calc(var(--icon-size-mobile) * 3 / 2);
-
-    font-size: var(--icon-size-mobile);
-  }
-
   .title-container {
     padding-left: 1em;
   }
@@ -201,7 +193,7 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
     display: none;
   }
 
-  .tool-button-sidebar {
+  .sidebar-tool-button-container {
     display: none;
   }
 }
@@ -223,7 +215,7 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
     padding-bottom: 1em;
   }
 
-  .tool-button-sidebar {
+  .sidebar-tool-button-container {
     display: none;
   }
 }

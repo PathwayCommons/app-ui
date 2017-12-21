@@ -1,5 +1,7 @@
 const convert = require('sbgnml-to-cytoscape');
 const metadataParser = require('./metadataParserJson');
+const getCommonData = require('../database/commonData').getCommonData;
+
 
 //Map metadata from BioPax to nodes
 //Returns a cy cytoscape json
@@ -10,11 +12,13 @@ module.exports = function (biopax, sbgn) {
 
   //Get mapped node list
   let nodes = cyGraph.nodes;
-  cyGraph.nodes = processBioPax(biopax, nodes);
 
-  //Return Enhanced JSON
-  return cyGraph;
-}
+  return processBioPax(biopax, nodes).then(res => {
+    cyGraph.nodes = res;
+    return cyGraph;
+  });
+
+};
 
 //Build a sub tree array for a biopax element
 function buildBioPaxSubtree(biopaxElement, biopaxFile, visited, nodeType = 'default') {
@@ -22,7 +26,7 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited, nodeType = 'defa
 
   if (nodeType !== 'Reference') {
     //Get type
-    let type = biopaxElement['@type']
+    let type = biopaxElement['@type'];
     if (type) { result.push(['Type', type]); }
 
     //Get data source
@@ -71,7 +75,7 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited, nodeType = 'defa
   if (!(xref)) { xref = []; }
 
   //Get entity reference and add it to xref
-  let eref = biopaxElement['entityReference']
+  let eref = biopaxElement['entityReference'];
   if (eref) xref.push(eref);
 
 
@@ -81,7 +85,7 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited, nodeType = 'defa
     for (let i = 0; i < xref.length; i++) {
 
       let keyName = 'Reference';
-      if (i == (xref.length - 1) && eref) { keyName = 'EntityReference' };
+      if (i == (xref.length - 1) && eref) { keyName = 'EntityReference';}
 
       //Get Referenced Element
       let refElement = getElementFromBioPax(biopaxFile, xref[i]);
@@ -107,22 +111,24 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited, nodeType = 'defa
 
 //Build a tree array for a biopax file
 function buildBioPaxTree(children, biopaxFile) {
-  let result = [];
 
-  if (!(children)) { return };
+  if (!(children)) { return; }
 
   //Get the node id
-  let id = children['pathid']
+  let id = children['pathid'];
   if (!(id)) { id = children['about']; }
   if (!(id)) { return; }
 
   //Build a subtree
   let visited = [id];
   let subtree = buildBioPaxSubtree(children, biopaxFile, visited);
-  result.push([id, subtree]);
+  let commonData = getCommonData(id);
 
-  //Return Biopax Tree
-  return result;
+  return commonData.then(res => {
+    subtree.push(['Common Data', res]);
+    return [id, subtree];
+  });
+
 }
 
 //Remove all characters after nth instance of underscore
@@ -194,7 +200,7 @@ function getBioPaxSubtree(nodeId, biopax) {
   let regularSearch = getElementFromBioPax(biopax, nodeId);
   if (regularSearch) { return buildBioPaxTree(regularSearch, biopax); }
 
-  return null;
+  return new Promise(r => r(null));
 }
 
 //Replace all instances of a substring with a given string
@@ -237,6 +243,9 @@ function processBioPax(data, nodes) {
   //Create a biopax map
   graph = preProcessBioPax(graph);
 
+  let promises = [];
+
+
   //Loop through all nodes
   for (let i = 0; i < nodes.length; i++) {
 
@@ -246,17 +255,14 @@ function processBioPax(data, nodes) {
     //Get metadata for current node
     let metadata = getBioPaxSubtree(id, graph);
 
-    //Parse metadata
-    try {
-      //Add data to nodes
-      let parsedMetadata = metadataParser(metadata);
+    promises.push(metadata.then(res => {
+      let parsedMetadata = metadataParser(res);
       nodes[i].data.parsedMetadata = parsedMetadata;
-    }
-    catch (e) { console.log(e); throw e; }
-
+    }));
   }
 
   //Return nodes
-  return nodes;
+  return Promise.all(promises).then(() => {return nodes;});
+  
 }
 

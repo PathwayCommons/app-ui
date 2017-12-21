@@ -122,7 +122,7 @@ const metaDataKeyMap = new Map()
   * Sample Output : <div class='fake-paragraph'><div class='field-name'></div></div>
 */
 function parseMetadata(pair, trim = true, expansionFunction) {
-  const doNotRender = ['Data Source', 'Data SourceTrim', 'Display Name'];
+  const doNotRender = ['Data Source', 'Data SourceTrim', 'Display Name', 'Common Data'];
   let key = pair[0];
 
   //Use the trim function if trim is applied

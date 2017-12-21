@@ -1,6 +1,7 @@
 const r = require('rethinkdb');
 const config = require('./config');
 const _ = require('lodash');
+const pcServices = require('../pathway-commons');
 
 let connect = _.memoize((conf) => {
   conf = conf || config;
@@ -53,9 +54,17 @@ function handleResult(resultPromise, callback) {
   }
 }
 
+function getLatestPCVersion(pcID) {
+  // Traverse queries to PC2 return the current PC2 version.
+  return pcServices.traverse({ format: 'JSON', path: 'Named/name', uri: pcID }).then((json) => {
+    return json.version;
+  });
+}
+
 module.exports = {
   queryRoot,
   insert,
   handleResult,
-  connect
+  connect,
+  getLatestPCVersion
 };

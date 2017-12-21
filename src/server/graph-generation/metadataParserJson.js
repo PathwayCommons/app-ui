@@ -106,10 +106,10 @@ function parse(subTree) {
   if (!(subTree)) return null;
 
   //Make a copy of subtree
-  let subTreeCopy = subTree.slice()[0][1];
+  let subTreeCopy = subTree.slice()[1];
 
   //Get Entity Reference
-  let entityRef = treeTraversal.searchForExactNodeWithObjectResult(subTreeCopy, 'EntityReference')
+  let entityRef = treeTraversal.searchForExactNodeWithObjectResult(subTreeCopy, 'EntityReference');
   if (entityRef) {
     //Remove un parsed copy
     subTreeCopy.splice(entityRef.index, 1);

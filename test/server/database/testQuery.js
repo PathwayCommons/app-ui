@@ -156,7 +156,7 @@ describe('Test query.js', function () {
       let version = mockData[1].value;
       let layout = mockData[2].value;
       connection.get().then(conn => {
-        return query.getLayout(version.pc_id, version.release_id, conn, null,
+        return query.getLayout(version.pc_id, version.release_id, conn,
           function (result) {
             expect(result).to.deep.equal(layout.positions);
             done();
@@ -166,7 +166,7 @@ describe('Test query.js', function () {
 
     it('Fails when a callback is provided and a layout is not found', function (done) {
       connection.get()
-        .then(conn => query.getLayout('fake', 'also fake', conn,null,
+        .then(conn => query.getLayout('fake', 'also fake', conn,
           function (result, err) {
             expect(function () { throw err; }).to.throw(Error);
             done();

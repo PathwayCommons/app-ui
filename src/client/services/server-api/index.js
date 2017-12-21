@@ -28,14 +28,6 @@ const ServerAPI = {
     return fetch(`/pc2/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },
 
-  getLatestLayouts(uri, version, numEntries) {
-    return fetch(`/api/get-layout-history?${qs.stringify({uri, version, numEntries})}`, defaultFetchOpts).then(res =>  res.json());
-  },
-  
-  renderImages(graph, layouts) {
-    return fetch(`/api/render-png`, _.assign({}, defaultFetchOpts, { method: 'POST', body: JSON.stringify({graph, layouts}) })).then(res =>  res.json());
-  },
-
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into
   // a layout
   submitNodeChange(uri, version, nodeId, bbox) {

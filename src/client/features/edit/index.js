@@ -10,22 +10,7 @@ const make_cytoscape = require('../../common/cy/');
 
 const { ServerAPI } = require('../../services/');
 
-const LayoutHistoryMenu = require('./layout-history-menu');
-
-const EditViewConfig = {
-  menus: BaseNetworkView.config.menus.concat({
-    id: 'layoutHistoryMenu',
-    func: props => h(LayoutHistoryMenu, props)
-  }),
-  toolbarButtons: BaseNetworkView.config.toolbarButtons.concat({
-      id: 'showLayoutHistory',
-      icon: 'history',
-      type: 'activateMenu',
-      menuId: 'layoutHistoryMenu',
-      description: 'Network Arrangment history'
-  }),
-  useSearchBar: true
-};
+const EditViewConfig = _.assign({}, BaseNetworkView.config, { useSearchBar: true});
 
 const bindMove = (cy, uri)  => {
   cy.on('free', 'node', function(evt) {

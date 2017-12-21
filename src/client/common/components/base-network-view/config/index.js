@@ -39,7 +39,7 @@ const toolbarButtons = [
     description: 'Download options'
   },
   {
-    id: 'expand collapse',
+    id: 'expandCollapse',
     icon: 'select_all',
     type: 'networkAction',
     func: expandCollapseAll,

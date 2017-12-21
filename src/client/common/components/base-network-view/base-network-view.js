@@ -98,6 +98,7 @@ class BaseNetworkView extends React.Component {
       return (
         h('div.sidebar-tool-button-container', [
           h(IconButton, {
+            key: btn.id,
             icon: btn.icon,
             active: state.activeMenu === btn.menuId,
             onClick: () => {
@@ -112,6 +113,7 @@ class BaseNetworkView extends React.Component {
     const networkButtons = toolbarButtons.filter(btn => btn.type === 'networkAction').map(btn => {
       return (
         h(IconButton, {
+          key: btn.id,
           icon: btn.icon,
           onClick: () => {
             btn.func(state);
@@ -124,6 +126,7 @@ class BaseNetworkView extends React.Component {
     const nodeSearchBar = [
       h(IconButton, {
         icon: 'search',
+        key: 'search',
         active: this.state.searchOpen,
         onClick: () => {
           !this.state.searchOpen || this.clearSearchBox();
@@ -149,11 +152,7 @@ class BaseNetworkView extends React.Component {
     ];
 
 
-    const toolBar = [...menuButtons, ...networkButtons];
-
-    if (componentConfig.useSearchBar) {
-      toolBar.push(nodeSearchBar);
-    }
+    const toolBar = [...menuButtons, ...networkButtons, ...(componentConfig.useSearchBar ? nodeSearchBar : [])];
 
 
     return h('div.View', [
@@ -197,6 +196,7 @@ class BaseNetworkView extends React.Component {
             className: classNames('sidebar-close-button-container', { 'sidebar-close-button-container-open': this.state.open })
           }, [
               h(IconButton, {
+                key: 'close',
                 icon: 'close',
                 onClick: () => this.changeMenu('closeMenu'),
                 desc: 'Close the sidebar'

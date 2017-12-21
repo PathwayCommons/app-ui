@@ -109,7 +109,7 @@ const searchNodes = (query, cy, fit = false, style = matchedStyle) => {
     if (fit) {
       cy.animate({
         fit: {
-          eles: cy.elements(), padding: 100
+          eles: cy.elements(), padding: 25
         }
       }, { duration: 700 });
     }

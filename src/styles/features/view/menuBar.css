@@ -52,9 +52,6 @@
     font-size: 0.9em;
     margin: 0;
 
-    & span {
-      cursor: pointer;
-    }
   }
 }
 

@@ -169,7 +169,7 @@ class BaseNetworkView extends React.Component {
           ]),
           h('div.title-container', [
             h('h4', [
-              h('span', { onClick: () => this.changeMenu('info') }, state.networkMetadata.name),
+              h('span', state.networkMetadata.name),
               ' | ',
               h('a', state.networkMetadata.datasource)
             ])

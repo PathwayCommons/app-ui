@@ -131,7 +131,7 @@ class Paint extends React.Component {
 
     });
 
-    const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
+    const loadingView = h(Loader, { loaded: !(state.expressionsLoading || state.networkLoading), options: { left: '50%', color: '#16A085' }});
 
     // create a view shell loading view e.g looks like the view but its not
     const content = state.expressionsLoading || state.networkLoading ? loadingView : baseView;

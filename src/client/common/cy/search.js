@@ -2,24 +2,6 @@ const _ = require('lodash');
 
 const {applyStyle, removeStyle} = require('./manage-style');
 
-//Determine if a regex pattern is valid
-const validateRegex = (pattern) => {
-  let parts = pattern.split('/');
-  let regex = pattern;
-  let options = '';
-
-  if (parts.length > 1) {
-    regex = parts[1];
-    options = parts[2];
-  }
-  try {
-    let regexObj = new RegExp(regex, options);
-    return regexObj;
-  }
-  catch (e) {
-    return null;
-  }
-};
 
 //Get all the names associated with a node
 //Requires a valid cytoscape node
@@ -48,11 +30,9 @@ const getNames = (node) => {
 //Requires a valid cytoscape node
 //Returns true or false
 const evaluateNode = (node, matchingFn) => {
-
-  //Get a list of names
   const namesList = getNames(node);
 
-  //Loop and find the first match
+  //Check if any of the alternative names match the query
   for (var i = 0; i < namesList.length; i++) {
     if (matchingFn(namesList[i])) {
       return true;
@@ -70,50 +50,19 @@ const matchedStyle = {
 const matchedScratchKey = '_matched-style-before';
 
 //Search for nodes that match an entered query
-const searchNodes = (query, cy, fit = false, style = matchedStyle) => {
-  
-  const isBlank = _.isString(query) ? !!_.trim(query) : false;
-  const isRegularExp = _.startsWith(query, 'regex:') && validateRegex(query.substring(6));
-  const isExact = _.startsWith(query, 'exact:');
-
+const searchNodes = (cy, query, style = matchedStyle) => {
+  const queryNonEmpty = !!_.trim(query);
   let nodes = cy.nodes();
 
-  //Get all child nodes
   const allChildNodes = nodes.map(node => node.data('compoundCollapse.collapsedCollection'));
-
-  //Add all child nodes to the main node search list
   allChildNodes.forEach(collection => nodes = nodes.union(collection));
 
-  let matched;
-
-  //Search based on regular expression
-  if (isRegularExp) {
-    let regexObject = validateRegex(query.substring(6));
-    matched = nodes.filter(node => evaluateNode(node, name => name.match(regexObject)));
-  }
-  //Search for an exact match
-  else if (isExact) {
-    let trimmedValue = query.substring(6).toUpperCase();
-    matched = nodes.filter(node => evaluateNode(node, name => name.toUpperCase() === trimmedValue));
-  }
-  //Search for a partial match
-  else {
-    let caseInsensitiveValue = query.toUpperCase();
-    matched = nodes.filter(node => evaluateNode(node, name => name.toUpperCase().includes(caseInsensitiveValue)));
-  }
+  let caseInsensitiveValue = query.toUpperCase();
+  let matched = nodes.filter(node => evaluateNode(node, name => name.toUpperCase().includes(caseInsensitiveValue)));
 
   removeStyle(cy, cy.nodes(), matchedScratchKey);
-  //Apply styling
-  if ( matched.length > 0 && isBlank) {
 
-    if (fit) {
-      cy.animate({
-        fit: {
-          eles: cy.elements(), padding: 25
-        }
-      }, { duration: 700 });
-    }
-
+  if ( matched.length > 0 && queryNonEmpty) {
     applyStyle(cy, matched, style, matchedScratchKey);
   }
 };

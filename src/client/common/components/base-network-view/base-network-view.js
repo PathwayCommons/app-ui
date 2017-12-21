@@ -75,9 +75,8 @@ class BaseNetworkView extends React.Component {
     }
   }
 
-  searchCyNodes(newVal) {
-    let cy = this.state.cy;
-    debouncedSearchNodes(newVal, cy, true);
+  searchCyNodes(queryString) {
+    debouncedSearchNodes(this.state.cy, queryString);
   }
 
   clearSearchBox() {

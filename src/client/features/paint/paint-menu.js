@@ -121,7 +121,7 @@ class PaintMenu extends React.Component {
         defaultPageSize: 150,
         showPagination: false,
         onFilteredChange: (column, value) => {
-          cysearch(_.get(column, '0.value', ''), cy, false, {'border-width': 8, 'border-color': 'red'});
+          cysearch(cy, _.get(column, '0.value', ''), {'border-width': 8, 'border-color': 'red'});
         }
       })
       ])

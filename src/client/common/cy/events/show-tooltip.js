@@ -3,15 +3,17 @@ const MetadataTip = require('../tooltips/');
 
 const bindShowTooltip = (cy) => {
   cy.on('showTooltip', 'node', function (evt) {
-    let data = evt.target.data();
-    let name = data.label;
-    let cy = evt.cy;
+    const node = evt.target;
+
+    const data = node.data();
+    const name = data.label;
+    const cy = evt.cy;
 
     //Create or get tooltip HTML object
-    let html = evt.target.scratch('_tooltip');
+    let html = node.scratch('_tooltip');
     if (!(html)) {
-      html = new MetadataTip(name, data, evt.target);
-      evt.target.scratch('_tooltip', html);
+      html = new MetadataTip(name, data, node);
+      node.scratch('_tooltip', html);
     }
 
     html.show(cy);

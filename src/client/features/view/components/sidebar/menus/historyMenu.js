@@ -29,6 +29,9 @@ class HistoryMenu extends React.Component {
       })
         //Obtain an image of each layout
         .then(() => {
+
+          if(!this.state || !this.state.layouts){return;}
+
           let graph = this.state.layouts.graph;
           let layouts = this.state.layouts.layout;
           

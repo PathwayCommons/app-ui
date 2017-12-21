@@ -16,7 +16,7 @@ Entry specficed by the tuple of pcID and releaseID.
  
 Accepts 'latest' as a valid releaseID
 */
-function getLayout(pcID, releaseID, connection, numEntries, callback) {
+function getLayout(pcID, releaseID, connection, callback) {
   // Extract a list of layouts associated with the version from the database
   let layout = db.queryRoot(pcID, releaseID,config)
     .run(connection)
@@ -33,9 +33,8 @@ function getLayout(pcID, releaseID, connection, numEntries, callback) {
       // Run decision making process to amalgamate down to one layout to return
       // currently just returns the most recent submission
 
-      return heuristics.run(allSubmissions, numEntries);
+      return heuristics.run(allSubmissions);
     }).then((result)=>{
-      if(numEntries) {return result;}
       return result.positions;
     });
 

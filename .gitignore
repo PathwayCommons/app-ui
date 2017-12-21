@@ -6,3 +6,4 @@ build
 .DS_Store
 *.log
 package-lock.json
+rethinkdb_data/*

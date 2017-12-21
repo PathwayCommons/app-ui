@@ -152,7 +152,12 @@ class BaseNetworkView extends React.Component {
     ];
 
 
-    const toolBar = [...menuButtons, ...networkButtons, ...(componentConfig.useSearchBar ? nodeSearchBar : [])];
+    const toolBar = [
+      ...menuButtons, 
+      ...networkButtons, 
+      // ...(componentConfig.useLayoutDropdown ? layoutDropdown : []),
+      ...(componentConfig.useSearchBar ? nodeSearchBar : [])
+    ];
 
 
     return h('div.View', [

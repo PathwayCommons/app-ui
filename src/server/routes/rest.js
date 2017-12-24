@@ -37,7 +37,17 @@ router.get('/get-graph-and-layout', function (req, res) {
 });
 
 router.get('/datasources', function(req, res) {
-  return res.json({datasources: datasources});
+  res.json(datasources);
+});
+
+router.get('/generate-pathways', (req, res) => {
+  controller.generatePathways();
+});
+
+router.get('/pathways/:id', (req, res) => {
+  controller.getPathway(req.params.id).then(result => {
+    res.json(result);
+  });
 });
 
 // Expose a rest endpoint for controller.endSession

@@ -5,6 +5,11 @@ const update = require('./../database/update');
 const logger = require('./../logger');
 const diffSaver = require('./../database/saveDiffs');
 
+const pathwayUris = require('../../scripts/pathway_uris.json');
+const config = require('../database/config');
+
+const r = require('rethinkdb');
+
 // getGraphFallback(pcID, releaseID, connection)
 // Retrieves the graph specified by (pcID, releaseID) if something
 // goes wrong with the request for a graph. It executes a lazyload
@@ -75,11 +80,30 @@ function endSession(pcID, releaseID, userID) {
   });
 }
 
+const generatePathways = async () => {
+  const connection = await db.connect();
+  const uris = pathwayUris;
+  for (const uri of uris) {
+    db.insert('pathways', {id: uri}, config, connection);
+  }
+};
+
+const getPathway = async (uri) => {
+  return pathway = db.connect().then(connection => {
+    return r.db(config.databaseName)
+      .table('pathways')
+      .get(uri)
+      .run(connection);
+  });
+}
+
 
 module.exports = {
   submitLayout,
   submitGraph,
   submitDiff,
   endSession,
-  getGraphAndLayout
+  getGraphAndLayout,
+  generatePathways,
+  getPathway
 };

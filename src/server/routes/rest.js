@@ -50,6 +50,12 @@ router.get('/pathways/:id', (req, res) => {
   });
 });
 
+router.get('/pathways', (req, res) => {
+  controller.pathways().then(result => {
+    res.json(result);
+  });
+});
+
 // Expose a rest endpoint for controller.endSession
 router.get('/disconnect', function (req, res) {
   controller.endSession(req.query.uri, req.query.version, req.query.user)

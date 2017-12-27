@@ -167,6 +167,10 @@ const generateAllPathways = async () => {
   const jsonlds = fs.readdirSync(__dirname + '/jsonld').sort((a, b) => parseInt(a.split('.')[0]) - parseInt(b.split('.'[0])));
 
   let i;
+  // manually enter the indices that failed
+  // for (i of [185, 1527, 4567, 4698, 5632]) {
+  // normal run param TODO refactor this to be configurable instead of 
+  // using the above hack
   for (i = 0; i < sbgns.length; i++) {
 
     try {

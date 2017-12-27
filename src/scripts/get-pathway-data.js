@@ -43,17 +43,6 @@ const getPathwayLevelMetadata = (uri) => {
   });
 }
 
-const getElementLevelMetadata = (uri) => {
-  let sbgn, biopax;
-  let downloadType = 'jsonld';
-
-  //Get SBGN and Biopax Files
-  return Promise.all([
-    pc.get({uri, format: 'sbgn'}).then(file => sbgn = file),
-    pc.get({uri, format: downloadType}).then(file => biopax = file)
-  ]).then(files => metadataMapperJson(biopax, sbgn));
-}
-
 const getAllSbgn = async () => {
   const failed = [];
   for (let i = 0; i < processedSearchResults.length; i++) {
@@ -104,54 +93,6 @@ const getAllJsonld = async () => {
 
   console.log(failed);
 }
-
-
-const getPathwayJson = async (uri) => {
-  const pathwayData = await getPathwayLevelMetadata(uri);
-  const elementData = await getElementLevelMetadata(uri);
-
-  const result = {pathwayData, elementData};
-
-  return result;
-}
-
-const getAllPathwayJson = async () => {
-  const pathways = [];
-
-  let i;
-  for (i = 0; i < processedSearchResults.length; i++) {
-    const result = processedSearchResults[i];
-    let pathway;
-    try {
-      pathway = await getPathwayJson(result.uri);
-    } catch (e) {
-      pathway = {
-        pathwayData: {
-          datasource: null,
-          name: null,
-          comments: null
-        },
-        elementData: null
-      }
-    }
-    const size = result.size;
-    pathways.push({
-      id: result.uri,
-      datasource: pathway.pathwayData.datasource,
-      name: pathway.pathwayData.name,
-      comments: pathway.pathwayData.comments,
-      size: size,
-      elements: pathway.elementData
-    });
-  }
-  console.log(pathways.length);
-  fs.writeFile('./all_processed_pathways.json', JSON.stringify(pathways, null, 2), 'utf8', err => {
-    if (err) throw err;
-  
-    console.log('results saved');
-  });  
-
-};
 
 const addMetadataToElements = (biopax, cyElements) => {
   const nodes = augmentCynodes(biopax, cyElements.nodes);
@@ -204,7 +145,6 @@ const generateAllPathways = async () => {
 }
 
 // getAllPathwaySearchHits();
-// getAllPathwayJson();
 
 // getAllSbgn();
 // getAllJsonld();

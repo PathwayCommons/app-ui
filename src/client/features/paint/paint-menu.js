@@ -34,18 +34,20 @@ class PaintMenu extends React.Component {
       }
     };
   }
-  
+
 
   render() {
+    const props = this.props;
+    const cy = props.cy;
+    const expressionTable = props.expressionTable;
+    const searchResults = props.searchResults;
 
     const selectedFunction = this.state.selectedFunction.func;
-    const expressionTable = this.props.expressionTable;
     const expressions = _.get(expressionTable, 'rows', []);
-    const cy = this.props.cy;
 
-    
-    const networkNodes = cy.nodes().map(node => node.data('label'));
-    const expressionsInNetwork = expressions.filter(row => networkNodes.includes(row.geneName));
+
+    const networkNodeLabels = cy.nodes().map(node => node.data('label'));
+    const expressionsInNetwork = expressions.filter(row => networkNodeLabels.includes(row.geneName));
     const expressionsNotInNetwork = _.difference(expressions, expressionsInNetwork);
 
 
@@ -57,7 +59,7 @@ class PaintMenu extends React.Component {
 
     const expressionHeader = _.get(expressionTable, 'header', []);
     const expressionRows = expressionsInNetwork.concat(expressionsNotInNetwork);
-    
+
 
     const columns = [
       {
@@ -97,7 +99,7 @@ class PaintMenu extends React.Component {
       h('div.paint-drawer-header', [
         h(TabList, [
           h(Tab, 'Expression Data'),
-          // h(Tab, 'Search Results')
+          h(Tab, 'Search Results')
         ])
       ]),
       h(TabPanel, [
@@ -106,25 +108,26 @@ class PaintMenu extends React.Component {
           h('p', `high ${max}`)
         ]),
         h('div.paint-expression-controls', [
-        h('div.paint-function-selector', [
-          'Class: ',
-          functionSelector
+          h('div.paint-function-selector', [
+            'Class: ',
+            functionSelector
+          ]),
+          h('div.paint-compare-selector', [
+            `Compare: ${expressionHeader[0]} vs ${expressionHeader[1]}`,
+          ]),
         ]),
-        h('div.paint-compare-selector', [
-          `Compare: ${expressionHeader[0]} vs ${expressionHeader[1]}`,
-        ]),
+        h(Table, {
+          className:'-striped -highlight',
+          data: expressionRows,
+          columns: columns,
+          defaultPageSize: 150,
+          showPagination: false,
+          onFilteredChange: (column, value) => {
+            cysearch(cy, _.get(column, '0.value', ''), {'border-width': 8, 'border-color': 'red'});
+          }
+        })
       ]),
-      h(Table, {
-        className:'-striped -highlight',
-        data: expressionRows,
-        columns: columns,
-        defaultPageSize: 150,
-        showPagination: false,
-        onFilteredChange: (column, value) => {
-          cysearch(cy, _.get(column, '0.value', ''), {'border-width': 8, 'border-color': 'red'});
-        }
-      })
-      ])
+      h(TabPanel, searchResults.map(result => h('div', result.name)))
     ]);
   }
 }

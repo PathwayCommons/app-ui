@@ -58,7 +58,7 @@ class Paint extends React.Component {
       },
 
       // search results state
-      query: '',
+      searchParam: '',
       searchResults: [],
 
     };
@@ -69,6 +69,11 @@ class Paint extends React.Component {
 
     ServerAPI.querySearch({q: searchParam}).then(results => {
       const uri = _.get(results, '0.uri', null);
+
+      this.setState({
+        searchParam: searchParam,
+        searchResults: results
+      });
 
       ServerAPI.getGraphAndLayout(uri, 'latest').then(networkJSON => {
         const layoutConfig = getLayoutConfig(networkJSON.layout);
@@ -127,7 +132,10 @@ class Paint extends React.Component {
 
       // paint specific props needed by the paint menu
       expressionTable: state.expressionTable,
-      selectedFunction: state.selectedFunction
+      selectedFunction: state.selectedFunction,
+
+      searchParam: state.searchParam,
+      searchResults: state.searchResults
 
     });
 

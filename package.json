@@ -151,6 +151,14 @@
       "name": "Max Franz",
       "email": "maxkfranz@gmail.com",
       "url": "http://maxfranz.com"
+    },
+    {
+      "name": "Logan Mosier",
+      "email": "lmmosier@edu.uwaterloo.ca"
+    },
+    {
+      "name": "wanxin Li",
+      "email": "wanxin.li@edu.uwaterloo.ca"
     }
   ],
   "license": "MIT"

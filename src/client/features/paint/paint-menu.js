@@ -7,7 +7,7 @@ const matchSorter = require('match-sorter').default;
 
 const cysearch = _.debounce(require('../../common/cy/search'), 500);
 
-const { applyExpressionData, computeFoldChange } = require('./expression-model');
+const { applyExpressionData, computeFoldChange, computeFoldChangeRange } = require('./expression-model');
 
 class PaintMenu extends React.Component {
   constructor(props) {
@@ -51,11 +51,7 @@ class PaintMenu extends React.Component {
     const expressionsNotInNetwork = _.difference(expressions, expressionsInNetwork);
 
 
-    const foldValues = expressionsInNetwork.map(expression => computeFoldChange(expression, selectedFunction));
-    const fvs = foldValues.map(fv => fv.value);
-    const maxMagnitude = Math.max(Math.max(...fvs), Math.abs(Math.min(...fvs)));
-    const max =  maxMagnitude;
-    const min = -maxMagnitude;
+    const { min, max } = computeFoldChangeRange(expressionTable, selectedFunction);
 
     const expressionHeader = _.get(expressionTable, 'header', []);
     const expressionRows = expressionsInNetwork.concat(expressionsNotInNetwork);

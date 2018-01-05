@@ -90,6 +90,17 @@ const expressionDataToNodeStyle = (value, range) => {
   return style;
 };
 
+const computeFoldChangeRange = (expressionTable, aggregateFn) => {
+  const foldValues = expressionTable.rows.map(expression => computeFoldChange(expression, aggregateFn));
+  const fvs = foldValues.map(fv => fv.value);
+  const maxMagnitude = Math.max(Math.max(...fvs), Math.abs(Math.min(...fvs)));
+
+  const max =  maxMagnitude;
+  const min = -maxMagnitude;
+
+  return {min, max};
+};
+
 const applyExpressionData = (cy, expressionTable, aggregateFn) => {
   const geneNodes = cy.nodes('[class="macromolecule"]');
   const geneNodeLabels = _.uniq(geneNodes.map(node => node.data('label'))).sort();
@@ -103,11 +114,11 @@ const applyExpressionData = (cy, expressionTable, aggregateFn) => {
     'opacity': 0.4
   });
 
-  const foldValues = expressionsInNetwork.map(expression => computeFoldChange(expression, aggregateFn));
-  const fvs = foldValues.map(fv => fv.value);
-  const maxMagnitude = Math.max(Math.max(...fvs), Math.abs(Math.min(...fvs)));
-  const range = [-maxMagnitude, maxMagnitude];
-  foldValues.forEach(fv => {
+  const {min, max} = computeFoldChangeRange(expressionTable, aggregateFn);
+  const range = [min, max];
+
+  const nodesInNetworkFoldValues = expressionsInNetwork.map(expression => computeFoldChange(expression, aggregateFn));
+  nodesInNetworkFoldValues.forEach(fv => {
     const matchedNodes = cy.nodes().filter(node => node.data('label') === fv.geneName);
     const style = expressionDataToNodeStyle(fv.value, range);
 
@@ -124,4 +135,4 @@ class ExpressionTable {
     this.rows = expressions.map(expression => createExpressionRow(expression, expressionClasses));
   }
 }
-module.exports = {computeFoldChange, applyExpressionData, createExpressionTable, minRelativeTo, maxRelativeTo, applyAggregateFn};
+module.exports = {computeFoldChange, applyExpressionData, createExpressionTable, minRelativeTo, maxRelativeTo, applyAggregateFn, computeFoldChangeRange};

@@ -155,7 +155,7 @@ class BaseNetworkView extends React.Component {
     const toolBar = [
       ...menuButtons, 
       ...networkButtons, 
-      // ...(componentConfig.useLayoutDropdown ? layoutDropdown : []),
+      // ...(componentConfig.useLayoutDropdown ? layoutDropdown : []), // TODO re-add dropdown for edit
       ...(componentConfig.useSearchBar ? nodeSearchBar : [])
     ];
 

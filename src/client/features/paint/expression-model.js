@@ -31,23 +31,6 @@ const createExpressionTable = (expressions, expressionClasses) => {
   return {header, rows};
 };
 
-const applyAggregateFn = (row, className, aggregateFn) => {
-  const result = aggregateFn(_.get(row, `classValues.${className}`, [])).toFixed(2);
-  return parseFloat(result);
-};
-
-const maxRelativeTo = (expressionRows, expressionClass, aggregateFn) => {
-  const results = expressionRows.map(row => applyAggregateFn(row, expressionClass, aggregateFn));
-  return _.max(results);
-};
-
-const minRelativeTo = (expressionRows, expressionClass, aggregateFn) => {
-  const results = expressionRows.map(row => applyAggregateFn(row, expressionClass, aggregateFn));
-  return _.min(results);
-};
-
-
-
 const computeFoldChange = (expression, selectedFunction) => {
   const classValues = Object.entries(expression.classValues);
   const c1Val = selectedFunction(classValues[0][1]);
@@ -135,4 +118,4 @@ class ExpressionTable {
     this.rows = expressions.map(expression => createExpressionRow(expression, expressionClasses));
   }
 }
-module.exports = {computeFoldChange, applyExpressionData, createExpressionTable, minRelativeTo, maxRelativeTo, applyAggregateFn, computeFoldChangeRange};
+module.exports = {computeFoldChange, applyExpressionData, createExpressionTable, computeFoldChangeRange};

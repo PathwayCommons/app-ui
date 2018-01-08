@@ -16,6 +16,7 @@ class PaintMenu extends React.Component {
 
     this.state = {
       selectedFunction: this.analysisFns().mean,
+      selectedClass: _.get(props.expressionTable, 'header.0', [])
     };
   }
 
@@ -104,15 +105,13 @@ class PaintMenu extends React.Component {
     });
 
     const searchTabContent = this.state.searchResultsLoading ? 'loading' : paintSearchResults;
-    // const classSelector = h('select.paint-select',
-    //   {
-    //     value: selectedClass,
-    //     onChange: e => this.setState({
-    //       selectedClass: e.target.value
-    //     }, () => this.applyExpressionData())
-    //   },
-    //   expressionHeader.map(exprClass => h('option', { value: exprClass }, exprClass))
-    // );
+
+    const classSelector = h('div', [
+      'Compare: ',
+      h('select.paint-select', {value: this.state.selectedClass, onChange: e => this.setState({selectedClass: e.target.value})}, expressionHeader.map(cls => h('option', { value: cls}, cls))),
+      ` vs ${_.difference(expressionHeader, [this.state.selectedClass])}`
+    ]);
+
     return h(Tabs, [
       h('div.paint-drawer-header', [
         h(TabList, [
@@ -130,9 +129,7 @@ class PaintMenu extends React.Component {
             'Class: ',
             functionSelector
           ]),
-          h('div.paint-compare-selector', [
-            `Compare: ${expressionHeader[0]} vs ${expressionHeader[1]}`,
-          ]),
+          h('div.paint-compare-selector', [classSelector]),
         ]),
         h(Table, {
           className:'-striped -highlight',

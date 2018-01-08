@@ -19,7 +19,7 @@ class PaintMenu extends React.Component {
       selectedFunction: this.analysisFns().mean,
       searchResultsLoading: true,
       geneIntersectionResults: []
-    };    
+    };
   }
 
   componentDidMount() {
@@ -107,7 +107,7 @@ class PaintMenu extends React.Component {
       {
         Header: 'log2 Fold-Change',
         id: 'foldChange',
-        accessor: row => computeFoldChange(row, _.mean).value
+        accessor: row => computeFoldChange(row, selectedFunction).value
       }
     ];
 
@@ -116,7 +116,7 @@ class PaintMenu extends React.Component {
         value: selectedFunction.name,
         onChange: e => this.setState({
           selectedFunction: _.find(this.analysisFns(), (fn) => fn.name === e.target.value)
-        }, () => applyExpressionData(this.props.cy, this.props.expressionTable, this.props.selectedFunction))
+        }, () => applyExpressionData(this.props.cy, this.props.expressionTable, selectedFunction))
       },
       Object.entries(this.analysisFns()).map(entry => h('option', {value: entry[0]}, entry[0]))
     );

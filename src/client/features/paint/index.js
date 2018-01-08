@@ -29,6 +29,28 @@ const PaintViewConfig = {
   useSearchBar: false
 };
 
+// determine the "best" pathway based on user query
+// THIS MOST LIKELY SHOULD BE A SERVER SIDE CALL
+const getAugmentedSearchResults = (searchParam, expressionTable) => {
+  return ServerAPI.querySearch({q: searchParam}).then(results => {
+
+    const pathwaysJSON = results.map(result => ServerAPI.getGraphAndLayout(result.uri, 'latest'));
+
+    return Promise.all(pathwaysJSON).then(pathways => {
+      const processed = pathways.map(pathway => {
+        const genesInPathway = _.uniq(pathway.graph.nodes.map(node => node.data.label));
+        const genesInExpressionData = expressionTable.rows.map(row => row.geneName);
+
+        return {
+          json: pathway,
+          geneIntersection: _.intersection(genesInPathway, genesInExpressionData)
+        };
+      });
+
+      return processed.sort((p0, p1 ) => p1.geneIntersection.length - p0.geneIntersection.length);
+    });
+  });
+};
 
 class Paint extends React.Component {
   constructor(props) {
@@ -49,7 +71,6 @@ class Paint extends React.Component {
       networkLoading: true,
 
       // enrichment data state
-      rawEnrichmentData: {},
       expressionTable: {},
       selectedClass: '',
       selectedFunction: {
@@ -67,56 +88,53 @@ class Paint extends React.Component {
     const searchParam = query.q;
     const enrichmentsURI = query.uri;
 
-    ServerAPI.querySearch({q: searchParam}).then(results => {
-      const uri = _.get(results, '0.uri', null);
-
-      this.setState({
-        searchParam: searchParam,
-        searchResults: results
-      });
-
-      ServerAPI.getGraphAndLayout(uri, 'latest').then(networkJSON => {
-        const layoutConfig = getLayoutConfig(networkJSON.layout);
-        const componentConfig = PaintViewConfig;
-
-        this.setState({
-          componentConfig: componentConfig,
-          layoutConfig: layoutConfig,
-          networkJSON: networkJSON.graph,
-          networkMetadata: {
-            uri: uri,
-            name: _.get(networkJSON, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
-            datasource: _.get(networkJSON, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
-            comments: networkJSON.graph.pathwayMetadata.comments,
-            organism: networkJSON.graph.pathwayMetadata.organism
-          },
-          networkLoading: false
-        });
-      });
-    });
-
     fetch(enrichmentsURI)
     .then(res => res.json())
     .then(json => {
       const expressionClasses = _.get(json.dataSetClassList, '0.classes', []);
       const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
+      const expressionTable = createExpressionTable(expressions, expressionClasses);
 
-      this.initPainter(expressions, expressionClasses);
+      getAugmentedSearchResults(searchParam, expressionTable).then(pathwayResults => {
+
+        // pathway results are sorted by gene expression intersection (largest to smallest)
+        // take the largest gene intersection by default
+        const candidatePathway = pathwayResults[0];
+
+        if (candidatePathway && _.get(candidatePathway, 'geneIntersection', []).length > 0) {
+          console.log('uh oh, no gene intersection');
+          // TODO perform fallback gene search
+          // return candidatePathway;
+        }
+
+        const network = candidatePathway.json;
+        const layoutConfig = getLayoutConfig(network.layout);
+        const componentConfig = PaintViewConfig;
+
+        this.setState({
+          componentConfig: componentConfig,
+          layoutConfig: layoutConfig,
+          networkJSON: network.graph,
+          networkMetadata: {
+            uri: network.graph.pathwayMetadata.uri,
+            name: _.get(network, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
+            datasource: _.get(network, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
+            comments: network.graph.pathwayMetadata.comments,
+            organism: network.graph.pathwayMetadata.organism
+          },
+          networkLoading: false,
+          expressionTable: expressionTable,
+          expressionsLoading: false,
+          searchParam: searchParam,
+          searchResults: pathwayResults
+
+        }, () => {
+          const selectedFn = this.state.selectedFunction.func;
+          this.state.cy.on('network-loaded', () => applyExpressionData(this.state.cy, expressionTable, selectedFn));
+        });
+      });
+
     });
-  }
-
-  initPainter(expressions, expressionClasses) {
-    const state = this.state;
-    const expressionTable = createExpressionTable(expressions, expressionClasses);
-    this.setState({
-      expressionTable: expressionTable,
-      expressionsLoading: false
-    });
-
-
-    const selectedFn = state.selectedFunction.func;
-
-    this.state.cy.on('network-loaded', () => applyExpressionData(this.state.cy, expressionTable, selectedFn));
   }
 
   render() {

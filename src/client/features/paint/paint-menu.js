@@ -9,7 +9,6 @@ const cysearch = _.debounce(require('../../common/cy/search'), 500);
 
 const { applyExpressionData, computeFoldChange, computeFoldChangeRange } = require('./expression-model');
 
-const { ServerAPI } = require('../../services');
 
 class PaintMenu extends React.Component {
   constructor(props) {
@@ -17,34 +16,7 @@ class PaintMenu extends React.Component {
 
     this.state = {
       selectedFunction: this.analysisFns().mean,
-      searchResultsLoading: true,
-      geneIntersectionResults: []
     };
-  }
-
-  componentDidMount() {
-    const searchResults = this.props.searchResults;
-
-    const pathwaysJSON = searchResults.map(result => ServerAPI.getGraphAndLayout(result.uri, 'latest'));
-
-    Promise.all(pathwaysJSON).then(results => {
-      const geneIntersectionResults = results.map(pathwayJSON => {
-        const genesInPathway = _.uniq(pathwayJSON.graph.nodes.map(node => node.data.label));
-        const genesInExpressionData = this.props.expressionTable.rows.map(row => row.geneName);
-
-        return {
-          cyJSON: pathwayJSON.graph,
-          name: pathwayJSON.graph.pathwayMetadata.title[0],
-          datasource: pathwayJSON.graph.pathwayMetadata.dataSource[0],
-          geneIntersection: _.intersection(genesInPathway, genesInExpressionData)
-        };
-      });
-      this.setState({
-        searchResultsLoading: false,
-        geneIntersectionResults: geneIntersectionResults
-      });
-    });
-
   }
 
   analysisFns() {
@@ -70,7 +42,7 @@ class PaintMenu extends React.Component {
     cy.add(networkJSON);
     const layout = cy.layout({name: 'cose-bilkent'});
     layout.on('layoutstop', () => {
-      applyExpressionData(this.props.cy, this.props.expressionTable, this.props.selectedFunction);
+      applyExpressionData(this.props.cy, this.props.expressionTable, this.state.selectedFunction);
     });
     layout.run();
   }
@@ -121,12 +93,11 @@ class PaintMenu extends React.Component {
       Object.entries(this.analysisFns()).map(entry => h('option', {value: entry[0]}, entry[0]))
     );
 
-    const paintSearchResults = this.state.geneIntersectionResults
-    .sort((a, b) => a.geneIntersection.length < b.geneIntersection.length)
-    .map(result => {
-      return h('div.paint-search-result', [
-        h('div', {onClick: e => this.loadNetwork(result.cyJSON)}, result.name),
-        h('div', result.title),
+    const paintSearchResults = props.searchResults.map(result => {
+      return h('div.paint-search-result', {onClick: e => this.loadNetwork(result.json.graph)}, [
+        h('div', result.name),
+        h('div', result.json.graph.pathwayMetadata.dataSource[0]),
+        h('div', result.json.graph.pathwayMetadata.title[0]),
         h('div', result.geneIntersection.join(' ')),
         h('div', `expressions found in pathway: ${result.geneIntersection.length}`)
       ]);

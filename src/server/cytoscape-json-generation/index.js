@@ -1,4 +1,5 @@
 const sbgnml2CyJson = require('sbgnml-to-cytoscape');
+const _ = require('lodash');
 
 
 const pc = require('./../pathway-commons');
@@ -41,7 +42,7 @@ function getCytoscapeJson(pcUri) {
   return getPathwayLevelMetadata(pcUri).then(result =>  {
     pathwayMetadata = result;
     return getCyElementMetadata(pcUri).then(result => {
-      result.pathwayMetadata = pathwayMetadata;
+      result.pathwayMetadata = _.assign({}, pathwayMetadata, {uri: pcUri});
       return result;
     });
   });

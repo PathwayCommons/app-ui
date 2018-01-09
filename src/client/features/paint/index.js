@@ -31,11 +31,38 @@ const PaintViewConfig = {
 
 // determine the "best" pathway based on user query
 // THIS MOST LIKELY SHOULD BE A SERVER SIDE CALL
+// const getAugmentedSearchResults = (searchParam, expressionTable) => {
+//   return ServerAPI.querySearch({q: searchParam}).then(results => {
+
+//     const pathwaysJSON = results.map(result => ServerAPI.getGraphAndLayout(result.uri, 'latest'));
+
+//     return Promise.all(pathwaysJSON).then(pathways => {
+//       const processed = pathways.map(pathway => {
+//         const genesInPathway = _.uniq(pathway.graph.nodes.map(node => node.data.label));
+//         const genesInExpressionData = expressionTable.rows.map(row => row.geneName);
+
+//         return {
+//           json: pathway,
+//           geneIntersection: _.intersection(genesInPathway, genesInExpressionData)
+//         };
+//       });
+
+//       return processed;
+//     });
+//   });
+// };
+
 const getAugmentedSearchResults = (searchParam, expressionTable) => {
-  return ServerAPI.querySearch({q: searchParam}).then(results => {
+  const geneQueries = _.chunk(expressionTable.rows.map(row => row.geneName), 15)
+  .map(chunk => ServerAPI.querySearch({q: chunk.join(' ')}));
 
-    const pathwaysJSON = results.map(result => ServerAPI.getGraphAndLayout(result.uri, 'latest'));
+  const searchQuery = ServerAPI.querySearch({q: searchParam});
 
+  return Promise.all([...geneQueries, searchQuery]).then(searchResults => {
+    const uniqueResults = _.uniqBy(_.flatten(searchResults), result => result.uri);
+
+    const pathwaysJSON = uniqueResults.map(result => ServerAPI.getGraphAndLayout(result.uri, 'latest'));
+    
     return Promise.all(pathwaysJSON).then(pathways => {
       const processed = pathways.map(pathway => {
         const genesInPathway = _.uniq(pathway.graph.nodes.map(node => node.data.label));
@@ -47,7 +74,7 @@ const getAugmentedSearchResults = (searchParam, expressionTable) => {
         };
       });
 
-      return processed.sort((p0, p1 ) => p1.geneIntersection.length - p0.geneIntersection.length);
+      return processed;
     });
   });
 };
@@ -95,17 +122,11 @@ class Paint extends React.Component {
       const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
       const expressionTable = createExpressionTable(expressions, expressionClasses);
 
-      getAugmentedSearchResults(searchParam, expressionTable).then(pathwayResults => {
+      getAugmentedSearchResults(searchParam, expressionTable).then(pathwayResults => { 
 
         // pathway results are sorted by gene expression intersection (largest to smallest)
         // take the largest gene intersection by default
-        const candidatePathway = pathwayResults[0];
-
-        if (candidatePathway && _.get(candidatePathway, 'geneIntersection', []).length > 0) {
-          console.log('uh oh, no gene intersection');
-          // TODO perform fallback gene search
-          // return candidatePathway;
-        }
+        let candidatePathway = pathwayResults.sort((p0, p1) => p1.geneIntersection.length - p0.geneIntersection.length)[0];
 
         const network = candidatePathway.json;
         const layoutConfig = getLayoutConfig(network.layout);

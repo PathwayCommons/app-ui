@@ -43,7 +43,7 @@ class PaintMenu extends React.Component {
     cy.add(networkJSON);
     const layout = cy.layout({name: 'cose-bilkent'});
     layout.on('layoutstop', () => {
-      applyExpressionData(this.props.cy, this.props.expressionTable, this.state.selectedFunction);
+      applyExpressionData(this.props.cy, this.props.expressionTable, this.state.selectedFunction.func);
     });
     layout.run();
   }

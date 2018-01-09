@@ -31,6 +31,25 @@ const createExpressionTable = (expressions, expressionClasses) => {
   return {header, rows};
 };
 
+const computeFoldChangeMulti = (expression, selectedClass, selectedFunction) => {
+  const c1Val = selectedFunction(expression.classValues[selectedClass]);
+  let c2Val = Object.entries(expression.classValues)
+  .filter(entry => entry[0] !== selectedClass)
+  .map(entry => selectedFunction(entry[0][1]));
+
+  if (c2Val === 0) {
+    c2Val = 1;
+  }
+
+  let foldChange = Math.log2(c1Val / c2Val);
+
+  return {
+    geneName: expression.geneName,
+    value: parseFloat(foldChange.toFixed(2))
+  };
+};
+
+
 const computeFoldChange = (expression, selectedFunction) => {
   const classValues = Object.entries(expression.classValues);
   const c1Val = selectedFunction(classValues[0][1]);

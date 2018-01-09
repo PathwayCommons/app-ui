@@ -34,7 +34,8 @@ class BaseNetworkView extends React.Component {
       {
         activeMenu: 'closeMenu',
         open: false,
-        networkLoading: true
+        networkLoading: true,
+        searchOpen: false
       }, props);
 
   }
@@ -130,6 +131,9 @@ class BaseNetworkView extends React.Component {
         active: this.state.searchOpen,
         onClick: () => {
           !this.state.searchOpen || this.clearSearchBox();
+          if (this.state.searchOpen == false) {
+            this.searchField.focus();
+          }
           this.setState({ searchOpen: !this.state.searchOpen });
         },
         desc: 'Search entities'
@@ -142,7 +146,7 @@ class BaseNetworkView extends React.Component {
             h('input.view-search', {
               ref: dom => this.searchField = dom,
               type: 'search',
-              placeholder: 'Search entities'
+              placeholder: 'Search entities',
             }),
             h('div.view-search-clear', {
               onClick: () => this.clearSearchBox(),

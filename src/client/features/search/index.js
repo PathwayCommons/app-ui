@@ -154,10 +154,7 @@ class Search extends React.Component {
             h('div.search-title', [
               h('a', { className: 'search-pc-link', href: 'http://www.pathwaycommons.org/' } , [
                 h('i.search-logo')
-            ])
-              // h(Link, { className: 'search-pc-link', to: { pathname: '/' } }, [
-              //   h('i.search-logo')
-              // ]),
+              ]),
             ]),
             h('div.search-branding-descriptor', [
               h('h2.search-pc-title', 'Pathway Commons'),

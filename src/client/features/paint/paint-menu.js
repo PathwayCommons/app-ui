@@ -43,7 +43,7 @@ class PaintMenu extends React.Component {
     cy.add(networkJSON);
     const layout = cy.layout({name: 'cose-bilkent'});
     layout.on('layoutstop', () => {
-      applyExpressionData(this.props.cy, this.props.expressionTable, this.state.selectedFunction.func);
+      applyExpressionData(this.props.cy, this.props.expressionTable, this.state.selectedClass, this.state.selectedFunction.func);
     });
     layout.run();
   }
@@ -108,8 +108,6 @@ class PaintMenu extends React.Component {
       ]);
     });
 
-    const searchTab = paintSearchResults.length > 1 ? h(Tab, 'Search Results') : null;
-    const searchTabContent = paintSearchResults.length > 1 ? paintSearchResults : null;
 
     const classSelector = h('div', [
       'Compare: ',
@@ -118,8 +116,9 @@ class PaintMenu extends React.Component {
         onChange: e => {
           const newSelectedClass = e.target.value;
           this.setState(
-          {selectedClass: newSelectedClass},
-          () => applyExpressionData(this.props.cy, this.props.expressionTable, newSelectedClass, selectedFunction));
+            {selectedClass: newSelectedClass},
+            () => applyExpressionData(this.props.cy, this.props.expressionTable, newSelectedClass, selectedFunction)
+          );
         }
       },
       expressionHeader.map(cls => h('option', { value: cls}, cls))
@@ -130,8 +129,14 @@ class PaintMenu extends React.Component {
     return h(Tabs, [
       h('div.paint-drawer-header', [
         h(TabList, [
-          h(Tab, 'Expression Data'),
-          searchTab
+          h(Tab, {
+            className: 'paint-drawer-tab',
+            selectedClassName: 'paint-drawer-tab-selected'
+            }, 'Expression Data'),
+          h(Tab, {
+            className: 'paint-drawer-tab',
+            selectedClassName: 'paint-drawer-tab-selected'
+          }, 'Search Results')
         ])
       ]),
       h(TabPanel, [
@@ -157,7 +162,7 @@ class PaintMenu extends React.Component {
           }
         })
       ]),
-      h(TabPanel, searchTabContent)
+      h(TabPanel, paintSearchResults)
     ]);
   }
 }

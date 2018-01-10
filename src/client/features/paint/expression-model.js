@@ -48,7 +48,7 @@ const computeFoldChange = (expression, selectedClass, selectedFunction) => {
   }
 
   const foldChange = Math.log2(c1Val / c2Val);
-  console.log(c1Val, c2Val, foldChange);
+
   return {
     geneName: expression.geneName,
     value: parseFloat(foldChange.toFixed(2))

@@ -32,3 +32,19 @@
 .paint-search-result {
   padding: 10px;
 }
+
+.paint-drawer-tab {
+  display: inline-block;
+  border: 1px solid transparent;
+  border-bottom: none;
+  bottom: -1px;
+  position: relative;
+  list-style: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  margin-bottom: 0;
+}
+
+.paint-drawer-tab-selected {
+  border-bottom: 3px solid var(--accent-1-colour);
+}

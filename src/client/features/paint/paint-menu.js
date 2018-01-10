@@ -92,7 +92,7 @@ class PaintMenu extends React.Component {
           const newSelectedFunction = _.find(this.analysisFns(), (fn) => fn.name === e.target.value);
           this.setState({
             selectedFunction: newSelectedFunction
-          }, () => applyExpressionData(this.props.cy, this.props.expressionTable, selectedClass, newSelectedFunction));
+          }, () => applyExpressionData(this.props.cy, this.props.expressionTable, selectedClass, newSelectedFunction.func));
         }
       },
       Object.entries(this.analysisFns()).map(entry => h('option', {value: entry[0]}, entry[0]))

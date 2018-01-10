@@ -174,6 +174,7 @@ class Paint extends React.Component {
       // paint specific props needed by the paint menu
       expressionTable: state.expressionTable,
       selectedFunction: state.selectedFunction,
+      selectedClass: state.selectedClass,
 
       searchParam: state.searchParam,
       searchResults: state.searchResults

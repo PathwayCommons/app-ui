@@ -16,7 +16,7 @@ class PaintMenu extends React.Component {
 
     this.state = {
       selectedFunction: this.analysisFns().mean,
-      selectedClass: _.get(props.expressionTable, 'header.0', [])
+      selectedClass: props.selectedClass
     };
   }
 
@@ -52,22 +52,20 @@ class PaintMenu extends React.Component {
   render() {
     const props = this.props;
     const cy = props.cy;
-    const expressionTable = props.expressionTable;
 
     const selectedFunction = this.state.selectedFunction.func;
     const selectedClass = this.state.selectedClass;
-    const expressions = _.get(expressionTable, 'rows', []);
 
-
-    const networkNodeLabels = cy.nodes().map(node => node.data('label'));
-    const expressionsInNetwork = expressions.filter(row => networkNodeLabels.includes(row.geneName));
-    const expressionsNotInNetwork = _.difference(expressions, expressionsInNetwork);
-
+    const expressionTable = props.expressionTable;
+    const expressionHeader = _.get(expressionTable, 'header', []);
+    const foldChangeExpressions = _.get(expressionTable, 'rows', []).map(row => {
+      return {
+        geneName: row.geneName,
+        foldChange: computeFoldChange(row, selectedClass, selectedFunction).value
+      };
+    });
 
     const { min, max } = computeFoldChangeRange(expressionTable, selectedClass, selectedFunction);
-
-    const expressionHeader = _.get(expressionTable, 'header', []);
-    const expressionRows = expressionsInNetwork.concat(expressionsNotInNetwork);
 
 
     const columns = [
@@ -81,16 +79,19 @@ class PaintMenu extends React.Component {
       {
         Header: 'log2 Fold-Change',
         id: 'foldChange',
-        accessor: row => computeFoldChange(row, selectedClass, selectedFunction).value
+        accessor: 'foldChange'
       }
     ];
 
     const functionSelector = h('select.paint-select',
       {
         value: selectedFunction.name,
-        onChange: e => this.setState({
-          selectedFunction: _.find(this.analysisFns(), (fn) => fn.name === e.target.value)
-        }, () => applyExpressionData(this.props.cy, this.props.expressionTable, selectedClass, selectedFunction))
+        onChange: e => {
+          const newSelectedFunction = _.find(this.analysisFns(), (fn) => fn.name === e.target.value);
+          this.setState({
+            selectedFunction: newSelectedFunction
+          }, () => applyExpressionData(this.props.cy, this.props.expressionTable, selectedClass, newSelectedFunction));
+        }
       },
       Object.entries(this.analysisFns()).map(entry => h('option', {value: entry[0]}, entry[0]))
     );
@@ -112,11 +113,14 @@ class PaintMenu extends React.Component {
       'Compare: ',
       h('select.paint-select', {
         value: selectedClass,
-        onChange: e => this.setState(
-          {selectedClass: e.target.value},
-          () => applyExpressionData(this.props.cy, this.props.expressionTable, selectedClass, selectedFunction)
-        )},
-        expressionHeader.map(cls => h('option', { value: cls}, cls))
+        onChange: e => {
+          const newSelectedClass = e.target.value;
+          this.setState(
+          {selectedClass: newSelectedClass},
+          () => applyExpressionData(this.props.cy, this.props.expressionTable, newSelectedClass, selectedFunction));
+        }
+      },
+      expressionHeader.map(cls => h('option', { value: cls}, cls))
       ),
       ` vs ${_.difference(expressionHeader, [selectedClass])}`
     ]);
@@ -142,7 +146,7 @@ class PaintMenu extends React.Component {
         ]),
         h(Table, {
           className:'-striped -highlight',
-          data: expressionRows,
+          data: foldChangeExpressions,
           columns: columns,
           defaultPageSize: 150,
           showPagination: false,

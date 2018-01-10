@@ -55,24 +55,6 @@ const computeFoldChange = (expression, selectedClass, selectedFunction) => {
   };
 };
 
-
-// const computeFoldChange = (expression, selectedFunction) => {
-//   const classValues = Object.entries(expression.classValues);
-
-//   console.log(classValues, expression.classValues);
-//   const c1Val = selectedFunction(classValues[0][1]);
-
-//   let c2Val = selectedFunction(classValues[1][1]);
-//   c2Val = c2Val === 0 ? c2Val = 1 : c2Val;
-
-//   let foldChange = Math.log2(c1Val / c2Val);
-
-//   return {
-//     geneName: expression.geneName,
-//     value: parseFloat(foldChange.toFixed(2))
-//   };
-// };
-
 const expressionDataToNodeStyle = (value, range) => {
   const [, max] = range;
   const style = {};

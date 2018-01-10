@@ -164,7 +164,7 @@ class BaseNetworkView extends React.Component {
       h('div', { className: classNames('menu-bar', { 'menu-bar-margin': state.activeMenu }) }, [
         h('div.menu-bar-inner-container', [
           h('div.pc-logo-container', [
-            h(Link, { to: { pathname: '/search' } }, [
+            h('a', { href: 'http://www.pathwaycommons.org/' } , [
               h('img', {
                 src: '/img/icon.png'
               })

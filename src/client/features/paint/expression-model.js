@@ -31,17 +31,23 @@ const createExpressionTable = (expressions, expressionClasses) => {
   return {header, rows};
 };
 
-const computeFoldChangeMulti = (expression, selectedClass, selectedFunction) => {
-  const c1Val = selectedFunction(expression.classValues[selectedClass]);
-  let c2Val = Object.entries(expression.classValues)
-  .filter(entry => entry[0] !== selectedClass)
-  .map(entry => selectedFunction(entry[0][1]));
+const computeFoldChange = (expression, selectedClass, selectedFunction) => {
+  const selectedClassValues = expression.classValues[selectedClass];
+  const nonSelectedClasses = _.omit(expression.classValues, [selectedClass]);
+
+
+  const nonSelectedClassesValues =_.flattenDeep(Object.entries(nonSelectedClasses)
+    .map(([className, values]) => values));
+
+  const c1Val = selectedFunction(selectedClassValues);
+
+  let c2Val = _.mean(nonSelectedClassesValues);
 
   if (c2Val === 0) {
     c2Val = 1;
   }
 
-  let foldChange = Math.log2(c1Val / c2Val);
+  const foldChange = Math.log2(c1Val / c2Val);
 
   return {
     geneName: expression.geneName,
@@ -50,20 +56,22 @@ const computeFoldChangeMulti = (expression, selectedClass, selectedFunction) => 
 };
 
 
-const computeFoldChange = (expression, selectedFunction) => {
-  const classValues = Object.entries(expression.classValues);
-  const c1Val = selectedFunction(classValues[0][1]);
+// const computeFoldChange = (expression, selectedFunction) => {
+//   const classValues = Object.entries(expression.classValues);
 
-  let c2Val = selectedFunction(classValues[1][1]);
-  c2Val = c2Val === 0 ? c2Val = 1 : c2Val;
+//   console.log(classValues, expression.classValues);
+//   const c1Val = selectedFunction(classValues[0][1]);
 
-  let foldChange = Math.log2(c1Val / c2Val);
+//   let c2Val = selectedFunction(classValues[1][1]);
+//   c2Val = c2Val === 0 ? c2Val = 1 : c2Val;
 
-  return {
-    geneName: expression.geneName,
-    value: parseFloat(foldChange.toFixed(2))
-  };
-};
+//   let foldChange = Math.log2(c1Val / c2Val);
+
+//   return {
+//     geneName: expression.geneName,
+//     value: parseFloat(foldChange.toFixed(2))
+//   };
+// };
 
 const expressionDataToNodeStyle = (value, range) => {
   const [, max] = range;
@@ -73,6 +81,7 @@ const expressionDataToNodeStyle = (value, range) => {
     style['background-color'] = 'white';
     style['background-opacity'] = 1;
     style['color'] = 'black';
+    style['text-outline-color'] = 'white';
   }
 
   if (value < (0 - max / 3)) {
@@ -92,8 +101,8 @@ const expressionDataToNodeStyle = (value, range) => {
   return style;
 };
 
-const computeFoldChangeRange = (expressionTable, aggregateFn) => {
-  const foldValues = expressionTable.rows.map(expression => computeFoldChange(expression, aggregateFn));
+const computeFoldChangeRange = (expressionTable, selectedClass, selectedFunction) => {
+  const foldValues = expressionTable.rows.map(expression => computeFoldChange(expression, selectedClass, selectedFunction));
   const fvs = foldValues.map(fv => fv.value);
   const maxMagnitude = Math.max(Math.max(...fvs), Math.abs(Math.min(...fvs)));
 
@@ -103,7 +112,7 @@ const computeFoldChangeRange = (expressionTable, aggregateFn) => {
   return {min, max};
 };
 
-const applyExpressionData = (cy, expressionTable, aggregateFn) => {
+const applyExpressionData = (cy, expressionTable, selectedClass, selectedFunction) => {
   const geneNodes = cy.nodes('[class="macromolecule"]');
   const geneNodeLabels = _.uniq(geneNodes.map(node => node.data('label'))).sort();
 
@@ -116,15 +125,15 @@ const applyExpressionData = (cy, expressionTable, aggregateFn) => {
     'opacity': 0.4
   });
 
-  const {min, max} = computeFoldChangeRange(expressionTable, aggregateFn);
+  const {min, max} = computeFoldChangeRange(expressionTable, selectedClass, selectedFunction);
   const range = [min, max];
 
-  const nodesInNetworkFoldValues = expressionsInNetwork.map(expression => computeFoldChange(expression, aggregateFn));
+  const nodesInNetworkFoldValues = expressionsInNetwork.map(expression => computeFoldChange(expression, selectedClass, selectedFunction));
   nodesInNetworkFoldValues.forEach(fv => {
     const matchedNodes = cy.nodes().filter(node => node.data('label') === fv.geneName);
     const style = expressionDataToNodeStyle(fv.value, range);
 
-    cy.batch(() => matchedNodes.style(style));
+    matchedNodes.style(style);
   });
 };
 

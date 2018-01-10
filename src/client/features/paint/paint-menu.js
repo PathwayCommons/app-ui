@@ -5,7 +5,7 @@ const Table = require('react-table').default;
 const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
 const matchSorter = require('match-sorter').default;
 
-const cysearch = _.debounce(require('../../common/cy/search'), 500);
+const cysearch = _.debounce(require('../../common/cy/match-style'), 500);
 
 const { applyExpressionData, computeFoldChange, computeFoldChangeRange } = require('./expression-model');
 
@@ -55,6 +55,7 @@ class PaintMenu extends React.Component {
     const expressionTable = props.expressionTable;
 
     const selectedFunction = this.state.selectedFunction.func;
+    const selectedClass = this.state.selectedClass;
     const expressions = _.get(expressionTable, 'rows', []);
 
 
@@ -63,7 +64,7 @@ class PaintMenu extends React.Component {
     const expressionsNotInNetwork = _.difference(expressions, expressionsInNetwork);
 
 
-    const { min, max } = computeFoldChangeRange(expressionTable, selectedFunction);
+    const { min, max } = computeFoldChangeRange(expressionTable, selectedClass, selectedFunction);
 
     const expressionHeader = _.get(expressionTable, 'header', []);
     const expressionRows = expressionsInNetwork.concat(expressionsNotInNetwork);
@@ -80,7 +81,7 @@ class PaintMenu extends React.Component {
       {
         Header: 'log2 Fold-Change',
         id: 'foldChange',
-        accessor: row => computeFoldChange(row, selectedFunction).value
+        accessor: row => computeFoldChange(row, selectedClass, selectedFunction).value
       }
     ];
 
@@ -89,7 +90,7 @@ class PaintMenu extends React.Component {
         value: selectedFunction.name,
         onChange: e => this.setState({
           selectedFunction: _.find(this.analysisFns(), (fn) => fn.name === e.target.value)
-        }, () => applyExpressionData(this.props.cy, this.props.expressionTable, selectedFunction))
+        }, () => applyExpressionData(this.props.cy, this.props.expressionTable, selectedClass, selectedFunction))
       },
       Object.entries(this.analysisFns()).map(entry => h('option', {value: entry[0]}, entry[0]))
     );
@@ -104,19 +105,27 @@ class PaintMenu extends React.Component {
       ]);
     });
 
-    const searchTabContent = this.state.searchResultsLoading ? 'loading' : paintSearchResults;
+    const searchTab = paintSearchResults.length > 1 ? h(Tab, 'Search Results') : null;
+    const searchTabContent = paintSearchResults.length > 1 ? paintSearchResults : null;
 
     const classSelector = h('div', [
       'Compare: ',
-      h('select.paint-select', {value: this.state.selectedClass, onChange: e => this.setState({selectedClass: e.target.value})}, expressionHeader.map(cls => h('option', { value: cls}, cls))),
-      ` vs ${_.difference(expressionHeader, [this.state.selectedClass])}`
+      h('select.paint-select', {
+        value: selectedClass,
+        onChange: e => this.setState(
+          {selectedClass: e.target.value},
+          () => applyExpressionData(this.props.cy, this.props.expressionTable, selectedClass, selectedFunction)
+        )},
+        expressionHeader.map(cls => h('option', { value: cls}, cls))
+      ),
+      ` vs ${_.difference(expressionHeader, [selectedClass])}`
     ]);
 
     return h(Tabs, [
       h('div.paint-drawer-header', [
         h(TabList, [
           h(Tab, 'Expression Data'),
-          h(Tab, 'Search Results')
+          searchTab
         ])
       ]),
       h(TabPanel, [

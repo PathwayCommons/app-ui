@@ -62,7 +62,7 @@ const getAugmentedSearchResults = (searchParam, expressionTable) => {
     const uniqueResults = _.uniqBy(_.flatten(searchResults), result => result.uri);
 
     const pathwaysJSON = uniqueResults.map(result => ServerAPI.getGraphAndLayout(result.uri, 'latest'));
-    
+
     return Promise.all(pathwaysJSON).then(pathways => {
       const processed = pathways.map(pathway => {
         const genesInPathway = _.uniq(pathway.graph.nodes.map(node => node.data.label));
@@ -122,7 +122,7 @@ class Paint extends React.Component {
       const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
       const expressionTable = createExpressionTable(expressions, expressionClasses);
 
-      getAugmentedSearchResults(searchParam, expressionTable).then(pathwayResults => { 
+      getAugmentedSearchResults(searchParam, expressionTable).then(pathwayResults => {
 
         // pathway results are sorted by gene expression intersection (largest to smallest)
         // take the largest gene intersection by default
@@ -145,13 +145,15 @@ class Paint extends React.Component {
           },
           networkLoading: false,
           expressionTable: expressionTable,
+          selectedClass: _.get(expressionClasses, '0', ''),
           expressionsLoading: false,
           searchParam: searchParam,
           searchResults: pathwayResults
 
         }, () => {
           const selectedFn = this.state.selectedFunction.func;
-          this.state.cy.on('network-loaded', () => applyExpressionData(this.state.cy, expressionTable, selectedFn));
+          const selectedClass = this.state.selectedClass;
+          this.state.cy.on('network-loaded', () => applyExpressionData(this.state.cy, expressionTable, selectedClass, selectedFn));
         });
       });
 

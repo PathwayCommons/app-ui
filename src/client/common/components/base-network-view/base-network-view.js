@@ -7,7 +7,7 @@ const _ = require('lodash');
 
 const IconButton = require('../icon-button');
 
-const debouncedSearchNodes = _.debounce(require('../../cy/search'), 300);
+const debouncedSearchNodes = _.debounce(require('../../cy/match-style'), 300);
 
 // cytoscape
 // grapjson
@@ -153,8 +153,8 @@ class BaseNetworkView extends React.Component {
 
 
     const toolBar = [
-      ...menuButtons, 
-      ...networkButtons, 
+      ...menuButtons,
+      ...networkButtons,
       // ...(componentConfig.useLayoutDropdown ? layoutDropdown : []), // TODO re-add dropdown for edit
       ...(componentConfig.useSearchBar ? nodeSearchBar : [])
     ];

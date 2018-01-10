@@ -59,9 +59,11 @@ class PaintMenu extends React.Component {
     const expressionTable = props.expressionTable;
     const expressionHeader = _.get(expressionTable, 'header', []);
     const foldChangeExpressions = _.get(expressionTable, 'rows', []).map(row => {
+      const fv = computeFoldChange(row, selectedClass, selectedFunction).value;
+
       return {
         geneName: row.geneName,
-        foldChange: computeFoldChange(row, selectedClass, selectedFunction).value
+        foldChange: fv === Infinity || fv === -Infinity ? 'N/A' : fv
       };
     });
 

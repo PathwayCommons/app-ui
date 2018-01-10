@@ -48,7 +48,7 @@ const computeFoldChange = (expression, selectedClass, selectedFunction) => {
   }
 
   const foldChange = Math.log2(c1Val / c2Val);
-
+  console.log(c1Val, c2Val, foldChange);
   return {
     geneName: expression.geneName,
     value: parseFloat(foldChange.toFixed(2))
@@ -85,7 +85,7 @@ const expressionDataToNodeStyle = (value, range) => {
 
 const computeFoldChangeRange = (expressionTable, selectedClass, selectedFunction) => {
   const foldValues = expressionTable.rows.map(expression => computeFoldChange(expression, selectedClass, selectedFunction));
-  const fvs = foldValues.map(fv => fv.value);
+  const fvs = foldValues.map(fv => fv.value).filter(fv => fv !== Infinity && fv !== -Infinity);
   const maxMagnitude = Math.max(Math.max(...fvs), Math.abs(Math.min(...fvs)));
 
   const max =  maxMagnitude;
@@ -111,7 +111,7 @@ const applyExpressionData = (cy, expressionTable, selectedClass, selectedFunctio
   const range = [min, max];
 
   const nodesInNetworkFoldValues = expressionsInNetwork.map(expression => computeFoldChange(expression, selectedClass, selectedFunction));
-  nodesInNetworkFoldValues.forEach(fv => {
+  nodesInNetworkFoldValues.filter(fv => fv !== Infinity && fv !== -Infinity).forEach(fv => {
     const matchedNodes = cy.nodes().filter(node => node.data('label') === fv.geneName);
     const style = expressionDataToNodeStyle(fv.value, range);
 

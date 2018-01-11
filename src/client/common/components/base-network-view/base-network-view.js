@@ -84,7 +84,7 @@ class BaseNetworkView extends React.Component {
     this.searchField.value = '';
     this.searchCyNodes('');
   }
-
+    
 
   render() {
     const state = this.state;

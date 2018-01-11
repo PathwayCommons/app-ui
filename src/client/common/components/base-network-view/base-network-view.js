@@ -84,7 +84,7 @@ class BaseNetworkView extends React.Component {
     this.searchField.value = '';
     this.searchCyNodes('');
   }
-    
+
 
   render() {
     const state = this.state;
@@ -124,7 +124,7 @@ class BaseNetworkView extends React.Component {
       );
     });
 
-    const nodeSearchBar = [  
+    const nodeSearchBar = [
       h(IconButton, {
         icon: 'search',
         key: 'search',
@@ -134,8 +134,8 @@ class BaseNetworkView extends React.Component {
           this.setState({ searchOpen: !this.state.searchOpen }, () => {
             if (this.state.searchOpen == true) {
               this.searchField.focus();
-            }     
-          });  
+            }
+          });
         },
         desc: 'Search entities'
       }),
@@ -158,8 +158,8 @@ class BaseNetworkView extends React.Component {
 
 
     const toolBar = [
-      ...menuButtons, 
-      ...networkButtons, 
+      ...menuButtons,
+      ...networkButtons,
       // ...(componentConfig.useLayoutDropdown ? layoutDropdown : []), // TODO re-add dropdown for edit
       ...(componentConfig.useSearchBar ? nodeSearchBar : [])
     ];

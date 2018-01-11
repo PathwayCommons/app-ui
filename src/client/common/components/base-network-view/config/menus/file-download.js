@@ -1,10 +1,8 @@
 const React = require('react');
 const h = require('react-hyperscript');
-const classNames = require('classnames');
 const saveAs = require('file-saver').saveAs;
 const _ = require('lodash');
 
-const FlatButton = require('../../../flat-button');
 const AsyncButton = require('../../../async-button');
 
 const { ServerAPI } = require('../../../../../services/');
@@ -16,7 +14,6 @@ class FileDownloadMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      extrasActive: false,
       loadingOptions: []
     };
   }
@@ -72,8 +69,7 @@ class FileDownloadMenu extends React.Component {
   }
 
   render() {
-    let getMenuContents = hidden => downloadTypes.reduce((result, option) => {
-      if (option.hidden === hidden) {
+    let getMenuContents = () => downloadTypes.reduce((result, option) => {
         result.push(
           h(AsyncButton, {
             header: option.displayName,
@@ -81,24 +77,12 @@ class FileDownloadMenu extends React.Component {
             loading: _.includes(this.state.loadingOptions, option.type)
           }, option.description)
         );
-      }
       return result;
     }, []);
 
     return h('div.file-download-menu', [
       h('h2', 'Network Downloads'),
-      h('div.file-download-content', [
-        h('div.file-download-main', getMenuContents(false)),
-        h('div.toggle-extra-downloads-container', [
-          h(FlatButton, {
-            onClick: () => this.setState({ extrasActive: !this.state.extrasActive }),
-            icon: this.state.extrasActive ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
-          }, `${this.state.extrasActive ? 'Hide' : 'Show'} more options`)
-        ]),
-        h('div', {
-          className: classNames('file-download-extras', { 'file-download-extras-hide': !this.state.extrasActive })
-        }, getMenuContents(true))
-      ])
+      h('div.file-download-content', getMenuContents())
     ]);
   }
 }

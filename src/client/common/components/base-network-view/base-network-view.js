@@ -36,8 +36,7 @@ class BaseNetworkView extends React.Component {
         open: false,
         networkLoading: true,
         searchOpen: false,
-        updateLoadingState: loadingState => this.setState({networkLoading: loadingState}),
-        updateNetworkMetadataState: networkMetadata => this.setState({networkMetadata: networkMetadata})
+        updateBaseViewState: (nextState, next) => this.setState(nextState, next ? next() : null)
       }, props);
 
   }

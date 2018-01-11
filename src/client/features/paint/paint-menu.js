@@ -38,26 +38,31 @@ class PaintMenu extends React.Component {
   }
 
   loadNetwork(networkJSON) {
-    const updateNetworkMetadataState = this.props.updateNetworkMetadataState;
-    const updateLoadingState = this.props.updateLoadingState;
+    const updateBaseViewState = this.props.updateBaseViewState;
     const cy = this.props.cy;
 
-    updateLoadingState(true);
-    updateNetworkMetadataState({
-      uri: networkJSON.pathwayMetadata.uri,
-      name: _.get(networkJSON, 'pathwayMetadata.title.0', 'Unknown Network'),
-      datasource: _.get(networkJSON, 'pathwayMetadata.dataSource.0', 'Unknown Data Source'),
-      comments: networkJSON.pathwayMetadata.comments,
-      organism: networkJSON.pathwayMetadata.organism
+    updateBaseViewState({
+      networkMetadata: {
+        uri: networkJSON.pathwayMetadata.uri,
+        name: _.get(networkJSON, 'pathwayMetadata.title.0', 'Unknown Network'),
+        datasource: _.get(networkJSON, 'pathwayMetadata.dataSource.0', 'Unknown Data Source'),
+        comments: networkJSON.pathwayMetadata.comments,
+        organism: networkJSON.pathwayMetadata.organism
+      }
     });
-    cy.remove('*');
-    cy.add(networkJSON);
-    const layout = cy.layout({name: 'cose-bilkent'});
-    layout.on('layoutstop', () => {
-      applyExpressionData(this.props.cy, this.props.expressionTable, this.state.selectedClass, this.state.selectedFunction.func);
-      updateLoadingState(false);
+
+    updateBaseViewState({
+      networkLoading: true
+    }, () => {
+      cy.remove('*');
+      cy.add({nodes: networkJSON.nodes, edges: networkJSON.edges});
+      const layout = cy.layout({name: 'cose-bilkent'});
+      layout.on('layoutstop', () => {
+        applyExpressionData(this.props.cy, this.props.expressionTable, this.state.selectedClass, this.state.selectedFunction.func);
+        updateBaseViewState({networkLoading: false});
+      });
+      layout.run();
     });
-    layout.run();
   }
 
 

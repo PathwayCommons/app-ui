@@ -135,7 +135,7 @@ class BaseNetworkView extends React.Component {
             if (this.state.searchOpen == true) {
               this.searchField.focus();
             }
-          });
+          });  
         },
         desc: 'Search entities'
       }),

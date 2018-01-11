@@ -124,7 +124,7 @@ class BaseNetworkView extends React.Component {
       );
     });
 
-    const nodeSearchBar = [
+    const nodeSearchBar = [  
       h(IconButton, {
         icon: 'search',
         key: 'search',

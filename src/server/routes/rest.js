@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('./controller');
-
+const datasources = require('../../scripts/datasources');
 
 
 // Expose a rest endpoint for controller.submitLayout
@@ -33,6 +33,26 @@ router.post('/submit-diff', function (req, res) {
 router.get('/get-graph-and-layout', function (req, res) {
   controller.getGraphAndLayout(req.query.uri, req.query.version).then((package) => {
     res.json(package);
+  });
+});
+
+router.get('/datasources', function(req, res) {
+  res.json(datasources);
+});
+
+router.get('/generate-pathways', (req, res) => {
+  controller.generatePathways();
+});
+
+router.get('/pathways/:id', (req, res) => {
+  controller.getPathway(req.params.id).then(result => {
+    res.json(result);
+  });
+});
+
+router.get('/pathways', (req, res) => {
+  controller.pathways().then(result => {
+    res.json(result);
   });
 });
 

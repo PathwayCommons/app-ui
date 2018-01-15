@@ -1,7 +1,6 @@
 const _ = require('lodash');
 const pcServices = require('./../pathway-commons');
 const metadataMapperJson = require('./metadataMapperJson');
-const metadataMapperPC2 = require('./metadataMapperPC2');
 
 //Get pathway name, description, and datasource
 //Requires a valid pathway uri
@@ -32,7 +31,6 @@ function getMetadataJson(uri, parseType) {
   ]).then(files => {
     //Map metadata
     if (parseType === 'jsonld') { return metadataMapperJson(biopax, sbgn); }
-    else if (parseType === 'pc2') { return metadataMapperPC2(biopax, sbgn); }
     else {return null;}
   });
 }

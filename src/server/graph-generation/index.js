@@ -1,6 +1,7 @@
 const _ = require('lodash');
+const sbgn2CyJson = require('sbgnml-to-cytoscape');
 const pcServices = require('./../pathway-commons');
-const metadataMapperJson = require('./metadataMapperJson');
+const {getBioPaxMetadata} = require('./biopax-metadata');
 
 //Get pathway name, description, and datasource
 //Requires a valid pathway uri
@@ -20,24 +21,41 @@ function getPathwayMetadata(uri) {
 
 //Get metadata enhanced cytoscape JSON
 //Requires a valid pathway uri
-function getElementMetadata(uri) {
-  let sbgn, biopax;
+function getPathwayElementJson(uri) {
+  let baseElementJson, biopaxJson;
 
   return Promise.all([
-    pcServices.get({uri, format: 'sbgn'}).then(file => sbgn = file),
-    pcServices.get({uri, format: 'jsonld'}).then(file => biopax = file)
-  ]).then(files => metadataMapperJson(biopax, sbgn));
+    pcServices.get({uri, format: 'sbgn'}).then(file => baseElementJson = sbgn2CyJson(file)),
+    pcServices.get({uri, format: 'jsonld'}).then(file => biopaxJson = file)
+  ]).then(files => {
+
+    const nodeMetadata = getBioPaxMetadata(biopaxJson, baseElementJson.nodes);
+
+    const augmentedNodes = baseElementJson.nodes.map(node => {
+      const augmentedNode = node;
+      augmentedNode.data.parsedMetadata = nodeMetadata[node.data.id];
+      // augmentedNode.data.geneSynonyms = getGenericPhysicalEntities(node);
+
+      return augmentedNode;
+    });
+
+    return {
+      nodes: augmentedNodes,
+      edges: baseElementJson.edges
+    };
+  });
 }
 
 //Return enhanced cytoscape json
 //Requires a valid pathway uri 
 function getPathwayJson(uri) {
+  let pathwayData, elementData;
 
-  return getPathwayMetadata(uri).then(pathwayMetadata => {
-    return getElementMetadata(uri).then(elementMetadata => {
-      const pathwayData = _.assign({}, pathwayMetadata, { uri: uri });
-      return _.assign({}, elementMetadata, { pathwayMetadata: pathwayData });
-    });
+  return Promise.all([
+    getPathwayMetadata(uri).then(data => pathwayData = _.assign({}, data, { uri: uri })),
+    getPathwayElementJson(uri).then(data => elementData = data)
+  ]).then(data => {
+    return _.assign({}, elementData, { pathwayMetadata: pathwayData });
   });
 }
 

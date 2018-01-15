@@ -1,20 +1,4 @@
-const convert = require('sbgnml-to-cytoscape');
 const metadataParser = require('./metadataParserJson');
-
-//Map metadata from BioPax to nodes
-//Returns a cy cytoscape json
-//Requires valid BioPax and sbgn files
-module.exports = function (biopax, sbgn) {
-  //Convert sbgn to json
-  let cyGraph = convert(sbgn);
-
-  //Get mapped node list
-  let nodes = cyGraph.nodes;
-  cyGraph.nodes = processBioPax(biopax, nodes);
-
-  //Return Enhanced JSON
-  return cyGraph;
-}
 
 //Build a sub tree array for a biopax element
 function buildBioPaxSubtree(biopaxElement, biopaxFile, visited, nodeType = 'default') {
@@ -185,7 +169,7 @@ function getBioPaxSubtree(nodeId, biopax) {
   let extSearch = getElementFromBioPax(biopax, fixedNodeId);
   if (extSearch) { return buildBioPaxTree(extSearch, biopax); }
 
-  //Conduct a plain search with slashes 
+  //Conduct a plain search with slashes
   fixedNodeId = nodeId.replace(/_/g, '/');
   let slashSearch = getElementFromBioPax(biopax, fixedNodeId);
   if (slashSearch) { return buildBioPaxTree(slashSearch, biopax); }
@@ -197,66 +181,33 @@ function getBioPaxSubtree(nodeId, biopax) {
   return null;
 }
 
-//Replace all instances of a substring with a given string
-//Returns a string
-function replaceAll(str, find, replace) {
-  return str.replace(new RegExp(find, 'g'), replace);
-}
+function getProcessedBioPax(biopaxJsonText) {
+  const graph = JSON.parse(biopaxJsonText.replace(new RegExp('@id', 'g'), 'pathid'))['@graph'];
+  const biopaxElementMap = new Map();
 
-//Preprocess biopax file  and create a map
-//Returns a map of the biopax file
-function preProcessBioPax(biopaxFile) {
-  let bioMap = new Map();
+  for (const element of graph) {
+    const fullId = element['pathid'];
+    const lastIndex = fullId.lastIndexOf('/');
+    const subId = fullId.substring(lastIndex + 1);
 
-  //Loop through all biopax entires and add them to the map
-  for (let i = 0; i < biopaxFile.length; i++) {
-    //Get the biopax id
-    let biopaxElement = biopaxFile[i];
-    let id = biopaxElement['pathid'];
-    var lastIndex = id.lastIndexOf('/');
-    id = id.substring(lastIndex + 1);
-
-    //Add a new map entry
-    bioMap.set(id, biopaxElement);
+    biopaxElementMap.set(subId, element);
   }
 
-  return bioMap;
+  return biopaxElementMap;
 }
 
-//Process biopax file
-function processBioPax(data, nodes) {
 
-  data = replaceAll(data, "@id", 'pathid');
-  //fs.writeFileSync('test', data);
+function getBioPaxMetadata(biopaxJsonText, nodes) {
+  const biopaxElementMap = getProcessedBioPax(biopaxJsonText);
 
-  data = JSON.parse(data);
+  const nodeMetadataMap = {};
 
-  //Get Graph Elements
-  let graph = data['@graph'];
+  nodes.forEach(node => {
+    const id = node.data.id;
+    nodeMetadataMap[id] = metadataParser(getBioPaxSubtree(id, biopaxElementMap));
+  });
 
-  //Create a biopax map
-  graph = preProcessBioPax(graph);
-
-  //Loop through all nodes
-  for (let i = 0; i < nodes.length; i++) {
-
-    //Get element values
-    let id = nodes[i].data.id;
-
-    //Get metadata for current node
-    let metadata = getBioPaxSubtree(id, graph);
-
-    //Parse metadata
-    try {
-      //Add data to nodes
-      let parsedMetadata = metadataParser(metadata);
-      nodes[i].data.parsedMetadata = parsedMetadata;
-    }
-    catch (e) { console.log(e); throw e; }
-
-  }
-
-  //Return nodes
-  return nodes;
+  return nodeMetadataMap;
 }
 
+module.exports = { getProcessedBioPax, getBioPaxMetadata};

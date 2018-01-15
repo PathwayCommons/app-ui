@@ -5,16 +5,18 @@ const Table = require('react-table').default;
 const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
 const matchSorter = require('match-sorter').default;
 
-const cysearch = _.debounce(require('../../common/cy/search'), 500);
+const cysearch = _.debounce(require('../../common/cy/match-style'), 500);
 
-const { applyExpressionData, computeFoldChange } = require('./expression-model');
+const { applyExpressionData, computeFoldChange, computeFoldChangeRange } = require('./expression-model');
+
 
 class PaintMenu extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      selectedFunction: this.analysisFns().mean
+      selectedFunction: this.analysisFns().mean,
+      selectedClass: props.selectedClass
     };
   }
 
@@ -34,30 +36,56 @@ class PaintMenu extends React.Component {
       }
     };
   }
-  
 
-  render() {
-
-    const selectedFunction = this.state.selectedFunction.func;
-    const expressionTable = this.props.expressionTable;
-    const expressions = _.get(expressionTable, 'rows', []);
+  loadNetwork(networkJSON) {
+    const updateBaseViewState = this.props.updateBaseViewState;
     const cy = this.props.cy;
 
-    
-    const networkNodes = cy.nodes().map(node => node.data('label'));
-    const expressionsInNetwork = expressions.filter(row => networkNodes.includes(row.geneName));
-    const expressionsNotInNetwork = _.difference(expressions, expressionsInNetwork);
+    updateBaseViewState({
+      networkMetadata: {
+        uri: networkJSON.pathwayMetadata.uri,
+        name: _.get(networkJSON, 'pathwayMetadata.title.0', 'Unknown Network'),
+        datasource: _.get(networkJSON, 'pathwayMetadata.dataSource.0', 'Unknown Data Source'),
+        comments: networkJSON.pathwayMetadata.comments,
+        organism: networkJSON.pathwayMetadata.organism
+      }
+    });
+
+    updateBaseViewState({
+      networkLoading: true
+    }, () => {
+      cy.remove('*');
+      cy.add({nodes: networkJSON.nodes, edges: networkJSON.edges});
+      const layout = cy.layout({name: 'cose-bilkent'});
+      layout.on('layoutstop', () => {
+        applyExpressionData(this.props.cy, this.props.expressionTable, this.state.selectedClass, this.state.selectedFunction.func);
+        updateBaseViewState({networkLoading: false});
+      });
+      layout.run();
+    });
+  }
 
 
-    const foldValues = expressionsInNetwork.map(expression => computeFoldChange(expression, selectedFunction));
-    const fvs = foldValues.map(fv => fv.value);
-    const maxMagnitude = Math.max(Math.max(...fvs), Math.abs(Math.min(...fvs)));
-    const max =  maxMagnitude;
-    const min = -maxMagnitude;
+  render() {
+    const props = this.props;
+    const cy = props.cy;
 
+    const selectedFunction = this.state.selectedFunction.func;
+    const selectedClass = this.state.selectedClass;
+
+    const expressionTable = props.expressionTable;
     const expressionHeader = _.get(expressionTable, 'header', []);
-    const expressionRows = expressionsInNetwork.concat(expressionsNotInNetwork);
-    
+    const foldChangeExpressions = _.get(expressionTable, 'rows', []).map(row => {
+      const fv = computeFoldChange(row, selectedClass, selectedFunction).value;
+
+      return {
+        geneName: row.geneName,
+        foldChange: fv === Infinity || fv === -Infinity ? 'N/A' : fv
+      };
+    });
+
+    const { min, max } = computeFoldChangeRange(expressionTable, selectedClass, selectedFunction);
+
 
     const columns = [
       {
@@ -70,34 +98,62 @@ class PaintMenu extends React.Component {
       {
         Header: 'log2 Fold-Change',
         id: 'foldChange',
-        accessor: row => computeFoldChange(row, _.mean).value
+        accessor: 'foldChange'
       }
     ];
 
     const functionSelector = h('select.paint-select',
       {
         value: selectedFunction.name,
-        onChange: e => this.setState({
-          selectedFunction: _.find(this.analysisFns(), (fn) => fn.name === e.target.value)
-        }, () => applyExpressionData(this.props.cy, this.props.expressionTable, this.props.selectedFunction))
+        onChange: e => {
+          const newSelectedFunction = _.find(this.analysisFns(), (fn) => fn.name === e.target.value);
+          this.setState({
+            selectedFunction: newSelectedFunction
+          }, () => applyExpressionData(this.props.cy, this.props.expressionTable, selectedClass, newSelectedFunction.func));
+        }
       },
       Object.entries(this.analysisFns()).map(entry => h('option', {value: entry[0]}, entry[0]))
     );
 
-    // const classSelector = h('select.paint-select',
-    //   {
-    //     value: selectedClass,
-    //     onChange: e => this.setState({
-    //       selectedClass: e.target.value
-    //     }, () => this.applyExpressionData())
-    //   },
-    //   expressionHeader.map(exprClass => h('option', { value: exprClass }, exprClass))
-    // );
+    const paintSearchResults = props.searchResults.map(result => {
+      return h('div.paint-search-result', {onClick: e => this.loadNetwork(result.json.graph)}, [
+        h('div', result.name),
+        h('div', result.json.graph.pathwayMetadata.dataSource[0]),
+        h('div', result.json.graph.pathwayMetadata.title[0]),
+        h('div', result.geneIntersection.join(' ')),
+        h('div', `expressions found in pathway: ${result.geneIntersection.length}`)
+      ]);
+    });
+
+
+    const classSelector = h('div', [
+      'Compare: ',
+      h('select.paint-select', {
+        value: selectedClass,
+        onChange: e => {
+          const newSelectedClass = e.target.value;
+          this.setState(
+            {selectedClass: newSelectedClass},
+            () => applyExpressionData(this.props.cy, this.props.expressionTable, newSelectedClass, selectedFunction)
+          );
+        }
+      },
+      expressionHeader.map(cls => h('option', { value: cls}, cls))
+      ),
+      ` vs ${_.difference(expressionHeader, [selectedClass])}`
+    ]);
+
     return h(Tabs, [
       h('div.paint-drawer-header', [
         h(TabList, [
-          h(Tab, 'Expression Data'),
-          // h(Tab, 'Search Results')
+          h(Tab, {
+            className: 'paint-drawer-tab',
+            selectedClassName: 'paint-drawer-tab-selected'
+            }, 'Expression Data'),
+          h(Tab, {
+            className: 'paint-drawer-tab',
+            selectedClassName: 'paint-drawer-tab-selected'
+          }, 'Search Results')
         ])
       ]),
       h(TabPanel, [
@@ -106,25 +162,24 @@ class PaintMenu extends React.Component {
           h('p', `high ${max}`)
         ]),
         h('div.paint-expression-controls', [
-        h('div.paint-function-selector', [
-          'Class: ',
-          functionSelector
+          h('div.paint-function-selector', [
+            'Class: ',
+            functionSelector
+          ]),
+          h('div.paint-compare-selector', [classSelector]),
         ]),
-        h('div.paint-compare-selector', [
-          `Compare: ${expressionHeader[0]} vs ${expressionHeader[1]}`,
-        ]),
+        h(Table, {
+          className:'-striped -highlight',
+          data: foldChangeExpressions,
+          columns: columns,
+          defaultPageSize: 150,
+          showPagination: false,
+          onFilteredChange: (column, value) => {
+            cysearch(cy, _.get(column, '0.value', ''), {'border-width': 8, 'border-color': 'red'});
+          }
+        })
       ]),
-      h(Table, {
-        className:'-striped -highlight',
-        data: expressionRows,
-        columns: columns,
-        defaultPageSize: 150,
-        showPagination: false,
-        onFilteredChange: (column, value) => {
-          cysearch(cy, _.get(column, '0.value', ''), {'border-width': 8, 'border-color': 'red'});
-        }
-      })
-      ])
+      h(TabPanel, paintSearchResults)
     ]);
   }
 }

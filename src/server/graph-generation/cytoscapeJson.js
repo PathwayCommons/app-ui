@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const pcServices = require('./../pathway-commons');
 const metadataMapperJson = require('./metadataMapperJson');
 
@@ -43,7 +44,7 @@ function getCytoscapeJson(uri, parseType = 'jsonld') {
   return getPathwayLevelMetadata(uri).then(function (data) {
     pathwayMetadata = data;
     return getMetadataJson(uri, parseType).then(function (data) {
-      data.pathwayMetadata = pathwayMetadata;
+      data.pathwayMetadata = _.assign({}, pathwayMetadata, {uri: uri});
       data.parseType = parseType;
       return data;
     });

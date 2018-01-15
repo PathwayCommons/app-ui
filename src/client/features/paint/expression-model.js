@@ -31,31 +31,23 @@ const createExpressionTable = (expressions, expressionClasses) => {
   return {header, rows};
 };
 
-const applyAggregateFn = (row, className, aggregateFn) => {
-  const result = aggregateFn(_.get(row, `classValues.${className}`, [])).toFixed(2);
-  return parseFloat(result);
-};
-
-const maxRelativeTo = (expressionRows, expressionClass, aggregateFn) => {
-  const results = expressionRows.map(row => applyAggregateFn(row, expressionClass, aggregateFn));
-  return _.max(results);
-};
-
-const minRelativeTo = (expressionRows, expressionClass, aggregateFn) => {
-  const results = expressionRows.map(row => applyAggregateFn(row, expressionClass, aggregateFn));
-  return _.min(results);
-};
+const computeFoldChange = (expression, selectedClass, selectedFunction) => {
+  const selectedClassValues = expression.classValues[selectedClass];
+  const nonSelectedClasses = _.omit(expression.classValues, [selectedClass]);
 
 
+  const nonSelectedClassesValues =_.flattenDeep(Object.entries(nonSelectedClasses)
+    .map(([className, values]) => values));
 
-const computeFoldChange = (expression, selectedFunction) => {
-  const classValues = Object.entries(expression.classValues);
-  const c1Val = selectedFunction(classValues[0][1]);
+  const c1Val = selectedFunction(selectedClassValues);
 
-  let c2Val = selectedFunction(classValues[1][1]);
-  c2Val = c2Val === 0 ? c2Val = 1 : c2Val;
+  let c2Val = _.mean(nonSelectedClassesValues);
 
-  let foldChange = Math.log2(c1Val / c2Val);
+  if (c2Val === 0) {
+    c2Val = 1;
+  }
+
+  const foldChange = Math.log2(c1Val / c2Val);
 
   return {
     geneName: expression.geneName,
@@ -71,6 +63,7 @@ const expressionDataToNodeStyle = (value, range) => {
     style['background-color'] = 'white';
     style['background-opacity'] = 1;
     style['color'] = 'black';
+    style['text-outline-color'] = 'white';
   }
 
   if (value < (0 - max / 3)) {
@@ -90,7 +83,18 @@ const expressionDataToNodeStyle = (value, range) => {
   return style;
 };
 
-const applyExpressionData = (cy, expressionTable, aggregateFn) => {
+const computeFoldChangeRange = (expressionTable, selectedClass, selectedFunction) => {
+  const foldValues = expressionTable.rows.map(expression => computeFoldChange(expression, selectedClass, selectedFunction));
+  const fvs = foldValues.map(fv => fv.value).filter(fv => fv !== Infinity && fv !== -Infinity);
+  const maxMagnitude = Math.max(Math.max(...fvs), Math.abs(Math.min(...fvs)));
+
+  const max =  maxMagnitude;
+  const min = -maxMagnitude;
+
+  return {min, max};
+};
+
+const applyExpressionData = (cy, expressionTable, selectedClass, selectedFunction) => {
   const geneNodes = cy.nodes('[class="macromolecule"]');
   const geneNodeLabels = _.uniq(geneNodes.map(node => node.data('label'))).sort();
 
@@ -103,15 +107,15 @@ const applyExpressionData = (cy, expressionTable, aggregateFn) => {
     'opacity': 0.4
   });
 
-  const foldValues = expressionsInNetwork.map(expression => computeFoldChange(expression, aggregateFn));
-  const fvs = foldValues.map(fv => fv.value);
-  const maxMagnitude = Math.max(Math.max(...fvs), Math.abs(Math.min(...fvs)));
-  const range = [-maxMagnitude, maxMagnitude];
-  foldValues.forEach(fv => {
+  const {min, max} = computeFoldChangeRange(expressionTable, selectedClass, selectedFunction);
+  const range = [min, max];
+
+  const nodesInNetworkFoldValues = expressionsInNetwork.map(expression => computeFoldChange(expression, selectedClass, selectedFunction));
+  nodesInNetworkFoldValues.filter(fv => fv !== Infinity && fv !== -Infinity).forEach(fv => {
     const matchedNodes = cy.nodes().filter(node => node.data('label') === fv.geneName);
     const style = expressionDataToNodeStyle(fv.value, range);
 
-    cy.batch(() => matchedNodes.style(style));
+    matchedNodes.style(style);
   });
 };
 
@@ -124,4 +128,4 @@ class ExpressionTable {
     this.rows = expressions.map(expression => createExpressionRow(expression, expressionClasses));
   }
 }
-module.exports = {computeFoldChange, applyExpressionData, createExpressionTable, minRelativeTo, maxRelativeTo, applyAggregateFn};
+module.exports = {computeFoldChange, applyExpressionData, createExpressionTable, computeFoldChangeRange};

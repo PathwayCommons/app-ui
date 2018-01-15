@@ -10,4 +10,4 @@ rethinkdb_data/*
 src/scripts/pathways/*
 src/scripts/sbgn/*
 src/scripts/jsonld/*
-
+.vscode/*

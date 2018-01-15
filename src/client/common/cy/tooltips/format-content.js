@@ -54,36 +54,6 @@ const typeHandler = (pair) => {
   return h('div.tooltip-type',  formattedType);
 };
 
-//Handle comment related fields
-const commentHandler = (pair, expansionFunction) => {
-  //Filter out replaced entries
-  let comments = removedReplacedComments(pair[1]);
-
-  //Don't print comments if there are none.
-  if (comments.length < 1) { return h('div.error'); }
-
-  //Generate expansion link
-  let expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less');
-  comments[comments.length - 1] = [comments[comments.length - 1], expansionLink];
-
-  return h('div.fake-paragraph', [h('div.field-name', 'Comments' + ': '), valueToHtml(comments, false)]);
-};
-const commentHandlerTrim = (pair, expansionFunction) => {
-  //Filter out replaced entries
-  let comments = removedReplacedComments(pair[1]);
-  let shortArray = trimValue(comments, config.commentEntryLimit);
-  //Don't print comments if there are none.
-
-  if (comments.length < 1) { return h('div.error'); }
-
-  //Generate expansion link
-  let expansionLink = comments.length > config.commentEntryLimit ?
-    h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »') : null;
-  if (expansionLink) { shortArray[config.commentEntryLimit - 1] = [shortArray[config.commentEntryLimit - 1], expansionLink]; }
-
-  return h('div.fake-paragraph', [h('div.field-name', 'Comments' + ': '), valueToHtml(shortArray, false)]);
-};
-
 //Default to generating a list of all items
 const defaultHandler = (pair) => {
   let key = pair[0];
@@ -107,10 +77,7 @@ const metaDataKeyMap = new Map()
   .set('Database IDs', databaseHandler)
   .set('Database IDsTrim', databaseHandlerTrim)
   .set('Publications', publicationHandler)
-  .set('PublicationsTrim', publicationHandler)
-  .set('Comment', commentHandler)
-  .set('CommentTrim', commentHandlerTrim);
-
+  .set('PublicationsTrim', publicationHandler);
 
  /**
   * parseMetadata(pair, trim)
@@ -468,28 +435,6 @@ function generateDatabaseList(sortedArray, trim, expansionLink) {
 
 
   return h('div.fake-paragraph', [h('div.span-field-name', 'Links :'), renderValue]);
-}
-
-/**
- * removeReplacedComments(comments)
- * @param comments A string or an array of string
- * @returns Array
- * @description Filters out any strings that contain the pc2 'REPLACED' indicator
- * Sample Input : ['Replaced http://pathwaycommons.org/pc2/id23']
- * Sample Output : []
- */
-function removedReplacedComments(comments) {
-  const replacedExists = comment => comment.toUpperCase().includes('REPLACED');
-
-  if (typeof comments === 'string') {
-    return replacedExists(comments) ? [] : comments;
-  }
-  else if (!(comments)) {
-    return [];
-  }
-  else {
-    return comments.filter(comment => !(replacedExists(comment)));
-  }
 }
 
 module.exports = {

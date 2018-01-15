@@ -7,7 +7,7 @@ const _ = require('lodash');
 
 const IconButton = require('../icon-button');
 
-const debouncedSearchNodes = _.debounce(require('../../cy/search'), 300);
+const debouncedSearchNodes = _.debounce(require('../../cy/match-style'), 300);
 
 // cytoscape
 // grapjson
@@ -33,10 +33,12 @@ class BaseNetworkView extends React.Component {
     this.state = _.merge({},
       {
         activeMenu: 'closeMenu',
-        open: false,
-        networkLoading: true
+        networkLoading: true,
+        searchOpen: false,
+        updateBaseViewState: (nextState, next) => this.setState(nextState, next ? next() : null)
       }, props);
 
+    this.state.open = this.state.activeMenu !== 'closeMenu';
   }
 
   componentWillUnmount() {
@@ -130,7 +132,11 @@ class BaseNetworkView extends React.Component {
         active: this.state.searchOpen,
         onClick: () => {
           !this.state.searchOpen || this.clearSearchBox();
-          this.setState({ searchOpen: !this.state.searchOpen });
+          this.setState({ searchOpen: !this.state.searchOpen }, () => {
+            if (this.state.searchOpen == true) {
+              this.searchField.focus();
+            }
+          });
         },
         desc: 'Search entities'
       }),
@@ -142,7 +148,7 @@ class BaseNetworkView extends React.Component {
             h('input.view-search', {
               ref: dom => this.searchField = dom,
               type: 'search',
-              placeholder: 'Search entities'
+              placeholder: 'Search entities',
             }),
             h('div.view-search-clear', {
               onClick: () => this.clearSearchBox(),
@@ -153,9 +159,9 @@ class BaseNetworkView extends React.Component {
 
 
     const toolBar = [
-      ...menuButtons, 
-      ...networkButtons, 
-      // ...(componentConfig.useLayoutDropdown ? layoutDropdown : []),
+      ...menuButtons,
+      ...networkButtons,
+      // ...(componentConfig.useLayoutDropdown ? layoutDropdown : []), // TODO re-add dropdown for edit
       ...(componentConfig.useSearchBar ? nodeSearchBar : [])
     ];
 
@@ -164,7 +170,7 @@ class BaseNetworkView extends React.Component {
       h('div', { className: classNames('menu-bar', { 'menu-bar-margin': state.activeMenu }) }, [
         h('div.menu-bar-inner-container', [
           h('div.pc-logo-container', [
-            h(Link, { to: { pathname: '/search' } }, [
+            h('a', { href: 'http://www.pathwaycommons.org/' } , [
               h('img', {
                 src: '/img/icon.png'
               })

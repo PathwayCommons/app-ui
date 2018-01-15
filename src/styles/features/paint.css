@@ -1,94 +1,3 @@
-.paint {
-  width: 100vw;
-  height: 100vh;
-
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-
-  & a {
-    cursor: pointer;
-  }
-}
-
-.paint-graph {
-  width: 100%;
-  z-index: 0;
-}
-
-.paint-omnibar {
-  width: 380px;
-  height: 30px;
-  padding: 10px;
-
-  color: var(--light-base-colour);
-  background-color: var(--dark-base-colour);
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-
-  transition-property: box-shadow;
-  transition-duration: 0.15s;
-  transition-timing-function: ease-in-out;
-
-  position: absolute;
-  top: 10px;
-  left: 10px;
-
-  z-index: 1;
-
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-}
-
-.paint-omnibar > a {
-  color: var(--light-base-colour);
-  font-size: 24px;
-  margin-right: 5px;
-}
-.paint-omnibar > a:hover {
-  color: var(--accent-1-colour);
-}
-
-.paint-omnibar > h5 {
-  margin: 0;
-  overflow: hidden;
-}
-
-
-.paint-drawer {
-  position: absolute;
-  background-color: var(--light-base-colour);
-  padding: 10px;
-  top: 0;
-  bottom: 0;
-  z-index: 10;
-  width: 600px;
-  transition: all 0.2s ease-in-out;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  transition-property: box-shadow;
-  transition-duration: 0.15s;
-  transition-timing-function: ease-in-out;
-  &.closed {
-    margin-left: -600px;
-    opacity: 0;
-  }
-  overflow: scroll;
-}
-
-.paint-drawer-header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.paint-drawer-header > a {
-  font-size: 24px;
-}
-
-.paint-drawer-header > a:hover {
-  color: var(--accent-1-colour);
-}
-
 .paint-legend {
   padding: 0px 5px 0px 5px;
   height: 40px;
@@ -109,19 +18,34 @@
   1px 1px 0 #000;
 }
 
-.paint-logo {
-  width: 40px;
-  height: 40px;
-  background-image: url('../image/pc_logo_dark.svg');
-}
-
 .paint-expression-controls {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  padding: 5px 0 5px 0;
+  justify-content: space-around;
+  padding: 15px;
+}
+
+.paint-select {
+  width: 75px;
 }
 
 .paint-search-result {
   padding: 10px;
+}
+
+.paint-drawer-tab {
+  display: inline-block;
+  border: 1px solid transparent;
+  border-bottom: none;
+  bottom: -1px;
+  position: relative;
+  list-style: none;
+  padding: 6px 0;
+  cursor: pointer;
+  margin-bottom: 0;
+  margin-right: 10px;
+}
+
+.paint-drawer-tab-selected {
+  border-bottom: 3px solid var(--accent-1-colour);
 }

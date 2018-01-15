@@ -14,21 +14,72 @@ const { ServerAPI } = require('../../services');
 const {createExpressionTable, applyExpressionData} = require('./expression-model');
 const PaintMenu = require('./paint-menu');
 
+
+const paintMenuId = 'paintMenu';
 const PaintViewConfig = {
   toolbarButtons: BaseNetworkView.config.toolbarButtons.concat({
-    id: 'showPaintMenu',
     icon: 'format_paint',
+    id: 'showPaintMenu',
     type: 'activateMenu',
     menuId: 'paintMenu',
     description: 'View expression data'
   }),
   menus: BaseNetworkView.config.menus.concat({
-    id: 'paintMenu',
+    id: paintMenuId,
     func: props => h(PaintMenu, props)
   }),
   useSearchBar: false
 };
 
+// determine the "best" pathway based on user query
+// THIS MOST LIKELY SHOULD BE A SERVER SIDE CALL
+// const getAugmentedSearchResults = (searchParam, expressionTable) => {
+//   return ServerAPI.querySearch({q: searchParam}).then(results => {
+
+//     const pathwaysJSON = results.map(result => ServerAPI.getGraphAndLayout(result.uri, 'latest'));
+
+//     return Promise.all(pathwaysJSON).then(pathways => {
+//       const processed = pathways.map(pathway => {
+//         const genesInPathway = _.uniq(pathway.graph.nodes.map(node => node.data.label));
+//         const genesInExpressionData = expressionTable.rows.map(row => row.geneName);
+
+//         return {
+//           json: pathway,
+//           geneIntersection: _.intersection(genesInPathway, genesInExpressionData)
+//         };
+//       });
+
+//       return processed;
+//     });
+//   });
+// };
+
+const getAugmentedSearchResults = (searchParam, expressionTable) => {
+  const geneQueries = _.chunk(expressionTable.rows.map(row => row.geneName), 15)
+  .map(chunk => ServerAPI.querySearch({q: chunk.join(' ')}));
+
+  const searchQuery = ServerAPI.querySearch({q: searchParam});
+
+  return Promise.all([...geneQueries, searchQuery]).then(searchResults => {
+    const uniqueResults = _.uniqBy(_.flatten(searchResults), result => result.uri);
+
+    const pathwaysJSON = uniqueResults.map(result => ServerAPI.getGraphAndLayout(result.uri, 'latest'));
+
+    return Promise.all(pathwaysJSON).then(pathways => {
+      const processed = pathways.map(pathway => {
+        const genesInPathway = _.uniq(pathway.graph.nodes.map(node => node.data.label));
+        const genesInExpressionData = expressionTable.rows.map(row => row.geneName);
+
+        return {
+          json: pathway,
+          geneIntersection: _.intersection(genesInPathway, genesInExpressionData)
+        };
+      });
+
+      return processed;
+    });
+  });
+};
 
 class Paint extends React.Component {
   constructor(props) {
@@ -49,7 +100,6 @@ class Paint extends React.Component {
       networkLoading: true,
 
       // enrichment data state
-      rawEnrichmentData: {},
       expressionTable: {},
       selectedClass: '',
       selectedFunction: {
@@ -58,7 +108,7 @@ class Paint extends React.Component {
       },
 
       // search results state
-      query: '',
+      searchParam: '',
       searchResults: [],
 
     };
@@ -67,51 +117,49 @@ class Paint extends React.Component {
     const searchParam = query.q;
     const enrichmentsURI = query.uri;
 
-    ServerAPI.querySearch({q: searchParam}).then(results => {
-      const uri = _.get(results, '0.uri', null);
-
-      ServerAPI.getGraphAndLayout(uri, 'latest').then(networkJSON => {
-        const layoutConfig = getLayoutConfig(networkJSON.layout);
-        const componentConfig = PaintViewConfig;
-
-        this.setState({
-          componentConfig: componentConfig,
-          layoutConfig: layoutConfig,
-          networkJSON: networkJSON.graph,
-          networkMetadata: {
-            uri: uri,
-            name: _.get(networkJSON, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
-            datasource: _.get(networkJSON, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
-            comments: networkJSON.graph.pathwayMetadata.comments,
-            organism: networkJSON.graph.pathwayMetadata.organism
-          },
-          networkLoading: false
-        });
-      });
-    });
-
     fetch(enrichmentsURI)
     .then(res => res.json())
     .then(json => {
       const expressionClasses = _.get(json.dataSetClassList, '0.classes', []);
       const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
+      const expressionTable = createExpressionTable(expressions, expressionClasses);
 
-      this.initPainter(expressions, expressionClasses);
+      getAugmentedSearchResults(searchParam, expressionTable).then(pathwayResults => {
+
+        // pathway results are sorted by gene expression intersection (largest to smallest)
+        // take the largest gene intersection by default
+        let candidatePathway = pathwayResults.sort((p0, p1) => p1.geneIntersection.length - p0.geneIntersection.length)[0];
+
+        const network = candidatePathway.json;
+        const layoutConfig = getLayoutConfig(network.layout);
+        const componentConfig = PaintViewConfig;
+
+        this.setState({
+          componentConfig: componentConfig,
+          layoutConfig: layoutConfig,
+          networkJSON: network.graph,
+          networkMetadata: {
+            uri: network.graph.pathwayMetadata.uri,
+            name: _.get(network, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
+            datasource: _.get(network, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
+            comments: network.graph.pathwayMetadata.comments,
+            organism: network.graph.pathwayMetadata.organism
+          },
+          networkLoading: false,
+          expressionTable: expressionTable,
+          selectedClass: _.get(expressionClasses, '0', ''),
+          expressionsLoading: false,
+          searchParam: searchParam,
+          searchResults: pathwayResults
+
+        }, () => {
+          const selectedFn = this.state.selectedFunction.func;
+          const selectedClass = this.state.selectedClass;
+          this.state.cy.on('network-loaded', () => applyExpressionData(this.state.cy, expressionTable, selectedClass, selectedFn));
+        });
+      });
+
     });
-  }
-
-  initPainter(expressions, expressionClasses) {
-    const state = this.state;
-    const expressionTable = createExpressionTable(expressions, expressionClasses);
-    this.setState({
-      expressionTable: expressionTable,
-      expressionsLoading: false
-    });
-
-
-    const selectedFn = state.selectedFunction.func;
-
-    this.state.cy.on('network-loaded', () => applyExpressionData(this.state.cy, expressionTable, selectedFn));
   }
 
   render() {
@@ -127,7 +175,12 @@ class Paint extends React.Component {
 
       // paint specific props needed by the paint menu
       expressionTable: state.expressionTable,
-      selectedFunction: state.selectedFunction
+      selectedFunction: state.selectedFunction,
+      selectedClass: state.selectedClass,
+      activeMenu: paintMenuId,
+
+      searchParam: state.searchParam,
+      searchResults: state.searchResults
 
     });
 

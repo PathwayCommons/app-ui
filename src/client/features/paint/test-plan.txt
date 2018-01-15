@@ -1,0 +1,7 @@
+1. single search hit (4cls, 2cls, 0cls)
+   - mitochondrial translation elongation
+2. multiple search hits (4cls, 2cls, 0cls)
+   - RAS pathway
+3. multiple search hits, no gene intersection (4cls, 2cls, 0cls)
+   - ERK cascade
+4. Ruth test data

@@ -6,7 +6,7 @@ const databases = [
   ['Panther', 'http://pantherdb.org/', 'genes/geneList.do?searchType=basic&fieldName=all&organism=all&listType=1&fieldValue='],
   ['PID', null],
   ['PhosphoSitePlus', null],
-  ['Reactome', 'http://identifiers.org/reactome/', ''],
+  ['Reactome', 'http://identifiers.org/reactome/','http://pathwaycommons.github.io/cpath2/logos/reactome.png', ''],
   ['SMPD', null],
   ['Wikipathways', 'http://identifiers.org/wikipathways/' , ''],
   ['UniProt', '	http://identifiers.org/uniprot/', ''],

@@ -1,19 +1,22 @@
 
 const r = require('rethinkdb');
+const sbgn2CyJson = require('sbgnml-to-cytoscape');
+
 const heuristics = require('./heuristics');
 const db = require('./utilities');
-const pcServices = require('./../pathway-commons');
-const lazyload = require('../lazyload');
+const pc = require('../pathway-commons');
+const { getPathwayJson } = require('../graph-generation/');
+
 const update = require('./update');
 
 let config = require('./config');
 
 // ------------------- Get a layout -----------------------
 /*
-getLayout(pcID, releaseID, connection [,callback]) 
-Retrieves a layout the database for the 
+getLayout(pcID, releaseID, connection [,callback])
+Retrieves a layout the database for the
 Entry specficed by the tuple of pcID and releaseID.
- 
+
 Accepts 'latest' as a valid releaseID
 */
 function getLayout(pcID, releaseID, connection, callback) {
@@ -45,15 +48,15 @@ function getLayout(pcID, releaseID, connection, callback) {
 /*
 getGraph(pcID, releaseID, connection [, callback])
 
-Retrieves a graph the database for the 
+Retrieves a graph the database for the
 Entry specficed by the tuple of pcID and releaseID.
- 
+
 Accepts 'latest' as a valid releaseID
 */
 
 function getLatestPCVersion(pcID) {
   // Traverse queries to PC2 return the current PC2 version.
-  return pcServices.traverse({ format: 'JSON', path: 'Named/name', uri: pcID }).then((json) => {
+  return pc.traverse({ format: 'JSON', path: 'Named/name', uri: pcID }).then((json) => {
     return json.version;
   });
 }
@@ -84,10 +87,9 @@ function getGraph(pcID, releaseID, connection, callback) {
 }
 
 function getGraphFromPC(pcID, releaseID, connection) {
-  return lazyload.queryForGraphAndMetadata(pcID)
-    .catch(() => {
-      return lazyload.queryPC(pcID);
-    }).then(result => {
+  return getPathwayJson(pcID)
+    .catch(() => pc.get(pcID).then(text => sbgn2CyJson(text)))
+    .then(result => {
       if (connection && result.pathwayMetadata) {
         update.updateGraph(pcID, releaseID, result, connection);
       }

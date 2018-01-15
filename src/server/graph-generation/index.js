@@ -4,7 +4,7 @@ const metadataMapperJson = require('./metadataMapperJson');
 
 //Get pathway name, description, and datasource
 //Requires a valid pathway uri
-function getPathwayLevelMetadata(uri) {
+function getPathwayMetadata(uri) {
 
   let title, dataSource, comments, organism;
   let getValue = data => data.traverseEntry[0].value;
@@ -20,38 +20,25 @@ function getPathwayLevelMetadata(uri) {
 
 //Get metadata enhanced cytoscape JSON
 //Requires a valid pathway uri
-function getMetadataJson(uri, parseType) {
+function getElementMetadata(uri) {
   let sbgn, biopax;
-  let downloadType = (parseType === 'pc2' ? 'jsonld' : parseType);
 
-  //Get SBGN and Biopax Files
   return Promise.all([
     pcServices.get({uri, format: 'sbgn'}).then(file => sbgn = file),
-    pcServices.get({uri, format: downloadType}).then(file => biopax = file)
-  ]).then(files => {
-    //Map metadata
-    if (parseType === 'jsonld') { return metadataMapperJson(biopax, sbgn); }
-    else {return null;}
-  });
+    pcServices.get({uri, format: 'jsonld'}).then(file => biopax = file)
+  ]).then(files => metadataMapperJson(biopax, sbgn));
 }
 
 //Return enhanced cytoscape json
 //Requires a valid pathway uri 
-function getCytoscapeJson(uri, parseType = 'jsonld') {
-  let pathwayMetadata;
+function getPathwayJson(uri) {
 
-  //Start Generation
-  return getPathwayLevelMetadata(uri).then(function (data) {
-    pathwayMetadata = data;
-    return getMetadataJson(uri, parseType).then(function (data) {
-      data.pathwayMetadata = _.assign({}, pathwayMetadata, {uri: uri});
-      data.parseType = parseType;
-      return data;
+  return getPathwayMetadata(uri).then(pathwayMetadata => {
+    return getElementMetadata(uri).then(elementMetadata => {
+      const pathwayData = _.assign({}, pathwayMetadata, { uri: uri });
+      return _.assign({}, elementMetadata, { pathwayMetadata: pathwayData });
     });
   });
 }
 
-module.exports = {
-  getCytoscapeJson,
-  getPathwayLevelMetadata
-};
+module.exports = { getPathwayJson };

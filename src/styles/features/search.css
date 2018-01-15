@@ -252,6 +252,7 @@
 
 .search-item-content-datasource {
   margin: 0;
+  margin-top: 2px;
   font-size: 14px;
 }
 .search-item-content-participants {

@@ -94,11 +94,7 @@ class Search extends React.Component {
 
     this.getSearchResult();
   }
-
-  souceBranding(){
-
-  }
-
+  
   render() {
     const props = this.props;
     const state = this.state;
@@ -122,7 +118,7 @@ class Search extends React.Component {
           ]),
           h('p.search-item-content-datasource', ` ${dsInfo.name}`),
           h('p.search-item-content-participants', `${result.numParticipants} Participants`)
-        ]),
+        ])
       ]);
     });
 

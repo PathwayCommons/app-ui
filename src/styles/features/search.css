@@ -231,14 +231,11 @@
 
 .search-item-icon {
   display: flex;
- 
   justify-content: center;
   width: 80px;
   height: auto;
-
 }
 .search-item-icon > img {
-   
   max-width: 80px;
   max-height: 40px;
 }

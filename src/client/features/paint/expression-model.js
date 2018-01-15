@@ -96,12 +96,14 @@ const computeFoldChangeRange = (expressionTable, selectedClass, selectedFunction
 
 const applyExpressionData = (cy, expressionTable, selectedClass, selectedFunction) => {
   const geneNodes = cy.nodes('[class="macromolecule"]');
-  const geneNodeLabels = _.uniq(geneNodes.map(node => node.data('label'))).sort();
+  const geneNodeLabels = _.uniq(
+    _.flattenDeep(geneNodes.map(node => [node.data('label'), ...(_.get(node.data('geneSynonyms'), 'synonyms', []))])
+  )).sort();
 
   const expressionsInNetwork = expressionTable.rows.filter(row => geneNodeLabels.includes(row.geneName));
 
   const expressionLabels = expressionsInNetwork.map(expression => expression.geneName);
-  geneNodes.filter(node => !expressionLabels.includes(node.data('label'))).style({
+  geneNodes.filter(node => _.intersection(expressionLabels, [node.data('label'), ..._.get(node.data('geneSynonyms'), 'synonyms', [])]).length === 0).style({
     'background-color': 'grey',
     'color': 'grey',
     'opacity': 0.4
@@ -112,7 +114,7 @@ const applyExpressionData = (cy, expressionTable, selectedClass, selectedFunctio
 
   const nodesInNetworkFoldValues = expressionsInNetwork.map(expression => computeFoldChange(expression, selectedClass, selectedFunction));
   nodesInNetworkFoldValues.filter(fv => fv !== Infinity && fv !== -Infinity).forEach(fv => {
-    const matchedNodes = cy.nodes().filter(node => node.data('label') === fv.geneName);
+    const matchedNodes = cy.nodes().filter(node => node.data('label') === fv.geneName || _.get(node.data('geneSynonyms'), 'synonyms', []).includes(fv.geneName));
     const style = expressionDataToNodeStyle(fv.value, range);
 
     matchedNodes.style(style);

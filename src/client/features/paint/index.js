@@ -14,16 +14,18 @@ const { ServerAPI } = require('../../services');
 const {createExpressionTable, applyExpressionData} = require('./expression-model');
 const PaintMenu = require('./paint-menu');
 
+
+const paintMenuId = 'paintMenu';
 const PaintViewConfig = {
   toolbarButtons: BaseNetworkView.config.toolbarButtons.concat({
-    id: 'showPaintMenu',
     icon: 'format_paint',
+    id: 'showPaintMenu',
     type: 'activateMenu',
     menuId: 'paintMenu',
     description: 'View expression data'
   }),
   menus: BaseNetworkView.config.menus.concat({
-    id: 'paintMenu',
+    id: paintMenuId,
     func: props => h(PaintMenu, props)
   }),
   useSearchBar: false
@@ -175,6 +177,7 @@ class Paint extends React.Component {
       expressionTable: state.expressionTable,
       selectedFunction: state.selectedFunction,
       selectedClass: state.selectedClass,
+      activeMenu: paintMenuId,
 
       searchParam: state.searchParam,
       searchResults: state.searchResults

@@ -33,12 +33,12 @@ class BaseNetworkView extends React.Component {
     this.state = _.merge({},
       {
         activeMenu: 'closeMenu',
-        open: false,
         networkLoading: true,
         searchOpen: false,
         updateBaseViewState: (nextState, next) => this.setState(nextState, next ? next() : null)
       }, props);
 
+    this.state.open = this.state.activeMenu !== 'closeMenu';
   }
 
   componentWillUnmount() {

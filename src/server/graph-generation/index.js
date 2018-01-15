@@ -2,6 +2,7 @@ const _ = require('lodash');
 const sbgn2CyJson = require('sbgnml-to-cytoscape');
 const pcServices = require('./../pathway-commons');
 const {getBioPaxMetadata} = require('./biopax-metadata');
+const {getNodesGeneSynonyms} = require('./generic-physical-entities');
 
 //Get pathway name, description, and datasource
 //Requires a valid pathway uri
@@ -25,16 +26,19 @@ function getPathwayElementJson(uri) {
   let baseElementJson, biopaxJson;
 
   return Promise.all([
-    pcServices.get({uri, format: 'sbgn'}).then(file => baseElementJson = sbgn2CyJson(file)),
+    pcServices.get({uri, format: 'sbgn'}).then(file => {
+      baseElementJson = sbgn2CyJson(file);
+    }),
     pcServices.get({uri, format: 'jsonld'}).then(file => biopaxJson = file)
   ]).then(files => {
 
-    const nodeMetadata = getBioPaxMetadata(biopaxJson, baseElementJson.nodes);
+    const nodesMetadata = getBioPaxMetadata(biopaxJson, baseElementJson.nodes);
+    const nodesGeneSynonyms = getNodesGeneSynonyms(baseElementJson.nodes);
 
     const augmentedNodes = baseElementJson.nodes.map(node => {
       const augmentedNode = node;
-      augmentedNode.data.parsedMetadata = nodeMetadata[node.data.id];
-      // augmentedNode.data.geneSynonyms = getGenericPhysicalEntities(node);
+      augmentedNode.data.parsedMetadata = nodesMetadata[node.data.id];
+      augmentedNode.data.geneSynonyms = nodesGeneSynonyms[node.data.id];
 
       return augmentedNode;
     });

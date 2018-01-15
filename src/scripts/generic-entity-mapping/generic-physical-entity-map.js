@@ -1,7 +1,5 @@
 const fs = require('fs');
 
-console.log(__dirname + '/processed_physical_entities.json');
-
 const tmp = JSON.parse(fs.readFileSync(__dirname + '/processed_physical_entities.json'));
 
 const processed = {};

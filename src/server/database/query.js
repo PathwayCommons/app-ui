@@ -88,7 +88,6 @@ function getGraph(pcID, releaseID, connection, callback) {
 
 function getGraphFromPC(pcID, releaseID, connection) {
   return getPathwayJson(pcID)
-    .catch(() => pc.get(pcID).then(text => sbgn2CyJson(text)))
     .then(result => {
       if (connection && result.pathwayMetadata) {
         update.updateGraph(pcID, releaseID, result, connection);

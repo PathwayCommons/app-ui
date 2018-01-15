@@ -111,16 +111,15 @@ class Search extends React.Component {
       const dsInfo = _.find(state.dataSources, ds => {
         return ds.uri === result.dataSource[0];
       });
-      const logo = _.find(state.dataSources, ds => {
-        return ds.uri === result.dataSource[2];
-      });
       return h('div.search-item', [
-        
+        h('div.search-item-icon',[
+          h('img', {src: dsInfo.iconUrl})
+        ]),
         h('div.search-item-content', [
+         
           h(Link, { to: { pathname: '/view', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' }, [
             h('h3.search-item-content-title', result.name || 'N/A'),
           ]),
-          h('img', {className:'source-branding', src: `http://pathwaycommons.github.io/cpath2/logos/reactome.png`}),
           h('p.search-item-content-datasource', ` ${dsInfo.name}`),
           h('p.search-item-content-participants', `${result.numParticipants} Participants`)
         ]),

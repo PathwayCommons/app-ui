@@ -121,13 +121,4 @@ const applyExpressionData = (cy, expressionTable, selectedClass, selectedFunctio
   });
 };
 
-class ExpressionTable {
-  constructor(rawJsonData) {
-    const expressionClasses = _.get(rawJsonData.dataSetClassList, '0.classes', []);
-    const expressions = _.get(rawJsonData.dataSetExpressionList, '0.expressions', []);
-
-    this.header = _.uniq(expressionClasses);
-    this.rows = expressions.map(expression => createExpressionRow(expression, expressionClasses));
-  }
-}
 module.exports = {computeFoldChange, applyExpressionData, createExpressionTable, computeFoldChangeRange};

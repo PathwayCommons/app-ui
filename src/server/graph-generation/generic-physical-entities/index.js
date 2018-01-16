@@ -9,7 +9,7 @@ const getNodesGeneSynonyms = nodes => {
 
   nodes.forEach(node => {
     const lookupId = 'http://pathwaycommons.org/pc2/' + node.data.id;
-    nodeGeneSynonyms[node.data.id] = genericPhysicalEntityMap[lookupId || {}];
+    nodeGeneSynonyms[node.data.id] = genericPhysicalEntityMap[lookupId] || {};
   });
 
   return nodeGeneSynonyms;

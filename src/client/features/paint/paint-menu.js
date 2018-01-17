@@ -18,7 +18,6 @@ class PaintMenu extends React.Component {
     this.state = {
       selectedFunction: this.analysisFns().mean,
       selectedClass: props.selectedClass,
-      geneFilterValue: '',
       selectedSearchResult: props.searchResults[0].json.graph.pathwayMetadata.uri,
       loading: false
     };
@@ -95,7 +94,20 @@ class PaintMenu extends React.Component {
       {
         Header: 'Gene',
         accessor: 'geneName',
-        filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['geneName'] }),
+        filterMethod: (filter, rows) => {
+          return matchSorter(rows, filter.value, { keys: ['geneName'] });
+        },
+        Filter: filter => {
+          return h('input', {
+            style: {
+              width: '100%'
+            },
+            type: 'text',
+            placeholder: 'Filter by gene',
+            value: filter ? filter.value : '',
+            onChange: e => filter.onChange(e.target.value)
+          });
+        },
         filterable: true,
         filterAll: true
       },

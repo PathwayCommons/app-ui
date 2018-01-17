@@ -17,15 +17,15 @@ const ServerAPI = {
   },
 
   pcQuery(method, params){
-    return fetch(`/pc2/${method}?${qs.stringify(params)}`, defaultFetchOpts);
+    return fetch(`/pc-client/${method}?${qs.stringify(params)}`, defaultFetchOpts);
   },
 
   datasources(){
-    return fetch('/pc2/datasources', defaultFetchOpts).then(res => res.json());
+    return fetch('/pc-client/datasources', defaultFetchOpts).then(res => res.json());
   },
-  
+
   querySearch(query){
-    return fetch(`/pc2/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
+    return fetch(`/pc-client/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into

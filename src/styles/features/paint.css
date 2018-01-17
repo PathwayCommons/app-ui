@@ -30,7 +30,12 @@
 }
 
 .paint-search-result {
+  cursor: pointer;
   padding: 10px;
+}
+
+.paint-search-result-selected {
+  border: 4px solid var(--accent-1-colour);
 }
 
 .paint-drawer-tab {

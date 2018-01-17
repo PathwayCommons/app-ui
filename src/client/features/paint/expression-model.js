@@ -59,6 +59,8 @@ const expressionDataToNodeStyle = (value, range) => {
   const [, max] = range;
   const style = {};
 
+  if (value === Infinity || value === -Infinity) return style;
+
   if ((0 - max / 3) <= value < (0 + max / 3)) {
     style['background-color'] = 'white';
     style['background-opacity'] = 1;

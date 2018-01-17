@@ -1,6 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
+const classNames = require('classnames');
 const Table = require('react-table').default;
 const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
 const matchSorter = require('match-sorter').default;
@@ -16,7 +17,10 @@ class PaintMenu extends React.Component {
 
     this.state = {
       selectedFunction: this.analysisFns().mean,
-      selectedClass: props.selectedClass
+      selectedClass: props.selectedClass,
+      geneFilterValue: '',
+      selectedSearchResult: props.searchResults[0].json.graph.pathwayMetadata.uri,
+      loading: false
     };
   }
 
@@ -96,7 +100,7 @@ class PaintMenu extends React.Component {
         filterAll: true
       },
       {
-        Header: 'log2 Fold-Change',
+        Header: 'Expression ratio (Log2)',
         id: 'foldChange',
         accessor: 'foldChange'
       }
@@ -116,12 +120,25 @@ class PaintMenu extends React.Component {
     );
 
     const paintSearchResults = props.searchResults.map(result => {
-      return h('div.paint-search-result', {onClick: e => this.loadNetwork(result.json.graph)}, [
+      return h('div', {
+          onClick: e => {
+            if (!this.state.loading) {
+              this.setState({
+                selectedSearchResult: result.json.graph.pathwayMetadata.uri
+              }, () => {
+                this.loadNetwork(result.json.graph);
+                this.setState({
+                  loading: false
+                });
+              });
+            }
+          },
+          className: classNames('paint-search-result', { 'paint-search-result-selected': this.state.selectedSearchResult ===  result.json.graph.pathwayMetadata.uri})
+        }, [
         h('div', result.name),
         h('div', result.json.graph.pathwayMetadata.dataSource[0]),
         h('div', result.json.graph.pathwayMetadata.title[0]),
-        h('div', result.geneIntersection.join(' ')),
-        h('div', `expressions found in pathway: ${result.geneIntersection.length}`)
+        h('div', `expressions in pathway: ${result.geneIntersection.length} / ${expressionTable.rows.length} `)
       ]);
     });
 
@@ -153,7 +170,7 @@ class PaintMenu extends React.Component {
           h(Tab, {
             className: 'paint-drawer-tab',
             selectedClassName: 'paint-drawer-tab-selected'
-          }, 'Search Results')
+          }, 'Select Pathway')
         ])
       ]),
       h(TabPanel, [
@@ -172,8 +189,12 @@ class PaintMenu extends React.Component {
           className:'-striped -highlight',
           data: foldChangeExpressions,
           columns: columns,
-          defaultPageSize: 150,
+          defaultPageSize: foldChangeExpressions.length,
           showPagination: false,
+          defaultSorted: [{
+            id: 'foldChange',
+            desc: true
+          }],
           onFilteredChange: (column, value) => {
             cysearch(cy, _.get(column, '0.value', ''), {'border-width': 8, 'border-color': 'red'});
           }

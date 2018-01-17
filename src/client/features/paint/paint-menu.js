@@ -135,10 +135,9 @@ class PaintMenu extends React.Component {
           },
           className: classNames('paint-search-result', { 'paint-search-result-selected': this.state.selectedSearchResult ===  result.json.graph.pathwayMetadata.uri})
         }, [
-        h('div', result.name),
-        h('div', result.json.graph.pathwayMetadata.dataSource[0]),
-        h('div', result.json.graph.pathwayMetadata.title[0]),
-        h('div', `expressions in pathway: ${result.geneIntersection.length} / ${expressionTable.rows.length} `)
+        h('h3', result.json.graph.pathwayMetadata.title[0]),
+        h('p', result.json.graph.pathwayMetadata.dataSource[0]),
+        h('p', `expressions in pathway: ${result.geneIntersection.length} / ${expressionTable.rows.length} `)
       ]);
     });
 

@@ -1,6 +1,6 @@
 .menu-bar {
   @extend %flex-center;
-  
+
   height: auto;
   padding: 0;
   margin-right: 2%;
@@ -11,7 +11,7 @@
 
   top: 0;
   left: 2%;
-  
+
   background-color: var(--light-base-colour);
   border-radius: 0px 0px 3px 0px;
   border-color: var(--light-base-colour-dark);
@@ -63,7 +63,7 @@
 
   height: calc(var(--icon-size) * 3 / 2);
   //width: calc((var(--icon-size) * 3 / 2) * var(--number-of-sidebar-icons));
- 
+
   position: absolute;
   top: 100%;
   left: -1px;
@@ -95,7 +95,7 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
   font-size: 0.9em;
 
   transition: all 0.1s ease-out;
-  
+
   & select {
     width: 100%;
     background-color: white;

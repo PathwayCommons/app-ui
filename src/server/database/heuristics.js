@@ -8,24 +8,10 @@
 */
 
 // --------- Fake Heuristics ---------------
-function run(layouts, numEntries, callback) {
+function run(layouts, callback) {
     let layout = layouts.toArray()
       .then((result) => {
-
-        result.reverse();
-
-        //Return n most recent layouts
-        if (numEntries && result.length <= 1){
-          return [];
-        }
-        if(numEntries && result.length < numEntries){
-          return result;
-        }
-        if(numEntries && result.length > numEntries){
-          return result.slice(0, numEntries);
-        }
-
-        return result[0];
+        return result[result.length - 1];
       });
   
     if (callback) {

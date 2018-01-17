@@ -5,7 +5,7 @@ const api = require('./rest');
 
 
 router.use('/api', api);
-router.use('/pc2', pc);
+router.use('/pc-client', pc);
 
 /* GET home page.
 All URLS not specified earlier in server/index.js (e.g. REST URLs) get handled by the React UI */

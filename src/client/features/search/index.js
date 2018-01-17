@@ -8,7 +8,7 @@ const _ = require('lodash');
 const classNames = require('classnames');
 
 const Icon = require('../../common/components').Icon;
-const { apiCaller } = require('../../services');
+const { ServerAPI } = require('../../services');
 
 class Search extends React.Component {
 
@@ -31,7 +31,7 @@ class Search extends React.Component {
       dataSources: []
     };
 
-    apiCaller.datasources()
+    ServerAPI.datasources()
       .then(result => {
         this.setState({
           dataSources: Object.values(result)
@@ -47,7 +47,7 @@ class Search extends React.Component {
       this.setState({
         loading: true
       });
-      apiCaller.querySearch(query)
+      ServerAPI.querySearch(query)
         .then(searchResults => {
           this.setState({
             searchResults: searchResults,
@@ -152,7 +152,7 @@ class Search extends React.Component {
         h('div.search-header', [
           h('div.search-branding', [
             h('div.search-title', [
-              h(Link, { className: 'search-pc-link', to: { pathname: '/' } }, [
+              h('a', { className: 'search-pc-link', href: 'http://www.pathwaycommons.org/' } , [
                 h('i.search-logo')
               ]),
             ]),
@@ -178,11 +178,12 @@ class Search extends React.Component {
                   ])
                 ])
               ]),
-              h('div.search-suggestions', ['e.g. ',
-              h(Example, {search: 'cell cycle'}), ', ',
-              h(Example, {search: 'p53 MDM2'}), ', ',
-              h(Example, {search: 'P04637'})
-            ]),
+              h('div.search-suggestions', [
+                'e.g. ',
+                h(Example, {search: 'cell cycle'}), ', ',
+                h(Example, {search: 'p53 MDM2'}), ', ',
+                h(Example, {search: 'P04637'})
+              ]),
               h('div.search-tabs', searchTypeTabs.concat([
                 h('div', {
                   className: classNames('search-option-item', 'search-option-item-tools', { 'search-option-item-tools-active': state.showFilters }),

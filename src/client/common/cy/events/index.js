@@ -1,7 +1,7 @@
 const bindHover = require('./hover');
-const bindExpandCollapse = require('./expandCollapse');
+const bindExpandCollapse = require('./expand-collapse');
 const { bindClick } = require('./click');
-const bindShowTooltip = require('./showTooltip');
+const bindShowTooltip = require('./show-tooltip');
 
 const bindEvents = (cy, callback) => {
   bindHover(cy);

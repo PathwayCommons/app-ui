@@ -1,3 +1,3 @@
-const apiCaller = require('./apiCaller/');
+const ServerAPI = require('./server-api/');
 
-module.exports = {apiCaller};
+module.exports = {ServerAPI};

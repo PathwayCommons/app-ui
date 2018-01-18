@@ -133,9 +133,8 @@ class BaseNetworkView extends React.Component {
         type: 'search',
         placeholder: 'Search entities',
       }),
-      this.state.nodeSearchValue === '' ? null : h('div.view-search-clear', {onClick: () => this.clearSearchBox()}, [ // check if the search bar is empty
-        h('i.material-icons', 'close')
-      ])
+      this.state.nodeSearchValue ===
+      '' ? null : h('div.v', {onClick: () => this.clearSearchBox()}, [h('i.material-icons', 'close')])
     ]);
 
 

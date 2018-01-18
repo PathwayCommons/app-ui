@@ -56,7 +56,7 @@ class PaintMenu extends React.Component {
 
     updateBaseViewState({
       networkLoading: true
-    }, () => {
+      }, () => {
       cy.remove('*');
       cy.add({nodes: networkJSON.nodes, edges: networkJSON.edges});
       const layout = cy.layout({name: 'cose-bilkent'});
@@ -149,7 +149,7 @@ class PaintMenu extends React.Component {
         }, [
         h('h3', result.json.graph.pathwayMetadata.title[0]),
         h('p', result.json.graph.pathwayMetadata.dataSource[0]),
-        h('p', `expressions in pathway: ${result.geneIntersection.length} / ${expressionTable.rows.length} `)
+        h('p', `Genes matched: ${result.geneIntersection.length} / ${expressionTable.rows.length} `)
       ]);
     });
 

@@ -30,7 +30,20 @@
 }
 
 .paint-search-result {
-  padding: 10px;
+  cursor: pointer;
+  padding: 5px;
+
+  & p {
+    margin: 0;
+  }
+
+  & h3 {
+    margin-bottom: 2px;
+  }
+}
+
+.paint-search-result-selected {
+  color: var(--accent-1-colour);
 }
 
 .paint-drawer-tab {
@@ -47,5 +60,7 @@
 }
 
 .paint-drawer-tab-selected {
+  font-weight: bold;
+  color: var(--accent-1-colour);
   border-bottom: 3px solid var(--accent-1-colour);
 }

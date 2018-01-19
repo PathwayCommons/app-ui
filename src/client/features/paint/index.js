@@ -31,29 +31,6 @@ const PaintViewConfig = {
   useSearchBar: false
 };
 
-// determine the "best" pathway based on user query
-// THIS MOST LIKELY SHOULD BE A SERVER SIDE CALL
-// const getAugmentedSearchResults = (searchParam, expressionTable) => {
-//   return ServerAPI.querySearch({q: searchParam}).then(results => {
-
-//     const pathwaysJSON = results.map(result => ServerAPI.getGraphAndLayout(result.uri, 'latest'));
-
-//     return Promise.all(pathwaysJSON).then(pathways => {
-//       const processed = pathways.map(pathway => {
-//         const genesInPathway = _.uniq(pathway.graph.nodes.map(node => node.data.label));
-//         const genesInExpressionData = expressionTable.rows.map(row => row.geneName);
-
-//         return {
-//           json: pathway,
-//           geneIntersection: _.intersection(genesInPathway, genesInExpressionData)
-//         };
-//       });
-
-//       return processed;
-//     });
-//   });
-// };
-
 const getAugmentedSearchResults = (searchParam, expressionTable) => {
   const geneQueries = _.chunk(expressionTable.rows.map(row => row.geneName), 15)
   .map(chunk => ServerAPI.querySearch({q: chunk.join(' ')}));

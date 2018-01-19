@@ -125,6 +125,18 @@ class BaseNetworkView extends React.Component {
       );
     });
 
+    const nodeSearchBarInput = h('div.view-search-bar', [
+      h('input.view-search', {
+        ref: dom => this.searchField = dom,
+        value: this.state.nodeSearchValue,
+        type: 'search',
+        placeholder: 'Search entities',
+      }),
+      this.state.nodeSearchValue ===
+      '' ? null : h('div.v', {onClick: () => this.clearSearchBox()}, [h('i.material-icons', 'close')])
+    ]);
+
+
     const nodeSearchBar = [
       h(IconButton, {
         icon: 'search',
@@ -143,18 +155,7 @@ class BaseNetworkView extends React.Component {
       h('div', {
         className: classNames('search-nodes', { 'search-nodes-open': this.state.searchOpen }),
         onChange: e => this.searchCyNodes(e.target.value)
-      }, [
-          h('div.view-search-bar', [
-            h('input.view-search', {
-              ref: dom => this.searchField = dom,
-              type: 'search',
-              placeholder: 'Search entities',
-            }),
-            h('div.view-search-clear', {
-              onClick: () => this.clearSearchBox(),
-            }, [h('i.material-icons', 'close')])
-          ])
-        ])
+      }, [nodeSearchBarInput])
     ];
 
 

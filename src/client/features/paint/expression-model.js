@@ -59,6 +59,8 @@ const expressionDataToNodeStyle = (value, range) => {
   const [, max] = range;
   const style = {};
 
+  if (value === Infinity || value === -Infinity) return style;
+
   if ((0 - max / 3) <= value < (0 + max / 3)) {
     style['background-color'] = 'white';
     style['background-opacity'] = 1;
@@ -121,13 +123,4 @@ const applyExpressionData = (cy, expressionTable, selectedClass, selectedFunctio
   });
 };
 
-class ExpressionTable {
-  constructor(rawJsonData) {
-    const expressionClasses = _.get(rawJsonData.dataSetClassList, '0.classes', []);
-    const expressions = _.get(rawJsonData.dataSetExpressionList, '0.expressions', []);
-
-    this.header = _.uniq(expressionClasses);
-    this.rows = expressions.map(expression => createExpressionRow(expression, expressionClasses));
-  }
-}
 module.exports = {computeFoldChange, applyExpressionData, createExpressionTable, computeFoldChangeRange};

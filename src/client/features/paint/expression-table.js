@@ -84,7 +84,7 @@ class Expression {
     this.classValues = classValues;
   }
 
-  foldChange(selectedClass, selectedFunction) {
+  foldChange(selectedClass, selectedFunction, invalidValueReplacement = null) {
     const selectedClassValues = this.classValues[selectedClass];
     const nonSelectedClasses = _.omit(this.classValues, [selectedClass]);
   
@@ -100,6 +100,10 @@ class Expression {
     }
   
     const foldChange = Math.log2(c1Val / c2Val);
+
+    if (foldChange === Infinity || foldChange === -Infinity) {
+      return invalidValueReplacement;
+    }
   
     return parseFloat(foldChange.toFixed(2));
   }
@@ -121,12 +125,17 @@ class ExpressionTable {
     this.header = _.uniq(expressionClasses);
     this.rows = [];
     this.expressionMap = new Map();
+    this.classes = expressionClasses;
 
     for (const expression of expressions) {
       const exp = new Expression(expression, expressionClasses);
       this.rows.push(exp);
       this.expressionMap.set(expression.geneName, exp);
     }
+  }
+
+  classes() {
+    return this.classes;
   }
 
   expressions(geneName = null) {
@@ -163,4 +172,4 @@ class ExpressionTable {
   }
 }
 
-module.exports = { ExpressionTable };
+module.exports = { ExpressionTable, applyExpressionData };

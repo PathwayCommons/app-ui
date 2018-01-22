@@ -7,7 +7,7 @@ const _ = require('lodash');
 
 const IconButton = require('../icon-button');
 
-const debouncedSearchNodes = _.debounce(require('../../cy/search'), 300);
+const debouncedSearchNodes = _.debounce(require('../../cy/match-style'), 300);
 
 // cytoscape
 // grapjson
@@ -36,9 +36,11 @@ class BaseNetworkView extends React.Component {
         nodeSearchValue: '',
         open: false,
         networkLoading: true,
-        searchOpen: false
+        searchOpen: false,
+        updateBaseViewState: (nextState, next) => this.setState(nextState, next ? next() : null)
       }, props);
 
+    this.state.open = this.state.activeMenu !== 'closeMenu';
   }
 
   componentWillUnmount() {
@@ -179,7 +181,7 @@ class BaseNetworkView extends React.Component {
       h('div', { className: classNames('menu-bar', { 'menu-bar-margin': state.activeMenu }) }, [
         h('div.menu-bar-inner-container', [
           h('div.pc-logo-container', [
-            h(Link, { to: { pathname: '/search' } }, [
+            h('a', { href: 'http://www.pathwaycommons.org/' } , [
               h('img', {
                 src: '/img/icon.png'
               })

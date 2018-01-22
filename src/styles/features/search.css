@@ -223,13 +223,17 @@
 
 .search-item {
   display: flex;
+  vertical-align: middle; 
+  align-items: center;
   padding-top: 20px;
   padding-bottom: 20px;
 }
 
 .search-item-icon {
+  display: flex;
+  justify-content: center;
   width: 80px;
-  height: 40px;
+  height: auto;
 }
 .search-item-icon > img {
   max-width: 80px;

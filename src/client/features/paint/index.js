@@ -14,43 +14,22 @@ const { ServerAPI } = require('../../services');
 const {createExpressionTable, applyExpressionData} = require('./expression-model');
 const PaintMenu = require('./paint-menu');
 
+
+const paintMenuId = 'paintMenu';
 const PaintViewConfig = {
   toolbarButtons: BaseNetworkView.config.toolbarButtons.concat({
-    id: 'showPaintMenu',
     icon: 'format_paint',
+    id: 'showPaintMenu',
     type: 'activateMenu',
     menuId: 'paintMenu',
     description: 'View expression data'
   }),
   menus: BaseNetworkView.config.menus.concat({
-    id: 'paintMenu',
+    id: paintMenuId,
     func: props => h(PaintMenu, props)
   }),
   useSearchBar: false
 };
-
-// determine the "best" pathway based on user query
-// THIS MOST LIKELY SHOULD BE A SERVER SIDE CALL
-// const getAugmentedSearchResults = (searchParam, expressionTable) => {
-//   return ServerAPI.querySearch({q: searchParam}).then(results => {
-
-//     const pathwaysJSON = results.map(result => ServerAPI.getGraphAndLayout(result.uri, 'latest'));
-
-//     return Promise.all(pathwaysJSON).then(pathways => {
-//       const processed = pathways.map(pathway => {
-//         const genesInPathway = _.uniq(pathway.graph.nodes.map(node => node.data.label));
-//         const genesInExpressionData = expressionTable.rows.map(row => row.geneName);
-
-//         return {
-//           json: pathway,
-//           geneIntersection: _.intersection(genesInPathway, genesInExpressionData)
-//         };
-//       });
-
-//       return processed;
-//     });
-//   });
-// };
 
 const getAugmentedSearchResults = (searchParam, expressionTable) => {
   const geneQueries = _.chunk(expressionTable.rows.map(row => row.geneName), 15)
@@ -62,7 +41,7 @@ const getAugmentedSearchResults = (searchParam, expressionTable) => {
     const uniqueResults = _.uniqBy(_.flatten(searchResults), result => result.uri);
 
     const pathwaysJSON = uniqueResults.map(result => ServerAPI.getGraphAndLayout(result.uri, 'latest'));
-    
+
     return Promise.all(pathwaysJSON).then(pathways => {
       const processed = pathways.map(pathway => {
         const genesInPathway = _.uniq(pathway.graph.nodes.map(node => node.data.label));
@@ -122,7 +101,7 @@ class Paint extends React.Component {
       const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
       const expressionTable = createExpressionTable(expressions, expressionClasses);
 
-      getAugmentedSearchResults(searchParam, expressionTable).then(pathwayResults => { 
+      getAugmentedSearchResults(searchParam, expressionTable).then(pathwayResults => {
 
         // pathway results are sorted by gene expression intersection (largest to smallest)
         // take the largest gene intersection by default
@@ -145,13 +124,15 @@ class Paint extends React.Component {
           },
           networkLoading: false,
           expressionTable: expressionTable,
+          selectedClass: _.get(expressionClasses, '0', ''),
           expressionsLoading: false,
           searchParam: searchParam,
           searchResults: pathwayResults
 
         }, () => {
           const selectedFn = this.state.selectedFunction.func;
-          this.state.cy.on('network-loaded', () => applyExpressionData(this.state.cy, expressionTable, selectedFn));
+          const selectedClass = this.state.selectedClass;
+          this.state.cy.on('network-loaded', () => applyExpressionData(this.state.cy, expressionTable, selectedClass, selectedFn));
         });
       });
 
@@ -172,6 +153,8 @@ class Paint extends React.Component {
       // paint specific props needed by the paint menu
       expressionTable: state.expressionTable,
       selectedFunction: state.selectedFunction,
+      selectedClass: state.selectedClass,
+      activeMenu: paintMenuId,
 
       searchParam: state.searchParam,
       searchResults: state.searchResults

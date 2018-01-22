@@ -68,6 +68,7 @@ class Expression {
   constructor(rawExpressionData, expressionClasses) {
     const geneName = rawExpressionData.geneName;
     const values = rawExpressionData.values;
+    const replacedExpression = rawExpressionData.replaced ? rawExpressionData.replaced : {};
 
     const class2ValuesMap = new Map();
 
@@ -88,6 +89,7 @@ class Expression {
 
     this.geneName = geneName;
     this.classValues = classValues;
+    this.replacedExpression = replacedExpression;
   }
 
   foldChange(selectedClass, selectedFunction, invalidValueReplacement = null) {
@@ -115,19 +117,42 @@ class Expression {
   }
 }
 
+
+const createRawExpressions = (expressionJSON, networkJSON) => {
+  const expressionByGeneName = new Map();
+
+  expressionJSON.forEach(expression => {
+    expressionByGeneName.set(expression.geneName, expression);
+  });
+
+  networkJSON.nodes.forEach(node => {
+    const geneIntersection =  _.intersection([...expressionByGeneName.keys()], node.data.geneSynonyms);
+    const isGenericMapping = !expressionByGeneName.has(node.data.label) && geneIntersection.length > 0;
+
+    if (isGenericMapping) {
+      const mappingCandidate = geneIntersection[0];
+      const existingExpression = expressionByGeneName.get(mappingCandidate);
+      expressionByGeneName.delete(mappingCandidate);
+      expressionByGeneName.set(node.data.label, {geneName: node.data.label, values: existingExpression.values, replaced: existingExpression});
+    }
+  });
+
+  return [...expressionByGeneName.entries()].map(entry => entry[1]);
+};
+
 class ExpressionTable {
-  constructor(rawJsonData) {
+  constructor(rawJsonData, networkJSON) {
     const expressionClasses = _.get(rawJsonData.dataSetClassList, '0.classes', []);
-    const expressions = _.get(rawJsonData.dataSetExpressionList, '0.expressions', []);
+    const expressions = createRawExpressions(_.get(rawJsonData.dataSetExpressionList, '0.expressions', []), networkJSON);
 
     this.classes = _.uniq(expressionClasses);
     this.rows = [];
     this.expressionMap = new Map();
 
-    for (const expression of expressions) {
-      const exp = new Expression(expression, expressionClasses);
+    for (const rawExpression of expressions) {
+      const exp = new Expression(rawExpression, expressionClasses);
       this.rows.push(exp);
-      this.expressionMap.set(expression.geneName, exp);
+      this.expressionMap.set(rawExpression.geneName, exp);
     }
   }
 

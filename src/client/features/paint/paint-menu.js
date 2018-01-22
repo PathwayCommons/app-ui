@@ -8,7 +8,7 @@ const matchSorter = require('match-sorter').default;
 
 const cysearch = _.debounce(require('../../common/cy/match-style'), 500);
 
-const { applyExpressionData } = require('./expression-table');
+const { ExpressionTable, applyExpressionData } = require('./expression-table');
 
 class PaintMenu extends React.Component {
   constructor(props) {
@@ -42,7 +42,7 @@ class PaintMenu extends React.Component {
   loadNetwork(networkJSON) {
     const updateBaseViewState = this.props.updateBaseViewState;
     const cy = this.props.cy;
-
+    const nextExpressionTable = new ExpressionTable(this.props.rawExpressions, networkJSON);
     updateBaseViewState({
       networkMetadata: {
         uri: networkJSON.pathwayMetadata.uri,
@@ -54,6 +54,7 @@ class PaintMenu extends React.Component {
     });
 
     updateBaseViewState({
+      expressionTable: nextExpressionTable,
       networkLoading: true
       }, () => {
       cy.remove('*');
@@ -79,7 +80,7 @@ class PaintMenu extends React.Component {
     const foldChangeExpressions = expressionTable.expressions().map(expression => {
 
       return {
-        geneName: expression.geneName,
+        geneName: `${expression.geneName}  ${expression.replacedExpression.geneName ? '(' + expression.replacedExpression.geneName + ')' : ''} `,
         foldChange: expression.foldChange(selectedClass, selectedFunction, 'N/A')
       };
     });

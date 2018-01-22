@@ -32,7 +32,7 @@ const PaintViewConfig = {
 };
 
 const getAugmentedSearchResults = (searchParam, expressionTable) => {
-  const geneQueries = _.chunk(expressionTable.expressions().map(expression => expression.geneName()), 15)
+  const geneQueries = _.chunk(expressionTable.expressions().map(expression => expression.geneName), 15)
   .map(chunk => ServerAPI.querySearch({q: chunk.join(' ')}));
 
   const searchQuery = ServerAPI.querySearch({q: searchParam});
@@ -45,7 +45,7 @@ const getAugmentedSearchResults = (searchParam, expressionTable) => {
     return Promise.all(pathwaysJSON).then(pathways => {
       const processed = pathways.map(pathway => {
         const genesInPathway = _.uniq(pathway.graph.nodes.map(node => node.data.label));
-        const genesInExpressionData = expressionTable.expressions().map(expression => expression.geneName());
+        const genesInExpressionData = expressionTable.expressions().map(expression => expression.geneName);
 
         return {
           json: pathway,
@@ -122,7 +122,7 @@ class Paint extends React.Component {
           },
           networkLoading: false,
           expressionTable: expressionTable,
-          selectedClass: _.get(expressionTable.classes(), '0', ''),
+          selectedClass: _.get(expressionTable.classes, '0', ''),
           expressionsLoading: false,
           searchParam: searchParam,
           searchResults: pathwayResults

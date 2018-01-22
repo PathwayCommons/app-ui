@@ -76,7 +76,13 @@ class PaintMenu extends React.Component {
     const selectedClass = this.state.selectedClass;
 
     const expressionTable = props.expressionTable;
-    const foldChangeExpressions = expressionTable.expressions().map(expression => expression.foldChange(selectedClass, selectedFunction, 'N/A'));
+    const foldChangeExpressions = expressionTable.expressions().map(expression => {
+
+      return {
+        geneName: expression.geneName,
+        foldChange: expression.foldChange(selectedClass, selectedFunction, 'N/A')
+      };
+    });
 
     const { min, max } = expressionTable.computeFoldChangeRange(selectedClass, selectedFunction);
 
@@ -157,9 +163,9 @@ class PaintMenu extends React.Component {
           );
         }
       },
-      expressionTable.classes().map(cls => h('option', { value: cls}, cls))
+      expressionTable.classes.map(cls => h('option', { value: cls}, cls))
       ),
-      ` vs ${_.difference(expressionTable.classes(), [selectedClass])}`
+      ` vs ${_.difference(expressionTable.classes, [selectedClass])}`
     ]);
 
     return h(Tabs, [

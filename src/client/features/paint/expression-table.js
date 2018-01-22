@@ -35,9 +35,9 @@ const applyExpressionData = (cy, expressionTable, selectedClass, selectedFunctio
     _.flattenDeep(geneNodes.map(node => [node.data('label'), ...(_.get(node.data('geneSynonyms'), 'synonyms', []))])
   )).sort();
 
-  const expressionsInNetwork = expressionTable.expressions().filter(expression => geneNodeLabels.includes(expression.geneName()));
+  const expressionsInNetwork = expressionTable.expressions().filter(expression => geneNodeLabels.includes(expression.geneName));
 
-  const expressionLabels = expressionsInNetwork.map(expression => expression.geneName());
+  const expressionLabels = expressionsInNetwork.map(expression => expression.geneName);
   geneNodes.filter(node => _.intersection(expressionLabels, [node.data('label'), ..._.get(node.data('geneSynonyms'), 'synonyms', [])]).length === 0).style({
     'background-color': 'grey',
     'color': 'grey',
@@ -47,12 +47,19 @@ const applyExpressionData = (cy, expressionTable, selectedClass, selectedFunctio
   const {min, max} = expressionTable.computeFoldChangeRange(selectedClass, selectedFunction);
   const range = [min, max];
 
-  const nodesInNetworkFoldValues = expressionsInNetwork.map(expression => expression.foldChange(selectedClass, selectedFunction));
-  nodesInNetworkFoldValues.filter(fv => fv !== Infinity && fv !== -Infinity).forEach(fv => {
-    const matchedNodes = cy.nodes().filter(node => node.data('label') === fv.geneName || _.get(node.data('geneSynonyms'), 'synonyms', []).includes(fv.geneName));
-    const style = expressionDataToNodeStyle(fv.value, range);
+  expressionsInNetwork.forEach(expression => {
+    const fv = expression.foldChange(selectedClass, selectedFunction);
 
-    matchedNodes.style(style);
+    if (fv !== Infinity && fv !== -Infinity) {
+      const matchedNodes = cy.nodes().filter(node => {
+        return node.data('label') === expression.geneName ||
+        _.get(node.data('geneSynonyms'), 'synonyms', []).includes(expression.geneName)
+      });
+
+      const style = expressionDataToNodeStyle(fv, range);
+      matchedNodes.style(style);
+    }
+
   });
 };
 
@@ -87,33 +94,25 @@ class Expression {
   foldChange(selectedClass, selectedFunction, invalidValueReplacement = null) {
     const selectedClassValues = this.classValues[selectedClass];
     const nonSelectedClasses = _.omit(this.classValues, [selectedClass]);
-  
+
     const nonSelectedClassesValues =_.flattenDeep(Object.entries(nonSelectedClasses)
       .map(([className, values]) => values));
-  
+
     const c1Val = selectedFunction(selectedClassValues);
-  
+
     let c2Val = _.mean(nonSelectedClassesValues);
-  
+
     if (c2Val === 0) {
       c2Val = 1;
     }
-  
+
     const foldChange = Math.log2(c1Val / c2Val);
 
     if (foldChange === Infinity || foldChange === -Infinity) {
       return invalidValueReplacement;
     }
-  
+
     return parseFloat(foldChange.toFixed(2));
-  }
-
-  geneName() {
-    return this.geneName;
-  }
-
-  classValues() {
-    return this.classValues;
   }
 }
 
@@ -122,20 +121,15 @@ class ExpressionTable {
     const expressionClasses = _.get(rawJsonData.dataSetClassList, '0.classes', []);
     const expressions = _.get(rawJsonData.dataSetExpressionList, '0.expressions', []);
 
-    this.header = _.uniq(expressionClasses);
+    this.classes = _.uniq(expressionClasses);
     this.rows = [];
     this.expressionMap = new Map();
-    this.classes = expressionClasses;
 
     for (const expression of expressions) {
       const exp = new Expression(expression, expressionClasses);
       this.rows.push(exp);
       this.expressionMap.set(expression.geneName, exp);
     }
-  }
-
-  classes() {
-    return this.classes;
   }
 
   expressions(geneName = null) {
@@ -164,10 +158,10 @@ class ExpressionTable {
     const foldValues = this.rows.map(expression => expression.foldChange(selectedClass, selectedFunction));
     const fvs = foldValues.filter(fv => fv !== Infinity && fv !== -Infinity);
     const maxMagnitude = Math.max(Math.max(...fvs), Math.abs(Math.min(...fvs)));
-  
+
     const max =  maxMagnitude;
     const min = -maxMagnitude;
-  
+
     return {min, max};
   }
 }

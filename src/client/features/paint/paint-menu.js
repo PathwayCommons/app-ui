@@ -79,8 +79,9 @@ class PaintMenu extends React.Component {
     const expressionTable = props.expressionTable;
     const foldChangeExpressions = expressionTable.expressions().map(expression => {
 
+      const geneDisplayName = expression.replacedExpression.geneName ? `${expression.replacedExpression.geneName} (${expression.geneName})` : expression.geneName;
       return {
-        geneName: `${expression.geneName}  ${expression.replacedExpression.geneName ? '(' + expression.replacedExpression.geneName + ')' : ''} `,
+        geneName: geneDisplayName,
         foldChange: expression.foldChange(selectedClass, selectedFunction, 'N/A')
       };
     });
@@ -110,7 +111,7 @@ class PaintMenu extends React.Component {
         filterAll: true
       },
       {
-        Header: 'Expression ratio (Log2)',
+        Header: 'Expression Ratio (Log2)',
         id: 'foldChange',
         accessor: 'foldChange'
       }

@@ -8,8 +8,7 @@ const matchSorter = require('match-sorter').default;
 
 const cysearch = _.debounce(require('../../common/cy/match-style'), 500);
 
-const { applyExpressionData, computeFoldChange, computeFoldChangeRange } = require('./expression-model');
-
+const { ExpressionTable, applyExpressionData } = require('./expression-table');
 
 class PaintMenu extends React.Component {
   constructor(props) {
@@ -43,7 +42,7 @@ class PaintMenu extends React.Component {
   loadNetwork(networkJSON) {
     const updateBaseViewState = this.props.updateBaseViewState;
     const cy = this.props.cy;
-
+    const nextExpressionTable = new ExpressionTable(this.props.rawExpressions, networkJSON);
     updateBaseViewState({
       networkMetadata: {
         uri: networkJSON.pathwayMetadata.uri,
@@ -55,6 +54,7 @@ class PaintMenu extends React.Component {
     });
 
     updateBaseViewState({
+      expressionTable: nextExpressionTable,
       networkLoading: true
       }, () => {
       cy.remove('*');
@@ -77,17 +77,16 @@ class PaintMenu extends React.Component {
     const selectedClass = this.state.selectedClass;
 
     const expressionTable = props.expressionTable;
-    const expressionHeader = _.get(expressionTable, 'header', []);
-    const foldChangeExpressions = _.get(expressionTable, 'rows', []).map(row => {
-      const fv = computeFoldChange(row, selectedClass, selectedFunction).value;
+    const foldChangeExpressions = expressionTable.expressions().map(expression => {
 
+      const geneDisplayName = expression.replacedExpression.geneName ? `${expression.replacedExpression.geneName} (${expression.geneName})` : expression.geneName;
       return {
-        geneName: row.geneName,
-        foldChange: fv === Infinity || fv === -Infinity ? 'N/A' : fv
+        geneName: geneDisplayName,
+        foldChange: expression.foldChange(selectedClass, selectedFunction, 'N/A')
       };
     });
 
-    const { min, max } = computeFoldChangeRange(expressionTable, selectedClass, selectedFunction);
+    const { min, max } = expressionTable.computeFoldChangeRange(selectedClass, selectedFunction);
 
 
     const columns = [
@@ -112,7 +111,7 @@ class PaintMenu extends React.Component {
         filterAll: true
       },
       {
-        Header: 'Expression ratio (Log2)',
+        Header: 'Expression Ratio (Log2)',
         id: 'foldChange',
         accessor: 'foldChange'
       }
@@ -149,7 +148,7 @@ class PaintMenu extends React.Component {
         }, [
         h('h3', result.json.graph.pathwayMetadata.title[0]),
         h('p', result.json.graph.pathwayMetadata.dataSource[0]),
-        h('p', `Genes matched: ${result.geneIntersection.length} / ${expressionTable.rows.length} `)
+        h('p', `Genes matched: ${result.geneIntersection.length} / ${expressionTable.expressions().length} `)
       ]);
     });
 
@@ -166,9 +165,9 @@ class PaintMenu extends React.Component {
           );
         }
       },
-      expressionHeader.map(cls => h('option', { value: cls}, cls))
+      expressionTable.classes.map(cls => h('option', { value: cls}, cls))
       ),
-      ` vs ${_.difference(expressionHeader, [selectedClass])}`
+      ` vs ${_.difference(expressionTable.classes, [selectedClass])}`
     ]);
 
     return h(Tabs, [

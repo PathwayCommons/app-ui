@@ -20,11 +20,19 @@ class Search extends React.Component {
     this.state = {
       query: _.assign({
         q: '',
-        gt: 0,
+        gt: 1,
         lt: 250,
         type: 'Pathway',
         datasource: []
       }, query),
+      landing: {
+        name:'',
+        fullName:'',
+        synonyms:'',
+        links:'',
+        species:'',
+        functions:'',
+      },
       searchResults: [],
       loading: false,
       showFilters: false,
@@ -42,17 +50,45 @@ class Search extends React.Component {
   getSearchResult() {
     const state = this.state;
     const query = state.query;
-
+    query.type='Pathway';
+    query.gt=1;
     if (query.q !== '') {
       this.setState({
         loading: true
       });
       ServerAPI.querySearch(query)
         .then(searchResults => {
-          this.setState({
-            searchResults: searchResults,
-            loading: false
-          });
+          console.log(searchResults);
+           this.setState({
+             searchResults: searchResults,
+             loading: false
+           });
+        });
+    }
+  }
+
+  getLandingResult() {
+    const state = this.state;
+    console.log('hi3');
+    const query = state.query;
+    query.type='PhysicalEntity';
+    query.gt=0;
+    if (query.q !== '') {
+      this.setState({
+        loading: true
+      });
+      ServerAPI.querySearch(query)
+        .then(searchResults => {
+          console.log(searchResults);
+           this.setState({
+             landing:{
+            name:searchResults[0].name,
+            fullName:searchResults[0].name,
+            synonyms:searchResults[0].name,
+            links:searchResults[0].dataSource[0],
+            species:searchResults[0].organism,
+            }
+           });
         });
     }
   }
@@ -91,8 +127,10 @@ class Search extends React.Component {
       search: queryString.stringify(query),
       state: {}
     });
-
+    this.getLandingResult();
+    console.log('hi');
     this.getSearchResult();
+    console.log('hi2');
   }
 
   render() {
@@ -107,6 +145,7 @@ class Search extends React.Component {
       const dsInfo = _.find(state.dataSources, ds => {
         return ds.uri === result.dataSource[0];
       });
+      console.log(dsInfo);
       return h('div.search-item', [
         h('div.search-item-icon',[
           h('img', {src: dsInfo.iconUrl})
@@ -148,6 +187,31 @@ class Search extends React.Component {
     ]) :
       h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
 
+    const realaventInfo = ()=>{
+      if(state.landing.name===''){
+        return h('div');
+      }
+        return h('div.search-landing',[
+            h('h1.search-landing-title',state.landing.name),
+            h('ul.search-landing-list', [
+              h('li.search-landing-item',[
+                h('strong',state.landing.fullName)]),
+              h('li.search-landing-item',[
+                h('strong','Synonyms'),
+                h('a',': ' + state.landing.synonyms)]),
+              h('li.search-landing-item',{href: state.landing.links},[
+                h('strong','Links'),
+                h('a',{src:': ' + state.landing.links.slice(state.landing.links.lastIndexOf('/')+1),href: state.landing.links})
+              ]), 
+              h('li.search-landing-item',[
+                h('strong','Species'),
+                h('a',': ' + state.landing.species)]),
+              h('li.search-landing-item',[
+                h('strong','Functions'),
+                h('a',': ' + state.landing.functions)])
+            ])
+        ]);
+    };
 
     return h('div.search', [
       h('div.search-header-container', [
@@ -200,6 +264,7 @@ class Search extends React.Component {
       h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' } }, [
         h('div.search-list-container', [
           h('div.search-result-info', [searchResultInfo]),
+          h(realaventInfo), 
           h('div.search-list', searchResults)
         ])
       ])

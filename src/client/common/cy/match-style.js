@@ -23,6 +23,8 @@ const getNames = (node) => {
   if (names.length > 0) { label = label.concat(names[0][1]); }
   if (displayName.length > 0) { label = label.concat(displayName[0][1]); }
 
+  label = label.concat(node.data('geneSynonyms'));
+
   return _.compact(label);
 };
 

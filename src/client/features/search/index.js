@@ -98,7 +98,7 @@ class Search extends React.Component {
   render() {
     const props = this.props;
     const state = this.state;
-
+    
     let Example = props => h('span.search-example', {
       onClick: () => this.setAndSubmitSearchQuery({q: props.search})
     }, props.search);
@@ -107,8 +107,10 @@ class Search extends React.Component {
       const dsInfo = _.find(state.dataSources, ds => {
         return ds.uri === result.dataSource[0];
       });
-
       return h('div.search-item', [
+        h('div.search-item-icon',[
+          h('img', {src: dsInfo.iconUrl})
+        ]),
         h('div.search-item-content', [
           h(Link, { to: { pathname: '/view', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' }, [
             h('h3.search-item-content-title', result.name || 'N/A'),

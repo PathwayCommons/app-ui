@@ -11,7 +11,7 @@ const make_cytoscape = require('../../common/cy');
 const { ServerAPI } = require('../../services');
 
 
-const {createExpressionTable, applyExpressionData} = require('./expression-model');
+const { ExpressionTable, applyExpressionData } = require('./expression-table');
 const PaintMenu = require('./paint-menu');
 
 
@@ -31,31 +31,8 @@ const PaintViewConfig = {
   useSearchBar: false
 };
 
-// determine the "best" pathway based on user query
-// THIS MOST LIKELY SHOULD BE A SERVER SIDE CALL
-// const getAugmentedSearchResults = (searchParam, expressionTable) => {
-//   return ServerAPI.querySearch({q: searchParam}).then(results => {
-
-//     const pathwaysJSON = results.map(result => ServerAPI.getGraphAndLayout(result.uri, 'latest'));
-
-//     return Promise.all(pathwaysJSON).then(pathways => {
-//       const processed = pathways.map(pathway => {
-//         const genesInPathway = _.uniq(pathway.graph.nodes.map(node => node.data.label));
-//         const genesInExpressionData = expressionTable.rows.map(row => row.geneName);
-
-//         return {
-//           json: pathway,
-//           geneIntersection: _.intersection(genesInPathway, genesInExpressionData)
-//         };
-//       });
-
-//       return processed;
-//     });
-//   });
-// };
-
-const getAugmentedSearchResults = (searchParam, expressionTable) => {
-  const geneQueries = _.chunk(expressionTable.rows.map(row => row.geneName), 15)
+const getAugmentedSearchResults = (searchParam, expressions) => {
+  const geneQueries = _.chunk(expressions.map(expression => expression.geneName), 15)
   .map(chunk => ServerAPI.querySearch({q: chunk.join(' ')}));
 
   const searchQuery = ServerAPI.querySearch({q: searchParam});
@@ -67,8 +44,9 @@ const getAugmentedSearchResults = (searchParam, expressionTable) => {
 
     return Promise.all(pathwaysJSON).then(pathways => {
       const processed = pathways.map(pathway => {
-        const genesInPathway = _.uniq(pathway.graph.nodes.map(node => node.data.label));
-        const genesInExpressionData = expressionTable.rows.map(row => row.geneName);
+        const macromolecules = pathway.graph.nodes.filter(node => node.data.class === 'macromolecule');
+        const genesInPathway = _.flattenDeep(_.uniq([...macromolecules.map(node => node.data.label), ...macromolecules.map(node => node.data.geneSynonyms)]));
+        const genesInExpressionData = expressions.map(expression => expression.geneName);
 
         return {
           json: pathway,
@@ -120,17 +98,17 @@ class Paint extends React.Component {
     fetch(enrichmentsURI)
     .then(res => res.json())
     .then(json => {
-      const expressionClasses = _.get(json.dataSetClassList, '0.classes', []);
       const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
-      const expressionTable = createExpressionTable(expressions, expressionClasses);
 
-      getAugmentedSearchResults(searchParam, expressionTable).then(pathwayResults => {
+      getAugmentedSearchResults(searchParam, expressions).then(pathwayResults => {
 
         // pathway results are sorted by gene expression intersection (largest to smallest)
         // take the largest gene intersection by default
         let candidatePathway = pathwayResults.sort((p0, p1) => p1.geneIntersection.length - p0.geneIntersection.length)[0];
 
         const network = candidatePathway.json;
+
+        const expressionTable = new ExpressionTable(json, candidatePathway.json.graph);
         const layoutConfig = getLayoutConfig(network.layout);
         const componentConfig = PaintViewConfig;
 
@@ -146,8 +124,9 @@ class Paint extends React.Component {
             organism: network.graph.pathwayMetadata.organism
           },
           networkLoading: false,
+          rawExpressions: json,
           expressionTable: expressionTable,
-          selectedClass: _.get(expressionClasses, '0', ''),
+          selectedClass: _.get(expressionTable.classes, '0', ''),
           expressionsLoading: false,
           searchParam: searchParam,
           searchResults: pathwayResults
@@ -174,6 +153,7 @@ class Paint extends React.Component {
       networkMetadata: state.networkMetadata,
 
       // paint specific props needed by the paint menu
+      rawExpressions: state.rawExpressions,
       expressionTable: state.expressionTable,
       selectedFunction: state.selectedFunction,
       selectedClass: state.selectedClass,

@@ -33,6 +33,8 @@ class BaseNetworkView extends React.Component {
     this.state = _.merge({},
       {
         activeMenu: 'closeMenu',
+        nodeSearchValue: '',
+        open: false,
         networkLoading: true,
         searchOpen: false,
         updateBaseViewState: (nextState, next) => this.setState(nextState, next ? next() : null)
@@ -82,8 +84,9 @@ class BaseNetworkView extends React.Component {
   }
 
   clearSearchBox() {
-    this.searchField.value = '';
-    this.searchCyNodes('');
+    this.setState({
+      nodeSearchValue: ''
+    }, () => this.searchCyNodes(''));
   }
 
 
@@ -125,6 +128,19 @@ class BaseNetworkView extends React.Component {
       );
     });
 
+    const nodeSearchBarInput = h('div.view-search-bar', [
+      h('input.view-search', {
+        ref: dom => this.searchField = dom,
+        value: this.state.nodeSearchValue,
+        type: 'search',
+        placeholder: 'Search entities',
+      }),
+      this.state.nodeSearchValue === '' ? null : h('div.view-search-clear', {onClick: () => this.clearSearchBox()}, [ // check if the search bar is empty
+        h('i.material-icons', 'close')
+      ])
+    ]);
+
+
     const nodeSearchBar = [
       h(IconButton, {
         icon: 'search',
@@ -142,20 +158,16 @@ class BaseNetworkView extends React.Component {
       }),
       h('div', {
         className: classNames('search-nodes', { 'search-nodes-open': this.state.searchOpen }),
-        onChange: e => this.searchCyNodes(e.target.value)
-      }, [
-          h('div.view-search-bar', [
-            h('input.view-search', {
-              ref: dom => this.searchField = dom,
-              type: 'search',
-              placeholder: 'Search entities',
-            }),
-            h('div.view-search-clear', {
-              onClick: () => this.clearSearchBox(),
-            }, [h('i.material-icons', 'close')])
-          ])
-        ])
+        onChange: e => {
+          this.setState({
+            nodeSearchValue: e.target.value
+          });
+          this.searchCyNodes(e.target.value);
+        }
+      }, [nodeSearchBarInput])
     ];
+
+
 
 
     const toolBar = [

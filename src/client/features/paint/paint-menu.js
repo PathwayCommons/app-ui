@@ -73,6 +73,7 @@ class PaintMenu extends React.Component {
     const props = this.props;
     const cy = props.cy;
 
+    const selectedFunctionName = this.state.selectedFunction.name;
     const selectedFunction = this.state.selectedFunction.func;
     const selectedClass = this.state.selectedClass;
 
@@ -119,7 +120,7 @@ class PaintMenu extends React.Component {
 
     const functionSelector = h('select.paint-select',
       {
-        value: selectedFunction.name,
+        value: selectedFunctionName,
         onChange: e => {
           const newSelectedFunction = _.find(this.analysisFns(), (fn) => fn.name === e.target.value);
           this.setState({

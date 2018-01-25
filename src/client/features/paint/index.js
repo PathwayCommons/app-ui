@@ -104,7 +104,13 @@ class Paint extends React.Component {
 
         // pathway results are sorted by gene expression intersection (largest to smallest)
         // take the largest gene intersection by default
-        let candidatePathway = pathwayResults.sort((p0, p1) => p1.geneIntersection.length - p0.geneIntersection.length)[0];
+
+        // see if there is a result that matches exactly
+        let candidatePathway = _.find(pathwayResults, pathway => pathway.json.graph.pathwayMetadata.title[0] === searchParam);
+
+        if (candidatePathway == null) {
+          candidatePathway = pathwayResults.sort((p0, p1) => p1.geneIntersection.length - p0.geneIntersection.length)[0];
+        }
 
         const network = candidatePathway.json;
 

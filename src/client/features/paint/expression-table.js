@@ -134,6 +134,10 @@ const createRawExpressions = (expressionJSON, networkJSON) => {
       const existingExpression = expressionByGeneName.get(mappingCandidate);
       expressionByGeneName.delete(mappingCandidate);
       expressionByGeneName.set(node.data.label, {geneName: node.data.label, values: existingExpression.values, replaced: existingExpression});
+
+      for (const gene of geneIntersection) {
+        expressionByGeneName.delete(gene);
+      }
     }
   });
 

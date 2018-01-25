@@ -17,7 +17,7 @@ class PaintMenu extends React.Component {
     this.state = {
       selectedFunction: this.analysisFns().mean,
       selectedClass: props.selectedClass,
-      selectedSearchResult: props.searchResults[0].json.graph.pathwayMetadata.uri,
+      selectedSearchResult: props.selectedSearchResult,
       loading: false
     };
   }

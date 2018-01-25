@@ -15,6 +15,10 @@ const { ExpressionTable, applyExpressionData } = require('./expression-table');
 const PaintMenu = require('./paint-menu');
 
 
+const demoExpressions = require('./demo-expressions.json');
+const demoPathways = require('./demo-pathway-results.json');
+
+
 const paintMenuId = 'paintMenu';
 const PaintViewConfig = {
   toolbarButtons: BaseNetworkView.config.toolbarButtons.concat({
@@ -64,7 +68,7 @@ class Paint extends React.Component {
     super(props);
 
     this.state = {
-      cy: make_cytoscape({headless: true}),
+      cy: {},
       componentConfig: {},
       layoutConfig: {},
       networkJSON: {},
@@ -95,56 +99,97 @@ class Paint extends React.Component {
     const searchParam = query.q;
     const enrichmentsURI = query.uri;
 
-    fetch(enrichmentsURI)
-    .then(res => res.json())
-    .then(json => {
-      const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
+    if (enrichmentsURI == null || searchParam == null) {
+      const network = demoPathways[0].json;
+      const demoExpressionTable = new ExpressionTable(demoExpressions, network.graph);
+      const layoutConfig = getLayoutConfig(network.layout);
+      const componentConfig = PaintViewConfig;
 
-      getAugmentedSearchResults(searchParam, expressions).then(pathwayResults => {
+      this.state = {
+        cy: make_cytoscape({headless: true}),
+        componentConfig: componentConfig,
+        layoutConfig: layoutConfig,
+        networkJSON: network.graph,
+        networkMetadata: {
+          uri: network.graph.pathwayMetadata.uri,
+          name: _.get(network, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
+          datasource: _.get(network, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
+          comments: network.graph.pathwayMetadata.comments,
+          organism: network.graph.pathwayMetadata.organism
+        },
+        networkLoading: false,
+        rawExpressions: demoExpressions,
+        expressionTable: demoExpressionTable,
+        selectedClass: _.get(demoExpressionTable.classes, '0', ''),
+        expressionsLoading: false,
+        searchParam: searchParam,
+        searchResults: demoPathways,
 
-        // pathway results are sorted by gene expression intersection (largest to smallest)
-        // take the largest gene intersection by default
-
-        // see if there is a result that matches exactly
-        let candidatePathway = _.find(pathwayResults, pathway => pathway.json.graph.pathwayMetadata.title[0] === searchParam);
-
-        if (candidatePathway == null) {
-          candidatePathway = pathwayResults.sort((p0, p1) => p1.geneIntersection.length - p0.geneIntersection.length)[0];
+        selectedSearchResult: network.graph.pathwayMetadata.uri,
+        selectedFunction: {
+          name: 'mean',
+          func: _.mean
         }
 
-        const network = candidatePathway.json;
+      };
 
-        const expressionTable = new ExpressionTable(json, candidatePathway.json.graph);
-        const layoutConfig = getLayoutConfig(network.layout);
-        const componentConfig = PaintViewConfig;
+      const selectedFn = this.state.selectedFunction.func;
+      const selectedClass = this.state.selectedClass;
+      this.state.cy.on('network-loaded', () => applyExpressionData(this.state.cy, demoExpressionTable, selectedClass, selectedFn));
+    } else {
+      fetch(enrichmentsURI)
+      .then(res => res.json())
+      .then(json => {
+        const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
 
-        this.setState({
-          componentConfig: componentConfig,
-          layoutConfig: layoutConfig,
-          networkJSON: network.graph,
-          networkMetadata: {
-            uri: network.graph.pathwayMetadata.uri,
-            name: _.get(network, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
-            datasource: _.get(network, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
-            comments: network.graph.pathwayMetadata.comments,
-            organism: network.graph.pathwayMetadata.organism
-          },
-          networkLoading: false,
-          rawExpressions: json,
-          expressionTable: expressionTable,
-          selectedClass: _.get(expressionTable.classes, '0', ''),
-          expressionsLoading: false,
-          searchParam: searchParam,
-          searchResults: pathwayResults
+        getAugmentedSearchResults(searchParam, expressions).then(pathwayResults => {
 
-        }, () => {
-          const selectedFn = this.state.selectedFunction.func;
-          const selectedClass = this.state.selectedClass;
-          this.state.cy.on('network-loaded', () => applyExpressionData(this.state.cy, expressionTable, selectedClass, selectedFn));
+          // pathway results are sorted by gene expression intersection (largest to smallest)
+          // take the largest gene intersection by default
+
+          // see if there is a result that matches exactly
+          let candidatePathway = _.find(pathwayResults, pathway => pathway.json.graph.pathwayMetadata.title[0] === searchParam);
+
+          if (candidatePathway == null) {
+            candidatePathway = pathwayResults.sort((p0, p1) => p1.geneIntersection.length - p0.geneIntersection.length)[0];
+          }
+
+          const network = candidatePathway.json;
+
+          const expressionTable = new ExpressionTable(json, candidatePathway.json.graph);
+          const layoutConfig = getLayoutConfig(network.layout);
+          const componentConfig = PaintViewConfig;
+
+          this.setState({
+            cy: make_cytoscape({headless: true}),
+            componentConfig: componentConfig,
+            layoutConfig: layoutConfig,
+            networkJSON: network.graph,
+            networkMetadata: {
+              uri: network.graph.pathwayMetadata.uri,
+              name: _.get(network, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
+              datasource: _.get(network, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
+              comments: network.graph.pathwayMetadata.comments,
+              organism: network.graph.pathwayMetadata.organism
+            },
+            networkLoading: false,
+            rawExpressions: json,
+            expressionTable: expressionTable,
+            selectedClass: _.get(expressionTable.classes, '0', ''),
+            expressionsLoading: false,
+            searchParam: searchParam,
+            searchResults: pathwayResults,
+
+            selectedSearchResult: candidatePathway.json.graph.pathwayMetadata.uri
+
+            }, () => {
+              const selectedFn = this.state.selectedFunction.func;
+              const selectedClass = this.state.selectedClass;
+              this.state.cy.on('network-loaded', () => applyExpressionData(this.state.cy, expressionTable, selectedClass, selectedFn));
+          });
         });
       });
-
-    });
+    }
   }
 
   render() {
@@ -166,7 +211,8 @@ class Paint extends React.Component {
       activeMenu: paintMenuId,
 
       searchParam: state.searchParam,
-      searchResults: state.searchResults
+      searchResults: state.searchResults,
+      selectedSearchResult: state.selectedSearchResult
 
     });
 

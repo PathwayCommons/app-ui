@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const controller = require('./controller');
 
+const geneQueryService = require('../gene-query');
 
 
 // Expose a rest endpoint for controller.submitLayout
@@ -36,6 +37,12 @@ router.get('/get-graph-and-layout', function (req, res) {
   });
 });
 
+router.get('/test/', (req, res) => {
+  const genes = req.query.genes;
+
+  res.json(geneQueryService(genes));
+
+});
 // Expose a rest endpoint for controller.endSession
 router.get('/disconnect', function (req, res) {
   controller.endSession(req.query.uri, req.query.version, req.query.user)

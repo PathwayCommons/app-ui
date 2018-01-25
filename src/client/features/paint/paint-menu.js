@@ -80,9 +80,8 @@ class PaintMenu extends React.Component {
     const expressionTable = props.expressionTable;
     const foldChangeExpressions = expressionTable.expressions().map(expression => {
 
-      const geneDisplayName = expression.replacedExpression.geneName ? `${expression.replacedExpression.geneName} (${expression.geneName})` : expression.geneName;
       return {
-        geneName: geneDisplayName,
+        geneName: expression.geneName,
         foldChange: expression.foldChange(selectedClass, selectedFunction, 'N/A')
       };
     });
@@ -149,7 +148,7 @@ class PaintMenu extends React.Component {
         }, [
         h('h3', result.json.graph.pathwayMetadata.title[0]),
         h('p', result.json.graph.pathwayMetadata.dataSource[0]),
-        h('p', `Genes matched: ${result.geneIntersection.length} / ${expressionTable.expressions().length} `)
+        h('p', `Genes matched: ${result.geneIntersection.length} `)
       ]);
     });
 

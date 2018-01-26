@@ -1,5 +1,5 @@
 const chai = require('chai');
-const tokenize = require('../src/server/tokenize.js');
+const tokenize = require('../src/server/gene-query/tokenize');
 const expect = chai.expect;
 
 // test summary:

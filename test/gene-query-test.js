@@ -120,6 +120,29 @@ describe('Gene query', function () {
     });
   });
 
+  describe('duplicate inputs', function() {
+    it('it should return a bad response', function() {
+      const badInput = ['AFF4', 'AFF4'];
+      const result = geneListValidator(badInput);
+      expect(result).to.equal({ msg: "input is bad" });
+    });
+    it('it should return a bad response', function() {
+      const badInput = ['AFF4', 'BRPF1', 'AFF4'];
+      const result = geneListValidator(badInput);
+      expect(result).to.equal({ msg: "input is bad" });
+    });
+    it('it should return a bad response', function() {
+      const badInput = ['HLTF', 'SIRT1', 'ING5', 'SIRT1'] ;
+      const result = geneListValidator(badInput);
+      expect(result).to.equal({ msg: "input is bad" });
+    });
+    it('it should return a bad response', function() {
+      const badInput = ['ELP4', 'HCFC1', 'TRIM24', 'KDM3A', 'PAF1', 'HCFC1', 'TRIM24'] ;
+      const result = geneListValidator(badInput);
+      expect(result).to.equal({ msg: "input is bad" });
+    });
+  });
+
   describe('mix of valid and invalid human gene symbols', function () {
     it('it should return a bad input response', function () {
       const badInput = ['AFF4', 'YY51'];

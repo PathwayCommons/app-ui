@@ -16,6 +16,5 @@ describe('mapping HGNC symbol to HGNC ID', function() {
     expect(mapping('GTF3C4')).to.deep.equal('HGNC:4667');
     expect(mapping('BRD4')).to.deep.equal('HGNC:13575');
     expect(mapping('ASH1L')).to.deep.equal('HGNC:19088');
-
   });
 });

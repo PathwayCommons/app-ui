@@ -6,6 +6,8 @@ const jsonContent = JSON.parse(jsonData);
 
 
 // map HGNC symbol to HGNC ID
+// After validation step, we can assume all symbols are valid
+// so that we can find a mapping for sure
 const mapping = function(symbol) {
   let id = 0;
   jsonContent.forEach(element => {

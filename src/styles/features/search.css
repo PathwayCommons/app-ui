@@ -224,21 +224,28 @@
   display: flex;
   vertical-align: middle; 
   align-items: center;
+  margin-top: 20px;
+  padding:(10px ,20px,30px,40px);
   width: var(--search-width);
   background-color: var(--light-base-colour);
 }
 .search-landing-title{
   color: var(--dark-base-colour);
-  
-  padding-left: 20px;
 }
 .search-landing-list{
   list-style-type: none;
+  padding:(10px ,20px,30px,40px);
 }
+
 .search-landing-item{
   margin: 0;
   padding: (1em,0em,1em,0em);
 }
+
+.search-landing-item-small{
+  font-size: 13px;
+}
+
 .search-item {
   display: flex;
   vertical-align: middle; 

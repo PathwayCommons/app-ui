@@ -28,6 +28,10 @@ const ServerAPI = {
     return fetch(`/pc-client/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },
 
+  landingBox(query){
+    return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&size=100&accession=${query}`,defaultFetchOpts).then(res => res.json());
+  },
+
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into
   // a layout
   submitNodeChange(uri, version, nodeId, bbox) {

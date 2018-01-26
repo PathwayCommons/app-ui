@@ -20,7 +20,7 @@ class Search extends React.Component {
     this.state = {
       query: _.assign({
         q: '',
-        gt: 1,
+        gt: 0,
         lt: 250,
         type: 'Pathway',
         datasource: []
@@ -29,7 +29,7 @@ class Search extends React.Component {
         name:'',
         fullName:'',
         synonyms:'',
-        links:[{text:'UniProt', link:'http://www.uniprot.org/uniprot/Q13315'}, {text:'Entrez gene',link:'fdsfd'}, {text:'Gene cards',link:'dsfdsfsd'}],
+        links:[],
         species:'',
         functions:'',
       },
@@ -52,8 +52,6 @@ class Search extends React.Component {
     const state = this.state;
     const query = state.query;
     this.getLandingResult();
-    query.type='Pathway';
-    query.gt=1;
     if (query.q !== '') {
       this.setState({
         loading: true
@@ -70,27 +68,38 @@ class Search extends React.Component {
 
   getLandingResult() {
     const state = this.state;
-    const query = state.query;
-    ServerAPI.landingBox(query.q).then(result=>{
-      this.setState({
-        landing:{
-          name: result[0].id.split('_')[0],
-          fullName:result[0].protein.recommendedName.fullName.value,
-          synonyms:result[0].protein.alternativeName ?result[0].protein.alternativeName.map(obj => {return obj.fullName.value;}).join(', ') :'',
-          links:[{text:'UniProt', link:`http://www.uniprot.org/uniprot/${query.q}`}, 
-                {text:'Gene cards',link:`http://www.genecards.org/cgi-bin/carddisp.pl?id=${query.q}`}, 
-                {text:'Methan',link:`http://mentha.uniroma2.it/result.php?q=${query.q}&org=9606`}],
-          species:result[0].organism.names[1].value,
-          functions:result[0].comments[0].text[0].value
-      }});
-    }).catch(() =>this.setState({landing: {
-      name:'',
-      fullName:'',
-      synonyms:'',
-      links:[],
-      species:'',
-      functions:'',
-    }}));
+    const query = {
+      q: state.query.q,
+        gt: -1,
+        lt: 250,
+        type: 'ProteinReference',
+        datasource: state.query.datasource
+    };
+    let uniprot;
+    ServerAPI.uniprotId(query).then(res=>{
+      uniprot=res[0];
+      if(!_.isEmpty(res)){
+        ServerAPI.landingBox(res[0]).then(result=>{
+          this.setState({
+          landing:{
+              name: result[0].id.split('_')[0],
+              fullName:result[0].protein.recommendedName.fullName.value,
+              synonyms:result[0].protein.alternativeName ?result[0].protein.alternativeName.map(obj => {return obj.fullName.value;}).join(', ') :'',
+              links:[{text:'UniProt', link:`http://www.uniprot.org/uniprot/${uniprot}`}, 
+                    {text:'Gene cards',link:`http://www.genecards.org/cgi-bin/carddisp.pl?id=${uniprot}`}, 
+                    {text:'Methan',link:`http://mentha.uniroma2.it/result.php?q=${uniprot}&org=9606`}],
+             species:result[0].organism.names[1].value,
+             functions:result[0].comments[0].text[0].value
+            }
+          });
+        });
+      }
+      else{
+        this.setState({
+          landing:{name:''}
+        });
+      }
+    });
   }
 
   componentDidMount() {

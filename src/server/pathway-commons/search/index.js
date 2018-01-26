@@ -49,7 +49,7 @@ const processQueryString = (queryString) => {
 //  - gt: min graph size result returned
 
 const querySearch = async (query) => {
-  const minSize = query.gt || 1; //TODO: why 250? 
+  const minSize = query.gt || 0; //TODO: why 250? 
   const maxSize = query.lt || 250;
  
   const queries = await processQueryString(query.q.trim());
@@ -64,7 +64,7 @@ const querySearch = async (query) => {
     if (searchSuccess && searchResult.searchHit.length > 0) {
       const filteredResults = searchResult.searchHit.filter(hit => {
         const size = hit.numParticipants ? hit.numParticipants : 0;
-        return minSize <= size && size < maxSize;
+        return minSize < size && size < maxSize;
       });
       if (filteredResults.length > 0) {
         return filteredResults;

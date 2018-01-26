@@ -223,9 +223,10 @@
 .search-landing{
   display: flex;
   vertical-align: middle; 
-  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
   margin-top: 20px;
-  padding:(10px ,20px,30px,40px);
+  padding:10px;
   width: var(--search-width);
   background-color: var(--light-base-colour);
 }
@@ -239,11 +240,27 @@
 
 .search-landing-item{
   margin: 0;
+  padding: (5em,0em,5em,0em);
+}
+.search-landing-item-hideContent {
+  overflow: hidden;
+  line-height: 1.2em;
+  height: 2.5em;
+  margin: 0;
+  padding: (1em,0em,1em,0em);
+}
+
+.search-landing-item-showContent {
+  line-height: 1.2em;
+  height: auto;
+  margin: 0;
   padding: (1em,0em,1em,0em);
 }
 
 .search-landing-item-small{
   font-size: 13px;
+  margin: 0;
+  padding: (1em,0em,1em,0em);
 }
 
 .search-item {

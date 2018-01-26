@@ -25,14 +25,7 @@ class Search extends React.Component {
         type: 'Pathway',
         datasource: []
       }, query),
-      landing: {
-        name:'',
-        fullName:'',
-        synonyms:'',
-        links:[],
-        species:'',
-        functions:'',
-      },
+      landing: [],
       searchResults: [],
       loading: false,
       showFilters: false,
@@ -75,28 +68,16 @@ class Search extends React.Component {
         type: 'ProteinReference',
         datasource: state.query.datasource
     };
-    let uniprot;
     ServerAPI.uniprotId(query).then(res=>{
-      uniprot=res[0];
       if(!_.isEmpty(res)){
         ServerAPI.landingBox(res[0]).then(result=>{
           this.setState({
-          landing:{
-              name: result[0].id.split('_')[0],
-              fullName:result[0].protein.recommendedName.fullName.value,
-              synonyms:result[0].protein.alternativeName ?result[0].protein.alternativeName.map(obj => {return obj.fullName.value;}).join(', ') :'',
-              links:[{text:'UniProt', link:`http://www.uniprot.org/uniprot/${uniprot}`}, 
-                    {text:'Gene cards',link:`http://www.genecards.org/cgi-bin/carddisp.pl?id=${uniprot}`}, 
-                    {text:'Methan',link:`http://mentha.uniroma2.it/result.php?q=${uniprot}&org=9606`}],
-             species:result[0].organism.names[1].value,
-             functions:result[0].comments[0].text[0].value
-            }
-          });
-        });
+          landing:result
+          });});
       }
       else{
         this.setState({
-          landing:{name:''}
+          landing:[]
         });
       }
     });
@@ -193,35 +174,31 @@ class Search extends React.Component {
     ]) :
       h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
 
-    const realaventInfo = ()=>{
-      if(state.landing.name===''){
-        return h('div');
-      }
-      
-      const links= state.landing.links.map(link=>{
+
+    const landing = state.landing.map(box=>{
+      const links=[{text:'UniProt', link:`http://www.uniprot.org/uniprot/${box.accession}`}, 
+      {text:'Gene cards',link:`http://www.genecards.org/cgi-bin/carddisp.pl?id=${box.accession}`}, 
+      {text:'Methan',link:`http://mentha.uniroma2.it/result.php?q=${box.accession}&org=9606`}]
+      .map(link=>{
        return h('a.more-link',{key: link.text, href: link.link},link.text);
       });
 
-      const functions = state.landingShowMore ? state.landing.functions : state.landing.functions.slice(0,180);
-    
-        return h('div.search-landing',[
-        //  h('div.sidebar',[
-        //     h('h1.search-landing-title',state.landing.name),
-        //     h('u.search-landing-item', state.landing.species)
-        //   ]),
-            h('ul.search-landing-list', [
-              h('li.search-landing-item',[
-                h('strong',state.landing.fullName+'-'),
-                h('strong.search-landing-item-small',state.landing.species)]),
-                h('i.search-landing-item-small',state.landing.synonyms),
-              h('li.search-landing-item',[
-                h('span.search-landing-item',{padding:'10px'},functions),
-                h('span.more-link',{onClick: e => this.setState({ landingShowMore: !state.landingShowMore })},state.landingShowMore? '« less': 'more »')
-              ]),
-              h('li.search-landing-item',[links])
-          ])
-        ]);
-    };
+      const synonyms= box.protein.alternativeName ?
+      h('i.search-landing-item-small',box.protein.alternativeName.map(obj => {return obj.fullName.value;}).join(', ')) :'';
+
+      const showFunction = state.landingShowMore ?  '.search-landing-item-showContent' : '.search-landing-item-hideContent';
+
+        return h('div.search-landing',{key: box.accession}, [
+              h('div.search-landing-item',[
+                h('strong',box.protein.recommendedName.fullName.value+'-'),
+                h('strong.search-landing-item-small', box.organism.names[1].value)]),
+                h('i.search-landing-item-small',[synonyms]),
+              h('div.search-landing-item',[
+                h(`p.${showFunction}`,box.comments[0].text[0].value),
+                h('span.more-link',{onClick: e => this.setState({ landingShowMore: !state.landingShowMore }) ,},state.landingShowMore? '« less': 'more »')]),
+              h('div.search-landing-item',[links])
+          ]);    
+    });
 
     return h('div.search', [
       h('div.search-header-container', [
@@ -274,7 +251,7 @@ class Search extends React.Component {
       h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' } }, [
         h('div.search-list-container', [
           h('div.search-result-info', [searchResultInfo]),
-          h(realaventInfo), 
+          h('div',[landing]), 
           h('div.search-list', searchResults)
         ])
       ])

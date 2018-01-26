@@ -37,11 +37,10 @@ router.get('/get-graph-and-layout', function (req, res) {
   });
 });
 
-router.get('/test/', (req, res) => {
+router.get('/gene-query/', (req, res) => {
   const genes = req.query.genes;
 
-  res.json(geneQueryService(genes));
-
+  res.json(geneQueryService({}));
 });
 // Expose a rest endpoint for controller.endSession
 router.get('/disconnect', function (req, res) {

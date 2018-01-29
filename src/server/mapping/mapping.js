@@ -1,7 +1,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const jsonData = fs.readFileSync(path.resolve(__dirname, "Validation_test_data_set.json"));
+const jsonData = fs.readFileSync(path.resolve(__dirname, "HGNC_dataset.json"));
 const jsonContent = JSON.parse(jsonData);
 
 
@@ -11,8 +11,8 @@ const jsonContent = JSON.parse(jsonData);
 const mapping = function(symbol) {
   let id = 0;
   jsonContent.forEach(element => {
-    if (element['FIELD1'] === symbol) {
-      id = element['FIELD2'];
+    if (element['B'] === symbol) {
+      id = element['A'];
     }
   });
   return id;

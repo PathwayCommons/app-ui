@@ -26,6 +26,7 @@ class Search extends React.Component {
         datasource: []
       }, query),
       landing: [],
+      landingLoading: false,
       searchResults: [],
       loading: false,
       showFilters: false,
@@ -44,11 +45,11 @@ class Search extends React.Component {
   getSearchResult() {
     const state = this.state;
     const query = state.query;
-    this.getLandingResult();
     if (query.q !== '') {
       this.setState({
         loading: true
       });
+      this.getLandingResult();
       ServerAPI.querySearch(query)
         .then(searchResults => {
            this.setState({
@@ -68,15 +69,22 @@ class Search extends React.Component {
         type: 'ProteinReference',
         datasource: state.query.datasource
     };
+    this.setState({
+      landingLoading: true
+    });
     ServerAPI.uniprotId(query).then(res=>{
       if(!_.isEmpty(res)){
         ServerAPI.landingBox(res[0]).then(result=>{
           this.setState({
-          landing:result
-          });});
+          landingLoading: false,
+          landing:result,
+          landingShowMore: false,
+          });
+        });
       }
       else{
         this.setState({
+          landingLoading: true,
           landing:[]
         });
       }
@@ -174,31 +182,41 @@ class Search extends React.Component {
     ]) :
       h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
 
+    const landing = (state.landingLoading && state.searchResults.length>0) ?
+      h('div.search-landing',[h(Loader, { loaded: !state.landingLoading, options: { color: '#16A085',position:'relative', top: '15px' }})]):
+      state.landing.map(box=>{
+        const synonyms=_.hasIn(box,'protein.alternativeName') ? 
+          h('i.search-landing-small',box.protein.alternativeName.map(obj => {return obj.fullName.value;}).join(', ')):'';
 
-    const landing = state.landing.map(box=>{
-      const links=[{text:'UniProt', link:`http://www.uniprot.org/uniprot/${box.accession}`}, 
-      {text:'Gene cards',link:`http://www.genecards.org/cgi-bin/carddisp.pl?id=${box.accession}`}, 
-      {text:'Methan',link:`http://mentha.uniroma2.it/result.php?q=${box.accession}&org=9606`}]
-      .map(link=>{
-       return h('a.more-link',{key: link.text, href: link.link},link.text);
+        const showFunction = state.landingShowMore ?  '.search-landing-showContent' : '.search-landing-hideContent';
+        let functions= h('div');
+        if(_.hasIn(box,'comments[0].text') && box.comments[0].type==='FUNCTION'){
+          functions=[h(`div.${showFunction}`,{key:'text'},box.comments[0].text[0].value)];
+          if (box.comments[0].text[0].value.length>=95){
+            functions.push(
+              h('div.search-landing-link',{onClick: e => this.setState({ landingShowMore: !state.landingShowMore }) , key:'showMore'},state.landingShowMore? '« less': 'more »')
+            );
+          }
+        } 
+       
+        const links=[
+          {text:'UniProt', link:`http://www.uniprot.org/uniprot/${box.accession}`}, 
+          {text:'Gene cards',link:`http://www.genecards.org/cgi-bin/carddisp.pl?id=${box.accession}`}, 
+          {text:'Methan',link:`http://mentha.uniroma2.it/result.php?q=${box.accession}&org=9606`}
+        ].map(link=>{return h('a.search-landing-link',{key: link.text, href: link.link},link.text);});
+
+        return h('div.search-landing',{key: box.accession},[ 
+          h(Loader, { loaded: !state.landingLoading, options: { color: '#16A085',position:'relative', top: '15px' }, loadedClassName: 'search-landing-flex' }, [
+            h('div.search-landing-section',[
+              h('strong',box.protein.recommendedName.fullName.value+'-'),
+              h('strong.search-landing-small', box.organism.names[1].value)
+            ]),
+            h('div.search-landing-section',[synonyms]),
+            h('div.search-landing-section',[functions]),
+            h('div.search-landing-section',[links])
+          ])
+        ]);    
       });
-
-      const synonyms= box.protein.alternativeName ?
-      h('i.search-landing-item-small',box.protein.alternativeName.map(obj => {return obj.fullName.value;}).join(', ')) :'';
-
-      const showFunction = state.landingShowMore ?  '.search-landing-item-showContent' : '.search-landing-item-hideContent';
-
-        return h('div.search-landing',{key: box.accession}, [
-              h('div.search-landing-item',[
-                h('strong',box.protein.recommendedName.fullName.value+'-'),
-                h('strong.search-landing-item-small', box.organism.names[1].value)]),
-                h('i.search-landing-item-small',[synonyms]),
-              h('div.search-landing-item',[
-                h(`p.${showFunction}`,box.comments[0].text[0].value),
-                h('span.more-link',{onClick: e => this.setState({ landingShowMore: !state.landingShowMore }) ,},state.landingShowMore? '« less': 'more »')]),
-              h('div.search-landing-item',[links])
-          ]);    
-    });
 
     return h('div.search', [
       h('div.search-header-container', [

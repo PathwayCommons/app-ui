@@ -9,7 +9,7 @@ const jsonContent = JSON.parse(jsonData);
 // After validation step, we can assume all symbols are valid
 // so that we can find a mapping for sure
 const mapping = function(hgncSymbol) {
-  let id = 0;
+  let id = null;
   jsonContent.forEach(element => {
     if (element['Approved_Symbol'] === hgncSymbol) {
       id = element['HGNC_ID'];

@@ -119,7 +119,7 @@
 .search-option-item-container {
   margin-right: 10px;
   cursor: pointer;
-
+  
   transition: all 0.1s linear;
 }
 
@@ -225,6 +225,7 @@
   margin-top: 20px;
   padding:10px;
   max-width: var(--search-width);
+  width: 100%;
   min-height: 30px;
   background-color: var(--light-base-colour);
 }
@@ -252,6 +253,7 @@
 .search-landing-showContent {
   line-height: 1.2em;
   display: inline;
+
 }
 .search-landing-small{
   font-size: 10pt;
@@ -267,7 +269,7 @@
   white-space: pre; 
   padding-right: 5px;
   display: inline;
-  cursor: pointer
+  cursor: pointer;
 }
 
 .search-item {

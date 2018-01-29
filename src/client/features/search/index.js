@@ -183,7 +183,7 @@ class Search extends React.Component {
       h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
 
     const landing = (state.landingLoading && state.searchResults.length>0) ?
-      h('div.search-landing',[h(Loader, { loaded: !state.landingLoading, options: { color: '#16A085',position:'relative', top: '15px' }})]):
+      h('div.search-landing',[h(Loader, { loaded:!state.landingLoading , options: { color: '#16A085',position:'relative', top: '15px' }})]):
       state.landing.map(box=>{
         const synonyms=_.hasIn(box,'protein.alternativeName') ? 
           h('i.search-landing-small',box.protein.alternativeName.map(obj => {return obj.fullName.value;}).join(', ')):'';
@@ -206,7 +206,7 @@ class Search extends React.Component {
         ].map(link=>{return h('a.search-landing-link',{key: link.text, href: link.link},link.text);});
 
         return h('div.search-landing',{key: box.accession},[ 
-          h(Loader, { loaded: !state.landingLoading, options: { color: '#16A085',position:'relative', top: '15px' }, loadedClassName: 'search-landing-flex' }, [
+          h('div.search-landing-flex', [
             h('div.search-landing-section',[
               h('strong',box.protein.recommendedName.fullName.value+'-'),
               h('strong.search-landing-small', box.organism.names[1].value)
@@ -269,7 +269,7 @@ class Search extends React.Component {
       h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' } }, [
         h('div.search-list-container', [
           h('div.search-result-info', [searchResultInfo]),
-          h('div',[landing]), 
+          h('div',{style:{width:'100%'}},[landing]), 
           h('div.search-list', searchResults)
         ])
       ])

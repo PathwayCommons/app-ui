@@ -32,7 +32,6 @@ describe('proceed', function () {
     expect(proceed(data4)).to.deep.equal(false);
     expect(proceed(data5)).to.deep.equal(false);
     expect(proceed(data6)).to.deep.equal(false);
-    expect(proceed(data1)).to.deep.equal(false);
   });
 });
 

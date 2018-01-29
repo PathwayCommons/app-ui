@@ -54,7 +54,5 @@ const proceed = function(listOfToken) {
   return ret;
 };
 
-
-
 module.exports = {validate, proceed};
 

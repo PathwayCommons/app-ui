@@ -26,12 +26,16 @@ describe('proceed', function () {
     const data4 = validate('\nELP4\n\nHLTF\nPAF1\nMLLT6\r\nHLTF\n\n\n');
     const data5 = validate('\r\n@II\nELP4\n\n\nPAF1\nMLLT6\r\nHLTF\n\n\n');
     const data6 = validate('\nELP4\n\nHLTF\r\nMLLT6\nPAF1\nMLLT6\r\nHLTF\n\n\n');
+    const data7 = validate('RNR5\n\nRNR4\r\nRNR5\r\n\r\n\r\nSNORD80\nSNORD102\r\n');
+    const data8 = validate('\nELP4\n\nHLTF\r\nMLLT6\r\n@II\nPAF1\r\n3LL9\nMLLT6\r\nHLTF\n\n\n');
     expect(proceed(data1)).to.deep.equal(false);
     expect(proceed(data2)).to.deep.equal(false);
     expect(proceed(data3)).to.deep.equal(false);
     expect(proceed(data4)).to.deep.equal(false);
     expect(proceed(data5)).to.deep.equal(false);
     expect(proceed(data6)).to.deep.equal(false);
+    expect(proceed(data7)).to.deep.equal(false);
+    expect(proceed(data8)).to.deep.equal(false);
   });
 });
 

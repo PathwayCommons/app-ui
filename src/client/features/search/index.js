@@ -36,7 +36,7 @@ class Search extends React.Component {
         this.setState({
           dataSources: Object.values(result)
         });
-      });
+      }); 
   }
 
   getSearchResult() {
@@ -104,6 +104,10 @@ class Search extends React.Component {
     }, props.search);
 
     const searchResults = state.searchResults.map(result => {
+      if(_.isEmpty(state.dataSources)){
+        return h('div');
+      }
+      else{
       const dsInfo = _.find(state.dataSources, ds => {
         return ds.uri === result.dataSource[0];
       });
@@ -119,6 +123,7 @@ class Search extends React.Component {
           h('p.search-item-content-participants', `${result.numParticipants} Participants`)
         ])
       ]);
+    }
     });
 
     const searchTypeTabs = [

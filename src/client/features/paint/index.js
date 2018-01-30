@@ -11,8 +11,12 @@ const make_cytoscape = require('../../common/cy');
 const { ServerAPI } = require('../../services');
 
 
-const {createExpressionTable, applyExpressionData} = require('./expression-model');
+const { ExpressionTable, applyExpressionData } = require('./expression-table');
 const PaintMenu = require('./paint-menu');
+
+
+const demoExpressions = require('./demo-expressions.json');
+const demoPathways = require('./demo-pathway-results.json');
 
 
 const paintMenuId = 'paintMenu';
@@ -31,8 +35,8 @@ const PaintViewConfig = {
   useSearchBar: false
 };
 
-const getAugmentedSearchResults = (searchParam, expressionTable) => {
-  const geneQueries = _.chunk(expressionTable.rows.map(row => row.geneName), 15)
+const getAugmentedSearchResults = (searchParam, expressions) => {
+  const geneQueries = _.chunk(expressions.map(expression => expression.geneName), 15)
   .map(chunk => ServerAPI.querySearch({q: chunk.join(' ')}));
 
   const searchQuery = ServerAPI.querySearch({q: searchParam});
@@ -44,8 +48,9 @@ const getAugmentedSearchResults = (searchParam, expressionTable) => {
 
     return Promise.all(pathwaysJSON).then(pathways => {
       const processed = pathways.map(pathway => {
-        const genesInPathway = _.uniq(pathway.graph.nodes.map(node => node.data.label));
-        const genesInExpressionData = expressionTable.rows.map(row => row.geneName);
+        const macromolecules = pathway.graph.nodes.filter(node => node.data.class === 'macromolecule');
+        const genesInPathway = _.flattenDeep(_.uniq([...macromolecules.map(node => node.data.label), ...macromolecules.map(node => node.data.geneSynonyms)]));
+        const genesInExpressionData = expressions.map(expression => expression.geneName);
 
         return {
           json: pathway,
@@ -63,7 +68,7 @@ class Paint extends React.Component {
     super(props);
 
     this.state = {
-      cy: make_cytoscape({headless: true}),
+      cy: {},
       componentConfig: {},
       layoutConfig: {},
       networkJSON: {},
@@ -94,49 +99,97 @@ class Paint extends React.Component {
     const searchParam = query.q;
     const enrichmentsURI = query.uri;
 
-    fetch(enrichmentsURI)
-    .then(res => res.json())
-    .then(json => {
-      const expressionClasses = _.get(json.dataSetClassList, '0.classes', []);
-      const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
-      const expressionTable = createExpressionTable(expressions, expressionClasses);
+    if (enrichmentsURI == null || searchParam == null) {
+      const network = demoPathways[0].json;
+      const demoExpressionTable = new ExpressionTable(demoExpressions, network.graph);
+      const layoutConfig = getLayoutConfig(network.layout);
+      const componentConfig = PaintViewConfig;
 
-      getAugmentedSearchResults(searchParam, expressionTable).then(pathwayResults => {
+      this.state = {
+        cy: make_cytoscape({headless: true}),
+        componentConfig: componentConfig,
+        layoutConfig: layoutConfig,
+        networkJSON: network.graph,
+        networkMetadata: {
+          uri: network.graph.pathwayMetadata.uri,
+          name: _.get(network, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
+          datasource: _.get(network, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
+          comments: network.graph.pathwayMetadata.comments,
+          organism: network.graph.pathwayMetadata.organism
+        },
+        networkLoading: false,
+        rawExpressions: demoExpressions,
+        expressionTable: demoExpressionTable,
+        selectedClass: _.get(demoExpressionTable.classes, '0', ''),
+        expressionsLoading: false,
+        searchParam: searchParam,
+        searchResults: demoPathways,
 
-        // pathway results are sorted by gene expression intersection (largest to smallest)
-        // take the largest gene intersection by default
-        let candidatePathway = pathwayResults.sort((p0, p1) => p1.geneIntersection.length - p0.geneIntersection.length)[0];
+        selectedSearchResult: network.graph.pathwayMetadata.uri,
+        selectedFunction: {
+          name: 'mean',
+          func: _.mean
+        }
 
-        const network = candidatePathway.json;
-        const layoutConfig = getLayoutConfig(network.layout);
-        const componentConfig = PaintViewConfig;
+      };
 
-        this.setState({
-          componentConfig: componentConfig,
-          layoutConfig: layoutConfig,
-          networkJSON: network.graph,
-          networkMetadata: {
-            uri: network.graph.pathwayMetadata.uri,
-            name: _.get(network, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
-            datasource: _.get(network, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
-            comments: network.graph.pathwayMetadata.comments,
-            organism: network.graph.pathwayMetadata.organism
-          },
-          networkLoading: false,
-          expressionTable: expressionTable,
-          selectedClass: _.get(expressionClasses, '0', ''),
-          expressionsLoading: false,
-          searchParam: searchParam,
-          searchResults: pathwayResults
+      const selectedFn = this.state.selectedFunction.func;
+      const selectedClass = this.state.selectedClass;
+      this.state.cy.on('network-loaded', () => applyExpressionData(this.state.cy, demoExpressionTable, selectedClass, selectedFn));
+    } else {
+      fetch(enrichmentsURI)
+      .then(res => res.json())
+      .then(json => {
+        const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
 
-        }, () => {
-          const selectedFn = this.state.selectedFunction.func;
-          const selectedClass = this.state.selectedClass;
-          this.state.cy.on('network-loaded', () => applyExpressionData(this.state.cy, expressionTable, selectedClass, selectedFn));
+        getAugmentedSearchResults(searchParam, expressions).then(pathwayResults => {
+
+          // pathway results are sorted by gene expression intersection (largest to smallest)
+          // take the largest gene intersection by default
+
+          // see if there is a result that matches exactly
+          let candidatePathway = _.find(pathwayResults, pathway => pathway.json.graph.pathwayMetadata.title[0] === searchParam);
+
+          if (candidatePathway == null) {
+            candidatePathway = pathwayResults.sort((p0, p1) => p1.geneIntersection.length - p0.geneIntersection.length)[0];
+          }
+
+          const network = candidatePathway.json;
+
+          const expressionTable = new ExpressionTable(json, candidatePathway.json.graph);
+          const layoutConfig = getLayoutConfig(network.layout);
+          const componentConfig = PaintViewConfig;
+
+          this.setState({
+            cy: make_cytoscape({headless: true}),
+            componentConfig: componentConfig,
+            layoutConfig: layoutConfig,
+            networkJSON: network.graph,
+            networkMetadata: {
+              uri: network.graph.pathwayMetadata.uri,
+              name: _.get(network, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
+              datasource: _.get(network, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
+              comments: network.graph.pathwayMetadata.comments,
+              organism: network.graph.pathwayMetadata.organism
+            },
+            networkLoading: false,
+            rawExpressions: json,
+            expressionTable: expressionTable,
+            selectedClass: _.get(expressionTable.classes, '0', ''),
+            expressionsLoading: false,
+            searchParam: searchParam,
+            searchResults: pathwayResults,
+
+            selectedSearchResult: candidatePathway.json.graph.pathwayMetadata.uri
+
+            }, () => {
+              const selectedFn = this.state.selectedFunction.func;
+              const selectedClass = this.state.selectedClass;
+              this.state.cy.on('network-loaded', () => applyExpressionData(this.state.cy, expressionTable, selectedClass, selectedFn));
+          });
         });
       });
-
-    });
+    }
   }
 
   render() {
@@ -151,13 +204,15 @@ class Paint extends React.Component {
       networkMetadata: state.networkMetadata,
 
       // paint specific props needed by the paint menu
+      rawExpressions: state.rawExpressions,
       expressionTable: state.expressionTable,
       selectedFunction: state.selectedFunction,
       selectedClass: state.selectedClass,
       activeMenu: paintMenuId,
 
       searchParam: state.searchParam,
-      searchResults: state.searchResults
+      searchResults: state.searchResults,
+      selectedSearchResult: state.selectedSearchResult
 
     });
 

@@ -1,5 +1,5 @@
 let winston = require('winston');
-let config = require('./config');
+let config = require('../config');
 
 let logger = new (winston.Logger)({
   transports: [

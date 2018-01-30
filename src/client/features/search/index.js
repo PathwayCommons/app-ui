@@ -183,7 +183,7 @@ class Search extends React.Component {
       h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
 
     const landing = (state.landingLoading && state.searchResults.length>0) ?
-      h(Loader, { loaded:!state.landingLoading , options: { color: '#16A085',position:'relative', top: '15px' }}):
+      h('div.search-landing.innner',[h(Loader, { loaded:!state.landingLoading , options: { color: '#16A085',position:'relative', top: '15px' }})]):
       state.landing.map(box=>{
         const synonyms=_.hasIn(box,'protein.alternativeName') ? 
           h('i.search-landing-small',box.protein.alternativeName.map(obj => {return obj.fullName.value;}).join(', ')):'';
@@ -205,15 +205,15 @@ class Search extends React.Component {
           {text:'Methan',link:`http://mentha.uniroma2.it/result.php?q=${box.accession}&org=9606`}
         ].map(link=>{return h('a.search-landing-link',{key: link.text, href: link.link},link.text);});
 
-        return [ 
-          h('div.search-landing-section',{key:'name'},[
+        return h('div.search-landing.innner',{key: box.accession},[ 
+          h('div.search-landing-section',[
             h('strong',box.protein.recommendedName.fullName.value+'-'),
             h('strong.search-landing-small', box.organism.names[1].value)
           ]),
-          h('div.search-landing-section',{key:'synonyms'},[synonyms]),
-          h('div.search-landing-section',{key:'functions'},[functions]),
-          h('div.search-landing-section',{key:'links'},[links])
-        ];    
+          h('div.search-landing-section',[synonyms]),
+          h('div.search-landing-section',[functions]),
+          h('div.search-landing-section',[links])
+        ]);    
       });
 
     return h('div.search', [

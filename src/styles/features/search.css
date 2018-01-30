@@ -220,8 +220,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .search-landing{
+  width: 100%;
+}
+
+.search-landing.innner{
   margin-top: 20px;
   padding:10px;
   max-width: var(--search-width);

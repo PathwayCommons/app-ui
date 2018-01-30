@@ -72,9 +72,9 @@ class Search extends React.Component {
     this.setState({
       landingLoading: true
     });
-    ServerAPI.uniprotId(query).then(res=>{
+    ServerAPI.findUniprotId(query).then(res=>{
       if(!_.isEmpty(res)){
-        ServerAPI.landingBox(res[0]).then(result=>{
+        ServerAPI.getProteinInformation(res[0]).then(result=>{
           this.setState({
           landingLoading: false,
           landing:result,
@@ -183,7 +183,7 @@ class Search extends React.Component {
       h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
 
     const landing = (state.landingLoading && state.searchResults.length>0) ?
-      h('div.search-landing',[h(Loader, { loaded:!state.landingLoading , options: { color: '#16A085',position:'relative', top: '15px' }})]):
+      h(Loader, { loaded:!state.landingLoading , options: { color: '#16A085',position:'relative', top: '15px' }}):
       state.landing.map(box=>{
         const synonyms=_.hasIn(box,'protein.alternativeName') ? 
           h('i.search-landing-small',box.protein.alternativeName.map(obj => {return obj.fullName.value;}).join(', ')):'';
@@ -205,15 +205,15 @@ class Search extends React.Component {
           {text:'Methan',link:`http://mentha.uniroma2.it/result.php?q=${box.accession}&org=9606`}
         ].map(link=>{return h('a.search-landing-link',{key: link.text, href: link.link},link.text);});
 
-        return h('div.search-landing',{key: box.accession},[ 
-          h('div.search-landing-section',[
+        return [ 
+          h('div.search-landing-section',{key:'name'},[
             h('strong',box.protein.recommendedName.fullName.value+'-'),
             h('strong.search-landing-small', box.organism.names[1].value)
           ]),
-          h('div.search-landing-section',[synonyms]),
-          h('div.search-landing-section',[functions]),
-          h('div.search-landing-section',[links])
-        ]);    
+          h('div.search-landing-section',{key:'synonyms'},[synonyms]),
+          h('div.search-landing-section',{key:'functions'},[functions]),
+          h('div.search-landing-section',{key:'links'},[links])
+        ];    
       });
 
     return h('div.search', [
@@ -267,7 +267,7 @@ class Search extends React.Component {
       h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' } }, [
         h('div.search-list-container', [
           h('div.search-result-info', [searchResultInfo]),
-          h('div',{style:{width:'100%'}},[landing]), 
+          h('div.search-landing',[landing]), 
           h('div.search-list', searchResults)
         ])
       ])

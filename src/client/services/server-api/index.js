@@ -28,7 +28,7 @@ const ServerAPI = {
     return fetch(`/pc-client/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },
 
-  uniprotId(query){
+  findUniprotId(query){
   return fetch(`/pc-client/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json()).then(res=> {
     return _.compact(res.map(hit=>{
         if( hit.uri.startsWith('http://identifiers.org/uniprot/') && _.endsWith(hit.organism[0],'9606')){
@@ -38,8 +38,8 @@ const ServerAPI = {
     });
   },
 
-  landingBox(query){
-    return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&size=1&accession=${query}`,defaultFetchOpts).then(res => res.json());
+  getProteinInformation(uniprotId){
+    return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&size=1&accession=${uniprotId}`,defaultFetchOpts).then(res => res.json());
   },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into

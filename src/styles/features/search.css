@@ -228,9 +228,6 @@
   width: 100%;
   min-height: 30px;
   background-color: var(--light-base-colour);
-}
-
-.search-landing-flex{
   display: flex;
   vertical-align: middle; 
   justify-content: space-between;

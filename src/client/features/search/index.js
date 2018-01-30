@@ -206,15 +206,13 @@ class Search extends React.Component {
         ].map(link=>{return h('a.search-landing-link',{key: link.text, href: link.link},link.text);});
 
         return h('div.search-landing',{key: box.accession},[ 
-          h('div.search-landing-flex', [
-            h('div.search-landing-section',[
-              h('strong',box.protein.recommendedName.fullName.value+'-'),
-              h('strong.search-landing-small', box.organism.names[1].value)
-            ]),
-            h('div.search-landing-section',[synonyms]),
-            h('div.search-landing-section',[functions]),
-            h('div.search-landing-section',[links])
-          ])
+          h('div.search-landing-section',[
+            h('strong',box.protein.recommendedName.fullName.value+'-'),
+            h('strong.search-landing-small', box.organism.names[1].value)
+          ]),
+          h('div.search-landing-section',[synonyms]),
+          h('div.search-landing-section',[functions]),
+          h('div.search-landing-section',[links])
         ]);    
       });
 

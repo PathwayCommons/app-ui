@@ -28,6 +28,20 @@ const ServerAPI = {
     return fetch(`/pc-client/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },
 
+  findUniprotId(query){
+  return fetch(`/pc-client/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json()).then(res=> {
+    return _.compact(res.map(hit=>{
+        if( hit.uri.startsWith('http://identifiers.org/uniprot/') && ( _.isUndefined(query.species)|| _.endsWith(hit.organism[0],query.species))) {
+         return _.last(hit.uri.split('/')); //Parses and returns the Uniprot id
+        }
+      }));
+    });
+  },
+
+  getProteinInformation(uniprotId){
+    return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&size=1&accession=${uniprotId}`,defaultFetchOpts).then(res => res.json());
+  },
+
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into
   // a layout
   submitNodeChange(uri, version, nodeId, bbox) {

@@ -25,9 +25,12 @@ class Search extends React.Component {
         type: 'Pathway',
         datasource: []
       }, query),
+      landing: [],
+      landingLoading: false,
       searchResults: [],
       loading: false,
       showFilters: false,
+      landingShowMore: false,
       dataSources: []
     };
     
@@ -42,19 +45,52 @@ class Search extends React.Component {
   getSearchResult() {
     const state = this.state;
     const query = state.query;
-
     if (query.q !== '') {
       this.setState({
         loading: true
       });
+      this.getLandingResult();
       ServerAPI.querySearch(query)
         .then(searchResults => {
-          this.setState({
-            searchResults: searchResults,
-            loading: false
-          });
+           this.setState({
+             searchResults: searchResults,
+             loading: false
+           });
         });
     }
+  }
+
+  getLandingResult() {
+    const state = this.state;
+    const query = {
+      q: state.query.q,
+        gt: -1,
+        lt: 250,
+        type: 'ProteinReference',
+        datasource: state.query.datasource,
+        species: '9606'
+    };
+    this.setState({
+      landingLoading: true
+    },()=>{
+      ServerAPI.findUniprotId(query).then(res=>{
+        if(!_.isEmpty(res)){
+          ServerAPI.getProteinInformation(res[0]).then(result=>{
+            this.setState({
+            landingLoading: false,
+            landing:result,
+            landingShowMore: false,
+            });
+          });
+        }
+        else{
+          this.setState({
+            landingLoading: true,
+            landing:[]
+          });
+        }
+      });
+    });
   }
 
   componentDidMount() {
@@ -91,14 +127,13 @@ class Search extends React.Component {
       search: queryString.stringify(query),
       state: {}
     });
-
     this.getSearchResult();
   }
 
   render() {
     const props = this.props;
     const state = this.state;
-    
+
     let Example = props => h('span.search-example', {
       onClick: () => this.setAndSubmitSearchQuery({q: props.search})
     }, props.search);
@@ -107,6 +142,7 @@ class Search extends React.Component {
       const dsInfo =_.isEmpty(state.dataSources)? {iconUrl:null , name:''}: _.find(state.dataSources, ds => {
         return ds.uri === result.dataSource[0];
       });
+
       return h('div.search-item', [
        h('div.search-item-icon',[
           h('img', {src: dsInfo.iconUrl})
@@ -148,6 +184,39 @@ class Search extends React.Component {
     ]) :
       h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
 
+    const landing = (state.landingLoading && state.searchResults.length>0) ?
+      h('div.search-landing.innner',[h(Loader, { loaded:!state.landingLoading , options: { color: '#16A085',position:'relative', top: '15px' }})]):
+      state.landing.map(box=>{
+        const synonyms=_.hasIn(box,'protein.alternativeName') ? 
+          h('i.search-landing-small',box.protein.alternativeName.map(obj => obj.fullName.value).join(', ')):'';
+
+        const showFunction = state.landingShowMore ?  'search-landing-showContent' : 'search-landing-hideContent';
+        let functions= h('div');
+        if(_.hasIn(box,'comments[0].text') && box.comments[0].type==='FUNCTION'){
+          functions=[h('div',{className: showFunction, key:'text'},box.comments[0].text[0].value)];
+          if (box.comments[0].text[0].value.length>=95){
+            functions.push(
+              h('div.search-landing-link',{onClick: e => this.setState({ landingShowMore: !state.landingShowMore }) , key:'showMore'},state.landingShowMore? '« less': 'more »')
+            );
+          }
+        } 
+       
+        const links=[
+          {text:'UniProt', link:`http://www.uniprot.org/uniprot/${box.accession}`}, 
+          {text:'Gene cards',link:`http://www.genecards.org/cgi-bin/carddisp.pl?id=${box.accession}`}, 
+          {text:'Methan',link:`http://mentha.uniroma2.it/result.php?q=${box.accession}&org=9606`}
+        ].map(link=>{return h('a.search-landing-link',{key: link.text, href: link.link},link.text);});
+
+        return h('div.search-landing.innner',{key: box.accession},[ 
+          h('div.search-landing-section',[
+            h('strong',box.protein.recommendedName.fullName.value+'-'),
+            h('strong.search-landing-small', box.organism.names[1].value)
+          ]),
+          h('div.search-landing-section',[synonyms]),
+          h('div.search-landing-section',[functions]),
+          h('div.search-landing-section',[links])
+        ]);    
+      });
 
     return h('div.search', [
       h('div.search-header-container', [
@@ -200,6 +269,7 @@ class Search extends React.Component {
       h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' } }, [
         h('div.search-list-container', [
           h('div.search-result-info', [searchResultInfo]),
+          h('div.search-landing',[landing]), 
           h('div.search-list', searchResults)
         ])
       ])

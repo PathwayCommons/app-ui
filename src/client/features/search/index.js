@@ -30,13 +30,13 @@ class Search extends React.Component {
       showFilters: false,
       dataSources: []
     };
-
-    ServerAPI.datasources()
-      .then(result => {
-        this.setState({
-          dataSources: Object.values(result)
+    
+      ServerAPI.datasources()
+        .then(result => {
+          this.setState({
+            dataSources: Object.values(result)
+          });
         });
-      });
   }
 
   getSearchResult() {
@@ -104,26 +104,21 @@ class Search extends React.Component {
     }, props.search);
 
     const searchResults = state.searchResults.map(result => {
-      if(_.isEmpty(state.dataSources)){
-        return h('div');
-      }
-      else{
-        const dsInfo = _.find(state.dataSources, ds => {
-          return ds.uri === result.dataSource[0];
-        });
-        return h('div.search-item', [
-          h('div.search-item-icon',[
-            h('img', {src: dsInfo.iconUrl})
+      const dsInfo =_.isEmpty(state.dataSources)? {iconUrl:null , name:''}: _.find(state.dataSources, ds => {
+        return ds.uri === result.dataSource[0];
+      });
+      return h('div.search-item', [
+       h('div.search-item-icon',[
+          h('img', {src: dsInfo.iconUrl})
+        ]),
+        h('div.search-item-content', [
+          h(Link, { to: { pathname: '/view', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' }, [
+            h('h3.search-item-content-title', result.name || 'N/A'),
           ]),
-          h('div.search-item-content', [
-            h(Link, { to: { pathname: '/view', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' }, [
-              h('h3.search-item-content-title', result.name || 'N/A'),
-            ]),
-            h('p.search-item-content-datasource', ` ${dsInfo.name}`),
-            h('p.search-item-content-participants', `${result.numParticipants} Participants`)
-          ])
-        ]);
-      }
+          h('p.search-item-content-datasource', ` ${dsInfo.name}`),
+          h('p.search-item-content-participants', `${result.numParticipants} Participants`)
+        ])
+      ]);
     });
 
     const searchTypeTabs = [

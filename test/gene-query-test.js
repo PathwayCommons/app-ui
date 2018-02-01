@@ -6,7 +6,6 @@ const assert = chai.assert;
 
 
 
-<<<<<<< HEAD
 describe('Gene query', function () {
   describe('single valid human gene symbol', function () {
     it('it should return a good input response', function () {
@@ -197,22 +196,5 @@ describe('Gene query', function () {
       expect(result).to.equal({ msg: "input is bad" });
     });
 
-=======
-describe('Gene query', function(){
-
-  it('single human gene symbol, returns a good input response', function(){
-    const goodInput = [['AFF4'], ['NAP1L3'], ['BRPF1'], ['TCF20']];
-
-    const result = geneListValidator(goodInput);
-    expect(result).to.equal({msg: "input is good"});
-  });
-
-
-  it('single invalid gene symbol, returns a bad input response', function(){
-    const badInput = [['YY50'], ['YY51'], ['YY52'], ['YY53']];
-
-    const result = geneListValidator(badInput);
-    expect(result).to.equal({msg: "input is bad"});
->>>>>>> a8ce9c8... initial commit
   });
 });

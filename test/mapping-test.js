@@ -1,7 +1,7 @@
 // mapping HGNC symbol to HGNC ID
 const chai = require('chai');
 const expect = chai.expect;
-const mapping = require('../src/server/mapping/mapping.js');
+const mapping = require('../src/server/gene-query/mapping.js');
 
 describe('mapping HGNC symbol to HGNC ID', function() {
   it('it should return a HGNC ID', function() {

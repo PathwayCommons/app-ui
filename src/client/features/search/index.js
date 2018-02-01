@@ -67,7 +67,8 @@ class Search extends React.Component {
         gt: -1,
         lt: 250,
         type: 'ProteinReference',
-        datasource: state.query.datasource
+        datasource: state.query.datasource,
+        species: '9606'
     };
     this.setState({
       landingLoading: true
@@ -188,10 +189,10 @@ class Search extends React.Component {
         const synonyms=_.hasIn(box,'protein.alternativeName') ? 
           h('i.search-landing-small',box.protein.alternativeName.map(obj => {return obj.fullName.value;}).join(', ')):'';
 
-        const showFunction = state.landingShowMore ?  '.search-landing-showContent' : '.search-landing-hideContent';
+        const showFunction = state.landingShowMore ?  'search-landing-showContent' : 'search-landing-hideContent';
         let functions= h('div');
         if(_.hasIn(box,'comments[0].text') && box.comments[0].type==='FUNCTION'){
-          functions=[h(`div.${showFunction}`,{key:'text'},box.comments[0].text[0].value)];
+          functions=[h('div',{className: showFunction, key:'text'},box.comments[0].text[0].value)];
           if (box.comments[0].text[0].value.length>=95){
             functions.push(
               h('div.search-landing-link',{onClick: e => this.setState({ landingShowMore: !state.landingShowMore }) , key:'showMore'},state.landingShowMore? '« less': 'more »')

@@ -31,8 +31,8 @@ const ServerAPI = {
   findUniprotId(query){
   return fetch(`/pc-client/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json()).then(res=> {
     return _.compact(res.map(hit=>{
-        if( hit.uri.startsWith('http://identifiers.org/uniprot/') && _.endsWith(hit.organism[0],'9606')){
-         return _.last(hit.uri.split('/'));
+        if( hit.uri.startsWith('http://identifiers.org/uniprot/') && ( _.isUndefined(query.species)|| _.endsWith(hit.organism[0],query.species))) {
+         return _.last(hit.uri.split('/')); //Parses and returns the Uniprot id
         }
       }));
     });

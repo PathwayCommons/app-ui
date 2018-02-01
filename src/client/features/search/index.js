@@ -72,23 +72,24 @@ class Search extends React.Component {
     };
     this.setState({
       landingLoading: true
-    });
-    ServerAPI.findUniprotId(query).then(res=>{
-      if(!_.isEmpty(res)){
-        ServerAPI.getProteinInformation(res[0]).then(result=>{
-          this.setState({
-          landingLoading: false,
-          landing:result,
-          landingShowMore: false,
+    },()=>{
+      ServerAPI.findUniprotId(query).then(res=>{
+        if(!_.isEmpty(res)){
+          ServerAPI.getProteinInformation(res[0]).then(result=>{
+            this.setState({
+            landingLoading: false,
+            landing:result,
+            landingShowMore: false,
+            });
           });
-        });
-      }
-      else{
-        this.setState({
-          landingLoading: true,
-          landing:[]
-        });
-      }
+        }
+        else{
+          this.setState({
+            landingLoading: true,
+            landing:[]
+          });
+        }
+      });
     });
   }
 
@@ -187,7 +188,7 @@ class Search extends React.Component {
       h('div.search-landing.innner',[h(Loader, { loaded:!state.landingLoading , options: { color: '#16A085',position:'relative', top: '15px' }})]):
       state.landing.map(box=>{
         const synonyms=_.hasIn(box,'protein.alternativeName') ? 
-          h('i.search-landing-small',box.protein.alternativeName.map(obj => {return obj.fullName.value;}).join(', ')):'';
+          h('i.search-landing-small',box.protein.alternativeName.map(obj => obj.fullName.value).join(', ')):'';
 
         const showFunction = state.landingShowMore ?  'search-landing-showContent' : 'search-landing-hideContent';
         let functions= h('div');

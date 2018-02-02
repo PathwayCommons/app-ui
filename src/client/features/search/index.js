@@ -30,13 +30,13 @@ class Search extends React.Component {
       showFilters: false,
       dataSources: []
     };
-
-    ServerAPI.datasources()
-      .then(result => {
-        this.setState({
-          dataSources: Object.values(result)
+    
+      ServerAPI.datasources()
+        .then(result => {
+          this.setState({
+            dataSources: Object.values(result)
+          });
         });
-      });
   }
 
   getSearchResult() {
@@ -104,11 +104,11 @@ class Search extends React.Component {
     }, props.search);
 
     const searchResults = state.searchResults.map(result => {
-      const dsInfo = _.find(state.dataSources, ds => {
+      const dsInfo =_.isEmpty(state.dataSources)? {iconUrl:null , name:''}: _.find(state.dataSources, ds => {
         return ds.uri === result.dataSource[0];
       });
       return h('div.search-item', [
-        h('div.search-item-icon',[
+       h('div.search-item-icon',[
           h('img', {src: dsInfo.iconUrl})
         ]),
         h('div.search-item-content', [

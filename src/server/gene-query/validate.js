@@ -1,5 +1,6 @@
 const tokenize = require('./tokenize');
 const mapping = require('./mapping');
+const _ = require('lodash');
 
 class token {
   constructor(symbol) {
@@ -34,8 +35,11 @@ const validate = function(input) {
   });
 
   // check duplicates
-  listOfToken.forEach(element => {
-    if ((listOfSymbol.filter(function(x) {return x == element.symbol;})).length > 1) {
+  _.forEach(listOfToken, function(element) {
+    const fil = _.filter(listOfSymbol, function(el){
+      return el == element.symbol;
+    });
+    if (fil.length > 1) {
       element.duplicate = true;
     }
   });

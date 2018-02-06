@@ -51,7 +51,7 @@ const defaultLayout = {
     animate: true,
     animationDuration: 500,
     fit: true,
-    padding: 100,
+    padding: 75,
     randomize: false
   }
 };

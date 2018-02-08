@@ -244,10 +244,11 @@
 
 .search-landing-hideContent {
   overflow: hidden;
+  vertical-align:text-bottom;
   line-height: 1.2em;
-  max-height: 1.2em; 
+  max-height: 3.6em; 
   max-width: 90%;
-  display: inline-block;
+  display: inline-flex;
 }
 
 .search-landing-showContent {
@@ -258,17 +259,18 @@
 .search-landing-small{
   font-size: 10pt;
 }
+.search-landing-title{
+  font-size: 15pt;
+}
 
 .search-landing-link {
-  vertical-align:top;
   color: var(--link);
   font-weight: lighter;
-  display: inline;
   text-decoration: underline;
   font-style: italic;
   white-space: pre; 
   padding-right: 5px;
-  display: inline;
+  display: inline-flex;
   cursor: pointer;
 }
 

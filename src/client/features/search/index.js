@@ -64,8 +64,6 @@ class Search extends React.Component {
     const state = this.state;
     const query = {
       q: state.query.q.trim(),
-      gt: -1,
-      lt: 250,
       type: 'ProteinReference',
       datasource: state.query.datasource,
       species: '9606'

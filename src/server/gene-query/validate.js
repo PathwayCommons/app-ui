@@ -4,8 +4,8 @@ const _ = require('lodash');
 
 class token {
   constructor(symbol) {
-    this.symbol = symbol;
-    this.id = "";
+    this.HgncSymbol = symbol;
+    this.HgncId = "";
     this.duplicate = false;
     this.legal = true;
   }
@@ -27,17 +27,17 @@ const validate = function(input) {
 
   // mapping, check for illegal symbols
   listOfToken.forEach(element => {
-    if(!mapping(element.symbol)) {
+    if(!mapping(element.HgncSymbol)) {
       element.legal = false;
     } else {
-      element.id = mapping(element);
+      element.HgncId = mapping(element.HgncSymbol);
     }
   });
 
   // check duplicates
   _.forEach(listOfToken, function(element) {
     const fil = _.filter(listOfSymbol, function(el){
-      return el == element.symbol;
+      return el == element.HgncSymbol;
     });
     if (fil.length > 1) {
       element.duplicate = true;
@@ -48,14 +48,23 @@ const validate = function(input) {
 };
 
 // determins if input can be proceeded to next service
+// true => output gene info
+// false => output all relevant error messages
+//          unrecognized gene symbols
+//          duplicate gene symbols
 const proceed = function(listOfToken) {
-  let ret = true;
+  let errorMessage = [];
+  let geneInfo = [];
   listOfToken.forEach(element => {
-    if (element.legal == false || element.duplicate == true) {
-      ret = false;
+    if (element.legal == false) {
+      errorMessage.push(element.HgncSymbol+" is not recognized");
+    } else if (element.duplicate == true) {
+      errorMessage.push(element.HgncSymbol+" is a duplicate");
     }
+    geneInfo.push({HGNC_symbol: element.HgncSymbol, HGNC_id: element.HgncId});
   });
-  return ret;
+  if (errorMessage.length != 0) return errorMessage;
+  return geneInfo;
 };
 
 module.exports = {validate, proceed};

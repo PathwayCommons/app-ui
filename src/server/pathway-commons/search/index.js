@@ -17,7 +17,7 @@ const processPhrase = (phrase) => {
     'refseq'
   ];
 
-  const tokens = phrase.split(/\s+/g);
+  const tokens = phrase.toUpperCase().split(/\s+/g);
   
   return getHGNCData(path.join(__dirname,'/hgncSymbols.txt')).then(collection => {
     return tokens.map(token => {
@@ -85,6 +85,7 @@ const uniprotIdSearch = async (query) => {
       .fetch();
     const searchSuccess = searchResult != null
     if (searchSuccess && searchResult.searchHit.length > 0) {
+      console.log(searchResult);
       const filteredResults = searchResult.searchHit.filter(hit =>
         hit.uri.startsWith('http://identifiers.org/uniprot/') 
       );

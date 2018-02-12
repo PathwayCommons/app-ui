@@ -11,11 +11,6 @@ class token {
   }
 }
 
-// whole validation procedure
-// take input
-// tokenize
-// call token ctor for each symbol, mapping, set legal field
-// check for duplicate, set dup field
 const validate = function(input) {
   const listOfSymbol = tokenize(input);
   let listOfToken = [];

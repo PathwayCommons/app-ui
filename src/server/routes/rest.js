@@ -76,8 +76,7 @@ router.get('/enrichment/', (req, res) => {
   const genes = req.query.gene;
   console.log("endpoint genes are: "+genes);
   enrichment.enrichment(genes).then(function(results) {
-    // res.json(results);
-    res.send(results);
+    res.json(results);
   });
 });
 

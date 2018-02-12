@@ -52,6 +52,7 @@ const validate = function(input) {
 // false => output all relevant error messages
 //          unrecognized gene symbols
 //          duplicate gene symbols
+// json response examples on github issue #401
 const proceed = function(listOfToken) {
   let errorMessage = [];
   let geneInfo = [];

@@ -85,8 +85,8 @@ const uniprotIdSearch = async (query) => {
       .fetch();
     const searchSuccess = searchResult != null
     if (searchSuccess && searchResult.searchHit.length > 0) {
-      const filteredResults = searchResult.searchHit.filter(hit => 
-        hit.uri.startsWith('http://identifiers.org/uniprot/') && ( _.isUndefined(query.species)|| _.endsWith(hit.organism[0],query.species)) 
+      const filteredResults = searchResult.searchHit.filter(hit =>
+        hit.uri.startsWith('http://identifiers.org/uniprot/') 
       );
       return filteredResults.map(hit=>_.last(hit.uri.split('/'))); //Parses and returns the Uniprot id
     }

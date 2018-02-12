@@ -69,7 +69,7 @@ class Search extends React.Component {
       species: '9606'
     };
     if(query.q.includes(' ')){
-      this.setState({
+      this.setState({   
         landingLoading: false,
         landing:[]
       });
@@ -192,17 +192,20 @@ class Search extends React.Component {
     const landing = (state.landingLoading ) ?
       h('div.search-landing.innner',[h(Loader, { loaded:!state.landingLoading , options: { color: '#16A085',position:'relative', top: '15px' }})]):
       state.landing.map(box=>{
-        const synonyms=_.hasIn(box,'protein.alternativeName') ? 
-          h('i.search-landing-small',box.protein.alternativeName.map(obj => obj.fullName.value).join(', ')):'';
-        const showFunction = state.landingShowMore ?  'search-landing-showContent' : 'search-landing-hideContent';
-        let functions= h('div');
+        let synonyms=null;
+        if(_.hasIn(box,'protein.alternativeName')){ 
+          const synonymsText= box.protein.alternativeName.map(obj => obj.fullName.value).join(', ');
+          synonyms=h('i.search-landing-small',synonymsText.slice(0,synonymsText.indexOf(',',70)));
+        }
+        let functions=null;
         if(_.hasIn(box,'comments[0].text') && box.comments[0].type==='FUNCTION'){
-          functions=[h('div',{className: showFunction, key:'text'},box.comments[0].text[0].value)];
-          if (box.comments[0].text[0].value.length>=95){
-            functions.push(
-              h('div.search-landing-link',{onClick: e => this.setState({ landingShowMore: !state.landingShowMore }) , key:'showMore'},state.landingShowMore? '« less': 'more »')
-            );
-          }
+          const functionText = state.landingShowMore?box.comments[0].text[0].value: box.comments[0].text[0].value.match(/^.{0,260}\w*/) ;
+            functions=[h('span.search-landing-function',{key:'text'},functionText)];
+            if(box.comments[0].text[0].value.length>260){
+              functions.push(
+                h('span.search-landing-link',{onClick: e => this.setState({ landingShowMore: !state.landingShowMore}), key:'showMore'},state.landingShowMore? '« less': 'more »')
+              );
+            }
         } 
         const links=[
           {text:'UniProt', link:`http://www.uniprot.org/uniprot/${box.accession}`}, 

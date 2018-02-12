@@ -242,23 +242,13 @@
   margin: 0;
 }
 
-.search-landing-hideContent {
-  overflow: hidden;
-  vertical-align:text-bottom;
-  line-height: 1.2em;
-  max-height: 3.6em; 
-  max-width: 90%;
-  display: inline-flex;
-}
-
-.search-landing-showContent {
-  line-height: 1.2em;
-  display: inline;
-
+.search-landing-function {
+ margin-right: 5px ;
 }
 .search-landing-small{
   font-size: 10pt;
 }
+
 .search-landing-title{
   font-size: 15pt;
 }

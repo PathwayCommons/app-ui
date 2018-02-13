@@ -48,6 +48,7 @@ const enrichment = function (query, userSetting) {
     "domain_size_type": "annotated",
     "custbg_cb": "none",
     "sf_GO:BP": "1",
+    "sf_REAC": "1",
     "query": query
   };
 

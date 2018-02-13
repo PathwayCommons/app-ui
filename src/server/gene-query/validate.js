@@ -79,7 +79,8 @@ const proceed = function (listOfToken) {
         if (count(unrecognized, element.HgncSymbol) == 0) {
           unrecognized.push(element.HgncSymbol);
         }
-      } else {
+      }
+      if (element.duplicate == true) {
         if (count(duplicate, element.HgncSymbol) == 0) {
           duplicate.push(element.HgncSymbol);
         }

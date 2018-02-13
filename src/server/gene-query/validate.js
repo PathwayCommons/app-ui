@@ -20,12 +20,19 @@ class token {
   }
 }
 
+const count = function (arr, key) {
+  const fil = _.filter(arr, function (el) {
+    return el == key;
+  });
+  return fil.length;
+};
+
 // whole validation procedure
 // take input
 // tokenize
 // call token ctor for each symbol, mapping, set legal field
 // check for duplicate, set dup field
-const validate = function(input) {
+const validate = function (input) {
   const listOfSymbol = tokenize(input);
   let listOfToken = [];
 
@@ -36,25 +43,25 @@ const validate = function(input) {
 
   // mapping, check for illegal symbols
   listOfToken.forEach(element => {
-    if(!mapping(element.HgncSymbol)) {
+    if (!mapping(element.HgncSymbol)) {
       element.legal = false;
     } else {
       element.HgncId = mapping(element.HgncSymbol);
     }
   });
 
-  // check duplicates
-  _.forEach(listOfToken, function(element) {
-    const fil = _.filter(listOfSymbol, function(el){
+
+  _.forEach(listOfToken, function (element) {
+    const fil = _.filter(listOfSymbol, function (el) {
       return el == element.HgncSymbol;
     });
     if (fil.length > 1) {
       element.duplicate = true;
     }
   });
-
   return listOfToken;
 };
+
 
 // determins if input can be proceeded to next service
 // true => output gene info
@@ -62,19 +69,26 @@ const validate = function(input) {
 //          unrecognized gene symbols
 //          duplicate gene symbols
 // json response examples on github issue #401
-const proceed = function(listOfToken) {
-  let errorMessage = [];
+const proceed = function (listOfToken) {
+  let unrecognized = [];
+  let duplicate = [];
   let geneInfo = [];
   listOfToken.forEach(element => {
-    if (element.legal == false) {
-      errorMessage.push(element.HgncSymbol+" is not recognized");
-    } else if (element.duplicate == true) {
-      errorMessage.push(element.HgncSymbol+" is a duplicate");
+    if (element.legal == false || element.duplicate == true) {
+      if (element.legal == false) {
+        if (count(unrecognized, element.HgncSymbol) == 0) {
+          unrecognized.push(element.HgncSymbol);
+        }
+      } else {
+        if (count(duplicate, element.HgncSymbol) == 0) {
+          duplicate.push(element.HgncSymbol);
+        }
+      }
+    } else {
+      geneInfo.push({ HGNC_symbol: element.HgncSymbol, HGNC_id: element.HgncId });
     }
-    geneInfo.push({HGNC_symbol: element.HgncSymbol, HGNC_id: element.HgncId});
   });
-  if (errorMessage.length != 0) return errorMessage;
-  return geneInfo;
+  return { "unrecognized": unrecognized, "duplicate": duplicate, "geneInfo": geneInfo };
 };
 
-module.exports = {validate, proceed};
+module.exports = { validate, proceed };

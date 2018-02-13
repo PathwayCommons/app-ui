@@ -76,7 +76,7 @@ router.get('/gene-query/', (req, res) => {
 //expose a rest endpoint for enrichment
 router.get('/enrichment/', (req, res) => {
   const genes = req.query.gene;
-  const user_settings = req.query.setting;
+  const user_settings = JSON.parse(req.query.setting);
   console.log("endpoint genes are: "+genes);
   enrichment(genes,user_settings).then(function(results) {
     res.json(results);

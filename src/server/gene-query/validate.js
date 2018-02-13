@@ -1,3 +1,12 @@
+/*
+documentation for validator
+sample requset URL: http://localhost:3000/api/gene-query/?gene=HCFC1,ATM
+parameter:
+gene - [string] a list of gene symbols delimited by commas
+return:
+[vector of Object] if gene symbol list is valid, return each gene info including HGNC symbol and HGNC id; otherwise, return relevant error message
+*/
+
 const tokenize = require('./tokenize');
 const mapping = require('./mapping');
 const _ = require('lodash');

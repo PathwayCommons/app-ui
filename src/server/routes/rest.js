@@ -7,7 +7,7 @@ const config = require('../../config');
 
 const {validate, proceed } = require('../gene-query');
 
-const enrichment = require("../enrichment");
+const enrichment = require("../enrichment").enrichment;
 
 
 const isAuthenticated = token => {
@@ -62,20 +62,23 @@ router.get('/get-graph-and-layout', function (req, res) {
 
 // expose a rest endpoint for validator
 router.get('/gene-query/', (req, res) => {
+  const encoded = encodeURI(req.query.gene);
+  console.log("encoded is: "+encoded);
   const genes = req.query.gene;
   console.log("endpoint genes are: "+genes);
 
   const geneTokens = validate(genes);
   const results = proceed(geneTokens);
-
+  console.log("result is: "+results);
   res.json(results);
 });
 
 //expose a rest endpoint for enrichment
 router.get('/enrichment/', (req, res) => {
   const genes = req.query.gene;
+  const user_settings = req.query.setting;
   console.log("endpoint genes are: "+genes);
-  enrichment.enrichment(genes).then(function(results) {
+  enrichment(genes,user_settings).then(function(results) {
     res.json(results);
   });
 });

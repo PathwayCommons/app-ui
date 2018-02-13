@@ -20,6 +20,7 @@ default settings:
     "threshold_algo": "fdr",
     "domain_size_type": "annotated",
     "custbg_cb": "none",
+    "sf_REAC": "1",
     "sf_GO:BP": "1"
 return:
 [vector of String] a list of valid GO and REACTOME pathway IDs

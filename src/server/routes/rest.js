@@ -64,7 +64,8 @@ router.get('/get-graph-and-layout', function (req, res) {
 router.get('/gene-query/', (req, res) => {
   const genes = req.query.genes;
   const results = validator(genes);
-  res.json(results);
+  var ret = JSON.stringify(results);
+  res.json(ret);
 });
 
 //expose a rest endpoint for enrichment

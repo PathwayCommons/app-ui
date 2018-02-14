@@ -93,21 +93,7 @@ const proceed = function (listOfToken) {
 };
 
 function validator (input) {
-  // alert("validator invoked");
-  // validate("TP53");
-  // //add(1);
-  // alert("one");
-  // alert(proceed(validate(input)));
-  // alert("after invoking");
-  // console.log('called');
-  // console.log(proceed(validate(input)));
-  // return proceed(validate(input));
-
- if (mapping(input) !== null) {
-  return true;
-  } else {
-    return false;
-  }
+  return proceed(validate(input));
 }
 
 

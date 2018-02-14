@@ -46,6 +46,10 @@ module.exports = () => {
           return h(Features.Edit, editProps);
         }
       },
+      {
+        path: '/gq',
+        render: props => h(Features.GeneQuery, props)
+      }
     ].map( spec => h(Route, _.assign({ exact: true }, spec)) ))
   ]);
 };

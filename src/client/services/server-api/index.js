@@ -28,9 +28,9 @@ const ServerAPI = {
     return fetch(`/pc-client/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },
 
-  // geneQuery(query){
-  //   return fetch(`/api/gene-query?${qs.stringify(query)}`, defaultFetchOpts).then(res => {res.json();});
-  // },
+  geneQuery(query){
+    return fetch(`/api/gene-query?${qs.stringify({genes: query})}`, defaultFetchOpts).then(res => res.json());
+  },
 
   // enrichment(query){
   //   return fetch(`/api/enrichment?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());

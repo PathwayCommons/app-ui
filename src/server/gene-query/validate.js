@@ -32,7 +32,7 @@ const count = function (arr, key) {
 // tokenize
 // call token ctor for each symbol, mapping, set legal field
 // check for duplicate, set dup field
-const validate = function (input) {
+function validate (input) {
   const listOfSymbol = tokenize(input);
   let listOfToken = [];
 
@@ -60,7 +60,7 @@ const validate = function (input) {
     }
   });
   return listOfToken;
-};
+}
 
 
 // determins if input can be proceeded to next service
@@ -92,8 +92,24 @@ const proceed = function (listOfToken) {
   return { "unrecognized": unrecognized, "duplicate": duplicate, "geneInfo": geneInfo };
 };
 
-const validator = (input) => {
-  return proceed(validate(input));
-};
+function validator (input) {
+  // alert("validator invoked");
+  // validate("TP53");
+  // //add(1);
+  // alert("one");
+  // alert(proceed(validate(input)));
+  // alert("after invoking");
+  // console.log('called');
+  // console.log(proceed(validate(input)));
+  // return proceed(validate(input));
+
+ if (mapping(input) !== null) {
+  return true;
+  } else {
+    return false;
+  }
+}
+
+
 
 module.exports = { validator };

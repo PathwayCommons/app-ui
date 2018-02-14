@@ -9,11 +9,12 @@ class Enrichment extends React.Component {
 
     this.state = {
       result: 'no result yet',
-      query: ''
+      query: '',
+      setting: {}
     };
   }
   enrich() {
-    ServerAPI.enrichment(this.state.query).then(res => {
+    ServerAPI.enrichment(this.state.query, this.state.setting).then(res => {
       this.setState({result: 'result is ' + res});
     });
   }
@@ -27,7 +28,7 @@ class Enrichment extends React.Component {
     [
       h('div', [h('button', { onClick: e => this.enrich()}, 'click to enrich')]),
       h('div', [h('input', { placeholder: 'enter genes', onChange: e => this.setState({query: e.target.value})})]),
-      //h('div', [h('input', { placeholder: 'enter settings', onChange: e => this.setState({query: e.target.value})})]),
+      h('div', [h('input', { placeholder: 'enter settings', onChange: e => this.setState({setting: e.target.value})})]),
       this.state.result
     ]);
 

@@ -32,8 +32,8 @@ const ServerAPI = {
     return fetch(`/api/gene-query?${qs.stringify({genes: query})}`, defaultFetchOpts).then(res => res.json());
   },
 
-  enrichment(query){
-    return fetch(`/api/enrichment?${qs.stringify({gene: query})}`, defaultFetchOpts).then(res => res.json());
+  enrichment(query, setting){
+    return fetch(`/api/enrichment?${qs.stringify({genes: query})}&${qs.stringify({setting: setting})}`, defaultFetchOpts).then(res => res.json());
   },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into

@@ -92,4 +92,8 @@ const proceed = function (listOfToken) {
   return { "unrecognized": unrecognized, "duplicate": duplicate, "geneInfo": geneInfo };
 };
 
-module.exports = { validate, proceed };
+const validator = (input) => {
+  return proceed(validate(input));
+};
+
+module.exports = { validator };

@@ -5,7 +5,7 @@ const router = express.Router();
 const controller = require('./controller');
 const config = require('../../config');
 
-const {validate, proceed } = require('../gene-query');
+const {validator } = require('../gene-query');
 
 const enrichment = require("../enrichment").enrichment;
 
@@ -64,9 +64,7 @@ router.get('/get-graph-and-layout', function (req, res) {
 router.get('/gene-query/', (req, res) => {
   const genes = req.query.gene;
   console.log("endpoint genes are: "+genes);
-
-  const geneTokens = validate(genes);
-  const results = proceed(geneTokens);
+  const results = validator(genes);
   res.json(results);
 });
 

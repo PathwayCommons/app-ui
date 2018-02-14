@@ -70,7 +70,7 @@ router.get('/gene-query/', (req, res) => {
 
 //expose a rest endpoint for enrichment
 router.get('/enrichment/', (req, res) => {
-  const genes = req.query.gene;
+  const genes = req.query.genes;
   if (req.query.setting == undefined) {
     req.query.setting = '""';
   }

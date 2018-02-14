@@ -1,3 +1,3 @@
-const {proceed, validate} = require('./validate');
+const {validator} = require('./validate');
 
-module.exports = { proceed, validate };
+module.exports = {validator };

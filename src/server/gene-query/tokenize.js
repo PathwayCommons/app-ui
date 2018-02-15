@@ -10,7 +10,7 @@ const tokenize = function(input) {
   // });
 
   // or use other delimiters
-  const result = input.split(/,/).filter(String);
+  const result = input.split(/ +/).filter(String);
   return result;
 };
 

@@ -53,6 +53,10 @@ module.exports = () => {
       {
         path: '/enrich',
         render: props => h(Features.Enrichment, props)
+      },
+      {
+        path: '/gqenrich',
+        render: props => h(Features.GqEnrich, props)
       }
     ].map( spec => h(Route, _.assign({ exact: true }, spec)) ))
   ]);

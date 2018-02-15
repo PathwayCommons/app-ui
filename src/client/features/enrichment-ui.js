@@ -10,7 +10,7 @@ class Enrichment extends React.Component {
     this.state = {
       result: 'no result yet',
       query: '',
-      setting: {}
+      setting: '""'
     };
   }
   enrich() {
@@ -28,7 +28,7 @@ class Enrichment extends React.Component {
     [
       h('div', [h('button', { onClick: e => this.enrich()}, 'click to enrich')]),
       h('div', [h('input', { placeholder: 'enter genes', onChange: e => this.setState({query: e.target.value})})]),
-      h('div', [h('input', { placeholder: 'enter settings', onChange: e => this.setState({setting: e.target.value})})]),
+      h('div', [h('input', { placeholder: 'enter settings', onChange: e => this.setState({setting: (e.target.value == "") ? '""':  e.target.value})})]),
       this.state.result
     ]);
 

@@ -5,7 +5,7 @@ const router = express.Router();
 const controller = require('./controller');
 const config = require('../../config');
 
-const {validator } = require('../gene-query');
+const { validator } = require('../gene-query');
 
 const enrichment = require("../enrichment").enrichment;
 
@@ -33,9 +33,9 @@ router.post('/submit-layout', function (req, res) {
 router.post('/submit-graph', function (req, res) {
   if (isAuthenticated(req.body.token)) {
     controller.submitGraph(req.body.uri, req.body.version, req.body.graph)
-    .then((package) => {
-      res.json(package);
-    });
+      .then((package) => {
+        res.json(package);
+      });
   } else {
     res.json(errorMsg);
   }
@@ -71,11 +71,11 @@ router.get('/gene-query/', (req, res) => {
 //expose a rest endpoint for enrichment
 router.get('/enrichment/', (req, res) => {
   const genes = req.query.genes;
-  if (req.query.setting == undefined) {
-    req.query.setting = '""';
+  let user_settings = {};
+  if (req.query.setting !== undefined) {
+    user_settings = JSON.parse(req.query.setting);
   }
-  const user_settings = JSON.parse(req.query.setting);
-  enrichment(genes,user_settings).then(function(results) {
+  enrichment(genes, user_settings).then(function (results) {
     res.json(results);
   });
 });

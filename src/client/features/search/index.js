@@ -63,13 +63,18 @@ class Search extends React.Component {
   getLandingResult() {
     const state = this.state;
     const query = {
-      q: state.query.q,
-        gt: -1,
-        lt: 250,
-        type: 'ProteinReference',
-        datasource: state.query.datasource,
-        species: '9606'
+      q: state.query.q.trim(),
+      type: 'ProteinReference',
+      datasource: state.query.datasource,
+      species: '9606'
     };
+    if(query.q.includes(' ')){
+      this.setState({   
+        landingLoading: false,
+        landing:[]
+      });
+      return;
+    }
     this.setState({
       landingLoading: true
     },()=>{
@@ -85,7 +90,7 @@ class Search extends React.Component {
         }
         else{
           this.setState({
-            landingLoading: true,
+            landingLoading: false,
             landing:[]
           });
         }
@@ -184,32 +189,32 @@ class Search extends React.Component {
     ]) :
       h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
 
-    const landing = (state.landingLoading && state.searchResults.length>0) ?
+    const landing = (state.landingLoading ) ?
       h('div.search-landing.innner',[h(Loader, { loaded:!state.landingLoading , options: { color: '#16A085',position:'relative', top: '15px' }})]):
       state.landing.map(box=>{
-        const synonyms=_.hasIn(box,'protein.alternativeName') ? 
-          h('i.search-landing-small',box.protein.alternativeName.map(obj => obj.fullName.value).join(', ')):'';
-
-        const showFunction = state.landingShowMore ?  'search-landing-showContent' : 'search-landing-hideContent';
-        let functions= h('div');
+        let synonyms=null;
+        if(_.hasIn(box,'protein.alternativeName')){ 
+          const synonymsText= box.protein.alternativeName.map(obj => obj.fullName.value).join(', ');
+          synonyms=h('i.search-landing-small',synonymsText.slice(0,synonymsText.indexOf(',',70)));
+        }
+        let functions=null;
         if(_.hasIn(box,'comments[0].text') && box.comments[0].type==='FUNCTION'){
-          functions=[h('div',{className: showFunction, key:'text'},box.comments[0].text[0].value)];
-          if (box.comments[0].text[0].value.length>=95){
-            functions.push(
-              h('div.search-landing-link',{onClick: e => this.setState({ landingShowMore: !state.landingShowMore }) , key:'showMore'},state.landingShowMore? '« less': 'more »')
-            );
-          }
+          const functionText = state.landingShowMore?box.comments[0].text[0].value: box.comments[0].text[0].value.match(/^.{0,260}\w*/) ;
+            functions=[h('span.search-landing-function',{key:'text'},functionText)];
+            if(box.comments[0].text[0].value.length>260){
+              functions.push(
+                h('span.search-landing-link',{onClick: e => this.setState({ landingShowMore: !state.landingShowMore}), key:'showMore'},state.landingShowMore? '« less': 'more »')
+              );
+            }
         } 
-       
         const links=[
           {text:'UniProt', link:`http://www.uniprot.org/uniprot/${box.accession}`}, 
           {text:'Gene cards',link:`http://www.genecards.org/cgi-bin/carddisp.pl?id=${box.accession}`}, 
           {text:'Methan',link:`http://mentha.uniroma2.it/result.php?q=${box.accession}&org=9606`}
         ].map(link=>{return h('a.search-landing-link',{key: link.text, href: link.link},link.text);});
-
         return h('div.search-landing.innner',{key: box.accession},[ 
           h('div.search-landing-section',[
-            h('strong',box.protein.recommendedName.fullName.value+'-'),
+            h('strong.search-landing-title',box.protein.recommendedName.fullName.value+'-'),
             h('strong.search-landing-small', box.organism.names[1].value)
           ]),
           h('div.search-landing-section',[synonyms]),
@@ -269,7 +274,7 @@ class Search extends React.Component {
       h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' } }, [
         h('div.search-list-container', [
           h('div.search-result-info', [searchResultInfo]),
-          h('div.search-landing',[landing]), 
+          h('div.search-landing',[searchResults.length?landing:'']), 
           h('div.search-list', searchResults)
         ])
       ])

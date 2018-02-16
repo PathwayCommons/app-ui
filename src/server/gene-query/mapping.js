@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const jsonData = JSON.parse(fs.readFileSync(path.resolve(__dirname, "HGNC_dataset.json")));
 const jsonContent = new Map();
-jsonData.forEach(el => jsonContent.set(el['B'], el['A']));
+jsonData.forEach(el => jsonContent.set(el['Approved Symbol'], el['HGNC ID']));
 
 
 // map HGNC symbol to HGNC ID

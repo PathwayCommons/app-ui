@@ -13,6 +13,7 @@ class GqEnrich extends React.Component {
       query: '',
       setting: '""'
     };
+    this.changeSetting = this.changeSetting.bind(this);
   }
   queryGenes() {
     ServerAPI.geneQuery(this.state.query).then(res => {
@@ -26,6 +27,20 @@ class GqEnrich extends React.Component {
     });
   }
 
+  changeSetting(key, val) {
+    if (val == "") {
+      delete this.state.setting[key];
+    } else if (this.state.setting == '""') {
+      const copy = {};
+      copy[key] = val;
+      this.setState({ setting: copy });
+    } else {
+      const copy = JSON.parse(JSON.stringify(this.state.setting));
+      copy[key] = val;
+      this.setState({ setting: copy });
+    }
+  }
+
   render() {
     // return h('div', [
     //   h('button', { onClick: e => this.queryGenes()}, 'click to test gene query'),
@@ -36,21 +51,41 @@ class GqEnrich extends React.Component {
     [
       h('div', [h('input', {
         placeholder: 'enter genes',
-        onChange: e => this.setState({query: e.target.value}),
+          onChange: e => this.setState({ query: e.target.value }),
         style: {
           width: '100vw',
         }
       })]),
-      h('div', [h('input', {
-        placeholder: 'enter settings',
-        onChange: e => this.setState({setting: (e.target.value == "") ? '""':  e.target.value}),
-        style: {
-          width: '100vw',
-        }
-      })]),
-      h('div', [h('button', { onClick: e => this.queryGenes()}, 'click to test gene query')]),
+        // h('div', [h('input', {
+        //   placeholder: 'enter settings',
+        //   onChange: e => this.setState({setting: (e.target.value == "") ? '""':  e.target.value, x: "1"}),
+        //   style: {
+        //     width: '100vw',
+        //   }
+        // })]),
+        // if output is changed, change this.state.setting, add "output": "1" to setting
+        h('div', 'Optional Settings:'),
+        h('div', [h('input', { placeholder: 'output', onChange: e => this.changeSetting('output', e.target.value) })]),
+        h('div', [h('input', { placeholder: 'organism', onChange: e => this.changeSetting('organism', e.target.value ) })]),
+        h('div', [h('input', { placeholder: 'significant', onChange: e => this.changeSetting('significant', e.target.value ) })]),
+        h('div', [h('input', { placeholder: 'sort_by_structure', onChange: e => this.changeSetting('sort_by_structure', e.target.value ) })]),
+        h('div', [h('input', { placeholder: 'ordered_query', onChange: e => this.changeSetting('ordered_query', e.target.value ) })]),
+        h('div', [h('input', { placeholder: 'as_ranges', onChange: e => this.changeSetting('as_ranges', e.target.value ) })]),
+        h('div', [h('input', { placeholder: 'no_iea', onChange: e => this.changeSetting('no_iea', e.target.value ) })]),
+        h('div', [h('input', { placeholder: 'underrep', onChange: e => this.changeSetting('underrep', e.target.value ) })]),
+        h('div', [h('input', { placeholder: 'user_thr', onChange: e => this.changeSetting('user_thr', e.target.value ) })]),
+        h('div', [h('input', { placeholder: 'hierfiltering', onChange: e => this.changeSetting('hierfiltering', e.target.value ) })]),
+        h('div', [h('input', { placeholder: 'min_set_size', onChange: e => this.changeSetting('min_set_size', e.target.value ) })]),
+        h('div', [h('input', { placeholder: 'max_set_size', onChange: e => this.changeSetting('max_set_size', e.target.value ) })]),
+        h('div', [h('input', { placeholder: 'threshold_algo', onChange: e => this.changeSetting('threshold_algo', e.target.value ) })]),
+        h('div', [h('input', { placeholder: 'domain_size_type', onChange: e => this.changeSetting('domain_size_type', e.target.value ) })]),
+        h('div', [h('input', { placeholder: 'custbg_cb', onChange: e => this.changeSetting('custbg_cb', e.target.value ) })]),
+        h('div', [h('input', { placeholder: 'custbg', onChange: e => this.changeSetting('custbg', e.target.value ) })]),
+
+
+        h('div', [h('button', { onClick: e => this.queryGenes() }, 'click to validate gene query')]),
       h('div', this.state.result_gq),
-      h('div', [h('button', { onClick: e => this.enrich()}, 'click to enrich')]),
+        h('div', [h('button', { onClick: e => this.enrich() }, 'click to enrich')]),
       h('div', this.state.result_enrich)
 
 

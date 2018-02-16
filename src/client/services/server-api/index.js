@@ -33,6 +33,7 @@ const ServerAPI = {
   },
 
   enrichment(query, setting){
+    setting = JSON.stringify(setting);
     return fetch(`/api/enrichment?${qs.stringify({genes: query})}&${qs.stringify({setting: setting})}`, defaultFetchOpts).then(res => res.json());
   },
 

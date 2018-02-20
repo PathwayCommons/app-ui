@@ -39,10 +39,7 @@ module.exports = () => {
       {
         path: '/interactions',
         render: props => {
-          const editProps = _.assign({}, props, {
-            interactions: true
-          });
-          return h(Features.Interactions, editProps);
+          return h(Features.Interactions, props);
         }
       },
       {

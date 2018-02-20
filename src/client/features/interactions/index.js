@@ -38,6 +38,7 @@ class Interactions extends React.Component {
         networkMetadata: {
           name: query.ID,
           datasource: 'Pathway Commons',
+          comments: ['place holder'], dataSource: ['place holder'], organism: ['place holder'], title: ['place holder'], uri: 'place holder'
         },
         loading: false
       }); 
@@ -90,8 +91,6 @@ class Interactions extends React.Component {
     let network = {
       edges:[],
       nodes:[],
-      parseType:"jsonld",
-      pathwayMetadata:{comments: [], dataSource: [], organism: [], title: [], uri: "http://identifiers.org/reactome/R-HSA-6804760"}
     };
     let nodeMap=new Map(); //keeps track of nodes that have already been added
     const splitByLines=data.split('\n');

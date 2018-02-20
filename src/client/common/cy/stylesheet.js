@@ -40,6 +40,35 @@ const stylesheet = sbgnStyleSheet(cytoscape)
 .selector('edge')
 .css({
   'opacity': 0.3
+})
+.selector('edge[class="Phosphorylation"]')
+.css({
+  'line-color': 'red'
+})
+.selector('edge[class="Binding"]')
+.css({
+  'line-color': 'green'
+})
+.selector('edge[class="Expression"]')
+.css({
+  'line-color': 'blue'
+})
+.selector('node[class="ball"]')
+.css({
+  'font-size': 20,
+  'color': 'black',
+  'text-outline-color': 'white',
+  'text-outline-width': 2,
+  'text-wrap': 'wrap',
+  'text-max-width': 175,
+  'width': 45,
+  'height': 45,
+  'label': node => {
+    const label = node.data('label')
+      .split('(').join('').split(')').join('')
+      .split(':').join(' ');
+    return label;
+  }
 });
 
 module.exports = stylesheet;

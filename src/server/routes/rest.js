@@ -8,6 +8,7 @@ const config = require('../../config');
 const { validator } = require('../gene-query');
 
 const enrichment = require("../enrichment").enrichment;
+const validateGp = require("../enrichment").validateGp;
 
 
 const isAuthenticated = token => {
@@ -68,6 +69,14 @@ router.get('/gene-query/', (req, res) => {
   res.json(ret);
 });
 
+// expose a rest endpoint for validatorGp
+router.get('/validateGp/', (req, res) => {
+  const genes = req.query.genes;
+  validateGp(genes).then(function (results) {
+    res.json(results);
+  });
+});
+
 //expose a rest endpoint for enrichment
 router.get('/enrichment/', (req, res) => {
   const genes = req.query.genes;
@@ -79,6 +88,8 @@ router.get('/enrichment/', (req, res) => {
     res.json(results);
   });
 });
+
+
 
 // Expose a rest endpoint for controller.endSession
 router.get('/disconnect', function (req, res) {

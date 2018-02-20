@@ -9,6 +9,7 @@ class GqEnrich extends React.Component {
 
     this.state = {
       result_gq: 'no result yet',
+      result_validate_gp: 'no result yet',
       result_enrich: 'no result yet',
       query: '',
       setting: '""'
@@ -18,6 +19,12 @@ class GqEnrich extends React.Component {
   queryGenes() {
     ServerAPI.geneQuery(this.state.query).then(res => {
       this.setState({ result_gq: 'validator result is ' + res });
+    });
+  }
+
+  validateGp() {
+    ServerAPI.validateGp(this.state.query).then(res => {
+      this.setState({ result_validate_gp: 'validator result from gProfiler is ' + res });
     });
   }
 
@@ -48,14 +55,14 @@ class GqEnrich extends React.Component {
     //   this.state.result
     // ]);
     return h('div',
-    [
-      h('div', [h('input', {
-        placeholder: 'enter genes',
+      [
+        h('div', [h('input', {
+          placeholder: 'enter genes: a list of gene names separated by whitespace',
           onChange: e => this.setState({ query: e.target.value }),
-        style: {
-          width: '100vw',
-        }
-      })]),
+          style: {
+            width: '100vw',
+          }
+        })]),
         // h('div', [h('input', {
         //   placeholder: 'enter settings',
         //   onChange: e => this.setState({setting: (e.target.value == "") ? '""':  e.target.value, x: "1"}),
@@ -64,32 +71,33 @@ class GqEnrich extends React.Component {
         //   }
         // })]),
         // if output is changed, change this.state.setting, add "output": "1" to setting
-        h('div', 'Optional Settings:'),
+        h('div', 'Optional Settings for enrichment:'),
         h('div', [h('input', { placeholder: 'output', onChange: e => this.changeSetting('output', e.target.value) })]),
-        h('div', [h('input', { placeholder: 'organism', onChange: e => this.changeSetting('organism', e.target.value ) })]),
-        h('div', [h('input', { placeholder: 'significant', onChange: e => this.changeSetting('significant', e.target.value ) })]),
-        h('div', [h('input', { placeholder: 'sort_by_structure', onChange: e => this.changeSetting('sort_by_structure', e.target.value ) })]),
-        h('div', [h('input', { placeholder: 'ordered_query', onChange: e => this.changeSetting('ordered_query', e.target.value ) })]),
-        h('div', [h('input', { placeholder: 'as_ranges', onChange: e => this.changeSetting('as_ranges', e.target.value ) })]),
-        h('div', [h('input', { placeholder: 'no_iea', onChange: e => this.changeSetting('no_iea', e.target.value ) })]),
-        h('div', [h('input', { placeholder: 'underrep', onChange: e => this.changeSetting('underrep', e.target.value ) })]),
-        h('div', [h('input', { placeholder: 'user_thr', onChange: e => this.changeSetting('user_thr', e.target.value ) })]),
-        h('div', [h('input', { placeholder: 'hierfiltering', onChange: e => this.changeSetting('hierfiltering', e.target.value ) })]),
-        h('div', [h('input', { placeholder: 'min_set_size', onChange: e => this.changeSetting('min_set_size', e.target.value ) })]),
-        h('div', [h('input', { placeholder: 'max_set_size', onChange: e => this.changeSetting('max_set_size', e.target.value ) })]),
-        h('div', [h('input', { placeholder: 'threshold_algo', onChange: e => this.changeSetting('threshold_algo', e.target.value ) })]),
-        h('div', [h('input', { placeholder: 'domain_size_type', onChange: e => this.changeSetting('domain_size_type', e.target.value ) })]),
-        h('div', [h('input', { placeholder: 'custbg_cb', onChange: e => this.changeSetting('custbg_cb', e.target.value ) })]),
-        h('div', [h('input', { placeholder: 'custbg', onChange: e => this.changeSetting('custbg', e.target.value ) })]),
+        h('div', [h('input', { placeholder: 'organism', onChange: e => this.changeSetting('organism', e.target.value) })]),
+        h('div', [h('input', { placeholder: 'significant', onChange: e => this.changeSetting('significant', e.target.value) })]),
+        h('div', [h('input', { placeholder: 'sort_by_structure', onChange: e => this.changeSetting('sort_by_structure', e.target.value) })]),
+        h('div', [h('input', { placeholder: 'ordered_query', onChange: e => this.changeSetting('ordered_query', e.target.value) })]),
+        h('div', [h('input', { placeholder: 'as_ranges', onChange: e => this.changeSetting('as_ranges', e.target.value) })]),
+        h('div', [h('input', { placeholder: 'no_iea', onChange: e => this.changeSetting('no_iea', e.target.value) })]),
+        h('div', [h('input', { placeholder: 'underrep', onChange: e => this.changeSetting('underrep', e.target.value) })]),
+        h('div', [h('input', { placeholder: 'user_thr', onChange: e => this.changeSetting('user_thr', e.target.value) })]),
+        h('div', [h('input', { placeholder: 'hierfiltering', onChange: e => this.changeSetting('hierfiltering', e.target.value) })]),
+        h('div', [h('input', { placeholder: 'min_set_size', onChange: e => this.changeSetting('min_set_size', e.target.value) })]),
+        h('div', [h('input', { placeholder: 'max_set_size', onChange: e => this.changeSetting('max_set_size', e.target.value) })]),
+        h('div', [h('input', { placeholder: 'threshold_algo', onChange: e => this.changeSetting('threshold_algo', e.target.value) })]),
+        h('div', [h('input', { placeholder: 'domain_size_type', onChange: e => this.changeSetting('domain_size_type', e.target.value) })]),
+        h('div', [h('input', { placeholder: 'custbg_cb', onChange: e => this.changeSetting('custbg_cb', e.target.value) })]),
+        h('div', [h('input', { placeholder: 'custbg', onChange: e => this.changeSetting('custbg', e.target.value) })]),
 
-
+        h('div', [h('button', { onClick: e => this.validateGp() }, 'click to validate gene query by gProfiler')]),
+        h('div', this.state.result_validate_gp),
         h('div', [h('button', { onClick: e => this.queryGenes() }, 'click to validate gene query')]),
-      h('div', this.state.result_gq),
+        h('div', this.state.result_gq),
         h('div', [h('button', { onClick: e => this.enrich() }, 'click to enrich')]),
-      h('div', this.state.result_enrich)
+        h('div', this.state.result_enrich)
 
 
-    ]);
+      ]);
   }
 }
 

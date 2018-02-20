@@ -32,6 +32,10 @@ const ServerAPI = {
     return fetch(`/api/gene-query?${qs.stringify({genes: query})}`, defaultFetchOpts).then(res => res.json());
   },
 
+  validateGp(query){
+    return fetch(`/api/validateGp?${qs.stringify({genes: query})}`, defaultFetchOpts).then(res => res.json());
+  },
+
   enrichment(query, setting){
     setting = JSON.stringify(setting);
     return fetch(`/api/enrichment?${qs.stringify({genes: query})}&${qs.stringify({setting: setting})}`, defaultFetchOpts).then(res => res.json());

@@ -5,7 +5,7 @@ const queryString = require('query-string');
 const Loader = require('react-loader');
 
 const make_cytoscape = require('../../common/cy/');
-
+const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
 const { ServerAPI } = require('../../services/');
 
 const { BaseNetworkView } = require('../../common/components');
@@ -15,7 +15,7 @@ class Interactions extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cy: make_cytoscape({ headless: true }),
+      cy: make_cytoscape({ headless: true, stylesheet: interactionsStylesheet }),
       componentConfig: {},
       layoutConfig: {},
       networkJSON: {},
@@ -108,7 +108,7 @@ class Interactions extends React.Component {
     i=1;
     while (splitByLines[i]){ 
       let splitLine=splitByLines[i].split('\t');
-      if(nodeMap.has(splitLine[0]) &&nodeMap.has(splitLine[2])){ //if it is a interaction with the main node or 2 nodes conected to the main node
+      if(nodeMap.has(splitLine[0]) && nodeMap.has(splitLine[2])){ //if it is a interaction with the main node or 2 nodes conected to the main node
         this.addInteraction(splitLine,network,nodeMap);
       }
       i++;

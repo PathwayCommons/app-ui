@@ -45,7 +45,7 @@ class Interactions extends React.Component {
     });
   }
 
-  edgeTypeing(type){
+  edgeType(type){
     switch(type){
       case 'in-complex-with':
       case 'interacts-with':
@@ -63,28 +63,28 @@ class Interactions extends React.Component {
     return data.filter(line => line.includes(id))[0].split('	')[0];
   }
 
-  pathwayLinks(line){
-    return line[6].split(';').map( link => {
+  pathwayLinks(sources){
+    return sources.split(';').map( link => {
       const splitLink=link.split('/').reverse();
       return [splitLink[1]==='reactome'? 'reactome': 'Pathway Commons',splitLink[0]];
     });
   }
 
-  addInteraction(splitLine,network,nodeMap){
-    for (let i = 0; i<=2; i+=2){
-      if(!nodeMap.has(splitLine[i])){
-        nodeMap.set(splitLine[i],true);
-        network.nodes.push({data:{bbox:{h:15,w:15,x:7.5,y:7.5},class: "ball",clonemarker:false,id: splitLine[i],label: splitLine[i],parsedMetadata:[],stateVariables:[],unitsOfInformation:[]}});
+  addInteraction(nodes,edge,sources,network,nodeMap){
+    for (let i = 0; i<2; i++){
+      if(!nodeMap.has(nodes[i])){
+        nodeMap.set(nodes[i],true);
+        network.nodes.push({data:{class: "ball",id: nodes[i],label: nodes[i],parsedMetadata:[]}});
       }
     }
     network.edges.push({data: {
-      id: splitLine[0]+splitLine[1]+splitLine[2] ,
-      label:splitLine[0]+' '+splitLine[1]+' '+splitLine[2] ,
-      source:splitLine[0],
-      target: splitLine[2],
-      class: this.edgeTypeing(splitLine[1]),
-      parsedMetadata:[['Database IDs',this.pathwayLinks(splitLine)]]
-    },classes: this.edgeTypeing(splitLine[1])});
+      id: nodes[0]+edge+nodes[1] ,
+      label:nodes[0]+' '+edge+' '+nodes[1] ,
+      source:nodes[0],
+      target: nodes[1],
+      class: this.edgeType(edge),
+      parsedMetadata:[['Database IDs',sources]]
+    }});
   }
 
   parse(data,query){
@@ -95,23 +95,17 @@ class Interactions extends React.Component {
     let nodeMap=new Map(); //keeps track of nodes that have already been added
     const splitByLines=data.split('\n');
     const id=this.findId(splitByLines,query);
-
-    let i=1;
-    while (splitByLines[i]){ 
-      let splitLine=splitByLines[i].split('\t');
-      if(splitLine[0]===id || splitLine[2]===id){ //if it is a interaction with the main node or 2 nodes conected to the main node
-        this.addInteraction(splitLine,network,nodeMap);
+  
+    for(let j = 0; j<2; j++){
+      let i=1;
+      while (splitByLines[i]){ 
+        let splitLine=splitByLines[i].split('\t');
+        if((j===0 && (splitLine[0]===id || splitLine[2]===id))||(j===1 && (nodeMap.has(splitLine[0]) && nodeMap.has(splitLine[2])))){ //if(a interaction with the main node(first loop))||
+          this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],this.pathwayLinks(splitLine[6]),network,nodeMap);              //(2 nodes conected to the main node(second loop))
+        }
+        i++;
       }
-      i++;
-    }
-    nodeMap.delete(id);
-    i=1;
-    while (splitByLines[i]){ 
-      let splitLine=splitByLines[i].split('\t');
-      if(nodeMap.has(splitLine[0]) && nodeMap.has(splitLine[2])){ //if it is a interaction with the main node or 2 nodes conected to the main node
-        this.addInteraction(splitLine,network,nodeMap);
-      }
-      i++;
+      nodeMap.delete(id); //remove main node to prevent getting duplicates 
     }
     return network;
   }

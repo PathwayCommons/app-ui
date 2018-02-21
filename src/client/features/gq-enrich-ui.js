@@ -89,7 +89,7 @@ class GqEnrich extends React.Component {
         h('div', [h('input', { placeholder: 'custbg_cb', onChange: e => this.changeSetting('custbg_cb', e.target.value) }), "default: 0"]),
         h('div', [h('input', { placeholder: 'custbg', onChange: e => this.changeSetting('custbg', e.target.value) }), "default: none"]),
 
-        h('div', [h('button', { onClick: e => this.validateGp() }, 'click to validate gene query by gProfiler')]),
+        h('div', [h('button', { onClick: e => this.validateGp() }, 'click to validate gene query by g:Convert')]),
         h('div', this.state.result_validate_gp),
         h('div', [h('button', { onClick: e => this.queryGenes() }, 'click to validate gene query')]),
         h('div', this.state.result_gq),

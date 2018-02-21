@@ -5,6 +5,11 @@ parameter:
 gene - [string] a list of gene symbols delimited by commas
 return:
 [vector of Object] if gene symbol list is valid, return each gene info including HGNC symbol and HGNC id; otherwise, return relevant error message
+Potential risks:
+1. We validate a gene that isn't recognized by GOSt
+2. We invalidate a gene that is recognized by GOSt
+Only 2 is detected in testing (e.g. 'TARP'). As long as our HGNC dataset is a subset of GOSt, we are okay.
+If 1 is detected in the future, error message should be added.
 */
 
 const tokenize = require('./tokenize');

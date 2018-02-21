@@ -20,7 +20,8 @@ const databases = [
   ['PubChem-Substance', 'http://identifiers.org/pubchem.substance/', ''],
   ['3DMET', 'http://identifiers.org/3dmet/', ''],
   ['Chemical Component Dictionary', 'http://identifiers.org/pdb-ccd/', ''],
-  ['CAS', 'http://identifiers.org/cas/', '']
+  ['CAS', 'http://identifiers.org/cas/', ''],
+  ['Pathway Commons','/view?uri=http://pathwaycommons.org/pc2/','']
 ];
 
 const publicationsURL = 'http://identifiers.org/pubmed/';

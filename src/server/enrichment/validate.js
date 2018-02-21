@@ -1,4 +1,3 @@
-//const removeEmptyLines = require('remove-blank-lines');
 const request = require('request');
 const Promise = require('promise-simple');
 const _ = require('lodash');
@@ -26,28 +25,10 @@ const validateGp = function (query, userSetting) {
 
   const formData = _.assign({}, defaultSetting, userSetting);
   const d = Promise.defer();
-  //let ret = [];
   request.post({ url: "http://biit.cs.ut.ee/gprofiler/gconvert.cgi", formData: formData }, function optionalCallback(err, httpResponse, body) {
     if (err) {
       d.reject(err);
     }
-
-
-    // extract lines starting with #WARNING
-    // const str3 = body.replace(/^(?!#WARNING.*$).*/mg, "");
-    // removeEmptyLines(str3);
-    // var arr = str3.split("\n");
-    // _.forEach(arr, ele => {
-    //   if (ele !== '') {
-    //     ret.push(ele);
-    //   }
-    // });
-    // needs to be added
-    // gprofiler has wierd behavior
-    // when there's no output, doesnt display warning messages
-    // if (ret.length == 0) {
-    //   ret = "Valid gene query";
-    // }
 
     d.resolve(body);
   });

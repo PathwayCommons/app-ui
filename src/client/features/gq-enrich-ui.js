@@ -63,14 +63,6 @@ class GqEnrich extends React.Component {
             width: '100vw',
           }
         })]),
-        // h('div', [h('input', {
-        //   placeholder: 'enter settings',
-        //   onChange: e => this.setState({setting: (e.target.value == "") ? '""':  e.target.value, x: "1"}),
-        //   style: {
-        //     width: '100vw',
-        //   }
-        // })]),
-        // if output is changed, change this.state.setting, add "output": "1" to setting
         h('div', 'Optional Settings for enrichment:'),
         h('div', [h('input', { placeholder: 'output', onChange: e => this.changeSetting('output', e.target.value) }), "default: mini"]),
         h('div', [h('input', { placeholder: 'organism', onChange: e => this.changeSetting('organism', e.target.value) }), "default: hsapiens"]),
@@ -95,8 +87,6 @@ class GqEnrich extends React.Component {
         h('div', this.state.result_gq),
         h('div', [h('button', { onClick: e => this.enrich() }, 'click to enrich')]),
         h('div', this.state.result_enrich)
-
-
       ]);
   }
 }

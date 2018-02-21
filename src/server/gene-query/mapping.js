@@ -7,8 +7,7 @@ jsonData.forEach(el => jsonContent.set(el['Approved Symbol'], el['HGNC ID']));
 
 
 // map HGNC symbol to HGNC ID
-// After validation step, we can assume all symbols are valid
-// so that we can find a mapping for sure
+// returns null if not found
 const mapping = function (hgncSymbol) {
   const validSymbol = jsonContent.has(hgncSymbol);
   if(validSymbol) {

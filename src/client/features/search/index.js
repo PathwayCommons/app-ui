@@ -197,7 +197,6 @@ class Search extends React.Component {
         if(_.hasIn(box,'protein.alternativeName')){ 
           const synonymsLength=100;
           const synonymsTextLong= box.protein.alternativeName.map(obj => obj.fullName.value).join(', ');
-          console.log(synonymsTextLong);
           const synonymsText= state.landingShowMore[0]|| synonymsTextLong.length<=synonymsLength?synonymsTextLong+' ': synonymsTextLong.slice(0,synonymsTextLong.lastIndexOf(',',synonymsLength))+' '; 
           synonyms=[h('i.search-landing-small',{key:'text'},synonymsText)];
           if(synonymsTextLong.length>synonymsLength){

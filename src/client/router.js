@@ -45,6 +45,18 @@ module.exports = () => {
           });
           return h(Features.Edit, editProps);
         }
+      },
+      {
+        path: '/gq',
+        render: props => h(Features.GeneQuery, props)
+      },
+      {
+        path: '/enrich',
+        render: props => h(Features.Enrichment, props)
+      },
+      {
+        path: '/gqenrich',
+        render: props => h(Features.GqEnrich, props)
       }
     ].map( spec => h(Route, _.assign({ exact: true }, spec)) ))
   ]);

@@ -232,6 +232,7 @@
 .search-item-icon {
   display: flex;
   justify-content: center;
+  flex: 0 0 auto;
   width: 80px;
   height: auto;
 }

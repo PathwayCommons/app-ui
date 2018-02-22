@@ -5,6 +5,11 @@ const router = express.Router();
 const controller = require('./controller');
 const config = require('../../config');
 
+const { validator } = require('../gene-query');
+
+const enrichment = require("../enrichment").enrichment;
+const validateGp = require("../enrichment").validateGp;
+
 
 const isAuthenticated = token => {
   return config.MASTER_PASSWORD != '' && config.MASTER_PASSWORD === token;
@@ -29,9 +34,9 @@ router.post('/submit-layout', function (req, res) {
 router.post('/submit-graph', function (req, res) {
   if (isAuthenticated(req.body.token)) {
     controller.submitGraph(req.body.uri, req.body.version, req.body.graph)
-    .then((package) => {
-      res.json(package);
-    });
+      .then((package) => {
+        res.json(package);
+      });
   } else {
     res.json(errorMsg);
   }
@@ -55,6 +60,36 @@ router.get('/get-graph-and-layout', function (req, res) {
     res.json(package);
   });
 });
+
+// expose a rest endpoint for validator
+router.get('/gene-query/', (req, res) => {
+  const genes = req.query.genes;
+  const results = validator(genes);
+  var ret = JSON.stringify(results);
+  res.json(ret);
+});
+
+// expose a rest endpoint for validatorGp
+router.get('/validateGp/', (req, res) => {
+  const genes = req.query.genes;
+  validateGp(genes).then(function (results) {
+    res.json(results);
+  });
+});
+
+//expose a rest endpoint for enrichment
+router.get('/enrichment/', (req, res) => {
+  const genes = req.query.genes;
+  let user_settings = {};
+  if (req.query.setting !== undefined) {
+    user_settings = JSON.parse(req.query.setting);
+  }
+  enrichment(genes, user_settings).then(function (results) {
+    res.json(results);
+  });
+});
+
+
 
 // Expose a rest endpoint for controller.endSession
 router.get('/disconnect', function (req, res) {

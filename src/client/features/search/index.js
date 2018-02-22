@@ -90,7 +90,7 @@ class Search extends React.Component {
         }
         else{
           this.setState({
-            landingLoading: [false,false],
+            landingLoading: false,
             landing:[]
           });
         }

@@ -44,7 +44,7 @@ const enrichment = function (query) {
 
       // convert csv to json, extract "term id"
       let collection = [];
-      let ret = [];
+      let ret = {};
       csv({ delimiter: "\t" })
         .fromFile("outputFile")
         .on('json', (jsonObj) => {
@@ -52,7 +52,15 @@ const enrichment = function (query) {
         })
         .on('done', (error) => {
           _.forEach(collection, function (elem) {
-            ret.push(elem["term ID"]);
+            ret[elem["term ID"]] = {signf: elem["signf"], pvalue: elem["p-value"], T: elem["T"]};
+            ret[elem["term ID"]]["Q&T"] = elem["Q&T"];
+            ret[elem["term ID"]]["Q&T/Q"] = elem["Q&T/Q"];
+            ret[elem["term ID"]]["Q&T/T"] = elem["Q&T/T"];
+            ret[elem["term ID"]]["t type"] = elem["t type"];
+            ret[elem["term ID"]]["t group"] = elem["t group"];
+            ret[elem["term ID"]]["t name"] = elem["t name"];
+            ret[elem["term ID"]]["t depth"] = elem["t depth"];
+            ret[elem["term ID"]]["Q&T list"] = elem["Q&T list"];
           });
           resolve(ret);
         });

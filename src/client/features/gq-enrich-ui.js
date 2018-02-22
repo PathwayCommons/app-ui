@@ -30,7 +30,7 @@ class GqEnrich extends React.Component {
 
   enrich() {
     ServerAPI.enrichment(this.state.query, this.state.setting).then(res => {
-      this.setState({ result_enrich: 'enrichment result is ' + res });
+      this.setState({ result_enrich: 'enrichment result is ' + JSON.stringify(res) });
     });
   }
 
@@ -49,11 +49,6 @@ class GqEnrich extends React.Component {
   }
 
   render() {
-    // return h('div', [
-    //   h('button', { onClick: e => this.queryGenes()}, 'click to test gene query'),
-    //   h('input', { placeholder: 'enter genes', onChange: e => this.setState({query: e.target.value})}),
-    //   this.state.result
-    // ]);
     return h('div',
       [
         h('div', [h('input', {

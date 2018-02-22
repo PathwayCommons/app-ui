@@ -27,7 +27,7 @@ class Interactions extends React.Component {
       loading: true,
     };    
     const query = queryString.parse(props.location.search);
-    ServerAPI.getNeighborhood(query.ID).then(res=>{ 
+    ServerAPI.getNeighborhood(query.ID,'TXT').then(res=>{ 
       const layoutConfig = getLayoutConfig('interactions');
       const componentConfig = _.merge({}, BaseNetworkView.config, { useSearchBar: true});
       const network= this.parse(res,query.ID);

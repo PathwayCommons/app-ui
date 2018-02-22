@@ -35,8 +35,8 @@ const ServerAPI = {
   getProteinInformation(uniprotId){
     return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&size=1&accession=${uniprotId}`,defaultFetchOpts).then(res => res.json());
   },
-  getNeighborhood(uniprotId){
-    return fetch(`http://www.pathwaycommons.org/pc2/graph?source=http://identifiers.org/uniprot/${uniprotId}&kind=neighborhood&format=TXT&pattern=controls-phosphorylation-of
+  getNeighborhood(uniprotId,format){
+    return fetch(`http://www.pathwaycommons.org/pc2/graph?source=http://identifiers.org/uniprot/${uniprotId}&kind=neighborhood&format=${format}&pattern=controls-phosphorylation-of
   &pattern=in-complex-with&pattern=controls-expression-of&pattern=interacts-with`,defaultFetchOpts).then(res => res.text());
   },
 

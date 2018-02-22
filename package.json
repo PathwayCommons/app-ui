@@ -68,6 +68,7 @@
     "node-fetch": "^1.7.3",
     "object-hash": "^1.2.0",
     "pathway-commons": "^1.5.4",
+    "promise-simple": "^0.1.0",
     "query-string": "^5.0.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",

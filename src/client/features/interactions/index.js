@@ -84,7 +84,7 @@ class Interactions extends React.Component {
       target: nodes[1],
       class: this.edgeType(edge),
       parsedMetadata:[['Database IDs',sources]]
-    }});
+    },classes:this.edgeType(edge)});
   }
 
   parse(data,query){

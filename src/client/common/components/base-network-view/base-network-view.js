@@ -126,7 +126,8 @@ class BaseNetworkView extends React.Component {
           onClick: () => {
             btn.func(state);
           },
-          desc: btn.description
+          desc: btn.description,
+          cy: state.cy
         })
       );
     });

@@ -1,6 +1,6 @@
 const h = require('react-hyperscript');
 
-const { NetworkInfoMenu, FileDownloadMenu } = require('./menus');
+const { NetworkInfoMenu, FileDownloadMenu, InteractionsSettingsMenu} = require('./menus');
 
 let expanded = true;
 const expandCollapseAll = (props) => {
@@ -38,6 +38,13 @@ const toolbarButtons = [
     menuId: 'fileDownloadMenu',
     description: 'Download options'
   },
+  location.pathname.includes('interactions')? {
+    id: 'settings',
+    icon: 'settings',
+    type: 'activateMenu',
+    menuId: 'interactionsSettingsMenu',
+    description: 'Settings'
+  }:{},
   {
     id: 'expandCollapse',
     icon: 'select_all',
@@ -57,9 +64,10 @@ const toolbarButtons = [
     icon: 'replay',
     type: 'networkAction',
     func: resetToDefaultLayout,
-    desc: 'Reset network arrangement'
+    description: 'Reset network arrangement'
   }
 ];
+
 
 // todo turn this into a map
 // create a null entry for the close menu
@@ -76,6 +84,10 @@ const menus = [
   {
     id: 'networkInfoMenu',
     func: props => h(NetworkInfoMenu, props),
+  },
+  {
+    id: 'interactionsSettingsMenu',
+    func: props => h(InteractionsSettingsMenu, props),
   }
 ];
 

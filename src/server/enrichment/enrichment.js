@@ -2,6 +2,8 @@ const request = require('request');
 const csv = require('csvtojson');
 const fs = require('fs');
 const _ = require('lodash');
+const path = require("path");
+
 const enrichment = function (query) {
 
   var promise = new Promise(function (resolve, reject) {
@@ -40,13 +42,13 @@ const enrichment = function (query) {
       // remove lines starting with #
       const str3 = str2.replace(/^#.*$/mg, "");
       const str4 = (str1 + '\n').concat(str3);
-      fs.writeFileSync("outputFile", str4);
+      fs.writeFileSync("src/server/enrichment/outputFile", str4);
 
       // convert csv to json, extract "term id"
       let collection = [];
       let ret = {};
       csv({ delimiter: "\t" })
-        .fromFile("outputFile")
+        .fromFile("src/server/enrichment/outputFile")
         .on('json', (jsonObj) => {
           collection.push(jsonObj);
         })
@@ -62,10 +64,10 @@ const enrichment = function (query) {
             ret[elem["term ID"]]["t depth"] = elem["t depth"];
             ret[elem["term ID"]]["Q&T list"] = elem["Q&T list"];
           });
+          fs.unlinkSync(path.resolve(__dirname, "outputFile"));
           resolve(ret);
         });
     });
-
   });
 
   return promise;

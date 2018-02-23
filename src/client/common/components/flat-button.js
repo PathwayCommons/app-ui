@@ -26,7 +26,7 @@ class FlatButton extends React.Component {
     }
 
     return h('div.common-flat-button', {
-      onClick: (e) => props.onClick(e)
+      onClick: () => props.onClick()
     }, contents);
   }
 }

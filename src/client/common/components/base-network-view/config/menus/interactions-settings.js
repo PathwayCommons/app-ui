@@ -1,43 +1,54 @@
 const React = require('react');
 const h = require('react-hyperscript');
-const FlatButton = require('../../../flat-button');
+const classNames = require('classnames');
 
 class InteractionsSettingsMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state={
-      savedCatagories: new Map ()
+      savedCatagories: new Map (),
+      buttons:new Map([['Binding',false],
+                      ['Phosphorylation',false],
+                      ['Expression',false]
+                    ]),
     };
-    this.handelClick.bind(this);
+    this.handelClick.bind(this); 
   }
 
   handelClick (e) {
-    const saved = this.state.savedCatagories;
-    if(!saved.has(e.target.textContent)){
-      const edges= this.props.cy.edges().filter(`.${e.target.textContent}`);
+    const state=this.state;
+    const saved = state.savedCatagories;
+    const buttons=state.buttons;
+    const type= e.target.textContent;
+    buttons.set(type,!buttons.get(type));
+    if(!saved.has(type)){
+      const edges= this.props.cy.edges().filter(`.${type}`);
       this.props.cy.remove(edges);
       const nodes = edges.connectedNodes();
          const toSave = edges.union(nodes);
       this.props.cy.remove(nodes.filter(nodes=>nodes.connectedEdges().length<=0));
       if(toSave.length){
-          saved.set(e.target.textContent, toSave);
+          saved.set(type, toSave);
       }
     }
     else{ 
-     saved.get(e.target.textContent).restore();
-      saved.delete(e.target.textContent);
+     saved.get(type).restore();
+      saved.delete(type);
     }
     this.setState({
-      savedCatagories: saved
+      savedCatagories: saved,
+      buttons:buttons
     });
   }
 
   render(){
-    const buttons= ['Binding','Phosphorylation','Expression'
-    ].map(but=>h(FlatButton,{children:but, onClick: (e) => this.handelClick(e),key:but}));
-    return h('div',[buttons]);
+   const buttons= [...this.state.buttons].map(([type, clicked])=>
+      h('div',{key:type,className:classNames ('interaction-settings-button',clicked? 'interaction-settings-clicked':'interaction-settings-not-clicked'),onClick: (e) => this.handelClick(e)},[
+        h('div',{className:classNames(type,'interaction-settings-legend')}),
+        h('h2.button-label',type),
+      ]));
+    return h('div',buttons);
     }
   
-
 }
 module.exports = InteractionsSettingsMenu;

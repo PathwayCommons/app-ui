@@ -44,7 +44,7 @@ const toolbarButtons = [
     type: 'activateMenu',
     menuId: 'interactionsSettingsMenu',
     description: 'Settings'
-  }:{},
+  }:
   {
     id: 'expandCollapse',
     icon: 'select_all',

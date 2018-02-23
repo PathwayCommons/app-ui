@@ -16,15 +16,15 @@ class InteractionsSettingsMenu extends React.Component {
     if(!saved.has(e.target.textContent)){
       const edges= this.props.cy.edges().filter(`.${e.target.textContent}`);
       this.props.cy.remove(edges);
-      const nodes = this.props.cy.nodes().filter(node=> node.connectedEdges().length<=0);
-      const toSave = edges.union(nodes);
-      this.props.cy.remove(nodes);
+      const nodes = edges.connectedNodes();
+         const toSave = edges.union(nodes);
+      this.props.cy.remove(nodes.filter(nodes=>nodes.connectedEdges().length<=0));
       if(toSave.length){
           saved.set(e.target.textContent, toSave);
       }
     }
     else{ 
-      saved.get(e.target.textContent).restore();
+     saved.get(e.target.textContent).restore();
       saved.delete(e.target.textContent);
     }
     this.setState({

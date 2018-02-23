@@ -2,9 +2,8 @@
 const MetadataTip = require('../tooltips/');
 
 const bindShowTooltip = (cy) => {
-  cy.on('showTooltip', 'node', function (evt) {
+  cy.on('showTooltip', 'node,edge.Binding,edge.Phosphorylation,edge.Expression', function (evt) {
     const node = evt.target;
-
     const data = node.data();
     const name = data.label;
     const cy = evt.cy;

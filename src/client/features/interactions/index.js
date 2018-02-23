@@ -60,7 +60,11 @@ class Interactions extends React.Component {
   }
 
   findId(data,id){
-    return data.filter(line => line.includes(id))[0].split('	')[0];
+    for (let i of data){
+      if (i[1][2].includes(id)||i[1][3].includes(id)){
+        return i[0]; 
+      }
+    }
   }
 
   pathwayLinks(sources){
@@ -70,11 +74,15 @@ class Interactions extends React.Component {
     });
   }
 
-  addInteraction(nodes,edge,sources,network,nodeMap){
+  addInteraction(nodes,edge,sources,network,nodeMap,nodeMetadata){
     for (let i = 0; i<2; i++){
       if(!nodeMap.has(nodes[i])){
+        const metadata=nodeMetadata.get(nodes[i]);
         nodeMap.set(nodes[i],true);
-        network.nodes.push({data:{class: "ball",id: nodes[i],label: nodes[i],parsedMetadata:[]}});
+        network.nodes.push({data:{class: "ball",id: nodes[i],label: nodes[i],parsedMetadata:[
+          ['Type','bp:'+metadata[0].split(' ')[0]],['Database IDs',[
+            [metadata[2].split(':')[0],metadata[2].split(':').slice(1).join(':')],
+            [metadata[3].split(':')[0],metadata[3].split(':').slice(1).join(':')]]]]}});
       }
     }
     network.edges.push({data: {
@@ -84,7 +92,7 @@ class Interactions extends React.Component {
       target: nodes[1],
       class: this.edgeType(edge),
       parsedMetadata:[['Database IDs',sources]]
-    }});
+    },classes:this.edgeType(edge)});
   }
 
   parse(data,query){
@@ -93,15 +101,16 @@ class Interactions extends React.Component {
       nodes:[],
     };
     let nodeMap=new Map(); //keeps track of nodes that have already been added
-    const splitByLines=data.split('\n');
-    const id=this.findId(splitByLines,query);
+    const dataSplit=data.split('\n\n');
+    const interactions=dataSplit[0].split('\n').slice(1).map(line => line.split('\t'));
+    const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
+    const id=this.findId(nodeMetadata,query);
   
     for(let j = 0; j<2; j++){
       let i=1;
-      while (splitByLines[i]){ 
-        let splitLine=splitByLines[i].split('\t');
-        if((j===0 && (splitLine[0]===id || splitLine[2]===id))||(j===1 && (nodeMap.has(splitLine[0]) && nodeMap.has(splitLine[2])))){ //if(a interaction with the main node(first loop))||
-          this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],this.pathwayLinks(splitLine[6]),network,nodeMap);              //(2 nodes conected to the main node(second loop))
+      while (interactions[i]){ 
+        if((j===0 && (interactions[i][0]===id || interactions[i][2]===id))||(j===1 && (nodeMap.has(interactions[i][0]) && nodeMap.has(interactions[i][2])))){ //if(a interaction with the main node(first loop))||
+          this.addInteraction([interactions[i][0],interactions[i][2]],interactions[i][1],this.pathwayLinks(interactions[i][6]),network,nodeMap,nodeMetadata);              //(2 nodes conected to the main node(second loop))
         }
         i++;
       }

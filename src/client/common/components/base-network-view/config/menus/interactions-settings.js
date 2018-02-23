@@ -1,6 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const classNames = require('classnames');
+const hideTooltips = require('../../../../cy/events/click.js').hideTooltips;
 
 class InteractionsSettingsMenu extends React.Component {
   constructor(props) {
@@ -20,15 +21,18 @@ class InteractionsSettingsMenu extends React.Component {
     const saved = state.savedCatagories;
     const buttons=state.buttons;
     const type= e.target.textContent;
+    const cy=this.props.cy;
+
     buttons.set(type,!buttons.get(type));
     if(!saved.has(type)){
-      const edges= this.props.cy.edges().filter(`.${type}`);
-      this.props.cy.remove(edges);
+      hideTooltips(cy);
+      const edges= cy.edges().filter(`.${type}`);
+      cy.remove(edges);
       const nodes = edges.connectedNodes();
-         const toSave = edges.union(nodes);
-      this.props.cy.remove(nodes.filter(nodes=>nodes.connectedEdges().length<=0));
+      const toSave = edges.union(nodes);
+      cy.remove(nodes.filter(nodes=>nodes.connectedEdges().length<=0));
       if(toSave.length){
-          saved.set(type, toSave);
+        saved.set(type, toSave);
       }
     }
     else{ 

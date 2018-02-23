@@ -1,7 +1,7 @@
 //Hide all Tooltips
 //Requires a valid cytoscape element
 const hideTooltips = (cy) => {
-  cy.nodes().union(cy.edges()).forEach(node => {
+  cy.nodes().union(cy.edges('.Binding,.Phosphorylation,.Expression')).forEach(node => {
     const tooltip = node.scratch('_tooltip');
     if (tooltip) { tooltip.hide(); }
   });

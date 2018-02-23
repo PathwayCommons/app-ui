@@ -5,14 +5,9 @@ const iStylesheet=cytoscape.stylesheet()
   'opacity': 0.3,
   'arrow-scale': 1.75,
   'curve-style': 'bezier',
-  'line-color': '#555',
   'target-arrow-fill': 'hollow',
   'source-arrow-fill': 'hollow',
   'width': 1.5,
-  'target-arrow-color': '#555',
-  'source-arrow-color': '#555',
-  'text-border-color': '#555',
-  'color': '#555'
 })
 .selector('edge[class="Phosphorylation"]')
 .css({

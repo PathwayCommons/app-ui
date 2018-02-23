@@ -40,7 +40,6 @@ class FileDownloadMenu extends React.Component {
       const extension = optionObj.ext;
       this.initiatePCDownload(pc2Name, extension, type);
     }
-
   }
 
   initiatePCDownload(format, fileExt, fileType) {
@@ -48,7 +47,7 @@ class FileDownloadMenu extends React.Component {
    
     const downloadFetch=location.pathname.includes('interactions') ? ServerAPI.getNeighborhood(location.search.slice(4),format) : 
       ServerAPI.pcQuery('get', { uri: this.props.networkMetadata.uri, format: format }).then(res => res.text());
-      
+
     downloadFetch.then(content => {
           let fileContent = content;
           if (typeof content === 'object') {

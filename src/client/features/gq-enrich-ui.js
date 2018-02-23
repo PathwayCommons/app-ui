@@ -18,7 +18,7 @@ class GqEnrich extends React.Component {
   }
   queryGenes() {
     ServerAPI.geneQuery(this.state.query).then(res => {
-      this.setState({ result_gq: 'validator result is ' + res });
+      this.setState({ result_gq: 'validator result is ' + JSON.stringify(res) });
     });
   }
 

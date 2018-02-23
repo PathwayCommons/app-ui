@@ -24,7 +24,7 @@ class GqEnrich extends React.Component {
 
   validateGp() {
     ServerAPI.validateGp(this.state.query).then(res => {
-      this.setState({ result_validate_gp: 'validator result from gProfiler is ' + JSON.stringify(res) });
+      this.setState({ result_validate_gp: 'validator result from gProfiler is ' + res });
     });
   }
 

@@ -35,6 +35,7 @@ class InteractionsSettingsMenu extends React.Component {
      saved.get(type).restore();
       saved.delete(type);
     }
+    this.props.cy.layout(this.props.layoutConfig.defaultLayout.options).run();
     this.setState({
       savedCatagories: saved,
       buttons:buttons

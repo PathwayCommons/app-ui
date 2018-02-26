@@ -24,6 +24,7 @@ class Interactions extends React.Component {
         datasource: '',
         comments: []
       },
+      id:'',
       loading: true,
     };    
     const query = queryString.parse(props.location.search);
@@ -34,12 +35,13 @@ class Interactions extends React.Component {
       this.setState({
         componentConfig: componentConfig,
         layoutConfig: layoutConfig,
-        networkJSON: network ,
+        networkJSON: network.network ,
         networkMetadata: {
           name: query.ID,
           datasource: 'Pathway Commons',
           comments: ['place holder'], dataSource: ['place holder'], organism: ['place holder'], title: ['place holder'], uri: 'place holder'
         },
+        id: network.id,
         loading: false
       }); 
     });
@@ -106,17 +108,11 @@ class Interactions extends React.Component {
     const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
     const id=this.findId(nodeMetadata,query);
   
-    for(let j = 0; j<2; j++){
-      let i=1;
-      while (interactions[i]){ 
-        if((j===0 && (interactions[i][0]===id || interactions[i][2]===id))||(j===1 && (nodeMap.has(interactions[i][0]) && nodeMap.has(interactions[i][2])))){ //if(a interaction with the main node(first loop))||
-          this.addInteraction([interactions[i][0],interactions[i][2]],interactions[i][1],this.pathwayLinks(interactions[i][6]),network,nodeMap,nodeMetadata);              //(2 nodes conected to the main node(second loop))
-        }
-        i++;
-      }
-      nodeMap.delete(id); //remove main node to prevent getting duplicates 
-    }
-    return network;
+    for(let i = 0; interactions[i]; i++){
+      let splitLine=interactions[i].split('\t');
+      this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],this.pathwayLinks(splitLine[6]),network,nodeMap);
+   }
+    return {id,network};
   }
 
   render(){
@@ -126,7 +122,9 @@ class Interactions extends React.Component {
       componentConfig: state.componentConfig,
       cy: state.cy,
       networkJSON: state.networkJSON,
-      networkMetadata: state.networkMetadata
+      networkMetadata: state.networkMetadata,
+      id:state.id,
+      interactionView: true
     });
     const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
 

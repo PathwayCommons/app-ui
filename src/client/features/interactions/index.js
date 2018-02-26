@@ -81,12 +81,12 @@ class Interactions extends React.Component {
       if(!nodeMap.has(nodes[i])){
         const metadata=nodeMetadata.get(nodes[i]);
         nodeMap.set(nodes[i],true);
+        const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>[entry.split(':')[0],entry.split(':')[1]]))),_.isEqual);       
         network.nodes.push({data:{class: "ball",id: nodes[i],label: nodes[i],parsedMetadata:[
-          ['Type','bp:'+metadata[0].split(' ')[0]],['Database IDs',[
-            [metadata[2].split(':')[0],metadata[2].split(':').slice(1).join(':')],
-            [metadata[3].split(':')[0],metadata[3].split(':').slice(1).join(':')]]]]}});
+          ['Type','bp:'+metadata[0].split(' ')[0]],['Database IDs', links]]}});
       }
     }
+
     network.edges.push({data: {
       id: nodes[0]+edge+nodes[1] ,
       label:nodes[0]+' '+edge+' '+nodes[1] ,
@@ -109,8 +109,8 @@ class Interactions extends React.Component {
     const id=this.findId(nodeMetadata,query);
   
     for(let i = 0; interactions[i]; i++){
-      let splitLine=interactions[i].split('\t');
-      this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],this.pathwayLinks(splitLine[6]),network,nodeMap);
+      let splitLine=interactions[i];
+      this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],this.pathwayLinks(splitLine[6]),network,nodeMap,nodeMetadata);
    }
     return {id,network};
   }

@@ -45,6 +45,11 @@ class Interactions extends React.Component {
         loading: false
       }); 
     });
+    this.state.cy.on('trim', () => {
+      const mainNode=this.state.cy.nodes(node=> node.data().id===this.state.id);
+      const nodesToKeep=mainNode.merge(mainNode.connectedEdges().connectedNodes());
+      this.state.cy.remove(this.state.cy.nodes().difference(nodesToKeep));
+    });
   }
 
   edgeType(type){
@@ -113,8 +118,6 @@ class Interactions extends React.Component {
       cy: state.cy,
       networkJSON: state.networkJSON,
       networkMetadata: state.networkMetadata,
-      id:state.id,
-      interactionView: true
     });
     const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
 

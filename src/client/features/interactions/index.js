@@ -89,7 +89,7 @@ class Interactions extends React.Component {
 
     network.edges.push({data: {
       id: nodes[0]+edge+nodes[1] ,
-      label:nodes[0]+' '+edge+' '+nodes[1] ,
+      label:nodes[0]+' '+edge.replace(/-/g,' ')+' '+nodes[1] ,
       source:nodes[0],
       target: nodes[1],
       class: this.edgeType(edge),

@@ -56,7 +56,11 @@ class BaseNetworkView extends React.Component {
     cy.mount(container);
     cy.remove('*');
     cy.add(state.networkJSON);
-
+    if(state.interactionView){
+      const mainNode=cy.nodes(node=> node.data().id===state.id);
+      const nodesToKeep=mainNode.merge(mainNode.connectedEdges().connectedNodes());
+      cy.remove(cy.nodes().difference(nodesToKeep));
+    }
     const layout = cy.layout(initialLayoutOpts);
     layout.on('layoutstop', () => {
       cy.emit('network-loaded');

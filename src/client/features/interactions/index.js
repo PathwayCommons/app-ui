@@ -81,7 +81,7 @@ class Interactions extends React.Component {
       if(!nodeMap.has(nodes[i])){
         const metadata=nodeMetadata.get(nodes[i]);
         nodeMap.set(nodes[i],true);
-        const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>[entry.split(':')[0],entry.split(':')[1]]))),_.isEqual);       
+        const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual);       
         network.nodes.push({data:{class: "ball",id: nodes[i],label: nodes[i],parsedMetadata:[
           ['Type','bp:'+metadata[0].split(' ')[0]],['Database IDs', links]]}});
       }
@@ -104,14 +104,12 @@ class Interactions extends React.Component {
     };
     let nodeMap=new Map(); //keeps track of nodes that have already been added
     const dataSplit=data.split('\n\n');
-    const interactions=dataSplit[0].split('\n').slice(1).map(line => line.split('\t'));
     const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
-    const id=this.findId(nodeMetadata,query);
-  
-    for(let i = 0; interactions[i]; i++){
-      let splitLine=interactions[i];
+    dataSplit[0].split('\n').slice(1).forEach(line => {
+      const splitLine=line.split('\t');
       this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],this.pathwayLinks(splitLine[6]),network,nodeMap,nodeMetadata);
-   }
+    });
+    const id=this.findId(nodeMetadata,query);
     return {id,network};
   }
 

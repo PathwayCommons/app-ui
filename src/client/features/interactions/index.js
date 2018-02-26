@@ -28,7 +28,7 @@ class Interactions extends React.Component {
       loading: true,
     };    
     const query = queryString.parse(props.location.search);
-    ServerAPI.getNeighborhood(query.ID).then(res=>{ 
+    ServerAPI.getNeighborhood(query.ID,'TXT').then(res=>{ 
       const layoutConfig = getLayoutConfig('interactions');
       const componentConfig = _.merge({}, BaseNetworkView.config, { useSearchBar: true});
       const network= this.parse(res,query.ID);
@@ -44,6 +44,11 @@ class Interactions extends React.Component {
         id: network.id,
         loading: false
       }); 
+    });
+    this.state.cy.on('trim', () => {
+      const mainNode=this.state.cy.nodes(node=> node.data().id===this.state.id);
+      const nodesToKeep=mainNode.merge(mainNode.connectedEdges().connectedNodes());
+      this.state.cy.remove(this.state.cy.nodes().difference(nodesToKeep));
     });
   }
 
@@ -121,8 +126,6 @@ class Interactions extends React.Component {
       cy: state.cy,
       networkJSON: state.networkJSON,
       networkMetadata: state.networkMetadata,
-      id:state.id,
-      interactionView: true
     });
     const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
 

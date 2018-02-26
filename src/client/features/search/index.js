@@ -220,8 +220,8 @@ class Search extends React.Component {
           h('div.search-landing-section',[synonyms]),
           h('div.search-landing-section',[functions]),
           h('div.search-landing-section',[links]),
-          h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ ID: box.accession })}, target: '_blank' }, [
-            h('div.search-landing-link ', 'Interactions'),
+          h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ ID: box.accession })}, target: '_blank',className: 'search-landing-interactions' }, [
+            h('button.search-landing-button', 'View Interactions'),
           ]),
         ]);    
       });

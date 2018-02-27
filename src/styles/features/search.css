@@ -264,6 +264,22 @@
   cursor: pointer;
 }
 
+.search-landing-button{
+
+  background-color: #0073BF;
+  color: white;
+  border-radius: 0px;
+  display: inline-flex;
+  border: 2px solid #0073BF;
+}
+.search-landing-button:hover {
+  background-color: #6E9ABD; 
+  color: white;
+}
+.search-landing-interactions {
+  margin-top: 3px;
+  width: 140px;
+}
 .search-item {
   display: flex;
   vertical-align: middle; 

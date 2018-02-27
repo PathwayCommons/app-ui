@@ -56,6 +56,19 @@ const defaultLayout = {
   }
 };
 
+const interactionsLayout = {
+  displayName: 'Grid',
+  description: 'Align the nodes in a grid',
+  options: {
+    name: 'grid',
+    nodeDimensionsIncludeLabels: true,
+    animate: true,
+    animationDuration: 500,
+    fit: true,
+    padding: 75,
+  }
+};
+
 const getLayoutConfig = (presetLayoutJSON) => {
   const humanCreatedLayout = {
     name: 'preset',
@@ -77,7 +90,14 @@ const getLayoutConfig = (presetLayoutJSON) => {
       defaultLayout: defaultLayout,
       layouts: [defaultLayout]
     };
-  } else {
+  }
+  else if(presetLayoutJSON === 'interactions'){
+    layoutConfig = {
+      defaultLayout: interactionsLayout,
+      layouts: [interactionsLayout]
+    };
+  }
+  else {
     layoutConfig = {
       defaultLayout: humanCreatedLayout,
       layouts: [humanCreatedLayout, defaultLayout]

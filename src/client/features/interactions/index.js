@@ -67,11 +67,13 @@ class Interactions extends React.Component {
   }
 
   findId(data,id){
-    for (let i of data){
-      if (i[1][2].includes(id)||i[1][3].includes(id)){
-        return i[0]; 
+    let hgncId;
+    data.forEach((value,key)=> {
+      if (value[2].includes(id)||value[3].includes(id)){
+        hgncId=key; 
       }
-    }
+    });
+    return hgncId;
   }
 
   pathwayLinks(sources){
@@ -82,20 +84,20 @@ class Interactions extends React.Component {
   }
 
   addInteraction(nodes,edge,sources,network,nodeMap,nodeMetadata){
-    for (let i = 0; i<2; i++){
-      if(!nodeMap.has(nodes[i])){
-        const metadata=nodeMetadata.get(nodes[i]);
-        nodeMap.set(nodes[i],true);
-        const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual);       
-        network.nodes.push({data:{class: "ball",id: nodes[i],label: nodes[i],parsedMetadata:[
+    nodes.forEach((node)=>{
+      if(!nodeMap.has(node)){
+        const metadata=nodeMetadata.get(node);
+        nodeMap.set(node,true);
+        const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');       
+        network.nodes.push({data:{class: "ball",id: node,label: node,parsedMetadata:[
           ['Type','bp:'+metadata[0].split(' ')[0]],['Database IDs', links]]}});
       }
-    }
+    });
 
     network.edges.push({data: {
       id: nodes[0]+edge+nodes[1] ,
-      label:nodes[0]+' '+edge.replace(/-/g,' ')+' '+nodes[1] ,
-      source:nodes[0],
+      label: nodes[0]+' '+edge.replace(/-/g,' ')+' '+nodes[1] ,
+      source: nodes[0],
       target: nodes[1],
       class: this.edgeType(edge),
       parsedMetadata:[['Database IDs',sources]]

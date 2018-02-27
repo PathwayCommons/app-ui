@@ -1,20 +1,19 @@
 const React = require('react');
 const h = require('react-hyperscript');
 
-const {ServerAPI} = require('../services');
+const {ServerAPI} = require('../../services');
 
-class Enrichment extends React.Component {
+class GeneQuery extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       result: 'no result yet',
-      query: '',
-      setting: '""'
+      query: ''
     };
   }
-  enrich() {
-    ServerAPI.enrichment(this.state.query, this.state.setting).then(res => {
+  queryGenes() {
+    ServerAPI.geneQuery(this.state.query).then(res => {
       this.setState({result: 'result is ' + res});
     });
   }
@@ -26,9 +25,8 @@ class Enrichment extends React.Component {
     // ]);
     return h('div',
     [
-      h('div', [h('button', { onClick: e => this.enrich()}, 'click to enrich')]),
+      h('div', [h('button', { onClick: e => this.queryGenes()}, 'click to test gene query')]),
       h('div', [h('input', { placeholder: 'enter genes', onChange: e => this.setState({query: e.target.value})})]),
-      h('div', [h('input', { placeholder: 'enter settings', onChange: e => this.setState({setting: (e.target.value == "") ? '""':  e.target.value})})]),
       this.state.result
     ]);
 
@@ -37,4 +35,4 @@ class Enrichment extends React.Component {
 }
 
 
-module.exports = Enrichment;
+module.exports = GeneQuery;

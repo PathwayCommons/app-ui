@@ -2,7 +2,7 @@ const request = require('request');
 const Promise = require('promise-simple');
 const _ = require('lodash');
 const validateGp = function (query, userSetting) {
-  var defaultSetting = {
+  const defaultSetting = {
     "output": "mini",
     "organism": "hsapiens",
     "significant": "1",

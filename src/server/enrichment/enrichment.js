@@ -4,12 +4,12 @@ const fs = require('fs');
 const _ = require('lodash');
 const path = require("path");
 
-const enrichment = function (query) {
+const enrichment = function (query, userSetting) {
 
   var promise = new Promise(function (resolve, reject) {
     // do a thing, possibly async, then…
 
-    const formData = {
+    const defaultSetting = {
       "output": "mini",
       "organism": "hsapiens",
       "significant": "1",
@@ -26,8 +26,12 @@ const enrichment = function (query) {
       "domain_size_type": "annotated",
       "custbg_cb": "none",
       "sf_GO:BP": "1",
+      "sf_REAC": "1",
       "query": query
     };
+
+    const formData = _.assign({}, defaultSetting, userSetting);
+
     request.post({ url: "http://biit.cs.ut.ee/gprofiler/", formData: formData }, function optionalCallback(err, httpResponse, body) {
       if (err) {
         reject(err);

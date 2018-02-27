@@ -1,7 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 
-const { ServerAPI } = require('../services');
+const { ServerAPI } = require('../../services');
 
 class GqEnrich extends React.Component {
   constructor(props) {

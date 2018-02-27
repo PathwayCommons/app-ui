@@ -6,7 +6,7 @@ const path = require("path");
 
 const enrichment = function (query, userSetting) {
 
-  var promise = new Promise(function (resolve, reject) {
+  const promise = new Promise(function (resolve, reject) {
     // do a thing, possibly async, then…
 
     const defaultSetting = {

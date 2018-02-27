@@ -90,7 +90,7 @@ class Interactions extends React.Component {
         nodeMap.set(node,true);
         const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');       
         network.nodes.push({data:{class: "ball",id: node,label: node,parsedMetadata:[
-          ['Type','bp:'+metadata[0].split(' ')[0]],['Database IDs', links]]}});
+          ['Type','bp:'+metadata[0].split(' ')[0].replace(/Reference/g,'').replace(/;/g,',')],['Database IDs', links]]}});
       }
     });
 

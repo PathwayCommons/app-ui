@@ -32,6 +32,12 @@ class BaseNetworkView extends React.Component {
 
     this.state = _.merge({},
       {
+        savedCatagories: new Map (),
+        buttons:new Map([['Binding',false],
+                        ['Phosphorylation',false],
+                        ['Expression',false]
+                      ]),
+        settingChange: this.settingChange.bind(this),
         activeMenu: 'closeMenu',
         nodeSearchValue: '',
         open: false,
@@ -64,7 +70,31 @@ class BaseNetworkView extends React.Component {
     });
     layout.run();
   }
-
+  settingChange(e,type) {
+    const state=this.state;
+    const saved = state.savedCatagories;
+    const buttons=state.buttons;
+    buttons.set(type,!buttons.get(type));
+    if(!saved.has(type)){
+      const edges= this.state.cy.edges().filter(`.${type}`);
+      this.state.cy.remove(edges);
+      const nodes = edges.connectedNodes();
+         const toSave = edges.union(nodes);
+      this.state.cy.remove(nodes.filter(nodes=>nodes.connectedEdges().length<=0));
+      if(toSave.length){
+          saved.set(type, toSave);
+      }
+    }
+    else{ 
+     saved.get(type).restore();
+      saved.delete(type);
+    }
+    this.state.cy.layout(this.state.layoutConfig.defaultLayout.options).run();
+    this.setState({
+      savedCatagories: saved,
+      buttons:buttons
+    });
+  }
   changeMenu(menu) {
     let resizeCyImmediate = () => this.state.cy.resize();
     let resizeCyDebounced = _.debounce( resizeCyImmediate, 500 );

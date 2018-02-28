@@ -67,11 +67,13 @@ class Interactions extends React.Component {
   }
 
   findId(data,id){
-    for (let i of data){
-      if (i[1][2].includes(id)||i[1][3].includes(id)){
-        return i[0]; 
+    let hgncId;
+    data.forEach((value,key)=> {
+      if (value[2].includes(id)||value[3].includes(id)){
+        hgncId=key; 
       }
-    }
+    });
+    return hgncId;
   }
 
   pathwayLinks(sources){
@@ -82,20 +84,20 @@ class Interactions extends React.Component {
   }
 
   addInteraction(nodes,edge,sources,network,nodeMap,nodeMetadata){
-    for (let i = 0; i<2; i++){
-      if(!nodeMap.has(nodes[i])){
-        const metadata=nodeMetadata.get(nodes[i]);
-        nodeMap.set(nodes[i],true);
-        network.nodes.push({data:{class: "ball",id: nodes[i],label: nodes[i],parsedMetadata:[
-          ['Type','bp:'+metadata[0].split(' ')[0]],['Database IDs',[
-            [metadata[2].split(':')[0],metadata[2].split(':').slice(1).join(':')],
-            [metadata[3].split(':')[0],metadata[3].split(':').slice(1).join(':')]]]]}});
+    nodes.forEach((node)=>{
+      if(!nodeMap.has(node)){
+        const metadata=nodeMetadata.get(node);
+        nodeMap.set(node,true);
+        const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');       
+        network.nodes.push({data:{class: "ball",id: node,label: node,parsedMetadata:[
+          ['Type','bp:'+metadata[0].split(' ')[0].replace(/Reference/g,'').replace(/;/g,',')],['Database IDs', links]]}});
       }
-    }
+    });
+
     network.edges.push({data: {
       id: nodes[0]+edge+nodes[1] ,
-      label:nodes[0]+' '+edge+' '+nodes[1] ,
-      source:nodes[0],
+      label: nodes[0]+' '+edge.replace(/-/g,' ')+' '+nodes[1] ,
+      source: nodes[0],
       target: nodes[1],
       class: this.edgeType(edge),
       parsedMetadata:[['Database IDs',sources]]
@@ -109,14 +111,12 @@ class Interactions extends React.Component {
     };
     let nodeMap=new Map(); //keeps track of nodes that have already been added
     const dataSplit=data.split('\n\n');
-    const interactions=dataSplit[0].split('\n').slice(1).map(line => line.split('\t'));
     const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
+    dataSplit[0].split('\n').slice(1).forEach(line => {
+      const splitLine=line.split('\t');
+      this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],this.pathwayLinks(splitLine[6]),network,nodeMap,nodeMetadata);
+    });
     const id=this.findId(nodeMetadata,query);
-  
-    for(let i = 0; interactions[i]; i++){
-      let splitLine=interactions[i];
-      this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],this.pathwayLinks(splitLine[6]),network,nodeMap);
-   }
     return {id,network};
   }
 

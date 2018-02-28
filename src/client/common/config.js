@@ -21,7 +21,9 @@ const databases = [
   ['3DMET', 'http://identifiers.org/3dmet/', ''],
   ['Chemical Component Dictionary', 'http://identifiers.org/pdb-ccd/', ''],
   ['CAS', 'http://identifiers.org/cas/', ''],
-  ['Pathway Commons','/view?uri=http://pathwaycommons.org/pc2/','']
+  ['Pathway Commons','/view?uri=http://pathwaycommons.org/pc2/',''],
+  ['HPRD','	http://identifiers.org/hprd/',''],
+  ['RefSeq','	http://identifiers.org/refseq/','']
 ];
 
 const publicationsURL = 'http://identifiers.org/pubmed/';

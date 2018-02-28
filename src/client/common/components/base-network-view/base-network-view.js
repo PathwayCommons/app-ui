@@ -4,7 +4,8 @@ const classNames = require('classnames');
 const Link = require('react-router-dom').Link;
 const Loader = require('react-loader');
 const _ = require('lodash');
-
+const hideTooltips = require('../../cy/events/click').hideTooltips;
+const removeStyle= require('../../cy/manage-style').removeStyle;
 const IconButton = require('../icon-button');
 
 const debouncedSearchNodes = _.debounce(require('../../cy/match-style'), 300);
@@ -70,12 +71,16 @@ class BaseNetworkView extends React.Component {
     });
     layout.run();
   }
+
   settingChange(e,type) {
     const state=this.state;
     const saved = state.savedCatagories;
     const buttons=state.buttons;
     const cy= state.cy;
     buttons.set(type,!buttons.get(type));
+    hideTooltips(cy);
+    const hovered = cy.filter(ele=>ele.style('background-color')==='blue'||ele.style('line-color')==='orange');
+    removeStyle(cy, hovered, '_hover-style-before');
     if(!saved.has(type)){
       const edges= cy.edges().filter(`.${type}`);
       cy.remove(edges);
@@ -96,6 +101,7 @@ class BaseNetworkView extends React.Component {
       buttons:buttons
     });
   }
+
   changeMenu(menu) {
     let resizeCyImmediate = () => this.state.cy.resize();
     let resizeCyDebounced = _.debounce( resizeCyImmediate, 500 );

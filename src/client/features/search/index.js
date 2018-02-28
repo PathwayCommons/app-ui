@@ -30,7 +30,7 @@ class Search extends React.Component {
       searchResults: [],
       loading: false,
       showFilters: false,
-      landingShowMore: false,
+      landingShowMore: [false,false],
       dataSources: []
     };
     
@@ -84,7 +84,7 @@ class Search extends React.Component {
             this.setState({
             landingLoading: false,
             landing:result,
-            landingShowMore: false,
+            landingShowMore: [false,false],
             });
           });
         }
@@ -192,26 +192,42 @@ class Search extends React.Component {
     const landing = (state.landingLoading ) ?
       h('div.search-landing.innner',[h(Loader, { loaded:!state.landingLoading , options: { color: '#16A085',position:'relative', top: '15px' }})]):
       state.landing.map(box=>{
+
         let synonyms=null;
         if(_.hasIn(box,'protein.alternativeName')){ 
-          const synonymsText= box.protein.alternativeName.map(obj => obj.fullName.value).join(', ');
-          synonyms=h('i.search-landing-small',synonymsText.slice(0,synonymsText.indexOf(',',70)));
+          const synonymsLength=115;
+          const synonymsTextLong= box.protein.alternativeName.map(obj => obj.fullName.value).join(', ');
+          const synonymsText= (state.landingShowMore[0]|| synonymsTextLong.length<=synonymsLength)?
+            synonymsTextLong+' ': synonymsTextLong.slice(0,synonymsTextLong.lastIndexOf(',',synonymsLength))+' '; 
+          synonyms=[h('i.search-landing-small',{key:'text'},synonymsText)];
+          if(synonymsTextLong.length>synonymsLength){
+            synonyms.push(
+              h('i.search-landing-link',{onClick: e => this.setState({ landingShowMore: [!state.landingShowMore[0],state.landingShowMore[1]]}), 
+                key:'showMore', className:classNames('search-landing-link','search-landing-small')},state.landingShowMore[0]? '« less': 'more »')
+            );
+          }
         }
+
         let functions=null;
         if(_.hasIn(box,'comments[0].text') && box.comments[0].type==='FUNCTION'){
-          const functionText = state.landingShowMore?box.comments[0].text[0].value: box.comments[0].text[0].value.match(/^.{0,260}\w*/) ;
-            functions=[h('span.search-landing-function',{key:'text'},functionText)];
-            if(box.comments[0].text[0].value.length>260){
-              functions.push(
-                h('span.search-landing-link',{onClick: e => this.setState({ landingShowMore: !state.landingShowMore}), key:'showMore'},state.landingShowMore? '« less': 'more »')
-              );
-            }
+          const functionsLength=280;
+          const functionTextLong=box.comments[0].text[0].value;
+          const functionText = (state.landingShowMore[1] || functionTextLong.length<=functionsLength)?
+            functionTextLong: functionTextLong.slice(0,functionTextLong.lastIndexOf(' ',functionsLength));
+          functions=[h('span.search-landing-function',{key:'text'},functionText)];
+          if(functionTextLong.length>functionsLength){
+            functions.push(
+              h('span.search-landing-link',{onClick: e => this.setState({ landingShowMore: [state.landingShowMore[0],!state.landingShowMore[1]]}), key:'showMore'},
+                state.landingShowMore[1]? '« less': 'more »')
+            );
+          }
         } 
-        const links=[
-          {text:'UniProt', link:`http://www.uniprot.org/uniprot/${box.accession}`}, 
-          {text:'Gene cards',link:`http://www.genecards.org/cgi-bin/carddisp.pl?id=${box.accession}`}, 
-          {text:'Methan',link:`http://mentha.uniroma2.it/result.php?q=${box.accession}&org=9606`}
-        ].map(link=>{return h('a.search-landing-link',{key: link.text, href: link.link},link.text);});
+        const ids = [box.accession,box.dbReferences.filter(entry =>entry.type=='HGNC')[0],box.dbReferences.filter(entry =>entry.type=='GeneID')[0]];
+        let links=[{text:'UniProt', link:`http://www.uniprot.org/uniprot/${ids[0]}`}];
+          if(ids[1]) {links.push({text:'HGNC',link:`https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=${ids[1].id}`});} 
+          if(ids[2]) {links.push({text:'Entrez Gene',link:`https://www.ncbi.nlm.nih.gov/gene/${ids[2].id}`});}
+        links=links.map(link=>{return h('a.search-landing-link',{key: link.text, href: link.link},link.text);});
+
         return h('div.search-landing.innner',{key: box.accession},[ 
           h('div.search-landing-section',[
             h('strong.search-landing-title',box.protein.recommendedName.fullName.value+'-'),

@@ -37,7 +37,7 @@ class Interactions extends React.Component {
         layoutConfig: layoutConfig,
         networkJSON: network.network ,
         networkMetadata: {
-          name: query.ID,
+          name: network.id+' Interactions',
           datasource: 'Pathway Commons',
           comments: ['place holder'], dataSource: ['place holder'], organism: ['place holder'], title: ['place holder'], uri: 'place holder'
         },

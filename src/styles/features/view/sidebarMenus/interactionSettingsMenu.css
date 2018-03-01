@@ -3,6 +3,10 @@
   width: 100%;
 }
 
+.interaction-settings-p{
+  margin: 0px;
+}
+
 .interaction-settings-button {
     align-items: center;
     display: flex;

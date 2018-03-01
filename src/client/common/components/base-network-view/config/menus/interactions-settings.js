@@ -6,11 +6,16 @@ class InteractionsSettingsMenu extends React.Component {
   render(){
    const props= this.props;
    const buttons= [...props.buttons].map(([type, clicked])=>
-   h('div',{key:type,className:classNames ('interaction-settings-button',clicked? 'interaction-settings-clicked':'interaction-settings-not-clicked'),onClick: (e) => props.settingChange(e,type)},[
+   h('div',{key:type,className:classNames ('interaction-settings-button',clicked? 'interaction-settings-clicked':'interaction-settings-not-clicked'),
+    onClick: (e) => props.settingChange(e,type)},[
         h('div',{className:classNames(type,'interaction-settings-legend')}),
-        h('h2.button-label',type),
+        h('h3.button-label',type),
+        h('div','')
       ]));
-    return h('div',buttons);
+    return h('div',[
+      h('h2', 'Settings'),
+      h('p.interaction-settings-p','Filter interactions by type:'),
+      h('div',buttons)]);
     }
   
 }

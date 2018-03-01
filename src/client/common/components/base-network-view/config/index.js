@@ -39,8 +39,8 @@ const toolbarButtons = [
     description: 'Download options'
   },
   location.pathname.includes('interactions')? {
-    id: 'settings',
-    icon: 'settings',
+    id: 'Filter',
+    icon: 'filter_list',
     type: 'activateMenu',
     menuId: 'interactionsSettingsMenu',
     description: 'Settings'

@@ -57,10 +57,10 @@ const defaultLayout = {
 };
 
 const interactionsLayout = {
-  displayName: 'Grid',
+  displayName: 'Concentric',
   description: 'Align the nodes in a grid',
   options: {
-    name: 'grid',
+    name: 'concentric',
     nodeDimensionsIncludeLabels: true,
     animate: true,
     animationDuration: 500,

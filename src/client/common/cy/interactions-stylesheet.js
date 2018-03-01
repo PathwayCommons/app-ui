@@ -38,6 +38,8 @@ const iStylesheet=cytoscape.stylesheet()
   'text-max-width': 175,
   'width': 30,
   'height': 30,
-  'label': node => node.data('label')
+  'label': node => node.data('label'),
+  'text-halign': 'center',
+  'text-valign': 'center',
 });
 module.exports = iStylesheet;

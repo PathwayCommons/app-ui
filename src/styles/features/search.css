@@ -271,14 +271,18 @@
   border-radius: 0px;
   display: inline-flex;
   border: 2px solid #0073BF;
+  width: 100%;
+  font-size: 13pt;
+  align-items: center;
+  justify-content: center;
 }
 .search-landing-button:hover {
   background-color: #6E9ABD; 
   color: white;
 }
 .search-landing-interactions {
-  margin-top: 3px;
-  width: 140px;
+  margin-top: 5px;
+  width: 100%;
 }
 .search-item {
   display: flex;

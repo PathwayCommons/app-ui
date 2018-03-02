@@ -4,8 +4,7 @@ const classNames = require('classnames');
 const Link = require('react-router-dom').Link;
 const Loader = require('react-loader');
 const _ = require('lodash');
-const hideTooltips = require('../../cy/events/click').hideTooltips;
-const removeStyle= require('../../cy/manage-style').removeStyle;
+
 const IconButton = require('../icon-button');
 
 const debouncedSearchNodes = _.debounce(require('../../cy/match-style'), 300);
@@ -33,12 +32,6 @@ class BaseNetworkView extends React.Component {
 
     this.state = _.merge({},
       {
-        savedCatagories: new Map (),
-        buttons:new Map([['Binding',false],
-                        ['Phosphorylation',false],
-                        ['Expression',false]
-                      ]),
-        settingChange: this.settingChange.bind(this),
         activeMenu: 'closeMenu',
         nodeSearchValue: '',
         open: false,
@@ -70,36 +63,6 @@ class BaseNetworkView extends React.Component {
       this.setState({networkLoading: false});
     });
     layout.run();
-  }
-
-  settingChange(e,type) {
-    const state=this.state;
-    const saved = state.savedCatagories;
-    const buttons=state.buttons;
-    const cy= state.cy;
-    buttons.set(type,!buttons.get(type));
-    hideTooltips(cy);
-    const hovered = cy.filter(ele=>ele.style('background-color')==='blue'||ele.style('line-color')==='orange');
-    removeStyle(cy, hovered, '_hover-style-before');
-    if(!saved.has(type)){
-      const edges= cy.edges().filter(`.${type}`);
-      cy.remove(edges);
-      const nodes = edges.connectedNodes();
-         const toSave = edges.union(nodes);
-      cy.remove(nodes.filter(nodes=>nodes.connectedEdges().length<=0));
-      if(toSave.length){
-          saved.set(type, toSave);
-      }
-    }
-    else{ 
-     saved.get(type).restore();
-      saved.delete(type);
-    }
-    cy.layout(state.layoutConfig.defaultLayout.options).run();
-    this.setState({
-      savedCatagories: saved,
-      buttons:buttons
-    });
   }
 
   changeMenu(menu) {
@@ -246,7 +209,8 @@ class BaseNetworkView extends React.Component {
       h('div.graph', {
           className: classNames({
             'graph-network-loading': this.state.networkLoading,
-            'graph-sidebar-open': this.state.open
+            'graph-sidebar-open': this.state.open && this.state.activeMenu!='interactionsFilterMenu',
+            'graph-sidebar-small-open': this.state.activeMenu==='interactionsFilterMenu'
           }),
         },
         [
@@ -256,7 +220,7 @@ class BaseNetworkView extends React.Component {
         ]
       ),
       h('div', {
-        className: classNames('sidebar-menu', { 'sidebar-menu-open': this.state.open })
+        className: classNames('sidebar-menu', { 'sidebar-menu-open': this.state.open,'sidebar-menu-small':this.state.activeMenu==='interactionsFilterMenu' })
       }, [
           h('div', {
             className: classNames('sidebar-close-button-container', { 'sidebar-close-button-container-open': this.state.open })

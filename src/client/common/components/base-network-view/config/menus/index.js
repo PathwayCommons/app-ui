@@ -1,5 +1,5 @@
 const FileDownloadMenu = require('./file-download');
 const NetworkInfoMenu = require('./network-info');
-const InteractionsSettingsMenu = require('./interactions-settings');
+const InteractionsFilterMenu = require('./interactions-filter');
 
-module.exports = {FileDownloadMenu, NetworkInfoMenu,InteractionsSettingsMenu};
+module.exports = {FileDownloadMenu, NetworkInfoMenu,InteractionsFilterMenu};

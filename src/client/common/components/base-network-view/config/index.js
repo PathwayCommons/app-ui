@@ -1,6 +1,6 @@
 const h = require('react-hyperscript');
 
-const { NetworkInfoMenu, FileDownloadMenu, InteractionsSettingsMenu} = require('./menus');
+const { NetworkInfoMenu, FileDownloadMenu, InteractionsFilterMenu} = require('./menus');
 
 let expanded = true;
 const expandCollapseAll = (props) => {
@@ -39,11 +39,11 @@ const toolbarButtons = [
     description: 'Download options'
   },
   location.pathname.includes('interactions')? {
-    id: 'settings',
-    icon: 'settings',
+    id: 'Filter',
+    icon: 'filter_list',
     type: 'activateMenu',
-    menuId: 'interactionsSettingsMenu',
-    description: 'Settings'
+    menuId: 'interactionsFilterMenu',
+    description: 'Filter'
   }:
   {
     id: 'expandCollapse',
@@ -86,8 +86,8 @@ const menus = [
     func: props => h(NetworkInfoMenu, props),
   },
   {
-    id: 'interactionsSettingsMenu',
-    func: props => h(InteractionsSettingsMenu, props),
+    id: 'interactionsFilterMenu',
+    func: props => h(InteractionsFilterMenu, props),
   }
 ];
 

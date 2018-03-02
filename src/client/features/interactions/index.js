@@ -3,7 +3,8 @@ const h = require('react-hyperscript');
 const _ = require('lodash');
 const queryString = require('query-string');
 const Loader = require('react-loader');
-
+const hideTooltips = require('../../common/cy/events/click').hideTooltips;
+const removeStyle= require('../../common/cy/manage-style').removeStyle;
 const make_cytoscape = require('../../common/cy/');
 const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
 const { ServerAPI } = require('../../services/');
@@ -26,6 +27,11 @@ class Interactions extends React.Component {
       },
       id:'',
       loading: true,
+      catagories: new Map (),
+        buttons:new Map([['Binding',false],
+                        ['Phosphorylation',false],
+                        ['Expression',false]
+                      ]),
     };    
     const query = queryString.parse(props.location.search);
     ServerAPI.getNeighborhood(query.ID,'TXT').then(res=>{ 
@@ -48,8 +54,25 @@ class Interactions extends React.Component {
     this.state.cy.on('trim', () => {
       const mainNode=this.state.cy.nodes(node=> node.data().id===this.state.id);
       const nodesToKeep=mainNode.merge(mainNode.connectedEdges().connectedNodes());
+      const catagories=this.state.catagories;
       this.state.cy.remove(this.state.cy.nodes().difference(nodesToKeep));
+      
+      [...this.state.buttons].forEach(([type, clicked])=>{
+      const edges= this.state.cy.edges().filter(`.${type}`);
+      const nodes = edges.connectedNodes();
+      catagories.set(type,{
+        edges:edges,
+        nodes:nodes
+      });
+      if(type!='Binding'){
+        this.filterUpdate(null,type);
+      }
     });
+    this.setState({
+      catagories:catagories
+    });
+    });
+
   }
 
   edgeType(type){
@@ -84,6 +107,7 @@ class Interactions extends React.Component {
   }
 
   addInteraction(nodes,edge,sources,network,nodeMap,nodeMetadata){
+    const interaction= this.edgeType(edge);
     nodes.forEach((node)=>{
       if(!nodeMap.has(node)){
         const metadata=nodeMetadata.get(node);
@@ -99,9 +123,9 @@ class Interactions extends React.Component {
       label: nodes[0]+' '+edge.replace(/-/g,' ')+' '+nodes[1] ,
       source: nodes[0],
       target: nodes[1],
-      class: this.edgeType(edge),
+      class:interaction ,
       parsedMetadata:[['Database IDs',sources]]
-    },classes:this.edgeType(edge)});
+    },classes:interaction});
   }
 
   parse(data,query){
@@ -119,6 +143,31 @@ class Interactions extends React.Component {
     const id=this.findId(nodeMetadata,query);
     return {id,network};
   }
+  filterUpdate(e,type) {
+    const state=this.state;
+    const catagories = state.catagories;
+    const buttons=state.buttons;
+    const cy= state.cy;
+    const edges=catagories.get(type).edges;
+    const nodes=catagories.get(type).nodes;
+
+    hideTooltips(cy);
+    const hovered = cy.filter(ele=>ele.style('background-color')==='blue'||ele.style('line-color')==='orange');
+    removeStyle(cy, hovered, '_hover-style-before');
+
+    if(!buttons.get(type)){
+      cy.remove(edges);
+      cy.remove(nodes.filter(nodes=>nodes.connectedEdges().length<=0));
+    }
+    else{ 
+      edges.union(nodes).restore();
+    }
+    
+    buttons.set(type,!buttons.get(type));
+    this.setState({
+      buttons:buttons
+    });
+  }
 
   render(){
     const state = this.state;
@@ -128,6 +177,10 @@ class Interactions extends React.Component {
       cy: state.cy,
       networkJSON: state.networkJSON,
       networkMetadata: state.networkMetadata,
+      //interaction specific
+      activeMenu:'interactionsFilterMenu',
+      filterUpdate:(evt,type)=> this.filterUpdate(evt,type),
+      buttons: state.buttons,
     });
     const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
 

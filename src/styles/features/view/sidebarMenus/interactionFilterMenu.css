@@ -1,9 +1,9 @@
-.interaction-settings-menu {
+.interaction-filter-menu {
   height: 100%;
   width: 100%;
 }
 
-.interaction-settings-button {
+.interaction-filter-button {
     align-items: center;
     display: flex;
     justify-content: flex-start;
@@ -24,10 +24,10 @@
 
     
 }
-.interaction-settings-clicked{
+.interaction-filter-clicked{
   background-color: var(--light-base-colour-darker);
 }
-.interaction-settings-not-clicked{
+.interaction-filter-not-clicked{
   background-color: white;
 }
 .button-label{
@@ -35,7 +35,7 @@
   display: inline-flex;
   margin: 0px;
 }
-.interaction-settings-legend{
+.interaction-filter-legend{
   height:50px;
   width: 30px;
   display: inline-flex;

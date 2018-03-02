@@ -65,6 +65,7 @@ const baseEdgeHoverStyle = {
 
 
 const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHoverStyle) => {
+  
   const hoverNode =  _.debounce(function (evt) { 
     const node = evt.target;
     const currZoom = cy.zoom();
@@ -91,14 +92,14 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
       'width': edgeWidth
     });
     applyStyle(cy, node.neighborhood().edges(), edgeHoverStyle, '_hover-style-before');
-  },500);
+  },200, {leading:false, trailing:true});
 
   cy.on('mouseover', 'node[class!="compartment"]',hoverNode);
 
   cy.on('mouseout', 'node[class!="compartment"]', function (evt) {
     const node = evt.target;
     const neighborhood = node.neighborhood();
-
+    hoverNode.cancel();
     removeStyle(cy, neighborhood.nodes(), '_hover-style-before');
     removeStyle(cy, node, '_hover-style-before');
     removeStyle(cy, neighborhood.edges(), '_hover-style-before');
@@ -132,19 +133,17 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
       });
       applyStyle(cy, node, nodeHoverStyle, '_hover-style-before');
     });
-  },500);
+  },200, {leading:false, trailing:true});
   
   cy.on('mouseover', 'edge',hoverEdge);
 
   cy.on('mouseout', 'edge', function (evt) {
     const edge = evt.target;
-
+    hoverEdge.cancel();
     removeStyle(cy, edge, '_hover-style-before');
     removeStyle(cy, edge.source(), '_hover-style-before');
     removeStyle(cy, edge.target(), '_hover-style-before');
   });
-
-
 
 };
 

@@ -1,24 +1,28 @@
 //Hide all Tooltips
 //Requires a valid cytoscape element
 const hideTooltips = (cy) => {
-  cy.nodes().union(cy.edges('.Binding,.Phosphorylation,.Expression')).forEach(node => {
-    const tooltip = node.scratch('_tooltip');
+  cy.nodes().union(cy.edges('.Binding,.Phosphorylation,.Expression')).forEach(ele => {
+    const tooltip = ele.scratch('_tooltip');
     if (tooltip) { tooltip.hide(); }
   });
 };
 
 const bindClick = (cy) => {
 
-  cy.on('tap', 'node,edge.Binding,edge.Phosphorylation,edge.Expression', evt => {
+  cy.on('tap', evt => {
     const cy = evt.cy;
-    const node = evt.target;
+    const ele = evt.target;
 
-    if (!node.scratch('_tooltip-opened')) {
-      node.emit('showTooltip');
-      node.scratch('_tooltip-opened', true);
-    } else {
+    if (!ele.scratch('_tooltip-opened')) {
+      ele.emit('showTooltip');
+      ele.scratch('_tooltip-opened', true);
+    } 
+    else if(ele===cy){
       hideTooltips(cy);
-      node.scratch('_tooltip-opened', false);
+    }
+    else {
+      hideTooltips(cy);
+      ele.scratch('_tooltip-opened', false);
     }
   });
 

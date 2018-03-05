@@ -54,7 +54,9 @@ class Interactions extends React.Component {
     ServerAPI.getProteinInformation(query.ID).then(result=>{
       this.setState({
       networkMetadata: Object.assign({}, this.state.networkMetadata, {
-        comments: [result[0].protein.recommendedName.fullName.value,result[0].protein.alternativeName.map(obj => obj.fullName.value).join(', '),result[0].comments[0].text[0].value,], 
+        comments: _.compact([result[0].protein.recommendedName.fullName.value,
+          result[0].protein.alternativeName && result[0].protein.alternativeName.map(obj => obj.fullName.value).join(', '),
+          result[0].comments[0].text[0].value,]), 
       }),
      }); 
     });

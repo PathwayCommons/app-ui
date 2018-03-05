@@ -57,7 +57,7 @@ class Interactions extends React.Component {
       const catagories=this.state.catagories;
       this.state.cy.remove(this.state.cy.nodes().difference(nodesToKeep));
       
-      [...this.state.buttons].forEach(([type, clicked])=>{
+      [...this.state.buttons].forEach(([type])=>{
       const edges= this.state.cy.edges().filter(`.${type}`);
       const nodes = edges.connectedNodes();
       catagories.set(type,{
@@ -65,7 +65,7 @@ class Interactions extends React.Component {
         nodes:nodes
       });
       if(type!='Binding'){
-        this.filterUpdate(null,type);
+        this.filterUpdate(type);
       }
     });
     this.setState({
@@ -92,7 +92,7 @@ class Interactions extends React.Component {
   findId(data,id){
     let hgncId;
     data.forEach((value,key)=> {
-      if (value[2].includes(id)||value[3].includes(id)){
+      if (value[2].includes(id)){
         hgncId=key; 
       }
     });
@@ -143,14 +143,16 @@ class Interactions extends React.Component {
     const id=this.findId(nodeMetadata,query);
     return {id,network};
   }
-  filterUpdate(e,type) {
+  filterUpdate(type) {
     const state=this.state;
     const catagories = state.catagories;
     const buttons=state.buttons;
     const cy= state.cy;
     const edges=catagories.get(type).edges;
     const nodes=catagories.get(type).nodes;
-
+    const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
+    const layout = cy.layout(initialLayoutOpts);
+    
     hideTooltips(cy);
     const hovered = cy.filter(ele=>ele.style('background-color')==='blue'||ele.style('line-color')==='orange');
     removeStyle(cy, hovered, '_hover-style-before');
@@ -162,7 +164,7 @@ class Interactions extends React.Component {
     else{ 
       edges.union(nodes).restore();
     }
-    
+    layout.run();
     buttons.set(type,!buttons.get(type));
     this.setState({
       buttons:buttons

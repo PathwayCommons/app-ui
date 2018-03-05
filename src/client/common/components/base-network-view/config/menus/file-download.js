@@ -7,8 +7,8 @@ const AsyncButton = require('../../../async-button');
 
 const { ServerAPI } = require('../../../../../services/');
 
-const downloadTypes = require('../../../../config').downloadTypes;
-
+const downloadTypesFull = require('../../../../config').downloadTypes;
+const downloadTypes = location.pathname.includes('interactions') ? downloadTypesFull.filter(option=> option.type==='png'||option.type==='sif'):downloadTypesFull ;
 
 class FileDownloadMenu extends React.Component {
   constructor(props) {

@@ -28,11 +28,12 @@ class Interactions extends React.Component {
       id:'',
       loading: true,
       catagories: new Map (),
-        buttons:new Map([['Binding',false],
-                        ['Phosphorylation',false],
-                        ['Expression',false]
-                      ]),
-    };    
+      buttons:new Map([['Binding',false],
+        ['Phosphorylation',false],
+        ['Expression',false]
+      ]),
+    };   
+
     const query = queryString.parse(props.location.search);
     ServerAPI.getNeighborhood(query.ID,'TXT').then(res=>{ 
       const layoutConfig = getLayoutConfig('interactions');
@@ -41,17 +42,23 @@ class Interactions extends React.Component {
       this.setState({
         componentConfig: componentConfig,
         layoutConfig: layoutConfig,
-        networkJSON: network.network ,
-        networkMetadata: {
-          name: network.id+' Interactions',
-          datasource: 'Pathway Commons',
-          comments: ['place holder'], dataSource: ['place holder'], organism: ['place holder'], title: ['place holder'], uri: 'place holder'
-        },
+        networkJSON: network.network,
+        networkMetadata: Object.assign({}, this.state.networkMetadata, {
+        name: (network.id+' Interactions'),
+        datasource: 'Pathway Commons',
+        }),
         id: network.id,
         loading: false
       }); 
     });
-    
+    ServerAPI.getProteinInformation(query.ID).then(result=>{
+      this.setState({
+      networkMetadata: Object.assign({}, this.state.networkMetadata, {
+        comments: [result[0].protein.recommendedName.fullName.value,result[0].protein.alternativeName.map(obj => obj.fullName.value).join(', '),result[0].comments[0].text[0].value,], 
+      }),
+     }); 
+    });
+
     this.state.cy.on('trim', () => {
       const mainNode=this.state.cy.nodes(node=> node.data().id===this.state.id);
       const nodesToKeep=mainNode.merge(mainNode.connectedEdges().connectedNodes());

@@ -33,12 +33,6 @@ class BaseNetworkView extends React.Component {
 
     this.state = _.merge({},
       {
-        savedCatagories: new Map (),
-        buttons:new Map([['Binding',false],
-                        ['Phosphorylation',false],
-                        ['Expression',false]
-                      ]),
-        settingChange: this.settingChange.bind(this),
         activeMenu: 'closeMenu',
         nodeSearchValue: '',
         open: false,

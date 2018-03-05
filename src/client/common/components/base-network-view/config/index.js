@@ -43,7 +43,7 @@ const toolbarButtons = [
     icon: 'filter_list',
     type: 'activateMenu',
     menuId: 'interactionsFilterMenu',
-    description: 'Filter'
+    description: 'Filter interaction types'
   }:
   {
     id: 'expandCollapse',

@@ -51,6 +51,7 @@ class Interactions extends React.Component {
         loading: false
       }); 
     });
+    
     this.state.cy.on('trim', () => {
       const mainNode=this.state.cy.nodes(node=> node.data().id===this.state.id);
       const nodesToKeep=mainNode.merge(mainNode.connectedEdges().connectedNodes());
@@ -150,8 +151,6 @@ class Interactions extends React.Component {
     const cy= state.cy;
     const edges=catagories.get(type).edges;
     const nodes=catagories.get(type).nodes;
-    const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
-    const layout = cy.layout(initialLayoutOpts);
     
     hideTooltips(cy);
     const hovered = cy.filter(ele=>ele.style('background-color')==='blue'||ele.style('line-color')==='orange');
@@ -164,8 +163,8 @@ class Interactions extends React.Component {
     else{ 
       edges.union(nodes).restore();
     }
-    layout.run();
     buttons.set(type,!buttons.get(type));
+    cy.layout(state.layoutConfig.defaultLayout.options).run();
     this.setState({
       buttons:buttons
     });

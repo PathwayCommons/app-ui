@@ -4,8 +4,6 @@ const classNames = require('classnames');
 const Link = require('react-router-dom').Link;
 const Loader = require('react-loader');
 const _ = require('lodash');
-const hideTooltips = require('../../cy/events/click').hideTooltips;
-const removeStyle = require('../../cy/manage-style').removeStyle;
 const IconButton = require('../icon-button');
 
 const debouncedSearchNodes = _.debounce(require('../../cy/match-style'), 300);

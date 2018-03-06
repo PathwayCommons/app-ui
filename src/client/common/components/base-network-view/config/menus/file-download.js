@@ -45,7 +45,7 @@ class FileDownloadMenu extends React.Component {
   initiatePCDownload(format, fileExt, fileType) {
     this.setState({ loadingOptions: this.state.loadingOptions.concat(fileType) });
     const downloadFetch=location.pathname.includes('interactions') ? 
-      Promise.resolve(_.map(this.props.cy.edges(),edge=> edge.data().id).sort().join('\n')): 
+      Promise.resolve(_.map(this.props.cy.edges(),edge=> edge.data().id).sort().join('\n')): //generates a SIF file from the interaction edges
       ServerAPI.pcQuery('get', { uri: this.props.networkMetadata.uri, format: format }).then(res => res.text());
    
     downloadFetch.then(content => {

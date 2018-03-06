@@ -44,8 +44,8 @@ class Interactions extends React.Component {
         layoutConfig: layoutConfig,
         networkJSON: network.network,
         networkMetadata: Object.assign({}, this.state.networkMetadata, {
-        name: (network.id+' Interactions'),
-        datasource: 'Pathway Commons',
+          name: (network.id+' Interactions'),
+          datasource: 'Pathway Commons',
         }),
         id: network.id,
         loading: false
@@ -54,9 +54,9 @@ class Interactions extends React.Component {
     ServerAPI.getProteinInformation(query.ID).then(result=>{
       this.setState({
       networkMetadata: Object.assign({}, this.state.networkMetadata, {
-        comments: _.compact([result[0].protein.recommendedName.fullName.value,
-          result[0].protein.alternativeName && result[0].protein.alternativeName.map(obj => obj.fullName.value).join(', '),
-          result[0].comments[0].text[0].value,]), 
+        comments: _.compact(['Full Name: '+result[0].protein.recommendedName.fullName.value,
+          result[0].protein.alternativeName && 'Synonyms: '+result[0].protein.alternativeName.map(obj => obj.fullName.value).join(', '),
+          result[0].comments[0].type==='FUNCTION'&&'Function: '+result[0].comments[0].text[0].value]), 
       }),
      }); 
     });

@@ -42,6 +42,12 @@ class BaseNetworkView extends React.Component {
     this.state.open = this.state.activeMenu !== 'closeMenu';
   }
 
+  componentWillReceiveProps(nextProps){//needed to updata metadata for interactions
+    this.setState({
+      networkMetadata: nextProps.networkMetadata
+    });
+  }
+
   componentWillUnmount() {
     this.state.cy.destroy();
   }

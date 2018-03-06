@@ -47,15 +47,15 @@ class FileDownloadMenu extends React.Component {
     const downloadFetch=location.pathname.includes('interactions') ? 
       Promise.resolve(_.map(this.props.cy.edges(),edge=> edge.data().id).sort().join('\n')): //generates a SIF file from the interaction edges
       ServerAPI.pcQuery('get', { uri: this.props.networkMetadata.uri, format: format }).then(res => res.text());
-   
+
     downloadFetch.then(content => {
       let fileContent = content;
-          if (typeof content === 'object') {
-            fileContent = JSON.stringify(content);
-          }
-          this.saveDownload(fileExt, fileContent);
-          this.setState({ loadingOptions: _.filter(this.state.loadingOptions, item => item !== fileType) });
-        });
+      if (typeof content === 'object') {
+        fileContent = JSON.stringify(content);
+      }
+      this.saveDownload(fileExt, fileContent);
+      this.setState({ loadingOptions: _.filter(this.state.loadingOptions, item => item !== fileType) });
+    });
   }
 
   saveDownload(file_ext, content) {

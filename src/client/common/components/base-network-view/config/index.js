@@ -68,7 +68,6 @@ const toolbarButtons = [
   }
 ];
 
-
 // todo turn this into a map
 // create a null entry for the close menu
 

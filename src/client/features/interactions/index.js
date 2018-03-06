@@ -51,6 +51,7 @@ class Interactions extends React.Component {
         loading: false
       }); 
     });
+
     ServerAPI.getProteinInformation(query.ID).then(result=>{
       this.setState({
       networkMetadata: Object.assign({}, this.state.networkMetadata, {
@@ -66,23 +67,21 @@ class Interactions extends React.Component {
       const nodesToKeep=mainNode.merge(mainNode.connectedEdges().connectedNodes());
       const catagories=this.state.catagories;
       this.state.cy.remove(this.state.cy.nodes().difference(nodesToKeep));
-      
       [...this.state.buttons].forEach(([type])=>{
-      const edges= this.state.cy.edges().filter(`.${type}`);
-      const nodes = edges.connectedNodes();
-      catagories.set(type,{
-        edges:edges,
-        nodes:nodes
+        const edges= this.state.cy.edges().filter(`.${type}`);
+        const nodes = edges.connectedNodes();
+        catagories.set(type,{
+          edges:edges,
+          nodes:nodes
+        });
+        if(type!='Binding'){
+          this.filterUpdate(type);
+        }
       });
-      if(type!='Binding'){
-        this.filterUpdate(type);
-      }
+      this.setState({
+        catagories:catagories
+      });
     });
-    this.setState({
-      catagories:catagories
-    });
-    });
-
   }
 
   edgeType(type){
@@ -153,6 +152,7 @@ class Interactions extends React.Component {
     const id=this.findId(nodeMetadata,query);
     return {id,network};
   }
+
   filterUpdate(type) {
     const state=this.state;
     const catagories = state.catagories;

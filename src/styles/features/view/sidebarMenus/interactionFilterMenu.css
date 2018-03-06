@@ -38,8 +38,7 @@
 .button-label{
   padding-left: 2px; 
   display: inline-flex;
-  margin-right: auto;
-  margin-bottom: 0px;
+  margin: 0px auto 0px 0px;
 }
 
 .interaction-filter-legend{

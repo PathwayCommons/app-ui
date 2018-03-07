@@ -1,6 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
-const {Tab, Tabs, TabList, TabPanel} = require('react-tabs');
+const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
 
 const ValidatorUI = require('./validator');
 const EMapUI = require('./emap');
@@ -23,12 +23,12 @@ class EnrichmentMap extends React.Component {
         ]),
         h(TabPanel, [
           h('div', [
-            h(EMapUI)
+            h(EnrichmentUI)
           ])
         ]),
         h(TabPanel, [
           h('div', [
-            h(EnrichmentUI)
+            h(EMapUI)
           ])
         ]),
       ])

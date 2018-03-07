@@ -43,6 +43,12 @@ module.exports = () => {
         }
       },
       {
+        path: '/enrichment-map',
+        render: props => {
+          return h(Features.EnrichmentMap, props);
+        }
+      },
+      {
         path: '/edit',
         render: props => {
           const editProps = _.assign({}, props, {

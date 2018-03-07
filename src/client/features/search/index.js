@@ -193,6 +193,7 @@ class Search extends React.Component {
       h('div.search-landing.innner',[h(Loader, { loaded:!state.landingLoading , options: { color: '#16A085',position:'relative', top: '15px' }})]):
       state.landing.map(box=>{
 
+        const name = h('strong.search-landing-title',box.protein.recommendedName.fullName.value);
         let synonyms=null;
         if(_.hasIn(box,'protein.alternativeName')){ 
           const synonymsLength=115;
@@ -229,10 +230,7 @@ class Search extends React.Component {
         links=links.map(link=>{return h('a.search-landing-link',{key: link.text, href: link.link},link.text);});
 
         return h('div.search-landing.innner',{key: box.accession},[ 
-          h('div.search-landing-section',[
-            h('strong.search-landing-title',box.protein.recommendedName.fullName.value+'-'),
-            h('strong.search-landing-small', box.organism.names[1].value)
-          ]),
+          h('div.search-landing-section',[name]),
           h('div.search-landing-section',[synonyms]),
           h('div.search-landing-section',[functions]),
           h('div.search-landing-section',[links]),

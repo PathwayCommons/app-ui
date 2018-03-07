@@ -57,15 +57,16 @@ const defaultLayout = {
 };
 
 const interactionsLayout = {
-  displayName: 'Grid',
-  description: 'Align the nodes in a grid',
+  displayName: 'Concentric',
+  description: 'Align the nodes in concentric circles',
   options: {
-    name: 'grid',
-    nodeDimensionsIncludeLabels: true,
+    name: 'concentric',
+    nodeDimensionsIncludeLabels: false,
     animate: true,
     animationDuration: 500,
     fit: true,
-    padding: 75,
+    padding: 0,
+    levelWidth:(nodes)=>nodes.maxDegree()/1000,
   }
 };
 

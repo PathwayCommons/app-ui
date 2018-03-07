@@ -173,7 +173,6 @@ class Interactions extends React.Component {
       edges.union(nodes).restore();
     }
     buttons.set(type,!buttons.get(type));
-    cy.layout(state.layoutConfig.defaultLayout.options).run();
     this.setState({
       buttons:buttons
     });

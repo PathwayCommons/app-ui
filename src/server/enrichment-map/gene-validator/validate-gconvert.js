@@ -60,6 +60,6 @@ module.exports = { validatorGconvert };
 
 
 // // simple testing
-validatorGconvert("ATM ATM AFF4 ATM ATP").then(function (results) {
-  console.log(results);
-});
+// validatorGconvert("ATM ATM AFF4 ATM ATP").then(function (results) {
+//   console.log(results);
+// });

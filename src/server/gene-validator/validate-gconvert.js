@@ -23,9 +23,8 @@ const validatorGconvert = (query) => {
       if (err) {
         reject(err);
       }
-      const tmp = _.map(body.split('\n'), ele => { return ele.split('\t'); });
-      tmp.splice(-1, 1); // remove last element ''
-      console.log(tmp);
+      const geneInfoList = _.map(body.split('\n'), ele => { return ele.split('\t'); });
+      geneInfoList.splice(-1, 1); // remove last element ''
 
       const unrecogized = [];
       const duplicate = [];
@@ -33,16 +32,16 @@ const validatorGconvert = (query) => {
       const initialAliasIndex = 1;
       const nameIndex = 4;
       const descriptionIndex = 5;
-      _.forEach(tmp, info => {
+      _.forEach(geneInfoList, info => {
         if (info[nameIndex] === 'N/A') {
           if (_.filter(unrecogized, ele => ele === info[initialAliasIndex]).length === 0) {
             unrecogized.push(info[initialAliasIndex]);
           }
         } else {
-          if (_.filter(tmp, ele => ele[initialAliasIndex] === info[initialAliasIndex]).length > 1 && _.filter(duplicate, ele => ele === info[initialAliasIndex]).length === 0) {
+          if (_.filter(geneInfoList, ele => ele[initialAliasIndex] === info[initialAliasIndex]).length > 1 && _.filter(duplicate, ele => ele === info[initialAliasIndex]).length === 0) {
             duplicate.push(info[initialAliasIndex]);
           }
-          if (_.filter(geneInfo, ele => ele.HGNC_symbol === info[initialAliasIndex]).length === 0) {
+          if (_.filter(geneInfoList, ele => ele.HGNC_symbol === info[initialAliasIndex]).length === 0) {
             geneInfo.push({ HGNC_symbol: info[initialAliasIndex], HGNC_id: info[descriptionIndex].substring(info[descriptionIndex].indexOf(';') + 5, info[descriptionIndex].length - 1) });
           }
         }

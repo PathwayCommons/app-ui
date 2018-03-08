@@ -8,16 +8,32 @@ const removeStyle= require('../../common/cy/manage-style').removeStyle;
 const make_cytoscape = require('../../common/cy/');
 const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
 const { ServerAPI } = require('../../services/');
-
+const FilterMenu= require('./filter-menu');
 const { BaseNetworkView } = require('../../common/components');
 const { getLayoutConfig } = require('../../common/cy/layout');
 
+const filterMenuId='filter-menu';
+const interactionsConfig={
+  toolbarButtons:_.pullAllBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'}],'id').concat({
+    id: 'filter',
+    icon: 'filter_list',
+    type: 'activateMenu',
+    menuId: filterMenuId,
+    description: 'Filter interaction types'
+  }),
+  menus: BaseNetworkView.config.menus.concat({
+    id: filterMenuId,
+    func: props => h(FilterMenu, props)
+  }),
+  useSearchBar: false
+  
+};
 class Interactions extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       cy: make_cytoscape({ headless: true, stylesheet: interactionsStylesheet }),
-      componentConfig: {},
+      componentConfig: interactionsConfig,
       layoutConfig: {},
       networkJSON: {},
       networkMetadata: {
@@ -37,7 +53,7 @@ class Interactions extends React.Component {
     const query = queryString.parse(props.location.search);
     ServerAPI.getNeighborhood(query.ID,'TXT').then(res=>{ 
       const layoutConfig = getLayoutConfig('interactions');
-      const componentConfig = _.merge({}, BaseNetworkView.config, { useSearchBar: true});
+      const componentConfig = _.merge({}, interactionsConfig, { useSearchBar: true});
       const network= this.parse(res,query.ID);
       this.setState({
         componentConfig: componentConfig,
@@ -187,7 +203,7 @@ class Interactions extends React.Component {
       networkJSON: state.networkJSON,
       networkMetadata: state.networkMetadata,
       //interaction specific
-      activeMenu:'interactionsFilterMenu',
+      activeMenu:filterMenuId,
       filterUpdate:(evt,type)=> this.filterUpdate(evt,type),
       buttons: state.buttons,
     });

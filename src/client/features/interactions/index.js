@@ -32,14 +32,14 @@ class Interactions extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cy: make_cytoscape({ headless: true, stylesheet: interactionsStylesheet }),
+      cy: make_cytoscape({ headless: true, stylesheet: interactionsStylesheet, edgeTooltips:true }),
       componentConfig: interactionsConfig,
       layoutConfig: {},
       networkJSON: {},
       networkMetadata: {
         name: '',
         datasource: '',
-        comments: []
+        comments: [],
       },
       id:'',
       loading: true,

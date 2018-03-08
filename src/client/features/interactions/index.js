@@ -11,6 +11,7 @@ const { ServerAPI } = require('../../services/');
 const FilterMenu= require('./filter-menu');
 const { BaseNetworkView } = require('../../common/components');
 const { getLayoutConfig } = require('../../common/cy/layout');
+const downloadTypes = require('../../common/config').downloadTypes;
 
 const filterMenuId='filter-menu';
 const interactionsConfig={
@@ -206,6 +207,10 @@ class Interactions extends React.Component {
       activeMenu:filterMenuId,
       filterUpdate:(evt,type)=> this.filterUpdate(evt,type),
       buttons: state.buttons,
+      download: {
+        types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'), 
+        promise: () => Promise.resolve(_.map(state.cy.edges(),edge=> edge.data().id).sort().join('\n'))
+      },
     });
     const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
 

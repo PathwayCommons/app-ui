@@ -8,18 +8,18 @@ const AsyncButton = require('../../../async-button');
 const { ServerAPI } = require('../../../../../services/');
 
 const downloadTypesFull = require('../../../../config').downloadTypes;
-const downloadTypes = location.pathname.includes('interactions') ? downloadTypesFull.filter(option=> option.type==='png'||option.type==='sif'):downloadTypesFull ;
 
 class FileDownloadMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      downloadTypes: this.props.download?this.props.download.types :downloadTypesFull ,
       loadingOptions: []
     };
   }
 
   downloadFromDisplayName(displayName) {
-    const optionObj = _.find(downloadTypes, ['displayName', displayName]);
+    const optionObj = _.find(this.state.downloadTypes, ['displayName', displayName]);
     const type = optionObj.type;
 
     if (type === 'png') {
@@ -44,8 +44,7 @@ class FileDownloadMenu extends React.Component {
 
   initiatePCDownload(format, fileExt, fileType) {
     this.setState({ loadingOptions: this.state.loadingOptions.concat(fileType) });
-    const downloadFetch=location.pathname.includes('interactions') ? 
-      Promise.resolve(_.map(this.props.cy.edges(),edge=> edge.data().id).sort().join('\n')): //generates a SIF file from the interaction edges
+    const downloadFetch=this.props.download? this.props.download.promise(): 
       ServerAPI.pcQuery('get', { uri: this.props.networkMetadata.uri, format: format }).then(res => res.text());
 
     downloadFetch.then(content => {
@@ -69,7 +68,7 @@ class FileDownloadMenu extends React.Component {
   }
 
   render() {
-    let getMenuContents = () => downloadTypes.reduce((result, option) => {
+    let getMenuContents = () => this.state.downloadTypes.reduce((result, option) => {
         result.push(
           h(AsyncButton, {
             header: option.displayName,

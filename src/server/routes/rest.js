@@ -5,7 +5,7 @@ const router = express.Router();
 const controller = require('./controller');
 const config = require('../../config');
 
-const { validatorGconvert } = require('../gene-validator');
+const { validatorGconvert } = require('../enrichment-map/gene-validator');
 
 const isAuthenticated = token => {
   return config.MASTER_PASSWORD != '' && config.MASTER_PASSWORD === token;

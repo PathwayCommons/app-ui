@@ -5,7 +5,7 @@ const router = express.Router();
 const controller = require('./controller');
 const config = require('../../config');
 
-const geneQueryService = require('../gene-query');
+const { validatorGconvert } = require('../gene-validator');
 
 const isAuthenticated = token => {
   return config.MASTER_PASSWORD != '' && config.MASTER_PASSWORD === token;
@@ -57,11 +57,14 @@ router.get('/get-graph-and-layout', function (req, res) {
   });
 });
 
-router.get('/gene-query/', (req, res) => {
+router.get('/gene-query', (req, res) => {
   const genes = req.query.genes;
 
-  res.json({});
+  validatorGconvert(genes).then(gconvertResult => {
+    res.json(gconvertResult);
+  });
 });
+
 // Expose a rest endpoint for controller.endSession
 router.get('/disconnect', function (req, res) {
   controller.endSession(req.query.uri, req.query.version, req.query.user)

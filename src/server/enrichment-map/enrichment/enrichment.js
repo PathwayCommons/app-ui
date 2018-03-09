@@ -14,17 +14,17 @@ const path = require("path");
 
 
 // remove #WARNING and #INFO
-const parseBody = (body) => {
+const parseGProfilerResponse = (gProfilerResponse) => {
   // remove the second line
-  const lines = body.split('\n');
+  const lines = gProfilerResponse.split('\n');
   lines.slice(0, 1);
-  const str1 = body.split('\n').slice(0, 1).join("\n");
-  let str2 = body.split('\n').slice(2).join("\n"); // concatenate at last
+  const str1 = gProfilerResponse.split('\n').slice(0, 1).join("\n");
+  let str2 = gProfilerResponse.split('\n').slice(2).join("\n"); // concatenate at last
   // remove lines starting with #
   const str3 = str2.replace(/^#.*$/mg, "");
   const str4 = (str1 + '\n').concat(str3);
   return str4;
-}
+};
 
 
 const enrichment = (query, userSetting) => {
@@ -50,12 +50,12 @@ const enrichment = (query, userSetting) => {
       "query": query
     };
     const formData = _.assign({}, defaultSetting, userSetting);
-    request.post({ url: "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/", formData: formData }, (err, httpResponse, body) => {
+    request.post({ url: "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/", formData: formData }, (err, httpResponse, gProfilerResponse) => {
       if (err) {
         reject(err);
       }
 
-      fs.writeFileSync("outputFile", parseBody(body));
+      fs.writeFileSync("outputFile", parseGProfilerResponse(gProfilerResponse));
       // convert csv to json, extract "term id"
       let collection = [];
       let ret = {};

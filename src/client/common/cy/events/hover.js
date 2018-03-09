@@ -63,46 +63,49 @@ const baseEdgeHoverStyle = {
   'opacity': 1
 };
 
+
 const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHoverStyle) => {
-  cy.on('mouseover', 'node[class!="compartment"]', function (evt) {
+  
+  const hoverNode =  _.debounce(function (evt) { 
     const node = evt.target;
     const currZoom = cy.zoom();
-
+  
     if (node.isParent() && node.isExpanded()) { return; }
-
+  
     const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
-
+  
     node.neighborhood().nodes().union(node).forEach((node) => {
       const { w, h } = scaledDimensions(node, currZoom);
-
+  
       const nodeHoverStyle = _.assign({}, nodeStyle, {
         'font-size': fontSize,
         'text-outline-width': outlineWidth,
         'width': w,
         'height': h
       });
-
+  
       applyStyle(cy, node, nodeHoverStyle, '_hover-style-before');
     });
-
+  
     const edgeHoverStyle = _.assign({}, edgeStyle, {
       'arrow-scale': arrowScale,
       'width': edgeWidth
     });
-
     applyStyle(cy, node.neighborhood().edges(), edgeHoverStyle, '_hover-style-before');
-  });
+  },200, {leading:false, trailing:true});
+
+  cy.on('mouseover', 'node[class!="compartment"]',hoverNode);
 
   cy.on('mouseout', 'node[class!="compartment"]', function (evt) {
     const node = evt.target;
     const neighborhood = node.neighborhood();
-
+    hoverNode.cancel();
     removeStyle(cy, neighborhood.nodes(), '_hover-style-before');
     removeStyle(cy, node, '_hover-style-before');
     removeStyle(cy, neighborhood.edges(), '_hover-style-before');
   });
 
-  cy.on('mouseover', 'edge', function (evt) {
+  const hoverEdge = _.debounce( function (evt) {
     const edge = evt.target;
     const currZoom = cy.zoom();
 
@@ -130,17 +133,17 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
       });
       applyStyle(cy, node, nodeHoverStyle, '_hover-style-before');
     });
-  });
+  },200, {leading:false, trailing:true});
+  
+  cy.on('mouseover', 'edge',hoverEdge);
 
   cy.on('mouseout', 'edge', function (evt) {
     const edge = evt.target;
-
+    hoverEdge.cancel();
     removeStyle(cy, edge, '_hover-style-before');
     removeStyle(cy, edge.source(), '_hover-style-before');
     removeStyle(cy, edge.target(), '_hover-style-before');
   });
-
-
 
 };
 

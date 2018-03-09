@@ -5,6 +5,7 @@ const router = express.Router();
 const controller = require('./controller');
 const config = require('../../config');
 
+const { validatorGconvert } = require('../enrichment-map/gene-validator');
 
 const isAuthenticated = token => {
   return config.MASTER_PASSWORD != '' && config.MASTER_PASSWORD === token;
@@ -53,6 +54,14 @@ router.post('/submit-diff', function (req, res) {
 router.get('/get-graph-and-layout', function (req, res) {
   controller.getGraphAndLayout(req.query.uri, req.query.version).then((package) => {
     res.json(package);
+  });
+});
+
+router.get('/gene-query', (req, res) => {
+  const genes = req.query.genes;
+
+  validatorGconvert(genes).then(gconvertResult => {
+    res.json(gconvertResult);
   });
 });
 

@@ -1,4 +1,3 @@
-
 const {BrowserRouter, Route} = require('react-router-dom');
 const h = require('react-hyperscript');
 const ReactGA = require('react-ga');
@@ -36,6 +35,18 @@ module.exports = () => {
       {
         path: '/paint',
         render: props => h(Features.Paint, props)
+      },
+      {
+        path: '/interactions',
+        render: props => {
+          return h(Features.Interactions, props);
+        }
+      },
+      {
+        path: '/enrichment-map',
+        render: props => {
+          return h(Features.EnrichmentMap, props);
+        }
       },
       {
         path: '/edit',

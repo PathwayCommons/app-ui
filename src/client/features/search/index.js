@@ -25,36 +25,77 @@ class Search extends React.Component {
         type: 'Pathway',
         datasource: []
       }, query),
+      landing: [],
+      landingLoading: false,
       searchResults: [],
       loading: false,
       showFilters: false,
+      landingShowMore: [false,false],
       dataSources: []
     };
-
-    ServerAPI.datasources()
-      .then(result => {
-        this.setState({
-          dataSources: Object.values(result)
+    
+      ServerAPI.datasources()
+        .then(result => {
+          this.setState({
+            dataSources: Object.values(result)
+          });
         });
-      });
   }
 
   getSearchResult() {
     const state = this.state;
     const query = state.query;
-
     if (query.q !== '') {
       this.setState({
         loading: true
       });
+      this.getLandingResult();
       ServerAPI.querySearch(query)
         .then(searchResults => {
-          this.setState({
-            searchResults: searchResults,
-            loading: false
-          });
+           this.setState({
+             searchResults: searchResults,
+             loading: false
+           });
         });
     }
+  }
+
+  getLandingResult() {
+    const state = this.state;
+    const query = {
+      q: state.query.q.trim(),
+      type: 'ProteinReference',
+      datasource: state.query.datasource,
+      species: '9606'
+    };
+    if(query.q.includes(' ')){
+      this.setState({   
+        landingLoading: false,
+        landing:[]
+      });
+      return;
+    }
+    this.setState({
+      landingLoading: true
+    },()=>{
+      ServerAPI.findUniprotId(query).then(res=>{
+        if(!_.isEmpty(res)){
+          ServerAPI.getProteinInformation(res[0]).then(result=>{
+            this.setState({
+            landingLoading: false,
+            landing:result,
+            landingShowMore: [false,false],
+            });
+          });
+        }
+        else{
+          this.setState({
+            landingLoading: false,
+            landing:[]
+          });
+        }
+      });
+    });
   }
 
   componentDidMount() {
@@ -91,24 +132,24 @@ class Search extends React.Component {
       search: queryString.stringify(query),
       state: {}
     });
-
     this.getSearchResult();
   }
 
   render() {
     const props = this.props;
     const state = this.state;
-    
+
     let Example = props => h('span.search-example', {
       onClick: () => this.setAndSubmitSearchQuery({q: props.search})
     }, props.search);
 
     const searchResults = state.searchResults.map(result => {
-      const dsInfo = _.find(state.dataSources, ds => {
+      const dsInfo =_.isEmpty(state.dataSources)? {iconUrl:null , name:''}: _.find(state.dataSources, ds => {
         return ds.uri === result.dataSource[0];
       });
+
       return h('div.search-item', [
-        h('div.search-item-icon',[
+       h('div.search-item-icon',[
           h('img', {src: dsInfo.iconUrl})
         ]),
         h('div.search-item-content', [
@@ -148,6 +189,56 @@ class Search extends React.Component {
     ]) :
       h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
 
+    const landing = (state.landingLoading ) ?
+      h('div.search-landing.innner',[h(Loader, { loaded:!state.landingLoading , options: { color: '#16A085',position:'relative', top: '15px' }})]):
+      state.landing.map(box=>{
+
+        const name = h('strong.search-landing-title',box.protein.recommendedName.fullName.value);
+        let synonyms=null;
+        if(_.hasIn(box,'protein.alternativeName')){ 
+          const synonymsLength=115;
+          const synonymsTextLong= box.protein.alternativeName.map(obj => obj.fullName.value).join(', ');
+          const synonymsText= (state.landingShowMore[0]|| synonymsTextLong.length<=synonymsLength)?
+            synonymsTextLong+' ': synonymsTextLong.slice(0,synonymsTextLong.lastIndexOf(',',synonymsLength))+' '; 
+          synonyms=[h('i.search-landing-small',{key:'text'},synonymsText)];
+          if(synonymsTextLong.length>synonymsLength){
+            synonyms.push(
+              h('i.search-landing-link',{onClick: e => this.setState({ landingShowMore: [!state.landingShowMore[0],state.landingShowMore[1]]}), 
+                key:'showMore', className:classNames('search-landing-link','search-landing-small')},state.landingShowMore[0]? '« less': 'more »')
+            );
+          }
+        }
+
+        let functions=null;
+        if(_.hasIn(box,'comments[0].text') && box.comments[0].type==='FUNCTION'){
+          const functionsLength=280;
+          const functionTextLong=box.comments[0].text[0].value;
+          const functionText = (state.landingShowMore[1] || functionTextLong.length<=functionsLength)?
+            functionTextLong: functionTextLong.slice(0,functionTextLong.lastIndexOf(' ',functionsLength));
+          functions=[h('span.search-landing-function',{key:'text'},functionText)];
+          if(functionTextLong.length>functionsLength){
+            functions.push(
+              h('span.search-landing-link',{onClick: e => this.setState({ landingShowMore: [state.landingShowMore[0],!state.landingShowMore[1]]}), key:'showMore'},
+                state.landingShowMore[1]? '« less': 'more »')
+            );
+          }
+        } 
+        const ids = [box.accession,box.dbReferences.filter(entry =>entry.type=='HGNC')[0],box.dbReferences.filter(entry =>entry.type=='GeneID')[0]];
+        let links=[{text:'UniProt', link:`http://www.uniprot.org/uniprot/${ids[0]}`}];
+          if(ids[1]) {links.push({text:'HGNC',link:`https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=${ids[1].id}`});} 
+          if(ids[2]) {links.push({text:'Entrez Gene',link:`https://www.ncbi.nlm.nih.gov/gene/${ids[2].id}`});}
+        links=links.map(link=>{return h('a.search-landing-link',{key: link.text, href: link.link},link.text);});
+
+        return h('div.search-landing.innner',{key: box.accession},[ 
+          h('div.search-landing-section',[name]),
+          h('div.search-landing-section',[synonyms]),
+          h('div.search-landing-section',[functions]),
+          h('div.search-landing-section',[links]),
+          h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ ID: box.accession })}, target: '_blank',className: 'search-landing-interactions' }, [
+            h('button.search-landing-button', 'View Interactions'),
+          ]),
+        ]);    
+      });
 
     return h('div.search', [
       h('div.search-header-container', [
@@ -200,6 +291,7 @@ class Search extends React.Component {
       h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' } }, [
         h('div.search-list-container', [
           h('div.search-result-info', [searchResultInfo]),
+          h('div.search-landing',[searchResults.length?landing:'']), 
           h('div.search-list', searchResults)
         ])
       ])

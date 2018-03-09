@@ -45,17 +45,18 @@ class FileDownloadMenu extends React.Component {
 
   initiatePCDownload(format, fileExt, fileType) {
     this.setState({ loadingOptions: this.state.loadingOptions.concat(fileType) });
-
-    ServerAPI.pcQuery('get', { uri: this.props.networkMetadata.uri, format: format })
-      .then(res => res.text()
-        .then(content => {
+   
+    const downloadFetch=location.pathname.includes('interactions') ? ServerAPI.getNeighborhood(location.search.slice(4),format) : 
+      ServerAPI.pcQuery('get', { uri: this.props.networkMetadata.uri, format: format }).then(res => res.text());
+      
+    downloadFetch.then(content => {
           let fileContent = content;
           if (typeof content === 'object') {
             fileContent = JSON.stringify(content);
           }
           this.saveDownload(fileExt, fileContent);
           this.setState({ loadingOptions: _.filter(this.state.loadingOptions, item => item !== fileType) });
-        }));
+        });
   }
 
   saveDownload(file_ext, content) {

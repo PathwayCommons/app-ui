@@ -8,7 +8,7 @@ const bindEvents = require('./events');
 const make_cytoscape = (opts) => {
   const cy = cytoscape({
     container: opts.container,
-    style: stylesheet,
+    style: opts.stylesheet ? opts.stylesheet: stylesheet,
     minZoom: 0.08,
     maxZoom: 4,
     headless: opts.headless,

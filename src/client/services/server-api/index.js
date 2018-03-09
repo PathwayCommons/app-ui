@@ -28,6 +28,18 @@ const ServerAPI = {
     return fetch(`/pc-client/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },
 
+  findUniprotId(query){
+  return fetch(`/pc-client/uniprotIdSearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
+  },
+
+  getProteinInformation(uniprotId){
+    return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&size=1&accession=${uniprotId}`,defaultFetchOpts).then(res => res.json());
+  },
+  getNeighborhood(uniprotId,format){
+    return fetch(`http://www.pathwaycommons.org/pc2/graph?source=http://identifiers.org/uniprot/${uniprotId}&kind=neighborhood&format=${format}&pattern=controls-phosphorylation-of
+  &pattern=in-complex-with&pattern=controls-expression-of&pattern=interacts-with`,defaultFetchOpts).then(res => res.text());
+  },
+
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into
   // a layout
   submitNodeChange(uri, version, nodeId, bbox) {

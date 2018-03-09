@@ -9,11 +9,11 @@ const expandCollapseAll = (props) => {
   } else {
     props.cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isCollapsed()).expand();
   }
-  expanded = !expanded;  
+  expanded = !expanded;
 };
 
 const fit = (props) => {
-  props.cy.fit(null, 100);
+  props.cy.animation({ duration: 250, fit: { padding: 75 } }).play();
 };
 
 const resetToDefaultLayout = (props) => {

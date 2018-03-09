@@ -56,7 +56,7 @@ class BaseNetworkView extends React.Component {
     cy.mount(container);
     cy.remove('*');
     cy.add(state.networkJSON);
-
+    cy.emit('trim');
     const layout = cy.layout(initialLayoutOpts);
     layout.on('layoutstop', () => {
       cy.emit('network-loaded');
@@ -66,16 +66,19 @@ class BaseNetworkView extends React.Component {
   }
 
   changeMenu(menu) {
+    let resizeCyImmediate = () => this.state.cy.resize();
+    let resizeCyDebounced = _.debounce( resizeCyImmediate, 500 );
+
     if (menu === this.state.activeMenu || menu === 'closeMenu') {
       this.setState({
         activeMenu: 'closeMenu',
         open: false
-      });
+      }, resizeCyImmediate);
     } else {
       this.setState({
         activeMenu: menu,
         open: true
-      });
+      }, resizeCyDebounced);
     }
   }
 
@@ -178,7 +181,7 @@ class BaseNetworkView extends React.Component {
     ];
 
 
-    return h('div.View', [
+    return h('div.view', [
       h('div', { className: classNames('menu-bar', { 'menu-bar-margin': state.activeMenu }) }, [
         h('div.menu-bar-inner-container', [
           h('div.pc-logo-container', [
@@ -202,16 +205,18 @@ class BaseNetworkView extends React.Component {
         loaded: !this.state.networkLoading,
         options: { left: '50%', color: '#16A085' },
       }),
-      h('div.Graph', [
-        h('div', {
-          ref: dom => this.graphDOM = dom,
-          style: {
-            width: '100vw',
-            height: '100vh',
-            visibility: this.state.networkLoading ? 'hidden' : undefined
-          }
-        })
-      ]),
+      h('div.graph', {
+          className: classNames({
+            'graph-network-loading': this.state.networkLoading,
+            'graph-sidebar-open': this.state.open
+          }),
+        },
+        [
+          h('div.graph-cy', {
+            ref: dom => this.graphDOM = dom,
+          })
+        ]
+      ),
       h('div', {
         className: classNames('sidebar-menu', { 'sidebar-menu-open': this.state.open })
       }, [

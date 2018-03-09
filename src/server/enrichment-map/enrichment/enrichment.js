@@ -13,6 +13,20 @@ const _ = require('lodash');
 const path = require("path");
 
 
+// remove #WARNING and #INFO
+const parseBody = (body) => {
+  // remove the second line
+  const lines = body.split('\n');
+  lines.slice(0, 1);
+  const str1 = body.split('\n').slice(0, 1).join("\n");
+  let str2 = body.split('\n').slice(2).join("\n"); // concatenate at last
+  // remove lines starting with #
+  const str3 = str2.replace(/^#.*$/mg, "");
+  const str4 = (str1 + '\n').concat(str3);
+  return str4;
+}
+
+
 const enrichment = (query, userSetting) => {
   const promise = new Promise( (resolve, reject) => {
     const defaultSetting = {
@@ -40,20 +54,13 @@ const enrichment = (query, userSetting) => {
       if (err) {
         reject(err);
       }
-      // remove the second line
-      const lines = body.split('\n');
-      lines.slice(0, 1);
-      const str1 = body.split('\n').slice(0, 1).join("\n");
-      let str2 = body.split('\n').slice(2).join("\n"); // concatenate at last
-      // remove lines starting with #
-      const str3 = str2.replace(/^#.*$/mg, "");
-      const str4 = (str1 + '\n').concat(str3);
-      fs.writeFileSync("src/server/enrichment/outputFile", str4);
+
+      fs.writeFileSync("outputFile", parseBody(body));
       // convert csv to json, extract "term id"
       let collection = [];
       let ret = {};
       csv({ delimiter: "\t" })
-        .fromFile("src/server/enrichment/outputFile")
+        .fromFile("outputFile")
         .on('json', (jsonObj) => {
           collection.push(jsonObj);
         })
@@ -79,3 +86,7 @@ const enrichment = (query, userSetting) => {
 
 
 module.exports = {enrichment};
+
+// enrichment(['ATM']).then(function (results) {
+//   console.log(results);
+// });

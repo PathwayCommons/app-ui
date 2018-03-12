@@ -43,6 +43,12 @@ class BaseNetworkView extends React.Component {
     this.state.open = this.state.activeMenu !== 'closeMenu';
   }
 
+  componentWillReceiveProps(nextProps){//needed to updata metadata for interactions
+    this.setState({
+      networkMetadata: nextProps.networkMetadata
+    });
+  }
+
   componentWillUnmount() {
     this.state.cy.destroy();
   }
@@ -64,7 +70,6 @@ class BaseNetworkView extends React.Component {
     });
     layout.run();
   }
-
   changeMenu(menu) {
     let resizeCyImmediate = () => this.state.cy.resize();
     let resizeCyDebounced = _.debounce( resizeCyImmediate, 500 );
@@ -126,7 +131,8 @@ class BaseNetworkView extends React.Component {
           onClick: () => {
             btn.func(state);
           },
-          desc: btn.description
+          desc: btn.description,
+          cy: state.cy
         })
       );
     });
@@ -208,7 +214,8 @@ class BaseNetworkView extends React.Component {
       h('div.graph', {
           className: classNames({
             'graph-network-loading': this.state.networkLoading,
-            'graph-sidebar-open': this.state.open
+            'graph-sidebar-open': this.state.open && this.state.activeMenu!='filter-menu',
+            'graph-sidebar-small-open': this.state.activeMenu==='filter-menu'
           }),
         },
         [
@@ -218,7 +225,7 @@ class BaseNetworkView extends React.Component {
         ]
       ),
       h('div', {
-        className: classNames('sidebar-menu', { 'sidebar-menu-open': this.state.open })
+        className: classNames('sidebar-menu', { 'sidebar-menu-open': this.state.open,'sidebar-menu-small':this.state.activeMenu==='filter-menu' })
       }, [
           h('div', {
             className: classNames('sidebar-close-button-container', { 'sidebar-close-button-container-open': this.state.open })

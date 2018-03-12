@@ -1,6 +1,6 @@
 const h = require('react-hyperscript');
 
-const { NetworkInfoMenu, FileDownloadMenu } = require('./menus');
+const { NetworkInfoMenu, FileDownloadMenu} = require('./menus');
 
 let expanded = true;
 const expandCollapseAll = (props) => {
@@ -57,7 +57,7 @@ const toolbarButtons = [
     icon: 'replay',
     type: 'networkAction',
     func: resetToDefaultLayout,
-    desc: 'Reset network arrangement'
+    description: 'Reset network arrangement'
   }
 ];
 
@@ -76,7 +76,7 @@ const menus = [
   {
     id: 'networkInfoMenu',
     func: props => h(NetworkInfoMenu, props),
-  }
+  },
 ];
 
 

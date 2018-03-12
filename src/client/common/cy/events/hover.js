@@ -49,7 +49,6 @@ const scaledDimensions = (node, zoom) => {
   };
 };
 
-
 const baseNodeHoverStyle = {
   'background-color': 'blue',
   'opacity': 1,
@@ -63,30 +62,24 @@ const baseEdgeHoverStyle = {
   'opacity': 1
 };
 
-
 const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHoverStyle) => {
-  
+
   const hoverNode =  _.debounce(function (evt) { 
     const node = evt.target;
     const currZoom = cy.zoom();
-  
     if (node.isParent() && node.isExpanded()) { return; }
-  
     const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
-  
+
     node.neighborhood().nodes().union(node).forEach((node) => {
       const { w, h } = scaledDimensions(node, currZoom);
-  
       const nodeHoverStyle = _.assign({}, nodeStyle, {
         'font-size': fontSize,
         'text-outline-width': outlineWidth,
         'width': w,
         'height': h
       });
-  
       applyStyle(cy, node, nodeHoverStyle, '_hover-style-before');
     });
-  
     const edgeHoverStyle = _.assign({}, edgeStyle, {
       'arrow-scale': arrowScale,
       'width': edgeWidth
@@ -108,16 +101,12 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
   const hoverEdge = _.debounce( function (evt) {
     const edge = evt.target;
     const currZoom = cy.zoom();
-
     const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
-
     const edgeHoverStyle = _.assign({}, edgeStyle, {
       'arrow-scale': arrowScale,
       'width': edgeWidth
     });
     applyStyle(cy, edge, edgeHoverStyle, '_hover-style-before');
-
-
     edge.source().union(edge.target()).forEach((node) => {
       const { w, h } = scaledDimensions(node, currZoom);
       const nodeHoverStyle = _.assign({}, nodeStyle, {

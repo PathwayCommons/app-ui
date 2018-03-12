@@ -5,12 +5,14 @@ const {enrichment} = require('../../../../src/server/enrichment-map/enrichment')
 
 
 // object keys are unordered
+// t group changes
 const objectEquality = (obj1, obj2) => {
-  _.forEach(obj1, property => {
-    if (!obj2.has(property)) { return false; }
-    if (obj1.get(property) != obj2.get(property)) { return false; }
+  return _.isEqualWith(obj1, obj2, (val1, val2, key) => {
+      if (key === "signf" || key === "pvalue" || key === "T" || key === "Q" || key === "Q&T" || key === "Q&T/Q" || key === "Q&T/T" || key === "t type" || key === "t name" || key === "t depth" || key === "Q&T list") {
+        return val1.key === val2.key;
+      }
+      return true;
   });
-  return true;
 };
 
 
@@ -24,7 +26,7 @@ describe('test enrichment', function() {
            pvalue: '8.70e-03',
            T: '124',
            Q: '1',
-           c: '1',
+           'Q&T': '1',
            'Q&T/Q': '1.000',
            'Q&T/T': '0.008',
            't type': 'BP',

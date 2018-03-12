@@ -57,7 +57,7 @@ const toolbarButtons = [
     icon: 'replay',
     type: 'networkAction',
     func: resetToDefaultLayout,
-    desc: 'Reset network arrangement'
+    description: 'Reset network arrangement'
   }
 ];
 

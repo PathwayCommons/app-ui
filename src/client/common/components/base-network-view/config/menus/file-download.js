@@ -7,19 +7,20 @@ const AsyncButton = require('../../../async-button');
 
 const { ServerAPI } = require('../../../../../services/');
 
-const downloadTypes = require('../../../../config').downloadTypes;
+const downloadTypesFull = require('../../../../config').downloadTypes;
 
 
 class FileDownloadMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      downloadTypes: this.props.download?this.props.download.types :downloadTypesFull,
       loadingOptions: []
     };
   }
 
   downloadFromDisplayName(displayName) {
-    const optionObj = _.find(downloadTypes, ['displayName', displayName]);
+    const optionObj = _.find(this.state.downloadTypes, ['displayName', displayName]);
     const type = optionObj.type;
 
     if (type === 'png') {
@@ -46,17 +47,17 @@ class FileDownloadMenu extends React.Component {
   initiatePCDownload(format, fileExt, fileType) {
     this.setState({ loadingOptions: this.state.loadingOptions.concat(fileType) });
    
-    const downloadFetch=location.pathname.includes('interactions') ? ServerAPI.getNeighborhood(location.search.slice(4),format) : 
+    const downloadFetch=this.props.download? this.props.download.promise():
       ServerAPI.pcQuery('get', { uri: this.props.networkMetadata.uri, format: format }).then(res => res.text());
-      
+
     downloadFetch.then(content => {
-          let fileContent = content;
-          if (typeof content === 'object') {
-            fileContent = JSON.stringify(content);
-          }
-          this.saveDownload(fileExt, fileContent);
-          this.setState({ loadingOptions: _.filter(this.state.loadingOptions, item => item !== fileType) });
-        });
+      let fileContent = content;
+      if (typeof content === 'object') {
+        fileContent = JSON.stringify(content);
+      }
+      this.saveDownload(fileExt, fileContent);
+      this.setState({ loadingOptions: _.filter(this.state.loadingOptions, item => item !== fileType) });
+    });
   }
 
   saveDownload(file_ext, content) {
@@ -70,7 +71,7 @@ class FileDownloadMenu extends React.Component {
   }
 
   render() {
-    let getMenuContents = () => downloadTypes.reduce((result, option) => {
+    let getMenuContents = () => this.state.downloadTypes.reduce((result, option) => {
         result.push(
           h(AsyncButton, {
             header: option.displayName,

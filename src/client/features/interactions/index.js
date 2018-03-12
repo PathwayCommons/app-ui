@@ -10,6 +10,13 @@ const { ServerAPI } = require('../../services/');
 
 const { BaseNetworkView } = require('../../common/components');
 const { getLayoutConfig } = require('../../common/cy/layout');
+const downloadTypes = require('../../common/config').downloadTypes;
+
+const interactionsConfig={
+  toolbarButtons:_.differenceBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'}],'id'),
+  menus: BaseNetworkView.config.menus,
+  useSearchBar: true
+};  
 
 class Interactions extends React.Component {
   constructor(props) {
@@ -27,24 +34,34 @@ class Interactions extends React.Component {
       id:'',
       loading: true,
     };    
+
     const query = queryString.parse(props.location.search);
     ServerAPI.getNeighborhood(query.ID,'TXT').then(res=>{ 
       const layoutConfig = getLayoutConfig('interactions');
-      const componentConfig = _.merge({}, BaseNetworkView.config, { useSearchBar: true});
       const network= this.parse(res,query.ID);
       this.setState({
-        componentConfig: componentConfig,
+        componentConfig: interactionsConfig,
         layoutConfig: layoutConfig,
         networkJSON: network.network ,
-        networkMetadata: {
-          name: query.ID,
+        networkMetadata: Object.assign({}, this.state.networkMetadata, {
+          name: (network.id+' Interactions'),
           datasource: 'Pathway Commons',
-          comments: ['place holder'], dataSource: ['place holder'], organism: ['place holder'], title: ['place holder'], uri: 'place holder'
-        },
+        }),
         id: network.id,
         loading: false
       }); 
     });
+
+    ServerAPI.getProteinInformation(query.ID).then(result=>{
+      this.setState({
+      networkMetadata: Object.assign({}, this.state.networkMetadata, {
+        comments: _.compact(['Full Name: '+result[0].protein.recommendedName.fullName.value,
+          result[0].protein.alternativeName && 'Synonyms: '+result[0].protein.alternativeName.map(obj => obj.fullName.value).join(', '),
+          result[0].comments[0].type==='FUNCTION'&&'Function: '+result[0].comments[0].text[0].value]), 
+      }),
+     }); 
+    });
+
     this.state.cy.on('trim', () => {
       const mainNode=this.state.cy.nodes(node=> node.data().id===this.state.id);
       const nodesToKeep=mainNode.merge(mainNode.connectedEdges().connectedNodes());
@@ -128,6 +145,11 @@ class Interactions extends React.Component {
       cy: state.cy,
       networkJSON: state.networkJSON,
       networkMetadata: state.networkMetadata,
+      //interaction specific
+      download: {
+        types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'), 
+        promise: () => Promise.resolve(_.map(state.cy.edges(),edge=> edge.data().id).sort().join('\n'))
+      },
     });
     const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
 

@@ -5,7 +5,8 @@ const { enrichment } = require('../../../../src/server/enrichment-map/enrichment
 
 
 // object keys are unordered
-// t group changes
+// reponses from gProfiler for 't group', 't depth' and 't name' are different at times
+// ignore 't group', 't name', trim inconsistent whitespaces in 't name'
 const objectEquality = (obj1, obj2) => {
   return _.isEqualWith(obj1, obj2, (val1, val2, key) => {
     if (key === 't group' || key === 't depth') { return true; }

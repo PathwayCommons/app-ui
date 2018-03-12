@@ -5,7 +5,7 @@ const {enrichment} = require('../../../../src/server/enrichment-map/enrichment')
 
 
 // object keys are unordered
-const objectEquility = (obj1, obj2) => {
+const objectEquality = (obj1, obj2) => {
   _.forEach(obj1, property => {
     if (!obj2.has(property)) { return false; }
     if (obj1.get(property) != obj2.get(property)) { return false; }
@@ -84,7 +84,7 @@ describe('test enrichment', function() {
            't name': '   RNA Polymerase II Pre-transcription Events',
            't depth': '1',
            'Q&T list': 'AFF4' } };
-        expect(objectEquility(result, res)).to.equal(true);
+        expect(objectEquality(result, res)).to.equal(true);
     });
   });
 });

@@ -43,11 +43,12 @@ class Interactions extends React.Component {
       },
       id:'',
       loading: true,
-      catagories: new Map (),
-      buttons:new Map([['Binding',false],
-        ['Phosphorylation',false],
-        ['Expression',false]
-      ]),
+      categories: new Map (),
+      buttonsClicked:{
+        Binding:false,
+        Phosphorylation:false,
+        Expression:false
+      }
     };    
     const query = queryString.parse(props.location.search);
     ServerAPI.getNeighborhood(query.ID,'TXT').then(res=>{ 
@@ -68,14 +69,14 @@ class Interactions extends React.Component {
       
     });
     this.state.cy.on('trim', () => {
-      const catagories=this.state.catagories;
+      const categories=this.state.categories;
       const mainNode=this.state.cy.nodes(node=> node.data().id===this.state.id);
       const nodesToKeep=mainNode.merge(mainNode.connectedEdges().connectedNodes());
       this.state.cy.remove(this.state.cy.nodes().difference(nodesToKeep));
-      [...this.state.buttons].forEach(([type])=>{
+      _.forEach(this.state.buttonsClicked,(value,type)=>{
         const edges= this.state.cy.edges().filter(`.${type}`);
         const nodes = edges.connectedNodes();
-        catagories.set(type,{
+        categories.set(type,{
           edges:edges,
           nodes:nodes
         });
@@ -84,7 +85,7 @@ class Interactions extends React.Component {
         }
       });
       this.setState({
-        catagories:catagories
+        categories:categories
       });
     });
   }
@@ -158,26 +159,28 @@ class Interactions extends React.Component {
   }
   filterUpdate(type) {
     const state=this.state;
-    const catagories = state.catagories;
-    const buttons=state.buttons;
+    const categories = state.categories;
+    const buttonsClicked=state.buttonsClicked;
     const cy= state.cy;
-    const edges=catagories.get(type).edges;
-    const nodes=catagories.get(type).nodes;
-    
-    hideTooltips(cy);
-    const hovered = cy.filter(ele=>ele.style('background-color')==='blue'||ele.style('line-color')==='orange');
-    removeStyle(cy, hovered, '_hover-style-before');
+    const edges=categories.get(type).edges;
+    const nodes=categories.get(type).nodes;
 
-    if(!buttons.get(type)){
-      cy.remove(edges);
-      cy.remove(nodes.filter(nodes=>nodes.connectedEdges().length<=0));
-    }
-    else{ 
-      edges.union(nodes).restore();
-    }
-    buttons.set(type,!buttons.get(type));
+    hideTooltips(cy);
+    const hovered = cy.filter(ele=>ele.scratch('_hover-style-before'));
+    cy.batch(()=>{
+      removeStyle(cy, hovered, '_hover-style-before');
+      if(!buttonsClicked[type]){
+          cy.remove(edges);
+          cy.remove(nodes.filter(nodes=>nodes.connectedEdges().empty()));
+      }
+      else{ 
+        edges.union(nodes).restore();
+      }
+    });
+    
+    buttonsClicked[type]=!buttonsClicked[type];
     this.setState({
-      buttons:buttons
+      buttonsClicked:buttonsClicked
     });
   }
   render(){
@@ -191,7 +194,7 @@ class Interactions extends React.Component {
       //interaction specific
       activeMenu:filterMenuId,
       filterUpdate:(evt,type)=> this.filterUpdate(evt,type),
-      buttons: state.buttons,
+      buttonsClicked: state.buttonsClicked,
     });
     const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
 

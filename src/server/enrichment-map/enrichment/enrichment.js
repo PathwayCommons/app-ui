@@ -74,15 +74,11 @@ const enrichment = (query, userSetting) => {
       const tDepthIndex = 12;
       const QTListIndex = 13;
       _.forEach(responseInfo, elem => {
-        ret[elem[termIdIndex]] = { signf: elem[signfIndex], pvalue: elem[pvalueIndex], T: elem[TIndex], Q: elem[QIndex] };
+        ret[elem[termIdIndex]] = { signf: elem[signfIndex], pvalue: elem[pvalueIndex], T: elem[TIndex], Q: elem[QIndex], tType: elem[tTypeIndex], tGroup: elem[tGroupIndex], tName: elem[tNameIndex], tDepth: elem[tDepthIndex] };
         ret[elem[termIdIndex]]["Q&T"] = elem[QTIndex];
         ret[elem[termIdIndex]]["Q&T/Q"] = elem[QTQIndex];
         ret[elem[termIdIndex]]["Q&T/T"] = elem[QTTIndex];
-        ret[elem[termIdIndex]]["t type"] = elem[tTypeIndex];
-        ret[elem[termIdIndex]]["t group"] = elem[tGroupIndex];
-        ret[elem[termIdIndex]]["t name"] = elem[tNameIndex];
-        ret[elem[termIdIndex]]["t depth"] = elem[tDepthIndex];
-        ret[elem[termIdIndex]]["Q&T list"] = elem[QTListIndex];
+        ret[elem[termIdIndex]]["Q&TList"] = elem[QTListIndex];
       });
       resolve(ret);
     });
@@ -93,6 +89,6 @@ const enrichment = (query, userSetting) => {
 
 module.exports = { enrichment };
 
-// enrichment(['AFF4']).then(function (results) {
-//   console.log(results);
-// });
+enrichment(['AFF4']).then(function (results) {
+  console.log(results);
+});

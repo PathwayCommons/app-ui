@@ -3,19 +3,36 @@ const h = require('react-hyperscript');
 const _ = require('lodash');
 const queryString = require('query-string');
 const Loader = require('react-loader');
-
+const hideTooltips = require('../../common/cy/events/click').hideTooltips;
+const removeStyle= require('../../common/cy/manage-style').removeStyle;
 const make_cytoscape = require('../../common/cy/');
 const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
 const { ServerAPI } = require('../../services/');
-
+const FilterMenu= require('./filter-menu');
 const { BaseNetworkView } = require('../../common/components');
 const { getLayoutConfig } = require('../../common/cy/layout');
+
+const filterMenuId='filter-menu';
+const interactionsConfig={
+  toolbarButtons: BaseNetworkView.config.toolbarButtons.concat({
+    id: 'filter',
+    icon: 'filter_list',
+    type: 'activateMenu',
+    menuId: filterMenuId,
+    description: 'Filter interaction types'
+  }),
+  menus: BaseNetworkView.config.menus.concat({
+    id: filterMenuId,
+    func: props => h(FilterMenu, props)
+  }),
+  useSearchBar: true
+};
 
 class Interactions extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cy: make_cytoscape({ headless: true, stylesheet: interactionsStylesheet, showTooltipsOnEdges:true }),
+      cy: make_cytoscape({ headless: true, stylesheet: interactionsStylesheet, edgeTooltips:true }),
       componentConfig: {},
       layoutConfig: {},
       networkJSON: {},
@@ -26,6 +43,11 @@ class Interactions extends React.Component {
       },
       id:'',
       loading: true,
+      catagories: new Map (),
+      buttons:new Map([['Binding',false],
+        ['Phosphorylation',false],
+        ['Expression',false]
+      ]),
     };    
     const query = queryString.parse(props.location.search);
     ServerAPI.getNeighborhood(query.ID,'TXT').then(res=>{ 
@@ -44,11 +66,27 @@ class Interactions extends React.Component {
         id: network.id,
         loading: false
       }); 
+      
     });
     this.state.cy.on('trim', () => {
+      const catagories=this.state.catagories;
       const mainNode=this.state.cy.nodes(node=> node.data().id===this.state.id);
       const nodesToKeep=mainNode.merge(mainNode.connectedEdges().connectedNodes());
       this.state.cy.remove(this.state.cy.nodes().difference(nodesToKeep));
+      [...this.state.buttons].forEach(([type])=>{
+        const edges= this.state.cy.edges().filter(`.${type}`);
+        const nodes = edges.connectedNodes();
+        catagories.set(type,{
+          edges:edges,
+          nodes:nodes
+        });
+        if(type!='Binding'){
+          this.filterUpdate(type);
+        }
+      });
+      this.setState({
+        catagories:catagories
+      });
     });
   }
 
@@ -119,7 +157,30 @@ class Interactions extends React.Component {
     const id=this.findId(nodeMetadata,query);
     return {id,network};
   }
+  filterUpdate(type) {
+    const state=this.state;
+    const catagories = state.catagories;
+    const buttons=state.buttons;
+    const cy= state.cy;
+    const edges=catagories.get(type).edges;
+    const nodes=catagories.get(type).nodes;
+    
+    hideTooltips(cy);
+    const hovered = cy.filter(ele=>ele.style('background-color')==='blue'||ele.style('line-color')==='orange');
+    removeStyle(cy, hovered, '_hover-style-before');
 
+    if(!buttons.get(type)){
+      cy.remove(edges);
+      cy.remove(nodes.filter(nodes=>nodes.connectedEdges().length<=0));
+    }
+    else{ 
+      edges.union(nodes).restore();
+    }
+    buttons.set(type,!buttons.get(type));
+    this.setState({
+      buttons:buttons
+    });
+  }
   render(){
     const state = this.state;
     const baseView = h(BaseNetworkView.component, {
@@ -128,6 +189,10 @@ class Interactions extends React.Component {
       cy: state.cy,
       networkJSON: state.networkJSON,
       networkMetadata: state.networkMetadata,
+      //interaction specific
+      activeMenu:filterMenuId,
+      filterUpdate:(evt,type)=> this.filterUpdate(evt,type),
+      buttons: state.buttons,
     });
     const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
 

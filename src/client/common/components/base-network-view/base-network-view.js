@@ -126,7 +126,8 @@ class BaseNetworkView extends React.Component {
           onClick: () => {
             btn.func(state);
           },
-          desc: btn.description
+          desc: btn.description,
+          cy: state.cy
         })
       );
     });
@@ -208,7 +209,8 @@ class BaseNetworkView extends React.Component {
       h('div.graph', {
           className: classNames({
             'graph-network-loading': this.state.networkLoading,
-            'graph-sidebar-open': this.state.open
+            'graph-sidebar-open': this.state.open && this.state.activeMenu!='filter-menu',
+            'graph-sidebar-small-open': this.state.activeMenu==='filter-menu'
           }),
         },
         [
@@ -218,7 +220,7 @@ class BaseNetworkView extends React.Component {
         ]
       ),
       h('div', {
-        className: classNames('sidebar-menu', { 'sidebar-menu-open': this.state.open })
+        className: classNames('sidebar-menu',{'sidebar-menu-small':this.state.activeMenu==='filter-menu',  'sidebar-menu-open': this.state.open })
       }, [
           h('div', {
             className: classNames('sidebar-close-button-container', { 'sidebar-close-button-container-open': this.state.open })

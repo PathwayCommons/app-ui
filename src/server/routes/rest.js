@@ -67,13 +67,13 @@ router.get('/gene-query', (req, res) => {
 });
 
 //expose a rest endpoint for enrichment
-router.get('/enrichment/', (req, res) => {
+router.get('/enrichment', (req, res) => {
   const genes = req.query.genes;
-  let user_settings = {};
+  let userOptions = {};
   if (req.query.setting !== undefined) {
-    user_settings = JSON.parse(req.query.setting);
+    userOptions = JSON.parse(req.query.options);
   }
-  enrichment(genes, user_settings).then(enrichmentResult => {
+  enrichment(genes, userOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
   });
 });

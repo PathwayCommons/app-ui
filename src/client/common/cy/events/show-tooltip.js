@@ -1,8 +1,8 @@
 
 const MetadataTip = require('../tooltips/');
 
-const bindShowTooltip = (cy,edgeTooltips) => {
-  const selector= 'node'+(edgeTooltips?',edge':'');
+const bindShowTooltip = (cy,showTooltipsOnEdges) => {
+  const selector= 'node'+(showTooltipsOnEdges ?',edge':'');
   cy.on('showTooltip', selector, function (evt) {
     const node = evt.target;
 

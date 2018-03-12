@@ -69,10 +69,30 @@ router.get('/gene-query', (req, res) => {
 //expose a rest endpoint for enrichment
 router.get('/enrichment', (req, res) => {
   const genes = req.query.genes;
-  let userOptions = {};
-  if (req.query.setting !== undefined) {
-    userOptions = JSON.parse(req.query.options);
+  const tmpOptions = {};
+  tmpOptions.organism = req.query.organism;
+  tmpOptions.significant = req.query.significant;
+  tmpOptions.sortByStructure = req.query.sortByStructure;
+  tmpOptions.orderedQuery = req.query.orderedQuery;
+  tmpOptions.asRanges = req.query.asRanges;
+  tmpOptions.noIea = req.query.noIea;
+  tmpOptions.underrep = req.query.underrep;
+  tmpOptions.hierfiltering = req.query.hierfiltering;
+  tmpOptions.userThr = req.query.userThr;
+  tmpOptions.minSetSize = req.query.minSetSize;
+  tmpOptions.maxSetSize = req.query.maxSetSize;
+  tmpOptions.thresholdAlgo = req.query.thresholdAlgo;
+  tmpOptions.domainSizeType = req.query.domainSizeType;
+  tmpOptions.custbg = req.query.custbg;
+  tmpOptions.custbgCb = req.query.custbgCb;
+
+  const userOptions = {};
+  for (const key in tmpOptions) {
+    if (tmpOptions[key] != undefined) {
+      userOptions[key] = tmpOptions[key];
+    }
   }
+
   enrichment(genes, userOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
   });

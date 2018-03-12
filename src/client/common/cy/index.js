@@ -15,7 +15,7 @@ const make_cytoscape = (opts) => {
     zoomingEnabled: true
   });
 
-  bindEvents(cy);
+  bindEvents(cy,opts);
 
   return cy;
 };

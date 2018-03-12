@@ -3,11 +3,11 @@ const bindExpandCollapse = require('./expand-collapse');
 const { bindClick } = require('./click');
 const bindShowTooltip = require('./show-tooltip');
 
-const bindEvents = (cy, callback) => {
+const bindEvents = (cy,opts, callback) => {
   bindHover(cy);
   bindExpandCollapse(cy);
   bindClick(cy, callback);
-  bindShowTooltip(cy);
+  bindShowTooltip(cy,opts.edgeTooltips);
 };
 
 module.exports = bindEvents;

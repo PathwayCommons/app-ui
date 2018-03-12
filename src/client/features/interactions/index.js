@@ -15,7 +15,7 @@ class Interactions extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cy: make_cytoscape({ headless: true, stylesheet: interactionsStylesheet }),
+      cy: make_cytoscape({ headless: true, stylesheet: interactionsStylesheet, edgeTooltips:true }),
       componentConfig: {},
       layoutConfig: {},
       networkJSON: {},
@@ -67,7 +67,13 @@ class Interactions extends React.Component {
   }
 
   findId(data,id){
-    return data.filter(line => line.includes(id))[0].split('	')[0];
+    let hgncId;
+    data.forEach((value,key)=> {
+      if (value[2].includes(id)){
+        hgncId=key; 
+      }
+    });
+    return hgncId;
   }
 
   pathwayLinks(sources){
@@ -77,21 +83,25 @@ class Interactions extends React.Component {
     });
   }
 
-  addInteraction(nodes,edge,sources,network,nodeMap){
-    for (let i = 0; i<2; i++){
-      if(!nodeMap.has(nodes[i])){
-        nodeMap.set(nodes[i],true);
-        network.nodes.push({data:{class: "ball",id: nodes[i],label: nodes[i],parsedMetadata:[]}});
+  addInteraction(nodes,edge,sources,network,nodeMap,nodeMetadata){
+    const interaction= this.edgeType(edge);
+   nodes.forEach((node)=>{
+    if(!nodeMap.has(node)){
+      const metadata=nodeMetadata.get(node);
+      nodeMap.set(node,true);
+      const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');       
+      network.nodes.push({data:{class: "ball",id: node,label: node,parsedMetadata:[
+        ['Type','bp:'+metadata[0].split(' ')[0].replace(/Reference/g,'').replace(/;/g,',')],['Database IDs', links]]}});
       }
-    }
+    });
     network.edges.push({data: {
-      id: nodes[0]+edge+nodes[1] ,
-      label:nodes[0]+' '+edge+' '+nodes[1] ,
-      source:nodes[0],
+      id: nodes[0]+'\t'+edge+'\t'+nodes[1] ,
+      label: nodes[0]+' '+edge.replace(/-/g,' ')+' '+nodes[1] ,
+      source: nodes[0],
       target: nodes[1],
-      class: this.edgeType(edge),
+      class: interaction,
       parsedMetadata:[['Database IDs',sources]]
-    }});
+    },classes:interaction});
   }
 
   parse(data,query){
@@ -100,13 +110,13 @@ class Interactions extends React.Component {
       nodes:[],
     };
     let nodeMap=new Map(); //keeps track of nodes that have already been added
-    const splitByLines=data.split('\n');
-    const id=this.findId(splitByLines,query);
-  
-    for(let i = 0; splitByLines[i]; i++){
-      let splitLine=splitByLines[i].split('\t');
-      this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],this.pathwayLinks(splitLine[6]),network,nodeMap);
-   }
+    const dataSplit=data.split('\n\n');
+    const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
+    dataSplit[0].split('\n').slice(1).forEach(line => {
+      const splitLine=line.split('\t');
+      this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],this.pathwayLinks(splitLine[6]),network,nodeMap,nodeMetadata);
+    });
+    const id=this.findId(nodeMetadata,query);
     return {id,network};
   }
 

@@ -59,7 +59,7 @@ const enrichment = (query, userSetting) => {
       responseInfo = _.map(responseInfo, ele => ele.split('\t'));
       responseInfo = _.filter(responseInfo, ele => ele.length != 1);
 
-      const ret = new Map;
+      const ret = {};
       const signfIndex = 1;
       const pvalueIndex = 2;
       const TIndex = 3;

@@ -6,6 +6,7 @@ const controller = require('./controller');
 const config = require('../../config');
 
 const { validatorGconvert } = require('../enrichment-map/gene-validator');
+const { enrichment } = require('../enrichment-map/enrichment');
 
 const isAuthenticated = token => {
   return config.MASTER_PASSWORD != '' && config.MASTER_PASSWORD === token;
@@ -62,6 +63,18 @@ router.get('/gene-query', (req, res) => {
 
   validatorGconvert(genes).then(gconvertResult => {
     res.json(gconvertResult);
+  });
+});
+
+//expose a rest endpoint for enrichment
+router.get('/enrichment/', (req, res) => {
+  const genes = req.query.genes;
+  let user_settings = {};
+  if (req.query.setting !== undefined) {
+    user_settings = JSON.parse(req.query.setting);
+  }
+  enrichment(genes, user_settings).then(enrichmentResult => {
+    res.json(enrichmentResult);
   });
 });
 

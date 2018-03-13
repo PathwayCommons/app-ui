@@ -32,13 +32,24 @@ const nameHandler = (pair, expansionFunction) => {
 const databaseHandlerTrim = (pair, expansionFunction) => {
   const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »');
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDatabaseList(sortByDatabaseId(pair[1]), true, expansionLink);
+  return generateDatabaseList(sortByDatabaseId(pair[1]), true, expansionLink,'Links', false);
 };
 const databaseHandler = (pair, expansionFunction) => {
   const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less');
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDatabaseList(sortByDatabaseId(pair[1]), false, expansionLink);
+  return generateDatabaseList(sortByDatabaseId(pair[1]), false, expansionLink,'Links',false);
+};
 
+//Handle interaction/Detailed views related fields
+const interactionHandlerTrim =(pair, expansionFunction) => {
+  const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »');
+  if (pair[1].length < 1) { return h('div.error'); }
+  return generateDatabaseList(sortByDatabaseId(pair[1]), true, expansionLink,'Detailed View', true);
+};
+const interactionHandler =(pair, expansionFunction) => {
+  const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less');
+  if (pair[1].length < 1) { return h('div.error'); }
+  return generateDatabaseList(sortByDatabaseId(pair[1]), false, expansionLink,'Detailed View', true);
 };
 
 //Handle publication related fields
@@ -77,7 +88,9 @@ const metaDataKeyMap = new Map()
   .set('Database IDs', databaseHandler)
   .set('Database IDsTrim', databaseHandlerTrim)
   .set('Publications', publicationHandler)
-  .set('PublicationsTrim', publicationHandler);
+  .set('PublicationsTrim', publicationHandler)
+  .set('Detailed views',interactionHandler)
+  .set('Detailed viewsTrim',interactionHandlerTrim);
 
  /**
   * parseMetadata(pair, trim)
@@ -247,7 +260,7 @@ function sortByDatabaseId(dbArray) {
  * Sample Input : generateIdList({'Reactome' : 'R-HSA-59544'})
  * Sample Output : <div class="fake-spacer"><a class="db-link-single-ref" href="http://identifiers.org/reactome/R-HSA-59544" target="_blank">Reactome</a></div>
  */
-function generateIdList(dbIdObject, trim) {
+function generateIdList(dbIdObject, trim, interactions) {
   //get name and trim ID list to 5 items
   let name = dbIdObject.database;
   let list = dbIdObject.ids;
@@ -262,10 +275,10 @@ function generateIdList(dbIdObject, trim) {
 
   //Generate a list or a single link
   if (list.length == 1 && trim) {
-    return generateDBLink(name, list[0], true);
+    return generateDBLink(name, list[0], true, interactions);
   }
   else {
-    return h('li.db-item', h('div.db-name', name + ": "), list.map(data => generateDBLink(name, data, false), this));
+    return h('li.db-item', h('div.db-name', name + ": "), list.map((data, index) => generateDBLink(name, data, false, interactions, index), this));
   }
 }
 
@@ -279,7 +292,7 @@ function generateIdList(dbIdObject, trim) {
  * Sample Input : generateDBLink('Reactome', 'R-HSA-59544', true)
  * Sample Output : <div class="fake-spacer"><a class="db-link-single-ref" href="http://identifiers.org/reactome/R-HSA-59544" target="_blank">Reactome</a></div>
  */
-function generateDBLink(dbName, dbId, isDbVisible) {
+function generateDBLink(dbName, dbId, isDbVisible, interactions, index) {
   //Get base url for dbid
   let db = config.databases;
   let className = '';
@@ -292,16 +305,15 @@ function generateDBLink(dbName, dbId, isDbVisible) {
   if (isDbVisible) {
     className = '-single-ref';
   }
+  let label = isDbVisible ? dbName : (interactions ? 'Interaction '+(index+1):dbId);
 
   //Build reference url
   if (link.length === 1 && link[0][1]) {
     let url = link[0][1] + link[0][2] + dbId;
-    dbId = isDbVisible ? dbName : dbId;
-    return h('div.fake-spacer', h('a.db-link' + className, { href: url, target: '_blank' }, dbId));
+    return h('div.fake-spacer', h('a.db-link' + className, { href: url, target: '_blank' }, label));
   }
   else {
-    dbId = isDbVisible ? dbName : dbId;
-    return h('div.db-no-link' + className, dbId);
+    return h('div.db-no-link' + className, label);
   }
 }
 
@@ -409,7 +421,7 @@ function publicationList(data) {
  *    </div>
  * </div>
  */
-function generateDatabaseList(sortedArray, trim, expansionLink) {
+function generateDatabaseList(sortedArray, trim, expansionLink, label, interactions) {
 
   //Ignore Publication references
   sortedArray = sortedArray.filter(databaseEntry => databaseEntry.database.toUpperCase() !== 'PUBMED');
@@ -418,7 +430,10 @@ function generateDatabaseList(sortedArray, trim, expansionLink) {
   var hasMultipleIds = _.find(sortedArray, databaseRef => databaseRef.ids.length > 1);
 
   //Generate list
-  let renderValue = sortedArray.map(item => generateIdList(item, trim), this);
+  let renderValue = sortedArray.map(item => [
+    generateIdList(item, trim, interactions)],
+    this
+  );
 
    //Append expansion link to render value if one exists
    if (expansionLink && hasMultipleIds && trim) {
@@ -433,8 +448,7 @@ function generateDatabaseList(sortedArray, trim, expansionLink) {
     renderValue = h('div.wrap-text', h('ul.db-list', renderValue));
   }
 
-
-  return h('div.fake-paragraph', [h('div.span-field-name', 'Links :'), renderValue]);
+  return h('div.fake-paragraph', [h('div.span-field-name', label+' :'), renderValue]);
 }
 
 module.exports = {

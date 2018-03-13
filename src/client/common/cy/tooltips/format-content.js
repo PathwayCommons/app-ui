@@ -42,12 +42,12 @@ const databaseHandler = (pair, expansionFunction) => {
 
 //Handle interaction/Detailed views related fields
 const interactionHandlerTrim =(pair, expansionFunction) => {
-  const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »');
+  const expansionLink = pair[1].length>8? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »'):'';
   if (pair[1].length < 1) { return h('div.error'); }
   return generateDatabaseList(sortByDatabaseId(pair[1]), true, expansionLink,'Detailed View', true);
 };
 const interactionHandler =(pair, expansionFunction) => {
-  const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less');
+  const expansionLink = pair[1].length>8? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less'):'';
   if (pair[1].length < 1) { return h('div.error'); }
   return generateDatabaseList(sortByDatabaseId(pair[1]), false, expansionLink,'Detailed View', true);
 };
@@ -270,15 +270,13 @@ function generateIdList(dbIdObject, trim, interactions) {
   let dbScan = db.filter(data => name.toUpperCase().indexOf(data[0].toUpperCase()) !== -1);
   if (dbScan.length > 0) { name = dbScan[0][0]; }
 
-  //Trim list
-  if (trim) { list = dbIdObject.ids.slice(0, 1); }
-
   //Generate a list or a single link
-  if (list.length == 1 && trim) {
-    return generateDBLink(name, list[0], true, interactions);
+  if (list.length >=  (interactions?8:1) && trim) {
+    list = dbIdObject.ids.slice(0, interactions?8:1);
+    return list.map((data, index) => generateDBLink(name, data, true, interactions, index), this);//generateDBLink(name, list[0], true, interactions);//
   }
   else {
-    return h('li.db-item', h('div.db-name', name + ": "), list.map((data, index) => generateDBLink(name, data, false, interactions, index), this));
+    return h('li.db-item', (interactions?'':h('div.db-name', name + ": ")), list.map((data, index) => generateDBLink(name, data, false, interactions, index), this));
   }
 }
 
@@ -305,7 +303,7 @@ function generateDBLink(dbName, dbId, isDbVisible, interactions, index) {
   if (isDbVisible) {
     className = '-single-ref';
   }
-  let label = isDbVisible ? dbName : (interactions ? 'Interaction '+(index+1):dbId);
+  let label = interactions ? 'Interaction '+(index+1):(isDbVisible ? dbName :dbId);
 
   //Build reference url
   if (link.length === 1 && link[0][1]) {

@@ -31,7 +31,9 @@ const validatorGconvert = (query) => {
       const geneInfo = [];
       const initialAliasIndex = 1;
       const convertedAliasIndex = 3;
+      const nameIndex = 4;
       const descriptionIndex = 5;
+      const namespaceIndex = 6;
       _.forEach(geneInfoList, info => {
         if (info[convertedAliasIndex] === 'N/A') {
           if (_.filter(unrecogized, ele => ele === info[initialAliasIndex]).length === 0) {
@@ -42,7 +44,7 @@ const validatorGconvert = (query) => {
             duplicate.push(info[initialAliasIndex]);
           }
           if (_.filter(geneInfo, ele => ele.HGNC_symbol === info[initialAliasIndex]).length === 0) {
-            geneInfo.push({ HGNC_symbol: info[initialAliasIndex], HGNC_id: info[descriptionIndex].substring(info[descriptionIndex].indexOf(';') + 5, info[descriptionIndex].length - 1) });
+            geneInfo.push({ initialAlias: info[initialAliasIndex], convertedAlias: info[convertedAliasIndex], name: info[nameIndex], description: info[descriptionIndex], namespace: info[namespaceIndex] });
           }
         }
       });

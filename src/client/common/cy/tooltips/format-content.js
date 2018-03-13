@@ -32,24 +32,26 @@ const nameHandler = (pair, expansionFunction) => {
 const databaseHandlerTrim = (pair, expansionFunction) => {
   const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »');
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDatabaseList(sortByDatabaseId(pair[1]), true, expansionLink,'Links', false);
+  return generateDatabaseList(sortByDatabaseId(pair[1]), true, expansionLink);
 };
 const databaseHandler = (pair, expansionFunction) => {
   const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less');
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDatabaseList(sortByDatabaseId(pair[1]), false, expansionLink,'Links',false);
+  return generateDatabaseList(sortByDatabaseId(pair[1]), false, expansionLink);
 };
 
 //Handle interaction/Detailed views related fields
 const interactionHandlerTrim =(pair, expansionFunction) => {
-  const expansionLink = pair[1].length>8? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »'):'';
+  let maxViews=8;
+  const expansionLink = pair[1].length>maxViews? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »'):'';
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDatabaseList(sortByDatabaseId(pair[1]), true, expansionLink,'Detailed View', true);
+  return generateDetailedViewList(sortByDatabaseId(pair[1]), pair[1].length>maxViews, expansionLink,maxViews);
 };
 const interactionHandler =(pair, expansionFunction) => {
-  const expansionLink = pair[1].length>8? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less'):'';
+  let maxViews=8;
+  const expansionLink = pair[1].length>maxViews? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less'):'';
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDatabaseList(sortByDatabaseId(pair[1]), false, expansionLink,'Detailed View', true);
+  return generateDetailedViewList(sortByDatabaseId(pair[1]),false, expansionLink,maxViews);
 };
 
 //Handle publication related fields
@@ -260,7 +262,7 @@ function sortByDatabaseId(dbArray) {
  * Sample Input : generateIdList({'Reactome' : 'R-HSA-59544'})
  * Sample Output : <div class="fake-spacer"><a class="db-link-single-ref" href="http://identifiers.org/reactome/R-HSA-59544" target="_blank">Reactome</a></div>
  */
-function generateIdList(dbIdObject, trim, interactions) {
+function generateIdList(dbIdObject, trim) {
   //get name and trim ID list to 5 items
   let name = dbIdObject.database;
   let list = dbIdObject.ids;
@@ -270,13 +272,15 @@ function generateIdList(dbIdObject, trim, interactions) {
   let dbScan = db.filter(data => name.toUpperCase().indexOf(data[0].toUpperCase()) !== -1);
   if (dbScan.length > 0) { name = dbScan[0][0]; }
 
+  //Trim List
+  if (trim) { list = dbIdObject.ids.slice(0, 1); }
+
   //Generate a list or a single link
-  if (list.length >=  (interactions?8:1) && trim) {
-    list = dbIdObject.ids.slice(0, interactions?8:1);
-    return list.map((data, index) => generateDBLink(name, data, true, interactions, index), this);//generateDBLink(name, list[0], true, interactions);//
+  if (list.length >= 1 && trim) {
+    return generateDBLink(name, list[0], true);
   }
   else {
-    return h('li.db-item', (interactions?'':h('div.db-name', name + ": ")), list.map((data, index) => generateDBLink(name, data, false, interactions, index), this));
+    return h('li.db-item', h('div.db-name', name + ": "), list.map(data => generateDBLink(name, data, false), this));
   }
 }
 
@@ -290,7 +294,7 @@ function generateIdList(dbIdObject, trim, interactions) {
  * Sample Input : generateDBLink('Reactome', 'R-HSA-59544', true)
  * Sample Output : <div class="fake-spacer"><a class="db-link-single-ref" href="http://identifiers.org/reactome/R-HSA-59544" target="_blank">Reactome</a></div>
  */
-function generateDBLink(dbName, dbId, isDbVisible, interactions, index) {
+function generateDBLink(dbName, dbId, isDbVisible, otherName) {
   //Get base url for dbid
   let db = config.databases;
   let className = '';
@@ -303,7 +307,7 @@ function generateDBLink(dbName, dbId, isDbVisible, interactions, index) {
   if (isDbVisible) {
     className = '-single-ref';
   }
-  let label = interactions ? 'Interaction '+(index+1):(isDbVisible ? dbName :dbId);
+  let label = otherName ? otherName :(isDbVisible ? dbName :dbId);
 
   //Build reference url
   if (link.length === 1 && link[0][1]) {
@@ -419,22 +423,30 @@ function publicationList(data) {
  *    </div>
  * </div>
  */
-function generateDatabaseList(sortedArray, trim, expansionLink, label, interactions) {
-
+function generateDatabaseList(sortedArray, trim, expansionLink) {
   //Ignore Publication references
   sortedArray = sortedArray.filter(databaseEntry => databaseEntry.database.toUpperCase() !== 'PUBMED');
 
-  //Determine if there is more than one link for a database
-  var hasMultipleIds = _.find(sortedArray, databaseRef => databaseRef.ids.length > 1);
-
   //Generate list
-  let renderValue = sortedArray.map(item => [
-    generateIdList(item, trim, interactions)],
-    this
-  );
+  let renderValue = sortedArray.map(item => [generateIdList(item, trim)], this);
 
-   //Append expansion link to render value if one exists
-   if (expansionLink && hasMultipleIds && trim) {
+  return formatRenderValue(sortedArray,renderValue,expansionLink,trim,true);
+}
+
+function generateDetailedViewList(sortedArray, trim, expansionLink,maxViews) {
+  let name = sortedArray[0].database;
+  let list = sortedArray[0].ids;
+  if(trim){list=list.slice(0,maxViews);}
+  //Generate list
+  let renderValue = list.map((data,index) => [generateDBLink(name, data, true,'Interaction '+(index+1))],this);
+
+  return formatRenderValue(sortedArray,renderValue,expansionLink,trim,false);
+}
+
+function formatRenderValue(sortedArray, renderValue, expansionLink, trim, list){
+  var hasMultipleIds = _.find(sortedArray, databaseRef => databaseRef.ids.length > 1);
+  //Append expansion link to render value if one exists
+  if (expansionLink && hasMultipleIds && trim) {
     renderValue = [renderValue, expansionLink];
   }
   else if (expansionLink && hasMultipleIds){
@@ -442,11 +454,11 @@ function generateDatabaseList(sortedArray, trim, expansionLink, label, interacti
   }
 
   //If in expansion mode, append list styling
-  if (!trim) {
+  if (!trim && list) {
     renderValue = h('div.wrap-text', h('ul.db-list', renderValue));
   }
 
-  return h('div.fake-paragraph', [h('div.span-field-name', label+' :'), renderValue]);
+  return h('div.fake-paragraph', [h('div.span-field-name', 'Detailed View:'), renderValue]);
 }
 
 module.exports = {

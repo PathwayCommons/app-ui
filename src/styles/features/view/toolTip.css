@@ -152,7 +152,6 @@
 .wrap-text {
   word-wrap: break-word;
   overflow-y: auto;
- /* max-height: 300px;*/
   width: 100%;
 }
 
@@ -221,7 +220,6 @@
 
 .db-item {
   list-style-type: none;
-  margin: 0.05em 0em 0em 0em;
   word-wrap: break-word;
   line-height: 0.9em;
 }

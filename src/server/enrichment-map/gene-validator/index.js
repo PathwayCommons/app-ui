@@ -41,7 +41,7 @@ const validatorGconvert = (query) => {
           if (_.filter(geneInfoList, ele => ele[convertedAliasIndex] === info[convertedAliasIndex]).length > 1 && _.filter(duplicate, ele => ele === info[initialAliasIndex]).length === 0) {
             duplicate.push(info[initialAliasIndex]);
           }
-          if (_.filter(geneInfoList, ele => ele.HGNC_symbol === info[initialAliasIndex]).length === 0) {
+          if (_.filter(geneInfo, ele => ele.HGNC_symbol === info[initialAliasIndex]).length === 0) {
             geneInfo.push({ HGNC_symbol: info[initialAliasIndex], HGNC_id: info[descriptionIndex].substring(info[descriptionIndex].indexOf(';') + 5, info[descriptionIndex].length - 1) });
           }
         }

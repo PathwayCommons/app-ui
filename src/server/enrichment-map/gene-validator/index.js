@@ -11,7 +11,7 @@ const _ = require('lodash');
 const defaultSetting = {
   'output': 'mini',
   'organism': 'hsapiens',
-  'target': 'ENSG'
+  'target': 'HGNC'
 };
 const gConvertURL = 'http://biit.cs.ut.ee/gprofiler/gconvert.cgi';
 

@@ -30,15 +30,15 @@ const validatorGconvert = (query) => {
       const duplicate = [];
       const geneInfo = [];
       const initialAliasIndex = 1;
-      const nameIndex = 4;
+      const convertedAliasIndex = 3;
       const descriptionIndex = 5;
       _.forEach(geneInfoList, info => {
-        if (info[nameIndex] === 'N/A') {
+        if (info[convertedAliasIndex] === 'N/A') {
           if (_.filter(unrecogized, ele => ele === info[initialAliasIndex]).length === 0) {
             unrecogized.push(info[initialAliasIndex]);
           }
         } else {
-          if (_.filter(geneInfoList, ele => ele[initialAliasIndex] === info[initialAliasIndex]).length > 1 && _.filter(duplicate, ele => ele === info[initialAliasIndex]).length === 0) {
+          if (_.filter(geneInfoList, ele => ele[convertedAliasIndex] === info[convertedAliasIndex]).length > 1 && _.filter(duplicate, ele => ele === info[initialAliasIndex]).length === 0) {
             duplicate.push(info[initialAliasIndex]);
           }
           if (_.filter(geneInfoList, ele => ele.HGNC_symbol === info[initialAliasIndex]).length === 0) {

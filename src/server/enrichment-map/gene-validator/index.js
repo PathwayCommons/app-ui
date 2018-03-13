@@ -8,7 +8,7 @@ const request = require('request');
 const _ = require('lodash');
 
 
-const defaultSetting = {
+const defaultOptions = {
   'output': 'mini',
   'organism': 'hsapiens',
   'target': 'HGNC'
@@ -18,7 +18,7 @@ const gConvertURL = 'http://biit.cs.ut.ee/gprofiler/gconvert.cgi';
 
 const validatorGconvert = (query) => {
   const promise = new Promise((resolve, reject) => {
-    const formData = _.assign({}, defaultSetting, { query: query });
+    const formData = _.assign({}, defaultOptions, { query: query });
     request.post({ url: gConvertURL, formData: formData }, (err, httpResponse, body) => {
       if (err) {
         reject(err);

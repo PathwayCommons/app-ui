@@ -46,7 +46,7 @@ const validatorGconvert = (query) => {
         }
       });
 
-      const ret = { unrecogized: unrecogized, duplicate: duplicate, geneInfo: geneInfo };
+      const ret = { options: {target: defaultOptions.target, organism: defaultOptions.organism}, unrecogized: unrecogized, duplicate: duplicate, geneInfo: geneInfo };
       resolve(ret);
     });
   });

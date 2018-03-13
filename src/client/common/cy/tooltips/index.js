@@ -24,6 +24,8 @@ class MetadataTip {
     //Get tooltip object from class
     let tooltip = this.tooltip;
     let tooltipExt = tooltip;
+    let zoom= this.zoom;
+    let isEdge=this.cyElement.isEdge();
 
     getPublications(this.data).then(function (data) {
       this.data = data;
@@ -32,15 +34,15 @@ class MetadataTip {
       this.hideAll(cy);
 
       //If no tooltip exists create one
-      if (!tooltip) {
+      if (!tooltip||(zoom!=cy.zoom()&&isEdge)) {
         //Generate HTML
         let tooltipHTML = this.generateToolTip(callback);
         let expandedHTML = this.generateExtendedToolTip(callback);
 
         //Create tippy object
         let refObject = this.cyElement.popperRef();
-        tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow: true, position: 'bottom' });
-        tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow: true, position: 'bottom' });
+        tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow: true, position: 'bottom', distance: isEdge? -25*cy.zoom()+7:10});
+        tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow: true, position: 'bottom', distance: isEdge? -25*cy.zoom()+7:10 });
         //Resolve Reference issues
         tooltip.selector.dim = refObject.dim;
         tooltip.selector.cyElement = refObject.cyElement;
@@ -49,6 +51,7 @@ class MetadataTip {
 
         //Save tooltips
         this.tooltip = tooltip;
+        this.zoom=cy.zoom();
         this.tooltipExt = tooltipExt;
       }
 

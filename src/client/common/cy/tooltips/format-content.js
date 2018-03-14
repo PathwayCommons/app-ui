@@ -430,7 +430,7 @@ function generateDatabaseList(sortedArray, trim, expansionLink) {
   //Generate list
   let renderValue = sortedArray.map(item => [generateIdList(item, trim)], this);
 
-  return formatRenderValue(sortedArray,renderValue,expansionLink,trim,true);
+  return formatRenderValue(sortedArray,renderValue,expansionLink,trim,true,'Links');
 }
 
 function generateDetailedViewList(sortedArray, trim, expansionLink,maxViews) {
@@ -440,10 +440,10 @@ function generateDetailedViewList(sortedArray, trim, expansionLink,maxViews) {
   //Generate list
   let renderValue = list.map((data,index) => [generateDBLink(name, data, true,'Interaction '+(index+1))],this);
 
-  return formatRenderValue(sortedArray,renderValue,expansionLink,trim,false);
+  return formatRenderValue(sortedArray,renderValue,expansionLink,trim,false,'Detailed Views');
 }
 
-function formatRenderValue(sortedArray, renderValue, expansionLink, trim, list){
+function formatRenderValue(sortedArray, renderValue, expansionLink, trim, list,name){
   var hasMultipleIds = _.find(sortedArray, databaseRef => databaseRef.ids.length > 1);
   //Append expansion link to render value if one exists
   if (expansionLink && hasMultipleIds && trim) {
@@ -458,7 +458,7 @@ function formatRenderValue(sortedArray, renderValue, expansionLink, trim, list){
     renderValue = h('div.wrap-text', h('ul.db-list', renderValue));
   }
 
-  return h('div.fake-paragraph', [h('div.span-field-name', 'Detailed View:'), renderValue]);
+  return h('div.fake-paragraph', [h('div.span-field-name', name+':'), renderValue]);
 }
 
 module.exports = {

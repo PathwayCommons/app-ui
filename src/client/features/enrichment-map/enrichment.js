@@ -6,46 +6,33 @@ class EnrichmentServiceUI extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      result_gq: 'no result yet',
-      result_validate_gp: 'no result yet',
-      result_enrich: 'no result yet',
+      enrichResult: 'no result yet',
       query: '',
-      setting: '""'
+      output: '',
+      organism: '',
+      significant: '',
+      sortByStructure: '',
+      orderedQuery: '',
+      asRanges: '',
+      noIea: '',
+      underrep: '',
+      hierfiltering: '',
+      userThr: '',
+      minSetSize: '',
+      maxSetSize: '',
+      thresholdAlgo: '',
+      domainSizeType: '',
+      custbg: '',
+      custbgCb: ''
     };
-    this.changeSetting = this.changeSetting.bind(this);
-  }
-
-  validator() {
-    ServerAPI.validator(this.state.query).then(res => {
-      this.setState({ result_gq: 'validator result is ' + JSON.stringify(res) });
-    });
-  }
-
-  validatorGconvert() {
-    ServerAPI.validatorGconvert(this.state.query).then(res => {
-      this.setState({ result_validate_gp: 'validator result from gProfiler is ' + JSON.stringify(res) });
-    });
   }
 
   enrich() {
-    ServerAPI.enrichment(this.state.query, this.state.setting).then(res => {
-      this.setState({ result_enrich: 'enrichment result is ' + JSON.stringify(res) });
+    ServerAPI.enrichment(this.state.query, this.state.output, this.state.organism, this.state.significant, this.state.sortByStructure, this.state.orderedQuery, this.state.asRanges, this.state.noIea, this.state.underrep, this.state.hierfiltering, this.state.userThr, this.state.minSetSize, this.state.maxSetSize, this.state.thresholdAlgo, this.state.domainSizeType, this.state.custbg, this.state.custbgCb).then(res => {
+      this.setState({ enrichResult: 'enrichment result is ' + JSON.stringify(res) });
     });
   }
 
-  changeSetting(key, val) {
-    if (val == "") {
-      delete this.state.setting[key];
-    } else if (this.state.setting == '""') {
-      const copy = {};
-      copy[key] = val;
-      this.setState({ setting: copy });
-    } else {
-      const copy = JSON.parse(JSON.stringify(this.state.setting));
-      copy[key] = val;
-      this.setState({ setting: copy });
-    }
-  }
 
   render() {
     return h('div',
@@ -58,25 +45,26 @@ class EnrichmentServiceUI extends React.Component {
           }
         })]),
         h('div', 'Optional Settings for enrichment:'),
-        h('div', [h('input', { placeholder: 'output', onChange: e => this.changeSetting('output', e.target.value) }), 'default: mini']),
-        h('div', [h('input', { placeholder: 'organism', onChange: e => this.changeSetting('organism', e.target.value) }), 'default: hsapiens']),
-        h('div', [h('input', { placeholder: 'significant', onChange: e => this.changeSetting('significant', e.target.value) }), 'default: 1']),
-        h('div', [h('input', { placeholder: 'sort_by_structure', onChange: e => this.changeSetting('sort_by_structure', e.target.value) }), 'default: 1']),
-        h('div', [h('input', { placeholder: 'ordered_query', onChange: e => this.changeSetting('ordered_query', e.target.value) }), 'default: 0']),
-        h('div', [h('input', { placeholder: 'as_ranges', onChange: e => this.changeSetting('as_ranges', e.target.value) }), 'default: 0']),
-        h('div', [h('input', { placeholder: 'no_iea', onChange: e => this.changeSetting('no_iea', e.target.value) }), 'default: 1']),
-        h('div', [h('input', { placeholder: 'underrep', onChange: e => this.changeSetting('underrep', e.target.value) }), 'default: 0']),
-        h('div', [h('input', { placeholder: 'user_thr', onChange: e => this.changeSetting('user_thr', e.target.value) }), 'default: 1']),
-        h('div', [h('input', { placeholder: 'hierfiltering', onChange: e => this.changeSetting('hierfiltering', e.target.value) }), 'default: none']),
-        h('div', [h('input', { placeholder: 'min_set_size', onChange: e => this.changeSetting('min_set_size', e.target.value) }), 'default: 5']),
-        h('div', [h('input', { placeholder: 'max_set_size', onChange: e => this.changeSetting('max_set_size', e.target.value) }), 'default: 200']),
-        h('div', [h('input', { placeholder: 'threshold_algo', onChange: e => this.changeSetting('threshold_algo', e.target.value) }), 'default: fdr']),
-        h('div', [h('input', { placeholder: 'domain_size_type', onChange: e => this.changeSetting('domain_size_type', e.target.value) }), 'default: annotated']),
-        h('div', [h('input', { placeholder: 'custbg_cb', onChange: e => this.changeSetting('custbg_cb', e.target.value) }), 'default: 0']),
-        h('div', [h('input', { placeholder: 'custbg', onChange: e => this.changeSetting('custbg', e.target.value) }), 'default: none']),
+        h('div', [h('input', { placeholder: 'output', onChange: e => this.setState({output: e.target.value}) }), 'default: mini']),
+        h('div', [h('input', { placeholder: 'organism', onChange: e => this.setState({organism: e.target.value}) }), 'default: hsapiens']),
+        h('div', [h('input', { placeholder: 'significant', onChange: e => this.setState({significant: e.target.value}) }), 'default: 1']),
+        h('div', [h('input', { placeholder: 'sortByStructure', onChange: e => this.setState({sortByStructure: e.target.value}) }), 'default: 1']),
+        h('div', [h('input', { placeholder: 'orderedQuery', onChange: e => this.setState({orderedQuery: e.target.value}) }), 'default: 0']),
+        h('div', [h('input', { placeholder: 'asRanges', onChange: e => this.setState({asRanges: e.target.value}) }), 'default: 0']),
+        h('div', [h('input', { placeholder: 'noIea', onChange: e => this.setState({noIea: e.target.value}) }), 'default: 1']),
+        h('div', [h('input', { placeholder: 'underrep', onChange: e => this.setState({underrep: e.target.value}) }), 'default: 0']),
+        h('div', [h('input', { placeholder: 'userThr', onChange: e => this.setState({userThr: e.target.value}) }), 'default: 1']),
+        h('div', [h('input', { placeholder: 'hierfiltering', onChange: e => this.setState({hierfiltering: e.target.value}) }), 'default: none']),
+        h('div', [h('input', { placeholder: 'minSetSize', onChange: e => this.setState({minSetSize: e.target.value}) }), 'default: 5']),
+        h('div', [h('input', { placeholder: 'maxSetSize', onChange: e => this.setState({maxSetSize: e.target.value}) }), 'default: 200']),
+        h('div', [h('input', { placeholder: 'thresholdAlgo', onChange: e => this.setState({thresholdAlgo: e.target.value}) }), 'default: fdr']),
+        h('div', [h('input', { placeholder: 'domainSizeType', onChange: e => this.setState({domainSizeType: e.target.value}) }), 'default: annotated']),
+        h('div', [h('input', { placeholder: 'custbg', onChange: e => this.setState({custbg: e.target.value}) }), 'default: none']),
+        h('div', [h('input', { placeholder: 'custbgCb', onChange: e => this.setState({custbgCb: e.target.value}) }), 'default: 0']),
+
 
         h('div', [h('button', { onClick: e => this.enrich() }, 'click to enrich')]),
-        h('div', this.state.result_enrich)
+        h('div', this.state.enrichResult)
       ]);
   }
 }

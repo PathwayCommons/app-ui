@@ -28,6 +28,10 @@ const ServerAPI = {
     return fetch(`/pc-client/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },
 
+  enrichment(query, output, organism, significant, sortByStructure, orderedQuery, asRanges, noIea, underrep, hierfiltering, userThr, minSetSize, maxSetSize, thresholdAlgo, domainSizeType, custbg, custbgCb){
+    return fetch(`/api/enrichment?${qs.stringify({genes: query})}&${qs.stringify({output: output})}&${qs.stringify({organism: organism})}&${qs.stringify({significant: significant})}&${qs.stringify({sortByStructure: sortByStructure})}&${qs.stringify({orderedQuery: orderedQuery})}&${qs.stringify({asRanges: asRanges})}&${qs.stringify({noIea: noIea})}&${qs.stringify({underrep: underrep})}&${qs.stringify({hierfiltering: hierfiltering})}&${qs.stringify({userThr: userThr})}&${qs.stringify({minSetSize: minSetSize})}&${qs.stringify({maxSetSize: maxSetSize})}&${qs.stringify({thresholdAlgo: thresholdAlgo})}&${qs.stringify({domainSizeType: domainSizeType})}&${qs.stringify({custbg: custbg})}&${qs.stringify({custbgCb: custbgCb})}`, defaultFetchOpts).then(res => res.json());
+  },
+
   findUniprotId(query){
   return fetch(`/pc-client/uniprotIdSearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },

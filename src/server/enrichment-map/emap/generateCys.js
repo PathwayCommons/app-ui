@@ -1,6 +1,6 @@
 /*
 documentation for emap
-sample request URL: http://localhost:3000/api/cys/?pathwayIdList=GO:1901216 GO:2001252 GO:1905269
+sample request URL: http://localhost:3000/api/emap/?pathwayIdList=GO:1901216 GO:2001252 GO:1905269
 parameter:
 pathwayIdList - [string] a list of pathwayIds (GO and REACTOME) delimited by whitespace
 return:
@@ -11,8 +11,8 @@ Notes:
 2. If a pathwayId is unrecognized and duplicate, only report it in unrecognize.
 3. If a pathwayId is recognized and duplicate, report it in duplicate and store info in graph.
 */
-const table = require('./PathwayTable').table;
-const make_cytoscape = require('../../../src/client/common/cy');
+const pathwayInfoTable = require('./PathwayTable').pathwayInfoTable;
+// const make_cytoscape = require('../../../../src/client/common/cy');
 const generateNodeInfo = require('./generateInfo').generateNodeInfo;
 const generateEdgeInfo = require('./generateInfo').generateEdgeInfo;
 const _ = require('lodash');
@@ -22,11 +22,11 @@ const _ = require('lodash');
 // returns a cytoscape object
 const generateCys = (pathwayIdList) => {
   // check unrecognized and duplicates, modify pathwayIdList
-  let unrecognized = [];
-  let duplicate = [];
+  const unrecognized = [];
+  const duplicate = [];
   for (let i = 0; i < pathwayIdList.length; ++i) {
     const pathwayId = pathwayIdList[i];
-    if (!table.has(pathwayId)) {
+    if (!pathwayInfoTable.has(pathwayId)) {
       if (_.filter(unrecognized, elem => elem === pathwayId).length === 0) {
         unrecognized.push(pathwayId);
       }
@@ -46,34 +46,46 @@ const generateCys = (pathwayIdList) => {
     }
   }
   // generate node and edge info
-  let cy = make_cytoscape({ headless: true });
+  const cy = {};
+  cy.node = [];
+  cy.edge = [];
   const nodeInfo = generateNodeInfo(pathwayIdList);
   _.forEach(nodeInfo, node => {
-    cy.add({
-      data: { id: node.pathwayId }
-    });
+    cy.node.push(node.pathwayId);
+    // cy.add({
+    //   data: { id: node.pathwayId }
+    // });
   });
   const edgeInfo = generateEdgeInfo(pathwayIdList);
   _.forEach(edgeInfo, edge => {
-    const source = edge.edgeId.split('_')[0];
-    const target = edge.edgeId.split('_')[1];
-    cy.add({
-      data: {
-        id: edge.edgeId,
-        source: source,
-        target: target,
-        similarity: edge.similarity,
-        intersection: edge.intersection
-      }
+    const sourceIndex = 0;
+    const targetIndex = 1;
+    const source = edge.edgeId.split('_')[sourceIndex];
+    const target = edge.edgeId.split('_')[targetIndex];
+    // cy.add({
+    //   data: {
+    //     id: edge.edgeId,
+    //     source: source,
+    //     target: target,
+    //     similarity: edge.similarity,
+    //     intersection: edge.intersection
+    //   }
+    // });
+    cy.edge.push({
+      id: edge.edgeId,
+      source: source,
+      target: target,
+      similarity: edge.similarity,
+      intersection: edge.intersection
     });
   });
-  return { unrecognized: unrecognized, duplicate: duplicate, graph: cy.json() };
+  return { unrecognized: unrecognized, duplicate: duplicate, graph: cy };
 };
 
 
 module.exports = { generateCys };
 
-// simple testing
-// console.log(generateCys(["GO:1902275", "GO:2001252", "GO:1905269"]));
+//simple testing
+//console.log(generateCys(["GO:1902275", "GO:2001252", "GO:1905269"]));
 // const result = generateCys(["GO:1902275", "GO:2001252", "GO:1905269"]);
-// console.log(result.json().elements.edges);
+// console.log(JSON.stringify(result));

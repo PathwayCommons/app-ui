@@ -28,6 +28,10 @@ const ServerAPI = {
     return fetch(`/pc-client/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },
 
+  emap(pathwayIdList){
+    return fetch(`/api/emap?${qs.stringify({pathwayIdList: pathwayIdList})}`, defaultFetchOpts).then(res => res.json());
+  },
+
   findUniprotId(query){
   return fetch(`/pc-client/uniprotIdSearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },

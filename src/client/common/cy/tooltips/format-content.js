@@ -272,11 +272,11 @@ function generateIdList(dbIdObject, trim) {
   let dbScan = db.filter(data => name.toUpperCase().indexOf(data[0].toUpperCase()) !== -1);
   if (dbScan.length > 0) { name = dbScan[0][0]; }
 
-  //Trim List
+  //Trim list
   if (trim) { list = dbIdObject.ids.slice(0, 1); }
 
   //Generate a list or a single link
-  if (list.length >= 1 && trim) {
+  if (list.length == 1 && trim) {
     return generateDBLink(name, list[0], true);
   }
   else {

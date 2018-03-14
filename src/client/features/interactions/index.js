@@ -76,14 +76,18 @@ class Interactions extends React.Component {
     return hgncId;
   }
 
-  pathwayLinks(sources){
-    let links = [['Detailed views',[]],['Database IDs',[]]];//Format expected by format-content
-    sources.split(';').forEach( link => {
+  interactionMetadata(mediatorIds,pubmedIds){
+    let metadata = [['Detailed views',[]],['Database IDs',[]]];//Format expected by format-content
+    mediatorIds.split(';').forEach( link => {
       const splitLink=link.split('/');
       const view = splitLink[2]==='pathwaycommons.org';
-      view ? links[0][1].push(['Pathway Commons',splitLink[4]]) : links[1][1].push(['Reactome',splitLink[4]]);
+      view ? metadata[0][1].push(['Pathway Commons',splitLink[4]]) :
+        metadata[1][1].push(['Reactome',splitLink[4]]);
     });
-   return links;
+    if(pubmedIds){
+     pubmedIds.split(';').forEach(id=>metadata[1][1].push(['PubMed_Interactions',id]));
+    }
+   return metadata;
 }
 
   addInteraction(nodes,edge,sources,network,nodeMap,nodeMetadata){
@@ -97,6 +101,7 @@ class Interactions extends React.Component {
         ['Type','bp:'+metadata[0].split(' ')[0].replace(/Reference/g,'').replace(/;/g,',')],['Database IDs', links]]}});
       }
     });
+
     network.edges.push({data: {
       id: nodes[0]+'\t'+edge+'\t'+nodes[1] ,
       label: nodes[0]+' '+edge.replace(/-/g,' ')+' '+nodes[1] ,
@@ -117,7 +122,8 @@ class Interactions extends React.Component {
     const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
     dataSplit[0].split('\n').slice(1).forEach(line => {
       const splitLine=line.split('\t');
-      this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],this.pathwayLinks(splitLine[6]),network,nodeMap,nodeMetadata);
+      const edgeMetadata = this.interactionMetadata(splitLine[6],splitLine[4]);
+      this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],edgeMetadata,network,nodeMap,nodeMetadata);
     });
     const id=this.findId(nodeMetadata,query);
     return {id,network};

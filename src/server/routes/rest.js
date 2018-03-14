@@ -70,6 +70,7 @@ router.get('/gene-query', (req, res) => {
 router.get('/enrichment', (req, res) => {
   const genes = req.query.genes;
   const tmpOptions = {};
+  tmpOptions.output = req.query.output;
   tmpOptions.organism = req.query.organism;
   tmpOptions.significant = req.query.significant;
   tmpOptions.sortByStructure = req.query.sortByStructure;

@@ -2,6 +2,8 @@
 const express = require('express');
 const router = express.Router();
 
+
+
 const controller = require('./controller');
 const config = require('../../config');
 
@@ -66,7 +68,8 @@ router.get('/gene-query', (req, res) => {
   });
 });
 
-//expose a rest endpoint for enrichment
+// expose a rest endpoint for enrichment
+// get request
 // use default values if the key is undefined
 router.get('/enrichment', (req, res) => {
   const genes = req.query.genes;
@@ -87,6 +90,41 @@ router.get('/enrichment', (req, res) => {
   tmpOptions.domainSizeType = req.query.domainSizeType;
   tmpOptions.custbg = req.query.custbg;
   tmpOptions.custbgCb = req.query.custbgCb;
+
+  const userOptions = {};
+  for (const key in tmpOptions) {
+    if (tmpOptions[key] != undefined) {
+      userOptions[key] = tmpOptions[key];
+    }
+  }
+
+  enrichment(genes, userOptions).then(enrichmentResult => {
+    res.json(enrichmentResult);
+  });
+});
+
+// expose a rest endpoint for enrichment
+// post request
+// use default values if the key is undefined
+router.post('/enrichment', (req, res) => {
+  const genes = req.body.genes;
+  const tmpOptions = {};
+  tmpOptions.output = req.body.output;
+  tmpOptions.organism = req.body.organism;
+  tmpOptions.significant = req.body.significant;
+  tmpOptions.sortByStructure = req.body.sortByStructure;
+  tmpOptions.orderedQuery = req.body.orderedQuery;
+  tmpOptions.asRanges = req.body.asRanges;
+  tmpOptions.noIea = req.body.noIea;
+  tmpOptions.underrep = req.body.underrep;
+  tmpOptions.hierfiltering = req.body.hierfiltering;
+  tmpOptions.userThr = req.body.userThr;
+  tmpOptions.minSetSize = req.body.minSetSize;
+  tmpOptions.maxSetSize = req.body.maxSetSize;
+  tmpOptions.thresholdAlgo = req.body.thresholdAlgo;
+  tmpOptions.domainSizeType = req.body.domainSizeType;
+  tmpOptions.custbg = req.body.custbg;
+  tmpOptions.custbgCb = req.body.custbgCb;
 
   const userOptions = {};
   for (const key in tmpOptions) {

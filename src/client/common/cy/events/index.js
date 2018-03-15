@@ -7,7 +7,7 @@ const bindEvents = (cy,opts, callback) => {
   bindHover(cy);
   bindExpandCollapse(cy);
   bindClick(cy, callback);
-  bindShowTooltip(cy,opts.edgeTooltips);
+  bindShowTooltip(cy,opts.showTooltipsOnEdges);
 };
 
 module.exports = bindEvents;

@@ -67,6 +67,7 @@ router.get('/gene-query', (req, res) => {
 });
 
 //expose a rest endpoint for enrichment
+// use default values if the key is undefined
 router.get('/enrichment', (req, res) => {
   const genes = req.query.genes;
   const tmpOptions = {};

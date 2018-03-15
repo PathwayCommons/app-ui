@@ -7,7 +7,7 @@ const config = require('../../config');
 
 const { validatorGconvert } = require('../enrichment-map/gene-validator');
 
-const {generateCys} = require('../enrichment-map/emap');
+const { generateCys } = require('../enrichment-map/emap');
 
 const isAuthenticated = token => {
   return config.MASTER_PASSWORD != '' && config.MASTER_PASSWORD === token;
@@ -70,7 +70,7 @@ router.get('/gene-query', (req, res) => {
 
 // Expose a rest endpoint for emap
 router.get('/emap', (req, res) => {
-  const pathwayIdList = req.query.pathwayIdList.split(/ +/);
+  const pathwayIdList = req.query.pathwayIdList.split(/\s+/);
   res.json(generateCys(pathwayIdList));
 });
 

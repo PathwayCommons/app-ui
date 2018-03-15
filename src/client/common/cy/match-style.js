@@ -36,7 +36,7 @@ const evaluateNode = (node, matchingFn) => {
 
   //Check if any of the alternative names match the query
   for (var i = 0; i < namesList.length; i++) {
-    if (matchingFn(namesList[i])) {
+    if (typeof namesList[i]==='string' && matchingFn(namesList[i])) {
       return true;
     }
   }

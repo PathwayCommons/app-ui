@@ -1,4 +1,4 @@
-const table = require('./pathwayTable').table;
+const pathwayInfoTable = require('./pathwayTable').pathwayInfoTable;
 const _ = require('lodash');
 
 
@@ -10,12 +10,12 @@ const _ = require('lodash');
 // {pathwayId: "pathway3", description: "des3", genes: [gene1]},
 // {pathwayId: "pathway4", description: "des4", genes: [gene8, gene1]}]
 const fetch = (pathwayList) => {
-  let ret = [];
+  const ret = [];
   _.forEach(pathwayList, pathwayId => {
-    if (!table.has(pathwayId)) {
+    if (!pathwayInfoTable.has(pathwayId)) {
       throw 'invalid pathway ID';
     }
-    ret.push({'pathwayId': pathwayId, 'description': table.get(pathwayId)['description'], 'genes': table.get(pathwayId)['geneset']});
+    ret.push({'pathwayId': pathwayId, 'description': pathwayInfoTable.get(pathwayId)['description'], 'genes': pathwayInfoTable.get(pathwayId)['geneset']});
   });
   return ret;
 };

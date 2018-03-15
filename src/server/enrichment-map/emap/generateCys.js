@@ -46,15 +46,12 @@ const generateCys = (pathwayIdList) => {
     }
   }
   // generate node and edge info
-  const cy = {};
-  cy.node = [];
-  cy.edge = [];
+  const cytoscapeJSON = {};
+  cytoscapeJSON.nodes = [];
+  cytoscapeJSON.edges = [];
   const nodeInfo = generateNodeInfo(pathwayIdList);
   _.forEach(nodeInfo, node => {
-    cy.node.push(node.pathwayId);
-    // cy.add({
-    //   data: { id: node.pathwayId }
-    // });
+    cytoscapeJSON.nodes.push(node.pathwayId);
   });
   const edgeInfo = generateEdgeInfo(pathwayIdList);
   _.forEach(edgeInfo, edge => {
@@ -62,16 +59,7 @@ const generateCys = (pathwayIdList) => {
     const targetIndex = 1;
     const source = edge.edgeId.split('_')[sourceIndex];
     const target = edge.edgeId.split('_')[targetIndex];
-    // cy.add({
-    //   data: {
-    //     id: edge.edgeId,
-    //     source: source,
-    //     target: target,
-    //     similarity: edge.similarity,
-    //     intersection: edge.intersection
-    //   }
-    // });
-    cy.edge.push({
+    cytoscapeJSON.edges.push({
       id: edge.edgeId,
       source: source,
       target: target,
@@ -79,7 +67,7 @@ const generateCys = (pathwayIdList) => {
       intersection: edge.intersection
     });
   });
-  return { unrecognized: unrecognized, duplicate: duplicate, graph: cy };
+  return { unrecognized: unrecognized, duplicate: duplicate, graph: cytoscapeJSON };
 };
 
 
@@ -87,5 +75,5 @@ module.exports = { generateCys };
 
 //simple testing
 //console.log(generateCys(["GO:1902275", "GO:2001252", "GO:1905269"]));
-// const result = generateCys(["GO:1902275", "GO:2001252", "GO:1905269"]);
-// console.log(JSON.stringify(result));
+const result = generateCys(["GO:1902275", "GO:2001252", "GO:1905269"]);
+console.log(JSON.stringify(result));

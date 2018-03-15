@@ -13,7 +13,7 @@ const defaultOptions = {
   'organism': 'hsapiens',
   'target': 'HGNC'
 };
-const gConvertURL = 'http://biit.cs.ut.ee/gprofiler/gconvert.cgi';
+const gConvertURL = 'https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/gconvert.cgi';
 
 
 const validatorGconvert = (query) => {

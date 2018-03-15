@@ -8,17 +8,17 @@ const request = require('request');
 const _ = require('lodash');
 
 
-const defaultSetting = {
+const defaultOptions = {
   'output': 'mini',
   'organism': 'hsapiens',
-  'target': 'ENSG'
+  'target': 'HGNC'
 };
 const gConvertURL = 'http://biit.cs.ut.ee/gprofiler/gconvert.cgi';
 
 
 const validatorGconvert = (query) => {
   const promise = new Promise((resolve, reject) => {
-    const formData = _.assign({}, defaultSetting, { query: query });
+    const formData = _.assign({}, defaultOptions, { query: query });
     request.post({ url: gConvertURL, formData: formData }, (err, httpResponse, body) => {
       if (err) {
         reject(err);
@@ -30,24 +30,23 @@ const validatorGconvert = (query) => {
       const duplicate = [];
       const geneInfo = [];
       const initialAliasIndex = 1;
-      const nameIndex = 4;
-      const descriptionIndex = 5;
+      const convertedAliasIndex = 3;
       _.forEach(geneInfoList, info => {
-        if (info[nameIndex] === 'N/A') {
+        if (info[convertedAliasIndex] === 'N/A') {
           if (_.filter(unrecogized, ele => ele === info[initialAliasIndex]).length === 0) {
             unrecogized.push(info[initialAliasIndex]);
           }
         } else {
-          if (_.filter(geneInfoList, ele => ele[initialAliasIndex] === info[initialAliasIndex]).length > 1 && _.filter(duplicate, ele => ele === info[initialAliasIndex]).length === 0) {
+          if (_.filter(geneInfoList, ele => ele[convertedAliasIndex] === info[convertedAliasIndex]).length > 1 && _.filter(duplicate, ele => ele === info[initialAliasIndex]).length === 0) {
             duplicate.push(info[initialAliasIndex]);
           }
-          if (_.filter(geneInfoList, ele => ele.HGNC_symbol === info[initialAliasIndex]).length === 0) {
-            geneInfo.push({ HGNC_symbol: info[initialAliasIndex], HGNC_id: info[descriptionIndex].substring(info[descriptionIndex].indexOf(';') + 5, info[descriptionIndex].length - 1) });
+          if (_.filter(geneInfo, ele => ele.initialAlias === info[initialAliasIndex]).length === 0) {
+            geneInfo.push({ initialAlias: info[initialAliasIndex], convertedAlias: info[convertedAliasIndex] });
           }
         }
       });
 
-      const ret = { unrecogized: unrecogized, duplicate: duplicate, geneInfo: geneInfo };
+      const ret = { options: {target: defaultOptions.target, organism: defaultOptions.organism}, unrecogized: unrecogized, duplicate: duplicate, geneInfo: geneInfo };
       resolve(ret);
     });
   });

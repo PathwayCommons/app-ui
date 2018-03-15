@@ -32,10 +32,6 @@
   }
 }
 
-.sidebar-menu-small{
-  width: calc(var(--view-sidebar-width)/1.4);
-}
-
 .sidebar-close-button-container {
   @extend %flex-center;
 

@@ -105,6 +105,7 @@ class BaseNetworkView extends React.Component {
     const menus = state.componentConfig.menus;
 
     const activeMenu = menus.filter(menu => menu.id === state.activeMenu)[0].func(state);
+    const menuWidth = menus.filter(menu => menu.id === state.activeMenu)[0].width;
 
     const menuButtons = toolbarButtons.filter(btn => btn.type === 'activateMenu').map(btn => {
       return (
@@ -213,9 +214,9 @@ class BaseNetworkView extends React.Component {
       h('div.graph', {
           className: classNames({
             'graph-network-loading': this.state.networkLoading,
-            'graph-sidebar-open': this.state.open && this.state.activeMenu != 'filter-menu',
-            'graph-sidebar-small-open': this.state.activeMenu === 'filter-menu'
+            'graph-sidebar-open': this.state.open
           }),
+          style: { width: menuWidth?`${100-menuWidth}%`:'' }
         },
         [
           h('div.graph-cy', {
@@ -224,7 +225,8 @@ class BaseNetworkView extends React.Component {
         ]
       ),
       h('div', {
-        className: classNames('sidebar-menu',{'sidebar-menu-small':this.state.activeMenu === 'filter-menu',  'sidebar-menu-open': this.state.open })
+        className: classNames('sidebar-menu',{'sidebar-menu-open': this.state.open }),
+        style: { width: menuWidth?`${menuWidth}%`:'' }
       }, [
           h('div', {
             className: classNames('sidebar-close-button-container', { 'sidebar-close-button-container-open': this.state.open })

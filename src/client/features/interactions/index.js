@@ -23,6 +23,7 @@ const interactionsConfig={
   }),
   menus: BaseNetworkView.config.menus.concat({
     id: filterMenuId,
+    width: 25, //%
     func: props => h(FilterMenu, props)
   }),
   useSearchBar: true

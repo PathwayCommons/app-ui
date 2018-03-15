@@ -16,10 +16,6 @@
   width: calc(100vw - var(--view-sidebar-width));
 }
 
-.graph-sidebar-small-open {
-  width: calc(100vw - var(--view-sidebar-width)/1.4);
-}
-
 .graph-cy {
   width: 100%;
   height: 100%;

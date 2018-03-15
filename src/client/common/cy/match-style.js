@@ -8,8 +8,8 @@ const {applyStyle, removeStyle} = require('./manage-style');
 //Returns a list of strings
 const getNames = (node) => {
   const parsedMetadata = node.data('parsedMetadata');
+  const geneSynonyms = node.data('geneSynonyms');
   let label = [node.data('label')];
-
 
   if (!parsedMetadata) return label;
 
@@ -23,7 +23,7 @@ const getNames = (node) => {
   if (names.length > 0) { label = label.concat(names[0][1]); }
   if (displayName.length > 0) { label = label.concat(displayName[0][1]); }
 
-  label = label.concat(node.data('geneSynonyms'));
+  if(_.isArray(geneSynonyms)){label = label.concat(node.data('geneSynonyms'));}
 
   return _.compact(label);
 };
@@ -36,7 +36,7 @@ const evaluateNode = (node, matchingFn) => {
 
   //Check if any of the alternative names match the query
   for (var i = 0; i < namesList.length; i++) {
-    if (typeof namesList[i]==='string' && matchingFn(namesList[i])) {
+    if ( matchingFn(namesList[i]) ) {
       return true;
     }
   }

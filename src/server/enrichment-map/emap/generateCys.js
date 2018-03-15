@@ -75,5 +75,5 @@ module.exports = { generateCys };
 
 //simple testing
 //console.log(generateCys(["GO:1902275", "GO:2001252", "GO:1905269"]));
-const result = generateCys(["GO:1902275", "GO:2001252", "GO:1905269"]);
-console.log(JSON.stringify(result));
+// const result = generateCys(["GO:1902275", "GO:2001252", "GO:1905269"]);
+// console.log(JSON.stringify(result));

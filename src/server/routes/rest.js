@@ -60,10 +60,21 @@ router.get('/get-graph-and-layout', function (req, res) {
 });
 
 // Expose a rest endpoint for gconvert validator
+// optional paramter: target, organism
+// use default values if not specified
 router.get('/gene-query', (req, res) => {
   const genes = req.query.genes;
+  const tmpOptions = {};
+  const userOptions = {};
+  tmpOptions.organism = req.query.organism;
+  tmpOptions.target = req.query.target;
+  for (const key in tmpOptions) {
+    if (tmpOptions[key] != undefined) {
+      userOptions[key] = tmpOptions[key];
+    }
+  }
 
-  validatorGconvert(genes).then(gconvertResult => {
+  validatorGconvert(genes, userOptions).then(gconvertResult => {
     res.json(gconvertResult);
   });
 });

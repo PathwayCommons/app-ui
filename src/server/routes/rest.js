@@ -89,7 +89,7 @@ router.get('/enrichment', (req, res) => {
 
   const userOptions = {};
   for (const key in tmpOptions) {
-    if (tmpOptions[key] != undefined && tmpOptions[key] != '') {
+    if (tmpOptions[key] != undefined) {
       userOptions[key] = tmpOptions[key];
     }
   }

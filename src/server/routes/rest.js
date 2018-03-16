@@ -2,10 +2,13 @@
 const express = require('express');
 const router = express.Router();
 
+
+
 const controller = require('./controller');
 const config = require('../../config');
 
 const { validatorGconvert } = require('../enrichment-map/gene-validator');
+const { enrichment } = require('../enrichment-map/enrichment');
 
 const { generateCys } = require('../enrichment-map/emap');
 
@@ -76,6 +79,76 @@ router.get('/gene-query', (req, res) => {
 
   validatorGconvert(genes, userOptions).then(gconvertResult => {
     res.json(gconvertResult);
+  });
+});
+
+// expose a rest endpoint for enrichment
+// get request
+// use default values if the key is undefined
+router.get('/enrichment', (req, res) => {
+  const genes = req.query.genes;
+  const tmpOptions = {};
+  tmpOptions.output = req.query.output;
+  tmpOptions.organism = req.query.organism;
+  tmpOptions.significant = req.query.significant;
+  tmpOptions.sortByStructure = req.query.sortByStructure;
+  tmpOptions.orderedQuery = req.query.orderedQuery;
+  tmpOptions.asRanges = req.query.asRanges;
+  tmpOptions.noIea = req.query.noIea;
+  tmpOptions.underrep = req.query.underrep;
+  tmpOptions.hierfiltering = req.query.hierfiltering;
+  tmpOptions.userThr = req.query.userThr;
+  tmpOptions.minSetSize = req.query.minSetSize;
+  tmpOptions.maxSetSize = req.query.maxSetSize;
+  tmpOptions.thresholdAlgo = req.query.thresholdAlgo;
+  tmpOptions.domainSizeType = req.query.domainSizeType;
+  tmpOptions.custbg = req.query.custbg;
+  tmpOptions.custbgCb = req.query.custbgCb;
+
+  const userOptions = {};
+  for (const key in tmpOptions) {
+    if (tmpOptions[key] != undefined) {
+      userOptions[key] = tmpOptions[key];
+    }
+  }
+
+  enrichment(genes, userOptions).then(enrichmentResult => {
+    res.json(enrichmentResult);
+  });
+});
+
+// expose a rest endpoint for enrichment
+// post request
+// use default values if the key is undefined
+router.post('/enrichment', (req, res) => {
+  const genes = req.body.genes;
+  const tmpOptions = {};
+  tmpOptions.output = req.body.output;
+  tmpOptions.organism = req.body.organism;
+  tmpOptions.significant = req.body.significant;
+  tmpOptions.sortByStructure = req.body.sortByStructure;
+  tmpOptions.orderedQuery = req.body.orderedQuery;
+  tmpOptions.asRanges = req.body.asRanges;
+  tmpOptions.noIea = req.body.noIea;
+  tmpOptions.underrep = req.body.underrep;
+  tmpOptions.hierfiltering = req.body.hierfiltering;
+  tmpOptions.userThr = req.body.userThr;
+  tmpOptions.minSetSize = req.body.minSetSize;
+  tmpOptions.maxSetSize = req.body.maxSetSize;
+  tmpOptions.thresholdAlgo = req.body.thresholdAlgo;
+  tmpOptions.domainSizeType = req.body.domainSizeType;
+  tmpOptions.custbg = req.body.custbg;
+  tmpOptions.custbgCb = req.body.custbgCb;
+
+  const userOptions = {};
+  for (const key in tmpOptions) {
+    if (tmpOptions[key] != undefined) {
+      userOptions[key] = tmpOptions[key];
+    }
+  }
+
+  enrichment(genes, userOptions).then(enrichmentResult => {
+    res.json(enrichmentResult);
   });
 });
 

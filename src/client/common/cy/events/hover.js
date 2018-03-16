@@ -65,7 +65,6 @@ const baseEdgeHoverStyle = {
 
 
 const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHoverStyle) => {
-  
   const hoverNode =  _.debounce(function (evt) { 
     const node = evt.target;
     const currZoom = cy.zoom();
@@ -117,7 +116,6 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
     });
     applyStyle(cy, edge, edgeHoverStyle, '_hover-style-before');
 
-
     edge.source().union(edge.target()).forEach((node) => {
       const { w, h } = scaledDimensions(node, currZoom);
       const nodeHoverStyle = _.assign({}, nodeStyle, {
@@ -134,7 +132,6 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
       applyStyle(cy, node, nodeHoverStyle, '_hover-style-before');
     });
   },200, {leading:false, trailing:true});
-  
   cy.on('mouseover', 'edge',hoverEdge);
 
   cy.on('mouseout', 'edge', function (evt) {
@@ -144,7 +141,6 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
     removeStyle(cy, edge.source(), '_hover-style-before');
     removeStyle(cy, edge.target(), '_hover-style-before');
   });
-
 };
 
 module.exports = bindHover;

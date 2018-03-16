@@ -10,9 +10,9 @@ class ValidatorServiceUI extends React.Component {
       query: ''
     };
   }
-  validatorGconvert() {
-    ServerAPI.validatorGconvert(this.state.query).then(res => {
-      this.setState({ result_validate_gp: 'validator result from gConvert is ' + JSON.stringify(res) });
+  geneQuery() {
+    ServerAPI.geneQuery(this.state.query).then(res => {
+      this.setState({ result: 'validator result from gConvert is ' + JSON.stringify(res) });
     });
   }
   render() {
@@ -24,7 +24,7 @@ class ValidatorServiceUI extends React.Component {
             width: '100vw',
           }
         })]),
-        h('div', [h('button', { onClick: e => this.validatorGconvert() }, 'click to validate')]),
+        h('div', [h('button', { onClick: e => this.geneQuery() }, 'click to validate')]),
         this.state.result
       ]);
   }

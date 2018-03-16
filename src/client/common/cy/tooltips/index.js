@@ -24,6 +24,8 @@ class MetadataTip {
     //Get tooltip object from class
     let tooltip = this.tooltip;
     let tooltipExt = tooltip;
+    let zoom= this.zoom;
+    let isEdge=this.cyElement.isEdge();
 
     getPublications(this.data).then(function (data) {
       this.data = data;
@@ -32,15 +34,16 @@ class MetadataTip {
       this.hideAll(cy);
 
       //If no tooltip exists create one
-      if (!tooltip) {
+      if (!tooltip||(zoom!=cy.zoom()&&isEdge)) {
+        zoom=cy.zoom();
         //Generate HTML
-        let tooltipHTML = this.generateToolTip(callback);
-        let expandedHTML = this.generateExtendedToolTip(callback);
+        let tooltipHTML = this.generateToolTip(zoom,isEdge,callback);
+        let expandedHTML = this.generateExtendedToolTip(zoom,isEdge,callback);
 
         //Create tippy object
         let refObject = this.cyElement.popperRef();
-        tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow: true, position: 'bottom' });
-        tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow: true, position: 'bottom' });
+        tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow: true, position: 'bottom', distance: isEdge? -25*zoom+7:10});
+        tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow: true, position: 'bottom', distance: isEdge? -25*zoom+7:10 });
         //Resolve Reference issues
         tooltip.selector.dim = refObject.dim;
         tooltip.selector.cyElement = refObject.cyElement;
@@ -49,6 +52,7 @@ class MetadataTip {
 
         //Save tooltips
         this.tooltip = tooltip;
+        this.zoom=zoom;
         this.tooltipExt = tooltipExt;
       }
 
@@ -67,7 +71,7 @@ class MetadataTip {
   }
 
   //Generate HTML Elements for tooltips
-  generateToolTip() {
+  generateToolTip(zoom,isEdge,callback) {
     //Order the data array
     let data = collection.toTop(this.data, config.tooltipOrder);
     data = collection.toBottom(data, config.tooltipReverseOrder);
@@ -80,7 +84,7 @@ class MetadataTip {
     this.validateName();
 
     //Generate the expand field option
-    const expandFunction = this.displayMore();
+    const expandFunction = this.displayMore(zoom,isEdge);
 
     if (!(this.data)) { this.data = []; }
     return h('div.tooltip-image', [
@@ -90,7 +94,7 @@ class MetadataTip {
   }
 
   //Generate HTML Elements for the side bar
-  generateExtendedToolTip() {
+  generateExtendedToolTip(zoom,isEdge,callback) {
     //Order the data array
     let data = collection.toTop(this.data, config.tooltipOrder);
     data = collection.toBottom(data, config.tooltipReverseOrder);
@@ -104,8 +108,8 @@ class MetadataTip {
     this.validateName();
 
     //Generate expansion and collapse functions 
-    const expandFunction = this.displayMore();
-    const collapseFunction = this.displayLess();
+    const expandFunction = this.displayMore(zoom,isEdge);
+    const collapseFunction = this.displayLess(zoom,isEdge);
 
     const getExpansionFunction = item => !this.isExpanded(item[0]) ? expandFunction : collapseFunction;
 
@@ -150,7 +154,7 @@ class MetadataTip {
   }
 
   //Display the expanded tooltip
-  expandToolTip(expansionObject, expansionField, fieldStatus) {
+  expandToolTip(expansionObject, expansionField, fieldStatus,zoom,isEdge) {
     //Modify view status
     expansionObject.viewStatus[expansionField] = fieldStatus;
 
@@ -160,7 +164,7 @@ class MetadataTip {
   
     //Get tooltip objects
     let tooltip = expansionObject.tooltip;
-    const expandedHTML = expansionObject.generateExtendedToolTip();
+    const expandedHTML = expansionObject.generateExtendedToolTip(zoom,isEdge);
 
     //Create tippy object
     let refObject = expansionObject.cyElement.popperRef();
@@ -172,9 +176,9 @@ class MetadataTip {
       arrow: true,
       position: 'bottom',
       animation: 'shift',
-      duration : 1
+      duration : 1,
+      distance: isEdge? -25*zoom+7:10
     });
-
 
     //Resolve Reference issues
     tooltipExt.selector.dim = refObject.dim;
@@ -189,15 +193,15 @@ class MetadataTip {
   }
 
   //Return a function that binds a tooltip to the expanded tooltip view
-  displayMore() {
+  displayMore(zoom,isEdge) {
     let that = this;
-    return (field) => that.expandToolTip(that, field, true);
+    return (field) => that.expandToolTip(that, field, true,zoom,isEdge);
   }
 
   //Return a function that binds an expanded tooltip to the minimized view.
-  displayLess() {
+  displayLess(zoom,isEdge) {
     let that = this;
-    return (field) => that.expandToolTip(that, field, false);
+    return (field) => that.expandToolTip(that, field, false,zoom,isEdge);
   }
 
   //Return the expansion status of a specified field

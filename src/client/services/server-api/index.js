@@ -28,6 +28,10 @@ const ServerAPI = {
     return fetch(`/pc-client/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },
 
+  geneQuery(query){
+    return fetch(`/api/gene-query?${qs.stringify({genes: query})}`, defaultFetchOpts).then(res => res.json());
+  },
+
   findUniprotId(query){
   return fetch(`/pc-client/uniprotIdSearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },

@@ -152,7 +152,6 @@
 .wrap-text {
   word-wrap: break-word;
   overflow-y: auto;
-  max-height: 300px;
   width: 100%;
 }
 
@@ -202,9 +201,11 @@
 
 .db-list {
   line-height: 0.2em;
+  margin: 0.2em 0em 0.2em 0em;
 }
 
 .db-link {
+  text-decoration: underline;
   color: var(--link);
   margin: 2px;
   font-weight: lighter;
@@ -218,6 +219,7 @@
 }
 
 .db-item {
+  list-style-type: none;
   word-wrap: break-word;
   line-height: 0.9em;
 }

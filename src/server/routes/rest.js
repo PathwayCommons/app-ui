@@ -10,6 +10,8 @@ const config = require('../../config');
 const { validatorGconvert } = require('../enrichment-map/gene-validator');
 const { enrichment } = require('../enrichment-map/enrichment');
 
+const { generateCys } = require('../enrichment-map/emap');
+
 const isAuthenticated = token => {
   return config.MASTER_PASSWORD != '' && config.MASTER_PASSWORD === token;
 };
@@ -60,10 +62,22 @@ router.get('/get-graph-and-layout', function (req, res) {
   });
 });
 
+// Expose a rest endpoint for gconvert validator
+// optional paramter: target, organism
+// use default values if not specified
 router.get('/gene-query', (req, res) => {
   const genes = req.query.genes;
+  const tmpOptions = {};
+  const userOptions = {};
+  tmpOptions.organism = req.query.organism;
+  tmpOptions.target = req.query.target;
+  for (const key in tmpOptions) {
+    if (tmpOptions[key] != undefined) {
+      userOptions[key] = tmpOptions[key];
+    }
+  }
 
-  validatorGconvert(genes).then(gconvertResult => {
+  validatorGconvert(genes, userOptions).then(gconvertResult => {
     res.json(gconvertResult);
   });
 });
@@ -136,6 +150,12 @@ router.post('/enrichment', (req, res) => {
   enrichment(genes, userOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
   });
+});
+
+// Expose a rest endpoint for emap
+router.get('/emap', (req, res) => {
+  const pathwayIdList = req.query.pathwayIdList.split(/\s+/);
+  res.json(generateCys(pathwayIdList));
 });
 
 // Expose a rest endpoint for controller.endSession

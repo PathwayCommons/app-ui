@@ -27,22 +27,22 @@ const parseGProfilerResponse = (gProfilerResponse) => {
 const defaultSetting = {
   "output": "mini",
   "organism": "hsapiens",
-  "significant": "1",
-  "sort_by_structure": "1",
-  "ordered_query": "0",
-  "as_ranges": "0",
-  "no_iea": "1",
-  "underrep": "0",
+  "significant": 1,
+  "sort_by_structure": 1,
+  "ordered_query": 0,
+  "as_ranges": 0,
+  "no_iea": 1,
+  "underrep": 0,
   "hierfiltering": "none",
-  "user_thr": "1",
-  "min_set_size": "5",
-  "max_set_size": "200",
+  "user_thr": 1,
+  "min_set_size": 5,
+  "max_set_size": 200,
   "threshold_algo": "fdr",
   "domain_size_type": "annotated",
   "custbg": [],
-  "custbg_cb": "0",
-  "sf_GO:BP": "1",
-  "sf_REAC": "1",
+  "custbg_cb": 0,
+  "sf_GO:BP": 1,
+  "sf_REAC": 1,
 };
 const gProfilerURL = "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/";
 
@@ -91,5 +91,5 @@ const enrichment = (query, userSetting) => {
 module.exports = { enrichment };
 
 // enrichment(['AFF4']).then(function (results) {
-//   console.log(results);
+//    console.log(results);
 // });

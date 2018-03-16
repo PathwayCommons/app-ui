@@ -12,9 +12,6 @@ const _ = require('lodash');
 const fetch = (pathwayList) => {
   const ret = [];
   _.forEach(pathwayList, pathwayId => {
-    if (!pathwayInfoTable.has(pathwayId)) {
-      throw 'invalid pathway ID';
-    }
     ret.push({'pathwayId': pathwayId, 'description': pathwayInfoTable.get(pathwayId)['description'], 'genes': pathwayInfoTable.get(pathwayId)['geneset']});
   });
   return ret;

@@ -6,6 +6,8 @@ output: {"unrecogized":["ATP"],"duplicate":["ATM"],"geneInfo":[{"HGNC_symbol":"A
 
 const request = require('request');
 const _ = require('lodash');
+const { validOrganism } = require('./validityInfo');
+const { validTarget } = require('./validityInfo');
 
 
 const defaultOptions = {
@@ -19,6 +21,17 @@ const gConvertURL = 'http://biit.cs.ut.ee/gprofiler/gconvert.cgi';
 const validatorGconvert = (query, userOptions) => {
   const promise = new Promise((resolve, reject) => {
     const formData = _.assign({}, defaultOptions, userOptions, { query: query });
+    const invalidInfo = {};
+    if (!validOrganism.includes(formData.organism)) {
+      invalidInfo.invalidOrganism = formData.organism;
+    }
+    if (!validTarget.includes(formData.target)) {
+      invalidInfo.invaldTarget = formData.target;
+    }
+    if (!_.isEmpty(invalidInfo)) {
+      resolve(invalidInfo);
+    }
+
     request.post({ url: gConvertURL, formData: formData }, (err, httpResponse, body) => {
       if (err) {
         reject(err);

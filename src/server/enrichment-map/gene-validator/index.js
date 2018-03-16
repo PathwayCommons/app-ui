@@ -16,9 +16,9 @@ const defaultOptions = {
 const gConvertURL = 'https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/gconvert.cgi';
 
 
-const validatorGconvert = (query) => {
+const validatorGconvert = (query, userOptions) => {
   const promise = new Promise((resolve, reject) => {
-    const formData = _.assign({}, defaultOptions, { query: query });
+    const formData = _.assign({}, defaultOptions, userOptions, { query: query });
     request.post({ url: gConvertURL, formData: formData }, (err, httpResponse, body) => {
       if (err) {
         reject(err);
@@ -46,7 +46,7 @@ const validatorGconvert = (query) => {
         }
       });
 
-      const ret = { options: {target: defaultOptions.target, organism: defaultOptions.organism}, unrecogized: unrecogized, duplicate: duplicate, geneInfo: geneInfo };
+      const ret = { options: {target: formData.target, organism: formData.organism}, unrecogized: unrecogized, duplicate: duplicate, geneInfo: geneInfo };
       resolve(ret);
     });
   });

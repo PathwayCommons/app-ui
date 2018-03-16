@@ -11,7 +11,7 @@ const filterEdges = require('./intersect').filterEdges;
 // {edgeId: "GO:1902275_GO:0051053", intersection: [gene1], similarity: 0.1},
 // {edgeId: "GO:2001252_GO:0051053", intersection: [gene1], similarity: 0.1}]
 // cutoff = 0.375 unless specified
-const generateEdgeInfo = (pathwayIdList, cutoff = 0.375) => {
+const generateEdgeInfo = (pathwayIdList, cutoff) => {
   return filterEdges(similarity(fetch(pathwayIdList)), cutoff);
 };
 
@@ -29,3 +29,5 @@ const generateNodeInfo = (pathwayIdList) => {
 
 
 module.exports = {generateEdgeInfo, generateNodeInfo};
+
+//console.log(generateEdgeInfo(['GO:0043525','GO:0043523']));

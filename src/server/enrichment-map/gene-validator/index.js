@@ -21,6 +21,8 @@ const gConvertURL = 'http://biit.cs.ut.ee/gprofiler/gconvert.cgi';
 const validatorGconvert = (query, userOptions) => {
   const promise = new Promise((resolve, reject) => {
     const formData = _.assign({}, defaultOptions, userOptions, { query: query });
+    formData.organism =  formData.organism.toLowerCase();
+    formData.target = formData.target.toUpperCase();
     const invalidInfo = {};
     if (!validOrganism.includes(formData.organism)) {
       invalidInfo.invalidOrganism = formData.organism;

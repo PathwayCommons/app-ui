@@ -71,7 +71,8 @@ router.get('/gene-query', (req, res) => {
 // Expose a rest endpoint for emap
 router.get('/emap', (req, res) => {
   const pathwayIdList = req.query.pathwayIdList.split(/\s+/);
-  res.json(generateCys(pathwayIdList));
+  const JCWeight = req.query.JCWeight;
+  res.json(generateCys(pathwayIdList, JCWeight));
 });
 
 // Expose a rest endpoint for controller.endSession

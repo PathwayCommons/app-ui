@@ -27,28 +27,29 @@ const parseGProfilerResponse = (gProfilerResponse) => {
 const defaultSetting = {
   "output": "mini",
   "organism": "hsapiens",
-  "significant": "1",
-  "sort_by_structure": "1",
-  "ordered_query": "0",
-  "as_ranges": "0",
-  "no_iea": "1",
-  "underrep": "0",
+  "significant": 1,
+  "sort_by_structure": 1,
+  "ordered_query": 0,
+  "as_ranges": 0,
+  "no_iea": 1,
+  "underrep": 0,
   "hierfiltering": "none",
-  "user_thr": "1",
-  "min_set_size": "5",
-  "max_set_size": "200",
+  "user_thr": 1,
+  "min_set_size": 5,
+  "max_set_size": 200,
   "threshold_algo": "fdr",
   "domain_size_type": "annotated",
-  "custbg_cb": "none",
-  "sf_GO:BP": "1",
-  "sf_REAC": "1",
+  "custbg": [],
+  "custbg_cb": 0,
+  "sf_GO:BP": 1,
+  "sf_REAC": 1,
 };
 const gProfilerURL = "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/";
 
 
 const enrichment = (query, userSetting) => {
   const promise = new Promise((resolve, reject) => {
-    const formData = _.assign({}, defaultSetting, {"query": query}, userSetting);
+    const formData = _.assign({}, defaultSetting, { "query": query }, userSetting);
     request.post({ url: gProfilerURL, formData: formData }, (err, httpResponse, gProfilerResponse) => {
       if (err) {
         reject(err);
@@ -59,7 +60,7 @@ const enrichment = (query, userSetting) => {
       responseInfo = _.map(responseInfo, ele => ele.split('\t'));
       responseInfo = _.filter(responseInfo, ele => ele.length != 1);
 
-      const ret = new Map;
+      const ret = {};
       const signfIndex = 1;
       const pvalueIndex = 2;
       const TIndex = 3;
@@ -74,15 +75,11 @@ const enrichment = (query, userSetting) => {
       const tDepthIndex = 12;
       const QTListIndex = 13;
       _.forEach(responseInfo, elem => {
-        ret[elem[termIdIndex]] = { signf: elem[signfIndex], pvalue: elem[pvalueIndex], T: elem[TIndex], Q: elem[QIndex] };
+        ret[elem[termIdIndex]] = { signf: elem[signfIndex], pvalue: elem[pvalueIndex], T: elem[TIndex], Q: elem[QIndex], tType: elem[tTypeIndex], tGroup: elem[tGroupIndex], tName: elem[tNameIndex], tDepth: elem[tDepthIndex] };
         ret[elem[termIdIndex]]["Q&T"] = elem[QTIndex];
         ret[elem[termIdIndex]]["Q&T/Q"] = elem[QTQIndex];
         ret[elem[termIdIndex]]["Q&T/T"] = elem[QTTIndex];
-        ret[elem[termIdIndex]]["t type"] = elem[tTypeIndex];
-        ret[elem[termIdIndex]]["t group"] = elem[tGroupIndex];
-        ret[elem[termIdIndex]]["t name"] = elem[tNameIndex];
-        ret[elem[termIdIndex]]["t depth"] = elem[tDepthIndex];
-        ret[elem[termIdIndex]]["Q&T list"] = elem[QTListIndex];
+        ret[elem[termIdIndex]]["Q&TList"] = elem[QTListIndex];
       });
       resolve(ret);
     });
@@ -94,5 +91,5 @@ const enrichment = (query, userSetting) => {
 module.exports = { enrichment };
 
 // enrichment(['AFF4']).then(function (results) {
-//   console.log(results);
+//    console.log(results);
 // });

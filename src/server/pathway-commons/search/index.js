@@ -74,4 +74,4 @@ const querySearch = async (query) => {
   return [];
 };
 
-module.exports = {querySearch:querySearch,uniprotIdSearch:uniprotIdSearch};
+module.exports = {querySearch};

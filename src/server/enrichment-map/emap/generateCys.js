@@ -24,13 +24,13 @@ const generateCys = (pathwayIdList, JCOCWeight) => {
   let JCWeight = Number(JCOCWeight.JCWeight);
   let OCWeight = Number(JCOCWeight.OCWeight);
   if (JCWeight < 0 || JCWeight > 1) {
-    return 'ERROR: JCWeight out of range [0, 1]';
+    throw 'ERROR: JCWeight out of range [0, 1]';
   }
   if (OCWeight < 0 || OCWeight > 1) {
-    return 'ERROR: OCWeight out of range [0, 1]';
+    throw 'ERROR: OCWeight out of range [0, 1]';
   }
   if (!isNaN(OCWeight) && !isNaN(JCWeight) && OCWeight + JCWeight != 1) {
-    return 'ERROR: OCWeight+JCWeight should be 1';
+    throw 'ERROR: OCWeight+JCWeight should be 1';
   }
   if (isNaN(JCWeight) && isNaN(OCWeight)) {
     JCWeight = 0.5;

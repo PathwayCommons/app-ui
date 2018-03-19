@@ -8,7 +8,7 @@ const _ = require('lodash');
 // JC/OC calculation
 // output: JSON object
 //        {edgeId: pathwayxyz_pathwayabc, intersection: [gene1, gene3], similarity: 0.6}
-const similarityRate = (pathway1, pathway2) => {
+const similarityRate = (pathway1, pathway2, JCWeight) => {
   let count = 0;
   let intersection = [];
   _.forEach(pathway1.genes, gene => {
@@ -18,7 +18,7 @@ const similarityRate = (pathway1, pathway2) => {
     }
   });
   // JC/OC calculation
-  const similarity = 0.5*(count/(pathway1.genes.length+pathway2.genes.length-count))+0.5*(count/Math.min(pathway1.genes.length, pathway2.genes.length));
+  const similarity = JCWeight*(count/(pathway1.genes.length+pathway2.genes.length-count))+(1-JCWeight)*(count/Math.min(pathway1.genes.length, pathway2.genes.length));
   return {edgeId: pathway1.pathwayId+'_'+pathway2.pathwayId, intersection: intersection, similarity: similarity};
 };
 
@@ -35,11 +35,11 @@ const similarityRate = (pathway1, pathway2) => {
 // {edgeId: "pathway2_pathway3", intersection: [], similarity: 0.1},
 // {edgeId: "pathway2_pathway4", intersection: [], similarity: 0.1},
 // {edgeId: "pathway3_pathway4", intersection: [gene1], similarity: 0.1}]
-const similarity = (pathwayList) => {
-  let ret = [];
+const similarity = (pathwayList, JCWeight) => {
+  const ret = [];
   for (let i = 0; i < pathwayList.length; ++i) {
     for (let j = i + 1; j < pathwayList.length; ++j) {
-      ret.push(similarityRate(pathwayList[i], pathwayList[j]));
+      ret.push(similarityRate(pathwayList[i], pathwayList[j], JCWeight));
     }
   }
   return ret;

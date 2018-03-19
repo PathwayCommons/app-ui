@@ -20,7 +20,24 @@ const _ = require('lodash');
 
 // input ["GO:1902275", "GO:2001252", "GO:1905269", "GO:0051053"]
 // returns a cytoscape object
-const generateCys = (pathwayIdList) => {
+const generateCys = (pathwayIdList, JCOCWeight) => {
+  let JCWeight = Number(JCOCWeight.JCWeight);
+  let OCWeight = Number(JCOCWeight.OCWeight);
+  if (JCWeight < 0 || JCWeight > 1) {
+    return 'ERROR: JCWeight out of range [0, 1]';
+  }
+  if (OCWeight < 0 || OCWeight > 1) {
+    return 'ERROR: OCWeight out of range [0, 1]';
+  }
+  if (!isNaN(OCWeight) && !isNaN(JCWeight) && OCWeight + JCWeight != 1) {
+    return 'ERROR: OCWeight+JCWeight should be 1';
+  }
+  if (isNaN(JCWeight) && isNaN(OCWeight)) {
+    JCWeight = 0.5;
+  } else if (isNaN(JCWeight)) {
+    JCWeight = 1 - OCWeight;
+  }
+
   // check unrecognized and duplicates, modify pathwayIdList
   const unrecognized = [];
   const duplicate = [];
@@ -53,7 +70,7 @@ const generateCys = (pathwayIdList) => {
   _.forEach(nodeInfo, node => {
     cytoscapeJSON.nodes.push(node.pathwayId);
   });
-  const edgeInfo = generateEdgeInfo(pathwayIdList);
+  const edgeInfo = generateEdgeInfo(pathwayIdList, JCWeight);
   _.forEach(edgeInfo, edge => {
     const sourceIndex = 0;
     const targetIndex = 1;

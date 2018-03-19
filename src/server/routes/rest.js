@@ -155,7 +155,10 @@ router.post('/enrichment', (req, res) => {
 // Expose a rest endpoint for emap
 router.get('/emap', (req, res) => {
   const pathwayIdList = req.query.pathwayIdList.split(/\s+/);
-  res.json(generateCys(pathwayIdList));
+  const JCWeight = req.query.JCWeight;
+  const OCWeight = req.query.OCWeight;
+  const JCOCWeight = {JCWeight: JCWeight, OCWeight: OCWeight};
+  res.json(generateCys(pathwayIdList, JCOCWeight));
 });
 
 // Expose a rest endpoint for controller.endSession

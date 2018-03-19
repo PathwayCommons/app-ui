@@ -20,7 +20,7 @@ const _ = require('lodash');
 
 // input ["GO:1902275", "GO:2001252", "GO:1905269", "GO:0051053"]
 // returns a cytoscape object
-const generateCys = (pathwayIdList) => {
+const generateGraphInfo = (pathwayIdList) => {
   // check unrecognized and duplicates, modify pathwayIdList
   const unrecognized = [];
   const duplicate = [];
@@ -71,9 +71,9 @@ const generateCys = (pathwayIdList) => {
 };
 
 
-module.exports = { generateCys };
+module.exports = { generateGraphInfo };
 
 //simple testing
-//console.log(generateCys(["GO:1902275", "GO:2001252", "GO:1905269"]));
-// const result = generateCys(["GO:1902275", "GO:2001252", "GO:1905269"]);
+//console.log(generateGraphInfo(["GO:1902275", "GO:2001252", "GO:1905269"]));
+// const result = generateGraphInfo(["GO:1902275", "GO:2001252", "GO:1905269"]);
 // console.log(JSON.stringify(result));

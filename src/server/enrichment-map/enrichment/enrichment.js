@@ -74,12 +74,20 @@ const enrichment = (query, userSetting) => {
       const tNameIndex = 11;
       const tDepthIndex = 12;
       const QTListIndex = 13;
+      ret.orderedQuery = formData.ordered_query;
+      ret.userThr = formData.user_thr;
+      ret.minSetSize = formData.min_set_size;
+      ret.maxSetSize = formData.max_set_size;
+      ret.thresholdAlgo = formData.threshold_algo;
+      ret.custbg = formData.custbg;
+      ret.custbgCb = formData.custbg_cb;
+      ret.pathwayInfo = {};
       _.forEach(responseInfo, elem => {
-        ret[elem[termIdIndex]] = { signf: elem[signfIndex], pvalue: elem[pvalueIndex], T: elem[TIndex], Q: elem[QIndex], tType: elem[tTypeIndex], tGroup: elem[tGroupIndex], tName: elem[tNameIndex], tDepth: elem[tDepthIndex] };
-        ret[elem[termIdIndex]]["Q&T"] = elem[QTIndex];
-        ret[elem[termIdIndex]]["Q&T/Q"] = elem[QTQIndex];
-        ret[elem[termIdIndex]]["Q&T/T"] = elem[QTTIndex];
-        ret[elem[termIdIndex]]["Q&TList"] = elem[QTListIndex];
+        ret.pathwayInfo[elem[termIdIndex]] = { signf: elem[signfIndex], pvalue: elem[pvalueIndex], T: elem[TIndex], Q: elem[QIndex], tType: elem[tTypeIndex], tGroup: elem[tGroupIndex], tName: elem[tNameIndex], tDepth: elem[tDepthIndex] };
+        ret.pathwayInfo[elem[termIdIndex]]["Q&T"] = elem[QTIndex];
+        ret.pathwayInfo[elem[termIdIndex]]["Q&T/Q"] = elem[QTQIndex];
+        ret.pathwayInfo[elem[termIdIndex]]["Q&T/T"] = elem[QTTIndex];
+        ret.pathwayInfo[elem[termIdIndex]]["Q&TList"] = elem[QTListIndex];
       });
       resolve(ret);
     });
@@ -91,5 +99,5 @@ const enrichment = (query, userSetting) => {
 module.exports = { enrichment };
 
 // enrichment(['AFF4']).then(function (results) {
-//    console.log(results);
+// console.log(results);
 // });

@@ -14,7 +14,8 @@ const processPhrase = (phrase) => {
     const genes = result.geneInfo.map(gene=>'xrefid:' + sanitize(gene.initialAlias.toUpperCase()));
     const otherIds = result.unrecogized.map(id=>{
       id=id.toUpperCase()
-      const recognized = /^SMP\d{5}$/.test(id); // check if they are small molecules     
+      const recognized = /^SMP\d{5}$/.test(id)     // check for a smpdb or chebi id 
+                      ||/^CHEBI:\d+$/.test(id) && (id.length <= ("CHEBI:".length + 6));      
       const sanitized = sanitize(id);
       return recognized ? ( 'xrefid:' + sanitized ) : ( 'name:' + '*' + sanitized + '*' );
     }); 

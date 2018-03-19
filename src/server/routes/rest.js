@@ -72,7 +72,9 @@ router.get('/gene-query', (req, res) => {
 router.get('/emap', (req, res) => {
   const pathwayIdList = req.query.pathwayIdList.split(/\s+/);
   const JCWeight = req.query.JCWeight;
-  res.json(generateCys(pathwayIdList, JCWeight));
+  const OCWeight = req.query.OCWeight;
+  const JCOCWeight = {JCWeight: JCWeight, OCWeight: OCWeight};
+  res.json(generateCys(pathwayIdList, JCOCWeight));
 });
 
 // Expose a rest endpoint for controller.endSession

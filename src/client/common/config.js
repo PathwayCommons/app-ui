@@ -23,7 +23,8 @@ const databases = [
   ['CAS', 'http://identifiers.org/cas/', ''],
   ['Pathway Commons','/view?uri=http://pathwaycommons.org/pc2/',''],
   ['HPRD','	http://identifiers.org/hprd/',''],
-  ['RefSeq','	http://identifiers.org/refseq/','']
+  ['RefSeq','	http://identifiers.org/refseq/',''],
+  ['Entrez Gene','http://www.ncbi.nlm.nih.gov/gene/','']
 ];
 
 const publicationsURL = 'http://identifiers.org/pubmed/';

@@ -29,7 +29,7 @@ const ServerAPI = {
   },
 
   geneQuery(query){
-    return fetch(`/api/gene-query?${qs.stringify({genes: query})}`, defaultFetchOpts).then(res => res.json());
+    return fetch(`/api/gene-query?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },
 
   findUniprotId(query){
@@ -37,7 +37,7 @@ const ServerAPI = {
   },
 
   getProteinInformation(uniprotId){
-    return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&size=1&accession=${uniprotId}`,defaultFetchOpts).then(res => res.json());
+    return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&accession=${uniprotId}`,defaultFetchOpts).then(res => res.json());
   },
   getNeighborhood(uniprotId,format){
     return fetch(`http://www.pathwaycommons.org/pc2/graph?source=http://identifiers.org/uniprot/${uniprotId}&kind=neighborhood&format=${format}&pattern=controls-phosphorylation-of

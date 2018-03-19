@@ -221,11 +221,14 @@
   text-overflow: ellipsis;
 }
 .search-landing{
+  max-width: var(--search-width);
   width: 100%;
+  background-color: var(--light-base-colour);
+  margin-top: 20px;
 }
 
-.search-landing.innner{
-  margin-top: 20px;
+.search-landing-innner{
+  margin: 0px;
   padding:10px;
   max-width: var(--search-width);
   width: 100%;
@@ -251,6 +254,7 @@
 
 .search-landing-title{
   font-size: 15pt;
+  margin-right: 5px;
 }
 
 .search-landing-link {
@@ -265,7 +269,6 @@
 }
 
 .search-landing-button{
-
   background-color: #0073BF;
   color: white;
   border-radius: 0px;
@@ -280,10 +283,12 @@
   background-color: #6E9ABD; 
   color: white;
 }
+
 .search-landing-interactions {
   margin-top: 5px;
   width: 100%;
 }
+
 .search-item {
   display: flex;
   vertical-align: middle; 

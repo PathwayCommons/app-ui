@@ -9,6 +9,7 @@ const classNames = require('classnames');
 
 const Icon = require('../../common/components').Icon;
 const { ServerAPI } = require('../../services');
+const databases = require('../../common/config').databases;
 
 class Search extends React.Component {
 
@@ -63,28 +64,39 @@ class Search extends React.Component {
   getLandingResult() {
     const state = this.state;
     const query = {
-      q: state.query.q.trim(),
-      type: 'ProteinReference',
-      datasource: state.query.datasource,
-      species: '9606'
+      genes: state.query.q.trim(),
+      target: 'UNIPROTSWISSPROT',
     };
-    if(query.q.includes(' ')){
-      this.setState({   
-        landingLoading: false,
-        landing:[]
-      });
-      return;
-    }
+
     this.setState({
       landingLoading: true
     },()=>{
-      ServerAPI.findUniprotId(query).then(res=>{
+      ServerAPI.geneQuery(query).then(res=>{
+        res=res.geneInfo;
         if(!_.isEmpty(res)){
-          ServerAPI.getProteinInformation(res[0]).then(result=>{
+          const ids=res.map(gene=>gene.convertedAlias).join(',');
+          ServerAPI.getProteinInformation(ids).then(result=>{
+            const landing=result.map(gene=>{ 
+              let links=_.mapValues( _.omit({'Uniprot':gene.accession,
+              'HGNC':gene.dbReferences.filter(entry =>entry.type=='HGNC')[0].id,
+              'Entrez Gene':gene.dbReferences.filter(entry =>entry.type=='GeneID')[0].id}),
+              (value,key)=>{
+                let link = databases.filter(value => key.toUpperCase() === value[0].toUpperCase());
+                  return link[0][1] + link[0][2] + value;
+                });
+
+              return {
+                accession:gene.accession,
+                name:gene.protein.recommendedName.fullName.value,
+                function: gene.comments[0].type==='FUNCTION' && gene.comments[0].text[0].value,
+                synonyms: _.hasIn(gene,'protein.alternativeName') && gene.protein.alternativeName.map(obj => obj.fullName.value).join(', '),
+                showMore:{full:!(result.length>1),function:false,synonyms:false},
+                links:links
+              };});
+
             this.setState({
             landingLoading: false,
-            landing:result,
-            landingShowMore: [false,false],
+            landing:landing,
             });
           });
         }
@@ -189,54 +201,57 @@ class Search extends React.Component {
     ]) :
       h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
 
-    const landing = (state.landingLoading ) ?
-      h('div.search-landing.innner',[h(Loader, { loaded:!state.landingLoading , options: { color: '#16A085',position:'relative', top: '15px' }})]):
-      state.landing.map(box=>{
+    const showMoreLink= (varToToggle,index,type) => {
+      const landing=state.landing;
+      return h(`${type}.search-landing-link`,{onClick: () => {
+        landing[index].showMore[varToToggle]=!landing[index].showMore[varToToggle];
+        this.setState({ landing:landing });}, 
+      key:'showMore'},landing[index].showMore[varToToggle]? '« less': 'more »');
+    };
 
-        const name = h('strong.search-landing-title',box.protein.recommendedName.fullName.value);
-        let synonyms=null;
-        if(_.hasIn(box,'protein.alternativeName')){ 
-          const synonymsLength=115;
-          const synonymsTextLong= box.protein.alternativeName.map(obj => obj.fullName.value).join(', ');
-          const synonymsText= (state.landingShowMore[0]|| synonymsTextLong.length<=synonymsLength)?
-            synonymsTextLong+' ': synonymsTextLong.slice(0,synonymsTextLong.lastIndexOf(',',synonymsLength))+' '; 
-          synonyms=[h('i.search-landing-small',{key:'text'},synonymsText)];
-          if(synonymsTextLong.length>synonymsLength){
-            synonyms.push(
-              h('i.search-landing-link',{onClick: e => this.setState({ landingShowMore: [!state.landingShowMore[0],state.landingShowMore[1]]}), 
-                key:'showMore', className:classNames('search-landing-link','search-landing-small')},state.landingShowMore[0]? '« less': 'more »')
-            );
-          }
+    const expandableText = (length,text,charToCutOn,type,cssClass,toggleVar,index)=>{
+      let result = null;
+      const varToToggle= state.landing[index].showMore[toggleVar];
+      const textToUse= (varToToggle|| text.length<=length)?
+        text+' ': text.slice(0,text.lastIndexOf(charToCutOn,length))+' '; 
+        result=[h(`${type}`,{className:cssClass,key:'text'},textToUse)];
+      if(text.length>length){
+        result.push(showMoreLink(toggleVar,index,type));
+      }
+      return result;
+    };
+    
+    const landing = (state.landingLoading ) ?
+      h('div.search-landing-innner',[h(Loader, { loaded:!state.landingLoading , options: { color: '#16A085',position:'relative', top: '15px' }})]):
+      state.landing.map((box,index)=>{
+        const title = [h('strong.search-landing-title',{key:'name'},box.name),];
+        if(state.landing.length>1){title.push(showMoreLink('full',index,'span'));}
+
+        let synonyms=[];
+        if(box.synonyms){ 
+          synonyms=expandableText(115, box.synonyms,',','i','search-landing-small','synonyms',index);
         }
 
-        let functions=null;
-        if(_.hasIn(box,'comments[0].text') && box.comments[0].type==='FUNCTION'){
-          const functionsLength=280;
-          const functionTextLong=box.comments[0].text[0].value;
-          const functionText = (state.landingShowMore[1] || functionTextLong.length<=functionsLength)?
-            functionTextLong: functionTextLong.slice(0,functionTextLong.lastIndexOf(' ',functionsLength));
-          functions=[h('span.search-landing-function',{key:'text'},functionText)];
-          if(functionTextLong.length>functionsLength){
-            functions.push(
-              h('span.search-landing-link',{onClick: e => this.setState({ landingShowMore: [state.landingShowMore[0],!state.landingShowMore[1]]}), key:'showMore'},
-                state.landingShowMore[1]? '« less': 'more »')
-            );
-          }
+        let functions=[];
+        if(box.function){
+          functions=expandableText(270, box.function,' ','span','search-landing-function','function',index);
         } 
-        const ids = [box.accession,box.dbReferences.filter(entry =>entry.type=='HGNC')[0],box.dbReferences.filter(entry =>entry.type=='GeneID')[0]];
-        let links=[{text:'UniProt', link:`http://www.uniprot.org/uniprot/${ids[0]}`}];
-          if(ids[1]) {links.push({text:'HGNC',link:`https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=${ids[1].id}`});} 
-          if(ids[2]) {links.push({text:'Entrez Gene',link:`https://www.ncbi.nlm.nih.gov/gene/${ids[2].id}`});}
-        links=links.map(link=>{return h('a.search-landing-link',{key: link.text, href: link.link},link.text);});
 
-        return h('div.search-landing.innner',{key: box.accession},[ 
-          h('div.search-landing-section',[name]),
-          h('div.search-landing-section',[synonyms]),
-          h('div.search-landing-section',[functions]),
-          h('div.search-landing-section',[links]),
-          h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ ID: box.accession })}, target: '_blank',className: 'search-landing-interactions' }, [
+        let links=[];
+        _.forIn((box.links),(value,key)=>{
+          links.push(h('a.search-landing-link',{key: key, href: value},key));
+        });
+
+        return h('div.search-landing-innner',{key: box.accession},[ 
+          h('div.search-landing-section',[title]),  
+          box.showMore.full? [
+          h('div.search-landing-section',{key: 'synonyms'},[synonyms]),
+          h('div.search-landing-section',{key: 'functions'},[functions]),
+          h('div.search-landing-section',{key: 'links'},[links]),
+          h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ ID: box.accession })}, 
+            target: '_blank',className: 'search-landing-interactions', key:'interactions' }, [
             h('button.search-landing-button', 'View Interactions'),
-          ]),
+          ])] : ''
         ]);    
       });
 

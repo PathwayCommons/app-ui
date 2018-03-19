@@ -10,20 +10,15 @@ const sanitize = (s) => {
 };
 
 const processPhrase = (phrase) => {
-  const sourceList = [
-    'smpdb'
-  ];
-
-  const keywords=[];
-
   return geneValidator(phrase).then(result => {
-    keywords.concat(result.geneInfo.map(gene=>'xrefid:' + sanitize(gene.initialAlias)));
-    keywords.concat(result.unrecogized.map(id=>{
-      const recognized = sourceList.some(source => utilities.sourceCheck(source, id));     
+    const genes = result.geneInfo.map(gene=>'xrefid:' + sanitize(gene.initialAlias.toUpperCase()));
+    const otherIds = result.unrecogized.map(id=>{
+      id=id.toUpperCase()
+      const recognized = /^SMP\d{5}$/.test(id); // check if they are small molecules     
       const sanitized = sanitize(id);
       return recognized ? ( 'xrefid:' + sanitized ) : ( 'name:' + '*' + sanitized + '*' );
-    }));
-    return keywords
+    }); 
+    return genes.concat(otherIds);  
   });
 };
 

@@ -74,23 +74,4 @@ const querySearch = async (query) => {
   return [];
 };
 
-const uniprotIdSearch = async (query) => {
-  const queries = await (processPhrase(sanitize(query.q.trim())));
-  const filteredQueries = queries.filter(entry=>entry.includes('xrefid'));
-  if(!_.isEmpty(filteredQueries)){
-    const searchResult = await search()
-      .query(query) //input query string
-      .q(filteredQueries)
-      .format('json')
-      .fetch();
-    const searchSuccess = searchResult != null
-    if (searchSuccess && searchResult.searchHit.length > 0) {
-      const filteredResults = searchResult.searchHit.filter(hit =>
-        hit.uri.startsWith('http://identifiers.org/uniprot/') 
-      );
-      return filteredResults.map(hit=>_.last(hit.uri.split('/'))); //Parses and returns the Uniprot id
-    }
-  } 
-  return [];
-};
 module.exports = {querySearch:querySearch,uniprotIdSearch:uniprotIdSearch};

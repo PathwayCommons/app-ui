@@ -32,10 +32,6 @@ const ServerAPI = {
     return fetch(`/api/gene-query?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },
 
-  findUniprotId(query){
-  return fetch(`/pc-client/uniprotIdSearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
-  },
-
   getProteinInformation(uniprotId){
     return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&size=1&accession=${uniprotId}`,defaultFetchOpts).then(res => res.json());
   },

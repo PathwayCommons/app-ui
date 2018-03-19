@@ -77,7 +77,6 @@ const PathwayCommonsService = {
 };
 
 PathwayCommonsService.querySearch = _.memoize(search.querySearch, query => JSON.stringify(query));
-PathwayCommonsService.uniprotIdSearch = _.memoize(search.uniprotIdSearch, query => JSON.stringify(query));
 PathwayCommonsService.datasources = _.memoize(datasources);
 
 // expose core cpath2 client api

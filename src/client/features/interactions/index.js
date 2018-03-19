@@ -13,15 +13,9 @@ const { BaseNetworkView } = require('../../common/components');
 const { getLayoutConfig } = require('../../common/cy/layout');
 const downloadTypes = require('../../common/config').downloadTypes;
 
-const interactionsConfig={
-  toolbarButtons:_.differenceBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'}],'id'),
-  menus: BaseNetworkView.config.menus,
-  useSearchBar: true
-};  
-
 const filterMenuId='filter-menu';
 const interactionsConfig={
-  toolbarButtons: BaseNetworkView.config.toolbarButtons.concat({
+  toolbarButtons: _.differenceBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'}],'id').concat({
     id: 'filter',
     icon: 'filter_list',
     type: 'activateMenu',

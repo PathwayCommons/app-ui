@@ -36,8 +36,6 @@ const generateCys = (pathwayIdList, JCOCWeight) => {
     JCWeight = 0.5;
   } else if (isNaN(JCWeight)) {
     JCWeight = 1 - OCWeight;
-  } else if (isNaN(OCWeight)) {
-    OCWeight = 1 - JCWeight;
   }
 
   // check unrecognized and duplicates, modify pathwayIdList

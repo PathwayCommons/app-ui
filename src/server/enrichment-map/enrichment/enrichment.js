@@ -24,7 +24,7 @@ const parseGProfilerResponse = (gProfilerResponse) => {
 };
 
 
-const defaultSetting = {
+const defaultOptions = {
   "output": "mini",
   "organism": "hsapiens",
   "significant": 0,
@@ -47,9 +47,10 @@ const defaultSetting = {
 const gProfilerURL = "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/";
 
 
-const enrichment = (query, userSetting) => {
+const enrichment = (query, userOptions) => {
   const promise = new Promise((resolve, reject) => {
-    const formData = _.assign({}, defaultSetting, { "query": query }, userSetting);
+    const formData = _.assign({}, defaultOptions, { "query": query }, userOptions);
+    console.log(formData.custbg_cb);
     request.post({ url: gProfilerURL, formData: formData }, (err, httpResponse, gProfilerResponse) => {
       if (err) {
         reject(err);
@@ -61,7 +62,6 @@ const enrichment = (query, userSetting) => {
       responseInfo = _.filter(responseInfo, ele => ele.length != 1);
 
       const ret = {};
-      const signfIndex = 1;
       const pvalueIndex = 2;
       const TIndex = 3;
       const QIndex = 4;
@@ -75,7 +75,7 @@ const enrichment = (query, userSetting) => {
       const tDepthIndex = 12;
       const QTListIndex = 13;
       _.forEach(responseInfo, elem => {
-        ret[elem[termIdIndex]] = { signf: elem[signfIndex], pvalue: elem[pvalueIndex], T: elem[TIndex], Q: elem[QIndex], tType: elem[tTypeIndex], tGroup: elem[tGroupIndex], tName: elem[tNameIndex], tDepth: elem[tDepthIndex] };
+        ret[elem[termIdIndex]] = { pvalue: elem[pvalueIndex], T: elem[TIndex], Q: elem[QIndex], tType: elem[tTypeIndex], tGroup: elem[tGroupIndex], tName: elem[tNameIndex], tDepth: elem[tDepthIndex] };
         ret[elem[termIdIndex]]["Q&T"] = elem[QTIndex];
         ret[elem[termIdIndex]]["Q&T/Q"] = elem[QTQIndex];
         ret[elem[termIdIndex]]["Q&T/T"] = elem[QTTIndex];

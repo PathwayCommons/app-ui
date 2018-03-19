@@ -88,13 +88,13 @@ router.get('/gene-query', (req, res) => {
 router.get('/enrichment', (req, res) => {
   const genes = req.query.genes;
   const tmpOptions = {};
-  tmpOptions.orderedQuery = req.query.orderedQuery;
-  tmpOptions.userThr = req.query.userThr;
-  tmpOptions.minSetSize = req.query.minSetSize;
-  tmpOptions.maxSetSize = req.query.maxSetSize;
-  tmpOptions.thresholdAlgo = req.query.thresholdAlgo;
+  tmpOptions.ordered_query = req.query.orderedQuery;
+  tmpOptions.user_thr = req.query.userThr;
+  tmpOptions.min_set_size = req.query.minSetSize;
+  tmpOptions.max_set_size = req.query.maxSetSize;
+  tmpOptions.threshold_algo = req.query.thresholdAlgo;
   tmpOptions.custbg = req.query.custbg;
-  tmpOptions.custbgCb = req.query.custbgCb;
+  tmpOptions.custbg_cb = req.query.custbgCb;
 
   const userOptions = {};
   for (const key in tmpOptions) {
@@ -115,13 +115,13 @@ router.post('/enrichment', (req, res) => {
   const genes = req.body.genes;
   const tmpOptions = {};
 
-  tmpOptions.orderedQuery = req.body.orderedQuery;
-  tmpOptions.userThr = req.body.userThr;
-  tmpOptions.minSetSize = req.body.minSetSize;
-  tmpOptions.maxSetSize = req.body.maxSetSize;
-  tmpOptions.thresholdAlgo = req.body.thresholdAlgo;
-  tmpOptions.custbg = req.body.custbg;
-  tmpOptions.custbgCb = req.body.custbgCb;
+  tmpOptions.ordered_query = req.query.orderedQuery;
+  tmpOptions.user_thr = req.query.userThr;
+  tmpOptions.min_set_size = req.query.minSetSize;
+  tmpOptions.max_set_size = req.query.maxSetSize;
+  tmpOptions.threshold_algo = req.query.thresholdAlgo;
+  tmpOptions.custbg = req.query.custbg;
+  tmpOptions.custbg_cb = req.query.custbgCb;
 
 
   const userOptions = {};

@@ -115,13 +115,13 @@ router.post('/enrichment', (req, res) => {
   const genes = req.body.genes;
   const tmpOptions = {};
 
-  tmpOptions.ordered_query = req.query.orderedQuery;
-  tmpOptions.user_thr = req.query.userThr;
-  tmpOptions.min_set_size = req.query.minSetSize;
-  tmpOptions.max_set_size = req.query.maxSetSize;
-  tmpOptions.threshold_algo = req.query.thresholdAlgo;
-  tmpOptions.custbg = req.query.custbg;
-  tmpOptions.custbg_cb = req.query.custbgCb;
+  tmpOptions.ordered_query = req.body.orderedQuery;
+  tmpOptions.user_thr = req.body.userThr;
+  tmpOptions.min_set_size = req.body.minSetSize;
+  tmpOptions.max_set_size = req.body.maxSetSize;
+  tmpOptions.threshold_algo = req.body.thresholdAlgo;
+  tmpOptions.custbg = req.body.custbg;
+  tmpOptions.custbg_cb = req.body.custbgCb;
 
 
   const userOptions = {};

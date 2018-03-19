@@ -123,20 +123,12 @@ router.get('/enrichment', (req, res) => {
 router.post('/enrichment', (req, res) => {
   const genes = req.body.genes;
   const tmpOptions = {};
-  tmpOptions.output = req.body.output;
-  tmpOptions.organism = req.body.organism;
-  tmpOptions.significant = req.body.significant;
-  tmpOptions.sortByStructure = req.body.sortByStructure;
+
   tmpOptions.orderedQuery = req.body.orderedQuery;
-  tmpOptions.asRanges = req.body.asRanges;
-  tmpOptions.noIea = req.body.noIea;
-  tmpOptions.underrep = req.body.underrep;
-  tmpOptions.hierfiltering = req.body.hierfiltering;
   tmpOptions.userThr = req.body.userThr;
   tmpOptions.minSetSize = req.body.minSetSize;
   tmpOptions.maxSetSize = req.body.maxSetSize;
   tmpOptions.thresholdAlgo = req.body.thresholdAlgo;
-  tmpOptions.domainSizeType = req.body.domainSizeType;
   tmpOptions.custbg = req.body.custbg;
   tmpOptions.custbgCb = req.body.custbgCb;
 

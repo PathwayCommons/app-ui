@@ -16,6 +16,13 @@ const defaultOptions = {
   'target': 'HGNC'
 };
 const gConvertURL = 'http://biit.cs.ut.ee/gprofiler/gconvert.cgi';
+class InvalidInfoError extends Error {
+  constructor(invalidOrganism, invalidTarget, message) {
+    super(message);
+    this.invalidTarget = invalidTarget;
+    this.invalidOrganism = invalidOrganism;
+  }
+}
 
 
 const validatorGconvert = (query, userOptions) => {
@@ -23,15 +30,15 @@ const validatorGconvert = (query, userOptions) => {
     const formData = _.assign({}, defaultOptions, userOptions, { query: query });
     formData.organism =  formData.organism.toLowerCase();
     formData.target = formData.target.toUpperCase();
-    const invalidInfo = {};
+    const invalidInfo = {invalidTarget: '', invalidOrganism: ''};
     if (!validOrganism.includes(formData.organism)) {
       invalidInfo.invalidOrganism = formData.organism;
     }
     if (!validTarget.includes(formData.target)) {
-      invalidInfo.invaldTarget = formData.target;
+      invalidInfo.invalidTarget = formData.target;
     }
-    if (!_.isEmpty(invalidInfo)) {
-      resolve(invalidInfo);
+    if (invalidInfo.invalidOrganism != '' || invalidInfo.invalidTarget != '') {
+      reject(new InvalidInfoError(invalidInfo.invalidOrganism, invalidInfo.invalidTarget, ''));
     }
 
     request.post({ url: gConvertURL, formData: formData }, (err, httpResponse, body) => {
@@ -70,9 +77,3 @@ const validatorGconvert = (query, userOptions) => {
 
 
 module.exports = { validatorGconvert };
-
-
-// // simple testing
-// validatorGconvert("ATM ATM AFF4 ATM ATP").then(function (results) {
-//   console.log(results);
-// });

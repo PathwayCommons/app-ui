@@ -76,6 +76,8 @@ router.get('/gene-query', (req, res) => {
 
   validatorGconvert(genes, userOptions).then(gconvertResult => {
     res.json(gconvertResult);
+  }).catch((invalidInfoError) => {
+    res.json({invalidTarget: invalidInfoError.invalidTarget, invalidOrganism: invalidInfoError.invalidOrganism});
   });
 });
 

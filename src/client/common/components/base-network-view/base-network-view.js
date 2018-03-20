@@ -44,18 +44,15 @@ class BaseNetworkView extends React.Component {
 
   componentWillReceiveProps(nextProps){//needed to updata metadata for interactions
     this.setState({
-      networkMetadata: nextProps.networkMetadata
+      networkMetadata: nextProps.networkMetadata,
+      buttonsClicked:nextProps.buttonsClicked
     });
   }
 
   componentWillUnmount() {
     this.state.cy.destroy();
   }
-  componentWillReceiveProps(nextProps){
-    this.setState({
-      buttonsClicked:nextProps.buttonsClicked
-    });
-  }
+  
   componentDidMount() {
     const state = this.state;
     const initialLayoutOpts = state.layoutConfig.defaultLayout.options;

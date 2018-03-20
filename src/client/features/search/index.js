@@ -76,13 +76,13 @@ class Search extends React.Component {
     this.setState({
       landingLoading: true
     },()=>{
-      ServerAPI.geneQuery(query).then(res=>{
-        res= res.geneInfo.map(gene=>gene.convertedAlias);
-        if(!_.isEmpty(res)){
-          ServerAPI.getProteinInformation(res).then(result=>{
+      ServerAPI.geneQuery(query).then(geneQueryResult=>{
+        geneQueryResult= geneQueryResult.geneInfo.map(gene=>gene.convertedAlias);
+        if(!_.isEmpty(geneQueryResult)){
+          ServerAPI.getProteinInformation(geneQueryResult).then(infoResult=>{
             this.setState({
             landingLoading: false,
-            landing:result,
+            landing:infoResult,
             landingShowMore: [false,false],
             });
           });

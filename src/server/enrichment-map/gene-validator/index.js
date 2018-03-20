@@ -24,12 +24,19 @@ class InvalidInfoError extends Error {
   }
 }
 
+// convert offical synonyms to gConvert names
+const convertGConvertNames = (gConvertName) => {
+  if (gConvertName === 'HGNC_ID') { return 'HGNC_ACC'; }
+  if (gConvertName === 'UNIPROT') { return 'UNIPROTSWISSPROT'; }
+  if (gConvertName === 'ENTREZGENE') { return 'ENTREZGENE_ACC'; }
+  return gConvertName;
+};
 
 const validatorGconvert = (query, userOptions) => {
   const promise = new Promise((resolve, reject) => {
     const formData = _.assign({}, defaultOptions, userOptions, { query: query });
     formData.organism =  formData.organism.toLowerCase();
-    formData.target = formData.target.toUpperCase();
+    formData.target = convertGConvertNames(formData.target.toUpperCase());
     const invalidInfo = {invalidTarget: '', invalidOrganism: ''};
     if (!validOrganism.includes(formData.organism)) {
       invalidInfo.invalidOrganism = formData.organism;

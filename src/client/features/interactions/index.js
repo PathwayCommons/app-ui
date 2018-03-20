@@ -36,15 +36,16 @@ class Interactions extends React.Component {
     };    
 
     const query = queryString.parse(props.location.search);
-    ServerAPI.getNeighborhood(query.ID,'TXT').then(res=>{ 
+    if(query.id.constructor != Array){query.id=[query.id];}
+      ServerAPI.getNeighborhood(query.id,query.kind).then(res=>{ 
       const layoutConfig = getLayoutConfig('interactions');
-      const network= this.parse(res,query.ID);
+      const network= this.parse(res,query.id);
       this.setState({
         componentConfig: interactionsConfig,
         layoutConfig: layoutConfig,
         networkJSON: network.network ,
         networkMetadata: Object.assign({}, this.state.networkMetadata, {
-          name: (network.id+' Interactions'),
+          name: (network.id.join(' , ')+' Interactions'),
           datasource: 'Pathway Commons',
         }),
         id: network.id,
@@ -52,7 +53,7 @@ class Interactions extends React.Component {
       }); 
     });
 
-    ServerAPI.getProteinInformation(query.ID).then(result=>{
+    ServerAPI.getProteinInformation(query.id).then(result=>{
       this.setState({
       networkMetadata: Object.assign({}, this.state.networkMetadata, {
         comments: _.compact(['Full Name: '+result[0].protein.recommendedName.fullName.value,
@@ -63,7 +64,7 @@ class Interactions extends React.Component {
     });
 
     this.state.cy.on('trim', () => {
-      const mainNode=this.state.cy.nodes(node=> node.data().id===this.state.id);
+      const mainNode=this.state.cy.nodes(node=> _.indexOf(this.state.id,node.data().id)!=-1);
       const nodesToKeep=mainNode.merge(mainNode.connectedEdges().connectedNodes());
       this.state.cy.remove(this.state.cy.nodes().difference(nodesToKeep));
     });
@@ -83,11 +84,11 @@ class Interactions extends React.Component {
     }
   }
 
-  findId(data,id){
-    let hgncId;
+  findId(data,ids){
+    let hgncId=[];
     data.forEach((value,key)=> {
-      if (value[2].includes(id)){
-        hgncId=key; 
+      if (new RegExp(ids.join("|")).test(value[2])){
+        hgncId.push(key); 
       }
     });
     return hgncId;

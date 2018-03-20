@@ -22,6 +22,7 @@ const _ = require('lodash');
 // returns a cytoscape object
 const generateCys = (pathwayIdList, cutoff = 0.375) => {
   if (cutoff < 0 || cutoff > 1) { throw new Error('ERROR: cutoff out of range [0,1]');}
+  if (isNaN(Number(cutoff))) { throw new Error('ERROR: cutoff is not a number'); }
   // check unrecognized and duplicates, modify pathwayIdList
   const unrecognized = [];
   const duplicate = [];

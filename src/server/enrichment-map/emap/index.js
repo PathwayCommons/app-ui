@@ -1,4 +1,4 @@
-const generateCys = require('./generateCys').generateCys;
+const generateGraphInfo = require('./generateGraphInfo').generateGraphInfo;
 
 
-module.exports = {generateCys};
+module.exports = {generateGraphInfo};

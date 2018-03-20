@@ -3,11 +3,12 @@ const h = require('react-hyperscript');
 const _ = require('lodash');
 const queryString = require('query-string');
 const Loader = require('react-loader');
-
+const hideTooltips = require('../../common/cy/events/click').hideTooltips;
+const removeStyle= require('../../common/cy/manage-style').removeStyle;
 const make_cytoscape = require('../../common/cy/');
 const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
 const { ServerAPI } = require('../../services/');
-
+const FilterMenu= require('./filter-menu');
 const { BaseNetworkView } = require('../../common/components');
 const { getLayoutConfig } = require('../../common/cy/layout');
 const downloadTypes = require('../../common/config').downloadTypes;
@@ -17,6 +18,23 @@ const interactionsConfig={
   menus: BaseNetworkView.config.menus,
   useSearchBar: true
 };  
+
+const filterMenuId='filter-menu';
+const interactionsConfig={
+  toolbarButtons: BaseNetworkView.config.toolbarButtons.concat({
+    id: 'filter',
+    icon: 'filter_list',
+    type: 'activateMenu',
+    menuId: filterMenuId,
+    description: 'Filter interaction types'
+  }),
+  menus: BaseNetworkView.config.menus.concat({
+    id: filterMenuId,
+    width: 25, //%
+    func: props => h(FilterMenu, props)
+  }),
+  useSearchBar: true
+};
 
 class Interactions extends React.Component {
   constructor(props) {
@@ -33,6 +51,12 @@ class Interactions extends React.Component {
       },
       id:'',
       loading: true,
+      categories: new Map (),
+      buttonsClicked:{
+        Binding:false,
+        Phosphorylation:false,
+        Expression:false
+      }
     };    
 
     const query = queryString.parse(props.location.search);
@@ -50,6 +74,7 @@ class Interactions extends React.Component {
         id: network.id,
         loading: false
       }); 
+      
     });
 
     ServerAPI.getProteinInformation(query.ID).then(result=>{
@@ -63,9 +88,24 @@ class Interactions extends React.Component {
     });
 
     this.state.cy.on('trim', () => {
+      const categories=this.state.categories;
       const mainNode=this.state.cy.nodes(node=> node.data().id===this.state.id);
       const nodesToKeep=mainNode.merge(mainNode.connectedEdges().connectedNodes());
       this.state.cy.remove(this.state.cy.nodes().difference(nodesToKeep));
+      _.forEach(this.state.buttonsClicked,(value,type)=>{
+        const edges= this.state.cy.edges().filter(`.${type}`);
+        const nodes = edges.connectedNodes();
+        categories.set(type,{
+          edges:edges,
+          nodes:nodes
+        });
+        if(type!='Binding'){
+          this.filterUpdate(type);
+        }
+      });
+      this.setState({
+        categories:categories
+      });
     });
   }
 
@@ -145,7 +185,32 @@ class Interactions extends React.Component {
     const id=this.findId(nodeMetadata,query);
     return {id,network};
   }
+  filterUpdate(type) {
+    const state=this.state;
+    const categories = state.categories;
+    const buttonsClicked=state.buttonsClicked;
+    const cy= state.cy;
+    const edges=categories.get(type).edges;
+    const nodes=categories.get(type).nodes;
 
+    hideTooltips(cy);
+    const hovered = cy.filter(ele=>ele.scratch('_hover-style-before'));
+    cy.batch(()=>{
+      removeStyle(cy, hovered, '_hover-style-before');
+      if(!buttonsClicked[type]){
+          cy.remove(edges);
+          cy.remove(nodes.filter(nodes=>nodes.connectedEdges().empty()));
+      }
+      else{ 
+        edges.union(nodes).restore();
+      }
+    });
+    
+    buttonsClicked[type]=!buttonsClicked[type];
+    this.setState({
+      buttonsClicked:buttonsClicked
+    });
+  }
   render(){
     const state = this.state;
     const baseView = h(BaseNetworkView.component, {
@@ -155,6 +220,9 @@ class Interactions extends React.Component {
       networkJSON: state.networkJSON,
       networkMetadata: state.networkMetadata,
       //interaction specific
+      activeMenu:filterMenuId,
+      filterUpdate:(evt,type)=> this.filterUpdate(evt,type),
+      buttonsClicked: state.buttonsClicked,
       download: {
         types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'), 
         promise: () => Promise.resolve(_.map(state.cy.edges(),edge=> edge.data().id).sort().join('\n'))

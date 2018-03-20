@@ -50,7 +50,6 @@ const gProfilerURL = "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/we
 const enrichment = (query, userOptions) => {
   const promise = new Promise((resolve, reject) => {
     const formData = _.assign({}, defaultOptions, { "query": query }, userOptions);
-    console.log(formData.custbg_cb);
     request.post({ url: gProfilerURL, formData: formData }, (err, httpResponse, gProfilerResponse) => {
       if (err) {
         reject(err);
@@ -89,7 +88,3 @@ const enrichment = (query, userOptions) => {
 
 
 module.exports = { enrichment };
-
-// enrichment(['AFF4']).then(function (results) {
-//    console.log(results);
-// });

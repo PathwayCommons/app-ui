@@ -228,6 +228,7 @@
 }
 
 .search-landing-innner{
+  box-sizing: border-box;
   margin: 0px;
   padding:10px;
   max-width: var(--search-width);

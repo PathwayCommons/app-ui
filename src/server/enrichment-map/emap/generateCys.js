@@ -27,6 +27,8 @@ const generateCys = (pathwayIdList, JCWeight, OCWeight) => {
   if (OCWeight < 0 || OCWeight > 1) {
     throw new Error('ERROR: OCWeight out of range [0, 1]');
   }
+  if (JCWeight != undefined && isNaN(Number(JCWeight))) {throw new Error('ERROR: JCWeight should be a number');}
+  if (OCWeight != undefined && isNaN(Number(OCWeight))) {throw new Error('ERROR: OCWeight should be a number');}
   if (OCWeight != undefined && JCWeight != undefined && Number(OCWeight) + Number(JCWeight) != 1) {
     throw new Error('ERROR: OCWeight+JCWeight should be 1');
   }
@@ -35,6 +37,7 @@ const generateCys = (pathwayIdList, JCWeight, OCWeight) => {
   } else if (JCWeight === undefined) {
     JCWeight = 1 - OCWeight;
   }
+
 
   // check unrecognized and duplicates, modify pathwayIdList
   const unrecognized = [];

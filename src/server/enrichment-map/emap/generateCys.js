@@ -21,7 +21,7 @@ const _ = require('lodash');
 // input ["GO:1902275", "GO:2001252", "GO:1905269", "GO:0051053"]
 // returns a cytoscape object
 const generateCys = (pathwayIdList, cutoff = 0.375) => {
-  if (cutoff < 0 || cutoff > 1) { throw 'ERROR: cutoff out of range [0,1]';}
+  if (cutoff < 0 || cutoff > 1) { throw new Error('ERROR: cutoff out of range [0,1]');}
   // check unrecognized and duplicates, modify pathwayIdList
   const unrecognized = [];
   const duplicate = [];

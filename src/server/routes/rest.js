@@ -72,7 +72,11 @@ router.get('/gene-query', (req, res) => {
 router.get('/emap', (req, res) => {
   const pathwayIdList = req.query.pathwayIdList.split(/\s+/);
   const cutoff = req.query.cutoff;
-  res.json(generateCys(pathwayIdList, cutoff));
+  try {
+    res.json(generateCys(pathwayIdList, cutoff));
+  } catch (err) {
+    res.json(err.message);
+  }
 });
 
 // Expose a rest endpoint for controller.endSession

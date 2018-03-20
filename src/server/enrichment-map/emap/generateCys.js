@@ -20,21 +20,19 @@ const _ = require('lodash');
 
 // input ["GO:1902275", "GO:2001252", "GO:1905269", "GO:0051053"]
 // returns a cytoscape object
-const generateCys = (pathwayIdList, JCOCWeight) => {
-  let JCWeight = Number(JCOCWeight.JCWeight);
-  let OCWeight = Number(JCOCWeight.OCWeight);
+const generateCys = (pathwayIdList, JCWeight, OCWeight) => {
   if (JCWeight < 0 || JCWeight > 1) {
     throw new Error('ERROR: JCWeight out of range [0, 1]');
   }
   if (OCWeight < 0 || OCWeight > 1) {
     throw new Error('ERROR: OCWeight out of range [0, 1]');
   }
-  if (!isNaN(OCWeight) && !isNaN(JCWeight) && OCWeight + JCWeight != 1) {
+  if (OCWeight != undefined && JCWeight != undefined && OCWeight + JCWeight != 1) {
     throw new Error('ERROR: OCWeight+JCWeight should be 1');
   }
-  if (isNaN(JCWeight) && isNaN(OCWeight)) {
+  if (JCWeight === undefined && OCWeight === undefined) {
     JCWeight = 0.5;
-  } else if (isNaN(JCWeight)) {
+  } else if (JCWeight === undefined) {
     JCWeight = 1 - OCWeight;
   }
 

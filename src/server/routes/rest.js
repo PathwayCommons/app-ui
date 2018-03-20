@@ -32,9 +32,9 @@ router.post('/submit-layout', function (req, res) {
 router.post('/submit-graph', function (req, res) {
   if (isAuthenticated(req.body.token)) {
     controller.submitGraph(req.body.uri, req.body.version, req.body.graph)
-    .then((package) => {
-      res.json(package);
-    });
+      .then((package) => {
+        res.json(package);
+      });
   } else {
     res.json(errorMsg);
   }
@@ -73,8 +73,11 @@ router.get('/emap', (req, res) => {
   const pathwayIdList = req.query.pathwayIdList.split(/\s+/);
   const JCWeight = req.query.JCWeight;
   const OCWeight = req.query.OCWeight;
-  const JCOCWeight = {JCWeight: JCWeight, OCWeight: OCWeight};
-  res.json(generateCys(pathwayIdList, JCOCWeight));
+  try {
+    res.json(generateCys(pathwayIdList, JCWeight, OCWeight));
+  } catch (err) {
+    res.json(err.message);
+  }
 });
 
 // Expose a rest endpoint for controller.endSession

@@ -1,7 +1,7 @@
 const {search, utilities} = require('pathway-commons');
 const path = require('path');
 const _ = require('lodash');
-const geneValidator = require('../../enrichment-map/gene-validator/index').validatorGconvert;
+const geneValidator = require('../../enrichment-map/gene-validator').validatorGconvert;
 
 const sanitize = (s) => {
   // Escape (with '\'), to treat them literally, symbols, such as '*', ':', or space, 

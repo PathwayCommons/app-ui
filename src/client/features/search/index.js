@@ -77,12 +77,12 @@ class Search extends React.Component {
           const ids=res.map(gene=>gene.convertedAlias).join(',');
           ServerAPI.getProteinInformation(ids).then(result=>{
             const landing=result.map(gene=>{ 
-              let links=_.mapValues( _.omit({'Uniprot':gene.accession,
-              'HGNC':gene.dbReferences.filter(entry =>entry.type=='HGNC')[0].id,
-              'Entrez Gene':gene.dbReferences.filter(entry =>entry.type=='GeneID')[0].id}),
+              let links=_.mapValues( _.pickBy({'Uniprot':{id:gene.accession},//to match the format the other 2 links are in
+              'HGNC':gene.dbReferences.filter(entry =>entry.type=='HGNC')[0],
+              'Entrez Gene':gene.dbReferences.filter(entry =>entry.type=='GeneID')[0]}),
               (value,key)=>{
-                let link = databases.filter(value => key.toUpperCase() === value[0].toUpperCase());
-                  return link[0][1] + link[0][2] + value;
+                let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue[0].toUpperCase());
+                  return link[0][1] + link[0][2] + value.id;
                 });
 
               return {
@@ -229,7 +229,7 @@ class Search extends React.Component {
 
         let synonyms=[];
         if(box.synonyms){ 
-          synonyms=expandableText(115, box.synonyms,',','i','search-landing-small','synonyms',index);
+          synonyms=expandableText(112, box.synonyms,',','i','search-landing-small','synonyms',index);
         }
 
         let functions=[];

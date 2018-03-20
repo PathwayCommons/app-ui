@@ -83,11 +83,12 @@ const enrichment = (query, userSetting) => {
       ret.custbgCb = formData.custbg_cb;
       ret.pathwayInfo = {};
       _.forEach(responseInfo, elem => {
-        ret.pathwayInfo[elem[termIdIndex]] = { signf: elem[signfIndex], pvalue: elem[pvalueIndex], T: elem[TIndex], Q: elem[QIndex], tType: elem[tTypeIndex], tGroup: elem[tGroupIndex], tName: elem[tNameIndex], tDepth: elem[tDepthIndex] };
-        ret.pathwayInfo[elem[termIdIndex]]["Q&T"] = elem[QTIndex];
-        ret.pathwayInfo[elem[termIdIndex]]["Q&T/Q"] = elem[QTQIndex];
-        ret.pathwayInfo[elem[termIdIndex]]["Q&T/T"] = elem[QTTIndex];
-        ret.pathwayInfo[elem[termIdIndex]]["Q&TList"] = elem[QTListIndex];
+        let termIdInfo = { signf: elem[signfIndex], pvalue: elem[pvalueIndex], T: elem[TIndex], Q: elem[QIndex], tType: elem[tTypeIndex], tGroup: elem[tGroupIndex], tName: elem[tNameIndex], tDepth: elem[tDepthIndex] };
+        termIdInfo["Q&T"] = elem[QTIndex];
+        termIdInfo["Q&T/Q"] = elem[QTQIndex];
+        termIdInfo["Q&T/T"] = elem[QTTIndex];
+        termIdInfo["Q&TList"] = elem[QTListIndex];
+        ret.pathwayInfo[elem[termIdIndex]] = termIdInfo;
       });
       resolve(ret);
     });
@@ -98,6 +99,3 @@ const enrichment = (query, userSetting) => {
 
 module.exports = { enrichment };
 
-// enrichment(['AFF4']).then(function (results) {
-// console.log(results);
-// });

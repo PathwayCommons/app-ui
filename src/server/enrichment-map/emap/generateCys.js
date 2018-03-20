@@ -27,7 +27,7 @@ const generateCys = (pathwayIdList, JCWeight, OCWeight) => {
   if (OCWeight < 0 || OCWeight > 1) {
     throw new Error('ERROR: OCWeight out of range [0, 1]');
   }
-  if (OCWeight != undefined && JCWeight != undefined && OCWeight + JCWeight != 1) {
+  if (OCWeight != undefined && JCWeight != undefined && Number(OCWeight) + Number(JCWeight) != 1) {
     throw new Error('ERROR: OCWeight+JCWeight should be 1');
   }
   if (JCWeight === undefined && OCWeight === undefined) {

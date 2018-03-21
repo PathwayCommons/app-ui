@@ -27,14 +27,14 @@ const parseGProfilerResponse = (gProfilerResponse) => {
 const defaultSetting = {
   "output": "mini",
   "organism": "hsapiens",
-  "significant": 1,
+  "significant": 0,
   "sort_by_structure": 1,
   "ordered_query": 0,
   "as_ranges": 0,
   "no_iea": 1,
   "underrep": 0,
   "hierfiltering": "none",
-  "user_thr": 1,
+  "user_thr": 0.05,
   "min_set_size": 5,
   "max_set_size": 200,
   "threshold_algo": "fdr",
@@ -61,7 +61,6 @@ const enrichment = (query, userSetting) => {
       responseInfo = _.filter(responseInfo, ele => ele.length != 1);
 
       const ret = {};
-      const signfIndex = 1;
       const pvalueIndex = 2;
       const TIndex = 3;
       const QIndex = 4;
@@ -74,12 +73,21 @@ const enrichment = (query, userSetting) => {
       const tNameIndex = 11;
       const tDepthIndex = 12;
       const QTListIndex = 13;
+      ret.orderedQuery = formData.ordered_query;
+      ret.userThr = formData.user_thr;
+      ret.minSetSize = formData.min_set_size;
+      ret.maxSetSize = formData.max_set_size;
+      ret.thresholdAlgo = formData.threshold_algo;
+      ret.custbg = formData.custbg;
+      ret.custbgCb = formData.custbg_cb;
+      ret.pathwayInfo = {};
       _.forEach(responseInfo, elem => {
-        ret[elem[termIdIndex]] = { signf: elem[signfIndex], pvalue: elem[pvalueIndex], T: elem[TIndex], Q: elem[QIndex], tType: elem[tTypeIndex], tGroup: elem[tGroupIndex], tName: elem[tNameIndex], tDepth: elem[tDepthIndex] };
-        ret[elem[termIdIndex]]["Q&T"] = elem[QTIndex];
-        ret[elem[termIdIndex]]["Q&T/Q"] = elem[QTQIndex];
-        ret[elem[termIdIndex]]["Q&T/T"] = elem[QTTIndex];
-        ret[elem[termIdIndex]]["Q&TList"] = elem[QTListIndex];
+        const termIdInfo = { pvalue: elem[pvalueIndex], T: elem[TIndex], Q: elem[QIndex], tType: elem[tTypeIndex], tGroup: elem[tGroupIndex], tName: elem[tNameIndex], tDepth: elem[tDepthIndex] };
+        termIdInfo["Q&T"] = elem[QTIndex];
+        termIdInfo["Q&T/Q"] = elem[QTQIndex];
+        termIdInfo["Q&T/T"] = elem[QTTIndex];
+        termIdInfo["Q&TList"] = elem[QTListIndex];
+        ret.pathwayInfo[elem[termIdIndex]] = termIdInfo;
       });
       resolve(ret);
     });
@@ -90,6 +98,3 @@ const enrichment = (query, userSetting) => {
 
 module.exports = { enrichment };
 
-// enrichment(['AFF4']).then(function (results) {
-//    console.log(results);
-// });

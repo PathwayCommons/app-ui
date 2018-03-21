@@ -70,7 +70,7 @@ class Search extends React.Component {
 
     this.setState({
       landingLoading: true
-    },()=>{
+    });
       ServerAPI.geneQuery(query).then(res=>{
         res=res.geneInfo;
         if(!_.isEmpty(res)){
@@ -107,7 +107,6 @@ class Search extends React.Component {
           });
         }
       });
-    });
   }
 
   componentDidMount() {
@@ -201,12 +200,10 @@ class Search extends React.Component {
     ]) :
       h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
 
-    const showMoreLink= (varToToggle,index,type) => {
+    const handelShowMoreClick= (varToToggle,index) => {
       const landing=state.landing;
-      return h(`${type}.search-landing-link`,{onClick: () => {
-        landing[index].showMore[varToToggle]=!landing[index].showMore[varToToggle];
-        this.setState({ landing:landing });}, 
-      key:'showMore'},landing[index].showMore[varToToggle]? '« less': 'more »');
+      landing[index].showMore[varToToggle]=!landing[index].showMore[varToToggle];
+      this.setState({ landing:landing }); 
     };
 
     const expandableText = (length,text,charToCutOn,type,cssClass,toggleVar,index)=>{
@@ -216,16 +213,20 @@ class Search extends React.Component {
         text+' ': text.slice(0,text.lastIndexOf(charToCutOn,length))+' '; 
         result=[h(`${type}`,{className:cssClass,key:'text'},textToUse)];
       if(text.length>length){
-        result.push(showMoreLink(toggleVar,index,type));
+        result.push(h(`${type}.search-landing-link`,{onClick: ()=> handelShowMoreClick(toggleVar,index),key:'showMore'},
+        state.landing[index].showMore[varToToggle]? '« less': 'more »'));
       }
       return result;
     };
     
     const landing = (state.landingLoading ) ?
-      h('div.search-landing-innner',[h(Loader, { loaded:!state.landingLoading , options: { color: '#16A085',position:'relative', top: '15px' }})]):
+      h('div.search-landing-innner',[h(Loader, { loaded:false , options: { color: '#16A085',position:'relative', top: '15px' }})]):
       state.landing.map((box,index)=>{
-        const title = [h('strong.search-landing-title',{key:'name'},box.name),];
-        if(state.landing.length>1){title.push(showMoreLink('full',index,'span'));}
+        const multipleBoxes = state.landing.length>1;
+        const title = [h('strong',{key:'name'},box.name),];
+        if(multipleBoxes){
+          title.push(h('strong.material-icons',{key:'arrow'},state.landing[index].showMore.full? 'expand_less': 'expand_more'));
+        }
 
         let synonyms=[];
         if(box.synonyms){ 
@@ -242,18 +243,20 @@ class Search extends React.Component {
           links.push(h('a.search-landing-link',{key: key, href: value},key));
         });
 
-        return h('div.search-landing-innner',{key: box.accession},[ 
-          h('div.search-landing-section',[title]),  
-          box.showMore.full? [
+        return [ 
+          h('div.search-landing-title',{onClick: () => {
+            if(multipleBoxes){handelShowMoreClick('full',index);}
+          },key:'title'},[title]),  
+          box.showMore.full && 
+          h('div.search-landing-innner',{key: box.accession},[ 
           h('div.search-landing-section',{key: 'synonyms'},[synonyms]),
           h('div.search-landing-section',{key: 'functions'},[functions]),
           h('div.search-landing-section',{key: 'links'},[links]),
           h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ ID: box.accession })}, 
             target: '_blank',className: 'search-landing-interactions', key:'interactions' }, [
             h('button.search-landing-button', 'View Interactions'),
-          ])] : ''
-        ]);    
-      });
+          ])]) 
+        ];});
 
     return h('div.search', [
       h('div.search-header-container', [

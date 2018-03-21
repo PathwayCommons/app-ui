@@ -228,15 +228,18 @@
 }
 
 .search-landing-innner{
-  margin: 0px;
+  box-sizing: border-box;
+  margin-bottom: 1px;
+  border:1px var(--light-base-colour-dark) solid;
   padding:10px;
+  padding-top: 5px;
   max-width: var(--search-width);
   width: 100%;
-  min-height: 30px;
+  min-height: 50px;
   background-color: var(--light-base-colour);
   display: flex;
-  vertical-align: middle; 
-  justify-content: space-between;
+  vertical-align: center;
+  justify-content: baseline;
   flex-direction: column;
 }
 
@@ -254,7 +257,13 @@
 
 .search-landing-title{
   font-size: 15pt;
-  margin-right: 5px;
+  padding:10px;
+  background-color: var(--light-base-colour-dark);
+  border-bottom:1px var(--light-base-colour-darker) solid;
+}
+
+.search-landing-title:last-of-type{
+  border-bottom-width:0px
 }
 
 .search-landing-link {

@@ -1,7 +1,7 @@
 const {search, utilities} = require('pathway-commons');
 const path = require('path');
 const _ = require('lodash');
-const getHGNCData = require('./hgnc');
+const geneValidator = require('../../enrichment-map/gene-validator').validatorGconvert;
 
 const sanitize = (s) => {
   // Escape (with '\'), to treat them literally, symbols, such as '*', ':', or space, 
@@ -10,23 +10,16 @@ const sanitize = (s) => {
 };
 
 const processPhrase = (phrase) => {
-  const sourceList = [
-    'uniprot',
-    'chebi',
-    'smpdb',
-    'refseq'
-  ];
-
-  const tokens = phrase.toUpperCase().split(/\s+/g);
-  
-  return getHGNCData(path.join(__dirname,'/hgncSymbols.txt')).then(collection => {
-    return tokens.map(token => {
-      //if symbol is recognized by at least one source
-      const recognized = sourceList.some(source => utilities.sourceCheck(source, token))
-                              || collection.has(token.toUpperCase());
-      const sanitized = sanitize(token);
+  return geneValidator(phrase).then(result => {
+    const genes = result.geneInfo.map(gene=>'xrefid:' + sanitize(gene.initialAlias.toUpperCase()));
+    const otherIds = result.unrecogized.map(id=>{
+      id=id.toUpperCase()
+      const recognized = /^SMP\d{5}$/.test(id)     // check for a smpdb or chebi id 
+                      ||/^CHEBI:\d+$/.test(id) && (id.length <= ("CHEBI:".length + 6));      
+      const sanitized = sanitize(id);
       return recognized ? ( 'xrefid:' + sanitized ) : ( 'name:' + '*' + sanitized + '*' );
-    });
+    }); 
+    return genes.concat(otherIds);  
   });
 };
 

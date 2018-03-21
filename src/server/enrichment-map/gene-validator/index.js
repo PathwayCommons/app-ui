@@ -26,9 +26,10 @@ class InvalidInfoError extends Error {
 
 // convert offical synonyms to gConvert names
 const convertGConvertNames = (gConvertName) => {
-  if (gConvertName === 'HGNC_ID') { return 'HGNC_ACC'; }
+  if (gConvertName === 'HGNCSYMBOL') { return 'HGNC'; }
+  if (gConvertName === 'HGNC') { return 'HGNC_ACC'; }
   if (gConvertName === 'UNIPROT') { return 'UNIPROTSWISSPROT'; }
-  if (gConvertName === 'ENTREZGENE') { return 'ENTREZGENE_ACC'; }
+  if (gConvertName === 'NCBIGENE') { return 'ENTREZGENE_ACC'; }
   return gConvertName;
 };
 

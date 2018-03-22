@@ -158,6 +158,14 @@ router.get('/emap', (req, res) => {
   res.json(generateGraphInfo(pathwayIdList));
 });
 
+router.post('/emap', (req, res) => {
+  const pathwayIdList = req.body.pathwayIdList.split(/\s+/);
+  const cutoff = req.body.cutoff;
+  const JCWeight = req.body.JCWeight;
+  const OCWeight = req.body.OCWeight;
+  res.json(generateGraphInfo(pathwayIdList, cutoff, JCWeight, OCWeight));
+});
+
 // Expose a rest endpoint for controller.endSession
 router.get('/disconnect', function (req, res) {
   controller.endSession(req.query.uri, req.query.version, req.query.user)

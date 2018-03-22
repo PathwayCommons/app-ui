@@ -136,20 +136,26 @@ class Interactions extends React.Component {
       nodes:[],
     };
     let nodeMap=new Map(); //keeps track of nodes that have already been added
-    const dataSplit=data.split('\n\n');
-    const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
-    dataSplit[0].split('\n').slice(1).forEach(line => {
-      const splitLine=line.split('\t');
-      const edgeMetadata = this.interactionMetadata(splitLine[6],splitLine[4]);
-      this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],edgeMetadata,network,nodeMap,nodeMetadata);
-    });
-    const id=this.findId(nodeMetadata,query);
-    return {id,network};
+    if(data){
+      const dataSplit=data.split('\n\n');
+      const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
+      dataSplit[0].split('\n').slice(1).forEach(line => {
+        const splitLine=line.split('\t');
+        const edgeMetadata = this.interactionMetadata(splitLine[6],splitLine[4]);
+        this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],edgeMetadata,network,nodeMap,nodeMetadata);
+      });
+      const id=this.findId(nodeMetadata,query);
+      return {id,network};
+    }
+    else{
+      return {id:[],network:{}};
+    }
   }
 
   render(){
     const state = this.state;
-    const baseView = h(BaseNetworkView.component, {
+    const networkToDisplay=!_.isEmpty(state.networkJSON) && !_.isEmpty(state.id);
+    const baseView = networkToDisplay ? h(BaseNetworkView.component, {
       layoutConfig: state.layoutConfig,
       componentConfig: state.componentConfig,
       cy: state.cy,
@@ -160,7 +166,9 @@ class Interactions extends React.Component {
         types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'), 
         promise: () => Promise.resolve(_.map(state.cy.edges(),edge=> edge.data().id).sort().join('\n'))
       },
-    });
+    }):
+    h('div','No interactions to display');
+
     const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
 
     // create a view shell loading view e.g looks like the view but its not

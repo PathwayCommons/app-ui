@@ -40,7 +40,6 @@ const defaultSetting = {
   "threshold_algo": "fdr",
   "domain_size_type": "annotated",
   "custbg": [],
-  "custbg_cb": 0,
   "sf_GO:BP": 1,
   "sf_REAC": 1,
 };
@@ -80,7 +79,6 @@ const enrichment = (query, userSetting) => {
       ret.maxSetSize = formData.max_set_size;
       ret.thresholdAlgo = formData.threshold_algo;
       ret.custbg = formData.custbg;
-      ret.custbgCb = formData.custbg_cb;
       ret.pathwayInfo = {};
       _.forEach(responseInfo, elem => {
         let termIdInfo = { signf: elem[signfIndex], pvalue: elem[pvalueIndex], T: elem[TIndex], Q: elem[QIndex], tType: elem[tTypeIndex], tGroup: elem[tGroupIndex], tName: elem[tNameIndex], tDepth: elem[tDepthIndex] };

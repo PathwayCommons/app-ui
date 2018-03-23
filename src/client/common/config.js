@@ -24,7 +24,8 @@ const databases = [
   ['Pathway Commons','/view?uri=http://pathwaycommons.org/pc2/',''],
   ['HPRD','	http://identifiers.org/hprd/',''],
   ['RefSeq','	http://identifiers.org/refseq/',''],
-  ['Entrez Gene','http://www.ncbi.nlm.nih.gov/gene/','']
+  ['NCBI Gene','http://identifiers.org/ncbigene/',''],
+  ['Gene Cards','http://identifiers.org/genecards/','']
 ];
 
 const publicationsURL = 'http://identifiers.org/pubmed/';

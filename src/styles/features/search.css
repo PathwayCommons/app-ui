@@ -262,6 +262,10 @@
   border-bottom:1px var(--light-base-colour-darker) solid;
 }
 
+.search-landing-title-multiple{
+  cursor:pointer;
+}
+
 .search-landing-title:last-of-type{
   border-bottom-width:0px
 }

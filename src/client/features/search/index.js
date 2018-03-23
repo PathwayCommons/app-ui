@@ -79,7 +79,8 @@ class Search extends React.Component {
             const landing=result.map(gene=>{ 
               let links=_.mapValues( _.pickBy({'Uniprot':{id:gene.accession},//to match the format the other 2 links are in
               'HGNC':gene.dbReferences.filter(entry =>entry.type=='HGNC')[0],
-              'Entrez Gene':gene.dbReferences.filter(entry =>entry.type=='GeneID')[0]}),
+              'NCBI Gene':gene.dbReferences.filter(entry =>entry.type=='GeneID')[0],
+              'Gene Cards':gene.dbReferences.filter(entry =>entry.type=='GeneCards')[0]}),
               (value,key)=>{
                 let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue[0].toUpperCase());
                   return link[0][1] + link[0][2] + value.id;
@@ -244,9 +245,10 @@ class Search extends React.Component {
         });
 
         return [ 
-          h('div.search-landing-title',{onClick: () => {
-            if(multipleBoxes){handelShowMoreClick('full',index);}
-          },key:'title'},[title]),  
+          h('div.search-landing-title',{key:'title',
+            onClick: () => {if(multipleBoxes){handelShowMoreClick('full',index);}},
+            className:classNames('search-landing-title',{'search-landing-title-multiple':multipleBoxes}),
+            },[title]),  
           box.showMore.full && 
           h('div.search-landing-innner',{key: box.accession},[ 
           h('div.search-landing-section',{key: 'synonyms'},[synonyms]),

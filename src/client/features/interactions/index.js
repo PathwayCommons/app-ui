@@ -34,7 +34,7 @@ class Interactions extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cy: make_cytoscape({ headless: true, stylesheet: interactionsStylesheet, showTooltipsOnEdges:true }),
+      cy: make_cytoscape({ headless: true, stylesheet: interactionsStylesheet, showTooltipsOnEdges:true, minZoom:0.01 }),
       componentConfig: {},
       layoutConfig: {},
       networkJSON: {},
@@ -73,33 +73,45 @@ class Interactions extends React.Component {
 
     ServerAPI.getProteinInformation(query.ID).then(result=>{
       this.setState({
-      networkMetadata: Object.assign({}, this.state.networkMetadata, {
-        comments: _.compact(['Full Name: '+result[0].protein.recommendedName.fullName.value,
-          result[0].protein.alternativeName && 'Synonyms: '+result[0].protein.alternativeName.map(obj => obj.fullName.value).join(', '),
-          result[0].comments[0].type==='FUNCTION'&&'Function: '+result[0].comments[0].text[0].value]), 
-      }),
-     }); 
+        networkMetadata: Object.assign({}, this.state.networkMetadata, {
+          comments: _.compact([
+            'Full Name: '+result[0].protein.recommendedName.fullName.value,
+            result[0].protein.alternativeName && 'Synonyms: '+result[0].protein.alternativeName.map(obj => obj.fullName.value).join(', '),
+            result[0].comments[0].type==='FUNCTION'&&'Function: '+result[0].comments[0].text[0].value
+          ]), 
+        }),
+      });
     });
 
     this.state.cy.on('trim', () => {
-      const categories=this.state.categories;
-      const mainNode=this.state.cy.nodes(node=> node.data().id===this.state.id);
-      const nodesToKeep=mainNode.merge(mainNode.connectedEdges().connectedNodes());
-      this.state.cy.remove(this.state.cy.nodes().difference(nodesToKeep));
-      _.forEach(this.state.buttonsClicked,(value,type)=>{
-        const edges= this.state.cy.edges().filter(`.${type}`);
+      const state = this.state;
+      const cy = this.state.cy;
+      const mainNode = cy.nodes(node=> node.data().id === state.id);
+      const nodesToKeep = mainNode.merge(mainNode.connectedEdges().connectedNodes());
+      cy.remove(cy.nodes().difference(nodesToKeep));
+    });
+
+    this.state.cy.one('layoutstop',()=>{
+      const state = this.state;
+      const cy = this.state.cy;
+      const categories = state.categories;
+      _.forEach(state.buttonsClicked,(value,type)=>{
+        const edges = cy.edges().filter(`.${type}`);
         const nodes = edges.connectedNodes();
         categories.set(type,{
           edges:edges,
           nodes:nodes
         });
-        if(type!='Binding'){
+        if(type != 'Binding'){
           this.filterUpdate(type);
         }
       });
       this.setState({
         categories:categories
       });
+      const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
+      const layout = cy.layout(initialLayoutOpts);
+      layout.run();
     });
   }
 

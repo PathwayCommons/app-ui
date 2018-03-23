@@ -94,7 +94,6 @@ router.get('/enrichment', (req, res) => {
   tmpOptions.max_set_size = req.query.maxSetSize;
   tmpOptions.threshold_algo = req.query.thresholdAlgo;
   tmpOptions.custbg = req.query.custbg;
-  tmpOptions.custbg_cb = req.query.custbgCb;
 
   const userOptions = {};
   for (const key in tmpOptions) {
@@ -120,7 +119,6 @@ router.post('/enrichment', (req, res) => {
   tmpOptions.max_set_size = req.body.maxSetSize;
   tmpOptions.threshold_algo = req.body.thresholdAlgo;
   tmpOptions.custbg = req.body.custbg;
-  tmpOptions.custbg_cb = req.body.custbgCb;
 
   const userOptions = {};
   for (const key in tmpOptions) {

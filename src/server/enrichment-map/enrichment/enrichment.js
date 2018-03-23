@@ -50,6 +50,31 @@ const gProfilerURL = "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/we
 const enrichment = (query, userSetting) => {
   const promise = new Promise((resolve, reject) => {
     const formData = _.assign({}, defaultSetting, { "query": query }, userSetting);
+    const orderedQueryVal = Number(formData.ordered_query);
+    const userThrVal = Number(formData.user_thr);
+    const minSetSizeVal = Number(formData.min_set_size);
+    const maxSetSizeVal = Number(formdata.max_set_size);
+    const thresholdAlgoVal = formData.threshold_algo;
+    const custbgCbVal = Number(formData.custbg_cb);
+    if (orderedQueryVal != 0 && orderedQueryVal != 1) {
+      throw new Error('ERROR: orderedQuery should be 1 or 0');
+    }
+    if (isNaN(userThrVal) || userThrVal > 1 || userThrVal < 0) {
+      throw new Error('ERROR: userThrVal should be a number [0, 1]')
+    }
+    if (isNaN(minSetSizeVal)) {
+      throw new Error('ERROR: minSetSize should be a number')
+    }
+    if (isNaN(maxSetSizeVal)) {
+      throw new Error('ERROR: maxSetSize should be a number');
+    }
+    if (thresholdAlgoVal != 'analytical' && thresholdAlgoVal != 'bonferroni' && thresholdAlgoVal != 'fdr') {
+      throw new Error('ERROR: thresholdAlgoVal should be one of analytical, bonferroni, fdr');
+    }
+    if (custbgCbVal != 0 && custbgCbVal != 1) {
+      throw new Error('ERROR: custbgCb should be 1 or 0')
+    }
+
     request.post({ url: gProfilerURL, formData: formData }, (err, httpResponse, gProfilerResponse) => {
       if (err) {
         reject(err);
@@ -90,6 +115,3 @@ const enrichment = (query, userSetting) => {
 
 module.exports = { enrichment };
 
-// enrichment(['AFF4']).then(function (results) {
-//    console.log(results);
-// });

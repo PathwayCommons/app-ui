@@ -53,7 +53,7 @@ const enrichment = (query, userSetting) => {
     const orderedQueryVal = Number(formData.ordered_query);
     const userThrVal = Number(formData.user_thr);
     const minSetSizeVal = Number(formData.min_set_size);
-    const maxSetSizeVal = Number(formdata.max_set_size);
+    const maxSetSizeVal = Number(formData.max_set_size);
     const thresholdAlgoVal = formData.threshold_algo;
     const custbgCbVal = Number(formData.custbg_cb);
     if (orderedQueryVal != 0 && orderedQueryVal != 1) {

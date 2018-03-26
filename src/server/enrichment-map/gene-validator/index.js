@@ -27,26 +27,32 @@ const validatorGconvert = (query, userOptions) => {
       geneInfoList.splice(-1, 1); // remove last element ''
 
       const unrecogized = [];
-      const duplicate = [];
+      const duplicate = {};
       const geneInfo = [];
       const initialAliasIndex = 1;
       const convertedAliasIndex = 3;
       _.forEach(geneInfoList, info => {
-        if (info[convertedAliasIndex] === 'N/A') {
+        const curConvertedAlias = info[convertedAliasIndex];
+        if (curConvertedAlias === 'N/A') {
           if (_.filter(unrecogized, ele => ele === info[initialAliasIndex]).length === 0) {
             unrecogized.push(info[initialAliasIndex]);
           }
         } else {
-          if (_.filter(geneInfoList, ele => ele[convertedAliasIndex] === info[convertedAliasIndex]).length > 1 && _.filter(duplicate, ele => ele === info[initialAliasIndex]).length === 0) {
-            duplicate.push(info[initialAliasIndex]);
-          }
-          if (_.filter(geneInfo, ele => ele.initialAlias === info[initialAliasIndex]).length === 0) {
-            geneInfo.push({ initialAlias: info[initialAliasIndex], convertedAlias: info[convertedAliasIndex] });
+          if (_.filter(geneInfoList, ele => ele[convertedAliasIndex] === curConvertedAlias).length > 1) {
+            if (!(curConvertedAlias in duplicate)) {
+              duplicate[curConvertedAlias] = [];
+            }
+            if (_.filter(duplicate[curConvertedAlias], ele => ele === info[initialAliasIndex]).length === 0) {
+              duplicate[curConvertedAlias].push(info[initialAliasIndex]);
+            }
+            if (_.filter(geneInfo, ele => ele.initialAlias === info[initialAliasIndex]).length === 0) {
+              geneInfo.push({ initialAlias: info[initialAliasIndex], convertedAlias: info[convertedAliasIndex] });
+            }
           }
         }
       });
 
-      const ret = { options: {target: formData.target, organism: formData.organism}, unrecogized: unrecogized, duplicate: duplicate, geneInfo: geneInfo };
+      const ret = { options: { target: formData.target, organism: formData.organism }, unrecogized: unrecogized, duplicate: duplicate, geneInfo: geneInfo };
       resolve(ret);
     });
   });

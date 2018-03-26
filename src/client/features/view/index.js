@@ -32,15 +32,19 @@ class View extends React.Component {
 
     ServerAPI.getGraphAndLayout(query.uri, 'latest').then(networkJSON => {
       const layoutConfig = getLayoutConfig(networkJSON.layout);
-      const componentConfig = _.merge({}, BaseNetworkView.config, { useSearchBar: true});
+      if(query.removeMenu){
+        BaseNetworkView.config.toolbarButtons.splice(
+          _.findIndex(BaseNetworkView.config.toolbarButtons, entry=>entry.id==='showInfo'),1);
+      }
 
+      const componentConfig = _.merge({},BaseNetworkView.config, { useSearchBar: true});
       this.setState({
         componentConfig: componentConfig,
         layoutConfig: layoutConfig,
         networkJSON: networkJSON.graph,
         networkMetadata: {
           uri: query.uri,
-          name: _.get(networkJSON, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
+          name: query.title || _.get(networkJSON, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
           datasource: _.get(networkJSON, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
           comments: networkJSON.graph.pathwayMetadata.comments,
           organism: networkJSON.graph.pathwayMetadata.organism

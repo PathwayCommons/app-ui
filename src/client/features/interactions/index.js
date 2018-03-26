@@ -222,7 +222,6 @@ class Interactions extends React.Component {
   }
   render(){
     const state = this.state;
-    console.log(state.buttonsClicked);
     const baseView = h(BaseNetworkView.component, {
       layoutConfig: state.layoutConfig,
       componentConfig: state.componentConfig,

@@ -109,8 +109,8 @@ const enrichment = (query, userSetting) => {
       _.forEach(responseInfo, elem => {
         ret.pathwayInfo[elem[termIdIndex]] = {
           pValue: Number(elem[pValueIndex]),
-          T: Number(elem[tIndex]),
-          Q: Number(elem[qIndex]),
+          t: Number(elem[tIndex]),
+          q: Number(elem[qIndex]),
           qAndT: Number(elem[qAndTIndex]),
           qAndTOverQ: Number(elem[qAndTOverQIndex]),
           qAndTOverT: Number(elem[qAndTOverTIndex]),

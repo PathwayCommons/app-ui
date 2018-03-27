@@ -28,7 +28,7 @@
   top: 2px;
   text-align: center;
   word-wrap: break-word;
-  font-size: calc(12pt+0.3vh);
+  font-size: 1.3em; 
   font-weight: 400;
   color: var(--dark-base-colour)
 }

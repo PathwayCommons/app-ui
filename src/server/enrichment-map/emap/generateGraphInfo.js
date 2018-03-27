@@ -52,7 +52,6 @@ const generateGraphInfo = (pathwayIdList) => {
   cytoscapeJSON.edges = [];
   const nodeInfo = generateNodeInfo(pathwayIdList);
   _.forEach(nodeInfo, node => {
-    //cytoscapeJSON.nodes.push(node.pathwayId);
     elements.push({ data: { id: node.pathwayId } });
   });
   const edgeInfo = generateEdgeInfo(pathwayIdList);

@@ -32,7 +32,7 @@ class View extends React.Component {
 
     ServerAPI.getGraphAndLayout(query.uri, 'latest').then(networkJSON => {
       const layoutConfig = getLayoutConfig(networkJSON.layout);
-      if(query.removeMenu){
+      if(query.removeInfoMenu){
         BaseNetworkView.config.toolbarButtons.splice(
           _.findIndex(BaseNetworkView.config.toolbarButtons, entry=>entry.id==='showInfo'),1
         );

@@ -441,7 +441,7 @@ function generateDetailedViewList(sortedArray, trim, expansionLink, maxViews, ti
   let renderValue = list.map((data,index) => [h('div.fake-spacer', 
     h('a.db-link' ,{
       href:'/view?',
-      search: queryString.stringify({uri:'http://pathwaycommons.org/pc2/'+data, title:title, removeMenu:true}),
+      search: queryString.stringify({uri:'http://pathwaycommons.org/pc2/'+data, title:title, removeInfoMenu:true}),
       target: '_blank', 
     }, 'Interaction '+(index+1))
   )]);

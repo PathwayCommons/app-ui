@@ -34,7 +34,8 @@ class View extends React.Component {
       const layoutConfig = getLayoutConfig(networkJSON.layout);
       if(query.removeMenu){
         BaseNetworkView.config.toolbarButtons.splice(
-          _.findIndex(BaseNetworkView.config.toolbarButtons, entry=>entry.id==='showInfo'),1);
+          _.findIndex(BaseNetworkView.config.toolbarButtons, entry=>entry.id==='showInfo'),1
+        );
       }
 
       const componentConfig = _.merge({},BaseNetworkView.config, { useSearchBar: true});

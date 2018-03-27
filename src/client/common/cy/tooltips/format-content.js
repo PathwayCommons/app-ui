@@ -431,21 +431,22 @@ function generateDatabaseList(sortedArray, trim, expansionLink) {
   //Generate list
   let renderValue = sortedArray.map(item => [generateIdList(item, trim)], this);
 
-  return formatRenderValue(sortedArray,renderValue,expansionLink,trim,true,'Links');
+  return formatRenderValue(sortedArray, renderValue, expansionLink, trim, true, 'Links');
 }
 
-function generateDetailedViewList(sortedArray, trim, expansionLink,maxViews,title) {
+function generateDetailedViewList(sortedArray, trim, expansionLink, maxViews, title) {
   let list = sortedArray[0].ids;
   if(trim){list=list.slice(0,maxViews);}
   //Generate list
-  let renderValue = list.map((data,index) => [h('div.fake-spacer',
-    h('a.db-link' , { href:'/view?',
-      search: queryString.stringify({uri:'http://pathwaycommons.org/pc2/'+data, 
-      title:title, removeMenu:true }), target: '_blank' }, 
-      'Interaction '+(index+1)))])
-    ;
+  let renderValue = list.map((data,index) => [h('div.fake-spacer', 
+    h('a.db-link' ,{
+      href:'/view?',
+      search: queryString.stringify({uri:'http://pathwaycommons.org/pc2/'+data, title:title, removeMenu:true}),
+      target: '_blank', 
+    }, 'Interaction '+(index+1))
+  )]);
 
-  return formatRenderValue(sortedArray,renderValue,expansionLink,trim,false,'Detailed Views');
+  return formatRenderValue(sortedArray, renderValue, expansionLink, trim, false, 'Detailed Views');
 }
 
 function formatRenderValue(sortedArray, renderValue, expansionLink, trim, list,name){

@@ -53,12 +53,18 @@ class Interactions extends React.Component {
       }); 
     });
 
-    ServerAPI.getProteinInformation(query.id).then(result=>{
+    ServerAPI.getProteinInformation(query.id).then(results=>{
+      const comments=_.flatten(results.map(result=>
+        _.compact([
+          'Full Name: '+result.protein.recommendedName.fullName.value,
+          result.protein.alternativeName && 'Synonyms: '+result.protein.alternativeName.map(obj => obj.fullName.value).join(', '),
+          result.comments[0].type==='FUNCTION'&&'Function: '+result.comments[0].text[0].value
+        ])
+      ));
+
       this.setState({
       networkMetadata: Object.assign({}, this.state.networkMetadata, {
-        comments: _.compact(['Full Name: '+result[0].protein.recommendedName.fullName.value,
-          result[0].protein.alternativeName && 'Synonyms: '+result[0].protein.alternativeName.map(obj => obj.fullName.value).join(', '),
-          result[0].comments[0].type==='FUNCTION'&&'Function: '+result[0].comments[0].text[0].value]), 
+        comments: comments
       }),
      }); 
     });

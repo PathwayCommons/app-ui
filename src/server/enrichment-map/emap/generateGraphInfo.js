@@ -46,12 +46,14 @@ const generateGraphInfo = (pathwayIdList) => {
     }
   }
   // generate node and edge info
+  const elements = [];
   const cytoscapeJSON = {};
   cytoscapeJSON.nodes = [];
   cytoscapeJSON.edges = [];
   const nodeInfo = generateNodeInfo(pathwayIdList);
   _.forEach(nodeInfo, node => {
-    cytoscapeJSON.nodes.push(node.pathwayId);
+    //cytoscapeJSON.nodes.push(node.pathwayId);
+    elements.push({ data: { id: node.pathwayId } });
   });
   const edgeInfo = generateEdgeInfo(pathwayIdList);
   _.forEach(edgeInfo, edge => {
@@ -59,15 +61,17 @@ const generateGraphInfo = (pathwayIdList) => {
     const targetIndex = 1;
     const source = edge.edgeId.split('_')[sourceIndex];
     const target = edge.edgeId.split('_')[targetIndex];
-    cytoscapeJSON.edges.push({
-      id: edge.edgeId,
-      source: source,
-      target: target,
-      similarity: edge.similarity,
-      intersection: edge.intersection
+    elements.push({
+      data: {
+        id: edge.edgeId,
+        source: source,
+        target: target,
+        similarity: edge.similarity,
+        intersection: edge.intersection
+      }
     });
   });
-  return { unrecognized: unrecognized, duplicate: duplicate, graph: cytoscapeJSON };
+  return { unrecognized: unrecognized, duplicate: duplicate, graph: elements };
 };
 
 

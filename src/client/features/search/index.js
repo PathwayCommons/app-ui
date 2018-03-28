@@ -215,7 +215,7 @@ class Search extends React.Component {
         result=[h(`${type}`,{className:cssClass,key:'text'},textToUse)];
       if(text.length>length){
         result.push(h(`${type}.search-landing-link`,{onClick: ()=> handelShowMoreClick(toggleVar,index),key:'showMore'},
-        state.landing[index].showMore[varToToggle]? '« less': 'more »'));
+        varToToggle ? '« less': 'more »'));
       }
       return result;
     };

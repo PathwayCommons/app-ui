@@ -173,13 +173,13 @@ class Interactions extends React.Component {
         promise: () => Promise.resolve(_.map(state.cy.edges(),edge=> edge.data().id).sort().join('\n'))
       },
     }):
-    h('div','No interactions to display');
+    h('div..no-network',[h('strong.title','No interactions to display'),h('span','Return to the previous page and try a diffrent set of entities')]);
 
     const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
 
     // create a view shell loading view e.g looks like the view but its not
     const content = state.loading ? loadingView : baseView;
-    return h('div', [content]);
+    return h('div.main', [content]);
   }
 }
 module.exports = Interactions;

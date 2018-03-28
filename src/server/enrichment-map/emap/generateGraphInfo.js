@@ -36,12 +36,6 @@ const generateGraphInfo = (pathwayIdList) => {
   for (let i = 0; i < pathwayIdList.length; ++i) {
     const pathwayId = pathwayIdList[i];
     if ((_.filter(pathwayIdList, ele => ele === pathwayId)).length > 1) {
-      // if (_.filter(duplicate, ele => ele === pathwayId).length == 0) {
-      //   duplicate.push(pathwayId);
-      // } else {
-      //   pathwayIdList.splice(pathwayIdList.indexOf(pathwayId), 1);
-      //   --i;
-      // }
       throw new Error('ERROR: ' + pathwayId + ' is a duplicate');
     }
   }

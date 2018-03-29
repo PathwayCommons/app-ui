@@ -82,6 +82,26 @@ router.get('/gene-query', (req, res) => {
   });
 });
 
+
+// post for gConvert validator
+router.post('/gene-query', (req, res) => {
+  const genes = req.body.genes;
+  const tmpOptions = {};
+  const userOptions = {};
+  tmpOptions.organism = req.body.organism;
+  tmpOptions.target = req.body.target;
+  for (const key in tmpOptions) {
+    if (tmpOptions[key] != undefined) {
+      userOptions[key] = tmpOptions[key];
+    }
+  }
+
+  validatorGconvert(genes, userOptions).then(gconvertResult => {
+    res.json(gconvertResult);
+  });
+});
+
+
 // expose a rest endpoint for enrichment
 // get request
 // use default values if the key is undefined
@@ -156,6 +176,14 @@ router.post('/enrichment', (req, res) => {
 router.get('/emap', (req, res) => {
   const pathwayIdList = req.query.pathwayIdList.split(/\s+/);
   res.json(generateGraphInfo(pathwayIdList));
+});
+
+router.post('/emap', (req, res) => {
+  const pathwayIdList = req.body.pathwayIdList.split(/\s+/);
+  const cutoff = req.body.cutoff;
+  const JCWeight = req.body.JCWeight;
+  const OCWeight = req.body.OCWeight;
+  res.json(generateGraphInfo(pathwayIdList, cutoff, JCWeight, OCWeight));
 });
 
 // Expose a rest endpoint for controller.endSession

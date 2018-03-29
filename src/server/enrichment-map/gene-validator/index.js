@@ -6,6 +6,8 @@ output: {"unrecognized":["ATP"],"duplicate":["ATM"],"geneInfo":[{"HGNC_symbol":"
 
 const request = require('request');
 const _ = require('lodash');
+const { validOrganism } = require('./validityInfo');
+const { validTarget } = require('./validityInfo');
 
 
 const defaultOptions = {
@@ -13,12 +15,43 @@ const defaultOptions = {
   'organism': 'hsapiens',
   'target': 'HGNC'
 };
+
+class InvalidInfoError extends Error {
+  constructor(invalidOrganism, invalidTarget, message) {
+    super(message);
+    this.invalidTarget = invalidTarget;
+    this.invalidOrganism = invalidOrganism;
+  }
+}
+
 const gConvertURL = 'https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/gconvert.cgi';
 
+
+// convert offical synonyms to gConvert names
+const convertGConvertNames = (gConvertName) => {
+  if (gConvertName === 'HGNCSYMBOL') { return 'HGNC'; }
+  if (gConvertName === 'HGNC') { return 'HGNC_ACC'; }
+  if (gConvertName === 'UNIPROT') { return 'UNIPROTSWISSPROT'; }
+  if (gConvertName === 'NCBIGENE') { return 'ENTREZGENE_ACC'; }
+  return gConvertName;
+};
 
 const validatorGconvert = (query, userOptions) => {
   const promise = new Promise((resolve, reject) => {
     const formData = _.assign({}, defaultOptions, userOptions, { query: query });
+    formData.organism =  formData.organism.toLowerCase();
+    formData.target = convertGConvertNames(formData.target.toUpperCase());
+    const invalidInfo = {invalidTarget: '', invalidOrganism: ''};
+    if (!validOrganism.includes(formData.organism)) {
+      invalidInfo.invalidOrganism = formData.organism;
+    }
+    if (!validTarget.includes(formData.target)) {
+      invalidInfo.invalidTarget = formData.target;
+    }
+    if (invalidInfo.invalidOrganism != '' || invalidInfo.invalidTarget != '') {
+      reject(new InvalidInfoError(invalidInfo.invalidOrganism, invalidInfo.invalidTarget, ''));
+    }
+
     request.post({ url: gConvertURL, formData: formData }, (err, httpResponse, body) => {
       if (err) {
         reject(err);
@@ -55,9 +88,3 @@ const validatorGconvert = (query, userOptions) => {
 
 
 module.exports = { validatorGconvert };
-
-
-// // simple testing
-// validatorGconvert("ATM ATM AFF4 ATM ATP").then(function (results) {
-//   console.log(results);
-// });

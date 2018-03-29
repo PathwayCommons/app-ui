@@ -23,7 +23,6 @@ const _ = require('lodash');
 const generateGraphInfo = (pathwayIdList) => {
   // check unrecognized and duplicates, modify pathwayIdList
   const unrecognized = [];
-  const duplicate = [];
   for (let i = 0; i < pathwayIdList.length; ++i) {
     const pathwayId = pathwayIdList[i];
     if (!pathwayInfoTable.has(pathwayId)) {
@@ -37,21 +36,17 @@ const generateGraphInfo = (pathwayIdList) => {
   for (let i = 0; i < pathwayIdList.length; ++i) {
     const pathwayId = pathwayIdList[i];
     if ((_.filter(pathwayIdList, ele => ele === pathwayId)).length > 1) {
-      if (_.filter(duplicate, ele => ele === pathwayId).length == 0) {
-        duplicate.push(pathwayId);
-      } else {
-        pathwayIdList.splice(pathwayIdList.indexOf(pathwayId), 1);
-        --i;
-      }
+      throw new Error('ERROR: ' + pathwayId + ' is a duplicate');
     }
   }
   // generate node and edge info
+  const elements = [];
   const cytoscapeJSON = {};
   cytoscapeJSON.nodes = [];
   cytoscapeJSON.edges = [];
   const nodeInfo = generateNodeInfo(pathwayIdList);
   _.forEach(nodeInfo, node => {
-    cytoscapeJSON.nodes.push(node.pathwayId);
+    elements.push({ data: { id: node.pathwayId } });
   });
   const edgeInfo = generateEdgeInfo(pathwayIdList);
   _.forEach(edgeInfo, edge => {
@@ -59,15 +54,19 @@ const generateGraphInfo = (pathwayIdList) => {
     const targetIndex = 1;
     const source = edge.edgeId.split('_')[sourceIndex];
     const target = edge.edgeId.split('_')[targetIndex];
-    cytoscapeJSON.edges.push({
-      id: edge.edgeId,
-      source: source,
-      target: target,
-      similarity: edge.similarity,
-      intersection: edge.intersection
+    elements.push({
+      data: {
+        id: edge.edgeId,
+        source: source,
+        target: target,
+        similarity: edge.similarity,
+        intersection: edge.intersection
+      }
     });
   });
-  return { unrecognized: unrecognized, duplicate: duplicate, graph: cytoscapeJSON };
+
+  return { unrecognized: unrecognized, graph: elements };
+
 };
 
 

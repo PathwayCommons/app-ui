@@ -95,19 +95,22 @@ class Interactions extends React.Component {
       const state = this.state;
       const cy = this.state.cy;
       const categories = state.categories;
-      _.forEach(state.buttonsClicked,(value,type)=>{
+      const buttonsClicked=state.buttonsClicked;
+      _.forEach(buttonsClicked,(value,type)=>{
         const edges = cy.edges().filter(`.${type}`);
         const nodes = edges.connectedNodes();
         categories.set(type,{
           edges:edges,
           nodes:nodes
         });
-        if(type != 'Binding'){
+        if(type != 'Binding' && nodes.length){
           this.filterUpdate(type);
         }
+        if(!nodes.length){buttonsClicked[type]='empty';}
       });
       this.setState({
-        categories:categories
+        categories:categories,
+        buttonsClicked:_.pickBy(buttonsClicked,_.isBoolean)
       });
       const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
       const layout = cy.layout(initialLayoutOpts);

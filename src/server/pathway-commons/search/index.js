@@ -12,7 +12,7 @@ const sanitize = (s) => {
 const processPhrase = (phrase) => {
   return geneValidator(phrase).then(result => {
     const genes = result.geneInfo.map(gene=>'xrefid:' + sanitize(gene.initialAlias.toUpperCase()));
-    const otherIds = result.unrecogized.map(id=>{
+    const otherIds = result.unrecognized.map(id=>{
       id=id.toUpperCase()
       const recognized = /^SMP\d{5}$/.test(id)     // check for a smpdb or chebi id 
                       ||/^CHEBI:\d+$/.test(id) && (id.length <= ("CHEBI:".length + 6));      

@@ -86,33 +86,40 @@ const enrichment = (query, userSetting) => {
       responseInfo = _.filter(responseInfo, ele => ele.length != 1);
 
       const ret = {};
-      const pvalueIndex = 2;
-      const TIndex = 3;
-      const QIndex = 4;
-      const QTIndex = 5;
-      const QTQIndex = 6;
-      const QTTIndex = 7;
+      const pValueIndex = 2;
+      const tIndex = 3;
+      const qIndex = 4;
+      const qAndTIndex = 5;
+      const qAndTOverQIndex = 6;
+      const qAndTOverTIndex = 7;
       const termIdIndex = 8;
       const tTypeIndex = 9;
       const tGroupIndex = 10;
       const tNameIndex = 11;
       const tDepthIndex = 12;
-      const QTListIndex = 13;
-      ret.orderedQuery = formData.ordered_query;
-      ret.userThr = formData.user_thr;
-      ret.minSetSize = formData.min_set_size;
-      ret.maxSetSize = formData.max_set_size;
-      ret.thresholdAlgo = formData.threshold_algo;
-      ret.custbg = formData.custbg;
-      ret.custbgCb = formData.custbg_cb;
+      const qAndTListIndex = 13;
+      ret.options = {};
+      ret.options.orderedQuery = formData.ordered_query;
+      ret.options.userThr = formData.user_thr;
+      ret.options.minSetSize = formData.min_set_size;
+      ret.options.maxSetSize = formData.max_set_size;
+      ret.options.thresholdAlgo = formData.threshold_algo;
+      ret.options.custbg = formData.custbg;
       ret.pathwayInfo = {};
       _.forEach(responseInfo, elem => {
-        const termIdInfo = { pvalue: elem[pvalueIndex], T: elem[TIndex], Q: elem[QIndex], tType: elem[tTypeIndex], tGroup: elem[tGroupIndex], tName: elem[tNameIndex], tDepth: elem[tDepthIndex] };
-        termIdInfo["Q&T"] = elem[QTIndex];
-        termIdInfo["Q&T/Q"] = elem[QTQIndex];
-        termIdInfo["Q&T/T"] = elem[QTTIndex];
-        termIdInfo["Q&TList"] = elem[QTListIndex];
-        ret.pathwayInfo[elem[termIdIndex]] = termIdInfo;
+        ret.pathwayInfo[elem[termIdIndex]] = {
+          pValue: Number(elem[pValueIndex]),
+          t: Number(elem[tIndex]),
+          q: Number(elem[qIndex]),
+          qAndT: Number(elem[qAndTIndex]),
+          qAndTOverQ: Number(elem[qAndTOverQIndex]),
+          qAndTOverT: Number(elem[qAndTOverTIndex]),
+          tType: elem[tTypeIndex].trim(),
+          tGroup: Number(elem[tGroupIndex]),
+          tName: elem[tNameIndex].trim(),
+          tDepth: Number(elem[tDepthIndex]),
+          qAndTList: elem[qAndTListIndex].split(',')
+        };
       });
       resolve(ret);
     });

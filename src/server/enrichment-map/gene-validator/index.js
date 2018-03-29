@@ -1,7 +1,7 @@
 /*
 Documentation for g:convert validator:
 sample url: http://localhost:3000/api/validatorGconvert?genes=ATM ATP ATM
-output: {"unrecogized":["ATP"],"duplicate":["ATM"],"geneInfo":[{"HGNC_symbol":"ATM","HGNC_id":"HGNC:795"}]}
+output: {"unrecognized":["ATP"],"duplicate":["ATM"],"geneInfo":[{"HGNC_symbol":"ATM","HGNC_id":"HGNC:795"}]}
 */
 
 const request = require('request');
@@ -15,7 +15,7 @@ const defaultOptions = {
   'organism': 'hsapiens',
   'target': 'HGNC'
 };
-const gConvertURL = 'http://biit.cs.ut.ee/gprofiler/gconvert.cgi';
+
 class InvalidInfoError extends Error {
   constructor(invalidOrganism, invalidTarget, message) {
     super(message);
@@ -23,6 +23,9 @@ class InvalidInfoError extends Error {
     this.invalidOrganism = invalidOrganism;
   }
 }
+
+const gConvertURL = 'https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/gconvert.cgi';
+
 
 // convert offical synonyms to gConvert names
 const convertGConvertNames = (gConvertName) => {
@@ -56,15 +59,15 @@ const validatorGconvert = (query, userOptions) => {
       const geneInfoList = _.map(body.split('\n'), ele => { return ele.split('\t'); });
       geneInfoList.splice(-1, 1); // remove last element ''
 
-      const unrecogized = [];
+      const unrecognized = [];
       const duplicate = [];
       const geneInfo = [];
       const initialAliasIndex = 1;
       const convertedAliasIndex = 3;
       _.forEach(geneInfoList, info => {
         if (info[convertedAliasIndex] === 'N/A') {
-          if (_.filter(unrecogized, ele => ele === info[initialAliasIndex]).length === 0) {
-            unrecogized.push(info[initialAliasIndex]);
+          if (_.filter(unrecognized, ele => ele === info[initialAliasIndex]).length === 0) {
+            unrecognized.push(info[initialAliasIndex]);
           }
         } else {
           if (_.filter(geneInfoList, ele => ele[convertedAliasIndex] === info[convertedAliasIndex]).length > 1 && _.filter(duplicate, ele => ele === info[initialAliasIndex]).length === 0) {
@@ -76,7 +79,7 @@ const validatorGconvert = (query, userOptions) => {
         }
       });
 
-      const ret = { options: {target: formData.target, organism: formData.organism}, unrecogized: unrecogized, duplicate: duplicate, geneInfo: geneInfo };
+      const ret = { options: {target: formData.target, organism: formData.organism}, unrecognized: unrecognized, duplicate: duplicate, geneInfo: geneInfo };
       resolve(ret);
     });
   });

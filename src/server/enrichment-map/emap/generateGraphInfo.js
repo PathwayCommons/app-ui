@@ -20,7 +20,7 @@ const _ = require('lodash');
 
 // input ["GO:1902275", "GO:2001252", "GO:1905269", "GO:0051053"]
 // returns a cytoscape object
-const generateCys = (pathwayIdList) => {
+const generateGraphInfo = (pathwayIdList) => {
   // check unrecognized and duplicates, modify pathwayIdList
   const unrecognized = [];
   const duplicate = [];
@@ -46,12 +46,13 @@ const generateCys = (pathwayIdList) => {
     }
   }
   // generate node and edge info
+  const elements = [];
   const cytoscapeJSON = {};
   cytoscapeJSON.nodes = [];
   cytoscapeJSON.edges = [];
   const nodeInfo = generateNodeInfo(pathwayIdList);
   _.forEach(nodeInfo, node => {
-    cytoscapeJSON.nodes.push(node.pathwayId);
+    elements.push({ data: { id: node.pathwayId } });
   });
   const edgeInfo = generateEdgeInfo(pathwayIdList);
   _.forEach(edgeInfo, edge => {
@@ -59,21 +60,23 @@ const generateCys = (pathwayIdList) => {
     const targetIndex = 1;
     const source = edge.edgeId.split('_')[sourceIndex];
     const target = edge.edgeId.split('_')[targetIndex];
-    cytoscapeJSON.edges.push({
-      id: edge.edgeId,
-      source: source,
-      target: target,
-      similarity: edge.similarity,
-      intersection: edge.intersection
+    elements.push({
+      data: {
+        id: edge.edgeId,
+        source: source,
+        target: target,
+        similarity: edge.similarity,
+        intersection: edge.intersection
+      }
     });
   });
-  return { unrecognized: unrecognized, duplicate: duplicate, graph: cytoscapeJSON };
+  return { unrecognized: unrecognized, duplicate: duplicate, graph: elements };
 };
 
 
-module.exports = { generateCys };
+module.exports = { generateGraphInfo };
 
 //simple testing
-//console.log(generateCys(["GO:1902275", "GO:2001252", "GO:1905269"]));
-// const result = generateCys(["GO:1902275", "GO:2001252", "GO:1905269"]);
+//console.log(generateGraphInfo(["GO:1902275", "GO:2001252", "GO:1905269"]));
+// const result = generateGraphInfo(["GO:1902275", "GO:2001252", "GO:1905269"]);
 // console.log(JSON.stringify(result));

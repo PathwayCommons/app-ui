@@ -223,10 +223,16 @@ class Search extends React.Component {
             );
           }
         } 
-        const ids = [box.accession,box.dbReferences.filter(entry =>entry.type=='HGNC')[0],box.dbReferences.filter(entry =>entry.type=='GeneID')[0]];
+        const ids = [
+          box.accession,
+          box.dbReferences.filter(entry =>entry.type=='HGNC')[0],
+          box.dbReferences.filter(entry =>entry.type=='GeneID')[0],
+          box.dbReferences.filter(entry =>entry.type=='GeneCards')[0],
+        ];
         let links=[{text:'UniProt', link:`http://www.uniprot.org/uniprot/${ids[0]}`}];
           if(ids[1]) {links.push({text:'HGNC',link:`https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=${ids[1].id}`});} 
-          if(ids[2]) {links.push({text:'Entrez Gene',link:`https://www.ncbi.nlm.nih.gov/gene/${ids[2].id}`});}
+          if(ids[2]) {links.push({text:'NCBI Gene',link:`https://www.ncbi.nlm.nih.gov/gene/${ids[2].id}`});}
+          if(ids[3]) {links.push({text:'Gene Cards',link:`http://www.genecards.org/cgi-bin/carddisp.pl?gene=${ids[3].id}`});}
         links=links.map(link=>{return h('a.search-landing-link',{key: link.text, href: link.link},link.text);});
 
         return h('div.search-landing.innner',{key: box.accession},[ 

@@ -158,7 +158,7 @@ router.get('/emap', (req, res) => {
   try {
     res.json(generateGraphInfo(pathwayIdList));
   } catch (err) {
-    res.json(err.message);
+    res.status(400).send(err.message);
   }
 });
 

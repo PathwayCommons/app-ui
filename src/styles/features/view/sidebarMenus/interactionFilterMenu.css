@@ -1,0 +1,60 @@
+.interaction-filter-menu {
+  height: 100%;
+  width: 100%;
+}
+
+.interaction-filter-button {
+    align-items: center;
+    display: flex;
+    justify-content: flex-start;
+    cursor: pointer;
+
+    border-style: solid;
+    border-color: var(--light-base-colour-dark);
+    border-width: 1px 1px 0px 1px;
+
+    transition: background-color 0.1s linear;
+
+    &:last-of-type {
+      border-width: 1px 1px 1px 1px;
+    }
+    &:hover {
+      background-color: var(--light-base-colour-dark);
+    }
+}
+
+.interaction-filter-icon{
+  margin-right: 150px;
+}
+
+.interaction-filter-clicked{
+  background-color: var(--light-base-colour-darker);
+}
+
+.interaction-filter-not-clicked{
+  background-color: white;
+}
+
+.button-label{
+  padding-left: 2px; 
+  display: inline-flex;
+  margin: 0px auto 0px 0px;
+}
+
+.interaction-filter-legend{
+  height:50px;
+  width: 30px;
+  display: inline-flex;
+}
+
+.Binding{
+  background-color:green;
+}
+
+.Phosphorylation{
+  background-color:red;
+}
+
+.Expression{
+  background-color:blue;
+}

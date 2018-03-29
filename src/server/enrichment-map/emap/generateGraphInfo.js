@@ -23,7 +23,6 @@ const _ = require('lodash');
 const generateGraphInfo = (pathwayIdList) => {
   // check unrecognized and duplicates, modify pathwayIdList
   const unrecognized = [];
-  const duplicate = [];
   for (let i = 0; i < pathwayIdList.length; ++i) {
     const pathwayId = pathwayIdList[i];
     if (!pathwayInfoTable.has(pathwayId)) {
@@ -37,12 +36,7 @@ const generateGraphInfo = (pathwayIdList) => {
   for (let i = 0; i < pathwayIdList.length; ++i) {
     const pathwayId = pathwayIdList[i];
     if ((_.filter(pathwayIdList, ele => ele === pathwayId)).length > 1) {
-      if (_.filter(duplicate, ele => ele === pathwayId).length == 0) {
-        duplicate.push(pathwayId);
-      } else {
-        pathwayIdList.splice(pathwayIdList.indexOf(pathwayId), 1);
-        --i;
-      }
+      throw new Error('ERROR: ' + pathwayId + ' is a duplicate');
     }
   }
   // generate node and edge info
@@ -70,7 +64,9 @@ const generateGraphInfo = (pathwayIdList) => {
       }
     });
   });
-  return { unrecognized: unrecognized, duplicate: duplicate, graph: elements };
+
+  return { unrecognized: unrecognized, graph: elements };
+
 };
 
 

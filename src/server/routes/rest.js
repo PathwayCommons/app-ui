@@ -35,9 +35,9 @@ router.post('/submit-layout', function (req, res) {
 router.post('/submit-graph', function (req, res) {
   if (isAuthenticated(req.body.token)) {
     controller.submitGraph(req.body.uri, req.body.version, req.body.graph)
-    .then((package) => {
-      res.json(package);
-    });
+      .then((package) => {
+        res.json(package);
+      });
   } else {
     res.json(errorMsg);
   }
@@ -177,7 +177,11 @@ router.post('/enrichment', (req, res) => {
 // Expose a rest endpoint for emap
 router.get('/emap', (req, res) => {
   const pathwayIdList = req.query.pathwayIdList.split(/\s+/);
-  res.json(generateGraphInfo(pathwayIdList));
+  try {
+    res.json(generateGraphInfo(pathwayIdList));
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
 });
 
 router.post('/emap', (req, res) => {

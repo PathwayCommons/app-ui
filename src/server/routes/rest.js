@@ -35,9 +35,9 @@ router.post('/submit-layout', function (req, res) {
 router.post('/submit-graph', function (req, res) {
   if (isAuthenticated(req.body.token)) {
     controller.submitGraph(req.body.uri, req.body.version, req.body.graph)
-    .then((package) => {
-      res.json(package);
-    });
+      .then((package) => {
+        res.json(package);
+      });
   } else {
     res.json(errorMsg);
   }
@@ -79,8 +79,30 @@ router.get('/gene-query', (req, res) => {
 
   validatorGconvert(genes, userOptions).then(gconvertResult => {
     res.json(gconvertResult);
+  }).catch((invalidInfoError) => {
+    res.json({invalidTarget: invalidInfoError.invalidTarget, invalidOrganism: invalidInfoError.invalidOrganism});
   });
 });
+
+
+// post for gConvert validator
+router.post('/gene-query', (req, res) => {
+  const genes = req.body.genes;
+  const tmpOptions = {};
+  const userOptions = {};
+  tmpOptions.organism = req.body.organism;
+  tmpOptions.target = req.body.target;
+  for (const key in tmpOptions) {
+    if (tmpOptions[key] != undefined) {
+      userOptions[key] = tmpOptions[key];
+    }
+  }
+
+  validatorGconvert(genes, userOptions).then(gconvertResult => {
+    res.json(gconvertResult);
+  });
+});
+
 
 // expose a rest endpoint for enrichment
 // get request
@@ -155,7 +177,19 @@ router.post('/enrichment', (req, res) => {
 // Expose a rest endpoint for emap
 router.get('/emap', (req, res) => {
   const pathwayIdList = req.query.pathwayIdList.split(/\s+/);
-  res.json(generateGraphInfo(pathwayIdList));
+  try {
+    res.json(generateGraphInfo(pathwayIdList));
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
+router.post('/emap', (req, res) => {
+  const pathwayIdList = req.body.pathwayIdList.split(/\s+/);
+  const cutoff = req.body.cutoff;
+  const JCWeight = req.body.JCWeight;
+  const OCWeight = req.body.OCWeight;
+  res.json(generateGraphInfo(pathwayIdList, cutoff, JCWeight, OCWeight));
 });
 
 // Expose a rest endpoint for controller.endSession

@@ -65,48 +65,51 @@ class Search extends React.Component {
     const state = this.state;
     const query = {
       genes: state.query.q.trim(),
-      target: 'UNIPROTSWISSPROT',
+      target: 'ENTREZGENE_ACC',
     };
+      ServerAPI.geneQuery(query).then(geneQueryResult=>{
+        if(!_.isEmpty(geneQueryResult.geneInfo)){
+          this.setState({
+            landingLoading: true
+          },()=>{
+            const ids=geneQueryResult.geneInfo.map(gene=>gene.convertedAlias.split(':')[1]);
+            ServerAPI.getGeneInformation(ids,'gene').then(result=>{
+              ServerAPI.getGeneLinks(ids,'gene');
+              const geneResults=result.result;
+               const landing=geneResults.uids.map((gene,index)=>{ 
+                 let links=_.mapValues( _.pickBy({
+                   //'Uniprot':{id:gene.accession},//to match the format the other 2 links are in
+                 //'HGNC':geneResults[gene].name,
+                 'NCBI Gene':gene,
+                // 'Gene Cards':gene.dbReferences.filter(entry =>entry.type=='GeneCards')[0]
+                }),
+                (value,key)=>{
+                  let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue[0].toUpperCase());
+                    return link[0][1] + link[0][2] + value;
+                  });
 
-    this.setState({
-      landingLoading: true
-    });
-      ServerAPI.geneQuery(query).then(res=>{
-        res=res.geneInfo;
-        if(!_.isEmpty(res)){
-          const ids=res.map(gene=>gene.convertedAlias).join(',');
-          ServerAPI.getProteinInformation(ids).then(result=>{
-            const landing=result.map(gene=>{ 
-              let links=_.mapValues( _.pickBy({'Uniprot':{id:gene.accession},//to match the format the other 2 links are in
-              'HGNC':gene.dbReferences.filter(entry =>entry.type=='HGNC')[0],
-              'NCBI Gene':gene.dbReferences.filter(entry =>entry.type=='GeneID')[0],
-              'Gene Cards':gene.dbReferences.filter(entry =>entry.type=='GeneCards')[0]}),
-              (value,key)=>{
-                let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue[0].toUpperCase());
-                  return link[0][1] + link[0][2] + value.id;
-                });
+                return {
+                  originalSearch:geneQueryResult.geneInfo[index].initialAlias,
+                  name:geneResults[gene].nomenclaturename,
+                  function: geneResults[gene].summary,
+                  synonyms: geneResults[gene].otheraliases,
+                  showMore:{full:!(result.length>1),function:false,synonyms:false},
+                  links:links
+                };});
 
-              return {
-                accession:gene.accession,
-                name:gene.protein.recommendedName.fullName.value,
-                function: gene.comments[0].type==='FUNCTION' && gene.comments[0].text[0].value,
-                synonyms: _.hasIn(gene,'protein.alternativeName') && gene.protein.alternativeName.map(obj => obj.fullName.value).join(', '),
-                showMore:{full:!(result.length>1),function:false,synonyms:false},
-                links:links
-              };});
-
-            this.setState({
-            landingLoading: false,
-            landing:landing,
+              this.setState({
+              landingLoading: false,
+              landing:landing,
+              });
             });
           });
         }
-        else{
-          this.setState({
-            landingLoading: false,
-            landing:[]
-          });
-        }
+          else{
+            this.setState({
+              landingLoading: false,
+              landing:[]
+            });
+          }
       });
   }
 
@@ -250,11 +253,11 @@ class Search extends React.Component {
             className:classNames('search-landing-title',{'search-landing-title-multiple':multipleBoxes}),
             },[title]),  
           box.showMore.full && 
-          h('div.search-landing-innner',{key: box.accession},[ 
+          h('div.search-landing-innner',{key: box.originalSearch},[ 
           h('div.search-landing-section',{key: 'synonyms'},[synonyms]),
           h('div.search-landing-section',{key: 'functions'},[functions]),
           h('div.search-landing-section',{key: 'links'},[links]),
-          h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ ID: box.accession })}, 
+          h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ ID: box.originalSearch })}, 
             target: '_blank',className: 'search-landing-interactions', key:'interactions' }, [
             h('button.search-landing-button', 'View Interactions'),
           ])]) 

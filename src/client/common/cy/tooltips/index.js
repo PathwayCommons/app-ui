@@ -155,7 +155,7 @@ class MetadataTip {
 
     //Hide existing tooltip 
     const existingToolTip = expansionObject.tooltipExt;
-    existingToolTip.hide(existingToolTip.store[0].popper);
+    existingToolTip.hide();
   
     //Get tooltip objects
     let tooltip = expansionObject.tooltip;
@@ -169,19 +169,15 @@ class MetadataTip {
       trigger: 'manual',
       hideOnClick: false,
       arrow: true,
-      position: 'bottom',
+      placement: 'bottom',
       animation: 'shift',
       duration : 1,
       distance: isEdge? -25*zoom+7:10
-    });
-
-    //Resolve Reference issues
-    tooltipExt.selector.dim = refObject.dim;
-    tooltipExt.selector.cyElement = refObject.cyElement;
+    }).tooltips[0];
 
     //Hide and show
-    tooltip.hide(tooltip.store[0].popper);
-    tooltipExt.show(tooltipExt.store[0].popper);
+    tooltip.hide();
+    tooltipExt.show();
 
     //Save extended tooltip
     expansionObject.tooltipExt = tooltipExt;

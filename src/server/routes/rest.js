@@ -79,8 +79,30 @@ router.get('/gene-query', (req, res) => {
 
   validatorGconvert(genes, userOptions).then(gconvertResult => {
     res.json(gconvertResult);
+  }).catch((invalidInfoError) => {
+    res.json({invalidTarget: invalidInfoError.invalidTarget, invalidOrganism: invalidInfoError.invalidOrganism});
   });
 });
+
+
+// post for gConvert validator
+router.post('/gene-query', (req, res) => {
+  const genes = req.body.genes;
+  const tmpOptions = {};
+  const userOptions = {};
+  tmpOptions.organism = req.body.organism;
+  tmpOptions.target = req.body.target;
+  for (const key in tmpOptions) {
+    if (tmpOptions[key] != undefined) {
+      userOptions[key] = tmpOptions[key];
+    }
+  }
+
+  validatorGconvert(genes, userOptions).then(gconvertResult => {
+    res.json(gconvertResult);
+  });
+});
+
 
 // expose a rest endpoint for enrichment
 // get request
@@ -160,6 +182,14 @@ router.get('/emap', (req, res) => {
   } catch (err) {
     res.status(400).send(err.message);
   }
+});
+
+router.post('/emap', (req, res) => {
+  const pathwayIdList = req.body.pathwayIdList.split(/\s+/);
+  const cutoff = req.body.cutoff;
+  const JCWeight = req.body.JCWeight;
+  const OCWeight = req.body.OCWeight;
+  res.json(generateGraphInfo(pathwayIdList, cutoff, JCWeight, OCWeight));
 });
 
 // Expose a rest endpoint for controller.endSession

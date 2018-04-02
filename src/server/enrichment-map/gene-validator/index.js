@@ -39,12 +39,8 @@ const convertGConvertNames = (gConvertName) => {
 const validatorGconvert = (query, userOptions) => {
   const promise = new Promise((resolve, reject) => {
     const formData = _.assign({}, defaultOptions, userOptions, { query: query });
-    console.log(formData);
     formData.organism =  formData.organism.toLowerCase();
     const initialTarget = formData.target.toUpperCase();
-    console.log(initialTarget)
-    console.log(convertGConvertNames);
-    console.log(convertGConvertNames(initialTarget));
     formData.target = convertGConvertNames(initialTarget);
     const invalidInfo = {invalidTarget: '', invalidOrganism: ''};
     if (!validOrganism.includes(formData.organism)) {

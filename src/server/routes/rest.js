@@ -128,6 +128,8 @@ router.get('/enrichment', (req, res) => {
 
   enrichment(genes, userOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
+  }).catch((err) => {
+    res.status(400).send(err.message);
   });
 });
 
@@ -153,6 +155,8 @@ router.post('/enrichment', (req, res) => {
 
   enrichment(genes, userOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
+  }).catch((err) => {
+    res.status(400).send(err.message);
   });
 });
 

@@ -75,31 +75,32 @@ class Search extends React.Component {
           const ids=geneQueryResult.geneInfo.map(gene=>gene.convertedAlias.split(':')[1]);
           ServerAPI.getGeneInformation(ids,'gene').then(result=>{
             const geneResults=result.result;
-            const landing=geneResults.uids.map((gene,index)=>{ 
-             let links=_.mapValues( _.pickBy({
-                //'Uniprot':{id:gene.accession},//to match the format the other 2 links are in
-                //'HGNC':geneResults[gene].name,
-                'NCBI Gene':gene,
-                // 'Gene Cards':gene.dbReferences.filter(entry =>entry.type=='GeneCards')[0]
-              }),
-              (value,key)=>{
-                let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue[0].toUpperCase());
-                return link[0][1] + link[0][2] + value;
-              });
+            let landing=geneResults.uids.map((gene,index)=>{ 
+              const lookupGene = 'ENTREZGENE_ACC:'+gene;
+              let links={'NCBI Gene':gene};
 
-              return {
-                originalSearch:geneQueryResult.geneInfo[index].initialAlias,
-                name:geneResults[gene].nomenclaturename,
-                function: geneResults[gene].summary,
-                synonyms: geneResults[gene].name+', '+geneResults[gene].otheraliases,
-                showMore:{full:!(geneResults.uids.length>1),function:false,synonyms:false},
-                links:links
-              };
+              return Promise.all([
+                ServerAPI.geneQuery({genes: lookupGene,target: 'UNIPROT'}).then(resultUNIPROT=>links['Uniprot']=resultUNIPROT.geneInfo[0]&&resultUNIPROT.geneInfo[0].convertedAlias),
+                ServerAPI.geneQuery({genes: lookupGene,target: 'HGNC'}).then(resultHGNC=>links['HGNC']=resultHGNC.geneInfo[0]&&resultHGNC.geneInfo[0].convertedAlias),
+                ServerAPI.geneQuery({genes: lookupGene,target: 'HGNCSYMBOL'}).then(resultCard=>links['Gene Cards']=resultCard.geneInfo[0]&&resultCard.geneInfo[0].convertedAlias),
+              ]).then(()=>{
+                links=_.mapValues( _.pickBy(links),
+                  (value,key)=>{
+                    let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue[0].toUpperCase());
+                    return link[0][1] + link[0][2] + value;
+                });
+
+                return {
+                  originalSearch:geneQueryResult.geneInfo[index].initialAlias,
+                  name:geneResults[gene].nomenclaturename,
+                  function: geneResults[gene].summary,
+                  synonyms: geneResults[gene].name+', '+geneResults[gene].otheraliases,
+                  showMore:{full:!(geneResults.uids.length>1),function:false,synonyms:false},
+                  links:links
+                };
+              });
             });
-            this.setState({
-              landingLoading: false,
-              landing:landing,
-            });
+            Promise.all(landing).then(result =>this.setState({landingLoading: false,landing:result}));
           });
         });
       }
@@ -221,7 +222,7 @@ class Search extends React.Component {
       }
       return result;
     };
-    
+    console.log( state.landing);
     const landing = (state.landingLoading ) ?
       h('div.search-landing-innner',[h(Loader, { loaded:false , options: { color: '#16A085',position:'relative', top: '15px' }})]):
       state.landing.map((box,index)=>{

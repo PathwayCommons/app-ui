@@ -226,7 +226,7 @@ class Search extends React.Component {
       h('div.search-landing-innner',[h(Loader, { loaded:false , options: { color: '#16A085',position:'relative', top: '15px' }})]):
       state.landing.map((box,index)=>{
         const multipleBoxes = state.landing.length>1;
-        const title = [h('strong',{key:'name'},box.name),];
+        const title = [h('strong.search-landing-title-text',{key:'name'},box.name),];
         if(multipleBoxes){
           title.push(h('strong.material-icons',{key:'arrow'},state.landing[index].showMore.full? 'expand_less': 'expand_more'));
         }

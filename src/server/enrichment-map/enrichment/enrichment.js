@@ -27,14 +27,14 @@ const parseGProfilerResponse = (gProfilerResponse) => {
 const defaultSetting = {
   "output": "mini",
   "organism": "hsapiens",
-  "significant": 1,
+  "significant": 0,
   "sort_by_structure": 1,
   "ordered_query": 0,
   "as_ranges": 0,
   "no_iea": 1,
   "underrep": 0,
   "hierfiltering": "none",
-  "user_thr": 1,
+  "user_thr": 0.05,
   "min_set_size": 5,
   "max_set_size": 200,
   "threshold_algo": "fdr",
@@ -50,6 +50,31 @@ const gProfilerURL = "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/we
 const enrichment = (query, userSetting) => {
   const promise = new Promise((resolve, reject) => {
     const formData = _.assign({}, defaultSetting, { "query": query }, userSetting);
+    const orderedQueryVal = Number(formData.ordered_query);
+    const userThrVal = Number(formData.user_thr);
+    const minSetSizeVal = Number(formData.min_set_size);
+    const maxSetSizeVal = Number(formData.max_set_size);
+    const thresholdAlgoVal = formData.threshold_algo;
+    const custbgCbVal = Number(formData.custbg_cb);
+    if (orderedQueryVal != 0 && orderedQueryVal != 1) {
+      throw new Error('ERROR: orderedQuery should be 1 or 0');
+    }
+    if (isNaN(userThrVal) || userThrVal > 1 || userThrVal < 0) {
+      throw new Error('ERROR: userThrVal should be a number [0, 1]')
+    }
+    if (isNaN(minSetSizeVal)) {
+      throw new Error('ERROR: minSetSize should be a number')
+    }
+    if (isNaN(maxSetSizeVal)) {
+      throw new Error('ERROR: maxSetSize should be a number');
+    }
+    if (thresholdAlgoVal != 'analytical' && thresholdAlgoVal != 'bonferroni' && thresholdAlgoVal != 'fdr') {
+      throw new Error('ERROR: thresholdAlgoVal should be one of analytical, bonferroni, fdr');
+    }
+    if (custbgCbVal != 0 && custbgCbVal != 1) {
+      throw new Error('ERROR: custbgCb should be 1 or 0')
+    }
+
     request.post({ url: gProfilerURL, formData: formData }, (err, httpResponse, gProfilerResponse) => {
       if (err) {
         reject(err);
@@ -61,25 +86,40 @@ const enrichment = (query, userSetting) => {
       responseInfo = _.filter(responseInfo, ele => ele.length != 1);
 
       const ret = {};
-      const signfIndex = 1;
-      const pvalueIndex = 2;
-      const TIndex = 3;
-      const QIndex = 4;
-      const QTIndex = 5;
-      const QTQIndex = 6;
-      const QTTIndex = 7;
+      const pValueIndex = 2;
+      const tIndex = 3;
+      const qIndex = 4;
+      const qAndTIndex = 5;
+      const qAndTOverQIndex = 6;
+      const qAndTOverTIndex = 7;
       const termIdIndex = 8;
       const tTypeIndex = 9;
       const tGroupIndex = 10;
       const tNameIndex = 11;
       const tDepthIndex = 12;
-      const QTListIndex = 13;
+      const qAndTListIndex = 13;
+      ret.options = {};
+      ret.options.orderedQuery = formData.ordered_query;
+      ret.options.userThr = formData.user_thr;
+      ret.options.minSetSize = formData.min_set_size;
+      ret.options.maxSetSize = formData.max_set_size;
+      ret.options.thresholdAlgo = formData.threshold_algo;
+      ret.options.custbg = formData.custbg;
+      ret.pathwayInfo = {};
       _.forEach(responseInfo, elem => {
-        ret[elem[termIdIndex]] = { signf: elem[signfIndex], pvalue: elem[pvalueIndex], T: elem[TIndex], Q: elem[QIndex], tType: elem[tTypeIndex], tGroup: elem[tGroupIndex], tName: elem[tNameIndex], tDepth: elem[tDepthIndex] };
-        ret[elem[termIdIndex]]["Q&T"] = elem[QTIndex];
-        ret[elem[termIdIndex]]["Q&T/Q"] = elem[QTQIndex];
-        ret[elem[termIdIndex]]["Q&T/T"] = elem[QTTIndex];
-        ret[elem[termIdIndex]]["Q&TList"] = elem[QTListIndex];
+        ret.pathwayInfo[elem[termIdIndex]] = {
+          pValue: Number(elem[pValueIndex]),
+          t: Number(elem[tIndex]),
+          q: Number(elem[qIndex]),
+          qAndT: Number(elem[qAndTIndex]),
+          qAndTOverQ: Number(elem[qAndTOverQIndex]),
+          qAndTOverT: Number(elem[qAndTOverTIndex]),
+          tType: elem[tTypeIndex].trim(),
+          tGroup: Number(elem[tGroupIndex]),
+          tName: elem[tNameIndex].trim(),
+          tDepth: Number(elem[tDepthIndex]),
+          qAndTList: elem[qAndTListIndex].split(',')
+        };
       });
       resolve(ret);
     });
@@ -90,6 +130,3 @@ const enrichment = (query, userSetting) => {
 
 module.exports = { enrichment };
 
-// enrichment(['AFF4']).then(function (results) {
-//    console.log(results);
-// });

@@ -65,7 +65,7 @@ class Search extends React.Component {
     const state = this.state;
     const query = {
       genes: state.query.q.trim(),
-      target: 'UNIPROTSWISSPROT',
+      target: 'UNIPROT',
     };
 
     this.setState({

@@ -100,6 +100,8 @@ router.post('/gene-query', (req, res) => {
 
   validatorGconvert(genes, userOptions).then(gconvertResult => {
     res.json(gconvertResult);
+  }).catch((invalidInfoError) => {
+    res.status(400).send({invalidTarget: invalidInfoError.invalidTarget, invalidOrganism: invalidInfoError.invalidOrganism});
   });
 });
 

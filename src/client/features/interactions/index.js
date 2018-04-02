@@ -35,32 +35,28 @@ class Interactions extends React.Component {
       loading: true,
     };    
 
-    const query = queryString.parse(props.location.search);
-    ServerAPI.getNeighborhood(query.ID,'TXT').then(res=>{ 
+    const id = queryString.parse(props.location.search).ID;
+    ServerAPI.getNeighborhood(id,'TXT').then(res=>{ 
+      const query = {
+        genes: id,
+        target: 'HGNC',
+      };
+      ServerAPI.geneQuery(query).then(geneQueryResult=>{
       const layoutConfig = getLayoutConfig('interactions');
-      const network= this.parse(res,query.ID);
+      const network= this.parse(res,id);
       this.setState({
         componentConfig: interactionsConfig,
         layoutConfig: layoutConfig,
         networkJSON: network.network ,
         networkMetadata: Object.assign({}, this.state.networkMetadata, {
-          name: (network.id+' Interactions'),
+          name: (geneQueryResult.geneInfo[0].convertedAlais+' Interactions'),
           datasource: 'Pathway Commons',
         }),
-        id: network.id,
+        id:geneQueryResult.geneInfo[0].convertedAlais ,
         loading: false
       }); 
     });
-
-    ServerAPI.getProteinInformation(query.ID).then(result=>{
-      this.setState({
-      networkMetadata: Object.assign({}, this.state.networkMetadata, {
-        comments: _.compact(['Full Name: '+result[0].protein.recommendedName.fullName.value,
-          result[0].protein.alternativeName && 'Synonyms: '+result[0].protein.alternativeName.map(obj => obj.fullName.value).join(', '),
-          result[0].comments[0].type==='FUNCTION'&&'Function: '+result[0].comments[0].text[0].value]), 
-      }),
-     }); 
-    });
+  });
 
     this.state.cy.on('trim', () => {
       const mainNode=this.state.cy.nodes(node=> node.data().id===this.state.id);
@@ -129,7 +125,7 @@ class Interactions extends React.Component {
     },classes:interaction});
   }
 
-  parse(data,query){
+  parse(data){
     let network = {
       edges:[],
       nodes:[],
@@ -142,8 +138,8 @@ class Interactions extends React.Component {
       const edgeMetadata = this.interactionMetadata(splitLine[6],splitLine[4]);
       this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],edgeMetadata,network,nodeMap,nodeMetadata);
     });
-    const id=this.findId(nodeMetadata,query);
-    return {id,network};
+    //const id=this.findId(nodeMetadata,query);
+    return {network};
   }
 
   render(){

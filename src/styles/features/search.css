@@ -260,6 +260,7 @@
   padding:10px;
   background-color: var(--light-base-colour-dark);
   border-bottom:1px var(--light-base-colour-darker) solid;
+  text-transform: capitalize;
 }
 
 .search-landing-title-multiple{

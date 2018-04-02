@@ -57,22 +57,28 @@ const enrichment = (query, userSetting) => {
     const thresholdAlgoVal = formData.threshold_algo;
     const custbgCbVal = Number(formData.custbg_cb);
     if (orderedQueryVal != 0 && orderedQueryVal != 1) {
-      throw new Error('ERROR: orderedQuery should be 1 or 0');
+      reject(new Error('ERROR: orderedQuery should be 1 or 0'));
     }
     if (isNaN(userThrVal) || userThrVal > 1 || userThrVal < 0) {
-      throw new Error('ERROR: userThrVal should be a number [0, 1]')
+      reject(new Error('ERROR: userThrVal should be a number [0, 1]'));
     }
     if (isNaN(minSetSizeVal)) {
-      throw new Error('ERROR: minSetSize should be a number')
+      reject(new Error('ERROR: minSetSize should be a number'));
+    }
+    if (minSetSizeVal < 0) {
+      reject(new Error('ERROR: minSetSize should be >= 0'));
     }
     if (isNaN(maxSetSizeVal)) {
-      throw new Error('ERROR: maxSetSize should be a number');
+      reject(new Error('ERROR: maxSetSize should be a number'));
+    }
+    if (maxSetSizeVal < minSetSizeVal) {
+      reject(new Error('ERROR: maxSetSize should be >= minSetSize'));
     }
     if (thresholdAlgoVal != 'analytical' && thresholdAlgoVal != 'bonferroni' && thresholdAlgoVal != 'fdr') {
-      throw new Error('ERROR: thresholdAlgoVal should be one of analytical, bonferroni, fdr');
+      reject(new Error('ERROR: thresholdAlgoVal should be one of analytical, bonferroni, fdr'));
     }
     if (custbgCbVal != 0 && custbgCbVal != 1) {
-      throw new Error('ERROR: custbgCb should be 1 or 0')
+      reject(new Error('ERROR: custbgCb should be 1 or 0'));
     }
 
     request.post({ url: gProfilerURL, formData: formData }, (err, httpResponse, gProfilerResponse) => {

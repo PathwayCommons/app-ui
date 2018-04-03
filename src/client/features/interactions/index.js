@@ -138,8 +138,9 @@ class Interactions extends React.Component {
 
   findId(data,ids){
     let hgncId=[];
+    const idTest=new RegExp(ids.join("|"));
     data.forEach((value,key)=> {
-      if (new RegExp(ids.join("|")).test(value[2])){
+      if (idTest.test(value[2])){
         hgncId.push(key); 
       }
     });

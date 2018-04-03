@@ -67,7 +67,6 @@ class Search extends React.Component {
       genes: state.query.q.trim(),
       target: 'UNIPROT',
     };
-
     this.setState({
       landingLoading: true
     });

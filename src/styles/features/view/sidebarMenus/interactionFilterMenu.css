@@ -8,7 +8,6 @@
     display: flex;
     justify-content: flex-start;
     cursor: pointer;
-
     border-style: solid;
     border-color: var(--light-base-colour-dark);
     border-width: 1px 1px 0px 1px;
@@ -39,12 +38,20 @@
   padding-left: 2px; 
   display: inline-flex;
   margin: 0px auto 0px 0px;
+  word-break:break-all;
 }
 
 .interaction-filter-legend{
   height:50px;
   width: 30px;
+  flex-shrink: 0;
   display: inline-flex;
+}
+
+@media screen and (max-width: 1010px) {
+  .icon-cutoff {
+      display:none;
+  }
 }
 
 .Binding{

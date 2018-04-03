@@ -40,7 +40,8 @@ const validatorGconvert = (query, userOptions) => {
   const promise = new Promise((resolve, reject) => {
     const formData = _.assign({}, defaultOptions, userOptions, { query: query });
     formData.organism =  formData.organism.toLowerCase();
-    formData.target = convertGConvertNames(formData.target.toUpperCase());
+    const initialTarget = formData.target.toUpperCase();
+    formData.target = convertGConvertNames(initialTarget);
     const invalidInfo = {invalidTarget: '', invalidOrganism: ''};
     if (!validOrganism.includes(formData.organism)) {
       invalidInfo.invalidOrganism = formData.organism;
@@ -79,7 +80,7 @@ const validatorGconvert = (query, userOptions) => {
         }
       });
 
-      const ret = { options: {target: formData.target, organism: formData.organism}, unrecognized: unrecognized, duplicate: duplicate, geneInfo: geneInfo };
+      const ret = { options: {target: initialTarget, organism: formData.organism}, unrecognized: unrecognized, duplicate: duplicate, geneInfo: geneInfo };
       resolve(ret);
     });
   });

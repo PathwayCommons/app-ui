@@ -39,10 +39,10 @@ const convertGConvertNames = (gConvertName) => {
 const validatorGconvert = (query, userOptions) => {
   const promise = new Promise((resolve, reject) => {
     const formData = _.assign({}, defaultOptions, userOptions, { query: query });
-    formData.organism =  formData.organism.toLowerCase();
+    formData.organism = formData.organism.toLowerCase();
     const initialTarget = formData.target.toUpperCase();
     formData.target = convertGConvertNames(initialTarget);
-    const invalidInfo = {invalidTarget: '', invalidOrganism: ''};
+    const invalidInfo = { invalidTarget: '', invalidOrganism: '' };
     if (!validOrganism.includes(formData.organism)) {
       invalidInfo.invalidOrganism = formData.organism;
     }
@@ -51,6 +51,16 @@ const validatorGconvert = (query, userOptions) => {
     }
     if (invalidInfo.invalidOrganism != '' || invalidInfo.invalidTarget != '') {
       reject(new InvalidInfoError(invalidInfo.invalidOrganism, invalidInfo.invalidTarget, ''));
+    }
+
+    if (formData.target === 'ENTREZGENE_ACC') {
+      formData.query = _.map(formData.query.split(/\s+/), ele => {
+        if (Number.isInteger(Number(ele))) {
+          return 'ENTREZGENE_ACC:' + ele;
+        }
+        return ele;
+      }
+      ).join(' ');
     }
 
     request.post({ url: gConvertURL, formData: formData }, (err, httpResponse, body) => {
@@ -66,11 +76,20 @@ const validatorGconvert = (query, userOptions) => {
       const initialAliasIndex = 1;
       const convertedAliasIndex = 3;
       _.forEach(geneInfoList, info => {
+        const initialAlias = info[initialAliasIndex];
+        const colonIndex = 14;
+        if (formData.target === 'ENTREZGENE_ACC' && initialAlias.substring(0, colonIndex + 1) === 'ENTREZGENE_ACC:') {
+          info[initialAliasIndex] = initialAlias.split(':')[1];
+        }
+
         if (info[convertedAliasIndex] === 'N/A') {
           if (_.filter(unrecognized, ele => ele === info[initialAliasIndex]).length === 0) {
             unrecognized.push(info[initialAliasIndex]);
           }
         } else {
+          if (formData.target === 'ENTREZGENE_ACC') {
+            info[convertedAliasIndex] = info[convertedAliasIndex].split(':')[1];
+          }
           if (_.filter(geneInfoList, ele => ele[convertedAliasIndex] === info[convertedAliasIndex]).length > 1 && _.filter(duplicate, ele => ele === info[initialAliasIndex]).length === 0) {
             duplicate.push(info[initialAliasIndex]);
           }
@@ -80,7 +99,7 @@ const validatorGconvert = (query, userOptions) => {
         }
       });
 
-      const ret = { options: {target: initialTarget, organism: formData.organism}, unrecognized: unrecognized, duplicate: duplicate, geneInfo: geneInfo };
+      const ret = { options: { target: initialTarget, organism: formData.organism }, unrecognized: unrecognized, duplicate: duplicate, geneInfo: geneInfo };
       resolve(ret);
     });
   });

@@ -40,7 +40,6 @@ const defaultSetting = {
   "threshold_algo": "fdr",
   "domain_size_type": "annotated",
   "custbg": [],
-  "custbg_cb": 0,
   "sf_GO:BP": 1,
   "sf_REAC": 1,
 };
@@ -103,6 +102,7 @@ const enrichment = (query, userSetting) => {
       const tGroupIndex = 10;
       const tNameIndex = 11;
       const tDepthIndex = 12;
+
       const qAndTListIndex = 13;
       ret.options = {};
       ret.options.orderedQuery = formData.ordered_query;
@@ -126,6 +126,7 @@ const enrichment = (query, userSetting) => {
           tDepth: Number(elem[tDepthIndex]),
           qAndTList: elem[qAndTListIndex].split(',')
         };
+
       });
       resolve(ret);
     });

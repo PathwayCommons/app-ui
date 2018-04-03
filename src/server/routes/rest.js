@@ -175,7 +175,11 @@ router.post('/emap', (req, res) => {
   const cutoff = req.body.cutoff;
   const JCWeight = req.body.JCWeight;
   const OCWeight = req.body.OCWeight;
-  res.json(generateGraphInfo(pathwayIdList, cutoff, JCWeight, OCWeight));
+  try {
+    res.json(generateGraphInfo(pathwayIdList, cutoff, JCWeight, OCWeight));
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
 });
 
 // Expose a rest endpoint for controller.endSession

@@ -29,11 +29,7 @@ const ServerAPI = {
   },
 
   geneQuery(query){
-    return fetch(`/api/gene-query?${qs.stringify({genes: query})}`, defaultFetchOpts).then(res => res.json());
-  },
-
-  findUniprotId(query){
-  return fetch(`/pc-client/uniprotIdSearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
+    return fetch(`/api/gene-query?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },
 
   getProteinInformation(uniprotId){

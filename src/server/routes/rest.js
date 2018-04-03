@@ -80,7 +80,7 @@ router.get('/gene-query', (req, res) => {
   validatorGconvert(genes, userOptions).then(gconvertResult => {
     res.json(gconvertResult);
   }).catch((invalidInfoError) => {
-    res.json({invalidTarget: invalidInfoError.invalidTarget, invalidOrganism: invalidInfoError.invalidOrganism});
+    res.status(400).send({invalidTarget: invalidInfoError.invalidTarget, invalidOrganism: invalidInfoError.invalidOrganism});
   });
 });
 
@@ -100,6 +100,8 @@ router.post('/gene-query', (req, res) => {
 
   validatorGconvert(genes, userOptions).then(gconvertResult => {
     res.json(gconvertResult);
+  }).catch((invalidInfoError) => {
+    res.status(400).send({invalidTarget: invalidInfoError.invalidTarget, invalidOrganism: invalidInfoError.invalidOrganism});
   });
 });
 
@@ -110,22 +112,12 @@ router.post('/gene-query', (req, res) => {
 router.get('/enrichment', (req, res) => {
   const genes = req.query.genes;
   const tmpOptions = {};
-  tmpOptions.output = req.query.output;
-  tmpOptions.organism = req.query.organism;
-  tmpOptions.significant = req.query.significant;
-  tmpOptions.sortByStructure = req.query.sortByStructure;
-  tmpOptions.orderedQuery = req.query.orderedQuery;
-  tmpOptions.asRanges = req.query.asRanges;
-  tmpOptions.noIea = req.query.noIea;
-  tmpOptions.underrep = req.query.underrep;
-  tmpOptions.hierfiltering = req.query.hierfiltering;
-  tmpOptions.userThr = req.query.userThr;
-  tmpOptions.minSetSize = req.query.minSetSize;
-  tmpOptions.maxSetSize = req.query.maxSetSize;
-  tmpOptions.thresholdAlgo = req.query.thresholdAlgo;
-  tmpOptions.domainSizeType = req.query.domainSizeType;
+  tmpOptions.ordered_query = req.query.orderedQuery;
+  tmpOptions.user_thr = req.query.userThr;
+  tmpOptions.min_set_size = req.query.minSetSize;
+  tmpOptions.max_set_size = req.query.maxSetSize;
+  tmpOptions.threshold_algo = req.query.thresholdAlgo;
   tmpOptions.custbg = req.query.custbg;
-  tmpOptions.custbgCb = req.query.custbgCb;
 
   const userOptions = {};
   for (const key in tmpOptions) {
@@ -136,6 +128,8 @@ router.get('/enrichment', (req, res) => {
 
   enrichment(genes, userOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
+  }).catch((err) => {
+    res.status(400).send(err.message);
   });
 });
 
@@ -145,22 +139,12 @@ router.get('/enrichment', (req, res) => {
 router.post('/enrichment', (req, res) => {
   const genes = req.body.genes;
   const tmpOptions = {};
-  tmpOptions.output = req.body.output;
-  tmpOptions.organism = req.body.organism;
-  tmpOptions.significant = req.body.significant;
-  tmpOptions.sortByStructure = req.body.sortByStructure;
-  tmpOptions.orderedQuery = req.body.orderedQuery;
-  tmpOptions.asRanges = req.body.asRanges;
-  tmpOptions.noIea = req.body.noIea;
-  tmpOptions.underrep = req.body.underrep;
-  tmpOptions.hierfiltering = req.body.hierfiltering;
-  tmpOptions.userThr = req.body.userThr;
-  tmpOptions.minSetSize = req.body.minSetSize;
-  tmpOptions.maxSetSize = req.body.maxSetSize;
-  tmpOptions.thresholdAlgo = req.body.thresholdAlgo;
-  tmpOptions.domainSizeType = req.body.domainSizeType;
+  tmpOptions.ordered_query = req.body.orderedQuery;
+  tmpOptions.user_thr = req.body.userThr;
+  tmpOptions.min_set_size = req.body.minSetSize;
+  tmpOptions.max_set_size = req.body.maxSetSize;
+  tmpOptions.threshold_algo = req.body.thresholdAlgo;
   tmpOptions.custbg = req.body.custbg;
-  tmpOptions.custbgCb = req.body.custbgCb;
 
   const userOptions = {};
   for (const key in tmpOptions) {
@@ -171,6 +155,8 @@ router.post('/enrichment', (req, res) => {
 
   enrichment(genes, userOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
+  }).catch((err) => {
+    res.status(400).send(err.message);
   });
 });
 
@@ -189,7 +175,11 @@ router.post('/emap', (req, res) => {
   const cutoff = req.body.cutoff;
   const JCWeight = req.body.JCWeight;
   const OCWeight = req.body.OCWeight;
-  res.json(generateGraphInfo(pathwayIdList, cutoff, JCWeight, OCWeight));
+  try {
+    res.json(generateGraphInfo(pathwayIdList, cutoff, JCWeight, OCWeight));
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
 });
 
 // Expose a rest endpoint for controller.endSession

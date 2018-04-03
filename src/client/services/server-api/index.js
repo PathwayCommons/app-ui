@@ -32,10 +32,6 @@ const ServerAPI = {
     return fetch(`/api/gene-query?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },
 
-  findUniprotId(query){
-  return fetch(`/pc-client/uniprotIdSearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
-  },
-
   getGeneInformation(ids,type){
     return fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?retmode=json&db=${type}&id=${ids.join(',')}`, {method: 'GET'}).then(res => res.json());
   },

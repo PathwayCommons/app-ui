@@ -40,7 +40,6 @@ const defaultSetting = {
   "threshold_algo": "fdr",
   "domain_size_type": "annotated",
   "custbg": [],
-  "custbg_cb": 0,
   "sf_GO:BP": 1,
   "sf_REAC": 1,
 };
@@ -55,7 +54,6 @@ const enrichment = (query, userSetting) => {
     const minSetSizeVal = Number(formData.min_set_size);
     const maxSetSizeVal = Number(formData.max_set_size);
     const thresholdAlgoVal = formData.threshold_algo;
-    const custbgCbVal = Number(formData.custbg_cb);
     if (orderedQueryVal != 0 && orderedQueryVal != 1) {
       reject(new Error('ERROR: orderedQuery should be 1 or 0'));
     }
@@ -76,9 +74,6 @@ const enrichment = (query, userSetting) => {
     }
     if (thresholdAlgoVal != 'analytical' && thresholdAlgoVal != 'bonferroni' && thresholdAlgoVal != 'fdr') {
       reject(new Error('ERROR: thresholdAlgoVal should be one of analytical, bonferroni, fdr'));
-    }
-    if (custbgCbVal != 0 && custbgCbVal != 1) {
-      reject(new Error('ERROR: custbgCb should be 1 or 0'));
     }
 
     request.post({ url: gProfilerURL, formData: formData }, (err, httpResponse, gProfilerResponse) => {

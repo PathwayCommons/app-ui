@@ -78,8 +78,8 @@ class Search extends React.Component {
       ServerAPI.geneQuery({genes: q,target: 'HGNCSYMBOL'}).then(result=>linkBuilder('Gene Cards',result.geneInfo)),
     ]).then(values=>{
       if(!_.isEmpty(values)){
-      let genes=values[0];
-      _.tail(values).forEach(gene=>_.mergeWith(genes,gene,(objValue, srcValue)=>_.assign(objValue,srcValue)));
+        let genes=values[0];
+        _.tail(values).forEach(gene=>_.mergeWith(genes,gene,(objValue, srcValue)=>_.assign(objValue,srcValue)));
         this.setState({
           landingLoading: true
         },()=>{
@@ -91,23 +91,25 @@ class Search extends React.Component {
           });
           ServerAPI.getGeneInformation(ids,'gene').then(result=>{
             const geneResults=result.result;
-             landing = geneResults.uids.map((gene)=>{ 
-                const originalSearch = _.findKey(genes,entry=> entry['NCBI Gene']===gene);
-                const links=_.mapValues(genes[originalSearch],
-                  (value,key)=>{
-                    let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue[0].toUpperCase());
-                    return link[0][1] + link[0][2] + value;
-                });
-                return {
-                  originalSearch:originalSearch,
-                  name:geneResults[gene].nomenclaturename,
-                  function: geneResults[gene].summary,
-                  synonyms: geneResults[gene].name+', '+geneResults[gene].otheraliases,
-                  showMore:{full:!(geneResults.uids.length>1),function:false,synonyms:false},
-                  links:links
-                };
+            landing = geneResults.uids.map((gene)=>{
+              const originalSearch = _.findKey(genes,entry=> entry['NCBI Gene']===gene);
+              const links=_.mapValues(genes[originalSearch],(value,key)=>{
+                let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue[0].toUpperCase());
+                return link[0][1] + link[0][2] + value;
               });
-              this.setState({landingLoading: false,landing:landing});
+              return {
+                originalSearch:originalSearch,
+                name:geneResults[gene].nomenclaturename,
+                function: geneResults[gene].summary,
+                synonyms: geneResults[gene].name+', '+geneResults[gene].otheraliases,
+                showMore:{full:!(geneResults.uids.length>1),function:false,synonyms:false},
+                links:links
+              };
+            });
+            this.setState({
+              landingLoading: false,
+              landing:landing}
+            );
           });
         });
       }
@@ -246,7 +248,7 @@ class Search extends React.Component {
 
         let functions=[];
         if(box.function){
-          functions=expandableText(270, box.function,' ','span','search-landing-function','function',index);
+          functions=expandableText(260, box.function,' ','span','search-landing-function','function',index);
         } 
 
         let links=[];

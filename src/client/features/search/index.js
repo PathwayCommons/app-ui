@@ -63,35 +63,43 @@ class Search extends React.Component {
 
   getLandingResult() {
     const state = this.state;
-    const query = {
-      genes: state.query.q.trim(),
-      target: 'ENTREZGENE_ACC',
+    const q=state.query.q.trim();
+    const linkBuilder= (source,array)=>{
+      let genes={};
+      array.forEach(gene=>{
+        genes[gene.initialAlias]={[source]:gene.convertedAlias};
+      });
+      return genes;
     };
-    ServerAPI.geneQuery(query).then(geneQueryResult=>{
-      if(!_.isEmpty(geneQueryResult.geneInfo)){
+    Promise.all([
+      ServerAPI.geneQuery({genes: q,target: 'ENTREZGENE_ACC'}).then(result=>linkBuilder('NCBI Gene',result.geneInfo)),
+      ServerAPI.geneQuery({genes: q,target: 'UNIPROT'}).then(result=>linkBuilder('Uniprot',result.geneInfo)),
+      ServerAPI.geneQuery({genes: q,target: 'HGNC'}).then(result=>linkBuilder('HGNC',result.geneInfo)),
+      ServerAPI.geneQuery({genes: q,target: 'HGNCSYMBOL'}).then(result=>linkBuilder('Gene Cards',result.geneInfo)),
+    ]).then(values=>{
+      if(!_.isEmpty(values)){
+      let genes=values[0];
+      _.tail(values).forEach(gene=>_.mergeWith(genes,gene,(objValue, srcValue)=>_.assign(objValue,srcValue)));
         this.setState({
           landingLoading: true
         },()=>{
-          const ids=geneQueryResult.geneInfo.map(gene=>gene.convertedAlias.split(':')[1]);
+          let ids=[];
+          let landing;
+          _.forEach(genes,gene=>{
+            gene['NCBI Gene']=gene['NCBI Gene'].split(':')[1]; //removes the ENTREZGENE_ACC from the NCBI id and puts it in ids 
+            ids.push(gene['NCBI Gene']);
+          });
           ServerAPI.getGeneInformation(ids,'gene').then(result=>{
             const geneResults=result.result;
-            let landing=geneResults.uids.map((gene,index)=>{ 
-              const lookupGene = 'ENTREZGENE_ACC:'+gene;
-              let links={'NCBI Gene':gene};
-
-              return Promise.all([
-                ServerAPI.geneQuery({genes: lookupGene,target: 'UNIPROT'}).then(resultUNIPROT=>links['Uniprot']=resultUNIPROT.geneInfo[0]&&resultUNIPROT.geneInfo[0].convertedAlias),
-                ServerAPI.geneQuery({genes: lookupGene,target: 'HGNC'}).then(resultHGNC=>links['HGNC']=resultHGNC.geneInfo[0]&&resultHGNC.geneInfo[0].convertedAlias),
-                ServerAPI.geneQuery({genes: lookupGene,target: 'HGNCSYMBOL'}).then(resultCard=>links['Gene Cards']=resultCard.geneInfo[0]&&resultCard.geneInfo[0].convertedAlias),
-              ]).then(()=>{
-                links=_.mapValues( _.pickBy(links),
+             landing = geneResults.uids.map((gene)=>{ 
+                const originalSearch = _.findKey(genes,entry=> entry['NCBI Gene']===gene);
+                const links=_.mapValues(genes[originalSearch],
                   (value,key)=>{
                     let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue[0].toUpperCase());
                     return link[0][1] + link[0][2] + value;
                 });
-
                 return {
-                  originalSearch:geneQueryResult.geneInfo[index].initialAlias,
+                  originalSearch:originalSearch,
                   name:geneResults[gene].nomenclaturename,
                   function: geneResults[gene].summary,
                   synonyms: geneResults[gene].name+', '+geneResults[gene].otheraliases,
@@ -99,8 +107,7 @@ class Search extends React.Component {
                   links:links
                 };
               });
-            });
-            Promise.all(landing).then(result =>this.setState({landingLoading: false,landing:result}));
+              this.setState({landingLoading: false,landing:landing});
           });
         });
       }
@@ -222,7 +229,7 @@ class Search extends React.Component {
       }
       return result;
     };
-    console.log( state.landing);
+
     const landing = (state.landingLoading ) ?
       h('div.search-landing-innner',[h(Loader, { loaded:false , options: { color: '#16A085',position:'relative', top: '15px' }})]):
       state.landing.map((box,index)=>{

@@ -44,11 +44,8 @@ const generateGraphInfo = (pathwayInfoList, cutoff = 0.375, JCWeight, OCWeight) 
 
   // check unrecognized and duplicates, modify pathwayIdList
   const unrecognized = [];
-  console.log(pathwayInfoList);
-  console.log(typeof(pathwayInfoList));
   for (let pathwayId in pathwayInfoList) {
     if (!pathwayInfoList.hasOwnProperty(pathwayId)) continue;
-    //console.log(pathwayId);
     if (!pathwayInfoTable.has(pathwayId)) {
       if (_.filter(unrecognized, elem => elem === pathwayId).length === 0) {
         unrecognized.push(pathwayId);

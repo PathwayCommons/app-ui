@@ -42,13 +42,8 @@ class MetadataTip {
 
         //Create tippy object
         let refObject = this.cyElement.popperRef();
-        tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow: true, position: 'bottom', distance: isEdge? -25*zoom+7:10});
-        tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow: true, position: 'bottom', distance: isEdge? -25*zoom+7:10 });
-        //Resolve Reference issues
-        tooltip.selector.dim = refObject.dim;
-        tooltip.selector.cyElement = refObject.cyElement;
-        tooltipExt.selector.dim = refObject.dim;
-        tooltipExt.selector.cyElement = refObject.cyElement;
+        tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow: true, placement: 'bottom',distance: isEdge? -25*zoom+7:10}).tooltips[0];
+        tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow: true, placement: 'bottom',distance: isEdge?-25*zoom+7:10}).tooltips[0];
 
         //Save tooltips
         this.tooltip = tooltip;
@@ -57,7 +52,7 @@ class MetadataTip {
       }
 
       //Show Tooltip
-      tooltip.show(tooltip.store[0].popper);
+      tooltip.show();
       this.visible = true;
     }.bind(this));
   }
@@ -89,7 +84,7 @@ class MetadataTip {
     if (!(this.data)) { this.data = []; }
     return h('div.tooltip-image', [
       h('div.tooltip-heading', this.name),
-      h('div.tooltip-internal', h('div', (data).map(item => formatContent.parseMetadata(item, true, expandFunction)), this))
+      h('div.tooltip-internal', h('div', (data).map(item => formatContent.parseMetadata(item, true, expandFunction, this.name)), this))
     ]);
   }
 
@@ -116,7 +111,7 @@ class MetadataTip {
     if (!(this.data)) { this.data = []; }
     return h('div.tooltip-image', [
       h('div.tooltip-heading', this.name),
-      h('div.tooltip-internal', h('div', (data).map(item => formatContent.parseMetadata(item, !this.isExpanded(item[0]), getExpansionFunction(item)), this)))
+      h('div.tooltip-internal', h('div', (data).map(item => formatContent.parseMetadata(item, !this.isExpanded(item[0]), getExpansionFunction(item), this.name), this)))
     ]
     );
   }
@@ -133,8 +128,8 @@ class MetadataTip {
   //Hide Tippy tooltip
   hide() {
     if (this.tooltip) {
-      this.tooltip.hide(this.tooltip.store[0].popper);
-      this.tooltipExt.hide(this.tooltipExt.store[0].popper);
+      this.tooltip.hide();
+      this.tooltipExt.hide();
     }
     this.visible = false;
     this.viewStatus = {};
@@ -160,7 +155,7 @@ class MetadataTip {
 
     //Hide existing tooltip 
     const existingToolTip = expansionObject.tooltipExt;
-    existingToolTip.hide(existingToolTip.store[0].popper);
+    existingToolTip.hide();
   
     //Get tooltip objects
     let tooltip = expansionObject.tooltip;
@@ -174,19 +169,15 @@ class MetadataTip {
       trigger: 'manual',
       hideOnClick: false,
       arrow: true,
-      position: 'bottom',
+      placement: 'bottom',
       animation: 'shift',
       duration : 1,
       distance: isEdge? -25*zoom+7:10
-    });
-
-    //Resolve Reference issues
-    tooltipExt.selector.dim = refObject.dim;
-    tooltipExt.selector.cyElement = refObject.cyElement;
+    }).tooltips[0];
 
     //Hide and show
-    tooltip.hide(tooltip.store[0].popper);
-    tooltipExt.show(tooltipExt.store[0].popper);
+    tooltip.hide();
+    tooltipExt.show();
 
     //Save extended tooltip
     expansionObject.tooltipExt = tooltipExt;

@@ -10,7 +10,7 @@ const config = require('../../config');
 const { validatorGconvert } = require('../enrichment-map/gene-validator');
 const { enrichment } = require('../enrichment-map/enrichment');
 
-const { generateCys } = require('../enrichment-map/emap');
+const { generateGraphInfo } = require('../enrichment-map/emap');
 
 const isAuthenticated = token => {
   return config.MASTER_PASSWORD != '' && config.MASTER_PASSWORD === token;
@@ -35,9 +35,9 @@ router.post('/submit-layout', function (req, res) {
 router.post('/submit-graph', function (req, res) {
   if (isAuthenticated(req.body.token)) {
     controller.submitGraph(req.body.uri, req.body.version, req.body.graph)
-    .then((package) => {
-      res.json(package);
-    });
+      .then((package) => {
+        res.json(package);
+      });
   } else {
     res.json(errorMsg);
   }
@@ -79,8 +79,32 @@ router.get('/gene-query', (req, res) => {
 
   validatorGconvert(genes, userOptions).then(gconvertResult => {
     res.json(gconvertResult);
+  }).catch((invalidInfoError) => {
+    res.status(400).send({invalidTarget: invalidInfoError.invalidTarget, invalidOrganism: invalidInfoError.invalidOrganism});
   });
 });
+
+
+// post for gConvert validator
+router.post('/gene-query', (req, res) => {
+  const genes = req.body.genes;
+  const tmpOptions = {};
+  const userOptions = {};
+  tmpOptions.organism = req.body.organism;
+  tmpOptions.target = req.body.target;
+  for (const key in tmpOptions) {
+    if (tmpOptions[key] != undefined) {
+      userOptions[key] = tmpOptions[key];
+    }
+  }
+
+  validatorGconvert(genes, userOptions).then(gconvertResult => {
+    res.json(gconvertResult);
+  }).catch((invalidInfoError) => {
+    res.status(400).send({invalidTarget: invalidInfoError.invalidTarget, invalidOrganism: invalidInfoError.invalidOrganism});
+  });
+});
+
 
 // expose a rest endpoint for enrichment
 // get request
@@ -88,22 +112,12 @@ router.get('/gene-query', (req, res) => {
 router.get('/enrichment', (req, res) => {
   const genes = req.query.genes;
   const tmpOptions = {};
-  tmpOptions.output = req.query.output;
-  tmpOptions.organism = req.query.organism;
-  tmpOptions.significant = req.query.significant;
-  tmpOptions.sortByStructure = req.query.sortByStructure;
-  tmpOptions.orderedQuery = req.query.orderedQuery;
-  tmpOptions.asRanges = req.query.asRanges;
-  tmpOptions.noIea = req.query.noIea;
-  tmpOptions.underrep = req.query.underrep;
-  tmpOptions.hierfiltering = req.query.hierfiltering;
-  tmpOptions.userThr = req.query.userThr;
-  tmpOptions.minSetSize = req.query.minSetSize;
-  tmpOptions.maxSetSize = req.query.maxSetSize;
-  tmpOptions.thresholdAlgo = req.query.thresholdAlgo;
-  tmpOptions.domainSizeType = req.query.domainSizeType;
+  tmpOptions.ordered_query = req.query.orderedQuery;
+  tmpOptions.user_thr = req.query.userThr;
+  tmpOptions.min_set_size = req.query.minSetSize;
+  tmpOptions.max_set_size = req.query.maxSetSize;
+  tmpOptions.threshold_algo = req.query.thresholdAlgo;
   tmpOptions.custbg = req.query.custbg;
-  tmpOptions.custbgCb = req.query.custbgCb;
 
   const userOptions = {};
   for (const key in tmpOptions) {
@@ -114,6 +128,8 @@ router.get('/enrichment', (req, res) => {
 
   enrichment(genes, userOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
+  }).catch((err) => {
+    res.status(400).send(err.message);
   });
 });
 
@@ -123,22 +139,12 @@ router.get('/enrichment', (req, res) => {
 router.post('/enrichment', (req, res) => {
   const genes = req.body.genes;
   const tmpOptions = {};
-  tmpOptions.output = req.body.output;
-  tmpOptions.organism = req.body.organism;
-  tmpOptions.significant = req.body.significant;
-  tmpOptions.sortByStructure = req.body.sortByStructure;
-  tmpOptions.orderedQuery = req.body.orderedQuery;
-  tmpOptions.asRanges = req.body.asRanges;
-  tmpOptions.noIea = req.body.noIea;
-  tmpOptions.underrep = req.body.underrep;
-  tmpOptions.hierfiltering = req.body.hierfiltering;
-  tmpOptions.userThr = req.body.userThr;
-  tmpOptions.minSetSize = req.body.minSetSize;
-  tmpOptions.maxSetSize = req.body.maxSetSize;
-  tmpOptions.thresholdAlgo = req.body.thresholdAlgo;
-  tmpOptions.domainSizeType = req.body.domainSizeType;
+  tmpOptions.ordered_query = req.body.orderedQuery;
+  tmpOptions.user_thr = req.body.userThr;
+  tmpOptions.min_set_size = req.body.minSetSize;
+  tmpOptions.max_set_size = req.body.maxSetSize;
+  tmpOptions.threshold_algo = req.body.thresholdAlgo;
   tmpOptions.custbg = req.body.custbg;
-  tmpOptions.custbgCb = req.body.custbgCb;
 
   const userOptions = {};
   for (const key in tmpOptions) {
@@ -149,13 +155,31 @@ router.post('/enrichment', (req, res) => {
 
   enrichment(genes, userOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
+  }).catch((err) => {
+    res.status(400).send(err.message);
   });
 });
 
 // Expose a rest endpoint for emap
 router.get('/emap', (req, res) => {
   const pathwayIdList = req.query.pathwayIdList.split(/\s+/);
-  res.json(generateCys(pathwayIdList));
+  try {
+    res.json(generateGraphInfo(pathwayIdList));
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
+router.post('/emap', (req, res) => {
+  const pathwayIdList = req.body.pathwayIdList.split(/\s+/);
+  const cutoff = req.body.cutoff;
+  const JCWeight = req.body.JCWeight;
+  const OCWeight = req.body.OCWeight;
+  try {
+    res.json(generateGraphInfo(pathwayIdList, cutoff, JCWeight, OCWeight));
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
 });
 
 // Expose a rest endpoint for controller.endSession

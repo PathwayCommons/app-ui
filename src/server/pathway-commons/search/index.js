@@ -1,7 +1,7 @@
 const {search, utilities} = require('pathway-commons');
 const path = require('path');
 const _ = require('lodash');
-const getHGNCData = require('./hgnc');
+const geneValidator = require('../../enrichment-map/gene-validator').validatorGconvert;
 
 const sanitize = (s) => {
   // Escape (with '\'), to treat them literally, symbols, such as '*', ':', or space, 
@@ -10,23 +10,16 @@ const sanitize = (s) => {
 };
 
 const processPhrase = (phrase) => {
-  const sourceList = [
-    'uniprot',
-    'chebi',
-    'smpdb',
-    'refseq'
-  ];
-
-  const tokens = phrase.toUpperCase().split(/\s+/g);
-  
-  return getHGNCData(path.join(__dirname,'/hgncSymbols.txt')).then(collection => {
-    return tokens.map(token => {
-      //if symbol is recognized by at least one source
-      const recognized = sourceList.some(source => utilities.sourceCheck(source, token))
-                              || collection.has(token.toUpperCase());
-      const sanitized = sanitize(token);
+  return geneValidator(phrase).then(result => {
+    const genes = result.geneInfo.map(gene=>'xrefid:' + sanitize(gene.initialAlias.toUpperCase()));
+    const otherIds = result.unrecognized.map(id=>{
+      id=id.toUpperCase()
+      const recognized = /^SMP\d{5}$/.test(id)     // check for a smpdb or chebi id 
+                      ||/^CHEBI:\d+$/.test(id) && (id.length <= ("CHEBI:".length + 6));      
+      const sanitized = sanitize(id);
       return recognized ? ( 'xrefid:' + sanitized ) : ( 'name:' + '*' + sanitized + '*' );
-    });
+    }); 
+    return genes.concat(otherIds);  
   });
 };
 
@@ -74,23 +67,4 @@ const querySearch = async (query) => {
   return [];
 };
 
-const uniprotIdSearch = async (query) => {
-  const queries = await (processPhrase(sanitize(query.q.trim())));
-  const filteredQueries = queries.filter(entry=>entry.includes('xrefid'));
-  if(!_.isEmpty(filteredQueries)){
-    const searchResult = await search()
-      .query(query) //input query string
-      .q(filteredQueries)
-      .format('json')
-      .fetch();
-    const searchSuccess = searchResult != null
-    if (searchSuccess && searchResult.searchHit.length > 0) {
-      const filteredResults = searchResult.searchHit.filter(hit =>
-        hit.uri.startsWith('http://identifiers.org/uniprot/') 
-      );
-      return filteredResults.map(hit=>_.last(hit.uri.split('/'))); //Parses and returns the Uniprot id
-    }
-  } 
-  return [];
-};
-module.exports = {querySearch:querySearch,uniprotIdSearch:uniprotIdSearch};
+module.exports = {querySearch};

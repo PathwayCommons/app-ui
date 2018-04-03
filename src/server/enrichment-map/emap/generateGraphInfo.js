@@ -20,10 +20,32 @@ const _ = require('lodash');
 
 // input ["GO:1902275", "GO:2001252", "GO:1905269", "GO:0051053"]
 // returns a cytoscape object
-const generateCys = (pathwayIdList) => {
+const generateGraphInfo = (pathwayIdList, cutoff = 0.375, JCWeight, OCWeight) => {
+  if (cutoff < 0 || cutoff > 1) { throw new Error('ERROR: cutoff out of range [0, 1]');}
+  if (isNaN(Number(cutoff))) { throw new Error('ERROR: cutoff is not a number'); }
+
+  if (JCWeight < 0 || JCWeight > 1) {
+    throw new Error('ERROR: JCWeight out of range [0, 1]');
+  }
+  if (OCWeight < 0 || OCWeight > 1) {
+    throw new Error('ERROR: OCWeight out of range [0, 1]');
+  }
+  if (JCWeight != undefined && isNaN(Number(JCWeight))) {throw new Error('ERROR: JCWeight should be a number');}
+  if (OCWeight != undefined && isNaN(Number(OCWeight))) {throw new Error('ERROR: OCWeight should be a number');}
+  if (OCWeight != undefined && JCWeight != undefined && Number(OCWeight) + Number(JCWeight) != 1) {
+    throw new Error('ERROR: OCWeight + JCWeight should be 1');
+  }
+  if (JCWeight === undefined && OCWeight === undefined) {
+    JCWeight = 0.5;
+    OCWeight = 0.5;
+  } else if (JCWeight === undefined) {
+    JCWeight = 1 - OCWeight;
+  } else if (OCWeight === undefined) {
+    OCWeight = 1 - JCWeight;
+  }
+
   // check unrecognized and duplicates, modify pathwayIdList
   const unrecognized = [];
-  const duplicate = [];
   for (let i = 0; i < pathwayIdList.length; ++i) {
     const pathwayId = pathwayIdList[i];
     if (!pathwayInfoTable.has(pathwayId)) {
@@ -37,43 +59,38 @@ const generateCys = (pathwayIdList) => {
   for (let i = 0; i < pathwayIdList.length; ++i) {
     const pathwayId = pathwayIdList[i];
     if ((_.filter(pathwayIdList, ele => ele === pathwayId)).length > 1) {
-      if (_.filter(duplicate, ele => ele === pathwayId).length == 0) {
-        duplicate.push(pathwayId);
-      } else {
-        pathwayIdList.splice(pathwayIdList.indexOf(pathwayId), 1);
-        --i;
-      }
+      throw new Error('ERROR: ' + pathwayId + ' is a duplicate');
     }
   }
   // generate node and edge info
+  const elements = [];
   const cytoscapeJSON = {};
   cytoscapeJSON.nodes = [];
   cytoscapeJSON.edges = [];
   const nodeInfo = generateNodeInfo(pathwayIdList);
   _.forEach(nodeInfo, node => {
-    cytoscapeJSON.nodes.push(node.pathwayId);
+    elements.push({ data: { id: node.pathwayId } });
   });
-  const edgeInfo = generateEdgeInfo(pathwayIdList);
+  const edgeInfo = generateEdgeInfo(pathwayIdList, JCWeight, cutoff);
   _.forEach(edgeInfo, edge => {
     const sourceIndex = 0;
     const targetIndex = 1;
     const source = edge.edgeId.split('_')[sourceIndex];
     const target = edge.edgeId.split('_')[targetIndex];
-    cytoscapeJSON.edges.push({
-      id: edge.edgeId,
-      source: source,
-      target: target,
-      similarity: edge.similarity,
-      intersection: edge.intersection
+    elements.push({
+      data: {
+        id: edge.edgeId,
+        source: source,
+        target: target,
+        similarity: edge.similarity,
+        intersection: edge.intersection
+      }
     });
   });
-  return { unrecognized: unrecognized, duplicate: duplicate, graph: cytoscapeJSON };
+
+  return { unrecognized: unrecognized, graph: elements };
+
 };
 
 
-module.exports = { generateCys };
-
-//simple testing
-//console.log(generateCys(["GO:1902275", "GO:2001252", "GO:1905269"]));
-// const result = generateCys(["GO:1902275", "GO:2001252", "GO:1905269"]);
-// console.log(JSON.stringify(result));
+module.exports = { generateGraphInfo };

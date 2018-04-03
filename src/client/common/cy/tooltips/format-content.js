@@ -2,6 +2,7 @@ const h = require('hyperscript');
 const classNames = require('classnames');
 const _ = require('lodash');
 const config = require('../../config');
+const queryString = require('query-string');
 
 //Handle standard name related metadata fields
 const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Name: ');
@@ -41,17 +42,17 @@ const databaseHandler = (pair, expansionFunction) => {
 };
 
 //Handle interaction/Detailed views related fields
-const interactionHandlerTrim =(pair, expansionFunction) => {
+const interactionHandlerTrim =(pair, expansionFunction, title) => {
   let maxViews=8;
   const expansionLink = pair[1].length>maxViews? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »'):'';
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDetailedViewList(sortByDatabaseId(pair[1]), pair[1].length>maxViews, expansionLink,maxViews);
+  return generateDetailedViewList(sortByDatabaseId(pair[1]), pair[1].length>maxViews, expansionLink,maxViews,title);
 };
-const interactionHandler =(pair, expansionFunction) => {
+const interactionHandler =(pair, expansionFunction, title) => {
   let maxViews=8;
   const expansionLink = pair[1].length>maxViews? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less'):'';
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDetailedViewList(sortByDatabaseId(pair[1]),false, expansionLink,maxViews);
+  return generateDetailedViewList(sortByDatabaseId(pair[1]),false, expansionLink,maxViews,title);
 };
 
 //Handle publication related fields
@@ -103,7 +104,7 @@ const metaDataKeyMap = new Map()
   * Sample Input : parseMetadata(['Standard Name', 'TP53'])
   * Sample Output : <div class='fake-paragraph'><div class='field-name'></div></div>
 */
-function parseMetadata(pair, trim = true, expansionFunction) {
+function parseMetadata(pair, trim = true, expansionFunction, title) {
   const doNotRender = ['Data Source', 'Data SourceTrim', 'Display Name'];
   let key = pair[0];
 
@@ -114,7 +115,7 @@ function parseMetadata(pair, trim = true, expansionFunction) {
 
   let handler = metaDataKeyMap.get(key);
   if (handler) {
-    return handler(pair, expansionFunction);
+    return handler(pair, expansionFunction, title);
   }
   else if (!(trim) && !doNotRender.includes(key)) {
     return defaultHandler(pair);
@@ -294,7 +295,7 @@ function generateIdList(dbIdObject, trim) {
  * Sample Input : generateDBLink('Reactome', 'R-HSA-59544', true)
  * Sample Output : <div class="fake-spacer"><a class="db-link-single-ref" href="http://identifiers.org/reactome/R-HSA-59544" target="_blank">Reactome</a></div>
  */
-function generateDBLink(dbName, dbId, isDbVisible, otherName) {
+function generateDBLink(dbName, dbId, isDbVisible) {
   //Get base url for dbid
   let db = config.databases;
   let className = '';
@@ -307,7 +308,7 @@ function generateDBLink(dbName, dbId, isDbVisible, otherName) {
   if (isDbVisible) {
     className = '-single-ref';
   }
-  let label = otherName ? otherName :(isDbVisible ? dbName :dbId);
+  let label = isDbVisible ? dbName :dbId;
 
   //Build reference url
   if (link.length === 1 && link[0][1]) {
@@ -430,17 +431,22 @@ function generateDatabaseList(sortedArray, trim, expansionLink) {
   //Generate list
   let renderValue = sortedArray.map(item => [generateIdList(item, trim)], this);
 
-  return formatRenderValue(sortedArray,renderValue,expansionLink,trim,true,'Links');
+  return formatRenderValue(sortedArray, renderValue, expansionLink, trim, true, 'Links');
 }
 
-function generateDetailedViewList(sortedArray, trim, expansionLink,maxViews) {
-  let name = sortedArray[0].database;
+function generateDetailedViewList(sortedArray, trim, expansionLink, maxViews, title) {
   let list = sortedArray[0].ids;
   if(trim){list=list.slice(0,maxViews);}
   //Generate list
-  let renderValue = list.map((data,index) => [generateDBLink(name, data, true,'Interaction '+(index+1))],this);
+  let renderValue = list.map((data,index) => [h('div.fake-spacer', 
+    h('a.db-link' ,{
+      href:'/view?',
+      search: queryString.stringify({uri:'http://pathwaycommons.org/pc2/'+data, title:title, removeInfoMenu:true}),
+      target: '_blank', 
+    }, 'Interaction '+(index+1))
+  )]);
 
-  return formatRenderValue(sortedArray,renderValue,expansionLink,trim,false,'Detailed Views');
+  return formatRenderValue(sortedArray, renderValue, expansionLink, trim, false, 'Detailed Views');
 }
 
 function formatRenderValue(sortedArray, renderValue, expansionLink, trim, list,name){

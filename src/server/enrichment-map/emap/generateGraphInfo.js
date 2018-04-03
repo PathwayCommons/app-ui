@@ -88,7 +88,7 @@ const generateGraphInfo = (pathwayIdList, cutoff = 0.375, JCWeight, OCWeight) =>
     });
   });
 
-  return { unrecognized: unrecognized, graph: elements };
+  return { options: { cutoff: cutoff, JCWeight: JCWeight, OCWeight: OCWeight }, unrecognized: unrecognized, graph: elements };
 
 };
 

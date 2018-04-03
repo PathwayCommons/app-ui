@@ -62,30 +62,7 @@ router.get('/get-graph-and-layout', function (req, res) {
   });
 });
 
-// Expose a rest endpoint for gconvert validator
-// optional paramter: target, organism
-// use default values if not specified
-router.get('/gene-query', (req, res) => {
-  const genes = req.query.genes;
-  const tmpOptions = {};
-  const userOptions = {};
-  tmpOptions.organism = req.query.organism;
-  tmpOptions.target = req.query.target;
-  for (const key in tmpOptions) {
-    if (tmpOptions[key] != undefined) {
-      userOptions[key] = tmpOptions[key];
-    }
-  }
-
-  validatorGconvert(genes, userOptions).then(gconvertResult => {
-    res.json(gconvertResult);
-  }).catch((invalidInfoError) => {
-    res.status(400).send({invalidTarget: invalidInfoError.invalidTarget, invalidOrganism: invalidInfoError.invalidOrganism});
-  });
-});
-
-
-// post for gConvert validator
+// expose a rest endpoint for gconvert validator
 router.post('/gene-query', (req, res) => {
   const genes = req.body.genes;
   const tmpOptions = {};
@@ -97,7 +74,6 @@ router.post('/gene-query', (req, res) => {
       userOptions[key] = tmpOptions[key];
     }
   }
-
   validatorGconvert(genes, userOptions).then(gconvertResult => {
     res.json(gconvertResult);
   }).catch((invalidInfoError) => {
@@ -107,35 +83,6 @@ router.post('/gene-query', (req, res) => {
 
 
 // expose a rest endpoint for enrichment
-// get request
-// use default values if the key is undefined
-router.get('/enrichment', (req, res) => {
-  const genes = req.query.genes;
-  const tmpOptions = {};
-  tmpOptions.ordered_query = req.query.orderedQuery;
-  tmpOptions.user_thr = req.query.userThr;
-  tmpOptions.min_set_size = req.query.minSetSize;
-  tmpOptions.max_set_size = req.query.maxSetSize;
-  tmpOptions.threshold_algo = req.query.thresholdAlgo;
-  tmpOptions.custbg = req.query.custbg;
-
-  const userOptions = {};
-  for (const key in tmpOptions) {
-    if (tmpOptions[key] != undefined) {
-      userOptions[key] = tmpOptions[key];
-    }
-  }
-
-  enrichment(genes, userOptions).then(enrichmentResult => {
-    res.json(enrichmentResult);
-  }).catch((err) => {
-    res.status(400).send(err.message);
-  });
-});
-
-// expose a rest endpoint for enrichment
-// post request
-// use default values if the key is undefined
 router.post('/enrichment', (req, res) => {
   const genes = req.body.genes;
   const tmpOptions = {};
@@ -145,14 +92,12 @@ router.post('/enrichment', (req, res) => {
   tmpOptions.max_set_size = req.body.maxSetSize;
   tmpOptions.threshold_algo = req.body.thresholdAlgo;
   tmpOptions.custbg = req.body.custbg;
-
   const userOptions = {};
   for (const key in tmpOptions) {
     if (tmpOptions[key] != undefined) {
       userOptions[key] = tmpOptions[key];
     }
   }
-
   enrichment(genes, userOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
   }).catch((err) => {
@@ -161,15 +106,6 @@ router.post('/enrichment', (req, res) => {
 });
 
 // Expose a rest endpoint for emap
-router.get('/emap', (req, res) => {
-  const pathwayIdList = req.query.pathwayIdList.split(/\s+/);
-  try {
-    res.json(generateGraphInfo(pathwayIdList));
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-});
-
 router.post('/emap', (req, res) => {
   const pathwayIdList = req.body.pathwayIdList.split(/\s+/);
   const cutoff = req.body.cutoff;
@@ -181,6 +117,7 @@ router.post('/emap', (req, res) => {
     res.status(400).send(err.message);
   }
 });
+
 
 // Expose a rest endpoint for controller.endSession
 router.get('/disconnect', function (req, res) {

@@ -53,29 +53,35 @@ class Interactions extends React.Component {
       }
     };    
 
-    const id = queryString.parse(props.location.search).ID;
-    ServerAPI.getNeighborhood(id,'TXT').then(res=>{ 
+    const originalIds = queryString.parse(props.location.search).ID;
+    Promise.all([ 
+      ServerAPI.getNeighborhood(originalIds,'TXT'),
+      ServerAPI.geneQuery({genes: originalIds,target: 'HGNCSYMBOL'}).then(result=>result.geneInfo.map(gene=>gene.convertedAlias))
+    ]).then(values=>{
     const layoutConfig = getLayoutConfig('interactions');
-    const network= this.parse(res,id);
+    const network= this.parse(values[0]);
     this.setState({
       componentConfig: interactionsConfig,
       layoutConfig: layoutConfig,
       networkJSON: network ,
       networkMetadata: Object.assign({}, this.state.networkMetadata, {
-        name: (id+' Interactions'),
+        name: (originalIds+' Interactions'),
         datasource: 'Pathway Commons',
       }),
-      id:id ,
+      ids:values[1] ,
       loading: false
     });
   });
 
+
     this.state.cy.on('trim', () => {
       const state = this.state;
-      const cy = this.state.cy;
-      const mainNode = cy.nodes(node=> node.data().id === state.id);
-      const nodesToKeep = mainNode.merge(mainNode.connectedEdges().connectedNodes());
-      cy.remove(cy.nodes().difference(nodesToKeep));
+      if(state.ids.length>0){   
+        const cy = this.state.cy;
+        const mainNode = cy.nodes(node=> node.data().id === state.ids[0]);
+        const nodesToKeep = mainNode.merge(mainNode.connectedEdges().connectedNodes());
+        cy.remove(cy.nodes().difference(nodesToKeep));
+      }
     });
 
     this.state.cy.one('layoutstop',()=>{

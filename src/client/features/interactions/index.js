@@ -54,7 +54,7 @@ class Interactions extends React.Component {
     };    
 
     const query = queryString.parse(props.location.search);
-    if(query.id.constructor != Array){query.id=[query.id];}
+    query.id=_.concat([],query.id);
       ServerAPI.getNeighborhood(query.id,query.kind).then(res=>{ 
       const layoutConfig = getLayoutConfig('interactions');
       const network= this.parse(res,query.id);

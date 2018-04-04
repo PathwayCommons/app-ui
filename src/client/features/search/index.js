@@ -63,12 +63,10 @@ class Search extends React.Component {
   getLandingResult() {
     const state = this.state;
     const query = {
-      q: state.query.q.trim(),
-      type: 'ProteinReference',
-      datasource: state.query.datasource,
-      species: '9606'
+      genes: state.query.q.trim(),
+      target: 'UNIPROT',
     };
-    if(query.q.includes(' ')){
+    if(query.genes.includes(' ')){
       this.setState({   
         landingLoading: false,
         landing:[]
@@ -78,12 +76,13 @@ class Search extends React.Component {
     this.setState({
       landingLoading: true
     },()=>{
-      ServerAPI.findUniprotId(query).then(res=>{
-        if(!_.isEmpty(res)){
-          ServerAPI.getProteinInformation(res[0]).then(result=>{
+      ServerAPI.geneQuery(query).then(geneQueryResult=>{
+        geneQueryResult= geneQueryResult.geneInfo.map(gene=>gene.convertedAlias);
+        if(!_.isEmpty(geneQueryResult)){
+          ServerAPI.getProteinInformation(geneQueryResult).then(infoResult=>{
             this.setState({
             landingLoading: false,
-            landing:result,
+            landing:infoResult,
             landingShowMore: [false,false],
             });
           });

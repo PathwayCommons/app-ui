@@ -40,9 +40,9 @@ const defaultSetting = {
   "threshold_algo": "fdr",
   "domain_size_type": "annotated",
   "custbg": [],
-  "custbg_cb": 0,
   "sf_GO:BP": 1,
   "sf_REAC": 1,
+  "prefix": 'ENTREZGENE_ACC'
 };
 const gProfilerURL = "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/";
 
@@ -55,24 +55,26 @@ const enrichment = (query, userSetting) => {
     const minSetSizeVal = Number(formData.min_set_size);
     const maxSetSizeVal = Number(formData.max_set_size);
     const thresholdAlgoVal = formData.threshold_algo;
-    const custbgCbVal = Number(formData.custbg_cb);
     if (orderedQueryVal != 0 && orderedQueryVal != 1) {
-      throw new Error('ERROR: orderedQuery should be 1 or 0');
+      reject(new Error('ERROR: orderedQuery should be 1 or 0'));
     }
     if (isNaN(userThrVal) || userThrVal > 1 || userThrVal < 0) {
-      throw new Error('ERROR: userThrVal should be a number [0, 1]')
+      reject(new Error('ERROR: userThrVal should be a number [0, 1]'));
     }
     if (isNaN(minSetSizeVal)) {
-      throw new Error('ERROR: minSetSize should be a number')
+      reject(new Error('ERROR: minSetSize should be a number'));
+    }
+    if (minSetSizeVal < 0) {
+      reject(new Error('ERROR: minSetSize should be >= 0'));
     }
     if (isNaN(maxSetSizeVal)) {
-      throw new Error('ERROR: maxSetSize should be a number');
+      reject(new Error('ERROR: maxSetSize should be a number'));
+    }
+    if (maxSetSizeVal < minSetSizeVal) {
+      reject(new Error('ERROR: maxSetSize should be >= minSetSize'));
     }
     if (thresholdAlgoVal != 'analytical' && thresholdAlgoVal != 'bonferroni' && thresholdAlgoVal != 'fdr') {
-      throw new Error('ERROR: thresholdAlgoVal should be one of analytical, bonferroni, fdr');
-    }
-    if (custbgCbVal != 0 && custbgCbVal != 1) {
-      throw new Error('ERROR: custbgCb should be 1 or 0')
+      reject(new Error('ERROR: thresholdAlgoVal should be one of analytical, bonferroni, fdr'));
     }
 
     request.post({ url: gProfilerURL, formData: formData }, (err, httpResponse, gProfilerResponse) => {
@@ -118,7 +120,14 @@ const enrichment = (query, userSetting) => {
           tGroup: Number(elem[tGroupIndex]),
           tName: elem[tNameIndex].trim(),
           tDepth: Number(elem[tDepthIndex]),
-          qAndTList: elem[qAndTListIndex].split(',')
+          qAndTList: _.map(elem[qAndTListIndex].split(','), gene => {
+            const colonIndex = 14;
+            if (gene.substring(0, colonIndex + 1) === 'ENTREZGENE_ACC:') {
+              const ncbiNameIndex = 1;
+              return gene.split(':')[ncbiNameIndex];
+            }
+            return gene;
+          })
         };
       });
       resolve(ret);

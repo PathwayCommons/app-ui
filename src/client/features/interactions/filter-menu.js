@@ -15,7 +15,7 @@ class InteractionsFilterMenu extends React.Component {
       [
         h('div',{className:classNames(type,'interaction-filter-legend')}),
         h('h3.button-label',type),
-        h('i', {className: classNames('common-icon-button','material-icons',{ 'common-icon-button-active': !clicked})}, clicked ? 'close':'check')
+        h('i', {className: classNames('common-icon-button','material-icons','icon-cutoff',{ 'common-icon-button-active': !clicked})}, clicked ? 'close':'check')
       ]
     ));
     return h('div',[

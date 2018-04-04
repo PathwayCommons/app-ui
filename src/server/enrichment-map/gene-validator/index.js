@@ -13,7 +13,8 @@ const { validTarget } = require('./validityInfo');
 const defaultOptions = {
   'output': 'mini',
   'organism': 'hsapiens',
-  'target': 'HGNC'
+  'target': 'HGNC',
+  'prefix': 'ENTREZGENE_ACC'
 };
 
 class InvalidInfoError extends Error {
@@ -39,9 +40,10 @@ const convertGConvertNames = (gConvertName) => {
 const validatorGconvert = (query, userOptions) => {
   const promise = new Promise((resolve, reject) => {
     const formData = _.assign({}, defaultOptions, userOptions, { query: query });
-    formData.organism =  formData.organism.toLowerCase();
-    formData.target = convertGConvertNames(formData.target.toUpperCase());
-    const invalidInfo = {invalidTarget: '', invalidOrganism: ''};
+    formData.organism = formData.organism.toLowerCase();
+    const initialTarget = formData.target.toUpperCase();
+    formData.target = convertGConvertNames(initialTarget);
+    const invalidInfo = { invalidTarget: '', invalidOrganism: '' };
     if (!validOrganism.includes(formData.organism)) {
       invalidInfo.invalidOrganism = formData.organism;
     }
@@ -67,28 +69,28 @@ const validatorGconvert = (query, userOptions) => {
       const convertedAliasIndex = 3;
       _.forEach(geneInfoList, info => {
 
-        const curConvertedAlias = info[convertedAliasIndex];
-        if (curConvertedAlias === 'N/A') {
-          if (_.filter(unrecogized, ele => ele === info[initialAliasIndex]).length === 0) {
-            unrecogized.push(info[initialAliasIndex]);
-
+        const colonIndex = 14;
+        let initialAlias = info[initialAliasIndex];
+        if (formData.target === 'ENTREZGENE_ACC' && initialAlias.substring(0, colonIndex + 1) === 'ENTREZGENE_ACC:') {
+          const ncbiNameIndex = 1;
+          initialAlias = initialAlias.split(':')[ncbiNameIndex];
+        }
+        if (info[convertedAliasIndex] === 'N/A') {
+          if (_.filter(unrecognized, ele => ele === initialAlias).length === 0) {
+            unrecognized.push(initialAlias);
           }
         } else {
-          if (_.filter(geneInfoList, ele => ele[convertedAliasIndex] === curConvertedAlias).length > 1) {
-            if (!(curConvertedAlias in duplicate)) {
-              duplicate[curConvertedAlias] = [];
-            }
-            if (_.filter(duplicate[curConvertedAlias], ele => ele === info[initialAliasIndex]).length === 0) {
-              duplicate[curConvertedAlias].push(info[initialAliasIndex]);
-            }
-            if (_.filter(geneInfo, ele => ele.initialAlias === info[initialAliasIndex]).length === 0) {
-              geneInfo.push({ initialAlias: info[initialAliasIndex], convertedAlias: info[convertedAliasIndex] });
-            }
+          if (_.filter(geneInfoList, ele => ele[convertedAliasIndex] === info[convertedAliasIndex]).length > 1 && _.filter(duplicate, ele => ele === initialAlias).length === 0) {
+            duplicate.push(initialAlias);
+          }
+          if (_.filter(geneInfo, ele => ele.initialAlias === initialAlias).length === 0) {
+            geneInfo.push({ initialAlias: initialAlias, convertedAlias: info[convertedAliasIndex] });
           }
         }
       });
 
-      const ret = { options: {target: formData.target, organism: formData.organism}, unrecognized: unrecognized, duplicate: duplicate, geneInfo: geneInfo };
+
+      const ret = { options: { target: initialTarget, organism: formData.organism }, unrecognized: unrecognized, duplicate: duplicate, geneInfo: geneInfo };
 
       resolve(ret);
     });

@@ -20,7 +20,30 @@ const _ = require('lodash');
 
 // input ["GO:1902275", "GO:2001252", "GO:1905269", "GO:0051053"]
 // returns a cytoscape object
-const generateGraphInfo = (pathwayIdList) => {
+const generateGraphInfo = (pathwayIdList, cutoff = 0.375, JCWeight, OCWeight) => {
+  if (cutoff < 0 || cutoff > 1) { throw new Error('ERROR: cutoff out of range [0, 1]');}
+  if (isNaN(Number(cutoff))) { throw new Error('ERROR: cutoff is not a number'); }
+
+  if (JCWeight < 0 || JCWeight > 1) {
+    throw new Error('ERROR: JCWeight out of range [0, 1]');
+  }
+  if (OCWeight < 0 || OCWeight > 1) {
+    throw new Error('ERROR: OCWeight out of range [0, 1]');
+  }
+  if (JCWeight != undefined && isNaN(Number(JCWeight))) {throw new Error('ERROR: JCWeight should be a number');}
+  if (OCWeight != undefined && isNaN(Number(OCWeight))) {throw new Error('ERROR: OCWeight should be a number');}
+  if (OCWeight != undefined && JCWeight != undefined && Number(OCWeight) + Number(JCWeight) != 1) {
+    throw new Error('ERROR: OCWeight + JCWeight should be 1');
+  }
+  if (JCWeight === undefined && OCWeight === undefined) {
+    JCWeight = 0.5;
+    OCWeight = 0.5;
+  } else if (JCWeight === undefined) {
+    JCWeight = 1 - OCWeight;
+  } else if (OCWeight === undefined) {
+    OCWeight = 1 - JCWeight;
+  }
+
   // check unrecognized and duplicates, modify pathwayIdList
   const unrecognized = [];
   for (let i = 0; i < pathwayIdList.length; ++i) {
@@ -48,7 +71,7 @@ const generateGraphInfo = (pathwayIdList) => {
   _.forEach(nodeInfo, node => {
     elements.push({ data: { id: node.pathwayId } });
   });
-  const edgeInfo = generateEdgeInfo(pathwayIdList);
+  const edgeInfo = generateEdgeInfo(pathwayIdList, JCWeight, cutoff);
   _.forEach(edgeInfo, edge => {
     const sourceIndex = 0;
     const targetIndex = 1;
@@ -71,8 +94,3 @@ const generateGraphInfo = (pathwayIdList) => {
 
 
 module.exports = { generateGraphInfo };
-
-//simple testing
-//console.log(generateGraphInfo(["GO:1902275", "GO:2001252", "GO:1905269"]));
-// const result = generateGraphInfo(["GO:1902275", "GO:2001252", "GO:1905269"]);
-// console.log(JSON.stringify(result));

@@ -20,8 +20,8 @@ const fetchPathwayInfo = (pathwayList) => {
 // {edgeId: "GO:1902275_GO:0051053", intersection: [gene1], similarity: 0.1},
 // {edgeId: "GO:2001252_GO:0051053", intersection: [gene1], similarity: 0.1}]
 // cutoff = 0.375 unless specified
-const generateEdgeInfo = (pathwayIdList, cutoff = 0.375) => {
-  return filterEdges(pathwayListGraph(fetchPathwayInfo(pathwayIdList)), cutoff);
+const generateEdgeInfo = (pathwayIdList, JCWeight, cutoff = 0.375) => {
+  return filterEdges(pathwayListGraph(fetchPathwayInfo(pathwayIdList), JCWeight), cutoff);
 };
 
 

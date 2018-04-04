@@ -42,6 +42,7 @@ const defaultSetting = {
   "custbg": [],
   "sf_GO:BP": 1,
   "sf_REAC": 1,
+  "prefix": 'ENTREZGENE_ACC'
 };
 const gProfilerURL = "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/";
 
@@ -119,7 +120,14 @@ const enrichment = (query, userSetting) => {
           tGroup: Number(elem[tGroupIndex]),
           tName: elem[tNameIndex].trim(),
           tDepth: Number(elem[tDepthIndex]),
-          qAndTList: elem[qAndTListIndex].split(',')
+          qAndTList: _.map(elem[qAndTListIndex].split(','), gene => {
+            const colonIndex = 14;
+            if (gene.substring(0, colonIndex + 1) === 'ENTREZGENE_ACC:') {
+              const ncbiNameIndex = 1;
+              return gene.split(':')[ncbiNameIndex];
+            }
+            return gene;
+          })
         };
       });
       resolve(ret);

@@ -73,7 +73,7 @@ class Interactions extends React.Component {
         hgncIds.push(geneResults[gene].name);
         return _.compact([
           'Nomenclature Name: '+geneResults[gene].nomenclaturename,
-          'Synonyms: '+geneResults[gene].name+', '+geneResults[gene].otheraliases,
+          'Other Aliases: '+geneResults[gene].name + (geneResults[gene].otheraliases ? ', '+geneResults[gene].otheraliases:''),
           geneResults[gene].summary&&'Function: '+geneResults[gene].summary
         ]);
       }));

@@ -100,7 +100,7 @@ class Search extends React.Component {
                 id:gene,
                 name:geneResults[gene].nomenclaturename,
                 function: geneResults[gene].summary,
-                synonyms: geneResults[gene].name+', '+geneResults[gene].otheraliases,
+                synonyms: geneResults[gene].name + (geneResults[gene].otheraliases ? ', '+geneResults[gene].otheraliases:''),
                 showMore:{full:!(geneResults.uids.length>1),function:false,synonyms:false},
                 links:links
               };
@@ -264,7 +264,7 @@ class Search extends React.Component {
             h(Link, { 
               to: { pathname: '/interactions',search: queryString.stringify({ id: box.id, kind:'NEIGHBORHOOD' })}, 
               target: '_blank', className: 'search-landing-interactions', key:'interactions' 
-            }, [h('button.search-landing-button', `View Interactions With ${box.name}`)])
+            }, [h('button.search-landing-button', `View Interactions`)])
           ])
         ];    
       });

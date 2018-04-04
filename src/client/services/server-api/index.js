@@ -38,8 +38,8 @@ const ServerAPI = {
 
   getNeighborhood(ids,kind){
    const source=ids.map(id=>`source=${id}`).join('&');
-    return fetch(`http://www.pathwaycommons.org/pc2/graph?${source}&kind=${kind}&format=TXT&pattern=controls-phosphorylation-of
-      &pattern=in-complex-with&pattern=controls-expression-of&pattern=interacts-with`,defaultFetchOpts).then(res => res.text());
+   const patterns = '&pattern=controls-phosphorylation-of&pattern=in-complex-with&pattern=controls-expression-of&pattern=interacts-with';
+    return fetch(`http://www.pathwaycommons.org/pc2/graph?${source}&kind=${kind}&format=TXT${patterns}`,defaultFetchOpts).then(res => res.text());
   },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into

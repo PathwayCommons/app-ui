@@ -55,25 +55,18 @@ class Interactions extends React.Component {
 
     const id = queryString.parse(props.location.search).ID;
     ServerAPI.getNeighborhood(id,'TXT').then(res=>{ 
-      const query = {
-        genes: id,
-        target: 'HGNC',
-      };
-      ServerAPI.geneQuery(query).then(geneQueryResult=>{
-      const layoutConfig = getLayoutConfig('interactions');
-      const network= this.parse(res,id);
-      this.setState({
-        componentConfig: interactionsConfig,
-        layoutConfig: layoutConfig,
-        networkJSON: network.network ,
-        networkMetadata: Object.assign({}, this.state.networkMetadata, {
-          name: (geneQueryResult.geneInfo[0].convertedAlais+' Interactions'),
-          datasource: 'Pathway Commons',
-        }),
-        id:geneQueryResult.geneInfo[0].convertedAlais ,
-        loading: false
-      }); 
-      
+    const layoutConfig = getLayoutConfig('interactions');
+    const network= this.parse(res,id);
+    this.setState({
+      componentConfig: interactionsConfig,
+      layoutConfig: layoutConfig,
+      networkJSON: network ,
+      networkMetadata: Object.assign({}, this.state.networkMetadata, {
+        name: (id+' Interactions'),
+        datasource: 'Pathway Commons',
+      }),
+      id:id ,
+      loading: false
     });
   });
 
@@ -186,7 +179,7 @@ class Interactions extends React.Component {
       this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],edgeMetadata,network,nodeMap,nodeMetadata);
     });
     //const id=this.findId(nodeMetadata,query);
-    return {network};
+    return network;
   }
   filterUpdate(type) {
     const state=this.state;

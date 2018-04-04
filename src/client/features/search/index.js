@@ -98,7 +98,7 @@ class Search extends React.Component {
                 return link[0][1] + link[0][2] + value;
               });
               return {
-                originalSearch:originalSearch,
+                hgncSymbol:geneResults[gene].name,
                 name:geneResults[gene].nomenclaturename,
                 function: geneResults[gene].summary,
                 synonyms: geneResults[gene].name+', '+geneResults[gene].otheraliases,
@@ -262,11 +262,11 @@ class Search extends React.Component {
             className:classNames('search-landing-title',{'search-landing-title-multiple':multipleBoxes}),
             },[title]),  
           box.showMore.full && 
-          h('div.search-landing-innner',{key: box.originalSearch},[ 
+          h('div.search-landing-innner',{key: box.hgncSymbol},[ 
           h('div.search-landing-section',{key: 'synonyms'},[synonyms]),
           h('div.search-landing-section',{key: 'functions'},[functions]),
           h('div.search-landing-section',{key: 'links'},[links]),
-          h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ ID: box.originalSearch })}, 
+          h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ ID: box.hgncSymbol })}, 
             target: '_blank',className: 'search-landing-interactions', key:'interactions' }, [
             h('button.search-landing-button', 'View Interactions'),
           ])]) 

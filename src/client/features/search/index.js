@@ -63,40 +63,51 @@ class Search extends React.Component {
 
   getLandingResult() {
     const state = this.state;
-    const query = {
-      genes: state.query.q.trim(),
-      target: 'UNIPROT',
+    const q=state.query.q.trim();
+    const linkBuilder= (source,array)=>{
+      let genes={};
+      array.forEach(gene=>{
+        genes[gene.initialAlias]={[source]:gene.convertedAlias};
+      });
+      return genes;
     };
-    this.setState({
-      landingLoading: true
-    });
-      ServerAPI.geneQuery(query).then(res=>{
-        res=res.geneInfo;
-        if(!_.isEmpty(res)){
-          const ids=res.map(gene=>gene.convertedAlias).join(',');
-          ServerAPI.getProteinInformation(ids).then(result=>{
-            const landing=result.map(gene=>{ 
-              let links=_.mapValues( _.pickBy({'Uniprot':{id:gene.accession},//to match the format the other 2 links are in
-              'HGNC':gene.dbReferences.filter(entry =>entry.type=='HGNC')[0],
-              'NCBI Gene':gene.dbReferences.filter(entry =>entry.type=='GeneID')[0],
-              'Gene Cards':gene.dbReferences.filter(entry =>entry.type=='GeneCards')[0]}),
-              (value,key)=>{
+    Promise.all([
+      ServerAPI.geneQuery({genes: q,target: 'ENTREZGENE_ACC'}).then(result=>linkBuilder('NCBI Gene',result.geneInfo)),
+      ServerAPI.geneQuery({genes: q,target: 'UNIPROT'}).then(result=>linkBuilder('Uniprot',result.geneInfo)),
+      ServerAPI.geneQuery({genes: q,target: 'HGNC'}).then(result=>linkBuilder('HGNC',result.geneInfo)),
+      ServerAPI.geneQuery({genes: q,target: 'HGNCSYMBOL'}).then(result=>linkBuilder('Gene Cards',result.geneInfo)),
+    ]).then(values=>{
+      let genes=values[0];
+      _.tail(values).forEach(gene=>_.mergeWith(genes,gene,(objValue, srcValue)=>_.assign(objValue,srcValue)));
+      this.setState({
+        landingLoading: true
+      },()=>{
+        let ids=[];
+        let landing;
+        _.forEach(genes,gene=>{
+          ids.push(gene['NCBI Gene']);
+        });
+        if(!_.isEmpty(ids)){
+          ServerAPI.getGeneInformation(ids,'gene').then(result=>{
+            const geneResults=result.result;
+            landing = geneResults.uids.map((gene)=>{
+              const originalSearch = _.findKey(genes,entry=> entry['NCBI Gene']===gene);
+              const links=_.mapValues(genes[originalSearch],(value,key)=>{
                 let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue[0].toUpperCase());
-                  return link[0][1] + link[0][2] + value.id;
-                });
-
+                return link[0][1] + link[0][2] + value;
+              });
               return {
-                accession:gene.accession,
-                name:gene.protein.recommendedName.fullName.value,
-                function: gene.comments[0].type==='FUNCTION' && gene.comments[0].text[0].value,
-                synonyms: _.hasIn(gene,'protein.alternativeName') && gene.protein.alternativeName.map(obj => obj.fullName.value).join(', '),
-                showMore:{full:!(result.length>1),function:false,synonyms:false},
+                originalSearch:originalSearch,
+                name:geneResults[gene].nomenclaturename,
+                function: geneResults[gene].summary,
+                synonyms: geneResults[gene].name+', '+geneResults[gene].otheraliases,
+                showMore:{full:!(geneResults.uids.length>1),function:false,synonyms:false},
                 links:links
-              };});
-
+              };
+            });
             this.setState({
-            landingLoading: false,
-            landing:landing,
+              landingLoading: false,
+              landing:landing
             });
           });
         }
@@ -107,6 +118,7 @@ class Search extends React.Component {
           });
         }
       });
+    });
   }
 
   componentDidMount() {
@@ -218,12 +230,12 @@ class Search extends React.Component {
       }
       return result;
     };
-    
+
     const landing = (state.landingLoading ) ?
       h('div.search-landing-innner',[h(Loader, { loaded:false , options: { color: '#16A085',position:'relative', top: '15px' }})]):
       state.landing.map((box,index)=>{
         const multipleBoxes = state.landing.length>1;
-        const title = [h('strong',{key:'name'},box.name),];
+        const title = [h('strong.search-landing-title-text',{key:'name'},box.name),];
         if(multipleBoxes){
           title.push(h('strong.material-icons',{key:'arrow'},state.landing[index].showMore.full? 'expand_less': 'expand_more'));
         }
@@ -235,7 +247,7 @@ class Search extends React.Component {
 
         let functions=[];
         if(box.function){
-          functions=expandableText(270, box.function,' ','span','search-landing-function','function',index);
+          functions=expandableText(260, box.function,' ','span','search-landing-function','function',index);
         } 
 
         let links=[];
@@ -249,11 +261,12 @@ class Search extends React.Component {
             className:classNames('search-landing-title',{'search-landing-title-multiple':multipleBoxes}),
             },[title]),  
           box.showMore.full && 
-          h('div.search-landing-innner',{key: box.accession},[ 
+          h('div.search-landing-innner',{key: box.originalSearch},[ 
           h('div.search-landing-section',{key: 'synonyms'},[synonyms]),
           h('div.search-landing-section',{key: 'functions'},[functions]),
           h('div.search-landing-section',{key: 'links'},[links]),
-          h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ id: box.accession, kind:'NEIGHBORHOOD' })}, 
+
+          h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ id: box.originalSearch, kind:'NEIGHBORHOOD' })}, 
             target: '_blank',className: 'search-landing-interactions', key:'interactions' }, [
             h('button.search-landing-button', `View Interactions With ${box.name}`),
           ])])

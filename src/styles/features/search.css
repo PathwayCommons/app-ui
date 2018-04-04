@@ -262,6 +262,10 @@
   border-bottom:1px var(--light-base-colour-darker) solid;
 }
 
+.search-landing-title-text{
+  text-transform: capitalize;
+}
+
 .search-landing-title-multiple{
   cursor:pointer;
 }

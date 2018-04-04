@@ -66,7 +66,7 @@ class Interactions extends React.Component {
           name: (network.id.join(' , ')+' Interactions'),
           datasource: 'Pathway Commons',
         }),
-        id: network.id,
+        id:geneQueryResult.geneInfo[0].convertedAlais ,
         loading: false
       }); 
       
@@ -180,7 +180,7 @@ class Interactions extends React.Component {
     },classes:interaction});
   }
 
-  parse(data,query){
+  parse(data){
     let network = {
       edges:[],
       nodes:[],

@@ -253,11 +253,18 @@ class Search extends React.Component {
           h('div.search-landing-section',{key: 'synonyms'},[synonyms]),
           h('div.search-landing-section',{key: 'functions'},[functions]),
           h('div.search-landing-section',{key: 'links'},[links]),
-          h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ ID: box.accession })}, 
+          h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ id: box.accession, kind:'NEIGHBORHOOD' })}, 
             target: '_blank',className: 'search-landing-interactions', key:'interactions' }, [
-            h('button.search-landing-button', 'View Interactions'),
-          ])]) 
-        ];});
+            h('button.search-landing-button', `View Interactions With ${box.name}`),
+          ])])
+        ];    
+      });
+      if(state.landing.length>1 && !state.landingLoading){
+        landing.push(h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ id: state.landing.map(entry=>entry.accession), kind:'PATHSBETWEEN' })}, 
+        target: '_blank',className: 'search-landing-interactions', key:'interactions' }, [
+        h('button.search-landing-button', 'View Interactions Between Entities'),
+      ]));
+      }
 
     return h('div.search', [
       h('div.search-header-container', [

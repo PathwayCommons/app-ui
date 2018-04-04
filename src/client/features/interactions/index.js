@@ -145,10 +145,7 @@ class Interactions extends React.Component {
   interactionMetadata(mediatorIds,pubmedIds){
     let metadata = [['Detailed views',[]],['Database IDs',[]]];//Format expected by format-content
     mediatorIds.split(';').forEach( link => {
-      const splitLink=link.split('/');
-      const view = splitLink[2]==='pathwaycommons.org';
-      view ? metadata[0][1].push(['Pathway Commons',splitLink[4]]) :
-        metadata[1][1].push(['Reactome',splitLink[4]]);
+        metadata[0][1].push(['Interaction',link.split('/')[4]]);
     });
     if(pubmedIds){
      pubmedIds.split(';').forEach(id=>metadata[1][1].push(['PubMed_Interactions',id]));

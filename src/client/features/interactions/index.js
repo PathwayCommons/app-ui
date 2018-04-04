@@ -43,7 +43,7 @@ class Interactions extends React.Component {
         datasource: '',
         comments: []
       },
-      id:'',
+      ids:[],
       loading: true,
       categories: new Map (),
       buttonsClicked:{
@@ -55,44 +55,47 @@ class Interactions extends React.Component {
 
     const query = queryString.parse(props.location.search);
     query.id=_.concat([],query.id);
-      ServerAPI.getNeighborhood(query.id,query.kind).then(res=>{ 
+    ServerAPI.getNeighborhood(query.id,query.kind).then(res=>{ 
       const layoutConfig = getLayoutConfig('interactions');
-      const network= this.parse(res,query.id);
+      const network= this.parse(res);
       this.setState({
         componentConfig: interactionsConfig,
         layoutConfig: layoutConfig,
-        networkJSON: network.network ,
-        networkMetadata: Object.assign({}, this.state.networkMetadata, {
-          name: (network.id.join(' , ')+' Interactions'),
-          datasource: 'Pathway Commons',
-        }),
-        id:geneQueryResult.geneInfo[0].convertedAlais ,
+        networkJSON: network ,
         loading: false
-      }); 
-      
+      });
     });
 
-    ServerAPI.getProteinInformation(query.id).then(results=>{
-      const comments=_.flatten(results.map(result=>
-        _.compact([
-          'Full Name: '+result.protein.recommendedName.fullName.value,
-          result.protein.alternativeName && 'Synonyms: '+result.protein.alternativeName.map(obj => obj.fullName.value).join(', '),
-          result.comments[0].type==='FUNCTION'&&'Function: '+result.comments[0].text[0].value
-        ])
-      ));
-
+    ServerAPI.getGeneInformation(query.id,'gene').then(result=>{
+      const geneResults=result.result;
+      let hgncIds=[];
+      const comments=_.flatten(geneResults.uids.map(gene=>{
+        hgncIds.push(geneResults[gene].name);
+        return _.compact([
+          'Nomenclature Name: '+geneResults[gene].nomenclaturename,
+          'Synonyms: '+geneResults[gene].name+', '+geneResults[gene].otheraliases,
+          geneResults[gene].summary&&'Function: '+geneResults[gene].summary
+        ]);
+      }));
       this.setState({
-      networkMetadata: Object.assign({}, this.state.networkMetadata, {
-        comments: comments
-      }),
-     }); 
+        networkMetadata: {
+          name: (hgncIds+' Interactions'),
+          datasource: 'Pathway Commons',
+          comments: comments
+        },
+        ids:hgncIds,
+      }); 
     });
 
     this.state.cy.on('trim', () => {
-      const cy = this.state.cy;
-      const mainNode = cy.nodes(node=> _.indexOf(this.state.id,node.data().id)!=-1);
-      const nodesToKeep = mainNode.merge(mainNode.connectedEdges().connectedNodes());
-      cy.remove(cy.nodes().difference(nodesToKeep));
+      const state = this.state;
+      const ids = state.ids;
+      if(ids.length>0){
+        const cy = state.cy;
+        const mainNode = cy.nodes(node=> ids.indexOf(node.data().id) != -1);
+        const nodesToKeep = mainNode.merge(mainNode.connectedEdges().connectedNodes());
+        cy.remove(cy.nodes().difference(nodesToKeep));
+      }
     });
 
     this.state.cy.one('layoutstop',()=>{
@@ -194,11 +197,10 @@ class Interactions extends React.Component {
         const edgeMetadata = this.interactionMetadata(splitLine[6],splitLine[4]);
         this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],edgeMetadata,network,nodeMap,nodeMetadata);
       });
-      const id=this.findId(nodeMetadata,query);
-      return {id,network};
+      return network;
     }
     else{
-      return {id:[],network:{}};
+      return {};
     }
   }
   filterUpdate(type) {
@@ -229,7 +231,7 @@ class Interactions extends React.Component {
   }
   render(){
     const state = this.state;
-    const networkToDisplay=!_.isEmpty(state.networkJSON) && !_.isEmpty(state.id);
+    const networkToDisplay = !_.isEmpty(state.networkJSON);
     const baseView = networkToDisplay ? h(BaseNetworkView.component, {
       layoutConfig: state.layoutConfig,
       componentConfig: state.componentConfig,

@@ -77,18 +77,18 @@ class Search extends React.Component {
       ServerAPI.geneQuery({genes: q,target: 'HGNC'}).then(result=>linkBuilder('HGNC',result.geneInfo)),
       ServerAPI.geneQuery({genes: q,target: 'HGNCSYMBOL'}).then(result=>linkBuilder('Gene Cards',result.geneInfo)),
     ]).then(values=>{
-      if(!_.isEmpty(values)){
-        let genes=values[0];
-        _.tail(values).forEach(gene=>_.mergeWith(genes,gene,(objValue, srcValue)=>_.assign(objValue,srcValue)));
-        this.setState({
-          landingLoading: true
-        },()=>{
-          let ids=[];
-          let landing;
-          _.forEach(genes,gene=>{
-            gene['NCBI Gene']=gene['NCBI Gene'].split(':')[1]; //removes the ENTREZGENE_ACC from the NCBI id and puts it in ids 
-            ids.push(gene['NCBI Gene']);
-          });
+      let genes=values[0];
+      _.tail(values).forEach(gene=>_.mergeWith(genes,gene,(objValue, srcValue)=>_.assign(objValue,srcValue)));
+      this.setState({
+        landingLoading: true
+      },()=>{
+        let ids=[];
+        let landing;
+        _.forEach(genes,gene=>{
+          gene['NCBI Gene']=gene['NCBI Gene'].split(':')[1]; //removes the ENTREZGENE_ACC from the NCBI id and puts it in ids 
+          ids.push(gene['NCBI Gene']);
+        });
+        if(!_.isEmpty(ids)){
           ServerAPI.getGeneInformation(ids,'gene').then(result=>{
             const geneResults=result.result;
             landing = geneResults.uids.map((gene)=>{
@@ -108,17 +108,17 @@ class Search extends React.Component {
             });
             this.setState({
               landingLoading: false,
-              landing:landing}
-            );
+              landing:landing
+            });
           });
-        });
-      }
-      else{
-        this.setState({
-          landingLoading: false,
-          landing:[]
-        });
-      }
+        }
+        else{
+          this.setState({
+            landingLoading: false,
+            landing:[]
+          });
+        }
+      });
     });
   }
 

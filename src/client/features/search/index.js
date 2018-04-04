@@ -91,14 +91,14 @@ class Search extends React.Component {
           });
           ServerAPI.getGeneInformation(ids,'gene').then(result=>{
             const geneResults=result.result;
-            landing = geneResults.uids.map((gene)=>{
+            landing = geneResults.uids.map(gene=>{
               const originalSearch = _.findKey(genes,entry=> entry['NCBI Gene']===gene);
               const links=_.mapValues(genes[originalSearch],(value,key)=>{
                 let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue[0].toUpperCase());
                 return link[0][1] + link[0][2] + value;
               });
               return {
-                originalSearch:originalSearch,
+                id:gene,
                 name:geneResults[gene].nomenclaturename,
                 function: geneResults[gene].summary,
                 synonyms: geneResults[gene].name+', '+geneResults[gene].otheraliases,
@@ -108,8 +108,8 @@ class Search extends React.Component {
             });
             this.setState({
               landingLoading: false,
-              landing:landing}
-            );
+              landing:landing
+            });
           });
         });
       }
@@ -262,11 +262,11 @@ class Search extends React.Component {
             className:classNames('search-landing-title',{'search-landing-title-multiple':multipleBoxes}),
             },[title]),  
           box.showMore.full && 
-          h('div.search-landing-innner',{key: box.originalSearch},[ 
+          h('div.search-landing-innner',{key: box.id},[ 
           h('div.search-landing-section',{key: 'synonyms'},[synonyms]),
           h('div.search-landing-section',{key: 'functions'},[functions]),
           h('div.search-landing-section',{key: 'links'},[links]),
-          h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ ID: box.originalSearch })}, 
+          h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ ID: box.id })}, 
             target: '_blank',className: 'search-landing-interactions', key:'interactions' }, [
             h('button.search-landing-button', 'View Interactions'),
           ])]) 

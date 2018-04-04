@@ -33,7 +33,7 @@ const ServerAPI = {
   },
 
   getProteinInformation(uniprotId){
-    return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&size=1&accession=${uniprotId}`,defaultFetchOpts).then(res => res.json());
+    return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&accession=${uniprotId}`,defaultFetchOpts).then(res => res.json());
   },
   
   getNeighborhood(uniprotId,format){

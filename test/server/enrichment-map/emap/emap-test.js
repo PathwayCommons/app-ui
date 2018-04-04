@@ -5,8 +5,141 @@ const {generateCys} = require('../../../server/enrichment-map/emap');
 
 describe('test generateCys', function() {
   it('it should return an object', function() {
-    return (generateCys(['GO:0043525', 'GO:0043523'])).then(function(res) {
-      const result = {"unrecognized":[],"duplicate":[],"graph":{"node":["GO:0043525","GO:0043523"],"edge":[{"id":"GO:0043525_GO:0043523","source":"GO:0043525","target":"GO:0043523","similarity":0.6294416243654822,"intersection":["FIS1","HDAC4","BCL2L11","ATF2","FOXO3","BBC3","PRNP","CDK5R1","BAX","TP53","CASP9","CDK5","MAP3K11","CASP3","CDC34","EPHA7","JUN","CASP2","TGFB2","DDIT3","ATF4","NQO2","PCSK9","GRIK2","NF1","GRIK5","NQO1","CDC42","FBXW7","RAPSN","PRKN","TFAP2A","FASLG","AIFM1","UBE2M","MAP2K4","MYB","MYBL2","ATM","PAK3","PITX3","CTNNB1","CCL3","ASCL1","CTSZ","PIN1","GSK3A","ITGA1","SRPK2","TFAP2B","MCL1"]}]}};
+    return (generateCys({"GO:0006354": {"pValue": 1, "t": 124}, "GO:0006368": {"qAndTList": ["AFF4"]}})).then(function(res) {
+      const result = {
+        "unrecognized": [],
+        "graph": [
+          {
+            "data": {
+              "id": "GO:0006354",
+              "pValue": 1,
+              "t": 124
+            }
+          },
+          {
+            "data": {
+              "id": "GO:0006368",
+              "qAndTList": [
+                "AFF4"
+              ]
+            }
+          },
+          {
+            "data": {
+              "id": "GO:0006354_GO:0006368",
+              "source": "GO:0006354",
+              "target": "GO:0006368",
+              "similarity": 0.8255813953488372,
+              "intersection": [
+                "TAF12",
+                "MLLT1",
+                "CTR9",
+                "GTF2H5",
+                "TAF1",
+                "TAF10",
+                "EAF2",
+                "ERCC2",
+                "ENY2",
+                "TAF2",
+                "GTF2H1",
+                "CDC73",
+                "RTF1",
+                "MNAT1",
+                "NCBP1",
+                "SUPT6H",
+                "TBP",
+                "TAF4",
+                "POLR2L",
+                "SUPT16H",
+                "GTF2B",
+                "ELOA",
+                "ELP3",
+                "CCNT2",
+                "ADRM1",
+                "ELL2",
+                "WDR61",
+                "AFF4",
+                "ZMYND11",
+                "ELP1",
+                "CTDP1",
+                "CDK9",
+                "TCEA1",
+                "ELOF1",
+                "CCNK",
+                "BRD4",
+                "CDK13",
+                "TAF7",
+                "POLR2A",
+                "GTF2A1",
+                "SHH",
+                "AXIN1",
+                "PAF1",
+                "SSRP1",
+                "SETD2",
+                "POLR2F",
+                "TAF9B",
+                "POLR2G",
+                "SOX10",
+                "POLR2C",
+                "POLR2J",
+                "CDK12",
+                "GTF2H3",
+                "NCBP2",
+                "TAF13",
+                "TAF5",
+                "ELOB",
+                "POLR2H",
+                "NELFB",
+                "ELOA3",
+                "SUPT5H",
+                "ELL",
+                "TAF4B",
+                "NELFA",
+                "ERCC3",
+                "GTF2H4",
+                "EAF1",
+                "ELL3",
+                "EZH2",
+                "CDK7",
+                "LEO1",
+                "TAF11",
+                "TAF9",
+                "TAF3",
+                "NELFE",
+                "POLR2D",
+                "GTF2F2",
+                "RNF8",
+                "TAF6",
+                "IWS1",
+                "MLLT3",
+                "GTF2A2",
+                "ELOA2",
+                "GTF2E1",
+                "CCNH",
+                "GTF2F1",
+                "PCID2",
+                "ELP2",
+                "POLR2B",
+                "GTF2E2",
+                "RECQL5",
+                "ELOA3D",
+                "POLR2I",
+                "SUPT4H1",
+                "ELP4",
+                "CCNT1",
+                "GTF2H2",
+                "RNF168",
+                "EAPP",
+                "POLR2K",
+                "POLR2E",
+                "TAF1L",
+                "ELOA3B",
+                "ELOC"
+              ]
+            }
+          }
+        ]
+      };
       expect(res).to.deep.equal(result);
     });
   });

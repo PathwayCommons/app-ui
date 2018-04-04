@@ -239,44 +239,42 @@ class Search extends React.Component {
         if(multipleBoxes){
           title.push(h('strong.material-icons',{key:'arrow'},state.landing[index].showMore.full? 'expand_less': 'expand_more'));
         }
-
         let synonyms=[];
         if(box.synonyms){ 
           synonyms=expandableText(112, box.synonyms,',','i','search-landing-small','synonyms',index);
         }
-
         let functions=[];
         if(box.function){
           functions=expandableText(260, box.function,' ','span','search-landing-function','function',index);
         } 
-
         let links=[];
         _.forIn((box.links),(value,key)=>{
           links.push(h('a.search-landing-link',{key: key, href: value},key));
         });
-
         return [ 
           h('div.search-landing-title',{key:'title',
             onClick: () => {if(multipleBoxes){handelShowMoreClick('full',index);}},
             className:classNames('search-landing-title',{'search-landing-title-multiple':multipleBoxes}),
-            },[title]),  
+          },[title]),
           box.showMore.full && 
           h('div.search-landing-innner',{key: box.id},[ 
-          h('div.search-landing-section',{key: 'synonyms'},[synonyms]),
-          h('div.search-landing-section',{key: 'functions'},[functions]),
-          h('div.search-landing-section',{key: 'links'},[links]),
-
-          h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ id: box.id, kind:'NEIGHBORHOOD' })}, 
-            target: '_blank',className: 'search-landing-interactions', key:'interactions' }, [
-            h('button.search-landing-button', `View Interactions With ${box.name}`),
-          ])])
+            h('div.search-landing-section',{key: 'synonyms'},[synonyms]),
+            h('div.search-landing-section',{key: 'functions'},[functions]),
+            h('div.search-landing-section',{key: 'links'},[links]),
+            h(Link, { 
+              to: { pathname: '/interactions',search: queryString.stringify({ id: box.id, kind:'NEIGHBORHOOD' })}, 
+              target: '_blank', className: 'search-landing-interactions', key:'interactions' 
+            }, [h('button.search-landing-button', `View Interactions With ${box.name}`)])
+          ])
         ];    
       });
       if(state.landing.length>1 && !state.landingLoading){
-        landing.push(h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ id: state.landing.map(entry=>entry.id), kind:'PATHSBETWEEN' })}, 
-        target: '_blank',className: 'search-landing-interactions', key:'interactions' }, [
-        h('button.search-landing-button', 'View Interactions Between Entities'),
-      ]));
+        landing.push(
+          h(Link, { 
+            to: { pathname: '/interactions',search: queryString.stringify({ id: state.landing.map(entry=>entry.id), kind:'PATHSBETWEEN' })}, 
+            target: '_blank', className: 'search-landing-interactions', key:'interactions' 
+          }, [h('button.search-landing-button', 'View Interactions Between Entities')])
+        );
       }
 
     return h('div.search', [

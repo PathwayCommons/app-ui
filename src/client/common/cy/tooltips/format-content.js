@@ -29,11 +29,26 @@ const databaseHandler = (pair, expansionFunction, trim) => {
 };
 
 //Handle interaction/Detailed views related fields
-const interactionHandler =(pair, expansionFunction, trim, title) => {
-  let maxViews=8;
-  const expansionLink = pair[1].length>maxViews? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, trimString(trim)):'';
+let maxListEntries=8;
+const viwerListHandler =(pair, expansionFunction, trim, title) => {
+  let db = config.databases;
+  const inner = (database, data, isDBVisble, index) => {
+    let link = db.filter(value => database.toUpperCase() === value.database.toUpperCase());
+    return h('a.db-link' ,{href:'/view?',search: queryString.stringify({
+      uri: link[0].url + link[0].search + data, 
+      title:title, removeInfoMenu:true}),
+    target: '_blank', }, 'Interaction '+(index+1));
+  };
+  const expansionLink = pair[1].length>maxListEntries? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, trimString(trim)):'';
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateInteractionList(sortByDatabaseId(pair[1]),trim, expansionLink,maxViews,title);
+  return interactionList(sortByDatabaseId(pair[1]),trim, expansionLink,maxListEntries,inner);
+};
+
+const listHandler = (pair, expansionFunction, trim) => {
+  const inner = generateDBLink;
+  const expansionLink = pair[1].length>maxListEntries? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, trimString(trim)):'';
+  if (pair[1].length < 1) { return h('div.error'); }
+  return interactionList(sortByDatabaseId(pair[1]),trim, expansionLink,maxListEntries,inner);
 };
 
 //Handle publication related fields
@@ -67,7 +82,8 @@ const metaDataKeyMap = new Map()
   .set('Names', nameHandler)
   .set('Database IDs', databaseHandler)
   .set('Publications', publicationHandler)
-  .set('Interaction',interactionHandler);
+  .set('List',listHandler)
+  .set('Detailed Views',viwerListHandler);
 
  /**
   * parseMetadata(pair, trim)
@@ -239,8 +255,8 @@ function generateIdList(dbIdObject, trim) {
   let db = config.databases;
 
   //Format names
-  let dbScan = db.filter(data => name.toUpperCase().indexOf(data[0].toUpperCase()) !== -1);
-  if (dbScan.length > 0) { name = dbScan[0][0]; }
+  let dbScan = db.filter(data => name.toUpperCase().indexOf(data.database.toUpperCase()) !== -1);
+  if (dbScan.length > 0) { name = dbScan[0].database; }
 
   //Trim list
   if (trim) { list = dbIdObject.ids.slice(0, 1); }
@@ -268,9 +284,9 @@ function generateDBLink(dbName, dbId, isDbVisible) {
   //Get base url for dbid
   let db = config.databases;
   let className = '';
-  let link = db.filter(value => dbName.toUpperCase() === value[0].toUpperCase());
+  let link = db.filter(value => dbName.toUpperCase() === value.database.toUpperCase());
   if (!link || link.length !== 1) {
-    link = db.filter(value => dbName.toUpperCase().indexOf(value[0].toUpperCase()) !== -1);
+    link = db.filter(value => dbName.toUpperCase().indexOf(value.database.toUpperCase()) !== -1);
   }
 
   //Render link as database name, if requested
@@ -280,8 +296,8 @@ function generateDBLink(dbName, dbId, isDbVisible) {
   let label = isDbVisible ? dbName :dbId;
 
   //Build reference url
-  if (link.length === 1 && link[0][1]) {
-    let url = link[0][1] + link[0][2] + dbId;
+  if (link.length === 1 && link[0].url) {
+    let url = link[0].url + link[0].search + dbId;
     return h('div.fake-spacer', h('a.db-link' + className, { href: url, target: '_blank' }, label));
   }
   else {
@@ -417,28 +433,16 @@ function generateDatabaseList(sortedArray, trim, expansionLink) {
   return h('div.fake-paragraph', [h('div.span-field-name', 'Links:'), renderValue]);
 }
 
-function generateInteractionList(sortedArray, trim, expansionLink, maxViews, title) {
+function interactionList(sortedArray, trim, expansionLink, maxViews, inner) {
   //Generate list
   return sortedArray.map(entry=>{
     let list=entry.ids;
-    if(trim){list=list.slice(0,maxViews);}
-    const inner= list.map((data,index) =>[h('div.fake-spacer', entry.database==='Detailed Views'?
-    h('a.db-link' ,{
-      href:'/view?',
-      search: queryString.stringify({
-        uri:(data.startsWith('R')?'http://identifiers.org/reactome/':'http://pathwaycommons.org/pc2/')+data, 
-        title:title, 
-        removeInfoMenu:true
-      }),
-      target: '_blank', 
-    }, 'Interaction '+(index+1)):
-    h('a.db-link' ,{
-      href:'/view?'+data, 
-      target: '_blank', 
-    }, data)
-  )]);
-return h('div.fake-paragraph', [h('div.span-field-name', entry.database+':'), inner]);
-});
+    if(trim){
+      list=list.slice(0,maxViews); 
+    }
+    const links= list.map((link,index)=>inner(entry.database,link,false,index));
+    return h('div.fake-paragraph', [h('div.span-field-name', entry.database+':'), _.concat(links,expansionLink)]);
+  });
 }
 
 module.exports = {

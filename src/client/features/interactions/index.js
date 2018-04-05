@@ -143,12 +143,12 @@ class Interactions extends React.Component {
   }
 
   interactionMetadata(mediatorIds,pubmedIds){
-    let metadata = [['Detailed views',[]],['Database IDs',[]]];//Format expected by format-content
+    let metadata = [['Interaction',[]]];//Format expected by format-content
     mediatorIds.split(';').forEach( link => {
-        metadata[0][1].push(['Interaction',link.split('/')[4]]);
+        metadata[0][1].push(['Detailed Views',link.split('/')[4]]);
     });
     if(pubmedIds){
-     pubmedIds.split(';').forEach(id=>metadata[1][1].push(['PubMed_Interactions',id]));
+     pubmedIds.split(';').forEach(id=>metadata[0][1].push(['PubMed',id]));
     }
    return metadata;
 }

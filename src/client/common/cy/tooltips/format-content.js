@@ -46,13 +46,13 @@ const interactionHandlerTrim =(pair, expansionFunction, title) => {
   let maxViews=8;
   const expansionLink = pair[1].length>maxViews? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »'):'';
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDetailedViewList(sortByDatabaseId(pair[1]), pair[1].length>maxViews, expansionLink,maxViews,title);
+  return generateInteractionList(sortByDatabaseId(pair[1]), pair[1].length>maxViews, expansionLink,maxViews,title);
 };
 const interactionHandler =(pair, expansionFunction, title) => {
   let maxViews=8;
   const expansionLink = pair[1].length>maxViews? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less'):'';
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDetailedViewList(sortByDatabaseId(pair[1]),false, expansionLink,maxViews,title);
+  return generateInteractionList(sortByDatabaseId(pair[1]),false, expansionLink,maxViews,title);
 };
 
 //Handle publication related fields
@@ -92,8 +92,8 @@ const metaDataKeyMap = new Map()
   .set('Database IDsTrim', databaseHandlerTrim)
   .set('Publications', publicationHandler)
   .set('PublicationsTrim', publicationHandler)
-  .set('Detailed views',interactionHandler)
-  .set('Detailed viewsTrim',interactionHandlerTrim);
+  .set('Interaction',interactionHandler)
+  .set('InteractionTrim',interactionHandlerTrim);
 
  /**
   * parseMetadata(pair, trim)
@@ -431,29 +431,6 @@ function generateDatabaseList(sortedArray, trim, expansionLink) {
   //Generate list
   let renderValue = sortedArray.map(item => [generateIdList(item, trim)], this);
 
-  return formatRenderValue(sortedArray, renderValue, expansionLink, trim, true, 'Links');
-}
-
-function generateDetailedViewList(sortedArray, trim, expansionLink, maxViews, title) {
-  let list = sortedArray[0].ids;
-  if(trim){list=list.slice(0,maxViews);}
-  //Generate list
-  let renderValue = list.map((data,index) => [h('div.fake-spacer', 
-    h('a.db-link' ,{
-      href:'/view?',
-      search: queryString.stringify({
-        uri:(data.startsWith('R')?'http://identifiers.org/reactome/':'http://pathwaycommons.org/pc2/')+data, 
-        title:title, 
-        removeInfoMenu:true
-      }),
-      target: '_blank', 
-    }, 'Interaction '+(index+1))
-  )]);
-
-  return formatRenderValue(sortedArray, renderValue, expansionLink, trim, false, 'Detailed Views');
-}
-
-function formatRenderValue(sortedArray, renderValue, expansionLink, trim, list,name){
   var hasMultipleIds = _.find(sortedArray, databaseRef => databaseRef.ids.length > 1);
   //Append expansion link to render value if one exists
   if (expansionLink && hasMultipleIds && trim) {
@@ -464,11 +441,35 @@ function formatRenderValue(sortedArray, renderValue, expansionLink, trim, list,n
   }
 
   //If in expansion mode, append list styling
-  if (!trim && list) {
+  if (!trim) {
     renderValue = h('div.wrap-text', h('ul.db-list', renderValue));
   }
 
-  return h('div.fake-paragraph', [h('div.span-field-name', name+':'), renderValue]);
+  return h('div.fake-paragraph', [h('div.span-field-name', 'Links:'), renderValue]);
+}
+
+function generateInteractionList(sortedArray, trim, expansionLink, maxViews, title) {
+  //Generate list
+  return sortedArray.map(entry=>{
+    let list=entry.ids;
+    if(trim){list=list.slice(0,maxViews);}
+    const inner= list.map((data,index) =>[h('div.fake-spacer', entry.database==='Detailed Views'?
+    h('a.db-link' ,{
+      href:'/view?',
+      search: queryString.stringify({
+        uri:(data.startsWith('R')?'http://identifiers.org/reactome/':'http://pathwaycommons.org/pc2/')+data, 
+        title:title, 
+        removeInfoMenu:true
+      }),
+      target: '_blank', 
+    }, 'Interaction '+(index+1)):
+    h('a.db-link' ,{
+      href:'/view?'+data, 
+      target: '_blank', 
+    }, data)
+  )]);
+return h('div.fake-paragraph', [h('div.span-field-name', entry.database+':'), inner]);
+});
 }
 
 module.exports = {

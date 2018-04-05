@@ -5,54 +5,35 @@ const config = require('../../config');
 const queryString = require('query-string');
 
 //Handle standard name related metadata fields
+const trimString = (trim) =>{return trim ? 'more »' : '« less';};
 const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Name: ');
-const standardNameHandlerTrim = (pair) => standardNameHandler(pair);
 const displayNameHandler = (pair) => makeTooltipItem(pair[1], 'Display Name: ');
-const nameHandlerTrim = (pair, expansionFunction) => {
+const nameHandler = (pair, expansionFunction, trim) => {
   let revisedList = filterChemicalFormulas(pair[1]);
-  let shortArray = trimValue(revisedList, config.defaultEntryLimit);
+  let shortArray = trim ? trimValue(revisedList, config.defaultEntryLimit):
+                   filterChemicalFormulas(pair[1]);
   let expansionLink = revisedList.length > config.defaultEntryLimit ?
-    h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »') : h('div.error');
-
+  h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, trimString(trim)) : h('div.error');
   return h('div.fake-paragraph', [
     h('div.field-name', 'Synonyms:'),
     valueToHtml(shortArray, true),
     expansionLink
   ]);
 };
-const nameHandler = (pair, expansionFunction) => {
-  let shortArray = filterChemicalFormulas(pair[1]);
-  return h('div.fake-paragraph', [
-    h('div.field-name', 'Synonyms:'),
-    valueToHtml(shortArray, true),
-    h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less')
-  ]);
-};
 
 //Handle database related fields
-const databaseHandlerTrim = (pair, expansionFunction) => {
-  const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »');
+const databaseHandler = (pair, expansionFunction, trim) => {
+  const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, trimString(trim));
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDatabaseList(sortByDatabaseId(pair[1]), true, expansionLink);
-};
-const databaseHandler = (pair, expansionFunction) => {
-  const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less');
-  if (pair[1].length < 1) { return h('div.error'); }
-  return generateDatabaseList(sortByDatabaseId(pair[1]), false, expansionLink);
+  return generateDatabaseList(sortByDatabaseId(pair[1]), trim, expansionLink);
 };
 
 //Handle interaction/Detailed views related fields
-const interactionHandlerTrim =(pair, expansionFunction, title) => {
+const interactionHandler =(pair, expansionFunction, trim, title) => {
   let maxViews=8;
-  const expansionLink = pair[1].length>maxViews? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »'):'';
+  const expansionLink = pair[1].length>maxViews? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, trimString(trim)):'';
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateInteractionList(sortByDatabaseId(pair[1]), pair[1].length>maxViews, expansionLink,maxViews,title);
-};
-const interactionHandler =(pair, expansionFunction, title) => {
-  let maxViews=8;
-  const expansionLink = pair[1].length>maxViews? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less'):'';
-  if (pair[1].length < 1) { return h('div.error'); }
-  return generateInteractionList(sortByDatabaseId(pair[1]),false, expansionLink,maxViews,title);
+  return generateInteractionList(sortByDatabaseId(pair[1]),trim, expansionLink,maxViews,title);
 };
 
 //Handle publication related fields
@@ -81,19 +62,12 @@ const defaultHandler = (pair) => {
 
 const metaDataKeyMap = new Map()
   .set('Standard Name', standardNameHandler)
-  .set('Standard NameTrim', standardNameHandlerTrim)
   .set('Display Name', displayNameHandler)
-  .set('Display NameTrim', displayNameHandler)
   .set('Type', typeHandler)
-  .set('TypeTrim', typeHandler)
   .set('Names', nameHandler)
-  .set('NamesTrim', nameHandlerTrim)
   .set('Database IDs', databaseHandler)
-  .set('Database IDsTrim', databaseHandlerTrim)
   .set('Publications', publicationHandler)
-  .set('PublicationsTrim', publicationHandler)
-  .set('Interaction',interactionHandler)
-  .set('InteractionTrim',interactionHandlerTrim);
+  .set('Interaction',interactionHandler);
 
  /**
   * parseMetadata(pair, trim)
@@ -108,14 +82,9 @@ function parseMetadata(pair, trim = true, expansionFunction, title) {
   const doNotRender = ['Data Source', 'Data SourceTrim', 'Display Name'];
   let key = pair[0];
 
-  //Use the trim function if trim is applied
-  if (trim) {
-    key += "Trim";
-  }
-
   let handler = metaDataKeyMap.get(key);
   if (handler) {
-    return handler(pair, expansionFunction, title);
+    return handler(pair, expansionFunction, trim, title);
   }
   else if (!(trim) && !doNotRender.includes(key)) {
     return defaultHandler(pair);

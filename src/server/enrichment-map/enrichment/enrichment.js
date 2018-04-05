@@ -49,12 +49,20 @@ const gProfilerURL = "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/we
 
 const enrichment = (query, userSetting) => {
   const promise = new Promise((resolve, reject) => {
-    const formData = _.assign({}, defaultSetting, { "query": query }, userSetting);
+    let formData = _.assign(defaultSetting, { "query": query }, userSetting);
     const orderedQueryVal = Number(formData.ordered_query);
     const userThrVal = Number(formData.user_thr);
     const minSetSizeVal = Number(formData.min_set_size);
     const maxSetSizeVal = Number(formData.max_set_size);
     const thresholdAlgoVal = formData.threshold_algo;
+    const custbgVal = formData.custbg.split(/\s+/);
+    formData = _.assign(formData, {
+      "ordered_query": orderedQueryVal,
+      "user_thr": userThrVal,
+      "min_set_size": minSetSizeVal,
+      "max_set_size": maxSetSizeVal,
+      "custbg": custbgVal
+    })
     if (orderedQueryVal != 0 && orderedQueryVal != 1) {
       reject(new Error('ERROR: orderedQuery should be 1 or 0'));
     }

@@ -21,8 +21,8 @@ const databases = [
   {database:'3DMET', url:'http://identifiers.org/3dmet/', search:''},
   {database:'Chemical Component Dictionary', url:'http://identifiers.org/pdb-ccd/', search:''},
   {database:'CAS', url:'http://identifiers.org/cas/', search:''},
-  {database:'HPRD',url:'	http://identifiers.org/hprd/',search:''},
-  {database:'RefSeq',url:'	http://identifiers.org/refseq/',search:''},
+  {database:'HPRD',url:'http://identifiers.org/hprd/',search:''},
+  {database:'RefSeq',url:'http://identifiers.org/refseq/',search:''},
   {database:'Pathway Commons',url:'http://pathwaycommons.org/pc2/',search:''}
 ];
 

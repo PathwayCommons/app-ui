@@ -6,6 +6,7 @@ const queryString = require('query-string');
 
 //Handle standard name related metadata fields
 const trimString = (trim) =>{return trim ? 'more »' : '« less';};
+
 const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Name: ');
 const displayNameHandler = (pair) => makeTooltipItem(pair[1], 'Display Name: ');
 const nameHandler = (pair, expansionFunction, trim) => {
@@ -41,14 +42,14 @@ const viwerListHandler =(pair, expansionFunction, trim, title) => {
   };
   const expansionLink = pair[1].length>maxListEntries? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, trimString(trim)):'';
   if (pair[1].length < 1) { return h('div.error'); }
-  return interactionList(sortByDatabaseId(pair[1]),trim, expansionLink,maxListEntries,inner);
+  return interactionList(sortByDatabaseId(pair[1]), expansionLink, maxListEntries, inner, trim);
 };
 
 const listHandler = (pair, expansionFunction, trim) => {
   const inner = generateDBLink;
   const expansionLink = pair[1].length>maxListEntries? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, trimString(trim)):'';
   if (pair[1].length < 1) { return h('div.error'); }
-  return interactionList(sortByDatabaseId(pair[1]),trim, expansionLink,maxListEntries,inner);
+  return interactionList(sortByDatabaseId(pair[1]), expansionLink, maxListEntries, inner, trim);
 };
 
 //Handle publication related fields
@@ -409,7 +410,7 @@ function publicationList(data) {
  *    </div>
  * </div>
  */
-function generateDatabaseList(sortedArray, trim, expansionLink) {
+function generateDatabaseList(sortedArray, expansionLink, trim) {
   //Ignore Publication references
   sortedArray = sortedArray.filter(databaseEntry => databaseEntry.database.toUpperCase() !== 'PUBMED');
 
@@ -433,7 +434,7 @@ function generateDatabaseList(sortedArray, trim, expansionLink) {
   return h('div.fake-paragraph', [h('div.span-field-name', 'Links:'), renderValue]);
 }
 
-function interactionList(sortedArray, trim, expansionLink, maxViews, inner) {
+function interactionList(sortedArray, expansionLink, maxViews, inner, trim) {
   //Generate list
   return sortedArray.map(entry=>{
     let list=entry.ids;

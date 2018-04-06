@@ -9,7 +9,7 @@ const classNames = require('classnames');
 
 const Icon = require('../../common/components').Icon;
 const { ServerAPI } = require('../../services');
-const databases = require('../../common/config').databases;
+const Landing = require('./landing-box');
 
 class Search extends React.Component {
 
@@ -50,7 +50,7 @@ class Search extends React.Component {
       this.setState({
         loading: true
       });
-      this.getLandingResult();
+     this.getLandingResult(query.q);
       ServerAPI.querySearch(query)
         .then(searchResults => {
            this.setState({
@@ -61,64 +61,16 @@ class Search extends React.Component {
     }
   }
 
-  getLandingResult() {
-    const state = this.state;
-    const q=state.query.q.trim();
-    const linkBuilder= (source,array)=>{
-      let genes={};
-      array.forEach(gene=>{
-        genes[gene.initialAlias]={[source]:gene.convertedAlias};
-      });
-      return genes;
-    };
-    Promise.all([
-      ServerAPI.geneQuery({genes: q,target: 'ENTREZGENE_ACC'}).then(result=>linkBuilder('NCBI Gene',result.geneInfo)),
-      ServerAPI.geneQuery({genes: q,target: 'UNIPROT'}).then(result=>linkBuilder('Uniprot',result.geneInfo)),
-      ServerAPI.geneQuery({genes: q,target: 'HGNC'}).then(result=>linkBuilder('HGNC',result.geneInfo)),
-      ServerAPI.geneQuery({genes: q,target: 'HGNCSYMBOL'}).then(result=>linkBuilder('Gene Cards',result.geneInfo)),
-    ]).then(values=>{
-      let genes=values[0];
-      _.tail(values).forEach(gene=>_.mergeWith(genes,gene,(objValue, srcValue)=>_.assign(objValue,srcValue)));
-      this.setState({
-        landingLoading: true
-      },()=>{
-        let ids=[];
-        let landing;
-        _.forEach(genes,gene=>{
-          ids.push(gene['NCBI Gene']);
-        });
-        if(!_.isEmpty(ids)){
-          ServerAPI.getGeneInformation(ids,'gene').then(result=>{
-            const geneResults=result.result;
-            landing = geneResults.uids.map(gene=>{
-              const originalSearch = _.findKey(genes,entry=> entry['NCBI Gene']===gene);
-              const links=_.mapValues(genes[originalSearch],(value,key)=>{
-                let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue[0].toUpperCase());
-                return link[0][1] + link[0][2] + value;
-              });
-              return {
-                id:gene,
-                name:geneResults[gene].nomenclaturename,
-                function: geneResults[gene].summary,
-                synonyms: geneResults[gene].name + (geneResults[gene].otheraliases ? ', '+geneResults[gene].otheraliases:''),
-                showMore:{full:!(geneResults.uids.length>1),function:false,synonyms:false},
-                links:links
-              };
-            });
-            this.setState({
-              landingLoading: false,
-              landing:landing
-            });
-          });
-        }
-        else{
-          this.setState({
-            landingLoading: false,
-            landing:[]
-          });
-        }
-      });
+  getLandingResult(query){
+    this.setState({
+      landingLoading:true
     });
+    Landing.getLandingResult(query).then(landing=>
+      this.setState({
+        landingLoading:false,
+        landing:landing
+      })
+    );
   }
 
   componentDidMount() {
@@ -161,7 +113,10 @@ class Search extends React.Component {
   render() {
     const props = this.props;
     const state = this.state;
-
+    const landing=state.landing;
+    const landingBox=Landing.landingBox;
+    const controller = this;
+    
     let Example = props => h('span.search-example', {
       onClick: () => this.setAndSubmitSearchQuery({q: props.search})
     }, props.search);
@@ -211,71 +166,6 @@ class Search extends React.Component {
           )),
     ]) :
       h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
-
-    const handelShowMoreClick= (varToToggle,index) => {
-      const landing=state.landing;
-      landing[index].showMore[varToToggle]=!landing[index].showMore[varToToggle];
-      this.setState({ landing:landing }); 
-    };
-
-    const expandableText = (length,text,charToCutOn,type,cssClass,toggleVar,index)=>{
-      let result = null;
-      const varToToggle= state.landing[index].showMore[toggleVar];
-      const textToUse= (varToToggle|| text.length<=length)?
-        text+' ': text.slice(0,text.lastIndexOf(charToCutOn,length))+' '; 
-        result=[h(`${type}`,{className:cssClass,key:'text'},textToUse)];
-      if(text.length>length){
-        result.push(h(`${type}.search-landing-link`,{onClick: ()=> handelShowMoreClick(toggleVar,index),key:'showMore'},
-        varToToggle ? '« less': 'more »'));
-      }
-      return result;
-    };
-
-    const landing = (state.landingLoading ) ?
-      h('div.search-landing-innner',[h(Loader, { loaded:false , options: { color: '#16A085',position:'relative', top: '15px' }})]):
-      state.landing.map((box,index)=>{
-        const multipleBoxes = state.landing.length>1;
-        const title = [h('strong.search-landing-title-text',{key:'name'},box.name),];
-        if(multipleBoxes){
-          title.push(h('strong.material-icons',{key:'arrow'},state.landing[index].showMore.full? 'expand_less': 'expand_more'));
-        }
-        let synonyms=[];
-        if(box.synonyms){ 
-          synonyms=expandableText(112, box.synonyms,',','i','search-landing-small','synonyms',index);
-        }
-        let functions=[];
-        if(box.function){
-          functions=expandableText(260, box.function,' ','span','search-landing-function','function',index);
-        } 
-        let links=[];
-        _.forIn((box.links),(value,key)=>{
-          links.push(h('a.search-landing-link',{key: key, href: value},key));
-        });
-        return [ 
-          h('div.search-landing-title',{key:'title',
-            onClick: () => {if(multipleBoxes){handelShowMoreClick('full',index);}},
-            className:classNames('search-landing-title',{'search-landing-title-multiple':multipleBoxes}),
-          },[title]),
-          box.showMore.full && 
-          h('div.search-landing-innner',{key: box.id},[ 
-            h('div.search-landing-section',{key: 'synonyms'},[synonyms]),
-            h('div.search-landing-section',{key: 'functions'},[functions]),
-            h('div.search-landing-section',{key: 'links'},[links]),
-            h(Link, { 
-              to: { pathname: '/interactions',search: queryString.stringify({ id: box.id, kind:'NEIGHBORHOOD' })}, 
-              target: '_blank', className: 'search-landing-interactions', key:'interactions' 
-            }, [h('button.search-landing-button', `View Interactions`)])
-          ])
-        ];    
-      });
-      if(state.landing.length>1 && !state.landingLoading){
-        landing.push(
-          h(Link, { 
-            to: { pathname: '/interactions',search: queryString.stringify({ id: state.landing.map(entry=>entry.id), kind:'PATHSBETWEEN' })}, 
-            target: '_blank', className: 'search-landing-interactions', key:'interactions' 
-          }, [h('button.search-landing-button', 'View Interactions Between Entities')])
-        );
-      }
 
     return h('div.search', [
       h('div.search-header-container', [
@@ -328,7 +218,7 @@ class Search extends React.Component {
       h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' } }, [
         h('div.search-list-container', [
           h('div.search-result-info', [searchResultInfo]),
-          h('div.search-landing',[searchResults.length?landing:'']), 
+          h('div.search-landing',[searchResults.length ? h(landingBox,{controller,landing}):'']), 
           h('div.search-list', searchResults)
         ])
       ])

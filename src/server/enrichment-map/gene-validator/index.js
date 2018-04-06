@@ -40,7 +40,7 @@ const convertGConvertNames = (gConvertName) => {
 
 const validatorGconvert = (query, userOptions) => {
   return promise = new Promise((resolve, reject) => {
-    const formData = _.assign({}, defaultOptions, userOptions, { query: query });
+    const formData = _.assign(defaultOptions, userOptions, { query: query });
     formData.organism = formData.organism.toLowerCase();
     const initialTarget = formData.target.toUpperCase();
     formData.target = convertGConvertNames(initialTarget);
@@ -93,7 +93,7 @@ const validatorGconvert = (query, userOptions) => {
           }
         });
 
-        const ret = { options: { target: initialTarget, organism: formData.organism }, unrecognized: unrecognized, duplicate: duplicate, geneInfo: geneInfo };
+        const ret = { unrecognized: unrecognized, duplicate: duplicate, geneInfo: geneInfo };
         resolve(ret);
       })
   });

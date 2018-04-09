@@ -85,13 +85,14 @@ router.post('/gene-query', (req, res) => {
 // expose a rest endpoint for enrichment
 router.post('/enrichment', (req, res) => {
   const genes = req.body.genes;
-  const tmpOptions = {};
-  tmpOptions.ordered_query = req.body.orderedQuery;
-  tmpOptions.user_thr = req.body.userThr;
-  tmpOptions.min_set_size = req.body.minSetSize;
-  tmpOptions.max_set_size = req.body.maxSetSize;
-  tmpOptions.threshold_algo = req.body.thresholdAlgo;
-  tmpOptions.custbg = req.body.custbg;
+  const tmpOptions = {
+    orderedQuery: req.body.orderedQuery,
+    userThr: req.body.userThr,
+    minSetSize: req.body.minSetSize,
+    maxSetSize: req.body.maxSetSize,
+    thresholdAlgo: req.body.thresholdAlgo,
+    custbg: req.body.custbg
+  };
   const userOptions = {};
   for (const key in tmpOptions) {
     if (tmpOptions[key] != undefined) {
@@ -108,11 +109,8 @@ router.post('/enrichment', (req, res) => {
 // Expose a rest endpoint for emap
 router.post('/emap', (req, res) => {
   const pathwayIdList = req.body.pathwayIdList.split(/\s+/);
-  const cutoff = req.body.cutoff;
-  const JCWeight = req.body.JCWeight;
-  const OCWeight = req.body.OCWeight;
   try {
-    res.json(generateGraphInfo(pathwayIdList, cutoff, JCWeight, OCWeight));
+    res.json(generateGraphInfo(pathwayIdList, req.body.cutoff, req.body.JCWeight, req.body.OCWeight));
   } catch (err) {
     res.status(400).send(err.message);
   }

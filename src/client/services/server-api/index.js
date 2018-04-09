@@ -1,5 +1,6 @@
 const io = require('socket.io-client');
 const qs = require('querystring');
+const Qs = require('qs');
 const _ = require('lodash');
 
 const socket = io.connect('/');
@@ -28,14 +29,60 @@ const ServerAPI = {
     return fetch(`/pc-client/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },
 
-  geneQuery(query){
-    return fetch(`/api/gene-query?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
+  geneQuery(genes, target, organism) {
+    return fetch(`/api/gene-query`, {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: Qs.stringify({
+        genes: genes,
+        target: target,
+        organism: organism
+      })
+    }).then(res => res.json());
+  },
+
+  enrichment(genes, orderedQuery, userThr, minSetSize, maxSetSize, thresholdAlgo, custbg) {
+    return fetch(`/api/enrichment`, {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: Qs.stringify({
+        genes: genes,
+        orderedQuery: orderedQuery,
+        userThr: userThr,
+        minSetSize: minSetSize,
+        maxSetSize: maxSetSize,
+        thresholdAlgo: thresholdAlgo,
+        custbg: custbg
+      })
+    }).then(res => res.json());
+  },
+
+  emap(pathwayInfoList, JCWeight, OCWeight, cutoff) {
+    return fetch(`/api/emap`, {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: Qs.stringify({
+        pathwayInfoList: pathwayInfoList,
+        JCWeight: JCWeight,
+        OCWeight: OCWeight,
+        cutoff: cutoff
+      })
+    }).then(res => res.json())
   },
 
   getProteinInformation(uniprotId){
     return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&size=1&accession=${uniprotId}`,defaultFetchOpts).then(res => res.json());
   },
-  
+
   getNeighborhood(uniprotId,format){
     return fetch(`http://www.pathwaycommons.org/pc2/graph?source=http://identifiers.org/uniprot/${uniprotId}&kind=neighborhood&format=${format}&pattern=controls-phosphorylation-of
   &pattern=in-complex-with&pattern=controls-expression-of&pattern=interacts-with`,defaultFetchOpts).then(res => res.text());

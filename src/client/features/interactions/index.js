@@ -15,7 +15,7 @@ const downloadTypes = require('../../common/config').downloadTypes;
 
 const filterMenuId='filter-menu';
 const interactionsConfig={
-  toolbarButtons: _.differenceBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'}],'id').concat({
+  toolbarButtons: _.differenceBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'},{'id': 'showInfo'}],'id').concat({
     id: 'filter',
     icon: 'filter_list',
     type: 'activateMenu',
@@ -54,8 +54,9 @@ class Interactions extends React.Component {
     };    
 
     const query = queryString.parse(props.location.search);
-    query.id=_.concat([],query.id);
-    ServerAPI.getNeighborhood(query.id,query.kind).then(res=>{ 
+   const source=_.concat([],query.source);
+   const kind = source.length>1?'PATHSBETWEEN':'Neighborhood';
+    ServerAPI.getNeighborhood(source,kind).then(res=>{ 
       const layoutConfig = getLayoutConfig('interactions');
       const network= this.parse(res);
       this.setState({
@@ -66,31 +67,21 @@ class Interactions extends React.Component {
       });
     });
 
-    ServerAPI.getGeneInformation(query.id,'gene').then(result=>{
-      const geneResults=result.result;
-      let hgncIds=[];
-      const comments=_.flatten(geneResults.uids.map(gene=>{
-        hgncIds.push(geneResults[gene].name);
-        return _.compact([
-          'Nomenclature Name: '+geneResults[gene].nomenclaturename,
-          'Other Aliases: '+geneResults[gene].name + (geneResults[gene].otheraliases ? ', '+geneResults[gene].otheraliases:''),
-          geneResults[gene].summary&&'Function: '+geneResults[gene].summary
-        ]);
-      }));
+    ServerAPI.geneQuery({genes:source.join(' ') ,target: 'HGNCSYMBOL'}).then(result=>{
+    const hgncIds=result.geneInfo.map(gene=> gene.convertedAlias);
       this.setState({
         networkMetadata: {
-          name: (hgncIds+' Interactions'),
+          name: hgncIds.length===source.length ? (hgncIds +' Interactions') : 'Interactions',
           datasource: 'Pathway Commons',
-          comments: comments
         },
         ids:hgncIds,
-      }); 
+      });
     });
 
     this.state.cy.on('trim', () => {
       const state = this.state;
       const ids = state.ids;
-      if(ids.length===query.id.length){
+      if(ids.length === source.length){
         const cy = state.cy;
         const mainNode = cy.nodes(node=> ids.indexOf(node.data().id) != -1);
         const nodesToKeep = mainNode.merge(mainNode.connectedEdges().connectedNodes());
@@ -236,7 +227,7 @@ class Interactions extends React.Component {
         promise: () => Promise.resolve(_.map(state.cy.edges(),edge=> edge.data().id).sort().join('\n'))
       },
     }):
-    h('div.no-network',[h('strong.title','No interactions to display'),h('span','Return to the previous page and try a diffrent set of entities')]);
+    h('div.no-network',[h('strong.title','No interactions to display'),h('span','Try a diffrent set of entities')]);
 
     const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
 

@@ -49,7 +49,7 @@ const getLandingResult= (query)=> {
               return link[0][1] + link[0][2] + value;
             });
             return {
-              id:gene,
+              originalSearch:originalSearch,
               name:geneResults[gene].nomenclaturename,
               function: geneResults[gene].summary,
               synonyms: geneResults[gene].name + (geneResults[gene].otheraliases ? ', '+geneResults[gene].otheraliases:''),
@@ -82,6 +82,11 @@ const expandableText = (controller,landing,length,text,charToCutOn,type,cssClass
   }
   return result;
 };
+
+const interactionsLink = (source,text)=> 
+  h(Link, {to: { pathname: '/interactions',search: queryString.stringify({source: source})}, 
+    target: '_blank', className: 'search-landing-interactions', key:'interactions' 
+  }, [h('button.search-landing-button', text)]);
 
 /*Generates a landing box
 input: {controller,[{
@@ -124,24 +129,16 @@ const landingBox = (props) => {
         className:classNames('search-landing-title',{'search-landing-title-multiple':multipleBoxes}),
       },[title]),
       box.showMore.full && 
-      h('div.search-landing-innner',{key: box.id},[ 
+      h('div.search-landing-innner',{key: box.originalSearch},[ 
         h('div.search-landing-section',{key: 'synonyms'},[synonyms]),
         h('div.search-landing-section',{key: 'functions'},[functions]),
         h('div.search-landing-section',{key: 'links'},[links]),
-        h(Link, { 
-          to: { pathname: '/interactions',search: queryString.stringify({ id: box.id, kind:'NEIGHBORHOOD' })}, 
-          target: '_blank', className: 'search-landing-interactions', key:'interactions' 
-        }, [h('button.search-landing-button', `View Interactions`)])
+        interactionsLink(box.originalSearch,'View Interactions')
       ])
     ];    
   });
   if(landing.length>1){
-    landingHTML.push(
-      h(Link, { 
-        to: { pathname: '/interactions',search: queryString.stringify({ id:landing.map(entry=>entry.id), kind:'PATHSBETWEEN' })}, 
-        target: '_blank', className: 'search-landing-interactions', key:'interactions' 
-      }, [h('button.search-landing-button', 'View Interactions Between Entities')])
-    );
+    landingHTML.push(interactionsLink(landing.map(entry=>entry.originalSearch),'View Interactions Between Entities'));
   }
   return landingHTML;
 };

@@ -10,7 +10,6 @@ const fetch = require('node-fetch')
 const _ = require('lodash');
 const qs = require('query-string');
 
-
 const parseGProfilerResponse = (gProfilerResponse) => {
   let lines = _.map(gProfilerResponse.split('\n'), line => {
     if (line.substring(0, 1) === '#') {
@@ -18,7 +17,7 @@ const parseGProfilerResponse = (gProfilerResponse) => {
     }
     return line;
   });
-  lines = _.filter(lines, line => line != '');
+  lines = _.compact(lines);
   return _.map(lines, line => {
     return line.split('\t');
   })

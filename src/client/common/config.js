@@ -22,7 +22,9 @@ const databases = [
   ['Chemical Component Dictionary', 'http://identifiers.org/pdb-ccd/', ''],
   ['CAS', 'http://identifiers.org/cas/', ''],
   ['HPRD','	http://identifiers.org/hprd/',''],
-  ['RefSeq','	http://identifiers.org/refseq/','']
+  ['RefSeq','	http://identifiers.org/refseq/',''],
+  ['NCBI Gene','http://identifiers.org/ncbigene/',''],
+  ['Gene Cards','http://identifiers.org/genecards/','']
 ];
 
 const publicationsURL = 'http://identifiers.org/pubmed/';

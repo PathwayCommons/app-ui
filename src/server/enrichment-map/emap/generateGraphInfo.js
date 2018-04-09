@@ -75,8 +75,9 @@ const generateGraphInfo = (pathwayIdList, cutoff = 0.375, JCWeight, OCWeight) =>
   _.forEach(edgeInfo, edge => {
     const sourceIndex = 0;
     const targetIndex = 1;
-    const source = edge.edgeId.split('_')[sourceIndex];
-    const target = edge.edgeId.split('_')[targetIndex];
+    const sourceTarget = edge.edgeId.split('_');
+    const source = sourceTarget[sourceIndex];
+    const target = sourceTarget[targetIndex];
     elements.push({
       data: {
         id: edge.edgeId,

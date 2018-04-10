@@ -64,11 +64,11 @@ router.get('/get-graph-and-layout', function (req, res) {
 
 // expose a rest endpoint for gconvert validator
 router.post('/gene-query', (req, res) => {
-  const genes = req.body.genes;
+  const genes = req.query.genes;
   const tmpOptions = {};
   const userOptions = {};
-  tmpOptions.organism = req.body.organism;
-  tmpOptions.target = req.body.target;
+  tmpOptions.organism = req.query.organism;
+  tmpOptions.target = req.query.target;
   for (const key in tmpOptions) {
     if (tmpOptions[key] != undefined) {
       userOptions[key] = tmpOptions[key];

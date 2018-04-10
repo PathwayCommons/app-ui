@@ -7,10 +7,15 @@ const databases = require('../../common/config').databases;
 const Loader = require('react-loader');
 const _ = require('lodash');
 
-const linkBuilder= (source,array)=>{
-  let genes={};
-  array.forEach(gene=>{
-    genes[gene.initialAlias]={[source]:gene.convertedAlias};
+const linkBuilder= (source,geneQuery)=>{
+  let genes={}; 
+  const geneArray=geneQuery.geneInfo;
+  const duplicates = new Set();
+  geneArray.forEach(gene=>{
+    if(!duplicates.has(gene.convertedAlias)){
+      genes[gene.initialAlias]={[source]:gene.convertedAlias};
+      duplicates.add(gene.convertedAlias);
+    }
   });
   return genes;
 };
@@ -29,10 +34,10 @@ synonyms:"TP53, BCC7, LFS1, P53, TRP53"
 const getLandingResult= (query)=> {
   const q=query.trim();
   return Promise.all([
-    ServerAPI.geneQuery({genes: q,target: 'ENTREZGENE_ACC'}).then(result=>linkBuilder('NCBI Gene',result.geneInfo)),
-    ServerAPI.geneQuery({genes: q,target: 'UNIPROT'}).then(result=>linkBuilder('Uniprot',result.geneInfo)),
-    ServerAPI.geneQuery({genes: q,target: 'HGNC'}).then(result=>linkBuilder('HGNC',result.geneInfo)),
-    ServerAPI.geneQuery({genes: q,target: 'HGNCSYMBOL'}).then(result=>linkBuilder('Gene Cards',result.geneInfo)),
+    ServerAPI.geneQuery({genes: q,target: 'NCBIGENE'}).then(result=>linkBuilder('NCBI Gene',result)),
+    ServerAPI.geneQuery({genes: q,target: 'UNIPROT'}).then(result=>linkBuilder('Uniprot',result)),
+    ServerAPI.geneQuery({genes: q,target: 'HGNC'}).then(result=>linkBuilder('HGNC',result)),
+    ServerAPI.geneQuery({genes: q,target: 'HGNCSYMBOL'}).then(result=>linkBuilder('Gene Cards',result)),
   ]).then(values=>{let genes=values[0];
     _.tail(values).forEach(gene=>_.mergeWith(genes,gene,(objValue, srcValue)=>_.assign(objValue,srcValue)));
       let ids=[];

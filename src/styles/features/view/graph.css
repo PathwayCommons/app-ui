@@ -8,6 +8,12 @@
   height: 100vh;
 }
 
+@media (--small-width-viewport) {
+  .graph{
+    width: 100% !important;
+  }
+}
+
 .graph-network-loading {
   visibility: hidden;
 }

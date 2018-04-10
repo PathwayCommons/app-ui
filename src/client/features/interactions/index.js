@@ -54,9 +54,9 @@ class Interactions extends React.Component {
     };    
 
     const query = queryString.parse(props.location.search);
-   const source=_.concat([],query.source);
-   const kind = source.length>1?'PATHSBETWEEN':'Neighborhood';
-    ServerAPI.getNeighborhood(source,kind).then(res=>{ 
+    const sources=_.concat([],query.source);
+    const kind = sources.length>1?'PATHSBETWEEN':'Neighborhood';
+    ServerAPI.getNeighborhood(sources,kind).then(res=>{ 
       const layoutConfig = getLayoutConfig('interactions');
       const network= this.parse(res);
       this.setState({
@@ -66,12 +66,14 @@ class Interactions extends React.Component {
         loading: false
       });
     });
-
-    ServerAPI.geneQuery({genes:source.join(' ') ,target: 'HGNCSYMBOL'}).then(result=>{
+    //converts identifiers uris into 
+    const identifier =  new RegExp('(http://identifiers.org/)+(\\w)+[/]+(\\w)+$');
+    const geneIds = sources.map(source=> identifier.test(source) ? _.last(source.split('/')) : source).join(' ');
+    ServerAPI.geneQuery({genes:geneIds ,target: 'HGNCSYMBOL'}).then(result=>{
     const hgncIds=result.geneInfo.map(gene=> gene.convertedAlias);
       this.setState({
         networkMetadata: {
-          name: hgncIds.length===source.length ? (hgncIds +' Interactions') : 'Interactions',
+          name: hgncIds.length === sources.length ? (hgncIds +' Interactions') : 'Interactions',
           datasource: 'Pathway Commons',
         },
         ids:hgncIds,
@@ -81,7 +83,7 @@ class Interactions extends React.Component {
     this.state.cy.on('trim', () => {
       const state = this.state;
       const ids = state.ids;
-      if(ids.length === source.length){
+      if(ids.length === sources.length){
         const cy = state.cy;
         const mainNode = cy.nodes(node=> ids.indexOf(node.data().id) != -1);
         const nodesToKeep = mainNode.merge(mainNode.connectedEdges().connectedNodes());

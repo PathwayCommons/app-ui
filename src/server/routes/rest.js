@@ -108,9 +108,13 @@ router.post('/enrichment', (req, res) => {
 
 // Expose a rest endpoint for emap
 router.post('/emap', (req, res) => {
-  const pathwayIdList = req.body.pathwayIdList.split(/\s+/);
+  const pathwayInfoList = JSON.parse(req.body.pathwayInfoList);
+  const cutoff = req.body.cutoff;
+  const JCWeight = req.body.JCWeight;
+  const OCWeight = req.body.OCWeight;
   try {
-    res.json(generateGraphInfo(pathwayIdList, req.body.cutoff, req.body.JCWeight, req.body.OCWeight));
+    res.json(generateGraphInfo(pathwayInfoList, cutoff, JCWeight, OCWeight));
+
   } catch (err) {
     res.status(400).send(err.message);
   }

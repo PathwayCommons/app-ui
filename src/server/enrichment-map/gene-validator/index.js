@@ -78,6 +78,7 @@ const validatorGconvert = (query, userOptions) => {
           if (formData.target === 'ENTREZGENE_ACC' && initialAlias.substring(0, colonIndex + 1) === 'ENTREZGENE_ACC:') {
             const ncbiNameIndex = 1;
             initialAlias = initialAlias.split(':')[ncbiNameIndex];
+
           }
           if (info[convertedAliasIndex] === 'N/A') {
             if (_.filter(unrecognized, ele => ele === initialAlias).length === 0) {
@@ -93,9 +94,11 @@ const validatorGconvert = (query, userOptions) => {
           }
         });
 
+
         const ret = { unrecognized: unrecognized, duplicate: duplicate, geneInfo: geneInfo };
         resolve(ret);
       })
+
   });
 };
 

@@ -47,9 +47,9 @@ const defaultSetting = {
 const gProfilerURL = "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/";
 
 
-const enrichment = (query, userSetting) => {
+const enrichment = (query, userSetting = {}) => {
   return promise = new Promise((resolve, reject) => {
-    const formData = _.assign({}, defaultSetting, { "query": query }, userSetting);
+    const formData = _.assign(defaultSetting, JSON.parse(JSON.stringify(userSetting)), { query: query });
     const orderedQueryVal = Number(formData.ordered_query);
     const userThrVal = Number(formData.user_thr);
     const minSetSizeVal = Number(formData.min_set_size);
@@ -130,4 +130,3 @@ const enrichment = (query, userSetting) => {
 
 
 module.exports = { enrichment };
-

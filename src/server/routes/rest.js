@@ -64,17 +64,12 @@ router.get('/get-graph-and-layout', function (req, res) {
 
 // expose a rest endpoint for gconvert validator
 router.post('/gene-query', (req, res) => {
-  const genes = req.query.genes;
+  const genes = req.body.genes;
   const tmpOptions = {};
   const userOptions = {};
-  tmpOptions.organism = req.query.organism;
-  tmpOptions.target = req.query.target;
-  for (const key in tmpOptions) {
-    if (tmpOptions[key] != undefined) {
-      userOptions[key] = tmpOptions[key];
-    }
-  }
-  validatorGconvert(genes, userOptions).then(gconvertResult => {
+  tmpOptions.organism = req.body.organism;
+  tmpOptions.target = req.body.target;
+  validatorGconvert(genes, tmpOptions).then(gconvertResult => {
     res.json(gconvertResult);
   }).catch((invalidInfoError) => {
     res.status(400).send({invalidTarget: invalidInfoError.invalidTarget, invalidOrganism: invalidInfoError.invalidOrganism});
@@ -92,13 +87,7 @@ router.post('/enrichment', (req, res) => {
   tmpOptions.max_set_size = req.body.maxSetSize;
   tmpOptions.threshold_algo = req.body.thresholdAlgo;
   tmpOptions.custbg = req.body.custbg;
-  const userOptions = {};
-  for (const key in tmpOptions) {
-    if (tmpOptions[key] != undefined) {
-      userOptions[key] = tmpOptions[key];
-    }
-  }
-  enrichment(genes, userOptions).then(enrichmentResult => {
+  enrichment(genes, tmpOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
   }).catch((err) => {
     res.status(400).send(err.message);

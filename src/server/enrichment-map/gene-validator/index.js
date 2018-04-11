@@ -93,8 +93,8 @@ const validatorGconvert = (query, userOptions = {}) => {
                 duplicate[curConvertedAlias].push(info[initialAliasIndex]);
               }
             }
-            if (_.filter(geneInfo, ele => ele.initialAlias === info[initialAliasIndex]).length === 0) {
-              geneInfo.push({ initialAlias: info[initialAliasIndex], convertedAlias: info[convertedAliasIndex] });
+            if (_.filter(geneInfo, ele => ele.initialAlias === initialAlias).length === 0) {
+              geneInfo.push({ initialAlias: initialAlias, convertedAlias: info[convertedAliasIndex] });
             }
           }
         });

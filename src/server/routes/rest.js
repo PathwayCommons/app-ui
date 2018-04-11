@@ -89,14 +89,8 @@ router.post('/enrichment', (req, res) => {
     thresholdAlgo: req.body.thresholdAlgo,
     custbg: req.body.custbg
   };
-  const userOptions = {};
-  for (const key in tmpOptions) {
-    if (tmpOptions[key] != undefined) {
-      userOptions[key] = tmpOptions[key];
-    }
-  }
-  enrichment(genes, userOptions).then(enrichmentResult => {
 
+  enrichment(genes, tmpOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
   }).catch((err) => {
     res.status(400).send(err.message);

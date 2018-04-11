@@ -49,7 +49,7 @@ const getLandingResult= (query)=> {
               return link[0][1] + link[0][2] + value;
             });
             return {
-              originalSearch:originalSearch,
+              id:gene,
               name:geneResults[gene].nomenclaturename,
               function: geneResults[gene].summary,
               synonyms: geneResults[gene].name + (geneResults[gene].otheraliases ? ', '+geneResults[gene].otheraliases:''),
@@ -129,16 +129,16 @@ const landingBox = (props) => {
         className:classNames('search-landing-title',{'search-landing-title-multiple':multipleBoxes}),
       },[title]),
       box.showMore.full && 
-      h('div.search-landing-innner',{key: box.originalSearch},[ 
+      h('div.search-landing-innner',{key: box.id},[ 
         h('div.search-landing-section',{key: 'synonyms'},[synonyms]),
         h('div.search-landing-section',{key: 'functions'},[functions]),
         h('div.search-landing-section',{key: 'links'},[links]),
-        interactionsLink(box.originalSearch,'View Interactions')
+        interactionsLink(box.id,'View Interactions')
       ])
     ];    
   });
   if(landing.length>1){
-    landingHTML.push(interactionsLink(landing.map(entry=>entry.originalSearch),'View Interactions Between Entities'));
+    landingHTML.push(interactionsLink(landing.map(entry=>entry.id),'View Interactions Between Entities'));
   }
   return landingHTML;
 };

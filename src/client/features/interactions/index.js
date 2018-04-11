@@ -44,7 +44,7 @@ class Interactions extends React.Component {
         comments: []
       },
       ids:[],
-      loading: true,
+      loaded:{network:false, ids:false},
       categories: new Map (),
       buttonsClicked:{
         Binding:false,
@@ -54,7 +54,7 @@ class Interactions extends React.Component {
     };    
 
     const query = queryString.parse(props.location.search);
-    const sources=_.concat([],query.source);
+    const sources=_.uniq(_.concat([],query.source));
     const kind = sources.length>1?'PATHSBETWEEN':'Neighborhood';
     ServerAPI.getNeighborhood(sources,kind).then(res=>{ 
       const layoutConfig = getLayoutConfig('interactions');
@@ -62,21 +62,28 @@ class Interactions extends React.Component {
       this.setState({
         componentConfig: interactionsConfig,
         layoutConfig: layoutConfig,
-        networkJSON: network ,
-        loading: false
+        networkJSON: network,
+        loaded:_.assign(this.state.loaded,{network:true})
       });
     });
-    //converts identifiers uris into 
-    const identifier =  new RegExp('(http://identifiers.org/)+(\\w)+[/]+(\\w)+$');
-    const geneIds = sources.map(source=> identifier.test(source) ? _.last(source.split('/')) : source).join(' ');
-    ServerAPI.geneQuery({genes:geneIds ,target: 'HGNCSYMBOL'}).then(result=>{
-    const hgncIds=result.geneInfo.map(gene=> gene.convertedAlias);
-      this.setState({
-        networkMetadata: {
-          name: hgncIds.length === sources.length ? (hgncIds +' Interactions') : 'Interactions',
-          datasource: 'Pathway Commons',
-        },
-        ids:hgncIds,
+    //get ids from uris 
+    const geneIds = sources.map(source=> 
+      source.includes('pathwaycommons')?
+      ServerAPI.pcQuery('traverse',{uri:source,path:`${_.last(source.split('/')).split('_')[0]}/displayName`}).then(result=>result.json())
+      .then(id=> _.words(id.traverseEntry[0].value[0]).length===1 ? id.traverseEntry[0].value[0].split('_')[0] : ''):
+      source.replace(/\//g,' ')
+    );
+    Promise.all(geneIds).then(geneIds=>{
+      ServerAPI.geneQuery({genes:geneIds.join(' '),target: 'HGNCSYMBOL'}).then(result=>{
+        const hgncIds=result.geneInfo.map(gene=> gene.convertedAlias);
+        this.setState({
+          networkMetadata: {
+            name: hgncIds.length === sources.length ? (hgncIds +' Interactions') : 'Interactions',
+            datasource: 'Pathway Commons',
+          },
+          ids: hgncIds,
+          loaded:_.assign(this.state.loaded,{ids:true})
+        });
       });
     });
 
@@ -213,8 +220,8 @@ class Interactions extends React.Component {
   }
   render(){
     const state = this.state;
-    const networkToDisplay = !_.isEmpty(state.networkJSON);
-    const baseView = networkToDisplay ? h(BaseNetworkView.component, {
+    const loaded = state.loaded.network && state.loaded.ids;
+    const baseView = !_.isEmpty(state.networkJSON) ? h(BaseNetworkView.component, {
       layoutConfig: state.layoutConfig,
       componentConfig: state.componentConfig,
       cy: state.cy,
@@ -231,10 +238,10 @@ class Interactions extends React.Component {
     }):
     h('div.no-network',[h('strong.title','No interactions to display'),h('span','Try a diffrent set of entities')]);
 
-    const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
+    const loadingView = h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' }});
 
     // create a view shell loading view e.g looks like the view but its not
-    const content = state.loading ? loadingView : baseView;
+    const content = loaded ? baseView : loadingView;
     return h('div.main', [content]);
   }
 }

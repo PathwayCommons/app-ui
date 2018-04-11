@@ -68,12 +68,13 @@ const validatorGconvert = (query, userOptions = {}) => {
         geneInfoList.splice(-1, 1); // remove last element ''
 
         const unrecognized = [];
-        const duplicate = [];
+        const duplicate = {};
         const geneInfo = [];
         const initialAliasIndex = 1;
         const convertedAliasIndex = 3;
         _.forEach(geneInfoList, info => {
           const colonIndex = 14;
+          const curConvertedAlias = info[convertedAliasIndex];
           let initialAlias = info[initialAliasIndex];
           if (formData.target === 'ENTREZGENE_ACC' && initialAlias.substring(0, colonIndex + 1) === 'ENTREZGENE_ACC:') {
             const ncbiNameIndex = 1;
@@ -84,8 +85,13 @@ const validatorGconvert = (query, userOptions = {}) => {
               unrecognized.push(initialAlias);
             }
           } else {
-            if (_.filter(geneInfoList, ele => ele[convertedAliasIndex] === info[convertedAliasIndex]).length > 1 && _.filter(duplicate, ele => ele === initialAlias).length === 0) {
-              duplicate.push(initialAlias);
+            if (_.filter(geneInfoList, ele => ele[convertedAliasIndex] === curConvertedAlias).length > 1) {
+              if (!(curConvertedAlias in duplicate)) {
+                duplicate[curConvertedAlias] = [];
+              }
+              if (_.filter(duplicate[curConvertedAlias], ele => ele === info[initialAliasIndex]).length === 0) {
+                duplicate[curConvertedAlias].push(info[initialAliasIndex]);
+              }
             }
             if (_.filter(geneInfo, ele => ele.initialAlias === initialAlias).length === 0) {
               geneInfo.push({ initialAlias: initialAlias, convertedAlias: info[convertedAliasIndex] });

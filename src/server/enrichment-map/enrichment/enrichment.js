@@ -23,6 +23,24 @@ const parseGProfilerResponse = (gProfilerResponse) => {
   })
 };
 
+// extract #WARNING from response
+const extractWarning = (gProfilerResponse) => {
+  const warningLines = gProfilerResponse.replace(/^(?!#WARNING).*$/mg, "");
+  const warningInfo = _.filter(warningLines.split('\n'), ele => ele.length != 0);
+  const duplicate = [];
+  const unrecognized = [];
+  _.forEach(warningInfo, ele => {
+    const desIndex = 1;
+    const hgncSymbolIndex = 1;
+    if (ele.indexOf('same internal ID') > -1) {
+      duplicate.push(ele.split('\t')[desIndex].split(/\s+/)[hgncSymbolIndex]);
+    } else if (ele.indexOf('not recognized') > -1) {
+      unrecognized.push(ele.split('\t')[desIndex].split(/\s+/)[hgncSymbolIndex]);
+    }
+  })
+  return { duplicate: duplicate, unrecognized: unrecognized };
+};
+
 
 const defaultSetting = {
   "output": "mini",
@@ -48,7 +66,7 @@ const gProfilerURL = "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/we
 
 
 
-const enrichment = (query, userSetting) => {
+const enrichment = (query, userSetting = {}) => {
   userSetting = _.mapKeys(userSetting, (value, key) => {
     if (key === 'orderedQuery') return 'ordered_query';
     if (key === 'userThr') return 'user_thr';
@@ -94,10 +112,11 @@ const enrichment = (query, userSetting) => {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: qs.stringify(formData)
-    }).then(gProfilerResponse => gProfilerResponse.text())
+    }).then(gProfilerResponse =>  gProfilerResponse.text())
       .then(body => {
-        let responseInfo = parseGProfilerResponse(body);
-        const ret = {};
+        const warning = extractWarning(body);
+        const responseInfo = parseGProfilerResponse(body);
+        let ret = {};
         const pValueIndex = 2;
         const tIndex = 3;
         const qIndex = 4;
@@ -133,6 +152,7 @@ const enrichment = (query, userSetting) => {
             })
           };
         });
+        ret = _.assign(warning, ret);
         resolve(ret);
       });
   })

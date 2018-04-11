@@ -17,43 +17,62 @@ const generateNodeInfo = require('./generateInfo').generateNodeInfo;
 const generateEdgeInfo = require('./generateInfo').generateEdgeInfo;
 const _ = require('lodash');
 
+// pathwayInfoList: {"GO:1":{pValue: 1}, "GO:2": {pValue: 0, color: "green"}}
+const generateGraphInfo = (pathwayInfoList, cutoff = 0.375, JCWeight, OCWeight) => {
+  if (cutoff < 0 || cutoff > 1) { throw new Error('ERROR: cutoff out of range [0, 1]'); }
+  if (isNaN(Number(cutoff))) { throw new Error('ERROR: cutoff is not a number'); }
 
-// input ["GO:1902275", "GO:2001252", "GO:1905269", "GO:0051053"]
-// returns a cytoscape object
-const generateGraphInfo = (pathwayIdList) => {
+  if (JCWeight < 0 || JCWeight > 1) {
+    throw new Error('ERROR: JCWeight out of range [0, 1]');
+  }
+  if (OCWeight < 0 || OCWeight > 1) {
+    throw new Error('ERROR: OCWeight out of range [0, 1]');
+  }
+  if (JCWeight != undefined && isNaN(Number(JCWeight))) { throw new Error('ERROR: JCWeight should be a number'); }
+  if (OCWeight != undefined && isNaN(Number(OCWeight))) { throw new Error('ERROR: OCWeight should be a number'); }
+  if (OCWeight != undefined && JCWeight != undefined && Number(OCWeight) + Number(JCWeight) != 1) {
+    throw new Error('ERROR: OCWeight + JCWeight should be 1');
+  }
+  if (JCWeight === undefined && OCWeight === undefined) {
+    JCWeight = 0.5;
+    OCWeight = 0.5;
+  } else if (JCWeight === undefined) {
+    JCWeight = 1 - OCWeight;
+  } else if (OCWeight === undefined) {
+    OCWeight = 1 - JCWeight;
+  }
+
   // check unrecognized and duplicates, modify pathwayIdList
   const unrecognized = [];
-  for (let i = 0; i < pathwayIdList.length; ++i) {
-    const pathwayId = pathwayIdList[i];
+  for (let pathwayId in pathwayInfoList) {
+    if (!pathwayInfoList.hasOwnProperty(pathwayId)) continue;
     if (!pathwayInfoTable.has(pathwayId)) {
       if (_.filter(unrecognized, elem => elem === pathwayId).length === 0) {
         unrecognized.push(pathwayId);
       }
-      pathwayIdList.splice(pathwayIdList.indexOf(pathwayId), 1);
-      --i;
+      delete pathwayInfoList[pathwayId];
+    } else if (pathwayInfoList[pathwayId].hasOwnProperty('pathwayId')) {
+      throw new Error('ERROR: additional info for ' + pathwayId + ' can not have pathwayId field');
     }
   }
-  for (let i = 0; i < pathwayIdList.length; ++i) {
-    const pathwayId = pathwayIdList[i];
-    if ((_.filter(pathwayIdList, ele => ele === pathwayId)).length > 1) {
-      throw new Error('ERROR: ' + pathwayId + ' is a duplicate');
-    }
+  const pathwayIdList = [];
+  for (let pathwayId in pathwayInfoList) {
+    if (!pathwayInfoList.hasOwnProperty(pathwayId)) continue;
+    pathwayIdList.push(pathwayId);
   }
   // generate node and edge info
   const elements = [];
-  const cytoscapeJSON = {};
-  cytoscapeJSON.nodes = [];
-  cytoscapeJSON.edges = [];
-  const nodeInfo = generateNodeInfo(pathwayIdList);
-  _.forEach(nodeInfo, node => {
-    elements.push({ data: { id: node.pathwayId } });
-  });
-  const edgeInfo = generateEdgeInfo(pathwayIdList);
+  for (let pathwayId in pathwayInfoList) {
+    if (!pathwayInfoList.hasOwnProperty(pathwayId)) continue;
+    elements.push({ data: _.assign({ id: pathwayId }, pathwayInfoList[pathwayId]) })
+  }
+  const edgeInfo = generateEdgeInfo(pathwayIdList, JCWeight, cutoff);
   _.forEach(edgeInfo, edge => {
     const sourceIndex = 0;
     const targetIndex = 1;
-    const source = edge.edgeId.split('_')[sourceIndex];
-    const target = edge.edgeId.split('_')[targetIndex];
+    const sourceTarget = edge.edgeId.split('_');
+    const source = sourceTarget[sourceIndex];
+    const target = sourceTarget[targetIndex];
     elements.push({
       data: {
         id: edge.edgeId,
@@ -71,8 +90,3 @@ const generateGraphInfo = (pathwayIdList) => {
 
 
 module.exports = { generateGraphInfo };
-
-//simple testing
-//console.log(generateGraphInfo(["GO:1902275", "GO:2001252", "GO:1905269"]));
-// const result = generateGraphInfo(["GO:1902275", "GO:2001252", "GO:1905269"]);
-// console.log(JSON.stringify(result));

@@ -253,6 +253,6 @@ const validOrganism = ['aaegypti',
   'vvinifera',
   'zmays'];
 
-const validTarget = ['ENSG', 'HGNC', 'HGNC_ACC', 'UNIPROTSWISSPROT', 'ENTREZGENE', 'ENTREZGENE_ACC'];
+const validTarget = ['ENSG', 'HGNC', 'HGNC_ACC', 'UNIPROTSWISSPROT', 'ENTREZGENE_ACC'];
 
 module.exports = {validOrganism, validTarget};

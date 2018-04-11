@@ -6,19 +6,22 @@ genes - [string] a list of gene symbols delimited by whitespace
 return:
 [vector of Object] relevant info for valid genes
 */
-const request = require('request');
+const fetch = require('node-fetch')
 const _ = require('lodash');
+const qs = require('query-string');
 
-
-// remove #WARNING, #INFO, and the first line
 const parseGProfilerResponse = (gProfilerResponse) => {
-  // remove the second line
-  const str1 = gProfilerResponse.split('\n').slice(0, 1).join("\n");
-  let str2 = gProfilerResponse.split('\n').slice(2).join("\n"); // concatenate at last
-  // remove lines starting with #
-  const str3 = str2.replace(/^#.*$/mg, "");
-  const str4 = (str1 + '\n').concat(str3);
-  return str4;
+  let lines = _.map(gProfilerResponse.split('\n'), line => {
+    if (line.substring(0, 1) === '#') {
+      return '';
+    }
+    return line;
+  });
+  lines = _.compact(lines);
+  return _.map(lines, line => {
+    return line.split('\t');
+  })
+
 };
 
 // extract #WARNING from response
@@ -44,107 +47,93 @@ const defaultSetting = {
   "threshold_algo": "fdr",
   "domain_size_type": "annotated",
   "custbg": [],
-  "custbg_cb": 0,
   "sf_GO:BP": 1,
   "sf_REAC": 1,
+  "prefix": 'ENTREZGENE_ACC'
 };
 const gProfilerURL = "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/";
 
 
 const enrichment = (query, userSetting) => {
-  const promise = new Promise((resolve, reject) => {
+  return promise = new Promise((resolve, reject) => {
     const formData = _.assign({}, defaultSetting, { "query": query }, userSetting);
     const orderedQueryVal = Number(formData.ordered_query);
     const userThrVal = Number(formData.user_thr);
     const minSetSizeVal = Number(formData.min_set_size);
     const maxSetSizeVal = Number(formData.max_set_size);
     const thresholdAlgoVal = formData.threshold_algo;
-    const custbgCbVal = Number(formData.custbg_cb);
     if (orderedQueryVal != 0 && orderedQueryVal != 1) {
-      throw new Error('ERROR: orderedQuery should be 1 or 0');
+      reject(new Error('ERROR: orderedQuery should be 1 or 0'));
     }
     if (isNaN(userThrVal) || userThrVal > 1 || userThrVal < 0) {
-      throw new Error('ERROR: userThrVal should be a number [0, 1]')
+      reject(new Error('ERROR: userThrVal should be a number [0, 1]'));
     }
     if (isNaN(minSetSizeVal)) {
-      throw new Error('ERROR: minSetSize should be a number')
+      reject(new Error('ERROR: minSetSize should be a number'));
+    }
+    if (minSetSizeVal < 0) {
+      reject(new Error('ERROR: minSetSize should be >= 0'));
     }
     if (isNaN(maxSetSizeVal)) {
-      throw new Error('ERROR: maxSetSize should be a number');
+      reject(new Error('ERROR: maxSetSize should be a number'));
+    }
+    if (maxSetSizeVal < minSetSizeVal) {
+      reject(new Error('ERROR: maxSetSize should be >= minSetSize'));
     }
     if (thresholdAlgoVal != 'analytical' && thresholdAlgoVal != 'bonferroni' && thresholdAlgoVal != 'fdr') {
-      throw new Error('ERROR: thresholdAlgoVal should be one of analytical, bonferroni, fdr');
-    }
-    if (custbgCbVal != 0 && custbgCbVal != 1) {
-      throw new Error('ERROR: custbgCb should be 1 or 0')
+      reject(new Error('ERROR: thresholdAlgoVal should be one of analytical, bonferroni, fdr'));
     }
 
-    request.post({ url: gProfilerURL, formData: formData }, (err, httpResponse, gProfilerResponse) => {
-      if (err) {
-        reject(err);
-      }
-
-      const unrecognized = [];
-      const duplicate = [];
-      const warningInfo = extractWarning(gProfilerResponse);
-      _.forEach(warningInfo, ele => {
-        const desIndex = 1;
-        const hgncSymbolIndex = 1;
-        if (ele.indexOf('same internal ID') > -1) {
-          duplicate.push(ele.split('\t')[desIndex].split(/\s+/)[hgncSymbolIndex]);
-        } else if (ele.indexOf('not recognized') > -1) {
-          unrecognized.push(ele.split('\t')[desIndex].split(/\s+/)[hgncSymbolIndex]);
-        }
+    fetch(gProfilerURL, {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: qs.stringify(formData)
+    }).then(gProfilerResponse => gProfilerResponse.text())
+      .then(body => {
+        let responseInfo = parseGProfilerResponse(body);
+        const ret = {};
+        const pValueIndex = 2;
+        const tIndex = 3;
+        const qIndex = 4;
+        const qAndTIndex = 5;
+        const qAndTOverQIndex = 6;
+        const qAndTOverTIndex = 7;
+        const termIdIndex = 8;
+        const tTypeIndex = 9;
+        const tGroupIndex = 10;
+        const tNameIndex = 11;
+        const tDepthIndex = 12;
+        const qAndTListIndex = 13;
+        ret.pathwayInfo = {};
+        _.forEach(responseInfo, elem => {
+          ret.pathwayInfo[elem[termIdIndex]] = {
+            pValue: Number(elem[pValueIndex]),
+            t: Number(elem[tIndex]),
+            q: Number(elem[qIndex]),
+            qAndT: Number(elem[qAndTIndex]),
+            qAndTOverQ: Number(elem[qAndTOverQIndex]),
+            qAndTOverT: Number(elem[qAndTOverTIndex]),
+            tType: elem[tTypeIndex].trim(),
+            tGroup: Number(elem[tGroupIndex]),
+            tName: elem[tNameIndex].trim(),
+            tDepth: Number(elem[tDepthIndex]),
+            qAndTList: _.map(elem[qAndTListIndex].split(','), gene => {
+              const colonIndex = 14;
+              if (gene.substring(0, colonIndex + 1) === 'ENTREZGENE_ACC:') {
+                const ncbiNameIndex = 1;
+                return gene.split(':')[ncbiNameIndex];
+              }
+              return gene;
+            })
+          };
+        });
+        resolve(ret);
       });
-
-      let responseInfo = parseGProfilerResponse(gProfilerResponse).split('\n');
-      responseInfo.splice(0, 1); // remove first elem
-      responseInfo = _.map(responseInfo, ele => ele.split('\t'));
-      responseInfo = _.filter(responseInfo, ele => ele.length != 1);
-
-      const ret = {};
-      const pValueIndex = 2;
-      const tIndex = 3;
-      const qIndex = 4;
-      const qAndTIndex = 5;
-      const qAndTOverQIndex = 6;
-      const qAndTOverTIndex = 7;
-      const termIdIndex = 8;
-      const tTypeIndex = 9;
-      const tGroupIndex = 10;
-      const tNameIndex = 11;
-      const tDepthIndex = 12;
-
-      const qAndTListIndex = 13;
-      ret.options = {};
-      ret.options.orderedQuery = formData.ordered_query;
-      ret.options.userThr = formData.user_thr;
-      ret.options.minSetSize = formData.min_set_size;
-      ret.options.maxSetSize = formData.max_set_size;
-      ret.options.thresholdAlgo = formData.threshold_algo;
-      ret.options.custbg = formData.custbg;
-      ret.pathwayInfo = {};
-      _.forEach(responseInfo, elem => {
-        ret.pathwayInfo[elem[termIdIndex]] = {
-          pValue: Number(elem[pValueIndex]),
-          t: Number(elem[tIndex]),
-          q: Number(elem[qIndex]),
-          qAndT: Number(elem[qAndTIndex]),
-          qAndTOverQ: Number(elem[qAndTOverQIndex]),
-          qAndTOverT: Number(elem[qAndTOverTIndex]),
-          tType: elem[tTypeIndex].trim(),
-          tGroup: Number(elem[tGroupIndex]),
-          tName: elem[tNameIndex].trim(),
-          tDepth: Number(elem[tDepthIndex]),
-          qAndTList: elem[qAndTListIndex].split(',')
-        };
-
-      });
-      resolve(ret);
-    });
-  });
-  return promise;
-};
+  })
+}
 
 
 module.exports = { enrichment };

@@ -21,8 +21,15 @@ const parseGProfilerResponse = (gProfilerResponse) => {
   return _.map(lines, line => {
     return line.split('\t');
   })
+
 };
 
+// extract #WARNING from response
+const extractWarning = (gProfilerResponse) => {
+  const warningLines = gProfilerResponse.replace(/^(?!#WARNING).*$/mg, "");
+  const warningInfo = _.filter(warningLines.split('\n'), ele => ele.length != 0);
+  return warningInfo;
+};
 
 const defaultSetting = {
   "output": "mini",

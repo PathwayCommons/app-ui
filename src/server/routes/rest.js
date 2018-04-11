@@ -69,12 +69,7 @@ router.post('/gene-query', (req, res) => {
   const userOptions = {};
   tmpOptions.organism = req.body.organism;
   tmpOptions.target = req.body.target;
-  for (const key in tmpOptions) {
-    if (tmpOptions[key] != undefined) {
-      userOptions[key] = tmpOptions[key];
-    }
-  }
-  validatorGconvert(genes, userOptions).then(gconvertResult => {
+  validatorGconvert(genes, tmpOptions).then(gconvertResult => {
     res.json(gconvertResult);
   }).catch((invalidInfoError) => {
     res.status(400).send({invalidTarget: invalidInfoError.invalidTarget, invalidOrganism: invalidInfoError.invalidOrganism});
@@ -85,6 +80,7 @@ router.post('/gene-query', (req, res) => {
 // expose a rest endpoint for enrichment
 router.post('/enrichment', (req, res) => {
   const genes = req.body.genes;
+
   const tmpOptions = {
     orderedQuery: req.body.orderedQuery,
     userThr: req.body.userThr,
@@ -100,6 +96,7 @@ router.post('/enrichment', (req, res) => {
     }
   }
   enrichment(genes, userOptions).then(enrichmentResult => {
+
     res.json(enrichmentResult);
   }).catch((err) => {
     res.status(400).send(err.message);

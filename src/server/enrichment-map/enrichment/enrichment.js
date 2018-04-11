@@ -10,18 +10,17 @@ const fetch = require('node-fetch')
 const _ = require('lodash');
 const qs = require('query-string');
 
-
-// remove #WARNING, #INFO, and the first line
 const parseGProfilerResponse = (gProfilerResponse) => {
-  // remove the second line
-  const lines = gProfilerResponse.split('\n');
-  lines.slice(0, 1);
-  const str1 = gProfilerResponse.split('\n').slice(0, 1).join("\n");
-  let str2 = gProfilerResponse.split('\n').slice(2).join("\n"); // concatenate at last
-  // remove lines starting with #
-  const str3 = str2.replace(/^#.*$/mg, "");
-  const str4 = (str1 + '\n').concat(str3);
-  return str4;
+  let lines = _.map(gProfilerResponse.split('\n'), line => {
+    if (line.substring(0, 1) === '#') {
+      return '';
+    }
+    return line;
+  });
+  lines = _.compact(lines);
+  return _.map(lines, line => {
+    return line.split('\t');
+  })
 };
 
 
@@ -48,6 +47,7 @@ const defaultSetting = {
 const gProfilerURL = "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/";
 
 
+
 const enrichment = (query, userSetting) => {
   userSetting = _.mapKeys(userSetting, (value, key) => {
     if (key === 'orderedQuery') return 'ordered_query';
@@ -57,8 +57,9 @@ const enrichment = (query, userSetting) => {
     if (key === 'thresholdAlgo') return 'threshold_algo';
     return key;
   })
+
   return promise = new Promise((resolve, reject) => {
-    const formData = _.assign({}, defaultSetting, { "query": query }, userSetting);
+    const formData = _.assign(defaultSetting, JSON.parse(JSON.stringify(userSetting)), { query: query });
     const orderedQueryVal = Number(formData.ordered_query);
     const userThrVal = Number(formData.user_thr);
     const minSetSizeVal = Number(formData.min_set_size);
@@ -95,11 +96,7 @@ const enrichment = (query, userSetting) => {
       body: qs.stringify(formData)
     }).then(gProfilerResponse => gProfilerResponse.text())
       .then(body => {
-        let responseInfo = parseGProfilerResponse(body).split('\n');
-        responseInfo.splice(0, 1); // remove first elem
-        responseInfo = _.map(responseInfo, ele => ele.split('\t'));
-        responseInfo = _.filter(responseInfo, ele => ele.length != 1);
-
+        let responseInfo = parseGProfilerResponse(body);
         const ret = {};
         const pValueIndex = 2;
         const tIndex = 3;
@@ -143,4 +140,3 @@ const enrichment = (query, userSetting) => {
 
 
 module.exports = { enrichment };
-

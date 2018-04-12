@@ -9,6 +9,7 @@ const classNames = require('classnames');
 
 const Icon = require('../../common/components').Icon;
 const { ServerAPI } = require('../../services');
+const Landing = require('./landing-box');
 
 class Search extends React.Component {
 
@@ -49,7 +50,7 @@ class Search extends React.Component {
       this.setState({
         loading: true
       });
-      this.getLandingResult();
+     this.getLandingResult(query.q);
       ServerAPI.querySearch(query)
         .then(searchResults => {
            this.setState({
@@ -60,41 +61,16 @@ class Search extends React.Component {
     }
   }
 
-  getLandingResult() {
-    const state = this.state;
-    const query = {
-      genes: state.query.q.trim(),
-      target: 'UNIPROT',
-    };
-    if(query.genes.includes(' ')){
-      this.setState({   
-        landingLoading: false,
-        landing:[]
-      });
-      return;
-    }
+  getLandingResult(query){
     this.setState({
-      landingLoading: true
-    },()=>{
-      ServerAPI.geneQuery(query).then(geneQueryResult=>{
-        geneQueryResult= geneQueryResult.geneInfo.map(gene=>gene.convertedAlias);
-        if(!_.isEmpty(geneQueryResult)){
-          ServerAPI.getProteinInformation(geneQueryResult).then(infoResult=>{
-            this.setState({
-            landingLoading: false,
-            landing:infoResult,
-            landingShowMore: [false,false],
-            });
-          });
-        }
-        else{
-          this.setState({
-            landingLoading: false,
-            landing:[]
-          });
-        }
-      });
+      landingLoading:true
     });
+    Landing.getLandingResult(query).then(landing=>
+      this.setState({
+        landingLoading:false,
+        landing:landing
+      })
+    );
   }
 
   componentDidMount() {
@@ -137,6 +113,9 @@ class Search extends React.Component {
   render() {
     const props = this.props;
     const state = this.state;
+    const landing=state.landing;
+    const landingBox=Landing.landingBox;
+    const controller = this;
 
     let Example = props => h('span.search-example', {
       onClick: () => this.setAndSubmitSearchQuery({q: props.search})
@@ -187,63 +166,6 @@ class Search extends React.Component {
           )),
     ]) :
       h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
-
-    const landing = (state.landingLoading ) ?
-      h('div.search-landing.innner',[h(Loader, { loaded:!state.landingLoading , options: { color: '#16A085',position:'relative', top: '15px' }})]):
-      state.landing.map(box=>{
-
-        const name = h('strong.search-landing-title',box.protein.recommendedName.fullName.value);
-        let synonyms=null;
-        if(_.hasIn(box,'protein.alternativeName')){ 
-          const synonymsLength=115;
-          const synonymsTextLong= box.protein.alternativeName.map(obj => obj.fullName.value).join(', ');
-          const synonymsText= (state.landingShowMore[0]|| synonymsTextLong.length<=synonymsLength)?
-            synonymsTextLong+' ': synonymsTextLong.slice(0,synonymsTextLong.lastIndexOf(',',synonymsLength))+' '; 
-          synonyms=[h('i.search-landing-small',{key:'text'},synonymsText)];
-          if(synonymsTextLong.length>synonymsLength){
-            synonyms.push(
-              h('i.search-landing-link',{onClick: e => this.setState({ landingShowMore: [!state.landingShowMore[0],state.landingShowMore[1]]}), 
-                key:'showMore', className:classNames('search-landing-link','search-landing-small')},state.landingShowMore[0]? '« less': 'more »')
-            );
-          }
-        }
-
-        let functions=null;
-        if(_.hasIn(box,'comments[0].text') && box.comments[0].type==='FUNCTION'){
-          const functionsLength=280;
-          const functionTextLong=box.comments[0].text[0].value;
-          const functionText = (state.landingShowMore[1] || functionTextLong.length<=functionsLength)?
-            functionTextLong: functionTextLong.slice(0,functionTextLong.lastIndexOf(' ',functionsLength));
-          functions=[h('span.search-landing-function',{key:'text'},functionText)];
-          if(functionTextLong.length>functionsLength){
-            functions.push(
-              h('span.search-landing-link',{onClick: e => this.setState({ landingShowMore: [state.landingShowMore[0],!state.landingShowMore[1]]}), key:'showMore'},
-                state.landingShowMore[1]? '« less': 'more »')
-            );
-          }
-        } 
-        const ids = [
-          box.accession,
-          box.dbReferences.filter(entry =>entry.type=='HGNC')[0],
-          box.dbReferences.filter(entry =>entry.type=='GeneID')[0],
-          box.dbReferences.filter(entry =>entry.type=='GeneCards')[0],
-        ];
-        let links=[{text:'UniProt', link:`http://www.uniprot.org/uniprot/${ids[0]}`}];
-          if(ids[1]) {links.push({text:'HGNC',link:`https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=${ids[1].id}`});} 
-          if(ids[2]) {links.push({text:'NCBI Gene',link:`https://www.ncbi.nlm.nih.gov/gene/${ids[2].id}`});}
-          if(ids[3]) {links.push({text:'Gene Cards',link:`http://www.genecards.org/cgi-bin/carddisp.pl?gene=${ids[3].id}`});}
-        links=links.map(link=>{return h('a.search-landing-link',{key: link.text, href: link.link},link.text);});
-
-        return h('div.search-landing.innner',{key: box.accession},[ 
-          h('div.search-landing-section',[name]),
-          h('div.search-landing-section',[synonyms]),
-          h('div.search-landing-section',[functions]),
-          h('div.search-landing-section',[links]),
-          h(Link, { to: { pathname: '/interactions',search: queryString.stringify({ ID: box.accession })}, target: '_blank',className: 'search-landing-interactions' }, [
-            h('button.search-landing-button', 'View Interactions'),
-          ]),
-        ]);    
-      });
 
     return h('div.search', [
       h('div.search-header-container', [
@@ -296,7 +218,7 @@ class Search extends React.Component {
       h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' } }, [
         h('div.search-list-container', [
           h('div.search-result-info', [searchResultInfo]),
-          h('div.search-landing',[searchResults.length?landing:'']), 
+          h(landingBox,{controller,landing}), 
           h('div.search-list', searchResults)
         ])
       ])

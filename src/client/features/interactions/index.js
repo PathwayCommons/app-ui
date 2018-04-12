@@ -43,7 +43,7 @@ class Interactions extends React.Component {
         datasource: '',
         comments: []
       },
-      id:'',
+      ids:[],
       loading: true,
       categories: new Map (),
       buttonsClicked:{
@@ -54,41 +54,48 @@ class Interactions extends React.Component {
     };    
 
     const query = queryString.parse(props.location.search);
-    ServerAPI.getNeighborhood(query.ID,'TXT').then(res=>{ 
+    query.id=_.concat([],query.id);
+    ServerAPI.getNeighborhood(query.id,query.kind).then(res=>{ 
       const layoutConfig = getLayoutConfig('interactions');
-      const network= this.parse(res,query.ID);
+      const network= this.parse(res);
       this.setState({
         componentConfig: interactionsConfig,
         layoutConfig: layoutConfig,
-        networkJSON: network.network ,
-        networkMetadata: Object.assign({}, this.state.networkMetadata, {
-          name: (network.id+' Interactions'),
-          datasource: 'Pathway Commons',
-        }),
-        id: network.id,
+        networkJSON: network ,
         loading: false
-      }); 
-      
+      });
     });
 
-    ServerAPI.getProteinInformation(query.ID).then(result=>{
+    ServerAPI.getGeneInformation(query.id,'gene').then(result=>{
+      const geneResults=result.result;
+      let hgncIds=[];
+      const comments=_.flatten(geneResults.uids.map(gene=>{
+        hgncIds.push(geneResults[gene].name);
+        return _.compact([
+          'Nomenclature Name: '+geneResults[gene].nomenclaturename,
+          'Other Aliases: '+geneResults[gene].name + (geneResults[gene].otheraliases ? ', '+geneResults[gene].otheraliases:''),
+          geneResults[gene].summary&&'Function: '+geneResults[gene].summary
+        ]);
+      }));
       this.setState({
-        networkMetadata: Object.assign({}, this.state.networkMetadata, {
-          comments: _.compact([
-            'Full Name: '+result[0].protein.recommendedName.fullName.value,
-            result[0].protein.alternativeName && 'Synonyms: '+result[0].protein.alternativeName.map(obj => obj.fullName.value).join(', '),
-            result[0].comments[0].type==='FUNCTION'&&'Function: '+result[0].comments[0].text[0].value
-          ]), 
-        }),
-      });
+        networkMetadata: {
+          name: (hgncIds+' Interactions'),
+          datasource: 'Pathway Commons',
+          comments: comments
+        },
+        ids:hgncIds,
+      }); 
     });
 
     this.state.cy.on('trim', () => {
       const state = this.state;
-      const cy = this.state.cy;
-      const mainNode = cy.nodes(node=> node.data().id === state.id);
-      const nodesToKeep = mainNode.merge(mainNode.connectedEdges().connectedNodes());
-      cy.remove(cy.nodes().difference(nodesToKeep));
+      const ids = state.ids;
+      if(ids.length===query.id.length){
+        const cy = state.cy;
+        const mainNode = cy.nodes(node=> ids.indexOf(node.data().id) != -1);
+        const nodesToKeep = mainNode.merge(mainNode.connectedEdges().connectedNodes());
+        cy.remove(cy.nodes().difference(nodesToKeep));
+      }
     });
 
     this.state.cy.one('layoutstop',()=>{
@@ -99,18 +106,15 @@ class Interactions extends React.Component {
       _.forEach(buttonsClicked,(value,type)=>{
         const edges = cy.edges().filter(`.${type}`);
         const nodes = edges.connectedNodes();
-        categories.set(type,{
-          edges:edges,
-          nodes:nodes
-        });
-        if(type != 'Binding' && nodes.length){
-          this.filterUpdate(type);
-        }
-        if(!nodes.length){buttonsClicked[type]='empty';}
+        edges.length?
+        categories.set(type,{edges:edges,nodes:nodes}):
+        (categories.delete(type),delete buttonsClicked[type]);      
       });
+
+      _.tail(_.toPairs(buttonsClicked)).map(pair=>this.filterUpdate(pair[0]));
       this.setState({
         categories:categories,
-        buttonsClicked:_.pickBy(buttonsClicked,_.isBoolean)
+        buttonsClicked:buttonsClicked
       });
       const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
       const layout = cy.layout(initialLayoutOpts);
@@ -130,16 +134,6 @@ class Interactions extends React.Component {
       default:
         return '';
     }
-  }
-
-  findId(data,id){
-    let hgncId;
-    data.forEach((value,key)=> {
-      if (value[2].includes(id)){
-        hgncId=key; 
-      }
-    });
-    return hgncId;
   }
 
   interactionMetadata(mediatorIds,pubmedIds){
@@ -176,21 +170,25 @@ class Interactions extends React.Component {
     },classes:interaction});
   }
 
-  parse(data,query){
+  parse(data){
     let network = {
       edges:[],
       nodes:[],
     };
     let nodeMap=new Map(); //keeps track of nodes that have already been added
-    const dataSplit=data.split('\n\n');
-    const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
-    dataSplit[0].split('\n').slice(1).forEach(line => {
-      const splitLine=line.split('\t');
-      const edgeMetadata = this.interactionMetadata(splitLine[6],splitLine[4]);
-      this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],edgeMetadata,network,nodeMap,nodeMetadata);
-    });
-    const id=this.findId(nodeMetadata,query);
-    return {id,network};
+    if(data){
+      const dataSplit=data.split('\n\n');
+      const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
+      dataSplit[0].split('\n').slice(1).forEach(line => {
+        const splitLine=line.split('\t');
+        const edgeMetadata = this.interactionMetadata(splitLine[6],splitLine[4]);
+        this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],edgeMetadata,network,nodeMap,nodeMetadata);
+      });
+      return network;
+    }
+    else{
+      return {};
+    }
   }
   filterUpdate(type) {
     const state=this.state;
@@ -220,7 +218,8 @@ class Interactions extends React.Component {
   }
   render(){
     const state = this.state;
-    const baseView = h(BaseNetworkView.component, {
+    const networkToDisplay = !_.isEmpty(state.networkJSON);
+    const baseView = networkToDisplay ? h(BaseNetworkView.component, {
       layoutConfig: state.layoutConfig,
       componentConfig: state.componentConfig,
       cy: state.cy,
@@ -234,12 +233,14 @@ class Interactions extends React.Component {
         types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'), 
         promise: () => Promise.resolve(_.map(state.cy.edges(),edge=> edge.data().id).sort().join('\n'))
       },
-    });
+    }):
+    h('div.no-network',[h('strong.title','No interactions to display'),h('span','Return to the previous page and try a diffrent set of entities')]);
+
     const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
 
     // create a view shell loading view e.g looks like the view but its not
     const content = state.loading ? loadingView : baseView;
-    return h('div', [content]);
+    return h('div.main', [content]);
   }
 }
 module.exports = Interactions;

@@ -23,7 +23,9 @@ const databases = [
   {database:'CAS', url:'http://identifiers.org/cas/', search:''},
   {database:'HPRD',url:'http://identifiers.org/hprd/',search:''},
   {database:'RefSeq',url:'http://identifiers.org/refseq/',search:''},
-  {database:'Pathway Commons',url:'http://pathwaycommons.org/pc2/',search:''}
+  {database:'Pathway Commons',url:'http://pathwaycommons.org/pc2/',search:''},
+  {database:'NCBI Gene',url:'http://identifiers.org/ncbigene/',search:''},
+  {database:'Gene Cards',url:'http://identifiers.org/genecards/',search:''}
 ];
 
 const publicationsURL = 'http://identifiers.org/pubmed/';

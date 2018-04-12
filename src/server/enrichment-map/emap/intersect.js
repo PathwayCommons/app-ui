@@ -18,8 +18,10 @@ const pathwayPairGraph = (pathway1, pathway2, JCWeight) => {
     }
   });
   // JC/OC calculation
-  const similarity = JCWeight*(intersectionCount/(pathway1.genes.length+pathway2.genes.length-intersectionCount))+(1-JCWeight)*(intersectionCount/Math.min(pathway1.genes.length, pathway2.genes.length));
-  return {edgeId: pathway1.pathwayId+'_'+pathway2.pathwayId, intersection: intersection, similarity: similarity};
+  const pathway1Length = pathway1.genes.length;
+  const pathway2Length = pathway2.genes.length;
+  const similarity = JCWeight*(intersectionCount/(pathway1Length + pathway2Length - intersectionCount)) + (1 - JCWeight) * (intersectionCount / Math.min(pathway1Length, pathway2Length));
+  return {edgeId: pathway1.pathwayId + '_' + pathway2.pathwayId, intersection: intersection, similarity: similarity};
 };
 
 

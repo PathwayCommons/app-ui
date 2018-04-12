@@ -33,9 +33,14 @@ const extractWarning = (gProfilerResponse) => {
     const desIndex = 1;
     const hgncSymbolIndex = 1;
     if (ele.indexOf('same internal ID') > -1) {
-      duplicate.push(ele.split('\t')[desIndex].split(/\s+/)[hgncSymbolIndex]);
+      const duplicateGene = ele.split('\t')[desIndex].split(/\s+/)[hgncSymbolIndex];
+      if (_.filter(duplicate, ele => ele === duplicateGene).length === 0) {
+        duplicate.push(duplicateGene);
+      }
     } else if (ele.indexOf('not recognized') > -1) {
-      unrecognized.push(ele.split('\t')[desIndex].split(/\s+/)[hgncSymbolIndex]);
+      const unrecognizedGene = ele.split('\t')[desIndex].split(/\s+/)[hgncSymbolIndex];
+      if (_.filter(unrecognized, ele => ele === unrecognizedGene).length === 0)
+        unrecognized.push(unrecognizedGene);
     }
   })
   return { duplicate: duplicate, unrecognized: unrecognized };
@@ -112,7 +117,7 @@ const enrichment = (query, userSetting = {}) => {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: qs.stringify(formData)
-    }).then(gProfilerResponse =>  gProfilerResponse.text())
+    }).then(gProfilerResponse => gProfilerResponse.text())
       .then(body => {
         const warning = extractWarning(body);
         const responseInfo = parseGProfilerResponse(body);

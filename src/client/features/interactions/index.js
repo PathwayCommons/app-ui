@@ -79,17 +79,20 @@ class Interactions extends React.Component {
         ServerAPI.getGeneInformation(ncbiIds,'gene').then(result=>{
           const geneResults=result.result;
           let hgncIds=[];
-          const comments=_.flatten(geneResults.uids.map(gene=>{
-            hgncIds.push(geneResults[gene].name);
-            return _.compact([
-              'Nomenclature Name: '+geneResults[gene].nomenclaturename,
-              'Other Aliases: '+geneResults[gene].name + (geneResults[gene].otheraliases ? ', '+geneResults[gene].otheraliases:''),
-              geneResults[gene].summary && 'Function: '+geneResults[gene].summary
-            ]);
-          }));
+          let comments=[];
+          if(!result.esummaryresult ){
+            comments=_.flatten(geneResults.uids.map(gene=>{
+              hgncIds.push(geneResults[gene].name);
+              return _.compact([
+                'Nomenclature Name: '+geneResults[gene].nomenclaturename,
+                'Other Aliases: '+geneResults[gene].name + (geneResults[gene].otheraliases ? ', '+geneResults[gene].otheraliases:''),
+                geneResults[gene].summary && 'Function: '+geneResults[gene].summary
+              ]);
+            }));
+          }
           this.setState({
             networkMetadata: {
-              name: (hgncIds+' Interactions'),
+              name: !_.isEmpty(hgncIds)?(hgncIds+' Interactions'):' Interactions',
               datasource: 'Pathway Commons',
               comments: comments
             },

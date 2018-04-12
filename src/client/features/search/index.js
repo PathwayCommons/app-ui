@@ -218,7 +218,7 @@ class Search extends React.Component {
       h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' } }, [
         h('div.search-list-container', [
           h('div.search-result-info', [searchResultInfo]),
-          h('div.search-landing',[searchResults.length ? h(landingBox,{controller,landing}):'']), 
+          h(landingBox,{controller,landing}), 
           h('div.search-list', searchResults)
         ])
       ])

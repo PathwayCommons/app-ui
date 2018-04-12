@@ -11,8 +11,7 @@ Notes:
 2. If a pathwayId is unrecognized and duplicate, only report it in unrecognize.
 3. If a pathwayId is recognized and duplicate, report it in duplicate and store info in graph.
 */
-const pathwayInfoTable = require('./PathwayTable').pathwayInfoTable;
-// const make_cytoscape = require('../../../../src/client/common/cy');
+const pathwayInfoTable = require('./pathwayTable').pathwayInfoTable;
 const generateNodeInfo = require('./generateInfo').generateNodeInfo;
 const generateEdgeInfo = require('./generateInfo').generateEdgeInfo;
 const _ = require('lodash');

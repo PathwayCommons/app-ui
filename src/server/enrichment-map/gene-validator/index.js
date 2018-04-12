@@ -74,27 +74,27 @@ const validatorGconvert = (query, userOptions = {}) => {
         const convertedAliasIndex = 3;
         _.forEach(geneInfoList, info => {
           const colonIndex = 14;
-          const curConvertedAlias = info[convertedAliasIndex];
+          const convertedAlias = info[convertedAliasIndex];
           let initialAlias = info[initialAliasIndex];
-          if (formData.target === 'ENTREZGENE_ACC' && initialAlias.substring(0, colonIndex + 1) === 'ENTREZGENE_ACC:') {
+          if (initialAlias.substring(0, colonIndex + 1) === 'ENTREZGENE_ACC:') {
             const ncbiNameIndex = 1;
             initialAlias = initialAlias.split(':')[ncbiNameIndex];
           }
-          if (info[convertedAliasIndex] === 'N/A') {
+          if (convertedAlias === 'N/A') {
             if (_.filter(unrecognized, ele => ele === initialAlias).length === 0) {
               unrecognized.push(initialAlias);
             }
           } else {
-            if (_.filter(geneInfoList, ele => ele[convertedAliasIndex] === curConvertedAlias).length > 1) {
-              if (!(curConvertedAlias in duplicate)) {
-                duplicate[curConvertedAlias] = [];
+            if (_.filter(geneInfoList, ele => ele[convertedAliasIndex] === convertedAlias).length > 1) {
+              if (!(convertedAlias in duplicate)) {
+                duplicate[convertedAlias] = [];
               }
-              if (_.filter(duplicate[curConvertedAlias], ele => ele === info[initialAliasIndex]).length === 0) {
-                duplicate[curConvertedAlias].push(info[initialAliasIndex]);
+              if (_.filter(duplicate[convertedAlias], ele => ele === initialAlias).length === 0) {
+                duplicate[convertedAlias].push(initialAlias);
               }
             }
             if (_.filter(geneInfo, ele => ele.initialAlias === initialAlias).length === 0) {
-              geneInfo.push({ initialAlias: initialAlias, convertedAlias: info[convertedAliasIndex] });
+              geneInfo.push({ initialAlias: initialAlias, convertedAlias: convertedAlias });
             }
           }
         });

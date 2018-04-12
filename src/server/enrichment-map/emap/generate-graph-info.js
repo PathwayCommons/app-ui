@@ -11,9 +11,9 @@ Notes:
 2. If a pathwayId is unrecognized and duplicate, only report it in unrecognize.
 3. If a pathwayId is recognized and duplicate, report it in duplicate and store info in graph.
 */
-const pathwayInfoTable = require('./pathwayTable').pathwayInfoTable;
-const generateNodeInfo = require('./generateInfo').generateNodeInfo;
-const generateEdgeInfo = require('./generateInfo').generateEdgeInfo;
+const pathwayInfoTable = require('./pathway-table').pathwayInfoTable;
+const generateNodeInfo = require('./generate-info').generateNodeInfo;
+const generateEdgeInfo = require('./generate-info').generateEdgeInfo;
 const _ = require('lodash');
 
 // pathwayInfoList: {"GO:1":{pValue: 1}, "GO:2": {pValue: 0, color: "green"}}

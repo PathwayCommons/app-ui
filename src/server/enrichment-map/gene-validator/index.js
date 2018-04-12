@@ -6,8 +6,8 @@ output: {"unrecognized":["ATP"],"duplicate":["ATM"],"geneInfo":[{"HGNC_symbol":"
 
 const fetch = require('node-fetch');
 const _ = require('lodash');
-const { validOrganism } = require('./validityInfo');
-const { validTarget } = require('./validityInfo');
+const { validOrganism } = require('./validity-info');
+const { validTarget } = require('./validity-info');
 const qs = require('query-string');
 
 

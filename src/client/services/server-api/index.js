@@ -29,7 +29,14 @@ const ServerAPI = {
   },
 
   geneQuery(query){
-    return fetch(`/api/gene-query?${qs.stringify(query)}`, {method:'POST'}).then(res => res.json());
+    return fetch('/api/gene-query', {
+      method:'POST', 
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body:qs.stringify(query)
+    }).then(res => res.json());
   },
 
   getGeneInformation(ids,type){

@@ -15,7 +15,7 @@ const downloadTypes = require('../../common/config').downloadTypes;
 
 const filterMenuId='filter-menu';
 const interactionsConfig={
-  toolbarButtons: _.differenceBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'},{'id': 'showInfo'}],'id').concat({
+  toolbarButtons: _.differenceBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'}],'id').concat({
     id: 'filter',
     icon: 'filter_list',
     type: 'activateMenu',
@@ -74,19 +74,32 @@ class Interactions extends React.Component {
       source.replace(/\//g,' ')
     );
     Promise.all(geneIds).then(geneIds=>{
-      ServerAPI.geneQuery({genes:geneIds.join(' '),target: 'HGNCSYMBOL'}).then(result=>{
-        const hgncIds=result.geneInfo.map(gene=> gene.convertedAlias);
-        this.setState({
-          networkMetadata: {
-            name: hgncIds.length === sources.length ? (hgncIds +' Interactions') : 'Interactions',
-            datasource: 'Pathway Commons',
-          },
-          ids: hgncIds,
-          loaded:_.assign(this.state.loaded,{ids:true})
+      ServerAPI.geneQuery({genes:geneIds.join(' '),target: 'NCBIGENE'}).then(result=>{
+        const ncbiIds=result.geneInfo.map(gene=> gene.convertedAlias);
+        ServerAPI.getGeneInformation(ncbiIds,'gene').then(result=>{
+          const geneResults=result.result;
+          let hgncIds=[];
+          const comments=_.flatten(geneResults.uids.map(gene=>{
+            hgncIds.push(geneResults[gene].name);
+            return _.compact([
+              'Nomenclature Name: '+geneResults[gene].nomenclaturename,
+              'Other Aliases: '+geneResults[gene].name + (geneResults[gene].otheraliases ? ', '+geneResults[gene].otheraliases:''),
+              geneResults[gene].summary && 'Function: '+geneResults[gene].summary
+            ]);
+          }));
+          this.setState({
+            networkMetadata: {
+              name: (hgncIds+' Interactions'),
+              datasource: 'Pathway Commons',
+              comments: comments
+            },
+            ids:hgncIds,
+            loaded:_.assign(this.state.loaded,{ids:true})
+          });
         });
       });
     });
-
+  
     this.state.cy.on('trim', () => {
       const state = this.state;
       const ids = state.ids;

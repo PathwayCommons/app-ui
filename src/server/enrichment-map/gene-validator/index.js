@@ -40,18 +40,18 @@ const convertGConvertNames = (gConvertName) => {
 
 const validatorGconvert = (query, userOptions = {}) => {
   return promise = new Promise((resolve, reject) => {
-    const formData = _.assign(defaultOptions, JSON.parse(JSON.stringify(userOptions)), { query: query });
+    const formData = _.assign({}, defaultOptions, JSON.parse(JSON.stringify(userOptions)), { query: query });
     formData.organism = formData.organism.toLowerCase();
     const initialTarget = formData.target.toUpperCase();
     formData.target = convertGConvertNames(initialTarget);
-    const invalidInfo = { invalidTarget: '', invalidOrganism: '' };
+    const invalidInfo = { invalidTarget: undefined, invalidOrganism: undefined };
     if (!validOrganism.includes(formData.organism)) {
       invalidInfo.invalidOrganism = formData.organism;
     }
     if (!validTarget.includes(formData.target)) {
       invalidInfo.invalidTarget = formData.target;
     }
-    if (invalidInfo.invalidOrganism != '' || invalidInfo.invalidTarget != '') {
+    if (invalidInfo.invalidOrganism != undefined || invalidInfo.invalidTarget != undefined) {
       reject(new InvalidInfoError(invalidInfo.invalidOrganism, invalidInfo.invalidTarget, ''));
     }
 

@@ -18,9 +18,16 @@ class InteractionsFilterMenu extends React.Component {
         h('i', {className: classNames('common-icon-button','material-icons','icon-cutoff',{ 'common-icon-button-active': !clicked})}, clicked ? 'close':'check')
       ]
     ));
+    // console.log(props.numNodesToHave);
+     console.log({min:1, max:props.sliderMax, value: props.numNodesToHave});
+   // const sliderUpdate=_.debounce(props.sliderUpdate,200, {leading:false, trailing:true});
     return h('div',[
-      h('h2', 'Interaction Filters'),
-      buttons
+      h('h2', 'Settings'),
+      h('h3', 'Interaction Filters'),
+      buttons,
+      h('h3', 'Nodes'),
+      h('input.interaction-slider',{type:'range', min:1, max:props.sliderMax,value:props.numNodesToHave,  
+        onChange:(evt)=>{console.log(props.numNodesToHave);props.sliderUpdate({a:_.toNumber(evt.target.value), b:props.numNodesToHave});}})
     ]);
   }
 }

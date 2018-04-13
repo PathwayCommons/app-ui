@@ -50,7 +50,8 @@ class Interactions extends React.Component {
         Binding:false,
         Phosphorylation:false,
         Expression:false
-      }
+      },
+      numNodesToHave:1
     };    
 
     const query = queryString.parse(props.location.search);
@@ -84,18 +85,26 @@ class Interactions extends React.Component {
           comments: comments
         },
         ids:hgncIds,
+        mainNodeGroup:['temp']
       }); 
     });
 
     this.state.cy.on('trim', () => {
       const state = this.state;
       const ids = state.ids;
+      const cy = state.cy;
+      let mainNodeGroup= cy.nodes(),mainNode = cy.nodes();
       if(ids.length===query.id.length){
-        const cy = state.cy;
-        const mainNode = cy.nodes(node=> ids.indexOf(node.data().id) != -1);
-        const nodesToKeep = mainNode.merge(mainNode.connectedEdges().connectedNodes());
-        cy.remove(cy.nodes().difference(nodesToKeep));
+        mainNode = cy.nodes(node=> ids.indexOf(node.data().id) != -1);
+        mainNodeGroup = mainNode.connectedEdges().connectedNodes();
+        cy.remove(cy.nodes().difference(mainNodeGroup));
       }
+    
+      this.setState({
+        mainNode:mainNode,
+        mainNodeGroup:mainNodeGroup.sort((a,b)=> b.degree() - a.degree()),
+        numNodesToHave: mainNodeGroup.length>40 ?_.round(mainNodeGroup.length/2) :mainNodeGroup.length
+      });
     });
 
     this.state.cy.one('layoutstop',()=>{
@@ -110,12 +119,12 @@ class Interactions extends React.Component {
         categories.set(type,{edges:edges,nodes:nodes}):
         (categories.delete(type),delete buttonsClicked[type]);      
       });
-
       _.tail(_.toPairs(buttonsClicked)).map(pair=>this.filterUpdate(pair[0]));
+      this.sliderUpdate(state.numNodesToHave,state.mainNodeGroup.length);
       this.setState({
         categories:categories,
         buttonsClicked:buttonsClicked
-      });
+      }); 
       const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
       const layout = cy.layout(initialLayoutOpts);
       layout.run();
@@ -203,7 +212,7 @@ class Interactions extends React.Component {
       removeStyle(cy, hovered, '_hover-style-before');
       if(!buttonsClicked[type]){
           cy.remove(edges);
-          cy.remove(nodes.filter(nodes=>nodes.connectedEdges().empty()));
+          cy.remove(nodes.filter(nodes=>nodes.connectedEdges(':visible').empty()));
       }
       else{ 
         edges.union(nodes).restore();
@@ -215,9 +224,26 @@ class Interactions extends React.Component {
       buttonsClicked:buttonsClicked
     });
   }
+
+  sliderUpdate(numNodesToHave,currentNumberOfNodes){
+    console.log(arguments);
+    if(!currentNumberOfNodes){currentNumberOfNodes=numNodesToHave.b;numNodesToHave=numNodesToHave.a;}
+    const upperRange=Math.max(currentNumberOfNodes,numNodesToHave);
+    const lowerRange = Math.min(currentNumberOfNodes,numNodesToHave);
+    console.log({numNodesToHave:numNodesToHave, currentNumberOfNodes: currentNumberOfNodes});
+    if(upperRange!=lowerRange){
+      console.log({'full length':this.state.mainNodeGroup.length,lowerRangemin:lowerRange,upperRange:upperRange});
+      const nodesToChange= this.state.mainNodeGroup.slice(lowerRange,upperRange);
+      console.log(nodesToChange);
+      numNodesToHave>currentNumberOfNodes ?  nodesToChange.style({display:'element'}) : nodesToChange.style({display:'none'});
+    }
+    this.setState({numNodesToHave: numNodesToHave});
+  }
+
   render(){
     const state = this.state;
     const networkToDisplay = !_.isEmpty(state.networkJSON);
+    // console.log(state.numNodesToHave);
     const baseView = networkToDisplay ? h(BaseNetworkView.component, {
       layoutConfig: state.layoutConfig,
       componentConfig: state.componentConfig,
@@ -227,11 +253,14 @@ class Interactions extends React.Component {
       //interaction specific
       activeMenu:filterMenuId,
       filterUpdate:(evt,type)=> this.filterUpdate(evt,type),
+      sliderUpdate:(value)=> this.sliderUpdate(value),
       buttonsClicked: state.buttonsClicked,
       download: {
         types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'), 
         promise: () => Promise.resolve(_.map(state.cy.edges(),edge=> edge.data().id).sort().join('\n'))
       },
+      numNodesToHave:state.numNodesToHave,
+      sliderMax: state.mainNodeGroup.length
     }):
     h('div.no-network',[h('strong.title','No interactions to display'),h('span','Return to the previous page and try a diffrent set of entities')]);
 

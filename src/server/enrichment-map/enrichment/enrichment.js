@@ -23,28 +23,6 @@ const parseGProfilerResponse = (gProfilerResponse) => {
   })
 };
 
-// extract #WARNING from response
-const extractWarning = (gProfilerResponse) => {
-  const warningLines = gProfilerResponse.replace(/^(?!#WARNING).*$/mg, "");
-  const warningInfo = _.filter(warningLines.split('\n'), ele => ele.length != 0);
-  const duplicate = [];
-  const unrecognized = [];
-  _.forEach(warningInfo, ele => {
-    const desIndex = 1;
-    const hgncSymbolIndex = 1;
-    if (ele.indexOf('same internal ID') > -1) {
-      const duplicateGene = ele.split('\t')[desIndex].split(/\s+/)[hgncSymbolIndex];
-      if (_.filter(duplicate, ele => ele === duplicateGene).length === 0) {
-        duplicate.push(duplicateGene);
-      }
-    } else if (ele.indexOf('not recognized') > -1) {
-      const unrecognizedGene = ele.split('\t')[desIndex].split(/\s+/)[hgncSymbolIndex];
-      if (_.filter(unrecognized, ele => ele === unrecognizedGene).length === 0)
-        unrecognized.push(unrecognizedGene);
-    }
-  })
-  return { duplicate: duplicate, unrecognized: unrecognized };
-};
 
 
 const defaultSetting = {
@@ -119,7 +97,6 @@ const enrichment = (query, userSetting = {}) => {
       body: qs.stringify(formData)
     }).then(gProfilerResponse => gProfilerResponse.text())
       .then(body => {
-        const warning = extractWarning(body);
         const responseInfo = parseGProfilerResponse(body);
         let ret = {};
         const pValueIndex = 2;
@@ -157,7 +134,6 @@ const enrichment = (query, userSetting = {}) => {
             })
           };
         });
-        ret = _.assign(warning, ret);
         resolve(ret);
       });
   })

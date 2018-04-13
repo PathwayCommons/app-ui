@@ -23,23 +23,6 @@ const parseGProfilerResponse = (gProfilerResponse) => {
   })
 };
 
-// extract #WARNING from response
-const extractWarning = (gProfilerResponse) => {
-  const warningLines = gProfilerResponse.replace(/^(?!#WARNING).*$/mg, "");
-  const warningInfo = _.filter(warningLines.split('\n'), ele => ele.length != 0);
-  const duplicate = [];
-  const unrecognized = [];
-  _.forEach(warningInfo, ele => {
-    const desIndex = 1;
-    const hgncSymbolIndex = 1;
-    if (ele.indexOf('same internal ID') > -1) {
-      duplicate.push(ele.split('\t')[desIndex].split(/\s+/)[hgncSymbolIndex]);
-    } else if (ele.indexOf('not recognized') > -1) {
-      unrecognized.push(ele.split('\t')[desIndex].split(/\s+/)[hgncSymbolIndex]);
-    }
-  })
-  return { duplicate: duplicate, unrecognized: unrecognized };
-};
 
 
 const defaultSetting = {
@@ -112,9 +95,8 @@ const enrichment = (query, userSetting = {}) => {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: qs.stringify(formData)
-    }).then(gProfilerResponse =>  gProfilerResponse.text())
+    }).then(gProfilerResponse => gProfilerResponse.text())
       .then(body => {
-        const warning = extractWarning(body);
         const responseInfo = parseGProfilerResponse(body);
         let ret = {};
         const pValueIndex = 2;
@@ -152,7 +134,6 @@ const enrichment = (query, userSetting = {}) => {
             })
           };
         });
-        ret = _.assign(warning, ret);
         resolve(ret);
       });
   })

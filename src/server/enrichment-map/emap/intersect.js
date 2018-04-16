@@ -11,12 +11,16 @@ const _ = require('lodash');
 const pathwayPairGraph = (pathway1, pathway2, JCWeight) => {
   let intersectionCount = 0;
   const intersection = [];
-  _.forEach(pathway1.genes, gene => {
-    if ((pathway2.genes.filter(ele => ele === gene)).length > 0) {
+
+  const joinedPathway = pathway1.genes.concat(pathway2.genes);
+  joinedPathway.sort();
+  for (let i = 1; i < joinedPathway.length; ++i) {
+    if (joinedPathway[i] === joinedPathway[i-1]) {
       ++intersectionCount;
-      intersection.push(gene);
+      intersection.push(joinedPathway[i]);
     }
-  });
+  }
+
   // JC/OC calculation
   const pathway1Length = pathway1.genes.length;
   const pathway2Length = pathway2.genes.length;

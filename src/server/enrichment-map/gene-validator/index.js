@@ -67,9 +67,10 @@ const validatorGconvert = (query, userOptions = {}) => {
         const geneInfoList = _.map(body.split('\n'), ele => { return ele.split('\t'); });
         geneInfoList.splice(-1, 1); // remove last element ''
 
-        const unrecognized = [];
-        const duplicate = {};
-        const geneInfo = [];
+        const unrecognized = new Set();
+        let duplicate = {};
+        const previous = new Set();
+        let geneInfo = new Set();
         const initialAliasIndex = 1;
         const convertedAliasIndex = 3;
         _.forEach(geneInfoList, info => {
@@ -81,25 +82,26 @@ const validatorGconvert = (query, userOptions = {}) => {
             initialAlias = initialAlias.split(':')[ncbiNameIndex];
           }
           if (convertedAlias === 'N/A') {
-            if (_.filter(unrecognized, ele => ele === initialAlias).length === 0) {
-              unrecognized.push(initialAlias);
-            }
+            unrecognized.add(initialAlias);
           } else {
-            if (_.filter(geneInfoList, ele => ele[convertedAliasIndex] === convertedAlias).length > 1) {
+            if (previous.has(convertedAlias)) {
+              previous.add(convertedAlias);
+            } else {
               if (!(convertedAlias in duplicate)) {
-                duplicate[convertedAlias] = [];
+                duplicate[convertedAlias] = new Set();
               }
-              if (_.filter(duplicate[convertedAlias], ele => ele === initialAlias).length === 0) {
-                duplicate[convertedAlias].push(initialAlias);
-              }
+              duplicate[convertedAlias].add(initialAlias);
             }
-            if (_.filter(geneInfo, ele => ele.initialAlias === initialAlias).length === 0) {
-              geneInfo.push({ initialAlias: initialAlias, convertedAlias: convertedAlias });
-            }
+            geneInfo.add(JSON.stringify({initialAlias: initialAlias, convertedAlias: convertedAlias}));
           }
         });
 
-        const ret = { unrecognized: unrecognized, duplicate: duplicate, geneInfo: geneInfo };
+        for (const initialAlias in duplicate) {
+          duplicate[initialAlias] = Array.from(duplicate[initialAlias]);
+        }
+        geneInfo = _.map(Array.from(geneInfo), ele => { return JSON.parse(ele); });
+
+        const ret = { unrecognized: Array.from(unrecognized), duplicate: duplicate, geneInfo: geneInfo };
         resolve(ret);
       })
   });

@@ -90,10 +90,6 @@ const enrichment = (query, userSetting = {}) => {
 
     fetch(gProfilerURL, {
       method: 'post',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
       body: qs.stringify(formData)
     }).then(gProfilerResponse => gProfilerResponse.text())
       .then(body => {

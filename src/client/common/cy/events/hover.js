@@ -73,7 +73,7 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
   
     const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
   
-    node.neighborhood().nodes().union(node).forEach((node) => {
+    node.neighborhood(ele=>ele.data().canBeShow).nodes().union(node).forEach((node) => {
       const { w, h } = scaledDimensions(node, currZoom);
   
       const nodeHoverStyle = _.assign({}, nodeStyle, {
@@ -90,7 +90,7 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
       'arrow-scale': arrowScale,
       'width': edgeWidth
     });
-    applyStyle(cy, node.neighborhood().edges(), edgeHoverStyle, '_hover-style-before');
+    applyStyle(cy, node.neighborhood(ele=>ele.data().canBeShown).edges(), edgeHoverStyle, '_hover-style-before');
   },200, {leading:false, trailing:true});
 
   cy.on('mouseover', 'node[class!="compartment"]',hoverNode);

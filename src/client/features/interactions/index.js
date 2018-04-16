@@ -93,17 +93,16 @@ class Interactions extends React.Component {
       const state = this.state;
       const ids = state.ids;
       const cy = state.cy;
-      let mainNodeGroup= cy.nodes(),mainNode = cy.nodes();
+      let mainNodeGroup= cy.nodes();
       if(ids.length===query.id.length){
-        mainNode = cy.nodes(node=> ids.indexOf(node.data().id) != -1);
-        mainNodeGroup = mainNode.connectedEdges().connectedNodes();
-        cy.remove(cy.nodes().difference(mainNodeGroup));
+        const mainNode = cy.nodes(node=> ids.indexOf(node.data().id) != -1);
+        mainNodeGroup = mainNode.connectedEdges().connectedNodes(node=>state.ids.indexOf(node.data().id)===-1);
+        cy.remove(cy.nodes().difference(mainNodeGroup.union(mainNode)));
       }
     
       this.setState({
-        mainNode:mainNode,
         mainNodeGroup:mainNodeGroup.sort((a,b)=> b.degree() - a.degree()),
-        numNodesToHave: mainNodeGroup.length>40 ?_.round(mainNodeGroup.length/2) :mainNodeGroup.length
+        numNodesToHave: mainNodeGroup.length>40 ?_.round(mainNodeGroup.length/2) : mainNodeGroup.length
       });
     });
 
@@ -163,9 +162,10 @@ class Interactions extends React.Component {
       const metadata=nodeMetadata.get(node);
       nodeMap.set(node,true);
       const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');       
-      network.nodes.push({data:{class: "ball",id: node,label: node,parsedMetadata:[
-        ['Type','bp:'+metadata[0].split(' ')[0].replace(/Reference/g,'').replace(/;/g,',')],['Database IDs', links]]}});
-      }
+      network.nodes.push({data:{class: "ball", id:node, label:node, canBeShown:true, parsedMetadata:[
+        ['Type','bp:'+metadata[0].split(' ')[0].replace(/Reference/g,'').replace(/;/g,',')],['Database IDs', links]
+      ]}});      
+    }
     });
 
     network.edges.push({data: {
@@ -174,6 +174,7 @@ class Interactions extends React.Component {
       source: nodes[0],
       target: nodes[1],
       class: interaction,
+      canBeShown:true,
       parsedMetadata:sources
     },classes:interaction});
   }
@@ -211,11 +212,18 @@ class Interactions extends React.Component {
     cy.batch(()=>{
       removeStyle(cy, hovered, '_hover-style-before');
       if(!buttonsClicked[type]){
-          cy.remove(edges);
-          cy.remove(nodes.filter(nodes=>nodes.connectedEdges(':visible').empty()));
+        edges.style({display:'none'});
+        edges.data('canBeShown',false);
+        nodes.filter(nodes=>
+          nodes.connectedEdges().every(edge=>buttonsClicked[edge.data().class]||!edge.data().canBeShown) 
+          && state.ids.indexOf(nodes.data().id)===-1
+        ).style({display:'none'}).data('canBeShown',false);
       }
       else{ 
-        edges.union(nodes).restore();
+        const nodesToRestore = nodes.intersection(state.mainNodeGroup.slice(0,state.numNodesToHave)).style({display:'element'});
+        edges.intersection(nodesToRestore.connectedEdges()).style({display:'element'});
+        nodes.data('canBeShown',true);
+        edges.data('canBeShown',true);
       }
     });
     
@@ -226,16 +234,15 @@ class Interactions extends React.Component {
   }
 
   sliderUpdate(numNodesToHave,currentNumberOfNodes){
-    console.log(arguments);
-    if(!currentNumberOfNodes){currentNumberOfNodes=numNodesToHave.b;numNodesToHave=numNodesToHave.a;}
+    const state=this.state;
+    const mainNodeGroup= state.mainNodeGroup;
+    if(currentNumberOfNodes===undefined){currentNumberOfNodes=numNodesToHave.currentNumberOfNodes;numNodesToHave=numNodesToHave.numNodesToHave;}
     const upperRange=Math.max(currentNumberOfNodes,numNodesToHave);
     const lowerRange = Math.min(currentNumberOfNodes,numNodesToHave);
-    console.log({numNodesToHave:numNodesToHave, currentNumberOfNodes: currentNumberOfNodes});
     if(upperRange!=lowerRange){
-      console.log({'full length':this.state.mainNodeGroup.length,lowerRangemin:lowerRange,upperRange:upperRange});
-      const nodesToChange= this.state.mainNodeGroup.slice(lowerRange,upperRange);
-      console.log(nodesToChange);
-      numNodesToHave>currentNumberOfNodes ?  nodesToChange.style({display:'element'}) : nodesToChange.style({display:'none'});
+      const nodesToChange= mainNodeGroup.slice(lowerRange,upperRange).filter(node=>node.data('canBeShown'));
+      const elesToChange= nodesToChange.union(nodesToChange.connectedEdges(edge=>edge.data('canBeShown')));
+      numNodesToHave>currentNumberOfNodes ?  elesToChange.style({display:'element'}) : elesToChange.style({display:'none'});
     }
     this.setState({numNodesToHave: numNodesToHave});
   }
@@ -243,7 +250,6 @@ class Interactions extends React.Component {
   render(){
     const state = this.state;
     const networkToDisplay = !_.isEmpty(state.networkJSON);
-    // console.log(state.numNodesToHave);
     const baseView = networkToDisplay ? h(BaseNetworkView.component, {
       layoutConfig: state.layoutConfig,
       componentConfig: state.componentConfig,

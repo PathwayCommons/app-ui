@@ -9,6 +9,7 @@ const _ = require('lodash');
 const { validOrganism } = require('./validity-info');
 const { validTarget } = require('./validity-info');
 const qs = require('query-string');
+const { cleanUpEntrez } = require('../helper');
 
 
 const defaultOptions = {
@@ -73,13 +74,9 @@ const validatorGconvert = (query, userOptions = {}) => {
         const initialAliasIndex = 1;
         const convertedAliasIndex = 3;
         _.forEach(geneInfoList, info => {
-          const colonIndex = 14;
           const convertedAlias = info[convertedAliasIndex];
           let initialAlias = info[initialAliasIndex];
-          if (initialAlias.substring(0, colonIndex + 1) === 'ENTREZGENE_ACC:') {
-            const ncbiNameIndex = 1;
-            initialAlias = initialAlias.split(':')[ncbiNameIndex];
-          }
+          initialAlias = cleanUpEntrez(initialAlias);
           if (convertedAlias === 'N/A') {
             if (_.filter(unrecognized, ele => ele === initialAlias).length === 0) {
               unrecognized.push(initialAlias);

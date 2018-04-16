@@ -9,6 +9,7 @@ return:
 const fetch = require('node-fetch')
 const _ = require('lodash');
 const qs = require('query-string');
+const { cleanUpEntrez } = require('../helper');
 
 const parseGProfilerResponse = (gProfilerResponse) => {
   let lines = _.map(gProfilerResponse.split('\n'), line => {
@@ -126,11 +127,7 @@ const enrichment = (query, userSetting = {}) => {
             tDepth: Number(elem[tDepthIndex]),
             qAndTList: _.map(elem[qAndTListIndex].split(','), gene => {
               const colonIndex = 14;
-              if (gene.substring(0, colonIndex + 1) === 'ENTREZGENE_ACC:') {
-                const ncbiNameIndex = 1;
-                return gene.split(':')[ncbiNameIndex];
-              }
-              return gene;
+              return cleanUpEntrez(gene);
             })
           };
         });

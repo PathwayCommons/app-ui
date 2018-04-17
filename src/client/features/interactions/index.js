@@ -263,7 +263,7 @@ class Interactions extends React.Component {
       buttonsClicked: state.buttonsClicked,
       download: {
         types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'), 
-        promise: () => Promise.resolve(_.map(state.cy.edges(),edge=> edge.data().id).sort().join('\n'))
+        promise: () => Promise.resolve(_.map(state.cy.edges(edge=>edge.visible()),edge=> edge.data().id).sort().join('\n'))
       },
       numNodesToHave:state.numNodesToHave,
       sliderMax: state.mainNodeGroup.length

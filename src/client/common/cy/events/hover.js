@@ -72,8 +72,10 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
     if (node.isParent() && node.isExpanded()) { return; }
   
     const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
+    const visibleEdges=node.connectedEdges(ele=>ele.visible());
+    const visibleNodes=node.union(visibleEdges.connectedNodes());
   
-    node.neighborhood(ele=>ele.data().canBeShow).nodes().union(node).forEach((node) => {
+    visibleNodes.forEach((node) => {
       const { w, h } = scaledDimensions(node, currZoom);
   
       const nodeHoverStyle = _.assign({}, nodeStyle, {
@@ -90,7 +92,7 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
       'arrow-scale': arrowScale,
       'width': edgeWidth
     });
-    applyStyle(cy, node.neighborhood(ele=>ele.data().canBeShown).edges(), edgeHoverStyle, '_hover-style-before');
+    applyStyle(cy, visibleEdges, edgeHoverStyle, '_hover-style-before');
   },200, {leading:false, trailing:true});
 
   cy.on('mouseover', 'node[class!="compartment"]',hoverNode);
@@ -116,7 +118,7 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
     });
     applyStyle(cy, edge, edgeHoverStyle, '_hover-style-before');
 
-    edge.source().union(edge.target()).forEach((node) => {
+    edge.connectedNodes().forEach((node) => {
       const { w, h } = scaledDimensions(node, currZoom);
       const nodeHoverStyle = _.assign({}, nodeStyle, {
         'width': w,

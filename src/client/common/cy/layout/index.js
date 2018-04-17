@@ -66,8 +66,8 @@ const interactionsLayout = {
     animationDuration: 500,
     fit: true,
     padding: 0,
-    levelWidth:(node)=>node.maxDegree()/1000,
-    concentric:(node)=> node.connectedEdges(edge=>edge.visible()).length,
+    levelWidth:(nodes)=>nodes.maxDegree()/1000,
+    concentric:(node)=> node.data().queried ? Number.MAX_SAFE_INTEGER: node.connectedEdges(':visible').length ,
   }
 };
 

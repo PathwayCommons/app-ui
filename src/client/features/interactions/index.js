@@ -125,7 +125,7 @@ class Interactions extends React.Component {
         buttonsClicked:buttonsClicked
       }); 
       const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
-      const layout = cy.layout(initialLayoutOpts);
+      const layout = cy.elements(':visible').layout(initialLayoutOpts);
       layout.run();
     });
   }

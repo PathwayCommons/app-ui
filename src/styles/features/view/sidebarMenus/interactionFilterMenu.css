@@ -11,7 +11,7 @@
     border-style: solid;
     border-color: var(--light-base-colour-dark);
     border-width: 1px 1px 0px 1px;
-
+    height: 50px;
     transition: background-color 0.1s linear;
 
     &:last-of-type {
@@ -20,6 +20,9 @@
     &:hover {
       background-color: var(--light-base-colour-dark);
     }
+}
+.interaction-filter-button.hover .child{
+  background-color: var(--light-base-colour-dark);
 }
 
 .interaction-filter-icon{
@@ -42,9 +45,10 @@
 }
 
 .interaction-filter-legend{
-  height:50px;
+  height: 100%;
   width: 30px;
   flex-shrink: 0;
+  background-color: var(--light-base-colour-darker);
   display: inline-flex;
 }
 

@@ -116,7 +116,7 @@ class Search extends React.Component {
     const landing=state.landing;
     const landingBox=Landing.landingBox;
     const controller = this;
-    
+
     let Example = props => h('span.search-example', {
       onClick: () => this.setAndSubmitSearchQuery({q: props.search})
     }, props.search);

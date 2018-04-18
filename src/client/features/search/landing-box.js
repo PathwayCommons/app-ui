@@ -50,8 +50,8 @@ const getLandingResult= (query)=> {
           return geneResults.uids.map(gene=>{
             const originalSearch = _.findKey(genes,entry=> entry['NCBI Gene']===gene);
             const links=_.mapValues(genes[originalSearch],(value,key)=>{
-              let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue[0].toUpperCase());
-              return link[0][1] + link[0][2] + value;
+              let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue.database.toUpperCase());
+              return link[0].url + link[0].search + value;
             });
             return {
               id:gene,
@@ -108,10 +108,10 @@ const landingBox = (props) => {
   const landing=props.landing;
   const controller=props.controller;
   if (controller.state.landingLoading ) {
-    return h('div.search-landing', 
-      h('div.search-landing-innner',
-        h(Loader, { loaded:false , options: { color: '#16A085', position:'relative', top: '15px' }})
-      )
+    return h('div.search-landing', [
+      h('div.search-landing-innner',[
+        h(Loader, { loaded:false , options: { color: '#16A085', position:'relative', top: '15px' }})]
+      )]
     );
   }
   const landingHTML= landing.map((box,index)=>{
@@ -149,6 +149,7 @@ const landingBox = (props) => {
   if(landing.length>1){
     landingHTML.push(interactionsLink(landing.map(entry=>entry.id),'View Interactions Between Entities'));
   }
+
   return h('div.search-landing',landingHTML);
 };
 

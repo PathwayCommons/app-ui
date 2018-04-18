@@ -44,57 +44,73 @@ class Interactions extends React.Component {
         comments: []
       },
       ids:[],
-      loading: true,
+      loaded:{network:false, ids:false},
       categories: new Map (),
       buttonsClicked:{
         Binding:false,
         Phosphorylation:false,
         Expression:false
       },
+      mainNodeGroup:['temp'],
       numNodesToHave:1
     };    
 
     const query = queryString.parse(props.location.search);
-    query.id=_.concat([],query.id);
-    ServerAPI.getNeighborhood(query.id,query.kind).then(res=>{ 
+    const sources=_.uniq(_.concat([],query.source));
+    const kind = sources.length>1?'PATHSBETWEEN':'Neighborhood';
+    ServerAPI.getNeighborhood(sources,kind).then(res=>{ 
       const layoutConfig = getLayoutConfig('interactions');
       const network= this.parse(res);
       this.setState({
         componentConfig: interactionsConfig,
         layoutConfig: layoutConfig,
-        networkJSON: network ,
-        loading: false
+        networkJSON: network,
+        loaded:_.assign(this.state.loaded,{network:true})
       });
     });
-
-    ServerAPI.getGeneInformation(query.id,'gene').then(result=>{
-      const geneResults=result.result;
-      let hgncIds=[];
-      const comments=_.flatten(geneResults.uids.map(gene=>{
-        hgncIds.push(geneResults[gene].name);
-        return _.compact([
-          'Nomenclature Name: '+geneResults[gene].nomenclaturename,
-          'Other Aliases: '+geneResults[gene].name + (geneResults[gene].otheraliases ? ', '+geneResults[gene].otheraliases:''),
-          geneResults[gene].summary&&'Function: '+geneResults[gene].summary
-        ]);
-      }));
-      this.setState({
-        networkMetadata: {
-          name: (hgncIds+' Interactions'),
-          datasource: 'Pathway Commons',
-          comments: comments
-        },
-        ids:hgncIds,
-        mainNodeGroup:['temp']
-      }); 
+    //get ids from uris 
+    const geneIds = sources.map(source=> 
+      source.includes('pathwaycommons')?
+      ServerAPI.pcQuery('traverse',{uri:source,path:`${_.last(source.split('/')).split('_')[0]}/displayName`}).then(result=>result.json())
+      .then(id=> _.words(id.traverseEntry[0].value[0]).length===1 ? id.traverseEntry[0].value[0].split('_')[0] : ''):
+      source.replace(/\//g,' ')
+    );
+    Promise.all(geneIds).then(geneIds=>{
+      ServerAPI.geneQuery({genes:geneIds.join(' '),target: 'NCBIGENE'}).then(result=>{
+        const ncbiIds=result.geneInfo.map(gene=> gene.convertedAlias);
+        ServerAPI.getGeneInformation(ncbiIds,'gene').then(result=>{
+          const geneResults=result.result;
+          let hgncIds=[];
+          let comments=[];
+          if(!result.esummaryresult ){
+            comments=_.flatten(geneResults.uids.map(gene=>{
+              hgncIds.push(geneResults[gene].name);
+              return _.compact([
+                'Nomenclature Name: '+geneResults[gene].nomenclaturename,
+                'Other Aliases: '+geneResults[gene].name + (geneResults[gene].otheraliases ? ', '+geneResults[gene].otheraliases:''),
+                geneResults[gene].summary && 'Function: '+geneResults[gene].summary
+              ]);
+            }));
+          }
+          this.setState({
+            networkMetadata: {
+              name: !_.isEmpty(hgncIds)?(hgncIds+' Interactions'):' Interactions',
+              datasource: 'Pathway Commons',
+              comments: comments
+            },
+            ids:hgncIds,
+            loaded:_.assign(this.state.loaded,{ids:true})
+          });
+        });
+      });
     });
-
+  
     this.state.cy.on('trim', () => {
       const state = this.state;
       const ids = state.ids;
       const cy = state.cy;
       let mainNodeGroup= cy.nodes();
-      if(ids.length===query.id.length){
+      if(ids.length===sources.length){
         const mainNode = cy.nodes(node=> ids.indexOf(node.data().id) != -1);
         mainNodeGroup = mainNode.connectedEdges().connectedNodes(node=>state.ids.indexOf(node.data().id)===-1);
         cy.remove(cy.nodes().difference(mainNodeGroup.union(mainNode)));
@@ -145,12 +161,13 @@ class Interactions extends React.Component {
   }
 
   interactionMetadata(mediatorIds,pubmedIds){
-    let metadata = [['Detailed views',[]],['Database IDs',[]]];//Format expected by format-content
+    let metadata = [['List',[]],['Detailed Views',[]]];//Format expected by format-content
     mediatorIds.split(';').forEach( link => {
-        metadata[0][1].push(['Interaction',link.split('/')[4]]);
+      const id=link.split('/')[4];
+      metadata[1][1].push(link.includes('reactome') ? ['Reactome',id]:['Pathway Commons',id]);
     });
     if(pubmedIds){
-     pubmedIds.split(';').forEach(id=>metadata[1][1].push(['PubMed_Interactions',id]));
+     pubmedIds.split(';').forEach(id=>metadata[0][1].push(['PubMed',id]));
     }
    return metadata;
 }
@@ -250,8 +267,8 @@ class Interactions extends React.Component {
 
   render(){
     const state = this.state;
-    const networkToDisplay = !_.isEmpty(state.networkJSON);
-    const baseView = networkToDisplay ? h(BaseNetworkView.component, {
+    const loaded = state.loaded.network && state.loaded.ids;
+    const baseView = !_.isEmpty(state.networkJSON) ? h(BaseNetworkView.component, {
       layoutConfig: state.layoutConfig,
       componentConfig: state.componentConfig,
       cy: state.cy,
@@ -269,12 +286,12 @@ class Interactions extends React.Component {
       numNodesToHave:state.numNodesToHave,
       sliderMax: state.mainNodeGroup.length
     }):
-    h('div.no-network',[h('strong.title','No interactions to display'),h('span','Return to the previous page and try a diffrent set of entities')]);
+    h('div.no-network',[h('strong.title','No interactions to display'),h('span','Try a diffrent set of entities')]);
 
-    const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
+    const loadingView = h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' }});
 
     // create a view shell loading view e.g looks like the view but its not
-    const content = state.loading ? loadingView : baseView;
+    const content = loaded ? baseView : loadingView;
     return h('div.main', [content]);
   }
 }

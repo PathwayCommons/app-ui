@@ -11,10 +11,9 @@ Notes:
 2. If a pathwayId is unrecognized and duplicate, only report it in unrecognize.
 3. If a pathwayId is recognized and duplicate, report it in duplicate and store info in graph.
 */
-const pathwayInfoTable = require('./PathwayTable').pathwayInfoTable;
-// const make_cytoscape = require('../../../../src/client/common/cy');
-const generateNodeInfo = require('./generateInfo').generateNodeInfo;
-const generateEdgeInfo = require('./generateInfo').generateEdgeInfo;
+const pathwayInfoTable = require('./pathway-table').pathwayInfoTable;
+const generateNodeInfo = require('./generate-info').generateNodeInfo;
+const generateEdgeInfo = require('./generate-info').generateEdgeInfo;
 const _ = require('lodash');
 
 // pathwayInfoList: {"GO:1":{pValue: 1}, "GO:2": {pValue: 0, color: "green"}}
@@ -43,13 +42,11 @@ const generateGraphInfo = (pathwayInfoList, cutoff = 0.375, JCWeight, OCWeight) 
   }
 
   // check unrecognized and duplicates, modify pathwayIdList
-  const unrecognized = [];
+  const unrecognized = new Set();
   for (let pathwayId in pathwayInfoList) {
     if (!pathwayInfoList.hasOwnProperty(pathwayId)) continue;
     if (!pathwayInfoTable.has(pathwayId)) {
-      if (_.filter(unrecognized, elem => elem === pathwayId).length === 0) {
-        unrecognized.push(pathwayId);
-      }
+      unrecognized.add(pathwayId);
       delete pathwayInfoList[pathwayId];
     } else if (pathwayInfoList[pathwayId].hasOwnProperty('pathwayId')) {
       throw new Error('ERROR: additional info for ' + pathwayId + ' can not have pathwayId field');
@@ -84,7 +81,7 @@ const generateGraphInfo = (pathwayInfoList, cutoff = 0.375, JCWeight, OCWeight) 
     });
   });
 
-  return { unrecognized: unrecognized, graph: elements };
+  return { unrecognized: Array.from(unrecognized), graph: elements };
 
 };
 

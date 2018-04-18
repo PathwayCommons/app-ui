@@ -50,8 +50,8 @@ const getLandingResult= (query)=> {
           return geneResults.uids.map(gene=>{
             const originalSearch = _.findKey(genes,entry=> entry['NCBI Gene']===gene);
             const links=_.mapValues(genes[originalSearch],(value,key)=>{
-              let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue[0].toUpperCase());
-              return link[0][1] + link[0][2] + value;
+              let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue.database.toUpperCase());
+              return link[0].url + link[0].search + value;
             });
             return {
               id:gene,
@@ -87,6 +87,11 @@ const expandableText = (controller,landing,length,text,charToCutOn,type,cssClass
   }
   return result;
 };
+
+const interactionsLink = (source,text)=> 
+  h(Link, {to: { pathname: '/interactions',search: queryString.stringify({source: source})}, 
+    target: '_blank', className: 'search-landing-interactions', key:'interactions' 
+  }, [h('button.search-landing-button', text)]);
 
 /*Generates a landing box
 input: {controller,[{
@@ -137,21 +142,14 @@ const landingBox = (props) => {
         h('div.search-landing-section',{key: 'synonyms'},[synonyms]),
         h('div.search-landing-section',{key: 'functions'},[functions]),
         h('div.search-landing-section',{key: 'links'},[links]),
-        h(Link, { 
-          to: { pathname: '/interactions',search: queryString.stringify({ id: box.id, kind:'NEIGHBORHOOD' })}, 
-          target: '_blank', className: 'search-landing-interactions', key:'interactions' 
-        }, [h('button.search-landing-button', `View Interactions`)])
+        interactionsLink(box.id,'View Interactions')
       ])
     ];    
   });
   if(landing.length>1){
-    landingHTML.push(
-      h(Link, { 
-        to: { pathname: '/interactions',search: queryString.stringify({ id:landing.map(entry=>entry.id), kind:'PATHSBETWEEN' })}, 
-        target: '_blank', className: 'search-landing-interactions', key:'interactions' 
-      }, [h('button.search-landing-button', 'View Interactions Between Entities')])
-    );
+    landingHTML.push(interactionsLink(landing.map(entry=>entry.id),'View Interactions Between Entities'));
   }
+
   return h('div.search-landing',landingHTML);
 };
 

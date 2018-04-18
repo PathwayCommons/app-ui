@@ -5,54 +5,51 @@ const config = require('../../config');
 const queryString = require('query-string');
 
 //Handle standard name related metadata fields
-const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Name: ');
-const standardNameHandlerTrim = (pair) => standardNameHandler(pair);
-const displayNameHandler = (pair) => makeTooltipItem(pair[1], 'Display Name: ');
-const nameHandlerTrim = (pair, expansionFunction) => {
-  let revisedList = filterChemicalFormulas(pair[1]);
-  let shortArray = trimValue(revisedList, config.defaultEntryLimit);
-  let expansionLink = revisedList.length > config.defaultEntryLimit ?
-    h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »') : h('div.error');
+const trimString = (trim) =>{return trim ? 'more »' : '« less';};
 
+const standardNameHandler = (pair) => makeTooltipItem(pair[1], 'Name: ');
+const displayNameHandler = (pair) => makeTooltipItem(pair[1], 'Display Name: ');
+const nameHandler = (pair, expansionFunction, trim) => {
+  let revisedList = filterChemicalFormulas(pair[1]);
+  let shortArray = trim ? trimValue(revisedList, config.defaultEntryLimit):
+                   filterChemicalFormulas(pair[1]);
+  let expansionLink = revisedList.length > config.defaultEntryLimit ?
+  h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, trimString(trim)) : h('div.error');
   return h('div.fake-paragraph', [
     h('div.field-name', 'Synonyms:'),
     valueToHtml(shortArray, true),
     expansionLink
   ]);
 };
-const nameHandler = (pair, expansionFunction) => {
-  let shortArray = filterChemicalFormulas(pair[1]);
-  return h('div.fake-paragraph', [
-    h('div.field-name', 'Synonyms:'),
-    valueToHtml(shortArray, true),
-    h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less')
-  ]);
-};
 
 //Handle database related fields
-const databaseHandlerTrim = (pair, expansionFunction) => {
-  const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »');
+const databaseHandler = (pair, expansionFunction, trim) => {
+  const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, trimString(trim));
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDatabaseList(sortByDatabaseId(pair[1]), true, expansionLink);
-};
-const databaseHandler = (pair, expansionFunction) => {
-  const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less');
-  if (pair[1].length < 1) { return h('div.error'); }
-  return generateDatabaseList(sortByDatabaseId(pair[1]), false, expansionLink);
+  return generateDatabaseList(sortByDatabaseId(pair[1]), trim, expansionLink);
 };
 
 //Handle interaction/Detailed views related fields
-const interactionHandlerTrim =(pair, expansionFunction, title) => {
-  let maxViews=8;
-  const expansionLink = pair[1].length>maxViews? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, 'more »'):'';
+let maxListEntries=8;
+const viwerListHandler =(pair, expansionFunction, trim, title) => {
+  let db = config.databases;
+  const inner = (database, data, isDBVisble, index) => {
+    let link = db.filter(value => database.toUpperCase() === value.database.toUpperCase());
+    return h('a.db-link' ,{href:'/view?',search: queryString.stringify({
+      uri: link[0].url + link[0].search + data, 
+      title:title, removeInfoMenu:true}),
+    target: '_blank', }, 'Interaction '+(index+1));
+  };
+  const expansionLink = pair[1].length>maxListEntries? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, trimString(trim)):'';
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDetailedViewList(sortByDatabaseId(pair[1]), pair[1].length>maxViews, expansionLink,maxViews,title);
+  return interactionList(sortByDatabaseId(pair[1]), expansionLink, maxListEntries, inner, trim);
 };
-const interactionHandler =(pair, expansionFunction, title) => {
-  let maxViews=8;
-  const expansionLink = pair[1].length>maxViews? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, '« less'):'';
+
+const listHandler = (pair, expansionFunction, trim) => {
+  const inner = generateDBLink;
+  const expansionLink = pair[1].length>maxListEntries? h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, trimString(trim)):'';
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDetailedViewList(sortByDatabaseId(pair[1]),false, expansionLink,maxViews,title);
+  return interactionList(sortByDatabaseId(pair[1]), expansionLink, maxListEntries, inner, trim);
 };
 
 //Handle publication related fields
@@ -81,19 +78,13 @@ const defaultHandler = (pair) => {
 
 const metaDataKeyMap = new Map()
   .set('Standard Name', standardNameHandler)
-  .set('Standard NameTrim', standardNameHandlerTrim)
   .set('Display Name', displayNameHandler)
-  .set('Display NameTrim', displayNameHandler)
   .set('Type', typeHandler)
-  .set('TypeTrim', typeHandler)
   .set('Names', nameHandler)
-  .set('NamesTrim', nameHandlerTrim)
   .set('Database IDs', databaseHandler)
-  .set('Database IDsTrim', databaseHandlerTrim)
   .set('Publications', publicationHandler)
-  .set('PublicationsTrim', publicationHandler)
-  .set('Detailed views',interactionHandler)
-  .set('Detailed viewsTrim',interactionHandlerTrim);
+  .set('List',listHandler)
+  .set('Detailed Views',viwerListHandler);
 
  /**
   * parseMetadata(pair, trim)
@@ -108,14 +99,9 @@ function parseMetadata(pair, trim = true, expansionFunction, title) {
   const doNotRender = ['Data Source', 'Data SourceTrim', 'Display Name'];
   let key = pair[0];
 
-  //Use the trim function if trim is applied
-  if (trim) {
-    key += "Trim";
-  }
-
   let handler = metaDataKeyMap.get(key);
   if (handler) {
-    return handler(pair, expansionFunction, title);
+    return handler(pair, expansionFunction, trim, title);
   }
   else if (!(trim) && !doNotRender.includes(key)) {
     return defaultHandler(pair);
@@ -270,8 +256,8 @@ function generateIdList(dbIdObject, trim) {
   let db = config.databases;
 
   //Format names
-  let dbScan = db.filter(data => name.toUpperCase().indexOf(data[0].toUpperCase()) !== -1);
-  if (dbScan.length > 0) { name = dbScan[0][0]; }
+  let dbScan = db.filter(data => name.toUpperCase().indexOf(data.database.toUpperCase()) !== -1);
+  if (dbScan.length > 0) { name = dbScan[0].database; }
 
   //Trim list
   if (trim) { list = dbIdObject.ids.slice(0, 1); }
@@ -299,9 +285,9 @@ function generateDBLink(dbName, dbId, isDbVisible) {
   //Get base url for dbid
   let db = config.databases;
   let className = '';
-  let link = db.filter(value => dbName.toUpperCase() === value[0].toUpperCase());
+  let link = db.filter(value => dbName.toUpperCase() === value.database.toUpperCase());
   if (!link || link.length !== 1) {
-    link = db.filter(value => dbName.toUpperCase().indexOf(value[0].toUpperCase()) !== -1);
+    link = db.filter(value => dbName.toUpperCase().indexOf(value.database.toUpperCase()) !== -1);
   }
 
   //Render link as database name, if requested
@@ -311,8 +297,8 @@ function generateDBLink(dbName, dbId, isDbVisible) {
   let label = isDbVisible ? dbName :dbId;
 
   //Build reference url
-  if (link.length === 1 && link[0][1]) {
-    let url = link[0][1] + link[0][2] + dbId;
+  if (link.length === 1 && link[0].url) {
+    let url = link[0].url + link[0].search + dbId;
     return h('div.fake-spacer', h('a.db-link' + className, { href: url, target: '_blank' }, label));
   }
   else {
@@ -424,36 +410,13 @@ function publicationList(data) {
  *    </div>
  * </div>
  */
-function generateDatabaseList(sortedArray, trim, expansionLink) {
+function generateDatabaseList(sortedArray, expansionLink, trim) {
   //Ignore Publication references
   sortedArray = sortedArray.filter(databaseEntry => databaseEntry.database.toUpperCase() !== 'PUBMED');
 
   //Generate list
   let renderValue = sortedArray.map(item => [generateIdList(item, trim)], this);
 
-  return formatRenderValue(sortedArray, renderValue, expansionLink, trim, true, 'Links');
-}
-
-function generateDetailedViewList(sortedArray, trim, expansionLink, maxViews, title) {
-  let list = sortedArray[0].ids;
-  if(trim){list=list.slice(0,maxViews);}
-  //Generate list
-  let renderValue = list.map((data,index) => [h('div.fake-spacer', 
-    h('a.db-link' ,{
-      href:'/view?',
-      search: queryString.stringify({
-        uri:(data.startsWith('R')?'http://identifiers.org/reactome/':'http://pathwaycommons.org/pc2/')+data, 
-        title:title, 
-        removeInfoMenu:true
-      }),
-      target: '_blank', 
-    }, 'Interaction '+(index+1))
-  )]);
-
-  return formatRenderValue(sortedArray, renderValue, expansionLink, trim, false, 'Detailed Views');
-}
-
-function formatRenderValue(sortedArray, renderValue, expansionLink, trim, list,name){
   var hasMultipleIds = _.find(sortedArray, databaseRef => databaseRef.ids.length > 1);
   //Append expansion link to render value if one exists
   if (expansionLink && hasMultipleIds && trim) {
@@ -464,11 +427,23 @@ function formatRenderValue(sortedArray, renderValue, expansionLink, trim, list,n
   }
 
   //If in expansion mode, append list styling
-  if (!trim && list) {
+  if (!trim) {
     renderValue = h('div.wrap-text', h('ul.db-list', renderValue));
   }
 
-  return h('div.fake-paragraph', [h('div.span-field-name', name+':'), renderValue]);
+  return h('div.fake-paragraph', [h('div.span-field-name', 'Links:'), renderValue]);
+}
+
+function interactionList(sortedArray, expansionLink, maxViews, inner, trim) {
+  //Generate list
+  return sortedArray.map(entry=>{
+    let list=entry.ids;
+    if(trim){
+      list=list.slice(0,maxViews); 
+    }
+    const links= list.map((link,index)=>inner(entry.database,link,false,index));
+    return h('div.fake-paragraph', [h('div.span-field-name', entry.database+':'), _.concat(links,expansionLink)]);
+  });
 }
 
 module.exports = {

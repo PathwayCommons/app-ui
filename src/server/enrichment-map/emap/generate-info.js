@@ -1,7 +1,7 @@
 const pathwayListGraph = require('./intersect').pathwayListGraph;
 const filterEdges = require('./intersect').filterEdges;
 const _ = require('lodash');
-const pathwayInfoTable = require('./pathwayTable').pathwayInfoTable;
+const pathwayInfoTable = require('./pathway-table').pathwayInfoTable;
 
 
 const fetchPathwayInfo = (pathwayList) => {

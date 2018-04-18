@@ -99,7 +99,7 @@ router.post('/enrichment', (req, res) => {
 
 // Expose a rest endpoint for emap
 router.post('/emap', (req, res) => {
-  const pathwayInfoList = JSON.parse(req.body.pathwayInfoList);
+  const pathwayInfoList = req.body.pathwayInfoList;
   const cutoff = req.body.cutoff;
   const JCWeight = req.body.JCWeight;
   const OCWeight = req.body.OCWeight;

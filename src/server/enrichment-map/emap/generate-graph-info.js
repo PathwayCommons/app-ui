@@ -42,13 +42,11 @@ const generateGraphInfo = (pathwayInfoList, cutoff = 0.375, JCWeight, OCWeight) 
   }
 
   // check unrecognized and duplicates, modify pathwayIdList
-  const unrecognized = [];
+  const unrecognized = new Set();
   for (let pathwayId in pathwayInfoList) {
     if (!pathwayInfoList.hasOwnProperty(pathwayId)) continue;
     if (!pathwayInfoTable.has(pathwayId)) {
-      if (_.filter(unrecognized, elem => elem === pathwayId).length === 0) {
-        unrecognized.push(pathwayId);
-      }
+      unrecognized.add(pathwayId);
       delete pathwayInfoList[pathwayId];
     } else if (pathwayInfoList[pathwayId].hasOwnProperty('pathwayId')) {
       throw new Error('ERROR: additional info for ' + pathwayId + ' can not have pathwayId field');
@@ -83,7 +81,7 @@ const generateGraphInfo = (pathwayInfoList, cutoff = 0.375, JCWeight, OCWeight) 
     });
   });
 
-  return { unrecognized: unrecognized, graph: elements };
+  return { unrecognized: Array.from(unrecognized), graph: elements };
 
 };
 

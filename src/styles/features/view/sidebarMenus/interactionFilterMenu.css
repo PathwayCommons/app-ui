@@ -48,10 +48,26 @@
   display: inline-flex;
 }
 
+.Binding{
+  background-color:green;
+}
+
+.Phosphorylation{
+  background-color:red;
+}
+
+.Expression{
+  background-color:blue;
+}
+
 @media screen and (max-width: 1010px) {
   .icon-cutoff {
       display:none;
   }
+}
+
+.interaction-h3{
+  margin-bottom: 0px;
 }
 
 /*Generated with http://danielstern.ca/range.css/#/*/ 
@@ -70,7 +86,7 @@ input[type=range].interaction-slider::-webkit-slider-runnable-track {
   box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
   background: #b5b9bb;
   border-radius: 1.3px;
-  border: 0.2px solid #010101;
+  border: 0px solid #010101;
 }
 input[type=range].interaction-slider::-webkit-slider-thumb {
   box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
@@ -93,7 +109,7 @@ input[type=range].interaction-slider::-moz-range-track {
   box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
   background: #b5b9bb;
   border-radius: 1.3px;
-  border: 0.2px solid #010101;
+  border: 0px solid #010101;
 }
 input[type=range].interaction-slider::-moz-range-thumb {
   box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
@@ -114,13 +130,13 @@ input[type=range].interaction-slider::-ms-track {
 }
 input[type=range].interaction-slider::-ms-fill-lower {
   background: #a8acaf;
-  border: 0.2px solid #010101;
+  border: 0px solid #010101;
   border-radius: 2.6px;
   box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
 }
 input[type=range].interaction-slider::-ms-fill-upper {
   background: #b5b9bb;
-  border: 0.2px solid #010101;
+  border: 0px solid #010101;
   border-radius: 2.6px;
   box-shadow:0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
 }
@@ -139,16 +155,4 @@ input[type=range].interaction-slider:focus::-ms-fill-lower {
 }
 input[type=range].interaction-slider:focus::-ms-fill-upper {
   background: #c2c6c7;
-}
-
-.Binding{
-  background-color:green;
-}
-
-.Phosphorylation{
-  background-color:red;
-}
-
-.Expression{
-  background-color:blue;
 }

@@ -88,6 +88,11 @@ const expandableText = (controller,landing,length,text,charToCutOn,type,cssClass
   return result;
 };
 
+const interactionsLink = (source,text)=> 
+  h(Link, {to: { pathname: '/interactions',search: queryString.stringify({source: source})}, 
+    target: '_blank', className: 'search-landing-interactions', key:'interactions' 
+  }, [h('button.search-landing-button', text)]);
+
 /*Generates a landing box
 input: {controller,[{
 function:"This gene encodes ..."
@@ -137,20 +142,12 @@ const landingBox = (props) => {
         h('div.search-landing-section',{key: 'synonyms'},[synonyms]),
         h('div.search-landing-section',{key: 'functions'},[functions]),
         h('div.search-landing-section',{key: 'links'},[links]),
-        h(Link, { 
-          to: { pathname: '/interactions',search: queryString.stringify({ id: box.id, kind:'NEIGHBORHOOD' })}, 
-          target: '_blank', className: 'search-landing-interactions', key:'interactions' 
-        }, [h('button.search-landing-button', `View Interactions`)])
+        interactionsLink(box.id,'View Interactions')
       ])
     ];    
   });
   if(landing.length>1){
-    landingHTML.push(
-      h(Link, { 
-        to: { pathname: '/interactions',search: queryString.stringify({ id:landing.map(entry=>entry.id), kind:'PATHSBETWEEN' })}, 
-        target: '_blank', className: 'search-landing-interactions', key:'interactions' 
-      }, [h('button.search-landing-button', 'View Interactions Between Entities')])
-    );
+    landingHTML.push(interactionsLink(landing.map(entry=>entry.id),'View Interactions Between Entities'));
   }
   return h('div.search-landing',landingHTML);
 };

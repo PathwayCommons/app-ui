@@ -57,10 +57,6 @@ const validatorGconvert = (query, userOptions = {}) => {
 
     fetch(gConvertURL, {
       method: 'post',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
       body: qs.stringify(formData)
     }).then(gConvertResponse => gConvertResponse.text())
       .then(body => {

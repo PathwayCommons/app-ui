@@ -209,6 +209,7 @@ class Interactions extends React.Component {
 
     hideTooltips(cy);
     const hovered = cy.filter(ele=>ele.scratch('_hover-style-before'));
+
     cy.batch(()=>{
       removeStyle(cy, hovered, '_hover-style-before');
       if(!buttonsClicked[type]){
@@ -236,8 +237,8 @@ class Interactions extends React.Component {
   sliderUpdate(numNodesToHave,currentNumberOfNodes){
     const state=this.state;
     const mainNodeGroup= state.mainNodeGroup;
-    if(currentNumberOfNodes===undefined){currentNumberOfNodes=numNodesToHave.currentNumberOfNodes;numNodesToHave=numNodesToHave.numNodesToHave;}
-    const upperRange=Math.max(currentNumberOfNodes,numNodesToHave);
+    if(currentNumberOfNodes === undefined){currentNumberOfNodes=state.numNodesToHave;}
+    const upperRange = Math.max(currentNumberOfNodes,numNodesToHave);
     const lowerRange = Math.min(currentNumberOfNodes,numNodesToHave);
     if(upperRange!=lowerRange){
       const nodesToChange= mainNodeGroup.slice(lowerRange,upperRange).filter(node=>node.data('canBeShown'));

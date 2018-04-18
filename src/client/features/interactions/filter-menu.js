@@ -24,7 +24,7 @@ class InteractionsFilterMenu extends React.Component {
       buttons,
       h('h3.interaction-h3', 'Nodes'),
       h('input.interaction-slider',{type:'range', min:0, max:props.sliderMax,value:props.numNodesToHave,  
-        onChange:(evt)=>props.sliderUpdate({numNodesToHave:_.toNumber(evt.target.value), currentNumberOfNodes:props.numNodesToHave})})
+        onChange:(evt)=>props.sliderUpdate(_.toNumber(evt.target.value))})
     ]);
   }
 }

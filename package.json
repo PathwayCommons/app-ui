@@ -121,6 +121,8 @@
     "rimraf": "^2.6.2",
     "stylelint": "^8.2.0",
     "stylelint-config-standard": "^17.0.0",
+    "swagger-jsdoc": "^1.9.7",
+    "swagger-ui-express": "^3.0.8",
     "uglifyjs-webpack-plugin": "^0.4.6",
     "webpack": "^3.6.0",
     "webpack-bundle-analyzer": "^2.9.0"

@@ -490,7 +490,7 @@ router.post('/gene-query', (req, res) => {
  *             description: "a space-separated list of genes used as a custom statistical
  *               background \n default: "
  *             required: false
- *             example: TP53 AFF4
+ *             example: ""
  *     responses:
  *       '200':
  *         description: Success response

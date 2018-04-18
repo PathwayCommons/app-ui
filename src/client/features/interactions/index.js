@@ -118,7 +118,7 @@ class Interactions extends React.Component {
     
       this.setState({
         mainNodeGroup:mainNodeGroup.sort((a,b)=> b.degree() - a.degree()),
-        numNodesToHave: mainNodeGroup.length>40 ?_.round(mainNodeGroup.length/2) : mainNodeGroup.length
+        numNodesToHave: mainNodeGroup.length>40 ? 20 : mainNodeGroup.length
       });
     });
 

@@ -41,7 +41,7 @@ const convertGConvertNames = (gConvertName) => {
 
 const validatorGconvert = (query, userOptions = {}) => {
   return promise = new Promise((resolve, reject) => {
-    const formData = _.assign({}, defaultOptions, JSON.parse(JSON.stringify(userOptions)), { query: query });
+    const formData = _.assign({}, defaultOptions, JSON.parse(JSON.stringify(userOptions)), { query: query.join(" ") });
     formData.organism = formData.organism.toLowerCase();
     const initialTarget = formData.target.toUpperCase();
     formData.target = convertGConvertNames(initialTarget);

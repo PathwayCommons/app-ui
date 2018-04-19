@@ -46,10 +46,10 @@ class Interactions extends React.Component {
       ids:[],
       loaded:{network:false, ids:false},
       categories: new Map (),
-      buttonsClicked:{
-        Binding:false,
-        Phosphorylation:false,
-        Expression:false
+      filters:{
+        Binding:true,
+        Phosphorylation:true,
+        Expression:true
       }
     };    
 
@@ -118,19 +118,19 @@ class Interactions extends React.Component {
       const state = this.state;
       const cy = this.state.cy;
       const categories = state.categories;
-      const buttonsClicked=state.buttonsClicked;
-      _.forEach(buttonsClicked,(value,type)=>{
+      const filters=state.filters;
+      _.forEach(filters,(value,type)=>{
         const edges = cy.edges().filter(`.${type}`);
         const nodes = edges.connectedNodes();
         edges.length?
         categories.set(type,{edges:edges,nodes:nodes}):
-        (categories.delete(type),delete buttonsClicked[type]);      
+        (categories.delete(type),delete filters[type]);      
       });
 
-      _.tail(_.toPairs(buttonsClicked)).map(pair=>this.filterUpdate(pair[0]));
+      _.tail(_.toPairs(filters)).map(pair=>this.filterUpdate(pair[0]));
       this.setState({
         categories:categories,
-        buttonsClicked:buttonsClicked
+        filters:filters
       });
       const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
       const layout = cy.layout(initialLayoutOpts);
@@ -209,7 +209,7 @@ class Interactions extends React.Component {
   filterUpdate(type) {
     const state=this.state;
     const categories = state.categories;
-    const buttonsClicked=state.buttonsClicked;
+    const filters=state.filters;
     const cy= state.cy;
     const edges=categories.get(type).edges;
     const nodes=categories.get(type).nodes;
@@ -218,7 +218,7 @@ class Interactions extends React.Component {
     const hovered = cy.filter(ele=>ele.scratch('_hover-style-before'));
     cy.batch(()=>{
       removeStyle(cy, hovered, '_hover-style-before');
-      if(!buttonsClicked[type]){
+      if(filters[type]){
           cy.remove(edges);
           cy.remove(nodes.filter(nodes=>nodes.connectedEdges().empty()));
       }
@@ -227,9 +227,9 @@ class Interactions extends React.Component {
       }
     });
     
-    buttonsClicked[type]=!buttonsClicked[type];
+    filters[type]=!filters[type];
     this.setState({
-      buttonsClicked:buttonsClicked
+      filters:filters
     });
   }
   render(){
@@ -244,7 +244,7 @@ class Interactions extends React.Component {
       //interaction specific
       activeMenu:filterMenuId,
       filterUpdate:(evt,type)=> this.filterUpdate(evt,type),
-      buttonsClicked: state.buttonsClicked,
+      filters: state.filters,
       download: {
         types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'), 
         promise: () => Promise.resolve(_.map(state.cy.edges(),edge=> edge.data().id).sort().join('\n'))

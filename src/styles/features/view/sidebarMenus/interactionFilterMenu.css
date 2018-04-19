@@ -22,11 +22,11 @@
     }
 }
 
-.interaction-filter-clicked{
+.interaction-filter-not-active{
   background-color: var(--light-base-colour-darker);
 }
 
-.interaction-filter-not-clicked{
+.interaction-filter-active{
   background-color: white;
 }
 

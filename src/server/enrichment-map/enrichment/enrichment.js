@@ -97,31 +97,15 @@ const enrichment = (query, userSetting = {}) => {
         const responseInfo = parseGProfilerResponse(body);
         let ret = {};
         const pValueIndex = 2;
-        const tIndex = 3;
-        const qIndex = 4;
-        const qAndTIndex = 5;
-        const qAndTOverQIndex = 6;
-        const qAndTOverTIndex = 7;
         const termIdIndex = 8;
-        const tTypeIndex = 9;
-        const tGroupIndex = 10;
         const tNameIndex = 11;
-        const tDepthIndex = 12;
         const qAndTListIndex = 13;
         ret.pathwayInfo = {};
         _.forEach(responseInfo, elem => {
           ret.pathwayInfo[elem[termIdIndex]] = {
-            pValue: Number(elem[pValueIndex]),
-            t: Number(elem[tIndex]),
-            q: Number(elem[qIndex]),
-            qAndT: Number(elem[qAndTIndex]),
-            qAndTOverQ: Number(elem[qAndTOverQIndex]),
-            qAndTOverT: Number(elem[qAndTOverTIndex]),
-            tType: elem[tTypeIndex].trim(),
-            tGroup: Number(elem[tGroupIndex]),
-            tName: elem[tNameIndex].trim(),
-            tDepth: Number(elem[tDepthIndex]),
-            qAndTList: _.map(elem[qAndTListIndex].split(','), gene => {
+            "p-value": Number(elem[pValueIndex]),
+            "description": elem[tNameIndex].trim(),
+            "intersection": _.map(elem[qAndTListIndex].split(','), gene => {
               const colonIndex = 14;
               return cleanUpEntrez(gene);
             })

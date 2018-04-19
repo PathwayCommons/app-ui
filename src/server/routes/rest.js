@@ -566,7 +566,7 @@ router.post('/enrichment', (req, res) => {
  *             type: number
  *             description: weight for overlap coefficient
  *             required: false
- *             example: 0.4
+ *             example: 0.45
  *     responses:
  *       '200':
  *         description: Success response

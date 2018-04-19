@@ -29,9 +29,8 @@ class Search extends React.Component {
       landing: [],
       landingLoading: false,
       searchResults: [],
-      loading: false,
+      searchLoading: false,
       showFilters: false,
-      landingShowMore: [false,false],
       dataSources: []
     };
     
@@ -48,14 +47,14 @@ class Search extends React.Component {
     const query = state.query;
     if (query.q !== '') {
       this.setState({
-        loading: true
+        searchLoading: true
       });
      this.getLandingResult(query.q);
       ServerAPI.querySearch(query)
         .then(searchResults => {
            this.setState({
              searchResults: searchResults,
-             loading: false
+             searchLoading: false
            });
         });
     }
@@ -90,7 +89,7 @@ class Search extends React.Component {
 
   setAndSubmitSearchQuery(query) {
     const state = this.state;
-    if (!state.loading) {
+    if (!state.searchLoading) {
       const newQueryState = _.assign({}, state.query, query);
       this.setState({ query: newQueryState }, () => this.submitSearchQuery());
     }
@@ -116,6 +115,7 @@ class Search extends React.Component {
     const landing=state.landing;
     const landingBox=Landing.landingBox;
     const controller = this;
+    const loaded= !(state.searchLoading || state.landingLoading);
 
     let Example = props => h('span.search-example', {
       onClick: () => this.setAndSubmitSearchQuery({q: props.search})
@@ -149,7 +149,7 @@ class Search extends React.Component {
       return h('div.search-option-item-container', [
         h('div', {
           onClick: e => this.setAndSubmitSearchQuery({ type: searchType.value }),
-          className: classNames('search-option-item', { 'search-option-item-disabled': state.loading }, { 'search-option-item-active': state.query.type === searchType.value })
+          className: classNames('search-option-item', { 'search-option-item-disabled': state.searchLoading }, { 'search-option-item-active': state.query.type === searchType.value })
         }, [
             h('a', searchType.name)
           ])
@@ -215,7 +215,7 @@ class Search extends React.Component {
             ])
         ])
       ]),
-      h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' } }, [
+      h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' } }, [
         h('div.search-list-container', [
           h('div.search-result-info', [searchResultInfo]),
           h(landingBox,{controller,landing}), 

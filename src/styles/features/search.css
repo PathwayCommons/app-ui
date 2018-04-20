@@ -244,15 +244,22 @@
 }
 
 .search-landing-section{
-  display: inline;
-  margin: 0;
+  display: inline-block;
+  margin-top: 3px;
+}
+.search-landing-section:first-of-type{
+  margin-top: 0px;
 }
 
 .search-landing-function {
  margin-right: 5px ;
 }
+
 .search-landing-small{
   font-size: 10pt;
+}
+.search-landing-small:first-of-type{
+  margin-right: 10px;
 }
 
 .search-landing-title{

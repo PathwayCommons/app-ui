@@ -13,12 +13,11 @@ const expandCollapseAll = (props) => {
 };
 
 const fit = (props) => {
-  props.cy.animation({ duration: 250, fit: { padding: 75 } }).play();
+  props.cy.animation({ duration: 250, fit: {eles:':visible', padding: 75 } }).play();
 };
 
 const resetToDefaultLayout = (props) => {
-  const cy = props.cy;
-  cy.layout(props.layoutConfig.defaultLayout.options).run();
+  props.cy.elements(':visible').layout(props.layoutConfig.defaultLayout.options).run();
 };
 
 

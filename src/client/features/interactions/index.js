@@ -50,7 +50,9 @@ class Interactions extends React.Component {
         Binding:true,
         Phosphorylation:true,
         Expression:true
-      }
+      },
+      mainNodeGroup:['temp'],
+      numNodesToHave:1
     };    
 
     const query = queryString.parse(props.location.search);
@@ -106,12 +108,18 @@ class Interactions extends React.Component {
     this.state.cy.on('trim', () => {
       const state = this.state;
       const ids = state.ids;
-      if(ids.length === sources.length){
-        const cy = state.cy;
+      const cy = state.cy;
+      let mainNodeGroup= cy.nodes();
+      if(ids.length===sources.length){
         const mainNode = cy.nodes(node=> ids.indexOf(node.data().id) != -1);
-        const nodesToKeep = mainNode.merge(mainNode.connectedEdges().connectedNodes());
-        cy.remove(cy.nodes().difference(nodesToKeep));
+        mainNodeGroup = mainNode.connectedEdges().connectedNodes(node=>state.ids.indexOf(node.data().id)===-1);
+        cy.remove(cy.nodes().difference(mainNodeGroup.union(mainNode)));
       }
+    
+      this.setState({
+        mainNodeGroup:mainNodeGroup.sort((a,b)=> b.degree() - a.degree()),
+        numNodesToHave: mainNodeGroup.length>40 ? 20 : mainNodeGroup.length
+      });
     });
 
     this.state.cy.one('layoutstop',()=>{
@@ -126,14 +134,14 @@ class Interactions extends React.Component {
         categories.set(type,{edges:edges,nodes:nodes}):
         (categories.delete(type),delete filters[type]);      
       });
-
       _.tail(_.toPairs(filters)).map(pair=>this.filterUpdate(pair[0]));
+      this.sliderUpdate(state.numNodesToHave,state.mainNodeGroup.length);
       this.setState({
         categories:categories,
         filters:filters
       });
       const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
-      const layout = cy.layout(initialLayoutOpts);
+      const layout = cy.elements(':visible').layout(initialLayoutOpts);
       layout.run();
     });
   }
@@ -171,9 +179,10 @@ class Interactions extends React.Component {
       const metadata=nodeMetadata.get(node);
       nodeMap.set(node,true);
       const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');       
-      network.nodes.push({data:{class: "ball",id: node,label: node,parsedMetadata:[
-        ['Type','bp:'+metadata[0].split(' ')[0].replace(/Reference/g,'').replace(/;/g,',')],['Database IDs', links]]}});
-      }
+      network.nodes.push({data:{class: "ball", id:node, label:node, canBeShown:true, queried:this.state.ids.indexOf(node)!=-1,
+        parsedMetadata:[['Type','bp:'+metadata[0].split(' ')[0].replace(/Reference/g,'').replace(/;/g,',')],['Database IDs', links]]
+      }});
+    }
     });
 
     network.edges.push({data: {
@@ -182,6 +191,7 @@ class Interactions extends React.Component {
       source: nodes[0],
       target: nodes[1],
       class: interaction,
+      canBeShown:true,
       parsedMetadata:sources
     },classes:interaction});
   }
@@ -216,14 +226,22 @@ class Interactions extends React.Component {
 
     hideTooltips(cy);
     const hovered = cy.filter(ele=>ele.scratch('_hover-style-before'));
+
     cy.batch(()=>{
       removeStyle(cy, hovered, '_hover-style-before');
       if(filters[type]){
-          cy.remove(edges);
-          cy.remove(nodes.filter(nodes=>nodes.connectedEdges().empty()));
+        edges.style({display:'none'});
+        edges.data('canBeShown',false);
+        nodes.filter(nodes=>
+          nodes.connectedEdges().every(edge=>!filters[edge.data().class]||!edge.data().canBeShown) 
+          && state.ids.indexOf(nodes.data().id)===-1
+        ).style({display:'none'}).data('canBeShown',false);
       }
       else{ 
-        edges.union(nodes).restore();
+        const nodesToRestore = nodes.intersection(state.mainNodeGroup.slice(0,state.numNodesToHave)).style({display:'element'});
+        edges.intersection(nodesToRestore.connectedEdges()).style({display:'element'});
+        nodes.data('canBeShown',true);
+        edges.data('canBeShown',true);
       }
     });
     
@@ -232,6 +250,21 @@ class Interactions extends React.Component {
       filters:filters
     });
   }
+
+  sliderUpdate(numNodesToHave,currentNumberOfNodes){
+    const state=this.state;
+    const mainNodeGroup= state.mainNodeGroup;
+    if(currentNumberOfNodes === undefined){currentNumberOfNodes=state.numNodesToHave;}
+    const upperRange = Math.max(currentNumberOfNodes,numNodesToHave);
+    const lowerRange = Math.min(currentNumberOfNodes,numNodesToHave);
+    if(upperRange!=lowerRange){
+      const nodesToChange= mainNodeGroup.slice(lowerRange,upperRange).filter(node=>node.data('canBeShown'));
+      const elesToChange= nodesToChange.union(nodesToChange.connectedEdges(edge=>edge.data('canBeShown')));
+      numNodesToHave>currentNumberOfNodes ?  elesToChange.style({display:'element'}) : elesToChange.style({display:'none'});
+    }
+    this.setState({numNodesToHave: numNodesToHave});
+  }
+
   render(){
     const state = this.state;
     const loaded = state.loaded.network && state.loaded.ids;
@@ -244,11 +277,14 @@ class Interactions extends React.Component {
       //interaction specific
       activeMenu:filterMenuId,
       filterUpdate:(evt,type)=> this.filterUpdate(evt,type),
+      sliderUpdate:(value)=> this.sliderUpdate(value),
       filters: state.filters,
       download: {
         types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'), 
-        promise: () => Promise.resolve(_.map(state.cy.edges(),edge=> edge.data().id).sort().join('\n'))
+        promise: () => Promise.resolve(_.map(state.cy.edges(edge=>edge.visible()),edge=> edge.data().id).sort().join('\n'))
       },
+      numNodesToHave:state.numNodesToHave,
+      sliderMax: state.mainNodeGroup.length
     }):
     h('div.no-network',[h('strong.title','No interactions to display'),h('span','Try a diffrent set of entities')]);
 

@@ -111,9 +111,9 @@ const landingBox = (props) => {
   if (controller.state.landingLoading ) {
     return h('div.search-landing', [
       h('div.search-landing-innner',[
-        h(Loader, { loaded:false , options: { color: '#16A085', position:'relative', top: '15px' }})]
-      )]
-    );
+        h(Loader, { loaded:false , options: { color: '#16A085', position:'relative', top: '15px' }})
+      ])
+    ]);
   }
   const landingHTML= landing.map((box,index)=>{
     const multipleBoxes = landing.length>1;

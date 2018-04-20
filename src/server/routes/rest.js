@@ -1,23 +1,19 @@
 //Import Depedencies
 const express = require('express');
 const router = express.Router();
-
-
-
 const controller = require('./controller');
 const config = require('../../config');
 
-const { validatorGconvert } = require('../enrichment-map/gene-validator');
-const { enrichment } = require('../enrichment-map/enrichment');
+const enrichmentRouter = require('./enrichment-rest');
 
-const { generateGraphInfo } = require('../enrichment-map/emap');
+
 
 const isAuthenticated = token => {
   return config.MASTER_PASSWORD != '' && config.MASTER_PASSWORD === token;
 };
-const errorMsg = {
-  error: 'Invalid access token'
-};
+
+
+router.use('/', enrichmentRouter);
 
 // Expose a rest endpoint for controller.submitLayout
 router.post('/submit-layout', function (req, res) {
@@ -62,56 +58,6 @@ router.get('/get-graph-and-layout', function (req, res) {
   });
 });
 
-// expose a rest endpoint for gconvert validator
-router.post('/gene-query', (req, res) => {
-  const genes = req.body.genes;
-  const tmpOptions = {};
-  const userOptions = {};
-  tmpOptions.organism = req.body.organism;
-  tmpOptions.target = req.body.target;
-  validatorGconvert(genes, tmpOptions).then(gconvertResult => {
-    res.json(gconvertResult);
-  }).catch((invalidInfoError) => {
-    res.status(400).send({invalidTarget: invalidInfoError.invalidTarget, invalidOrganism: invalidInfoError.invalidOrganism});
-  });
-});
-
-
-// expose a rest endpoint for enrichment
-router.post('/enrichment', (req, res) => {
-  const genes = req.body.genes;
-
-  const tmpOptions = {
-    orderedQuery: req.body.orderedQuery,
-    userThr: req.body.userThr,
-    minSetSize: req.body.minSetSize,
-    maxSetSize: req.body.maxSetSize,
-    thresholdAlgo: req.body.thresholdAlgo,
-    custbg: req.body.custbg
-  };
-
-  enrichment(genes, tmpOptions).then(enrichmentResult => {
-    res.json(enrichmentResult);
-  }).catch((err) => {
-    res.status(400).send(err.message);
-  });
-});
-
-// Expose a rest endpoint for emap
-router.post('/emap', (req, res) => {
-  const pathwayInfoList = req.body.pathwayInfoList;
-  const cutoff = req.body.cutoff;
-  const JCWeight = req.body.JCWeight;
-  const OCWeight = req.body.OCWeight;
-  try {
-    res.json(generateGraphInfo(pathwayInfoList, cutoff, JCWeight, OCWeight));
-
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-});
-
-
 // Expose a rest endpoint for controller.endSession
 router.get('/disconnect', function (req, res) {
   controller.endSession(req.query.uri, req.query.version, req.query.user)
@@ -119,5 +65,6 @@ router.get('/disconnect', function (req, res) {
       res.json(package);
     });
 });
+
 
 module.exports = router;

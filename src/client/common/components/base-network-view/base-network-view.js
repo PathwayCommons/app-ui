@@ -45,7 +45,7 @@ class BaseNetworkView extends React.Component {
   componentWillReceiveProps(nextProps){//needed to updata metadata for interactions
     this.setState({
       networkMetadata: nextProps.networkMetadata,
-      buttonsClicked:nextProps.buttonsClicked,
+      filters:nextProps.filters,
       numNodesToHave:nextProps.numNodesToHave,
       sliderMax:nextProps.sliderMax
     });

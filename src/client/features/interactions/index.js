@@ -46,10 +46,10 @@ class Interactions extends React.Component {
       ids:[],
       loaded:{network:false, ids:false},
       categories: new Map (),
-      buttonsClicked:{
-        Binding:false,
-        Phosphorylation:false,
-        Expression:false
+      filters:{
+        Binding:true,
+        Phosphorylation:true,
+        Expression:true
       },
       mainNodeGroup:['temp'],
       numNodesToHave:1
@@ -126,20 +126,20 @@ class Interactions extends React.Component {
       const state = this.state;
       const cy = this.state.cy;
       const categories = state.categories;
-      const buttonsClicked=state.buttonsClicked;
-      _.forEach(buttonsClicked,(value,type)=>{
+      const filters=state.filters;
+      _.forEach(filters,(value,type)=>{
         const edges = cy.edges().filter(`.${type}`);
         const nodes = edges.connectedNodes();
         edges.length?
         categories.set(type,{edges:edges,nodes:nodes}):
-        (categories.delete(type),delete buttonsClicked[type]);      
+        (categories.delete(type),delete filters[type]);      
       });
-      _.tail(_.toPairs(buttonsClicked)).map(pair=>this.filterUpdate(pair[0]));
+      _.tail(_.toPairs(filters)).map(pair=>this.filterUpdate(pair[0]));
       this.sliderUpdate(state.numNodesToHave,state.mainNodeGroup.length);
       this.setState({
         categories:categories,
-        buttonsClicked:buttonsClicked
-      }); 
+        filters:filters
+      });
       const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
       const layout = cy.elements(':visible').layout(initialLayoutOpts);
       layout.run();
@@ -219,7 +219,7 @@ class Interactions extends React.Component {
   filterUpdate(type) {
     const state=this.state;
     const categories = state.categories;
-    const buttonsClicked=state.buttonsClicked;
+    const filters=state.filters;
     const cy= state.cy;
     const edges=categories.get(type).edges;
     const nodes=categories.get(type).nodes;
@@ -229,11 +229,11 @@ class Interactions extends React.Component {
 
     cy.batch(()=>{
       removeStyle(cy, hovered, '_hover-style-before');
-      if(!buttonsClicked[type]){
+      if(filters[type]){
         edges.style({display:'none'});
         edges.data('canBeShown',false);
         nodes.filter(nodes=>
-          nodes.connectedEdges().every(edge=>buttonsClicked[edge.data().class]||!edge.data().canBeShown) 
+          nodes.connectedEdges().every(edge=>!filters[edge.data().class]||!edge.data().canBeShown) 
           && state.ids.indexOf(nodes.data().id)===-1
         ).style({display:'none'}).data('canBeShown',false);
       }
@@ -245,9 +245,9 @@ class Interactions extends React.Component {
       }
     });
     
-    buttonsClicked[type]=!buttonsClicked[type];
+    filters[type]=!filters[type];
     this.setState({
-      buttonsClicked:buttonsClicked
+      filters:filters
     });
   }
 
@@ -278,7 +278,7 @@ class Interactions extends React.Component {
       activeMenu:filterMenuId,
       filterUpdate:(evt,type)=> this.filterUpdate(evt,type),
       sliderUpdate:(value)=> this.sliderUpdate(value),
-      buttonsClicked: state.buttonsClicked,
+      filters: state.filters,
       download: {
         types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'), 
         promise: () => Promise.resolve(_.map(state.cy.edges(edge=>edge.visible()),edge=> edge.data().id).sort().join('\n'))

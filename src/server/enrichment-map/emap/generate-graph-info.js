@@ -58,10 +58,12 @@ const generateGraphInfo = (pathwayInfoList, cutoff = 0.375, JCWeight, OCWeight) 
     pathwayIdList.push(pathwayId);
   }
   // generate node and edge info
-  const elements = [];
+  const elements = {};
+  elements.nodes = [];
+  elements.edges = [];
   for (let pathwayId in pathwayInfoList) {
     if (!pathwayInfoList.hasOwnProperty(pathwayId)) continue;
-    elements.push({ data: _.assign({ id: pathwayId }, pathwayInfoList[pathwayId]) })
+    elements.nodes.push({ data: _.assign({ id: pathwayId }, pathwayInfoList[pathwayId]) })
   }
   const edgeInfo = generateEdgeInfo(pathwayIdList, JCWeight, cutoff);
   _.forEach(edgeInfo, edge => {
@@ -70,7 +72,7 @@ const generateGraphInfo = (pathwayInfoList, cutoff = 0.375, JCWeight, OCWeight) 
     const sourceTarget = edge.edgeId.split('_');
     const source = sourceTarget[sourceIndex];
     const target = sourceTarget[targetIndex];
-    elements.push({
+    elements.edges.push({
       data: {
         id: edge.edgeId,
         source: source,
@@ -81,7 +83,7 @@ const generateGraphInfo = (pathwayInfoList, cutoff = 0.375, JCWeight, OCWeight) 
     });
   });
 
-  return { unrecognized: Array.from(unrecognized), graph: elements };
+  return { unrecognized: Array.from(unrecognized), graph: {elements: elements} };
 
 };
 

@@ -11,7 +11,7 @@
     border-style: solid;
     border-color: var(--light-base-colour-dark);
     border-width: 1px 1px 0px 1px;
-
+    height: 50px;
     transition: background-color 0.1s linear;
 
     &:last-of-type {
@@ -22,42 +22,47 @@
     }
 }
 
-.interaction-filter-icon{
-  margin-right: 150px;
-}
-
-.interaction-filter-clicked{
+.interaction-filter-not-active{
   background-color: var(--light-base-colour-darker);
 }
 
-.interaction-filter-not-clicked{
+.interaction-filter-active{
   background-color: white;
 }
 
 .button-label{
   padding-left: 2px; 
   display: inline-flex;
-  margin: 0px auto 0px 0px;
+  margin: 0px auto 0px 4px;
   word-break:break-all;
 }
 
 .interaction-filter-legend{
-  height:50px;
-  width: 30px;
+  height: 100%;
+  width: 0px;
   flex-shrink: 0;
+  background-color: var(--light-base-colour-darker);
   display: inline-flex;
+  -webkit-transition:  0.5s; /* For Safari 3.1 to 6.0 */
+  transition: 0.5s;
 }
 
 .Binding{
   background-color:green;
+  width: 30px;
+  margin-right:-4px
 }
 
 .Phosphorylation{
   background-color:red;
+  width: 30px;
+  margin-right:-4px
 }
 
 .Expression{
   background-color:blue;
+  width: 30px;
+  margin-right:-4px
 }
 
 @media screen and (max-width: 1010px) {

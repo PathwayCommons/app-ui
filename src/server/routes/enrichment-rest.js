@@ -636,11 +636,24 @@ enrichmentRouter.post('/emap', (req, res) => {
  *             type: string
  *             example: GO:1
  *         graph:
- *           type: array
- *           items:
- *             oneOf:
- *             - "$ref": "#/definitions/success/nodeData"
- *             - "$ref": "#/definitions/success/edgeData"
+ *           type: object
+ *           required:
+ *           - elements
+ *           properties:
+ *             elements:
+ *               type: object
+ *               required:
+ *               - nodes
+ *               - edges
+ *               properties:
+ *                 nodes:
+ *                   type: array
+ *                   items:
+ *                     "$ref": "#/definitions/success/nodeData"
+ *                 edges:
+ *                   type: array
+ *                   items:
+ *                     "$ref": "#/definitions/success/edgeData"
  *     edgeData:
  *       type: object
  *       required:
@@ -677,6 +690,8 @@ enrichmentRouter.post('/emap', (req, res) => {
  *                 - BCL2L11
  *     nodeData:
  *       type: object
+ *       required:
+ *       - data
  *       properties:
  *         data:
  *           type: object
@@ -686,7 +701,7 @@ enrichmentRouter.post('/emap', (req, res) => {
  *             id:
  *               type: string
  *               example: GO:0043525
- *             pValue:
+ *             p-value:
  *               type: number
  *               example: 0.2
 */

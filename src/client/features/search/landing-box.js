@@ -20,6 +20,49 @@ const linkBuilder= (source,geneQuery)=>{
   return genes;
 };
 
+const getNcbiInfo = (ncbiIds,genes) => {
+  return ServerAPI.getGeneInformation(ncbiIds,'gene').then(result=>{
+    const geneResults=result.result;
+    return geneResults.uids.map(gene=>{
+      const originalSearch = _.findKey(genes,entry=> entry['NCBI Gene']===gene);
+      const links=_.mapValues(genes[originalSearch],(value,key)=>{
+        let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue.database.toUpperCase());
+        return link[0].url + link[0].search + value;
+      });
+      return {
+        id:gene,
+        name:geneResults[gene].nomenclaturename,
+        function: geneResults[gene].summary,
+        officialIds:_.values(genes[originalSearch]).join(', '),
+        unofficialIds: geneResults[gene].otheraliases ? geneResults[gene].otheraliases:'',
+        showMore:{full:true,function:false,synonyms:false},
+        links:links
+      };
+    });
+  });
+};
+
+const getUniprotInfo= (uniprotIds,genes) => {
+  return ServerAPI.getUniprotnformation(uniprotIds).then(result=>{
+    return result.map(gene=>{
+      const originalSearch = _.findKey(genes,entry=> entry['Uniprot']===gene.accession);
+      const links=_.mapValues(genes[originalSearch],(value,key)=>{
+        let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue.database.toUpperCase());
+        return link[0].url + link[0].search + value;
+      });
+      console.log(gene);
+      return {
+        id:gene.accession,
+        name:gene.gene[0].name.value,
+        function: gene.comments[0] && gene.comments[0].text[0].value,
+        officialIds:_.values(genes[originalSearch]).join(', '),
+        unofficialIds: '',
+        showMore:{full:true,function:false,synonyms:false},
+        links:links
+      };
+    });
+  });
+};
 /*Gets info for a landing box
 input: 'TP53'
 output: [{
@@ -40,34 +83,27 @@ const getLandingResult= (query)=> {
     ServerAPI.geneQuery({genes: q,target: 'HGNC'}).then(result=>linkBuilder('HGNC',result)),
   ]).then(values=>{let genes=values[0];
     _.tail(values).forEach(gene=>_.mergeWith(genes,gene,(objValue, srcValue)=>_.assign(objValue,srcValue)));
-      let ids=[];
+      let ncbiIds=[],uniprotIds=[];
       _.forEach(genes,gene=>{
-        ids.push(gene['NCBI Gene']);
+        if(gene['NCBI Gene']){
+          ncbiIds.push(gene['NCBI Gene']);
+        }
+        if(gene['Uniprot']){
+          uniprotIds.push(gene['Uniprot']);
+        }
       });
-       if(!_.isEmpty(ids)){
-         return ServerAPI.getGeneInformation(ids,'gene').then(result=>{
-          const geneResults=result.result;
-          return geneResults.uids.map(gene=>{
-            const originalSearch = _.findKey(genes,entry=> entry['NCBI Gene']===gene);
-            const links=_.mapValues(genes[originalSearch],(value,key)=>{
-              let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue.database.toUpperCase());
-              return link[0].url + link[0].search + value;
-            });
-            return {
-              id:gene,
-              name:geneResults[gene].nomenclaturename,
-              function: geneResults[gene].summary,
-              officialIds:_.values(genes[originalSearch]).join(', '),
-              unofficialIds: geneResults[gene].otheraliases ? geneResults[gene].otheraliases:'',
-              showMore:{full:!(geneResults.uids.length>1),function:false,synonyms:false},
-              links:links
-            };
-          });
-        });
+      let landingBoxes=[];
+       if(!_.isEmpty(ncbiIds)){
+        landingBoxes.push(getNcbiInfo(ncbiIds,genes));
        }
-       else{
-        return [];
-      }
+       if(!_.isEmpty(uniprotIds)){
+        landingBoxes.push(getUniprotInfo(uniprotIds,genes));
+       }
+      return Promise.all(landingBoxes).then(landingBoxes=> {
+        landingBoxes=_.flatten(landingBoxes);
+        if(landingBoxes.length>1){landingBoxes.forEach(box=>box.showMore.full=false);}
+        return landingBoxes;
+      });
   });
 };
 

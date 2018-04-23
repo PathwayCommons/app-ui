@@ -43,6 +43,10 @@ const ServerAPI = {
     return fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?retmode=json&db=${type}&id=${ids.join(',')}`, {method: 'GET'}).then(res => res.json());
   },
 
+  getUniprotnformation(ids){
+    return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&accession=${ids.join(',')}`, defaultFetchOpts).then(res => res.json());
+  },
+
   getNeighborhood(ids,kind){
    const source=ids.map(id=>`source=${id}`).join('&');
    const patterns = '&pattern=controls-phosphorylation-of&pattern=in-complex-with&pattern=controls-expression-of&pattern=interacts-with';

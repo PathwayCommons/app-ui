@@ -12,9 +12,6 @@ describe('test validatorGconvert', function() {
         "duplicate": {
           "HGNC:11998": [
             "TP53"
-          ],
-          "HGNC:795": [
-            "ATM"
           ]
         },
         "geneInfo": [

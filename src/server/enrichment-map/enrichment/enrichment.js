@@ -61,7 +61,8 @@ const enrichment = (query, userSetting = {}) => {
   })
 
   return promise = new Promise((resolve, reject) => {
-    const formData = _.assign({}, defaultSetting, JSON.parse(JSON.stringify(userSetting)), { query: query });
+    let formData = _.assign({}, defaultSetting, JSON.parse(JSON.stringify(userSetting)), { query: query.join(" ") });
+    formData.custbg = formData.custbg.join(" ");
     const orderedQueryVal = Number(formData.ordered_query);
     const userThrVal = Number(formData.user_thr);
     const minSetSizeVal = Number(formData.min_set_size);

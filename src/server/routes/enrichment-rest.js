@@ -47,7 +47,7 @@ var options = {
 var swaggerSpec = swaggerJSDoc(options);
 
 // route for swagger.json
-enrichmentRouter.get('/swagger.json', function (req, res) {
+enrichmentRouter.get('http://192.168.81.233:9090/api/swagger.json', function (req, res) {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);
 });

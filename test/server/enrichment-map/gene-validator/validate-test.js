@@ -4,18 +4,19 @@ const {validatorGconvert} = require('../../../../src/server/enrichment-map/gene-
 
 describe('test validatorGconvert', function() {
   it('it should return an object', function() {
-    return (validatorGconvert('TP53 ATP ATM TP53')).then(function(res) {
+    return (validatorGconvert(['TP53', 'ATP', 'ATM', 'TP53'])).then(function(res) {
       const result = {
-        "options": {
-          "target": "HGNC",
-          "organism": "hsapiens"
-        },
         "unrecognized": [
           "ATP"
         ],
-        "duplicate": [
-          "TP53"
-        ],
+        "duplicate": {
+          "HGNC:11998": [
+            "TP53"
+          ],
+          "HGNC:795": [
+            "ATM"
+          ]
+        },
         "geneInfo": [
           {
             "initialAlias": "TP53",

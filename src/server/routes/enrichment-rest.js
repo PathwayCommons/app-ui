@@ -3,9 +3,9 @@ const express = require('express');
 const enrichmentRouter = express.Router();
 const swaggerUi = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
-const { validatorGconvert } = require('../enrichment-map/gene-validator');
-const { enrichment } = require('../enrichment-map/enrichment');
-const { generateGraphInfo } = require('../enrichment-map/emap');
+const { validatorGconvert } = require('../enrichment-map/validation');
+const { enrichment } = require('../enrichment-map/analysis');
+const { generateGraphInfo } = require('../enrichment-map/visualization');
 
 // swagger definition
 var swaggerDefinition = {
@@ -27,11 +27,11 @@ var swaggerDefinition = {
       "description": "Validate gene list"
     },
     {
-      "name": "Enrichment Service",
+      "name": "Analysis Service",
       "description": "Summarize gene list as pathway list \n Only Gene Ontology Biological Process terms and Reactome pathways are queried. \n Versions: Gene Ontolody: Ensembl v90 / Ensembl Genomes v37, Reactome: v56"
     },
     {
-      "name": "Emap Service",
+      "name": "Visualization Service",
       "description": "Generate graph information \n Only Gene Ontology Biological Process and Reactome are supported. \n Arbitrary key-value pairs under a pathway ID are passed-through to nodes."
     }
   ]
@@ -64,7 +64,7 @@ const isAuthenticated = token => {
 
 /**
  * @swagger
- * "/gene-query":
+ * "/validation":
  *   post:
  *     tags:
  *     - Gene Validation Service
@@ -81,19 +81,19 @@ const isAuthenticated = token => {
  *       description: query list and optional parameters
  *       required: true
  *       schema:
- *         "$ref": "#/definitions/input/geneQueryObj"
+ *         "$ref": "#/definitions/input/validationObj"
  *     responses:
  *       '200':
  *         description: Success response
  *         schema:
- *           "$ref": "#/definitions/success/geneQuerySuccess"
+ *           "$ref": "#/definitions/success/validationSuccess"
  *       '400':
  *         description: Invalid input (organism, target, or JSON format)
  *         schema:
- *           "$ref": "#/definitions/error/geneQueryError"
+ *           "$ref": "#/definitions/error/validationError"
 */
 // expose a rest endpoint for gconvert validator
-enrichmentRouter.post('/gene-query', (req, res) => {
+enrichmentRouter.post('/validation', (req, res) => {
   const genes = req.body.genes;
   const tmpOptions = {};
   const userOptions = {};
@@ -108,10 +108,10 @@ enrichmentRouter.post('/gene-query', (req, res) => {
 
 /**
  *@swagger
- * "/enrichment":
+ * "/analysis":
  *   post:
  *     tags:
- *     - Enrichment Service
+ *     - Analysis Service
  *     summary: ''
  *     description: ''
  *     operationId: enrichment
@@ -125,20 +125,20 @@ enrichmentRouter.post('/gene-query', (req, res) => {
  *       description: gene list and optional parameters
  *       required: true
  *       schema:
- *         "$ref": "#/definitions/input/enrichmentObj"
+ *         "$ref": "#/definitions/input/analysisObj"
  *     responses:
  *       '200':
  *         description: Success response
  *         schema:
- *           "$ref": "#/definitions/success/enrichmentSuccess"
+ *           "$ref": "#/definitions/success/analysisSuccess"
  *       '400':
  *         description: Invalid input (orderedQuery, userThr, minSetSize, maxSetSize,
  *           thresholdAlgo, custbg or JSON format)
  *         schema:
- *           "$ref": "#/definitions/error/enrichmentError"
+ *           "$ref": "#/definitions/error/analysisError"
 */
 // expose a rest endpoint for enrichment
-enrichmentRouter.post('/enrichment', (req, res) => {
+enrichmentRouter.post('/analysis', (req, res) => {
   const genes = req.body.genes;
 
   const tmpOptions = {
@@ -160,10 +160,10 @@ enrichmentRouter.post('/enrichment', (req, res) => {
 
 /**
  * @swagger
- * "/emap":
+ * "/visualization":
  *   post:
  *     tags:
- *     - Emap Service
+ *     - Visualization Service
  *     summary: ''
  *     description: ''
  *     operationId: emap
@@ -177,19 +177,19 @@ enrichmentRouter.post('/enrichment', (req, res) => {
  *       description: output from enrichment service
  *       required: true
  *       schema:
- *         "$ref": "#/definitions/input/emapObj"
+ *         "$ref": "#/definitions/input/visualizationObj"
  *     responses:
  *       '200':
  *         description: Success response
  *         schema:
- *           "$ref": "#/definitions/success/emapSuccess"
+ *           "$ref": "#/definitions/success/visualizationSuccess"
  *       '400':
  *         description: invalid input (cutoff, OCweight, JCWeight or JSON format)
  *         schema:
- *           "$ref": "#/definitions/error/emapError"
+ *           "$ref": "#/definitions/error/visualizationError"
 */
 // Expose a rest endpoint for emap
-enrichmentRouter.post('/emap', (req, res) => {
+enrichmentRouter.post('/visualization', (req, res) => {
   const pathwayInfoList = req.body.pathwayInfoList;
   const cutoff = req.body.cutoff;
   const JCWeight = req.body.JCWeight;
@@ -206,7 +206,7 @@ enrichmentRouter.post('/emap', (req, res) => {
  * @swagger
  * definitions:
  *   error:
- *     geneQueryError:
+ *     validationError:
  *       type: object
  *       properties:
  *         invalidTarget:
@@ -215,23 +215,25 @@ enrichmentRouter.post('/emap', (req, res) => {
  *         invalidOrganism:
  *           type: string
  *           example: hsapiensss
- *     enrichmentError:
+ *     analysisError:
  *       type: string
  *       example: 'ERROR: orderedQuery should be 1 or 0'
- *     emapError:
+ *     visualizationError:
  *       type: string
  *       example: 'ERROR: OCWeight + JCWeight should be 1'
  *   input:
- *     geneQueryObj:
+ *     validationObj:
  *       type: object
  *       required:
  *       - genes
  *       properties:
  *         genes:
- *           type: string
- *           description: a space-separated (spaces, tabs, newlines) list of genes, integers
+ *           type: array
+ *           description: an array of genes, integers
  *             are interpreted as NCBIGENE
- *           example: TP53 111 AFF4 111 11998
+ *           example: ["TP53", "111", "AFF4", "111", "11998"]
+ *           items:
+ *             type: string
  *         target:
  *           type: string
  *           description: "target database (namespace) for conversion \n default: HGNC"
@@ -500,15 +502,17 @@ enrichmentRouter.post('/emap', (req, res) => {
  *           - turartu
  *           - vvinifera
  *           - zmays
- *     enrichmentObj:
+ *     analysisObj:
  *       type: object
  *       required:
  *       - genes
  *       properties:
  *         genes:
- *           type: string
- *           description: a space-separated (spaces, tabs, newlines) list of genes
- *           example: AFF4
+ *           type: array
+ *           description: an array of genes
+ *           example: ["AFF4"]
+ *           items:
+ *             type: string
  *         orderedQuery:
  *           type: boolean
  *           description: "genes are placed in some biologically meaningful order \n
@@ -538,11 +542,13 @@ enrichmentRouter.post('/emap', (req, res) => {
  *           - analytical
  *           - bonferroni
  *         custbg:
- *           type: string
+ *           type: array
  *           description: "a space-separated (spaces, tabs, newlines) list of genes used
- *             as a custom statistical background \n default: "
- *           example: ''
- *     emapObj:
+ *             as a custom statistical background \n default: []"
+ *           example: []
+ *           items:
+ *             type: string
+ *     visualizationObj:
  *       type: object
  *       required:
  *       - pathwayInfoList
@@ -569,7 +575,7 @@ enrichmentRouter.post('/emap', (req, res) => {
  *           description: weight for overlap coefficient
  *           example: 0.45
  *   success:
- *     geneQuerySuccess:
+ *     validationSuccess:
  *       type: object
  *       required:
  *       - unrecognized
@@ -599,7 +605,7 @@ enrichmentRouter.post('/emap', (req, res) => {
  *               convertedAlias:
  *                 type: string
  *                 example: HGNC:11998
- *     enrichmentSuccess:
+ *     analysisSuccess:
  *       type: object
  *       required:
  *       - pathwayInfo
@@ -624,7 +630,7 @@ enrichmentRouter.post('/emap', (req, res) => {
  *                 items:
  *                   type: string
  *                   example: AFF4
- *     emapSuccess:
+ *     visualizationSuccess:
  *       type: object
  *       required:
  *       - unrecognized
@@ -636,11 +642,24 @@ enrichmentRouter.post('/emap', (req, res) => {
  *             type: string
  *             example: GO:1
  *         graph:
- *           type: array
- *           items:
- *             oneOf:
- *             - "$ref": "#/definitions/success/nodeData"
- *             - "$ref": "#/definitions/success/edgeData"
+ *           type: object
+ *           required:
+ *           - elements
+ *           properties:
+ *             elements:
+ *               type: object
+ *               required:
+ *               - nodes
+ *               - edges
+ *               properties:
+ *                 nodes:
+ *                   type: array
+ *                   items:
+ *                     "$ref": "#/definitions/success/nodeData"
+ *                 edges:
+ *                   type: array
+ *                   items:
+ *                     "$ref": "#/definitions/success/edgeData"
  *     edgeData:
  *       type: object
  *       required:
@@ -677,6 +696,8 @@ enrichmentRouter.post('/emap', (req, res) => {
  *                 - BCL2L11
  *     nodeData:
  *       type: object
+ *       required:
+ *       - data
  *       properties:
  *         data:
  *           type: object
@@ -686,7 +707,7 @@ enrichmentRouter.post('/emap', (req, res) => {
  *             id:
  *               type: string
  *               example: GO:0043525
- *             pValue:
+ *             p-value:
  *               type: number
  *               example: 0.2
 */

@@ -1,10 +1,10 @@
 const {search, utilities} = require('pathway-commons');
 const path = require('path');
 const _ = require('lodash');
-const geneValidator = require('../../enrichment-map/gene-validator').validatorGconvert;
+const geneValidator = require('../../enrichment-map/validation').validatorGconvert;
 
 const sanitize = (s) => {
-  // Escape (with '\'), to treat them literally, symbols, such as '*', ':', or space, 
+  // Escape (with '\'), to treat them literally, symbols, such as '*', ':', or space,
   // which otherwise play special roles in a Lucene query string.
   return s.replace(/([\!\*\+\-\&\|\(\)\[\]\{\}\^\~\?\:\/\\"\s])/g, '\\$1')
 };
@@ -14,12 +14,12 @@ const processPhrase = (phrase) => {
     const genes = result.geneInfo.map(gene=>'xrefid:' + sanitize(gene.initialAlias.toUpperCase()));
     const otherIds = result.unrecognized.map(id=>{
       id=id.toUpperCase()
-      const recognized = /^SMP\d{5}$/.test(id)     // check for a smpdb or chebi id 
-                      ||/^CHEBI:\d+$/.test(id) && (id.length <= ("CHEBI:".length + 6));      
+      const recognized = /^SMP\d{5}$/.test(id)     // check for a smpdb or chebi id
+                      ||/^CHEBI:\d+$/.test(id) && (id.length <= ("CHEBI:".length + 6));
       const sanitized = sanitize(id);
       return recognized ? ( 'xrefid:' + sanitized ) : ( 'name:' + '*' + sanitized + '*' );
-    }); 
-    return genes.concat(otherIds);  
+    });
+    return genes.concat(otherIds);
   });
 };
 
@@ -41,7 +41,7 @@ const processQueryString = async (queryString) => {
 //  - gt: min graph size result returned
 
 const querySearch = async (query) => {
-  const minSize = query.gt || 0; //TODO: why 250? 
+  const minSize = query.gt || 0; //TODO: why 250?
   const maxSize = query.lt || 250;
 
   const queries = await processQueryString(query.q.trim());
@@ -51,7 +51,7 @@ const querySearch = async (query) => {
       .q(q)
       .format('json')
       .fetch();
-    
+
     const searchSuccess = searchResult != null;
     if (searchSuccess && searchResult.searchHit.length > 0) {
       const filteredResults = searchResult.searchHit.filter(hit => {

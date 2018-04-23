@@ -40,7 +40,12 @@ const ServerAPI = {
   },
 
   getGeneInformation(ids,type){
-    return fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?retmode=json&db=${type}&id=${ids.join(',')}`, {method: 'GET'}).then(res => res.json());
+    switch(type){
+      case 'NCBI': ()={
+        fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?retmode=json&db=gene&id=${ids.join(',')}`, {method: 'GET'}).then(res => res.json());
+      };
+      case 'Uniprot':
+    return 
   },
 
   getUniprotnformation(ids){

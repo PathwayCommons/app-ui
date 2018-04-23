@@ -21,7 +21,7 @@ const linkBuilder= (source,geneQuery)=>{
 };
 
 const getNcbiInfo = (ncbiIds,genes) => {
-  return ServerAPI.getGeneInformation(ncbiIds,'gene').then(result=>{
+  return ServerAPI.getGeneInformation(ncbiIds).then(result=>{
     const geneResults=result.result;
     return geneResults.uids.map(gene=>{
       const originalSearch = _.findKey(genes,entry=> entry['NCBI Gene']===gene);
@@ -54,7 +54,7 @@ const getUniprotInfo= (uniprotIds,genes) => {
       return {
         id:gene.accession,
         name:gene.gene[0].name.value,
-        function: gene.comments[0] && gene.comments[0].text[0].value,
+        function: gene.comments && gene.comments[0].type==='FUNCTION' ?gene.comments[0].text[0].value:'',
         officialIds:_.values(genes[originalSearch]).join(', '),
         unofficialIds: '',
         showMore:{full:true,function:false,synonyms:false},

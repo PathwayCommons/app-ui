@@ -228,10 +228,12 @@ enrichmentRouter.post('/emap', (req, res) => {
  *       - genes
  *       properties:
  *         genes:
- *           type: string
- *           description: a space-separated (spaces, tabs, newlines) list of genes, integers
+ *           type: array
+ *           description: an array of genes, integers
  *             are interpreted as NCBIGENE
- *           example: TP53 111 AFF4 111 11998
+ *           example: ["TP53", "111", "AFF4", "111", "11998"]
+ *           items:
+ *             type: string
  *         target:
  *           type: string
  *           description: "target database (namespace) for conversion \n default: HGNC"
@@ -506,9 +508,11 @@ enrichmentRouter.post('/emap', (req, res) => {
  *       - genes
  *       properties:
  *         genes:
- *           type: string
- *           description: a space-separated (spaces, tabs, newlines) list of genes
- *           example: AFF4
+ *           type: array
+ *           description: an array of genes
+ *           example: ["AFF4"]
+ *           items:
+ *             type: string
  *         orderedQuery:
  *           type: boolean
  *           description: "genes are placed in some biologically meaningful order \n
@@ -538,10 +542,12 @@ enrichmentRouter.post('/emap', (req, res) => {
  *           - analytical
  *           - bonferroni
  *         custbg:
- *           type: string
+ *           type: array
  *           description: "a space-separated (spaces, tabs, newlines) list of genes used
- *             as a custom statistical background \n default: "
- *           example: ''
+ *             as a custom statistical background \n default: []"
+ *           example: []
+ *           items:
+ *             type: string
  *     emapObj:
  *       type: object
  *       required:

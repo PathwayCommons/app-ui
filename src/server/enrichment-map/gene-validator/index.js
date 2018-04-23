@@ -66,7 +66,7 @@ const validatorGconvert = (query, userOptions = {}) => {
 
         const unrecognized = new Set();
         let duplicate = {};
-        const previous = new Set();
+        const previous = new Map();
         let geneInfo = new Set();
         const initialAliasIndex = 1;
         const convertedAliasIndex = 3;
@@ -77,11 +77,11 @@ const validatorGconvert = (query, userOptions = {}) => {
           if (convertedAlias === 'N/A') {
             unrecognized.add(initialAlias);
           } else {
-            if (previous.has(convertedAlias)) {
-              previous.add(convertedAlias);
+            if (!previous.has(convertedAlias)) {
+              previous.set(convertedAlias, initialAlias);
             } else {
               if (!(convertedAlias in duplicate)) {
-                duplicate[convertedAlias] = new Set();
+                duplicate[convertedAlias] = new Set([previous.get(convertedAlias)]);
               }
               duplicate[convertedAlias].add(initialAlias);
             }

@@ -19,7 +19,9 @@ var swaggerDefinition = {
       url: "https://github.com/PathwayCommons/app-ui/blob/master/LICENSE"
     }
   },
-  host: 'localhost:3000',
+
+  host: '192.168.81.233:9090',
+
   basePath: '/api/',
   "tags": [
     {

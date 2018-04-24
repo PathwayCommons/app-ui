@@ -17,7 +17,7 @@ const ServerAPI = {
   },
 
   pcQuery(method, params){
-    return fetch(`/pc-client/${method}?${qs.stringify(params)}`, defaultFetchOpts);
+    return fetch(`/pc-client/${method}?${qs.stringify(params)}`, defaultFetchOpts).then(res => res.json());
   },
 
   datasources(){

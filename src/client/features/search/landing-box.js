@@ -10,6 +10,7 @@ const _ = require('lodash');
 const linkBuilder= (source,geneQuery)=>{
   let genes={}; 
   const geneArray=geneQuery.geneInfo;
+  genes.unrecognized=geneQuery.unrecognized;
   const duplicates = new Set();
   geneArray.forEach(gene=>{
     if(!duplicates.has(gene.convertedAlias)){
@@ -18,6 +19,21 @@ const linkBuilder= (source,geneQuery)=>{
     }
   });
   return genes;
+};
+const pcFallback = (unrecognized,genes) => {
+ return unrecognized.map(entry=>{
+    if(!_.findKey(genes,entry)){
+     return ServerAPI.pcQuery('search', {q:entry,entry:'entityreference'}).then((search)=>{
+        const hits=search.searchHit;
+        if(hits[0]){
+         genes[entry]={'Uniprot': _.compact(hits.map(hit=>{
+           hit =_.reverse(hit.uri.split('/'));
+           return hit[1]==='uniprot' ? hit[0] : false;
+          }))[0]};
+        }
+      });
+    }
+  });
 };
 
 const getNcbiInfo = (ncbiIds,genes) => {
@@ -50,7 +66,6 @@ const getUniprotInfo= (uniprotIds,genes) => {
         let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue.database.toUpperCase());
         return link[0].url + link[0].search + value;
       });
-      console.log(gene);
       return {
         id:gene.accession,
         name:gene.gene[0].name.value,
@@ -81,8 +96,11 @@ const getLandingResult= (query)=> {
     ServerAPI.geneQuery({genes: q,target: 'UNIPROT'}).then(result=>linkBuilder('Uniprot',result)),
     ServerAPI.geneQuery({genes: q,target: 'NCBIGENE'}).then(result=>linkBuilder('NCBI Gene',result)),
     ServerAPI.geneQuery({genes: q,target: 'HGNC'}).then(result=>linkBuilder('HGNC',result)),
-  ]).then(values=>{let genes=values[0];
+  ]).then(values=>{
+    let genes=values[0];
     _.tail(values).forEach(gene=>_.mergeWith(genes,gene,(objValue, srcValue)=>_.assign(objValue,srcValue)));
+   return genes;
+  }).then(genes=>Promise.all(pcFallback(genes.unrecognized,genes)).then(()=>genes)).then((genes)=>{
       let ncbiIds=[],uniprotIds=[];
       _.forEach(genes,gene=>{
         if(gene['NCBI Gene']){

@@ -1,7 +1,7 @@
 const chai = require('chai');
 const expect = chai.expect;
 const _ = require('lodash');
-const { enrichment } = require('../../../../src/server/enrichment-map/enrichment');
+const { enrichment } = require('../../../../src/server/enrichment/enrichment');
 
 
 describe('test enrichment', function () {

@@ -3,17 +3,17 @@ const express = require('express');
 const enrichmentRouter = express.Router();
 const swaggerUi = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
-const { validatorGconvert } = require('../enrichment-map/validation');
-const { enrichment } = require('../enrichment-map/analysis');
-const { generateGraphInfo } = require('../enrichment-map/visualization');
+const { validatorGconvert } = require('../enrichment/validation');
+const { enrichment } = require('../enrichment/analysis');
+const { generateGraphInfo } = require('../enrichment/visualization');
 
 // swagger definition
 var swaggerDefinition = {
   info: {
-    title: 'Enrichment-Map Services',
+    title: 'Enrichment Services',
     version: '1.0.0',
-    description: 'This is a sample enrichment-map service server. You can find detailed documentation at [Wiki](https://github.com/PathwayCommons/app-ui/wiki/Enrichment-Map-Services)',
-    documentation: "https://github.com/PathwayCommons/app-ui/wiki/Enrichment-Map-Services",
+    description: 'This is a sample enrichment service server. You can find detailed documentation at [Wiki](https://github.com/PathwayCommons/app-ui/wiki/Enrichment-Map-Services)',
+    documentation: "https://github.com/PathwayCommons/app-ui/wiki/Enrichment-Services",
     license: {
       name: "MIT",
       url: "https://github.com/PathwayCommons/app-ui/blob/master/LICENSE"
@@ -543,7 +543,7 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           - bonferroni
  *         custbg:
  *           type: array
- *           description: "a space-separated (spaces, tabs, newlines) list of genes used
+ *           description: "an array of genes used
  *             as a custom statistical background \n default: []"
  *           example: []
  *           items:

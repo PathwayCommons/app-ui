@@ -1,6 +1,6 @@
 const chai = require('chai');
 const expect = chai.expect;
-const {validatorGconvert} = require('../../../../src/server/enrichment-map/gene-validator/index');
+const {validatorGconvert} = require('../../../../src/server/enrichment/gene-validator/index');
 
 describe('test validatorGconvert', function() {
   it('it should return an object', function() {

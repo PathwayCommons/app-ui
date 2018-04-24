@@ -30,7 +30,7 @@ const ServerAPI = {
 
   geneQuery(query){
     query.genes=_.concat(['padding'],query.genes.split(' '));
-    return fetch('/enrichment/gene-query', {
+    return fetch('/enrichment/validation', {
       method:'POST', 
       headers: {
         'Accept': 'application/json',

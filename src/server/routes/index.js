@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const pc = require('./pc');
 const api = require('./rest');
-
+const enrichment = require('./enrichment-rest');
 
 router.use('/api', api);
+router.use('/enrichment', enrichment);
 router.use('/pc-client', pc);
 
 /* GET home page.

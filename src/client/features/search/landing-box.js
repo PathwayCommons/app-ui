@@ -34,9 +34,9 @@ synonyms:"TP53, BCC7, LFS1, P53, TRP53"
 const getLandingResult= (query)=> {
   const q=query.trim();
   return Promise.all([
+    ServerAPI.geneQuery({genes: q,target: 'NCBIGENE'}).then(result=>linkBuilder('NCBI Gene',result)),
     ServerAPI.geneQuery({genes: q,target: 'HGNCSYMBOL'}).then(result=>linkBuilder('Gene Cards',result)),
     ServerAPI.geneQuery({genes: q,target: 'UNIPROT'}).then(result=>linkBuilder('Uniprot',result)),
-    ServerAPI.geneQuery({genes: q,target: 'NCBIGENE'}).then(result=>linkBuilder('NCBI Gene',result)),
     ServerAPI.geneQuery({genes: q,target: 'HGNC'}).then(result=>linkBuilder('HGNC',result)),
   ]).then(values=>{let genes=values[0];
     _.tail(values).forEach(gene=>_.mergeWith(genes,gene,(objValue, srcValue)=>_.assign(objValue,srcValue)));
@@ -54,11 +54,11 @@ const getLandingResult= (query)=> {
               return link[0].url + link[0].search + value;
             });
             return {
-              id:gene,
+              ncbiId:gene,
               name:geneResults[gene].nomenclaturename,
               function: geneResults[gene].summary,
-              officialIds:_.values(genes[originalSearch]).join(', '),
-              unofficialIds: geneResults[gene].otheraliases ? geneResults[gene].otheraliases:'',
+              hgncSymbol:genes[originalSearch]['Gene Cards'],
+              otherNames: geneResults[gene].otheraliases ? geneResults[gene].otheraliases:'',
               showMore:{full:!(geneResults.uids.length>1),function:false,synonyms:false},
               links:links
             };
@@ -84,7 +84,7 @@ const expandableText = (controller,landing,length,text,separator,type,cssClass,t
     result=[h(`${type}`,{className:cssClass,key:'text'},textToUse)];
   if(text.length>length){
     result.push(h(`${type}.search-landing-link`,{onClick: ()=> handelShowMoreClick(controller, landing, toggleVar, index),key:'showMore'},
-    varToToggle ? '« less': 'more »'));
+    varToToggle ? '« hide': 'show »'));
   }
   return result;
 };
@@ -121,10 +121,13 @@ const landingBox = (props) => {
     if(multipleBoxes){
       title.push(h('strong.material-icons',{key:'arrow'},landing[index].showMore.full? 'expand_less': 'expand_more'));
     }
-    const officialIds=h('i.search-landing-small','Official Ids: '+box.officialIds);
-    let unofficialIds=[];
-    if(box.unofficialIds){ 
-      unofficialIds=expandableText(controller,landing,60,'Unofficial Ids: '+box.unofficialIds,',','i','search-landing-small','synonyms',index);
+    let hgncSymbol='';
+    if(box.hgncSymbol){ 
+      hgncSymbol=h('i.search-landing-small','Official Symbol: '+box.hgncSymbol);
+    }
+    let otherNames=[];
+    if(box.otherNames){ 
+      otherNames=expandableText(controller,landing,16,'Other Names: '+box.otherNames,',','i','search-landing-small','synonyms',index);
     }
     let functions=[];
     if(box.function){
@@ -140,11 +143,11 @@ const landingBox = (props) => {
         className:classNames('search-landing-title',{'search-landing-title-multiple':multipleBoxes}),
       },[title]),
       box.showMore.full && 
-      h('div.search-landing-innner',{key: box.id},[ 
-        h('div.search-landing-section',{key: 'ids'},[officialIds,unofficialIds]),
+      h('div.search-landing-innner',{key: box.ncbiId},[ 
+        h('div.search-landing-section',{key: 'ids'},[hgncSymbol,otherNames]),
         h('div.search-landing-section',{key: 'functions'},[functions]),
         h('div.search-landing-section',{key: 'links'},[links]),
-        interactionsLink(box.id,'View Interactions')
+        interactionsLink(box.ncbiId,'View Interactions')
       ])
     ];    
   });

@@ -20,8 +20,6 @@ var swaggerDefinition = {
     }
   },
 
-  host: '192.168.81.233:9090',
-
   basePath: '/api/',
   "tags": [
     {

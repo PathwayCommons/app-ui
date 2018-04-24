@@ -39,13 +39,8 @@ const ServerAPI = {
     }).then(res => res.json());
   },
 
-  getGeneInformation(ids,type){
-    switch(type){
-      case 'NCBI': ()={
-        fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?retmode=json&db=gene&id=${ids.join(',')}`, {method: 'GET'}).then(res => res.json());
-      };
-      case 'Uniprot':
-    return 
+  getGeneInformation(ids){
+    return fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?retmode=json&db=gene&id=${ids.join(',')}`, {method: 'GET'}).then(res => res.json());
   },
 
   getUniprotnformation(ids){

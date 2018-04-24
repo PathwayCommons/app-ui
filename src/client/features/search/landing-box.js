@@ -88,7 +88,7 @@ const getLandingResult= (query)=> {
         if(gene['NCBI Gene']){
           ncbiIds.push(gene['NCBI Gene']);
         }
-        if(gene['Uniprot']){
+        else if(gene['Uniprot']){
           uniprotIds.push(gene['Uniprot']);
         }
       });

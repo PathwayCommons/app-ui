@@ -23,7 +23,7 @@ var swaggerDefinition = {
   basePath: '/api/',
   "tags": [
     {
-      "name": "Gene Validation Service",
+      "name": "Validation Service",
       "description": "Validate gene list"
     },
     {
@@ -67,7 +67,7 @@ const isAuthenticated = token => {
  * "/validation":
  *   post:
  *     tags:
- *     - Gene Validation Service
+ *     - Validation Service
  *     summary: ''
  *     description: ''
  *     operationId: geneQuery

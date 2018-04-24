@@ -10,7 +10,7 @@ const sanitize = (s) => {
 };
 
 const processPhrase = (phrase) => {
-  return geneValidator(phrase).then(result => {
+  return geneValidator(phrase.split(' ')).then(result => {
     const genes = result.geneInfo.map(gene=>'xrefid:' + sanitize(gene.initialAlias.toUpperCase()));
     const otherIds = result.unrecognized.map(id=>{
       id=id.toUpperCase()

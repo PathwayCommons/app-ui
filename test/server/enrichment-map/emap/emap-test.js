@@ -1,6 +1,6 @@
 const chai = require('chai');
 const expect = chai.expect;
-const {generateCys} = require('../../../server/enrichment-map/emap');
+const {generateCys} = require('../../../server/enrichment/emap');
 
 
 describe('test generateCys', function() {

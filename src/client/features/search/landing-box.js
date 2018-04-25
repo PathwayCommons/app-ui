@@ -6,6 +6,13 @@ const { ServerAPI } = require('../../services');
 const databases = require('../../common/config').databases;
 const Loader = require('react-loader');
 const _ = require('lodash');
+//usedDatabases=[['Uniprot lookup name',{configName:,gProfiler:}]]
+const usedDatabases=new Map ([
+  ['GeneCards',{configName:'Gene Cards',gProfiler:'HGNCSYMBOL'}],
+  ['HGNC',{configName:'HGNC',gProfiler:'HGNC'}],
+  ['GeneID',{configName:'NCBI Gene',gProfiler:'NCBIGene'}],
+  ['Uniprot',{configName:'Uniprot',gProfiler:'Uniprot'}]
+]);
 
 const linkBuilder= (source,geneQuery)=>{
   let genes={}; 
@@ -20,31 +27,38 @@ const linkBuilder= (source,geneQuery)=>{
   });
   return genes;
 };
+
 const pcFallback = (unrecognized,genes) => {
  return unrecognized.map(entry=>{
-    if(!_.findKey(genes,entry)){
+    if(!genes[entry]){
      return ServerAPI.pcQuery('search', {q:entry,entry:'entityreference'}).then((search)=>{
-        const hits=search.searchHit;
-        if(hits[0]){
-         genes[entry]={'Uniprot': _.compact(hits.map(hit=>{
-           hit =_.reverse(hit.uri.split('/'));
-           return hit[1]==='uniprot' ? hit[0] : false;
-          }))[0]};
+        const ids = _.compact(search.searchHit.map(hit=>{
+          hit =_.reverse(hit.uri.split('/'));
+          return hit[1]==='uniprot' ? hit[0] : false;
+        }));
+        const duplicateCheck = _.compact(ids.map(id=>_.findKey(genes,{'Uniprot':id})));
+        if(!_.isEmpty(ids) && _.isEmpty(duplicateCheck)){
+          genes[entry]={'Uniprot': ids[0]};
         }
       });
     }
   });
 };
 
-const getNcbiInfo = (ncbiIds,genes) => {
+const idToLinkConverter = (ids)  =>{
+  const dbSet = databases.filter(databaseValue => ids[databaseValue.database]);
+  return _.assign({},
+    ...dbSet.map(database=>({[database.database]:database.url+database.search+ids[database.database].replace(/[^a-zA-Z0-9:]/g)}))
+  );
+};
+
+const getNcbiInfo = (ids,genes) => {
+  const ncbiIds=_.map(ids,(search,id)=>id);
   return ServerAPI.getGeneInformation(ncbiIds).then(result=>{
     const geneResults=result.result;
     return geneResults.uids.map(gene=>{
-      const originalSearch = _.findKey(genes,entry=> entry['NCBI Gene']===gene);
-      const links=_.mapValues(genes[originalSearch],(value,key)=>{
-        let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue.database.toUpperCase());
-        return link[0].url + link[0].search + value.replace(/[^a-zA-Z0-9-_]/g, '');
-      });
+      const originalSearch = ids[gene];
+      const links=idToLinkConverter(genes[originalSearch]);
       return {
         databaseID:gene,
         name:geneResults[gene].nomenclaturename,
@@ -58,26 +72,32 @@ const getNcbiInfo = (ncbiIds,genes) => {
   });
 };
 
-const getUniprotInfo= (uniprotIds,genes) => {
-  const databaseNames=new Map ([['GeneCards','Gene Cards'],['HGNC','HGNC'],['GeneID','NCBI Gene']]);
+const getUniprotInfo= (ids,genes) => {
+  const uniprotIds=_.map(ids,(search,id)=>id);
   return ServerAPI.getUniprotnformation(uniprotIds).then(result=>{
     return result.map(gene=>{
-      const originalSearch = _.findKey(genes,entry=> entry['Uniprot']===gene.accession);
       let links={Uniprot:gene.accession};
-      gene.dbReferences.forEach(db=>_.assign(links, databaseNames.has(db.type) ? {[databaseNames.get(db.type)]:db.id}:{}));
-      const hgncSymbol = links.HGNC;
-      links = _.mapValues(links,(value,key)=>{
-        let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue.database.toUpperCase());
-        return link[0].url + link[0].search + value.replace(/[^a-zA-Z0-9:]/g, '');
+      gene.dbReferences.forEach(db=>{
+        if(usedDatabases.has(db.type)){
+          _.assign(links,{[usedDatabases.get(db.type).configName]:db.id});
+        }
       });
-      return {
-        databaseID:gene.accession,
-        name:gene.gene[0].name.value,
-        function: gene.comments && gene.comments[0].type==='FUNCTION' ?gene.comments[0].text[0].value:'',
-        hgncSymbol:hgncSymbol,
-        showMore:{full:true,function:false,synonyms:false},
-        links:links
-      };
+      const hgncSymbol = links['Gene Cards'];
+      const duplicateCheck = _.findKey(genes,{'Gene Cards':hgncSymbol});
+      if(!duplicateCheck || genes[duplicateCheck]['Uniprot']===gene.accession){
+      links=idToLinkConverter(links);
+        return {
+          databaseID:gene.accession,
+          name:gene.gene[0].name.value,
+          function: gene.comments && gene.comments[0].type==='FUNCTION' ? gene.comments[0].text[0].value:'',
+          hgncSymbol:hgncSymbol,
+          showMore:{full:true,function:false,synonyms:false},
+          links:links
+        };
+      }
+      else{
+        return;
+      }
     });
   });
 };
@@ -94,23 +114,22 @@ synonyms:"TP53, BCC7, LFS1, P53, TRP53"
 */
 const getLandingResult= (query)=> {
   const q=query.trim();
-  return Promise.all([
-    ServerAPI.geneQuery({genes: q,target: 'NCBIGENE'}).then(result=>linkBuilder('NCBI Gene',result)),
-    ServerAPI.geneQuery({genes: q,target: 'HGNCSYMBOL'}).then(result=>linkBuilder('Gene Cards',result)),
-    ServerAPI.geneQuery({genes: q,target: 'UNIPROT'}).then(result=>linkBuilder('Uniprot',result)),
-    ServerAPI.geneQuery({genes: q,target: 'HGNC'}).then(result=>linkBuilder('HGNC',result)),
-  ]).then(values=>{
+  const promises= [];
+  usedDatabases.forEach((database)=>promises.push(
+    ServerAPI.geneQuery({genes: q,target: database.gProfiler}).then(result=>linkBuilder(database.configName,result))
+  ));
+  return Promise.all(promises).then(values=>{
     let genes=values[0];
     _.tail(values).forEach(gene=>_.mergeWith(genes,gene,(objValue, srcValue)=>_.assign(objValue,srcValue)));
-   return genes;
+    return genes;
   }).then(genes=>Promise.all(pcFallback(genes.unrecognized,genes)).then(()=>genes)).then((genes)=>{
-      let ncbiIds=[],uniprotIds=[];
-      _.forEach(genes,gene=>{
+      let ncbiIds={},uniprotIds={};
+      _.forEach(genes,(gene,search)=>{
         if(gene['NCBI Gene']){
-          ncbiIds.push(gene['NCBI Gene']);
+          ncbiIds[gene['NCBI Gene']]=search;
         }
         else if(gene['Uniprot']){
-          uniprotIds.push(gene['Uniprot']);
+          uniprotIds[gene['Uniprot']]=search;
         }
       });
       let landingBoxes=[];
@@ -121,7 +140,7 @@ const getLandingResult= (query)=> {
         landingBoxes.push(getUniprotInfo(uniprotIds,genes));
        }
       return Promise.all(landingBoxes).then(landingBoxes=> {
-        landingBoxes=_.flatten(landingBoxes);
+        landingBoxes=_.compact(_.flatten(landingBoxes));
         if(landingBoxes.length>1){landingBoxes.forEach(box=>box.showMore.full=false);}
         return landingBoxes;
       });
@@ -154,7 +173,9 @@ const interactionsLink = (source,text)=>
 /*Generates a landing box
 input: {controller,[{
 function:"This gene encodes ..."
-id:"7157"
+databaseID:"7157"
+hgncSymbol:TP53
+otherNames:'...,...'
 links:{Gene Cards:"http://identifiers.org/genecards/TP53"...}
 name:"tumor protein p53"
 showMore:{full:false,function:false,synonyms:false}
@@ -200,16 +221,16 @@ const landingBox = (props) => {
         className:classNames('search-landing-title',{'search-landing-title-multiple':multipleBoxes}),
       },[title]),
       box.showMore.full && 
-      h('div.search-landing-innner',{key: box.ncbiId},[ 
+      h('div.search-landing-innner',{key: box.databaseID},[ 
         h('div.search-landing-section',{key: 'ids'},[hgncSymbol,otherNames]),
         h('div.search-landing-section',{key: 'functions'},[functions]),
         h('div.search-landing-section',{key: 'links'},[links]),
-        interactionsLink(box.ncbiId,'View Interactions')
+        interactionsLink(box.databaseID,'View Interactions')
       ])
     ];    
   });
   if(landing.length>1){
-    landingHTML.push(interactionsLink(landing.map(entry=>entry.id),'View Interactions Between Entities'));
+    landingHTML.push(interactionsLink(landing.map(entry=>entry.databaseID),'View Interactions Between Entities'));
   }
 
   return h('div.search-landing',landingHTML);

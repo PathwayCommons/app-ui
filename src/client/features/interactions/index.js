@@ -92,7 +92,7 @@ class Interactions extends React.Component {
           }
           this.setState({
             networkMetadata: {
-              name: !_.isEmpty(hgncIds)?(hgncIds+' Interactions'):' Interactions',
+              name: hgncIds.length === sources.length ?(hgncIds+' Interactions'):' Interactions',
               datasource: 'Pathway Commons',
               comments: comments
             },

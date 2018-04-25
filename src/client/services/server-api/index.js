@@ -30,14 +30,14 @@ const ServerAPI = {
 
   geneQuery(query){
     query.genes=_.concat(['padding'],query.genes.split(' '));
-    return fetch('/enrichment/validation', {
+    return fetch('/api/validation', {
       method:'POST', 
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body:qs.stringify(query)
-    }).then(res => res.json());
+    }).then(res => res.json()).then(ids=> _.assign(ids,{unrecognized:_.tail(ids.unrecognized)}));//remove padding
   },
 
   getGeneInformation(ids){

@@ -71,8 +71,8 @@ const enrichment = (query, userSetting = {}) => {
     if (orderedQueryVal != 0 && orderedQueryVal != 1) {
       reject(new Error('ERROR: orderedQuery should be 1 or 0'));
     }
-    if (isNaN(userThrVal) || userThrVal > 1 || userThrVal < 0) {
-      reject(new Error('ERROR: userThrVal should be a number [0, 1]'));
+    if (isNaN(userThrVal) || userThrVal > 1 || userThrVal <= 0) {
+      reject(new Error('ERROR: userThrVal should be a number in (0, 1]'));
     }
     if (isNaN(minSetSizeVal)) {
       reject(new Error('ERROR: minSetSize should be a number'));

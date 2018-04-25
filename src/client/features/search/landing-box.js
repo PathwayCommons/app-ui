@@ -46,12 +46,12 @@ const getNcbiInfo = (ncbiIds,genes) => {
         return link[0].url + link[0].search + value.replace(/[^a-zA-Z0-9-_]/g, '');
       });
       return {
-        id:gene,
+        databaseID:gene,
         name:geneResults[gene].nomenclaturename,
         function: geneResults[gene].summary,
-        officialIds:_.values(genes[originalSearch]).join(', '),
-        unofficialIds: geneResults[gene].otheraliases ? geneResults[gene].otheraliases:'',
-        showMore:{full:true,function:false,synonyms:false},
+        hgncSymbol:genes[originalSearch]['Gene Cards'],
+        otherNames: geneResults[gene].otheraliases ? geneResults[gene].otheraliases:'',
+        showMore:{full:!(geneResults.uids.length>1),function:false,synonyms:false},
         links:links
       };
     });
@@ -65,16 +65,16 @@ const getUniprotInfo= (uniprotIds,genes) => {
       const originalSearch = _.findKey(genes,entry=> entry['Uniprot']===gene.accession);
       let links={Uniprot:gene.accession};
       gene.dbReferences.forEach(db=>_.assign(links, databaseNames.has(db.type) ? {[databaseNames.get(db.type)]:db.id}:{}));
+      const hgncSymbol = links.HGNC;
       links = _.mapValues(links,(value,key)=>{
         let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue.database.toUpperCase());
         return link[0].url + link[0].search + value.replace(/[^a-zA-Z0-9:]/g, '');
       });
       return {
-        id:gene.accession,
+        databaseID:gene.accession,
         name:gene.gene[0].name.value,
         function: gene.comments && gene.comments[0].type==='FUNCTION' ?gene.comments[0].text[0].value:'',
-        officialIds:_.values(genes[originalSearch]).join(', '),
-        unofficialIds: '',
+        hgncSymbol:hgncSymbol,
         showMore:{full:true,function:false,synonyms:false},
         links:links
       };
@@ -95,9 +95,9 @@ synonyms:"TP53, BCC7, LFS1, P53, TRP53"
 const getLandingResult= (query)=> {
   const q=query.trim();
   return Promise.all([
+    ServerAPI.geneQuery({genes: q,target: 'NCBIGENE'}).then(result=>linkBuilder('NCBI Gene',result)),
     ServerAPI.geneQuery({genes: q,target: 'HGNCSYMBOL'}).then(result=>linkBuilder('Gene Cards',result)),
     ServerAPI.geneQuery({genes: q,target: 'UNIPROT'}).then(result=>linkBuilder('Uniprot',result)),
-    ServerAPI.geneQuery({genes: q,target: 'NCBIGENE'}).then(result=>linkBuilder('NCBI Gene',result)),
     ServerAPI.geneQuery({genes: q,target: 'HGNC'}).then(result=>linkBuilder('HGNC',result)),
   ]).then(values=>{
     let genes=values[0];
@@ -141,7 +141,7 @@ const expandableText = (controller,landing,length,text,separator,type,cssClass,t
     result=[h(`${type}`,{className:cssClass,key:'text'},textToUse)];
   if(text.length>length){
     result.push(h(`${type}.search-landing-link`,{onClick: ()=> handelShowMoreClick(controller, landing, toggleVar, index),key:'showMore'},
-    varToToggle ? '« less': 'more »'));
+    varToToggle ? '« hide': 'show »'));
   }
   return result;
 };
@@ -178,10 +178,13 @@ const landingBox = (props) => {
     if(multipleBoxes){
       title.push(h('strong.material-icons',{key:'arrow'},landing[index].showMore.full? 'expand_less': 'expand_more'));
     }
-    const officialIds=h('i.search-landing-small','Official Ids: '+box.officialIds);
-    let unofficialIds=[];
-    if(box.unofficialIds){ 
-      unofficialIds=expandableText(controller,landing,60,'Unofficial Ids: '+box.unofficialIds,',','i','search-landing-small','synonyms',index);
+    let hgncSymbol='';
+    if(box.hgncSymbol){ 
+      hgncSymbol=h('i.search-landing-small','Official Symbol: '+box.hgncSymbol);
+    }
+    let otherNames=[];
+    if(box.otherNames){ 
+      otherNames=expandableText(controller,landing,16,'Other Names: '+box.otherNames,',','i','search-landing-small','synonyms',index);
     }
     let functions=[];
     if(box.function){
@@ -197,11 +200,11 @@ const landingBox = (props) => {
         className:classNames('search-landing-title',{'search-landing-title-multiple':multipleBoxes}),
       },[title]),
       box.showMore.full && 
-      h('div.search-landing-innner',{key: box.id},[ 
-        h('div.search-landing-section',{key: 'ids'},[officialIds,unofficialIds]),
+      h('div.search-landing-innner',{key: box.ncbiId},[ 
+        h('div.search-landing-section',{key: 'ids'},[hgncSymbol,otherNames]),
         h('div.search-landing-section',{key: 'functions'},[functions]),
         h('div.search-landing-section',{key: 'links'},[links]),
-        interactionsLink(box.id,'View Interactions')
+        interactionsLink(box.ncbiId,'View Interactions')
       ])
     ];    
   });

@@ -43,7 +43,7 @@ const getNcbiInfo = (ncbiIds,genes) => {
       const originalSearch = _.findKey(genes,entry=> entry['NCBI Gene']===gene);
       const links=_.mapValues(genes[originalSearch],(value,key)=>{
         let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue.database.toUpperCase());
-        return link[0].url + link[0].search + value;
+        return link[0].url + link[0].search + value.replace(/[^a-zA-Z0-9-_]/g, '');
       });
       return {
         id:gene,
@@ -59,12 +59,15 @@ const getNcbiInfo = (ncbiIds,genes) => {
 };
 
 const getUniprotInfo= (uniprotIds,genes) => {
+  const databaseNames=new Map ([['GeneCards','Gene Cards'],['HGNC','HGNC'],['GeneID','NCBI Gene']]);
   return ServerAPI.getUniprotnformation(uniprotIds).then(result=>{
     return result.map(gene=>{
       const originalSearch = _.findKey(genes,entry=> entry['Uniprot']===gene.accession);
-      const links=_.mapValues(genes[originalSearch],(value,key)=>{
+      let links={Uniprot:gene.accession};
+      gene.dbReferences.forEach(db=>_.assign(links, databaseNames.has(db.type) ? {[databaseNames.get(db.type)]:db.id}:{}));
+      links = _.mapValues(links,(value,key)=>{
         let link = databases.filter(databaseValue => key.toUpperCase() === databaseValue.database.toUpperCase());
-        return link[0].url + link[0].search + value;
+        return link[0].url + link[0].search + value.replace(/[^a-zA-Z0-9:]/g, '');
       });
       return {
         id:gene.accession,

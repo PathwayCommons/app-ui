@@ -18,8 +18,12 @@ const _ = require('lodash');
 
 // pathwayInfoList: {"GO:1":{pValue: 1}, "GO:2": {pValue: 0, color: "green"}}
 const generateGraphInfo = (pathwayInfoList, cutoff = 0.375, JCWeight, OCWeight) => {
-  if (cutoff < 0 || cutoff > 1) { throw new Error('ERROR: cutoff out of range [0, 1]'); }
-  if (isNaN(Number(cutoff))) { throw new Error('ERROR: cutoff is not a number'); }
+  if (cutoff < 0 || cutoff > 1) {
+    throw new Error('ERROR: cutoff out of range [0, 1]');
+  }
+  if (typeof(cutoff) != 'number') {
+    throw new Error('ERROR: cutoff is not a number');
+  }
 
   if (JCWeight < 0 || JCWeight > 1) {
     throw new Error('ERROR: JCWeight out of range [0, 1]');
@@ -27,9 +31,13 @@ const generateGraphInfo = (pathwayInfoList, cutoff = 0.375, JCWeight, OCWeight) 
   if (OCWeight < 0 || OCWeight > 1) {
     throw new Error('ERROR: OCWeight out of range [0, 1]');
   }
-  if (JCWeight != undefined && isNaN(Number(JCWeight))) { throw new Error('ERROR: JCWeight should be a number'); }
-  if (OCWeight != undefined && isNaN(Number(OCWeight))) { throw new Error('ERROR: OCWeight should be a number'); }
-  if (OCWeight != undefined && JCWeight != undefined && Number(OCWeight) + Number(JCWeight) != 1) {
+  if (JCWeight != undefined && typeof(JCWeight) != 'number') {
+    throw new Error('ERROR: JCWeight should be a number');
+  }
+  if (OCWeight != undefined && typeof(OCWeight) != 'number') {
+    throw new Error('ERROR: OCWeight should be a number');
+  }
+  if (OCWeight != undefined && JCWeight != undefined && OCWeight + JCWeight != 1) {
     throw new Error('ERROR: OCWeight + JCWeight should be 1');
   }
   if (JCWeight === undefined && OCWeight === undefined) {

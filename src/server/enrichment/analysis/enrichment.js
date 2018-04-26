@@ -10,6 +10,7 @@ const fetch = require('node-fetch')
 const _ = require('lodash');
 const qs = require('query-string');
 const { cleanUpEntrez } = require('../helper');
+const { mapReactId } = require('../helper');
 
 const parseGProfilerResponse = (gProfilerResponse) => {
   let lines = _.map(gProfilerResponse.split('\n'), line => {
@@ -103,7 +104,7 @@ const enrichment = (query, userSetting = {}) => {
         const qAndTListIndex = 13;
         ret.pathwayInfo = {};
         _.forEach(responseInfo, elem => {
-          ret.pathwayInfo[elem[termIdIndex]] = {
+          ret.pathwayInfo[mapReactId(elem[termIdIndex])] = {
             "p-value": Number(elem[pValueIndex]),
             "description": elem[tNameIndex].trim(),
             "intersection": _.map(elem[qAndTListIndex].split(','), gene => {

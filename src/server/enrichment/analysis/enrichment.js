@@ -46,7 +46,7 @@ const parseGProfilerResponse = (gProfilerResponse) => {
 // and an object of user settings userSetting
 // and extracts enrichment information
 // from g:Profiler for the query list based on userSetting
-const enrichment = (query, userSetting = {}) => {
+const enrichment = (query, userSetting) => {
   // map camelCase to snake case (g:Profiler uses snake case parameters)
   userSetting = _.mapKeys(userSetting, (value, key) => {
     if (key === 'orderedQuery') return 'ordered_query';

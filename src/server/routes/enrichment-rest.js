@@ -143,7 +143,6 @@ enrichmentRouter.post('/validation', (req, res) => {
 // expose a rest endpoint for enrichment service
 enrichmentRouter.post('/analysis', (req, res) => {
   const genes = req.body.genes;
-
   const tmpOptions = {
     orderedQuery: req.body.orderedQuery,
     userThr: req.body.userThr,
@@ -152,7 +151,6 @@ enrichmentRouter.post('/analysis', (req, res) => {
     thresholdAlgo: req.body.thresholdAlgo,
     custbg: req.body.custbg
   };
-
   enrichment(genes, tmpOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
   }).catch((err) => {
@@ -199,7 +197,6 @@ enrichmentRouter.post('/visualization', (req, res) => {
   const OCWeight = req.body.OCWeight;
   try {
     res.json(generateGraphInfo(pathwayInfoList, cutoff, JCWeight, OCWeight));
-
   } catch (err) {
     res.status(400).send(err.message);
   }

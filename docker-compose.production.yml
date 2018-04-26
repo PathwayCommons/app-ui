@@ -1,0 +1,11 @@
+version: '3'
+services:
+  webapp:
+    image: pathwaycommons/app-ui:latest
+    container_name: appui_webapp
+    ports:
+      - "3000:3000" 
+    environment:
+      NODE_ENV: "production"  
+      host: "host.docker.internal"
+  

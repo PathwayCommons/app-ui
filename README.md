@@ -36,6 +36,8 @@ The following environment variables can be used to configure the server:
 
 ## Running via Docker
 
+### Build and run directly
+
 Build the container.  Here, `app-ui` is used as the container name.
 
 ```
@@ -60,6 +62,31 @@ Notes:
   - [Documentation of docker-node](https://github.com/nodejs/docker-node)
   - [Docker CLI docs](https://docs.docker.com/engine/reference/commandline/cli/)
 
+
+### Run image hosted on Docker Hub using Docker Compose
+
+Pathway Commons maintains a [Docker Hub](https://hub.docker.com/) image for [app-ui](https://hub.docker.com/r/pathwaycommons/app-ui/) that is automatically built each time a commit is pushed to GitHub. 
+
+To run the GitHub development branch:
+
+```sh
+docker-compose --file docker-compose.yml up --detach
+```
+
+Access the app instance at port `9090`.The default configuration declared in `docker-compose.yml` also runs a [rethinkdb](https://hub.docker.com/_/rethinkdb/) image; access the UI at port `8020`. 
+
+To run the GitHub master branch:
+
+```sh
+docker-compose --file docker-compose.production.yml up --detach
+```
+
+Access the app instance at port `3000`. The production configuration declared in `docker-compose.production.yml` uses a rethinkdb instance running on host.   
+
+Notes:
+- The Docker Hub image tag `latest` corresponds to the GitHub master while other tags (e.g. `development`) match the branch name 
+- References:
+  - [Getting started with Docker Compose](https://docs.docker.com/compose/gettingstarted/)
 
 
 ## Testing

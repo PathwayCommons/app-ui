@@ -17,7 +17,7 @@ const ServerAPI = {
   },
 
   pcQuery(method, params){
-    return fetch(`/pc-client/${method}?${qs.stringify(params)}`, defaultFetchOpts);
+    return fetch(`/pc-client/${method}?${qs.stringify(params)}`, defaultFetchOpts).then(res => res.json());
   },
 
   datasources(){
@@ -30,18 +30,22 @@ const ServerAPI = {
 
   geneQuery(query){
     query.genes=_.concat(['padding'],query.genes.split(' '));
-    return fetch('/enrichment/validation', {
+    return fetch('/api/validation', {
       method:'POST', 
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body:qs.stringify(query)
-    }).then(res => res.json());
+    }).then(res => res.json()).then(ids=> _.assign(ids,{unrecognized:_.tail(ids.unrecognized)}));//remove padding
   },
 
-  getGeneInformation(ids,type){
-    return fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?retmode=json&db=${type}&id=${ids.join(',')}`, {method: 'GET'}).then(res => res.json());
+  getGeneInformation(ids){
+    return fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?retmode=json&db=gene&id=${ids.join(',')}`, {method: 'GET'}).then(res => res.json());
+  },
+
+  getUniprotnformation(ids){
+    return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&accession=${ids.join(',')}`, defaultFetchOpts).then(res => res.json());
   },
 
   getNeighborhood(ids,kind){

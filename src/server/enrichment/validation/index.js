@@ -39,13 +39,18 @@ const convertGConvertNames = (gConvertName) => {
   return gConvertName;
 };
 
-const validatorGconvert = (query, userOptions = {}) => {
+const validatorGconvert = (query, userOptions) => {
   return promise = new Promise((resolve, reject) => {
-    const formData = _.assign({}, defaultOptions, JSON.parse(JSON.stringify(userOptions)), { query: query.join(" ") });
+    const formData = _.assign({}, defaultOptions, JSON.parse(JSON.stringify(userOptions)), { query: query });
     formData.organism = formData.organism.toLowerCase();
     const initialTarget = formData.target.toUpperCase();
     formData.target = convertGConvertNames(initialTarget);
     const invalidInfo = { invalidTarget: undefined, invalidOrganism: undefined };
+    const queryVal = formData.query;
+    if (!Array.isArray(queryVal)) {
+      reject(new Error('ERROR: genes should be an array'));
+    }
+    formData.query = queryVal.join(" ");
     if (!validOrganism.includes(formData.organism)) {
       invalidInfo.invalidOrganism = formData.organism;
     }
@@ -101,4 +106,4 @@ const validatorGconvert = (query, userOptions = {}) => {
 };
 
 
-module.exports = { validatorGconvert };
+module.exports = { validatorGconvert, InvalidInfoError };

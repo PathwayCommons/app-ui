@@ -61,26 +61,34 @@ const enrichment = (query, userSetting = {}) => {
   })
 
   return promise = new Promise((resolve, reject) => {
-    let formData = _.assign({}, defaultSetting, JSON.parse(JSON.stringify(userSetting)), { query: query.join(" ") });
-    formData.custbg = formData.custbg.join(" ");
-    const orderedQueryVal = Number(formData.ordered_query);
-    const userThrVal = Number(formData.user_thr);
-    const minSetSizeVal = Number(formData.min_set_size);
-    const maxSetSizeVal = Number(formData.max_set_size);
+    let formData = _.assign({}, defaultSetting, JSON.parse(JSON.stringify(userSetting)), { query: query });
+    const queryVal = formData.query;
+    const orderedQueryVal = formData.ordered_query;
+    const userThrVal = formData.user_thr;
+    const minSetSizeVal = formData.min_set_size;
+    const maxSetSizeVal = formData.max_set_size;
     const thresholdAlgoVal = formData.threshold_algo;
+    const custbgVal = formData.custbg;
+    if (!Array.isArray(queryVal)) {
+      reject(new Error('ERROR: genes should be an array'))
+    }
+    formData.query = query.join(" ");
     if (orderedQueryVal != 0 && orderedQueryVal != 1) {
-      reject(new Error('ERROR: orderedQuery should be 1 or 0'));
+      reject(new Error('ERROR: orderedQuery should be 0 / false or 1 / true'))
     }
-    if (isNaN(userThrVal) || userThrVal > 1 || userThrVal <= 0) {
-      reject(new Error('ERROR: userThrVal should be a number in (0, 1]'));
+    if (typeof(formData.user_thr) != 'number') {
+      reject(new Error('ERROR: userThr should be a number'));
     }
-    if (isNaN(minSetSizeVal)) {
+    if (userThrVal > 1 || userThrVal <= 0) {
+      reject(new Error('ERROR: userThrVal should be in (0, 1]'));
+    }
+    if (typeof(formData.min_set_size) != 'number') {
       reject(new Error('ERROR: minSetSize should be a number'));
     }
     if (minSetSizeVal < 0) {
       reject(new Error('ERROR: minSetSize should be >= 0'));
     }
-    if (isNaN(maxSetSizeVal)) {
+    if (typeof(formData.max_set_size) != 'number') {
       reject(new Error('ERROR: maxSetSize should be a number'));
     }
     if (maxSetSizeVal < minSetSizeVal) {
@@ -89,6 +97,11 @@ const enrichment = (query, userSetting = {}) => {
     if (thresholdAlgoVal != 'analytical' && thresholdAlgoVal != 'bonferroni' && thresholdAlgoVal != 'fdr') {
       reject(new Error('ERROR: thresholdAlgoVal should be one of analytical, bonferroni, fdr'));
     }
+    if (!Array.isArray(custbgVal)) {
+      reject(new Error('ERROR: custbg should be an array'));
+    }
+    formData.custbg = custbgVal.join(" ");
+
 
     fetch(gProfilerURL, {
       method: 'post',

@@ -76,7 +76,7 @@ class Interactions extends React.Component {
     Promise.all(geneIds).then(geneIds=>{
       ServerAPI.geneQuery({genes:geneIds.join(' '),target: 'NCBIGENE'}).then(result=>{
         const ncbiIds=result.geneInfo.map(gene=> gene.convertedAlias);
-        ServerAPI.getGeneInformation(ncbiIds,'gene').then(result=>{
+        ServerAPI.getGeneInformation(ncbiIds).then(result=>{
           const geneResults=result.result;
           let hgncIds=[];
           let comments=[];
@@ -92,7 +92,7 @@ class Interactions extends React.Component {
           }
           this.setState({
             networkMetadata: {
-              name: !_.isEmpty(hgncIds)?(hgncIds+' Interactions'):' Interactions',
+              name: hgncIds.length === sources.length ?(hgncIds+' Interactions'):' Interactions',
               datasource: 'Pathway Commons',
               comments: comments
             },

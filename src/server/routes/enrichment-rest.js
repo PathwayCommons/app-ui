@@ -12,8 +12,7 @@ var swaggerDefinition = {
   info: {
     title: 'Enrichment Services',
     version: '1.0.0',
-    description: 'This is a sample enrichment service server. You can find detailed documentation at [Wiki](https://github.com/PathwayCommons/app-ui/wiki/Enrichment-Map-Services)',
-    documentation: "https://github.com/PathwayCommons/app-ui/wiki/Enrichment-Services",
+    description: 'This is a sample enrichment service server. You can find detailed documentation at [Wiki](https://github.com/PathwayCommons/app-ui/wiki/Enrichment-Services)',
     license: {
       name: "MIT",
       url: "https://github.com/PathwayCommons/app-ui/blob/master/LICENSE"
@@ -101,10 +100,15 @@ enrichmentRouter.post('/validation', (req, res) => {
   tmpOptions.target = req.body.target;
   validatorGconvert(genes, tmpOptions).then(gconvertResult => {
     res.json(gconvertResult);
-  }).catch((invalidInfoError) => {
-    res.status(400).send({ invalidTarget: invalidInfoError.invalidTarget, invalidOrganism: invalidInfoError.invalidOrganism });
-  });
+  }).catch((err) => {
+    if (err.constructor.name === 'InvalidInfoError') {
+      res.status(400).send({ invalidTarget: err.invalidTarget, invalidOrganism: err.invalidOrganism })
+    } else {
+      res.status(400).send(err.message);
+    }
+  })
 });
+
 
 /**
  *@swagger
@@ -217,7 +221,7 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           example: hsapiensss
  *     analysisError:
  *       type: string
- *       example: 'ERROR: orderedQuery should be 1 or 0'
+ *       example: 'ERROR: orderedQuery should be 0 / false or 1 / true'
  *     visualizationError:
  *       type: string
  *       example: 'ERROR: OCWeight + JCWeight should be 1'

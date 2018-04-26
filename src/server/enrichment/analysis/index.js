@@ -1,4 +1,4 @@
-const enrichment = require('./enrichment').enrichment;
+const { enrichment } = require('./enrichment');
 
 
-module.exports = { enrichment};
+module.exports = { enrichment };

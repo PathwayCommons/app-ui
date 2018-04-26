@@ -4,7 +4,7 @@ const router = express.Router();
 const controller = require('./controller');
 const config = require('../../config');
 
-const enrichmentRouter = require('./enrichment-rest');
+const { enrichmentRouter } = require('./enrichment-rest');
 
 
 

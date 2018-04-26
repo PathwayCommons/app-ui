@@ -113,17 +113,25 @@ synonyms:"TP53, BCC7, LFS1, P53, TRP53"
 }]
 */
 const getLandingResult= (query)=> {
-  const q=query.trim();
+  let q=query.trim().split(' ');
+  let ncbiIds={},uniprotIds={},labeledId={};
+  q.forEach((id,index)=>{if(/(uniprot:\w+|hgnc:\w+|ncbi:[0-9]+)$/.test(id)){
+    const splitId=id.split(':');
+    if('uniprot'===splitId[0]){uniprotIds[splitId[1]]=splitId[1]; _.pullAt(q,index);}
+    else if('ncbi'===splitId[0]){ncbiIds[splitId[1]]=splitId[1]; _.pullAt(q,index);}
+    else {labeledId[splitId]=splitId[1]; q[index]=splitId[1];}
+  }});
   const promises= [];
+  console.log(q);
   usedDatabases.forEach((database)=>promises.push(
     ServerAPI.geneQuery({genes: q,target: database.gProfiler}).then(result=>linkBuilder(database.configName,result))
   ));
   return Promise.all(promises).then(values=>{
+    console.log(values);
     let genes=values[0];
     _.tail(values).forEach(gene=>_.mergeWith(genes,gene,(objValue, srcValue)=>_.assign(objValue,srcValue)));
     return genes;
-  }).then(genes=>Promise.all(pcFallback(genes.unrecognized,genes)).then(()=>genes)).then((genes)=>{
-      let ncbiIds={},uniprotIds={};
+  }).then(genes=>Promise.all(pcFallback(_.without(genes.unrecognized,genes,id=>!labeledId[id]),genes)).then(()=>genes)).then((genes)=>{
       _.forEach(genes,(gene,search)=>{
         if(gene['NCBI Gene']){
           ncbiIds[gene['NCBI Gene']]=search;

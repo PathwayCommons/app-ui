@@ -29,7 +29,13 @@ const ServerAPI = {
   },
 
   geneQuery(query){
-    query.genes=_.concat(['padding'],query.genes.split(' '));
+    const paddingAdded = _.max([2-query.genes.length,0]);
+    console.log(paddingAdded);
+    const padding = _.times(paddingAdded,()=>'p');
+    console.log(padding);
+    query.genes=_.concat(padding,query.genes);
+    
+    console.log(query.genes);
     return fetch('/api/validation', {
       method:'POST', 
       headers: {
@@ -37,7 +43,7 @@ const ServerAPI = {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body:qs.stringify(query)
-    }).then(res => res.json()).then(ids=> _.assign(ids,{unrecognized:_.tail(ids.unrecognized)}));//remove padding
+    }).then(res => res.json()).then(ids=> _.assign(ids,{unrecognized:_.drop(ids.unrecognized,paddingAdded)}));//remove padding
   },
 
   getGeneInformation(ids){

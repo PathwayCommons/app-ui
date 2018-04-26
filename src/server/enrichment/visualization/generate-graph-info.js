@@ -56,8 +56,6 @@ const generateGraphInfo = (pathwayInfoList, cutoff = 0.375, JCWeight, OCWeight) 
     if (!pathwayInfoTable.has(pathwayId)) {
       unrecognized.add(pathwayId);
       delete pathwayInfoList[pathwayId];
-    } else if (pathwayInfoList[pathwayId].hasOwnProperty('pathwayId')) {
-      throw new Error('ERROR: additional info for ' + pathwayId + ' can not have pathwayId field');
     }
   }
   const pathwayIdList = [];

@@ -1,6 +1,5 @@
 log_file
 metadata
-package-lock.json
 node_modules
 build
 .DS_Store

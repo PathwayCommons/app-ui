@@ -91,11 +91,10 @@ const isAuthenticated = token => {
  *         schema:
  *           "$ref": "#/definitions/error/validationError"
 */
-// expose a rest endpoint for gconvert validator
+// expose a rest endpoint for validation service
 enrichmentRouter.post('/validation', (req, res) => {
   const genes = req.body.genes;
   const tmpOptions = {};
-  const userOptions = {};
   tmpOptions.organism = req.body.organism;
   tmpOptions.target = req.body.target;
   validatorGconvert(genes, tmpOptions).then(gconvertResult => {
@@ -141,10 +140,9 @@ enrichmentRouter.post('/validation', (req, res) => {
  *         schema:
  *           "$ref": "#/definitions/error/analysisError"
 */
-// expose a rest endpoint for enrichment
+// expose a rest endpoint for enrichment service
 enrichmentRouter.post('/analysis', (req, res) => {
   const genes = req.body.genes;
-
   const tmpOptions = {
     orderedQuery: req.body.orderedQuery,
     userThr: req.body.userThr,
@@ -153,7 +151,6 @@ enrichmentRouter.post('/analysis', (req, res) => {
     thresholdAlgo: req.body.thresholdAlgo,
     custbg: req.body.custbg
   };
-
   enrichment(genes, tmpOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
   }).catch((err) => {
@@ -192,7 +189,7 @@ enrichmentRouter.post('/analysis', (req, res) => {
  *         schema:
  *           "$ref": "#/definitions/error/visualizationError"
 */
-// Expose a rest endpoint for emap
+// Expose a rest endpoint for visualization service
 enrichmentRouter.post('/visualization', (req, res) => {
   const pathwayInfoList = req.body.pathwayInfoList;
   const cutoff = req.body.cutoff;
@@ -200,7 +197,6 @@ enrichmentRouter.post('/visualization', (req, res) => {
   const OCWeight = req.body.OCWeight;
   try {
     res.json(generateGraphInfo(pathwayInfoList, cutoff, JCWeight, OCWeight));
-
   } catch (err) {
     res.status(400).send(err.message);
   }
@@ -717,4 +713,4 @@ enrichmentRouter.post('/visualization', (req, res) => {
 */
 
 
-module.exports = enrichmentRouter;
+module.exports = { enrichmentRouter };

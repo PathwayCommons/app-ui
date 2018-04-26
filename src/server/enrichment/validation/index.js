@@ -1,16 +1,9 @@
-/*
-Documentation for g:convert validator:
-sample url: http://localhost:3000/api/validatorGconvert?genes=ATM ATP ATM
-output: {"unrecognized":["ATP"],"duplicate":["ATM"],"geneInfo":[{"HGNC_symbol":"ATM","HGNC_id":"HGNC:795"}]}
-*/
-
 const fetch = require('node-fetch');
 const _ = require('lodash');
 const { validOrganism } = require('./validity-info');
 const { validTarget } = require('./validity-info');
 const qs = require('query-string');
 const { cleanUpEntrez } = require('../helper');
-
 
 const defaultOptions = {
   'output': 'mini',
@@ -30,15 +23,20 @@ class InvalidInfoError extends Error {
 const gConvertURL = 'https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/gconvert.cgi';
 
 
-// convert offical synonyms to gConvert names
-const convertGConvertNames = (gConvertName) => {
-  if (gConvertName === 'HGNCSYMBOL') { return 'HGNC'; }
-  if (gConvertName === 'HGNC') { return 'HGNC_ACC'; }
-  if (gConvertName === 'UNIPROT') { return 'UNIPROTSWISSPROT'; }
-  if (gConvertName === 'NCBIGENE') { return 'ENTREZGENE_ACC'; }
-  return gConvertName;
+// convertGConvertNames(officalSynonym) takes a gene identifier officalSynonym
+// and converts it to gConvert names
+const convertGConvertNames = (officalSynonym) => {
+  if (officalSynonym === 'HGNCSYMBOL') { return 'HGNC'; }
+  if (officalSynonym === 'HGNC') { return 'HGNC_ACC'; }
+  if (officalSynonym === 'UNIPROT') { return 'UNIPROTSWISSPROT'; }
+  if (officalSynonym === 'NCBIGENE') { return 'ENTREZGENE_ACC'; }
+  return officalSynonym;
 };
 
+
+// validatorGconvert(query, userOptions) takes an identifier list query
+// and an object of options userOptions
+// and validates the query based on userOptions
 const validatorGconvert = (query, userOptions) => {
   return promise = new Promise((resolve, reject) => {
     const formData = _.assign({}, defaultOptions, JSON.parse(JSON.stringify(userOptions)), { query: query });
@@ -68,7 +66,6 @@ const validatorGconvert = (query, userOptions) => {
       .then(body => {
         const geneInfoList = _.map(body.split('\n'), ele => { return ele.split('\t'); });
         geneInfoList.splice(-1, 1); // remove last element ''
-
         const unrecognized = new Set();
         let duplicate = {};
         const previous = new Map();

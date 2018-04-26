@@ -1,4 +1,4 @@
-const pathwayInfoTable = require('./preprocess').pathwayInfoTable;
+const { pathwayInfoTable } = require('./preprocess');
 
 
 module.exports = { pathwayInfoTable };

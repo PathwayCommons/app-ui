@@ -1,30 +1,7 @@
-/*
-documentation for enrichment
-sample request URL: http://localhost:3000/api/enrichment/?genes=HCFC1 ATM
-parameter:
-genes - [string] a list of gene symbols delimited by whitespace
-return:
-[vector of Object] relevant info for valid genes
-*/
 const fetch = require('node-fetch')
 const _ = require('lodash');
 const qs = require('query-string');
 const { cleanUpEntrez } = require('../helper');
-
-const parseGProfilerResponse = (gProfilerResponse) => {
-  let lines = _.map(gProfilerResponse.split('\n'), line => {
-    if (line.substring(0, 1) === '#') {
-      return '';
-    }
-    return line;
-  });
-  lines = _.compact(lines);
-  return _.map(lines, line => {
-    return line.split('\t');
-  })
-};
-
-
 
 const defaultSetting = {
   "output": "mini",
@@ -49,8 +26,28 @@ const defaultSetting = {
 const gProfilerURL = "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/";
 
 
+// parseGProfilerResponse(gProfilerResponse) takes the text response
+// from gProfiler gProfilerResponse and parses it into JSON format
+const parseGProfilerResponse = (gProfilerResponse) => {
+  let lines = _.map(gProfilerResponse.split('\n'), line => {
+    if (line.substring(0, 1) === '#') {
+      return '';
+    }
+    return line;
+  });
+  lines = _.compact(lines);
+  return _.map(lines, line => {
+    return line.split('\t');
+  })
+};
 
-const enrichment = (query, userSetting = {}) => {
+
+// enrichmemt(query, userSetting) takes a list of gene identifiers query
+// and an object of user settings userSetting
+// and extracts enrichment information
+// from g:Profiler for the query list based on userSetting
+const enrichment = (query, userSetting) => {
+  // map camelCase to snake case (g:Profiler uses snake case parameters)
   userSetting = _.mapKeys(userSetting, (value, key) => {
     if (key === 'orderedQuery') return 'ordered_query';
     if (key === 'userThr') return 'user_thr';
@@ -101,8 +98,6 @@ const enrichment = (query, userSetting = {}) => {
       reject(new Error('ERROR: custbg should be an array'));
     }
     formData.custbg = custbgVal.join(" ");
-
-
     fetch(gProfilerURL, {
       method: 'post',
       body: qs.stringify(formData)

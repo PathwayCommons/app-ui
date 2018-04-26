@@ -1,12 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
-
-
-// create table (17489 items in total) from 'hsapiens.pathways.NAME.gmt'
-// key: GO/REACTOME ID
-// value: {"description":..., "geneset":...}
 const pathwayData = fs.readFileSync(path.resolve(__dirname, 'hsapiens.pathways.NAME.gmt')).toString('utf8').split('\n');
+
+// pathwayInfoTable is map where the keys are GO/REACTOME pathway identifiers
+// and values are description and geneset
 const pathwayInfoTable = new Map();
 _.forEach(pathwayData, pathwayInfo => {
   const pathwayInfoList = pathwayInfo.split('\t');
@@ -22,4 +20,4 @@ _.forEach(pathwayData, pathwayInfo => {
 pathwayInfoTable.delete('');
 
 
-module.exports = {pathwayInfoTable};
+module.exports = { pathwayInfoTable };

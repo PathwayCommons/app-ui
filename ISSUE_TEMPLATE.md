@@ -24,7 +24,7 @@ When submitting a bug report, check the following:
 
 ## Desired behaviour
 
-<!-- What do you expect Factoid to do instead? -->
+<!-- What do you expect app-ui to do instead? -->
 
 
 ## Minimum steps to reproduce

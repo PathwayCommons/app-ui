@@ -1,30 +1,7 @@
-/*
-documentation for enrichment
-sample request URL: http://localhost:3000/api/enrichment/?genes=HCFC1 ATM
-parameter:
-genes - [string] a list of gene symbols delimited by whitespace
-return:
-[vector of Object] relevant info for valid genes
-*/
 const fetch = require('node-fetch')
 const _ = require('lodash');
 const qs = require('query-string');
 const { cleanUpEntrez } = require('../helper');
-
-const parseGProfilerResponse = (gProfilerResponse) => {
-  let lines = _.map(gProfilerResponse.split('\n'), line => {
-    if (line.substring(0, 1) === '#') {
-      return '';
-    }
-    return line;
-  });
-  lines = _.compact(lines);
-  return _.map(lines, line => {
-    return line.split('\t');
-  })
-};
-
-
 
 const defaultSetting = {
   "output": "mini",
@@ -46,11 +23,32 @@ const defaultSetting = {
   "sf_REAC": 1,
   "prefix": 'ENTREZGENE_ACC'
 };
+
 const gProfilerURL = "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/";
 
 
+// parseGProfilerResponse(gProfilerResponse) takes the text response
+// from gProfiler gProfilerResponse and parses it into JSON format
+const parseGProfilerResponse = (gProfilerResponse) => {
+  let lines = _.map(gProfilerResponse.split('\n'), line => {
+    if (line.substring(0, 1) === '#') {
+      return '';
+    }
+    return line;
+  });
+  lines = _.compact(lines);
+  return _.map(lines, line => {
+    return line.split('\t');
+  });
+};
 
-const enrichment = (query, userSetting = {}) => {
+
+// enrichmemt(query, userSetting) takes a list of gene identifiers query
+// and an object of user settings userSetting
+// and extracts enrichment information
+// from g:Profiler for the query list based on userSetting
+const enrichment = (query, userSetting) => {
+  // map camelCase to snake case (g:Profiler uses snake case parameters)
   userSetting = _.mapKeys(userSetting, (value, key) => {
     if (key === 'orderedQuery') return 'ordered_query';
     if (key === 'userThr') return 'user_thr';
@@ -58,9 +56,9 @@ const enrichment = (query, userSetting = {}) => {
     if (key === 'maxSetSize') return 'max_set_size';
     if (key === 'thresholdAlgo') return 'threshold_algo';
     return key;
-  })
+  });
 
-  return promise = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     let formData = _.assign({}, defaultSetting, JSON.parse(JSON.stringify(userSetting)), { query: query });
     const queryVal = formData.query;
     const orderedQueryVal = formData.ordered_query;
@@ -70,11 +68,11 @@ const enrichment = (query, userSetting = {}) => {
     const thresholdAlgoVal = formData.threshold_algo;
     const custbgVal = formData.custbg;
     if (!Array.isArray(queryVal)) {
-      reject(new Error('ERROR: genes should be an array'))
+      reject(new Error('ERROR: genes should be an array'));
     }
     formData.query = query.join(" ");
     if (orderedQueryVal != 0 && orderedQueryVal != 1) {
-      reject(new Error('ERROR: orderedQuery should be 0 / false or 1 / true'))
+      reject(new Error('ERROR: orderedQuery should be 0 / false or 1 / true'));
     }
     if (typeof(formData.user_thr) != 'number') {
       reject(new Error('ERROR: userThr should be a number'));
@@ -102,7 +100,6 @@ const enrichment = (query, userSetting = {}) => {
     }
     formData.custbg = custbgVal.join(" ");
 
-
     fetch(gProfilerURL, {
       method: 'post',
       body: qs.stringify(formData)
@@ -120,15 +117,14 @@ const enrichment = (query, userSetting = {}) => {
             "p-value": Number(elem[pValueIndex]),
             "description": elem[tNameIndex].trim(),
             "intersection": _.map(elem[qAndTListIndex].split(','), gene => {
-              const colonIndex = 14;
               return cleanUpEntrez(gene);
             })
           };
         });
         resolve(ret);
       });
-  })
-}
+  });
+};
 
 
 module.exports = { enrichment };

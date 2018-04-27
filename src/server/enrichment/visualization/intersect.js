@@ -1,17 +1,12 @@
 const _ = require('lodash');
 
 
-// input:
-// pathway1: {pathwayId: pathway description, genes: pathway gene sets}
-// {pathwayId: pathwayxyz, genes:[gene1, gene2, gene3]}
-// {pathwayId: pathwayabc, genes: [gene1, gene3]}
-// JC/OC calculation
-// output: JSON object
-//        {edgeId: pathwayxyz_pathwayabc, intersection: [gene1, gene3], similarity: 0.6}
+// pathwayPairGraph(pathway1, pathway2, JCWeight) takes two pathway IDs
+// pathway1 and pathway1 and a weight for Jaccard coefficient
+// and generates the edge information between pathway1 and pathway2
 const pathwayPairGraph = (pathway1, pathway2, JCWeight) => {
   let intersectionCount = 0;
   const intersection = [];
-
   const joinedPathway = pathway1.genes.concat(pathway2.genes);
   joinedPathway.sort();
   for (let i = 1; i < joinedPathway.length; ++i) {
@@ -20,27 +15,17 @@ const pathwayPairGraph = (pathway1, pathway2, JCWeight) => {
       intersection.push(joinedPathway[i]);
     }
   }
-
   // JC/OC calculation
   const pathway1Length = pathway1.genes.length;
   const pathway2Length = pathway2.genes.length;
-  const similarity = JCWeight*(intersectionCount/(pathway1Length + pathway2Length - intersectionCount)) + (1 - JCWeight) * (intersectionCount / Math.min(pathway1Length, pathway2Length));
+  const similarity = JCWeight * (intersectionCount / (pathway1Length + pathway2Length - intersectionCount)) + (1 - JCWeight) * (intersectionCount / Math.min(pathway1Length, pathway2Length));
   return {edgeId: pathway1.pathwayId + '_' + pathway2.pathwayId, intersection: intersection, similarity: similarity};
 };
 
 
-// input: a list of objects
-// [{pathwayId: "pathway1", description: "des1", genes: [gene1, gene2, gene3]},
-// {pathwayId: "pathway2", description: "des2", genes: [gene4, gene2]},
-// {pathwayId: "pathway3", description: "des3", genes: [gene1]},
-// {pathwayId: "pathway4", description: "des4", genes: [gene8, gene1]}]
-// output:
-// [{edgeId: "pathway1_pathway2", intersection: [gene2], similarity: 0.1},
-// {edgeId: "pathway1_pathway3", intersection: [gene1], similarity: 0.1},
-// {edgeId: "pathway1_pathway4", intersection: [gene1], similarity: 0.1},
-// {edgeId: "pathway2_pathway3", intersection: [], similarity: 0.1},
-// {edgeId: "pathway2_pathway4", intersection: [], similarity: 0.1},
-// {edgeId: "pathway3_pathway4", intersection: [gene1], similarity: 0.1}]
+// pathwayListGraph(pathwayList, JCWeight) takes a list of pathway IDs pathwayList
+// and a weight for Jaccard coefficient JCWeight
+// and generates all edge informatino pairwise
 const pathwayListGraph = (pathwayList, JCWeight) => {
   const ret = [];
   for (let i = 0; i < pathwayList.length; ++i) {
@@ -52,7 +37,9 @@ const pathwayListGraph = (pathwayList, JCWeight) => {
 };
 
 
-// filter out edges with similarity rate < curoff
+// filterEdges(edgeList, cutoff) takes a list of edges edgelist and
+// a number for cutoff point cutoff
+// and filters edges whose similarity rate is less than cutoff
 const filterEdges = (edgeList, cutoff) => {
   return _.filter(edgeList, edge => {
     return edge.similarity >= cutoff;

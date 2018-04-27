@@ -1,22 +1,13 @@
-/*
-documentation for emap
-sample request URL: http://localhost:3000/api/emap/?pathwayIdList=GO:1901216 GO:2001252 GO:1905269
-parameter:
-pathwayIdList - [string] a list of pathwayIds (GO and REACTOME) delimited by whitespace
-return:
-[Object] {"unrecognized":[vector of pathwayIds], "duplicate": [vector of pathwayIds], "graph": [Object of node and edge info]}
-
-Notes:
-1. each pathwayId appears at most once in unrecognize, duplicate and geneInfo
-2. If a pathwayId is unrecognized and duplicate, only report it in unrecognize.
-3. If a pathwayId is recognized and duplicate, report it in duplicate and store info in graph.
-*/
-const pathwayInfoTable = require('./pathway-table').pathwayInfoTable;
-const generateNodeInfo = require('./generate-info').generateNodeInfo;
-const generateEdgeInfo = require('./generate-info').generateEdgeInfo;
+const { pathwayInfoTable } = require('./pathway-table');
+const { generateEdgeInfo } = require('./generate-info');
 const _ = require('lodash');
 
-// pathwayInfoList: {"GO:1":{pValue: 1}, "GO:2": {pValue: 0, color: "green"}}
+
+// generateGraphInfo(pathwayInfoList, cutoff = 0.375, JCWeight, OCWeight) takes a
+// list of pathway information pathwayInfoList, a number for cutoff point cutoff
+// and the weights for Jaccard coefficients and Overlap coefficient JCWeight and
+// OCWeight
+// and returns the graph information for pathwayInfoList based on cutoff, JCWeight and OCWeight
 const generateGraphInfo = (pathwayInfoList, cutoff = 0.375, JCWeight, OCWeight) => {
   if (cutoff < 0 || cutoff > 1) {
     throw new Error('ERROR: cutoff out of range [0, 1]');
@@ -24,7 +15,6 @@ const generateGraphInfo = (pathwayInfoList, cutoff = 0.375, JCWeight, OCWeight) 
   if (typeof(cutoff) != 'number') {
     throw new Error('ERROR: cutoff is not a number');
   }
-
   if (JCWeight < 0 || JCWeight > 1) {
     throw new Error('ERROR: JCWeight out of range [0, 1]');
   }
@@ -48,7 +38,6 @@ const generateGraphInfo = (pathwayInfoList, cutoff = 0.375, JCWeight, OCWeight) 
   } else if (OCWeight === undefined) {
     OCWeight = 1 - JCWeight;
   }
-
   // check unrecognized and duplicates, modify pathwayIdList
   const unrecognized = new Set();
   for (let pathwayId in pathwayInfoList) {
@@ -88,9 +77,7 @@ const generateGraphInfo = (pathwayInfoList, cutoff = 0.375, JCWeight, OCWeight) 
       }
     });
   });
-
   return { unrecognized: Array.from(unrecognized), graph: {elements: elements} };
-
 };
 
 

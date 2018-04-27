@@ -1,4 +1,4 @@
-const generateGraphInfo = require('./generate-graph-info').generateGraphInfo;
+const { generateGraphInfo } = require('./generate-graph-info');
 
 
-module.exports = {generateGraphInfo};
+module.exports = { generateGraphInfo };

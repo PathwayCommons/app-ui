@@ -25,7 +25,9 @@ const ServerAPI = {
   },
 
   querySearch(query){
-    return fetch(`/pc-client/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
+    const queryClone=_.assign({},query);
+    if(/(uniprot:\w+|ncbi:[0-9]+|hgnc:\w+)$/.test(queryClone.q)){queryClone.q=queryClone.q.split(':')[1];}
+    return fetch(`/pc-client/querySearch?${qs.stringify(queryClone)}`, defaultFetchOpts).then(res => res.json());
   },
 
   geneQuery(query){

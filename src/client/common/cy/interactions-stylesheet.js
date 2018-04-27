@@ -42,7 +42,7 @@ const iStylesheet=cytoscape.stylesheet()
   'text-halign': 'center',
   'text-valign': 'center',
 })
-.selector('node[?quried]')
+.selector('node[?queried]')
 .css({
   'background-color': 'blue',
   'opacity': 1,

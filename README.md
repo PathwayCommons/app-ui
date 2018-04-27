@@ -75,16 +75,7 @@ docker-compose --file docker-compose.yml up --detach
 
 Access the app instance at port `9090`.The default configuration declared in `docker-compose.yml` also runs a [rethinkdb](https://hub.docker.com/_/rethinkdb/) image; access the UI at port `8020`. 
 
-To run the GitHub master branch:
-
-```sh
-docker-compose --file docker-compose.production.yml up --detach
-```
-
-Access the app instance at port `3000`. The production configuration declared in `docker-compose.production.yml` uses a rethinkdb instance running on host.   
-
 Notes:
-- The Docker Hub image tag `latest` corresponds to the GitHub master while other tags (e.g. `development`) match the branch name 
 - References:
   - [Getting started with Docker Compose](https://docs.docker.com/compose/gettingstarted/)
 

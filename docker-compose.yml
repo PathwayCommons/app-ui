@@ -6,11 +6,9 @@ services:
     ports:
       - "9090:3000" 
     environment:
-      NODE_ENV: "development"  
       host: "db"
   db:
     container_name: appui_db
     image: rethinkdb:2.3.6
     ports:
       - "8020:8080" 
-      - "28015:28015" 

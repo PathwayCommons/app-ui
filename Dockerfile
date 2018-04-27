@@ -3,7 +3,7 @@
 # https://github.com/nodejs/docker-node
 
 # Node.js base image 
-FROM node:9.11.1
+FROM node:8
 
 # Create an unprivileged user w/ home directory
 RUN groupadd appuser \

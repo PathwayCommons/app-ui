@@ -38,7 +38,7 @@ const convertGConvertNames = (officalSynonym) => {
 // and an object of options userOptions
 // and validates the query based on userOptions
 const validatorGconvert = (query, userOptions) => {
-  return promise = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const formData = _.assign({}, defaultOptions, JSON.parse(JSON.stringify(userOptions)), { query: query });
     formData.organism = formData.organism.toLowerCase();
     const initialTarget = formData.target.toUpperCase();
@@ -90,15 +90,13 @@ const validatorGconvert = (query, userOptions) => {
             geneInfo.add(JSON.stringify({initialAlias: initialAlias, convertedAlias: convertedAlias}));
           }
         });
-
         for (const initialAlias in duplicate) {
           duplicate[initialAlias] = Array.from(duplicate[initialAlias]);
         }
         geneInfo = _.map(Array.from(geneInfo), ele => { return JSON.parse(ele); });
-
         const ret = { unrecognized: Array.from(unrecognized), duplicate: duplicate, geneInfo: geneInfo };
         resolve(ret);
-      })
+      });
   });
 };
 

@@ -1,7 +1,6 @@
 //Import Depedencies
 const express = require('express');
 const enrichmentRouter = express.Router();
-const swaggerUi = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
 const { validatorGconvert } = require('../enrichment/validation');
 const { enrichment } = require('../enrichment/analysis');
@@ -18,7 +17,6 @@ var swaggerDefinition = {
       url: "https://github.com/PathwayCommons/app-ui/blob/master/LICENSE"
     }
   },
-
   basePath: '/api/',
   "tags": [
     {
@@ -50,15 +48,6 @@ enrichmentRouter.get('/swagger.json', function (req, res) {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);
 });
-
-
-const controller = require('./controller');
-const config = require('../../config');
-
-
-const isAuthenticated = token => {
-  return config.MASTER_PASSWORD != '' && config.MASTER_PASSWORD === token;
-};
 
 
 /**
@@ -105,7 +94,7 @@ enrichmentRouter.post('/validation', (req, res) => {
     } else {
       res.status(400).send(err.message);
     }
-  })
+  });
 });
 
 
@@ -201,6 +190,7 @@ enrichmentRouter.post('/visualization', (req, res) => {
     res.status(400).send(err.message);
   }
 });
+
 
 /**
  * @swagger

@@ -25,11 +25,4 @@ const generateEdgeInfo = (pathwayIdList, JCWeight, cutoff = 0.375) => {
 };
 
 
-// generateNodeInfo(pathwayIdList) takes a list of pathway IDs
-// and returns the node information
-const generateNodeInfo = (pathwayIdList) => {
-  return fetchPathwayInfo(pathwayIdList);
-};
-
-
-module.exports = { generateEdgeInfo, generateNodeInfo };
+module.exports = { generateEdgeInfo };

@@ -1,5 +1,4 @@
 const { pathwayInfoTable } = require('./pathway-table');
-const { generateNodeInfo } = require('./generate-info');
 const { generateEdgeInfo } = require('./generate-info');
 const _ = require('lodash');
 

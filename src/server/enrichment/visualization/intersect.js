@@ -18,7 +18,7 @@ const pathwayPairGraph = (pathway1, pathway2, JCWeight) => {
   // JC/OC calculation
   const pathway1Length = pathway1.genes.length;
   const pathway2Length = pathway2.genes.length;
-  const similarity = JCWeight*(intersectionCount/(pathway1Length + pathway2Length - intersectionCount)) + (1 - JCWeight) * (intersectionCount / Math.min(pathway1Length, pathway2Length));
+  const similarity = JCWeight * (intersectionCount / (pathway1Length + pathway2Length - intersectionCount)) + (1 - JCWeight) * (intersectionCount / Math.min(pathway1Length, pathway2Length));
   return {edgeId: pathway1.pathwayId + '_' + pathway2.pathwayId, intersection: intersection, similarity: similarity};
 };
 

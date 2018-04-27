@@ -7,7 +7,7 @@ const cleanUpEntrez = (initialAlias) => {
     initialAlias = initialAlias.split(':')[ncbiNameIndex];
   }
   return initialAlias;
-}
+};
 
 
 module.exports = { cleanUpEntrez };

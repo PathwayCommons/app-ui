@@ -23,6 +23,7 @@ const defaultSetting = {
   "sf_REAC": 1,
   "prefix": 'ENTREZGENE_ACC'
 };
+
 const gProfilerURL = "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/";
 
 
@@ -38,7 +39,7 @@ const parseGProfilerResponse = (gProfilerResponse) => {
   lines = _.compact(lines);
   return _.map(lines, line => {
     return line.split('\t');
-  })
+  });
 };
 
 
@@ -55,9 +56,9 @@ const enrichment = (query, userSetting) => {
     if (key === 'maxSetSize') return 'max_set_size';
     if (key === 'thresholdAlgo') return 'threshold_algo';
     return key;
-  })
+  });
 
-  return promise = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     let formData = _.assign({}, defaultSetting, JSON.parse(JSON.stringify(userSetting)), { query: query });
     const queryVal = formData.query;
     const orderedQueryVal = formData.ordered_query;
@@ -67,11 +68,11 @@ const enrichment = (query, userSetting) => {
     const thresholdAlgoVal = formData.threshold_algo;
     const custbgVal = formData.custbg;
     if (!Array.isArray(queryVal)) {
-      reject(new Error('ERROR: genes should be an array'))
+      reject(new Error('ERROR: genes should be an array'));
     }
     formData.query = query.join(" ");
     if (orderedQueryVal != 0 && orderedQueryVal != 1) {
-      reject(new Error('ERROR: orderedQuery should be 0 / false or 1 / true'))
+      reject(new Error('ERROR: orderedQuery should be 0 / false or 1 / true'));
     }
     if (typeof(formData.user_thr) != 'number') {
       reject(new Error('ERROR: userThr should be a number'));
@@ -98,6 +99,7 @@ const enrichment = (query, userSetting) => {
       reject(new Error('ERROR: custbg should be an array'));
     }
     formData.custbg = custbgVal.join(" ");
+
     fetch(gProfilerURL, {
       method: 'post',
       body: qs.stringify(formData)
@@ -115,15 +117,14 @@ const enrichment = (query, userSetting) => {
             "p-value": Number(elem[pValueIndex]),
             "description": elem[tNameIndex].trim(),
             "intersection": _.map(elem[qAndTListIndex].split(','), gene => {
-              const colonIndex = 14;
               return cleanUpEntrez(gene);
             })
           };
         });
         resolve(ret);
       });
-  })
-}
+  });
+};
 
 
 module.exports = { enrichment };

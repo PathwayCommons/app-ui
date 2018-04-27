@@ -41,5 +41,13 @@ const iStylesheet=cytoscape.stylesheet()
   'label': node => node.data('label'),
   'text-halign': 'center',
   'text-valign': 'center',
+})
+.selector('node[?queried]')
+.css({
+  'background-color': 'blue',
+  'opacity': 1,
+  'z-compound-depth': 'top',
+  'color': 'white',
+  'text-outline-color': 'black'
 });
 module.exports = iStylesheet;

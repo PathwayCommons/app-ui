@@ -29,21 +29,22 @@ const ServerAPI = {
   },
 
   geneQuery(query){
-    const paddingAdded = _.max([2-query.genes.length,0]);
-    console.log(paddingAdded);
-    const padding = _.times(paddingAdded,()=>'p');
-    console.log(padding);
-    query.genes=_.concat(padding,query.genes);
-    
-    console.log(query.genes);
-    return fetch('/api/validation', {
-      method:'POST', 
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body:qs.stringify(query)
-    }).then(res => res.json()).then(ids=> _.assign(ids,{unrecognized:_.drop(ids.unrecognized,paddingAdded)}));//remove padding
+    if(query.genes.length>=1){
+      const paddingAdded = _.max([2-query.genes.length,0]);
+      const padding = _.times(paddingAdded,()=>'p');
+      query.genes=_.concat(padding,query.genes);
+      return fetch('/api/validation', {
+        method:'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body:qs.stringify(query)
+      }).then(res => res.json()).then(ids=> _.assign(ids,{unrecognized:_.drop(ids.unrecognized,paddingAdded)}));//remove padding
+    }
+    else{
+      return Promise.resolve({geneInfo:[],unrecognized:[]});
+    }
   },
 
   getGeneInformation(ids){

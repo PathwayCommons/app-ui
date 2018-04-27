@@ -6,6 +6,7 @@ const { ServerAPI } = require('../../services');
 const databases = require('../../common/config').databases;
 const Loader = require('react-loader');
 const _ = require('lodash');
+
 //usedDatabases=[['Uniprot lookup name',{configName:,gProfiler:}]]
 const usedDatabases=new Map ([
   ['GeneCards',{configName:'Gene Cards',gProfiler:'HGNCSYMBOL'}],
@@ -14,7 +15,7 @@ const usedDatabases=new Map ([
   ['Uniprot',{configName:'Uniprot',gProfiler:'Uniprot'}]
 ]);
 
-const linkBuilder= (source,geneQuery)=>{
+const idFormatter= (source,geneQuery)=>{
   let genes={}; 
   const geneArray=geneQuery.geneInfo;
   genes.unrecognized=geneQuery.unrecognized;
@@ -36,7 +37,7 @@ const pcFallback = (unrecognized,genes) => {
           hit =_.reverse(hit.uri.split('/'));
           return hit[1]==='uniprot' ? hit[0] : false;
         }));
-        const duplicateCheck = _.compact(ids.map(id=>_.findKey(genes,{'Uniprot':id})));
+        const duplicateCheck = _.compact(ids.map(id=>_.filter(genes,{'Uniprot':id})));
         if(!_.isEmpty(ids) && _.isEmpty(duplicateCheck)){
           genes[entry]={'Uniprot': ids[0]};
         }
@@ -72,7 +73,7 @@ const getNcbiInfo = (ids,genes) => {
   });
 };
 
-const getUniprotInfo= (ids,genes) => {
+const getUniprotInfo= (ids) => {
   const uniprotIds=_.map(ids,(search,id)=>id);
   return ServerAPI.getUniprotnformation(uniprotIds).then(result=>{
     return result.map(gene=>{
@@ -83,24 +84,19 @@ const getUniprotInfo= (ids,genes) => {
         }
       });
       const hgncSymbol = links['Gene Cards'];
-      const duplicateCheck = _.findKey(genes,{'Gene Cards':hgncSymbol});
-      if(!duplicateCheck || genes[duplicateCheck]['Uniprot']===gene.accession){
       links=idToLinkConverter(links);
-        return {
-          databaseID:gene.accession,
-          name:gene.gene[0].name.value,
-          function: gene.comments && gene.comments[0].type==='FUNCTION' ? gene.comments[0].text[0].value:'',
-          hgncSymbol:hgncSymbol,
-          showMore:{full:true,function:false,synonyms:false},
-          links:links
-        };
-      }
-      else{
-        return;
-      }
+      return {
+        databaseID:gene.accession,
+        name:gene.gene[0].name.value,
+        function: gene.comments && gene.comments[0].type==='FUNCTION' ? gene.comments[0].text[0].value:'',
+        hgncSymbol:hgncSymbol,
+        showMore:{full:true,function:false,synonyms:false},
+        links:links
+      };
     });
   });
 };
+
 /*Gets info for a landing box
 input: 'TP53'
 output: [{
@@ -115,43 +111,46 @@ synonyms:"TP53, BCC7, LFS1, P53, TRP53"
 const getLandingResult= (query)=> {
   let q=query.trim().split(' ');
   let ncbiIds={},uniprotIds={},labeledId={};
-  q.forEach((id,index)=>{if(/(uniprot:\w+|hgnc:\w+|ncbi:[0-9]+)$/.test(id)){
+  const genesToSearch = [];
+  q.forEach((id)=>{
     const splitId=id.split(':');
-    if('uniprot'===splitId[0]){uniprotIds[splitId[1]]=splitId[1]; _.pullAt(q,index);}
-    else if('ncbi'===splitId[0]){ncbiIds[splitId[1]]=splitId[1]; _.pullAt(q,index);}
-    else {labeledId[splitId]=splitId[1]; q[index]=splitId[1];}
-  }});
+    if(/uniprot:\w+$/.test(id)){uniprotIds[splitId[1]]=splitId[1];}
+    else if(/(ncbi:[0-9]+|hgnc:\w+)$/.test(id)){labeledId[splitId[1]]=splitId[1]; genesToSearch.push(splitId[1]);}
+    else {genesToSearch.push(splitId[0]);}
+  });
   const promises= [];
-  console.log(q);
   usedDatabases.forEach((database)=>promises.push(
-    ServerAPI.geneQuery({genes: q,target: database.gProfiler}).then(result=>linkBuilder(database.configName,result))
+    ServerAPI.geneQuery({genes: genesToSearch,target: database.gProfiler}).then(result=>idFormatter(database.configName,result))
   ));
   return Promise.all(promises).then(values=>{
-    console.log(values);
     let genes=values[0];
     _.tail(values).forEach(gene=>_.mergeWith(genes,gene,(objValue, srcValue)=>_.assign(objValue,srcValue)));
     return genes;
-  }).then(genes=>Promise.all(pcFallback(_.without(genes.unrecognized,genes,id=>!labeledId[id]),genes)).then(()=>genes)).then((genes)=>{
-      _.forEach(genes,(gene,search)=>{
-        if(gene['NCBI Gene']){
-          ncbiIds[gene['NCBI Gene']]=search;
-        }
-        else if(gene['Uniprot']){
-          uniprotIds[gene['Uniprot']]=search;
-        }
-      });
-      let landingBoxes=[];
-       if(!_.isEmpty(ncbiIds)){
-        landingBoxes.push(getNcbiInfo(ncbiIds,genes));
-       }
-       if(!_.isEmpty(uniprotIds)){
-        landingBoxes.push(getUniprotInfo(uniprotIds,genes));
-       }
-      return Promise.all(landingBoxes).then(landingBoxes=> {
-        landingBoxes=_.compact(_.flatten(landingBoxes));
-        if(landingBoxes.length>1){landingBoxes.forEach(box=>box.showMore.full=false);}
-        return landingBoxes;
-      });
+  })
+  .then(genes=>Promise.all(pcFallback(_.without(genes.unrecognized,genes,id=>!labeledId[id]),genes)).then(()=>genes))
+  .then((genes)=>{
+    _.forEach(genes,(gene,search)=>{
+      if(gene['NCBI Gene']){
+        ncbiIds[gene['NCBI Gene']]=search;
+      }
+      else if(gene['Uniprot']){
+        uniprotIds[gene['Uniprot']]=search;
+      }
+    });
+    let landingBoxes=[];
+     if(!_.isEmpty(ncbiIds)){
+      landingBoxes.push(getNcbiInfo(ncbiIds,genes));
+     }
+     if(!_.isEmpty(uniprotIds)){
+      landingBoxes.push(getUniprotInfo(uniprotIds));
+     }
+    return Promise.all(landingBoxes).then(landingBoxes=> {
+      landingBoxes=_.uniqWith(_.flatten(landingBoxes),(arrVal, othVal)=>
+        _.intersectionWith(_.values(arrVal.links),_.values(othVal.links),_.isEqual).length
+      );
+      if(landingBoxes.length>1){landingBoxes.forEach(box=>box.showMore.full=false);}
+      return landingBoxes;
+    });
   });
 };
 
@@ -173,10 +172,14 @@ const expandableText = (controller,landing,length,text,separator,type,cssClass,t
   return result;
 };
 
-const interactionsLink = (source,text)=> 
-  h(Link, {to: { pathname: '/interactions',search: queryString.stringify({source: source})}, 
-    target: '_blank', className: 'search-landing-interactions', key:'interactions' 
-  }, [h('button.search-landing-button', text)]);
+const interactionsLink = (source,text)=>{ 
+  return h(Link, {
+      to: { pathname:'/interactions', search:queryString.stringify({source: source})}, 
+      target: '_blank', className: 'search-landing-interactions', key:'interactions' 
+    }, 
+    [h('button.search-landing-button', text)]
+  );
+};
 
 /*Generates a landing box
 input: {controller,[{

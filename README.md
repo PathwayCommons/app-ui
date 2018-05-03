@@ -1,9 +1,13 @@
 # app-ui
 
+## Test
+
+### Changing for the sake of changing changes.
 
 ## Required software
 
 - [Node.js](https://nodejs.org/en/) >=6.3.0
+- another bullet point
 
 
 
@@ -18,7 +22,7 @@ The following environment variables can be used to configure the server:
  1. Download [RethinkDB](https://www.rethinkdb.com/docs/install/)
  2. Start your RethinkDB server by following the steps [here](https://www.rethinkdb.com/docs/start-a-server/)
  3. Go to `src/server/database/config.js`  and modify the ip field to match your server address
- 4. Start the project : `npm run start` or `npm run watch`, then the server will auto create all the required tables for you. 
+ 4. Start the project : `npm run start` or `npm run watch`, then the server will auto create all the required tables for you.
 
 
 ## Run targets
@@ -65,7 +69,7 @@ Notes:
 
 ### Run image hosted on Docker Hub using Docker Compose
 
-Pathway Commons maintains a [Docker Hub](https://hub.docker.com/) image for [app-ui](https://hub.docker.com/r/pathwaycommons/app-ui/) that is automatically built each time a commit is pushed to GitHub. 
+Pathway Commons maintains a [Docker Hub](https://hub.docker.com/) image for [app-ui](https://hub.docker.com/r/pathwaycommons/app-ui/) that is automatically built each time a commit is pushed to GitHub.
 
 To run the GitHub development branch:
 
@@ -73,7 +77,7 @@ To run the GitHub development branch:
 docker-compose --file docker-compose.yml up --detach
 ```
 
-Access the app instance at port `9090`.The default configuration declared in `docker-compose.yml` also runs a [rethinkdb](https://hub.docker.com/_/rethinkdb/) image; access the UI at port `8020`. 
+Access the app instance at port `9090`.The default configuration declared in `docker-compose.yml` also runs a [rethinkdb](https://hub.docker.com/_/rethinkdb/) image; access the UI at port `8020`.
 
 Notes:
 - References:

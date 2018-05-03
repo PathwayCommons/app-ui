@@ -1,14 +1,8 @@
 # app-ui
 
-## Test
-
-### Changing for the sake of changing changes.
-
 ## Required software
 
-- [Node.js](https://nodejs.org/en/) >=6.3.0
-- another bullet point
-
+- [Node.js](https://nodejs.org/en/) >=8
 
 
 ## Configuration

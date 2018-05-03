@@ -4,7 +4,7 @@ const _ = require('lodash');
 let defaults = {
   PORT: 3000,
   MASTER_PASSWORD: '',
-  RANDOM_VAR: ''
+  ANSWER: 42
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );

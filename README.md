@@ -5,7 +5,28 @@
 
 - [Node.js](https://nodejs.org/en/) >=6.3.0
 
+## Running the App Locally
+1.  Install rethinkdb and run it by typing the command in your terminal
+```
+rethinkdb
+```
+2. Install the project dependencies by typing:
+```
+npm install
+```
 
+3.  Run the project using one of the defined package scripts:
+
+For development:
+```
+npm run watch 
+```
+
+For a production build:
+```
+npm run build-prod
+npm run start
+```
 
 ## Configuration
 

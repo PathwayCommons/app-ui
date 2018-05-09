@@ -119,7 +119,7 @@
 .search-option-item-container {
   margin-right: 10px;
   cursor: pointer;
-
+  
   transition: all 0.1s linear;
 }
 
@@ -287,7 +287,7 @@
   font-weight: lighter;
   text-decoration: underline;
   font-style: italic;
-  white-space: pre;
+  white-space: pre; 
   padding-right: 5px;
   display: inline-flex;
   cursor: pointer;
@@ -305,7 +305,7 @@
   justify-content: center;
 }
 .search-landing-button:hover {
-  background-color: #6E9ABD;
+  background-color: #6E9ABD; 
   color: white;
 }
 
@@ -316,7 +316,7 @@
 
 .search-item {
   display: flex;
-  vertical-align: middle;
+  vertical-align: middle; 
   align-items: center;
   padding-top: 20px;
   padding-bottom: 20px;

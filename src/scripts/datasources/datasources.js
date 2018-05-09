@@ -12,18 +12,6 @@ module.exports = [
     "homePage": "http://www.uniprot.org"
   },
   {
-    "id": "chebi",
-    "pcId": "http://pathwaycommons.org/pc2/chebi",
-    "description": "CheBI Ontology",
-    "homePage": "http://www.ebi.ac.uk/chebi/"
-  },
-  {
-    "id": "uniprot",
-    "pcId": "http://pathwaycommons.org/pc2/uniprot_human",
-    "description": "UniProtKB/Swiss-Prot (human)",
-    "homePage": "http://www.uniprot.org"
-  },
-  {
     "id": "reactome",
     "displayName": "Reactome",
     "pcId": "http://pathwaycommons.org/pc2/reactome",
@@ -35,7 +23,7 @@ module.exports = [
     "displayName": "pid",
     "pcId": "http://pathwaycommons.org/pc2/pid",
     "description": "NCI Curated Human Pathways from PID",
-    "homePage": "http://pid.nci.nih.gov/"
+    "homePage": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2686461/"
   },
   {
     "id": "psp",
@@ -70,7 +58,7 @@ module.exports = [
     "displayName": "DIP",
     "pcId": "http://pathwaycommons.org/pc2/dip",
     "description": "DIP (human)",
-    "homePage": "	http://dip.doe-mbi.ucla.edu"
+    "homePage": "http://dip.doe-mbi.ucla.edu"
   },
   {
     "id": "biogrid",
@@ -98,7 +86,7 @@ module.exports = [
     "displayName": "BIND",
     "pcId": "http://pathwaycommons.org/pc2/bind",
     "description": "BIND (human)",
-    "homePage": "http://bond.unleashedinformatics.com/"
+    "homePage": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC165503/"
   },
   {
     "id": "corum",
@@ -166,7 +154,7 @@ module.exports = [
     "displayName": "NetPath",
     "pcId": "http://pathwaycommons.org/pc2/netpath",
     "description": "NetPath",
-    "homePage": "http://www.netpath.org"
+    "homePage": "https://en.wikipedia.org/wiki/Netpath"
   },
   {
     "id": "wp",

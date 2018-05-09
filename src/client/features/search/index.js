@@ -11,6 +11,14 @@ const Icon = require('../../common/components').Icon;
 const { ServerAPI } = require('../../services');
 const Landing = require('./landing-box');
 
+//File in the scripts folder which has all the information needed to associate each URL with an ID
+//load that file and create a mapping object
+const URLData = require('../../../scripts/datasources/datasources');
+const sourceLinkMap = new Object();
+for(let i in URLData){
+  sourceLinkMap[URLData[i].id] = URLData[i].homePage;
+}
+
 class Search extends React.Component {
 
   constructor(props) {
@@ -33,7 +41,9 @@ class Search extends React.Component {
       showFilters: false,
       dataSources: []
     };
-    
+
+
+
       ServerAPI.datasources()
         .then(result => {
           this.setState({
@@ -125,16 +135,20 @@ class Search extends React.Component {
       const dsInfo =_.isEmpty(state.dataSources)? {iconUrl:null , name:''}: _.find(state.dataSources, ds => {
         return ds.uri === result.dataSource[0];
       });
+    
+    //get the link to source website from the map defined at start of file.
+    const sourceLink = sourceLinkMap[dsInfo.id] || "";
 
       return h('div.search-item', [
        h('div.search-item-icon',[
-          h('img', {src: dsInfo.iconUrl})
-        ]),
+          h('a',{href:sourceLink,target:"_blank"},[
+            h('img.search-item-image', {src: dsInfo.iconUrl})
+          ])]),
         h('div.search-item-content', [
           h(Link, { to: { pathname: '/view', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' }, [
             h('h3.search-item-content-title', result.name || 'N/A'),
           ]),
-          h('p.search-item-content-datasource', ` ${dsInfo.name}`),
+          h('a.search-item-content-datasource',{href: sourceLink,target:"_blank"},`${dsInfo.name}`),
           h('p.search-item-content-participants', `${result.numParticipants} Participants`)
         ])
       ]);

@@ -52,7 +52,7 @@ class BaseNetworkView extends React.Component {
   componentWillUnmount() {
     this.state.cy.destroy();
   }
-  
+
   componentDidMount() {
     const state = this.state;
     const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
@@ -158,17 +158,13 @@ class BaseNetworkView extends React.Component {
         key: 'search',
         active: this.state.searchOpen,
         onClick: () => {
-          !this.state.searchOpen || this.clearSearchBox();
-          this.setState({ searchOpen: !this.state.searchOpen }, () => {
-            if (this.state.searchOpen == true) {
-              this.searchField.focus();
-            }
-          });
+          this.clearSearchBox();
+          this.setState({ searchOpen: !this.state.searchOpen});
         },
         desc: 'Search entities'
       }),
       h('div', {
-        className: classNames('search-nodes', { 'search-nodes-open': this.state.searchOpen }),
+        className: classNames('search-nodes'),
         onChange: e => {
           this.setState({
             nodeSearchValue: e.target.value

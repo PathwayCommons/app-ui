@@ -15,7 +15,7 @@ const usedDatabases=new Map ([
 ]);
 
 const linkBuilder= (source,geneQuery)=>{
-  let genes={}; 
+  let genes={};
   const geneArray=geneQuery.geneInfo;
   genes.unrecognized=geneQuery.unrecognized;
   const duplicates = new Set();
@@ -149,7 +149,7 @@ const getLandingResult= (query)=> {
 
 const handelShowMoreClick= (controller,landing,varToToggle,index) => {
   landing[index].showMore[varToToggle]=!landing[index].showMore[varToToggle];
-  controller.setState({ landing:landing }); 
+  controller.setState({ landing:landing });
 };
 
 const expandableText = (controller,landing,length,text,separator,type,cssClass,toggleVar,index)=>{
@@ -165,9 +165,9 @@ const expandableText = (controller,landing,length,text,separator,type,cssClass,t
   return result;
 };
 
-const interactionsLink = (source,text)=> 
-  h(Link, {to: { pathname: '/interactions',search: queryString.stringify({source: source})}, 
-    target: '_blank', className: 'search-landing-interactions', key:'interactions' 
+const interactionsLink = (source,text)=>
+  h(Link, {to: { pathname: '/interactions',search: queryString.stringify({source: source})},
+    target: '_blank', className: 'search-landing-interactions', key:'interactions'
   }, [h('button.search-landing-button', text)]);
 
 /*Generates a landing box
@@ -200,34 +200,34 @@ const landingBox = (props) => {
       title.push(h('strong.material-icons',{key:'arrow'},landing[index].showMore.full? 'expand_less': 'expand_more'));
     }
     let hgncSymbol='';
-    if(box.hgncSymbol){ 
+    if(box.hgncSymbol){
       hgncSymbol=h('i.search-landing-small','Official Symbol: '+box.hgncSymbol);
     }
     let otherNames=[];
-    if(box.otherNames){ 
+    if(box.otherNames){
       otherNames=expandableText(controller,landing,16,'Other Names: '+box.otherNames,',','i','search-landing-small','synonyms',index);
     }
     let functions=[];
     if(box.function){
       functions=expandableText(controller,landing,260, box.function,/\s/g,'span','search-landing-function','function',index);
-    } 
+    }
     let links=[];
     _.forIn((box.links),(value,key)=>{
       links.push(h('a.search-landing-link',{key: key, href: value},key));
     });
-    return [ 
+    return [
       h('div.search-landing-title',{key:'title',
         onClick: () => {if(multipleBoxes){handelShowMoreClick(controller,landing, 'full', index);}},
         className:classNames('search-landing-title',{'search-landing-title-multiple':multipleBoxes}),
       },[title]),
-      box.showMore.full && 
-      h('div.search-landing-innner',{key: box.databaseID},[ 
+      box.showMore.full &&
+      h('div.search-landing-innner',{key: box.databaseID},[
         h('div.search-landing-section',{key: 'ids'},[hgncSymbol,otherNames]),
         h('div.search-landing-section',{key: 'functions'},[functions]),
         h('div.search-landing-section',{key: 'links'},[links]),
         interactionsLink(box.databaseID,'View Interactions')
       ])
-    ];    
+    ];
   });
   if(landing.length>1){
     landingHTML.push(interactionsLink(landing.map(entry=>entry.databaseID),'View Interactions Between Entities'));

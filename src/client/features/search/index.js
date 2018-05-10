@@ -42,8 +42,6 @@ class Search extends React.Component {
       dataSources: []
     };
 
-
-
       ServerAPI.datasources()
         .then(result => {
           this.setState({
@@ -223,7 +221,7 @@ class Search extends React.Component {
                   className: classNames('search-option-item', 'search-option-item-tools', { 'search-option-item-tools-active': state.showFilters }),
                   onClick: e => this.setState({ showFilters: !state.showFilters })
                 }, [
-                    h('a', 'Tools')
+                    h('a', 'Datasource')
                   ])
               ]))
             ])
@@ -232,7 +230,7 @@ class Search extends React.Component {
       h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' } }, [
         h('div.search-list-container', [
           h('div.search-result-info', [searchResultInfo]),
-          h(landingBox,{controller,landing}), 
+          h(landingBox,{controller,landing}),
           h('div.search-list', searchResults)
         ])
       ])

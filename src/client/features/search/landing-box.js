@@ -160,7 +160,7 @@ const expandableText = (controller,landing,length,text,separator,type,cssClass,t
     result=[h(`${type}`,{className:cssClass,key:'text'},textToUse)];
   if(text.length>length){
     result.push(h(`${type}.search-landing-link`,{onClick: ()=> handelShowMoreClick(controller, landing, toggleVar, index),key:'showMore'},
-    varToToggle ? '« hide': 'show »'));
+    varToToggle ? '« less': 'more »'));
   }
   return result;
 };
@@ -209,7 +209,7 @@ const landingBox = (props) => {
     }
     let functions=[];
     if(box.function){
-      functions=expandableText(controller,landing,260, box.function,/\s/g,'span','search-landing-function','function',index);
+      functions=expandableText(controller,landing,360, box.function,".",'span','search-landing-function','function',index);
     }
     let links=[];
     _.forIn((box.links),(value,key)=>{

@@ -36,7 +36,6 @@ class BaseNetworkView extends React.Component {
         nodeSearchValue: '',
         open: false,
         networkLoading: true,
-        searchOpen: false,
         updateBaseViewState: (nextState, next) => this.setState(nextState, next ? next() : null)
       }, props);
     this.state.open = this.state.activeMenu !== 'closeMenu';

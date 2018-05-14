@@ -33,8 +33,6 @@ class MetadataTip {
     getPublications(this.data).then(function (data) {
       this.data = data;
 
-      console.log(data);
-
       //Hide all other tooltips
       this.hideAll(cy);
 

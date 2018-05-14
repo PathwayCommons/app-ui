@@ -76,6 +76,14 @@ const defaultHandler = (pair) => {
   ]);
 };
 
+//Handle PC Search Related Fields
+const searchLinkHandler = (pair) => {
+  let searchTerm = pair[1];
+  return h('div.fake-paragraph',
+  h('a.tooltip-search-link',{href:"/search?q=" + searchTerm,target:"_blank"},'Search Pathway Commons for "' + searchTerm + '"')
+  );
+};
+
 const metaDataKeyMap = new Map()
   .set('Standard Name', standardNameHandler)
   .set('Display Name', displayNameHandler)
@@ -84,7 +92,8 @@ const metaDataKeyMap = new Map()
   .set('Database IDs', databaseHandler)
   .set('Publications', publicationHandler)
   .set('List',listHandler)
-  .set('Detailed Views',viwerListHandler);
+  .set('Detailed Views',viwerListHandler)
+  .set('Search Link',searchLinkHandler);
 
  /**
   * parseMetadata(pair, trim)

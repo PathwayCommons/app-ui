@@ -16,7 +16,7 @@ class MetadataTip {
     this.data = data.parsedMetadata;
     //Add an extra piece of metadata for proteins
     if(data.class === "macromolecule")
-      this.data.push(["Search Link",this.name]);
+      this.data.push(["Search Link",data.label]);
     this.cyElement = cyElement;
     this.db = config.databases;
     this.viewStatus = {};

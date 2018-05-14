@@ -165,6 +165,15 @@ const expandableText = (controller,landing,length,text,separator,type,cssClass,t
   return result;
 };
 
+const expandableFunctionText = (controller,landing,text,toggleVar,index)=>{
+  let result = null;
+  const varToToggle= landing[index].showMore[toggleVar];
+  const cssClass = varToToggle ? 'search-landing-function-more' : 'search-landing-function-less';
+  result=[h('div', {key:'text', className:cssClass}, [h('span',text)])];
+  result.push(h('span.search-landing-link',{onClick: ()=> handelShowMoreClick(controller, landing, toggleVar, index),key:'showMore'}, varToToggle ? '« less': 'more »'));
+  return result;
+};
+
 const interactionsLink = (source,text)=>
   h(Link, {to: { pathname: '/interactions',search: queryString.stringify({source: source})},
     target: '_blank', className: 'search-landing-interactions', key:'interactions'
@@ -209,11 +218,11 @@ const landingBox = (props) => {
     }
     let functions=[];
     if(box.function){
-      functions=expandableText(controller,landing,360, box.function,".",'span','search-landing-function','function',index);
+      functions=expandableFunctionText(controller,landing,box.function,'function',index);
     }
     let links=[];
     _.forIn((box.links),(value,key)=>{
-      links.push(h('a.search-landing-link',{key: key, href: value},key));
+      links.push(h('a.search-landing-link',{key: key, href: value}, key));
     });
     return [
       h('div.search-landing-title',{key:'title',

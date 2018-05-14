@@ -40,8 +40,6 @@ class Search extends React.Component {
             dataSources: Object.values(result)
           });
         });
-
-    window.onpopstate = (() => window.location.reload() );
   }
 
   getSearchResult() {
@@ -119,7 +117,7 @@ class Search extends React.Component {
     const controller = this;
     const loaded= !(state.searchLoading || state.landingLoading);
 
-    let Example = props => h('span.search-example', {
+    let Example = props => h('a.search-example', {
       onClick: () => this.setAndSubmitSearchQuery({q: props.search})
     }, props.search);
 
@@ -194,10 +192,12 @@ class Search extends React.Component {
                   onChange: e => this.onSearchValueChange(e),
                   onKeyPress: e => this.onSearchValueChange(e)
                 }),
-                h('div.search-search-button', [
-                  h('button', { onClick: e => this.submitSearchQuery(e) }, [
-                    h(Icon, { icon: 'search' })
-                  ])
+                /*
+                h('button.search-search-button', { onClick: e => this.submitSearchQuery(e) }, [
+                  h(Icon, { icon: 'search' })
+                */
+                h('a.search-search-button', { href:"/search?" + queryString.stringify(state.query)}, [
+                  h(Icon, { icon: 'search' })
                 ])
               ]),
               h('div.search-suggestions', [

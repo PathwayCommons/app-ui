@@ -9,7 +9,7 @@ const _ = require('lodash');
 //usedDatabases=[['Uniprot lookup name',{configName:,gProfiler:}]]
 const usedDatabases=new Map ([
   ['GeneCards',{configName:'Gene Cards',gProfiler:'HGNCSYMBOL'}],
-  ['HGNC',{configName:'HGNC',gProfiler:'HGNC'}],
+  ['HGNC Symbol',{configName:'HGNC Symbol',gProfiler:'HGNCSymbol'}],
   ['GeneID',{configName:'NCBI Gene',gProfiler:'NCBIGene'}],
   ['Uniprot',{configName:'Uniprot',gProfiler:'Uniprot'}]
 ]);

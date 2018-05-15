@@ -152,16 +152,6 @@ class BaseNetworkView extends React.Component {
 
 
     const nodeSearchBar = [
-      h(IconButton, {
-        icon: 'search',
-        key: 'search',
-        active: this.state.searchOpen,
-        onClick: () => {
-          this.clearSearchBox();
-          this.setState({ searchOpen: !this.state.searchOpen});
-        },
-        desc: 'Search entities'
-      }),
       h('div', {
         className: classNames('search-nodes'),
         onChange: e => {

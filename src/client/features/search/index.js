@@ -30,7 +30,7 @@ class Search extends React.Component {
       landingLoading: false,
       searchResults: [],
       searchLoading: false,
-      showFilters: false,
+      showFilters: [],
       dataSources: []
     };
 
@@ -156,7 +156,7 @@ class Search extends React.Component {
       ]);
     });
 
-    const searchResultInfo = state.showFilters ? h('div.search-filters', [
+    const searchResultFilter = h('div.search-filters', [
       h('select.search-datasource-filter', {
         value: state.query.datasource,
         onChange: e => this.setAndSubmitSearchQuery({ datasource: e.target.value })
@@ -164,8 +164,9 @@ class Search extends React.Component {
         h('option', { value: [] }, 'Any datasource')].concat(
           _.sortBy(state.dataSources, 'name').map(ds => h('option', { value: [ds.id] }, ds.name))
           )),
-    ]) :
-      h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
+    ]);
+
+    const searchResultHitCount = h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
 
     return h('div.search', [
       h('div.search-header-container', [
@@ -205,19 +206,14 @@ class Search extends React.Component {
                 h(Example, {search: 'P04637'})
               ]),
               h('div.search-tabs', searchTypeTabs.concat([
-                h('div', {
-                  className: classNames('search-option-item', 'search-option-item-tools', { 'search-option-item-tools-active': state.showFilters }),
-                  onClick: e => this.setState({ showFilters: !state.showFilters })
-                }, [
-                    h('a', 'Datasource')
-                  ])
               ]))
             ])
         ])
       ]),
       h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' } }, [
         h('div.search-list-container', [
-          h('div.search-result-info', [searchResultInfo]),
+          h('div.search-result-filter', [searchResultFilter]),
+          h('div.search-result-hit-count',[searchResultHitCount]),
           h(landingBox,{controller,landing}),
           h('div.search-list', searchResults)
         ])

@@ -113,7 +113,6 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
 .search-nodes {
   @extend %flex-center;
   @extend %no-select;
-
   width: 11em;
   padding-left: 0.5em;
   padding-right: 0.5em;
@@ -123,8 +122,6 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
 }
 
 .view-search-bar {
-  @extend %flex-center;
-
   height: 1.85em;
   width: 100%;
   background-color: white;

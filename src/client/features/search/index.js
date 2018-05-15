@@ -109,6 +109,13 @@ class Search extends React.Component {
     this.getSearchResult();
   }
 
+  componentWillReceiveProps (nextProps) {
+    const nextQuery = queryString.parse(nextProps.location.search);
+    if( this.state.query != nextQuery ){
+      this.getSearchResult(this.state.query);
+    }
+ }
+
   render() {
     const props = this.props;
     const state = this.state;
@@ -196,7 +203,7 @@ class Search extends React.Component {
                 h('button.search-search-button', { onClick: e => this.submitSearchQuery(e) }, [
                   h(Icon, { icon: 'search' })
                 */
-                h('a.search-search-button', { href:"/search?" + queryString.stringify(state.query)}, [
+                h(Link, { to: { pathname: '/search', search: queryString.stringify(state.query)}}, [
                   h(Icon, { icon: 'search' })
                 ])
               ]),

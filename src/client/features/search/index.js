@@ -227,7 +227,7 @@ buildExampleLink (search) {
                   className: classNames('search-option-item', 'search-option-item-tools', { 'search-option-item-tools-active': state.showFilters }),
                   onClick: e => this.setState({ showFilters: !state.showFilters })
                 }, [
-                    h('a', 'Tools')
+                    h('a', 'Datasource')
                   ])
               ]))
             ])

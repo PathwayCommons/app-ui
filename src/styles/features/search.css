@@ -359,8 +359,8 @@
 }
 
 @media (--small-width-viewport) {
-  .search-branding {
-    display: none;
+  .search-header {
+    display: block;
   }
 
   .search-item-icon {

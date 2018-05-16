@@ -17,7 +17,9 @@ const bindShowTooltip = (cy,showTooltipsOnEdges) => {
       node.scratch('_tooltip', html);
     }
 
-    html.show(cy);
+    //if the selection is a compartment, do not display a tooltip
+    if(data.class !== "compartment")
+      html.show(cy);
   });
 };
 

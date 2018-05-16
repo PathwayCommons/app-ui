@@ -114,23 +114,12 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
   @extend %flex-center;
   @extend %no-select;
 
-  height: calc(var(--icon-size) * 3 / 2);
-  width: 0;
-  padding: 0;
-
-  box-sizing: border-box;
-  overflow: hidden;
-
+  width: 11em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  overflow: visible;
   font-size: 0.9em;
-
-  transition: all 0.1s ease-out;
-
-  &.search-nodes-open {
-    width: 11em;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-    overflow: visible;
-  }
+  box-sizing: border-box;
 }
 
 .view-search-bar {
@@ -183,10 +172,6 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
 
   .title-container {
     padding-left: 1em;
-  }
-
-  .pc-logo-container {
-    display: none;
   }
 
   .sidebar-tool-button-container {

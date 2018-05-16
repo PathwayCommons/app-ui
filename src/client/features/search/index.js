@@ -110,11 +110,26 @@ class Search extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    const nextQuery = queryString.parse(nextProps.location.search);
-    if( this.state.query != nextQuery ){
-      this.getSearchResult(this.state.query);
+    const nextSearch = nextProps.location.search;
+    if( this.props.location.search !==  nextSearch){
+      this.setState({
+        query: _.assign({
+          q: '',
+          gt: 0,
+          lt: 250,
+          type: 'Pathway',
+          datasource: []
+          }, queryString.parse(nextSearch))} , ()=>{
+            this.getSearchResult();
+          });
     }
  }
+
+buildExampleLink (search) {
+  let query = _.clone(this.state.query);
+  query.q = search;
+  return queryString.stringify(query);
+}
 
   render() {
     const props = this.props;
@@ -124,9 +139,7 @@ class Search extends React.Component {
     const controller = this;
     const loaded= !(state.searchLoading || state.landingLoading);
 
-    let Example = props => h('a.search-example', {
-      onClick: () => this.setAndSubmitSearchQuery({q: props.search})
-    }, props.search);
+   let Example = props => h(Link, { to: { pathname: '/search', search: this.buildExampleLink(props.search) }}, props.search);
 
     const searchResults = state.searchResults.map(result => {
       const dsInfo =_.isEmpty(state.dataSources)? {iconUrl:null , name:''}: _.find(state.dataSources, ds => {
@@ -199,11 +212,7 @@ class Search extends React.Component {
                   onChange: e => this.onSearchValueChange(e),
                   onKeyPress: e => this.onSearchValueChange(e)
                 }),
-                /*
-                h('button.search-search-button', { onClick: e => this.submitSearchQuery(e) }, [
-                  h(Icon, { icon: 'search' })
-                */
-                h(Link, { to: { pathname: '/search', search: queryString.stringify(state.query)}}, [
+                h(Link, { to: { pathname: '/search', search: queryString.stringify(state.query)},className:"search-search-button"}, [
                   h(Icon, { icon: 'search' })
                 ])
               ]),

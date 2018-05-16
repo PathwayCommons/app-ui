@@ -8,6 +8,11 @@ const _ = require('lodash');
 const IconButton = require('../icon-button');
 
 const debouncedSearchNodes = _.debounce(require('../../cy/match-style'), 300);
+const URLData = require('../../../../scripts/datasources/datasources');
+const sourceLinkMap = new Object();
+for(let i in URLData){
+  sourceLinkMap[URLData[i].displayName] = URLData[i].homePage;
+}
 
 // cytoscape
 // grapjson
@@ -29,6 +34,7 @@ class BaseNetworkView extends React.Component {
     if( process.env.NODE_ENV !== 'production' ){
       window.cy = props.cy;
     }
+
 
     this.state = _.merge({},
       {
@@ -173,6 +179,7 @@ class BaseNetworkView extends React.Component {
       ...(componentConfig.useSearchBar ? nodeSearchBar : [])
     ];
 
+    const sourceLink = sourceLinkMap[state.networkMetadata.datasource] || "";
 
     return h('div.view', [
       h('div', { className: classNames('menu-bar', { 'menu-bar-margin': state.activeMenu }) }, [
@@ -188,7 +195,7 @@ class BaseNetworkView extends React.Component {
             h('h4', [
               h('span', state.networkMetadata.name),
               ' | ',
-              h('a', state.networkMetadata.datasource)
+              h('a',{href:sourceLink,target:"_blank"} ,state.networkMetadata.datasource)
             ])
           ])
         ]),

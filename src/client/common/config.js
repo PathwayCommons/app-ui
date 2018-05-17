@@ -1,3 +1,6 @@
+const conf = require("../../config");
+const PC_URI = conf.PC_URI;
+
 const databases = [
   {database:'BioGrid', url:'http://identifiers.org/biogrid/', search:''},
   {database:'DrugBank', url:'https://www.drugbank.ca/', search:''},
@@ -23,7 +26,7 @@ const databases = [
   {database:'CAS', url:'http://identifiers.org/cas/', search:''},
   {database:'HPRD',url:'http://identifiers.org/hprd/',search:''},
   {database:'RefSeq',url:'http://identifiers.org/refseq/',search:''},
-  {database:'Pathway Commons',url:'http://pathwaycommons.org/pc2/',search:''},
+  {database:'Pathway Commons',url:PC_URI,search:''},
   {database:'NCBI Gene',url:'http://identifiers.org/ncbigene/',search:''},
   {database:'Gene Cards',url:'http://identifiers.org/genecards/',search:''}
 ];

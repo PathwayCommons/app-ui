@@ -9,6 +9,9 @@ const IconButton = require('../icon-button');
 
 const debouncedSearchNodes = _.debounce(require('../../cy/match-style'), 300);
 
+const conf = require("../../config");
+const BASE_URL = conf.BASE_URL;
+
 // cytoscape
 // grapjson
 // metadata
@@ -178,7 +181,7 @@ class BaseNetworkView extends React.Component {
       h('div', { className: classNames('menu-bar', { 'menu-bar-margin': state.activeMenu }) }, [
         h('div.menu-bar-inner-container', [
           h('div.pc-logo-container', [
-            h('a', { href: 'http://www.pathwaycommons.org/' } , [
+            h('a', { href: BASE_URL } , [
               h('img', {
                 src: '/img/icon.png'
               })

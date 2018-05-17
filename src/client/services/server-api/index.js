@@ -4,6 +4,9 @@ const _ = require('lodash');
 
 const socket = io.connect('/');
 
+const conf = require("../../../config");
+const PC_URI = conf.PC_URI;
+
 const defaultFetchOpts = {
   method: 'GET', headers: {
     'Content-type': 'application/json',
@@ -51,7 +54,7 @@ const ServerAPI = {
   getNeighborhood(ids,kind){
    const source=ids.map(id=>`source=${id}`).join('&');
    const patterns = '&pattern=controls-phosphorylation-of&pattern=in-complex-with&pattern=controls-expression-of&pattern=interacts-with';
-    return fetch(`http://www.pathwaycommons.org/pc2/graph?${source}&kind=${kind}&format=TXT${patterns}`,defaultFetchOpts).then(res => res.text());
+    return fetch(PC_URI + `graph?${source}&kind=${kind}&format=TXT${patterns}`,defaultFetchOpts).then(res => res.text());
   },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into

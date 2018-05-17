@@ -4,6 +4,8 @@ const queryString = require('query-string');
 const _ = require('lodash');
 
 const Icon = require('../../common/components').Icon;
+const conf = require("../../../config");
+const BASE_URL = conf.BASE_URL;
 
 
 // requires react router props
@@ -43,7 +45,7 @@ class Entry extends React.Component {
     return h('div.entry', [
       h('div.entry-header', [
         h('a.entry-pc-link', {
-          href: 'https://www.pathwaycommons.org'
+          href: BASE_URL
         }, [
           h('i.entry-logo')
         ]),

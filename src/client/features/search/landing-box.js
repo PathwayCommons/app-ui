@@ -8,10 +8,10 @@ const Loader = require('react-loader');
 const _ = require('lodash');
 //usedDatabases=[['Uniprot lookup name',{configName:,gProfiler:}]]
 const usedDatabases=new Map ([
-  ['GeneCards',{configName:'Gene Cards',gProfiler:'HGNCSYMBOL'}],
-  ['HGNC Symbol',{configName:'HGNC',gProfiler:'HGNCSymbol'}],
-  ['GeneID',{configName:'NCBI Gene',gProfiler:'NCBIGene'}],
-  ['Uniprot',{configName:'Uniprot',gProfiler:'Uniprot'}]
+  ['GeneCards',{configName:'Gene Cards',gProfiler:'HGNCSYMBOL',displayName:'Gene Cards'}],
+  ['HGNC Symbol',{configName:'HGNC Symbol',gProfiler:'HGNCSymbol',displayName:'NGNC'}],
+  ['GeneID',{configName:'NCBI Gene',gProfiler:'NCBIGene',displayName:'NCBI Gene'}],
+  ['Uniprot',{configName:'Uniprot',gProfiler:'Uniprot',displayName:'Uniprot'}]
 ]);
 
 const linkBuilder= (source,geneQuery)=>{
@@ -47,9 +47,18 @@ const pcFallback = (unrecognized,genes) => {
 
 const idToLinkConverter = (ids)  =>{
   const dbSet = databases.filter(databaseValue => ids[databaseValue.database]);
-  return _.assign({},
+  let dbs =  _.assign({},
     ...dbSet.map(database=>({[database.database]:database.url+database.search+ids[database.database].replace(/[^a-zA-Z0-9:]/g)}))
   );
+
+  let links = [];
+  usedDatabases.forEach((usedDatabase)=>{
+    let dbLink = dbs[usedDatabase.configName];
+    if (dbLink != null) {
+      links.push({"link":dbLink,"displayName":usedDatabase.displayName});
+    }
+  });
+  return links;
 };
 
 const getNcbiInfo = (ids,genes) => {
@@ -212,8 +221,8 @@ const landingBox = (props) => {
       functions=expandableText(controller,landing,360, box.function,".",'span','search-landing-function','function',index);
     }
     let links=[];
-    _.forIn((box.links),(value,key)=>{
-      links.push(h('a.search-landing-link',{key: key, href: value},key));
+    box.links.forEach((link)=>{
+      links.push(h('a.search-landing-link',{key: link.displayName, href: link.link},link.displayName));
     });
     return [
       h('div.search-landing-title',{key:'title',

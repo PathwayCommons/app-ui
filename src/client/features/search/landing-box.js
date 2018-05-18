@@ -55,7 +55,7 @@ const idToLinkConverter = (ids)  =>{
   usedDatabases.forEach((usedDatabase)=>{
     let dbLink = dbs[usedDatabase.configName];
     if (dbLink != null) {
-      links.push({"link":dbLink,"displayName":usedDatabase.displayName});
+      links.push({link:dbLink,displayName:usedDatabase.displayName});
     }
   });
   return links;

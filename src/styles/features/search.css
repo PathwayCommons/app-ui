@@ -251,9 +251,18 @@
   margin-top: 0px;
 }
 
-.search-landing-function {
+.search-landing-function-less {
  margin-right: 5px ;
+ line-height: 1.2em;
+ max-height: 2.4em;
+ overflow: hidden;
 }
+
+.search-landing-function-more {
+  margin-right: 5px ;
+  line-height: 1.2em;
+  overflow: hidden;
+ }
 
 .search-landing-small{
   font-size: 10pt;

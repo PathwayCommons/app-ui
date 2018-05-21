@@ -17,7 +17,8 @@ const ServerAPI = {
   },
 
   pcQuery(method, params){
-    return fetch(`/pc-client/${method}?${qs.stringify(params)}`, defaultFetchOpts).then(res => res.json());
+    return fetch(`/pc-client/${method}?${qs.stringify(params)}`, defaultFetchOpts)
+      .then(res => (method=='get' || method=='graph') ? res.text() : res.json());
   },
 
   datasources(){
@@ -46,12 +47,6 @@ const ServerAPI = {
 
   getUniprotnformation(ids){
     return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&accession=${ids.join(',')}`, defaultFetchOpts).then(res => res.json());
-  },
-
-  getNeighborhood(ids,kind){
-   const source=ids.map(id=>`source=${id}`).join('&');
-   const patterns = '&pattern=controls-phosphorylation-of&pattern=in-complex-with&pattern=controls-expression-of&pattern=interacts-with';
-    return fetch(`http://www.pathwaycommons.org/pc2/graph?${source}&kind=${kind}&format=TXT${patterns}`,defaultFetchOpts).then(res => res.text());
   },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into

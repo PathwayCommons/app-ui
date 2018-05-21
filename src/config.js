@@ -3,7 +3,8 @@ const _ = require('lodash');
 
 let defaults = {
   PORT: 3000,
-  MASTER_PASSWORD: ''
+  MASTER_PASSWORD: '',
+  PC_URL: 'http://www.pathwaycommons.org/pc2/'
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );

@@ -1,6 +1,5 @@
 const _ = require('lodash');
 const fs = require('fs');
-const fetch = require('node-fetch');
 const symbolNameBlackList = [
   'CELL'
 ];

@@ -88,8 +88,6 @@ function getPublications(data) {
     }
   }
 
-  console.log(data);
-
   return new Promise(function (resolve, reject) {
     if (!(data)) { resolve(data); }
 

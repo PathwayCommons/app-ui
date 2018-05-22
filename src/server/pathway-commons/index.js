@@ -5,7 +5,8 @@ const fetch = require('node-fetch');
 
 const search = require('./search/');
 const datasources = require('./datasources');
-
+const conf = require("../../config");
+const PC_URI = conf.PC_URI;
 
 const fetchOptions = {
   method: 'GET',
@@ -14,6 +15,7 @@ const fetchOptions = {
     'Accept': 'application/json'
   }
 };
+
 
 const PathwayCommonsService = {
   // query pathway commons for pathways, sbgn, information, etc.
@@ -44,7 +46,7 @@ const PathwayCommonsService = {
 
   get(options) {
     //Construct query url
-    let url = 'https://www.pathwaycommons.org/pc2/get?' + qs.stringify(options);
+    let url = PC_URI + 'get?' + qs.stringify(options);
     return fetch(url, fetchOptions).then(response => response.text());
   },
 
@@ -53,25 +55,25 @@ const PathwayCommonsService = {
   //Requires a valid query and uri
   traverse(options) {
     //Construct query url
-    let url = 'https://www.pathwaycommons.org/pc2/traverse?' + qs.stringify(options);
+    let url = PC_URI + 'traverse?' + qs.stringify(options);
     return fetch(url, fetchOptions).then(response => response.json());
   },
 
   search(options) {
     //Construct query url
-    let url = 'https://www.pathwaycommons.org/pc2/search?' + qs.stringify(options);
+    let url = PC_URI + 'search?' + qs.stringify(options);
     return fetch(url, fetchOptions).then(response => response.json());
   },
 
   graph(options) {
     //Construct query url
-    let url = 'https://www.pathwaycommons.org/pc2/graph?' + qs.stringify(options);
+    let url = PC_URI + 'graph?' + qs.stringify(options);
     return fetch(url, fetchOptions).then(response => response.json());
   },
 
   top_pathways(options) {
     //Construct query url
-    let url = 'https://www.pathwaycommons.org/pc2/top_pathways?' + qs.stringify(options);
+    let url = PC_URI + 'top_pathways?' + qs.stringify(options);
     return fetch(url, fetchOptions).then(response => response.json());
   }
 };

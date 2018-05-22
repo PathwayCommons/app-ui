@@ -10,6 +10,8 @@ const classNames = require('classnames');
 const Icon = require('../../common/components').Icon;
 const { ServerAPI } = require('../../services');
 const Landing = require('./landing-box');
+const conf = require("../../../config");
+const BASE_URL = conf.BASE_URL;
 
 class Search extends React.Component {
 
@@ -172,7 +174,7 @@ class Search extends React.Component {
         h('div.search-header', [
           h('div.search-branding', [
             h('div.search-title', [
-              h('a', { className: 'search-pc-link', href: 'http://www.pathwaycommons.org/' } , [
+              h('a', { className: 'search-pc-link', href: BASE_URL } , [
                 h('i.search-logo')
               ]),
             ]),

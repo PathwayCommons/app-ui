@@ -14,7 +14,8 @@ class MetadataTip {
   constructor(name, data, cyElement) {
     this.name = name;
     this.data = data.parsedMetadata;
-    //Add an extra piece of metadata for proteins
+    //Add an extra piece of metadata to generate the search link
+    //search text needs to be generated differently for 'processes'
       if(data.class === "process"){
         for(let i in this.data){
           if(this.data[i][0]==="Display Name")

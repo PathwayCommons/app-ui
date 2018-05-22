@@ -31,7 +31,7 @@ const linkBuilder= (source,geneQuery)=>{
 const pcFallback = (unrecognized,genes) => {
  return unrecognized.map(entry=>{
     if(!genes[entry]){
-     return ServerAPI.pcQuery('search', {q:entry,entry:'entityreference'}).then((search)=>{
+     return ServerAPI.pcQuery('search', {q:entry,type:'entityreference'}).then((search)=>{
         const ids = _.compact(search.searchHit.map(hit=>{
           hit =_.reverse(hit.uri.split('/'));
           return hit[1]==='uniprot' ? hit[0] : false;

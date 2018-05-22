@@ -33,8 +33,8 @@ const _processPhrase = (phrase) => {
   });
 };
 
-const _processQueryString = (inputString) => {
-  const keywords = _processPhrase(inputString);
+const _processQueryString = async (inputString) => {
+  const keywords = await _processPhrase(inputString);
   const phrase = _sanitize(inputString);
   // return three search query candidates: the first one is the fastest, the last - slowest
   return [
@@ -45,14 +45,16 @@ const _processQueryString = (inputString) => {
 };
 
 //Pathway Commons HTTP GET request; options.cmd = 'get', 'search', 'traverse', 'graph', etc.
-const query = (queryObj) => {
-  queryObj.user = name;
-  let cmd = queryObj.cmd.toLowerCase() | 'get';
-  delete queryObj['cmd'];
-  let url = config.PC_URL+cmd + ((cmd=='graph') ? '' : '?' + qs.stringify(queryObj));
+const query = async (queryObj) => {
+  queryObj.user = 'app-ui';
+  let cmd = queryObj.cmd || 'get';
+  //TODO: (not critical) client app's sends useless parameters to the PC server: cmd, lt, gt
+  const url = config.PC_URL + cmd + ((cmd=='graph') ? '' : '?' + qs.stringify(queryObj));
   // try later:
+  // const url = config.PC_URL + cmd + ((cmd=='graph') ? '' : '?' + qs.stringify(queryObj));
   // const fo = (cmd=='graph') ? {method: 'POST', body: JSON.stringify(queryObj)} : fetchOptions;
-  return fetch(url, fetchOptions).then(response => (cmd=='get'||cmd=='graph') ? response.text() : response.json());
+  return fetch(url, fetchOptions)
+    .then(response => (cmd=='get'||cmd=='graph') ? response.text() : response.json());
 };
 
 // A fine-tuned PC search to improve relevance of full-text search and filter out unwanted hits.
@@ -61,17 +63,17 @@ const query = (queryObj) => {
 //  - type: BioPAX type to match/filter by
 //  - lt: max graph size result returned
 //  - gt: min graph size result returned
-const _querySearch = (args) => {
+const _querySearch = async (args) => {
   const minSize = args.gt || 0;
   const maxSize = args.lt || 250;
-  // delete query.gt; delete query.lt;
   //analyse the input string, generate specific (lucene) search sub-queries
   const queryString = args.q.trim();
-  const queries = _processQueryString(queryString);
-  args.cmd = 'search'; //set PC ws command
+  const queries = await _processQueryString(queryString);
   for (let q of queries) {
+    // console.log(q);//TODO remove
+    args.cmd = 'search'; //PC command
     args.q = q; //override initial query.q string with the sub-query q
-    const searchResult = query(args); //up to 100 hits at once; if we need more, then must use 'page' parameter...
+    const searchResult = await query(args); //up to 100 hits at once; if we need more, then must use 'page' parameter...
     const searchSuccess = searchResult != null;
     if (searchSuccess && searchResult.searchHit.length > 0) {
       const filteredResults = searchResult.searchHit.filter(hit => {
@@ -92,7 +94,6 @@ const _datasources = () => {
   return fetch(config.PC_URL + 'metadata/datasources', fetchOptions)
   .then(res => res.json())
   .then(array => {
-    // console.log('datasources() - ' + array); //TODO remove
     const output = {};
     array.filter(source => source.notPathwayData == false).map(ds => {
       var name = (ds.name.length > 1) ? ds.name[1] : ds.name[0];
@@ -102,26 +103,28 @@ const _datasources = () => {
         name: name,
         description: ds.description,
         type: ds.type,
-        iconUrl: ds.iconUrl
+        iconUrl: ds.iconUrl,
+        hasPathways: (ds.numPathways>0)?true:false
       };
     });
     return output; //filtered, simplified map
   })
   .catch((e) => {
-    // console.log('datasources() ERROR - ' + e); //TODO remove
     return null;
   });
+};
+
+//PC pathway data sources
+const _metadata = async () => {
+  const meta = {};
+  meta.version = await query({cmd:'traverse', path: 'Named/name', uri: "foo" }).then((json) => json.version);
+  return meta; //TODO: get more metadata in the future (configuration, name, desc., logo, etc.)
 };
 
 //cached functions
 const datasources = _.memoize(_datasources);
 const querySearch = _.memoize(_querySearch, query => JSON.stringify(query));
+const metadata = _.memoize(_metadata);
 
-//PC pathway data sources
-const metadata = () => {
-  const meta = {};
-  meta.version = query({cmd:'traverse', path: 'Named/name', uri: "" }).then((json) => json.version);
-  return meta; //TODO: get more metadata in the future (configuration, name, desc., logo, etc.)
-};
 
 module.exports = {query, querySearch, datasources, metadata};

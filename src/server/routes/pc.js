@@ -8,7 +8,8 @@ router.get('/datasources', function (req, res) {
 });
 
 router.get('/querySearch', function (req, res) {
-  cli.querySearch(req.query).then(r => res.json(r));
+  const query = req.query;
+  cli.querySearch(query).then(r => res.json(r));
 });
 
 router.get('/:path', function (req, res) {

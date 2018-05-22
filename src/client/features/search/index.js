@@ -36,9 +36,8 @@ class Search extends React.Component {
 
     ServerAPI.datasources()
     .then(result => {
-      // console.log(result); //TODO remove
       this.setState({
-        dataSources: Object.values(result)
+        dataSources: Object.values(result).filter(ds => ds.hasPathways==true)
       });
     });
   }

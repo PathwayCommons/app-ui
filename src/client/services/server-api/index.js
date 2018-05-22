@@ -26,7 +26,8 @@ const ServerAPI = {
   },
 
   querySearch(query){
-    return fetch(`/pc-client/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
+    const strQuery = qs.stringify(query);
+    return fetch(`/pc-client/querySearch?${strQuery}`, defaultFetchOpts).then(res => res.json());
   },
 
   geneQuery(query){

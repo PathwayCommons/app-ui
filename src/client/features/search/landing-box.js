@@ -131,7 +131,7 @@ const getLandingResult= (query)=> {
     let genes=values[0];
     _.tail(values).forEach(gene=>_.mergeWith(genes,gene,(objValue, srcValue)=>_.assign(objValue,srcValue)));
     return genes;
-  }).then(genes=>Promise.all(pcFallback(genes.unrecognized,genes)).then(()=>genes)).then((genes)=>{
+  }).then(genes=>{
       let ncbiIds={},uniprotIds={};
       _.forEach(genes,(gene,search)=>{
         if(gene['NCBI Gene']){

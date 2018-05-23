@@ -13,12 +13,11 @@ const defaultFetchOpts = {
 
 const ServerAPI = {
   getGraphAndLayout(uri, version) {
-    return fetch(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`, defaultFetchOpts).then(res =>  res.json());
+    return fetch(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`, defaultFetchOpts).then(res => res.json());
   },
 
   pcQuery(method, params){
-    return fetch(`/pc-client/${method}?${qs.stringify(params)}`, defaultFetchOpts)
-      .then(res => (method=='get' || method=='graph') ? res.text() : res.json());
+    return fetch(`/pc-client/${method}?${qs.stringify(params)}`, defaultFetchOpts);
   },
 
   datasources(){
@@ -26,8 +25,7 @@ const ServerAPI = {
   },
 
   querySearch(query){
-    const strQuery = qs.stringify(query);
-    return fetch(`/pc-client/querySearch?${strQuery}`, defaultFetchOpts).then(res => res.json());
+    return fetch(`/pc-client/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
   },
 
   geneQuery(query){

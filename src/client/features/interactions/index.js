@@ -62,8 +62,11 @@ class Interactions extends React.Component {
       kind : sources.length>1 ? 'pathsbetween' : 'neighborhood',
       format : 'txt',
       //TODO: consider using direction:'bothstream' for neighborhood queries (or remove 'interacts-with' PPI-only pattern)
+      // direction:'bothstream' //ignored if it's pathsbetween
     };
-    ServerAPI.pcQuery('graph', params).then(res=>{
+    ServerAPI.pcQuery('graph', params)
+      .then(res=>res.text())
+      .then(res=>{
       const layoutConfig = getLayoutConfig('interactions');
       const network= this.parse(res);
       this.setState({

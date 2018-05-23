@@ -49,12 +49,8 @@ const query = async (queryObj) => {
   queryObj.user = 'app-ui';
   let cmd = queryObj.cmd || 'get';
   //TODO: (not critical) client app's sends useless parameters to the PC server: cmd, lt, gt
-  const url = config.PC_URL + cmd + ((cmd=='graph') ? '' : '?' + qs.stringify(queryObj));
-  // try later:
-  // const url = config.PC_URL + cmd + ((cmd=='graph') ? '' : '?' + qs.stringify(queryObj));
-  // const fo = (cmd=='graph') ? {method: 'POST', body: JSON.stringify(queryObj)} : fetchOptions;
-  return fetch(url, fetchOptions)
-    .then(response => (cmd=='get'||cmd=='graph') ? response.text() : response.json());
+  const url = config.PC_URL + cmd + '?' + qs.stringify(queryObj);
+  return fetch(url, fetchOptions).then(res => (cmd=='get'||cmd=='graph')?res.text():res.json());
 };
 
 // A fine-tuned PC search to improve relevance of full-text search and filter out unwanted hits.
@@ -107,6 +103,7 @@ const _datasources = () => {
         hasPathways: (ds.numPathways>0)?true:false
       };
     });
+    // console.log(output);
     return output; //filtered, simplified map
   })
   .catch((e) => {

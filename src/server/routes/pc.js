@@ -1,21 +1,20 @@
 //Import Depedencies
 const express = require('express');
-const cli = require('../pathway-commons');
+const qs = require('querystring');
+const pc = require('../pathway-commons/');
 const router = express.Router();
 
 router.get('/datasources', function (req, res) {
-  cli.datasources().then(o => res.json(o));
+  pc.datasources().then(o => res.json(o));
 });
 
 router.get('/querySearch', function (req, res) {
-  const query = req.query;
-  cli.querySearch(query).then(r => res.json(r));
+  pc.querySearch(req.query).then(r => res.json(r));
 });
 
+//this is mainly to download and save raw data (with correct content-time) from PC ws directly to client
 router.get('/:path', function (req, res) {
-  const cmd = req.params.path;
-  req.query.cmd = cmd; //sets the PC command (e.g., 'traverse')
-  cli.query(req.query).then(r => (cmd=='get' || cmd=='graph') ? res.text(r) : res.json(r));
+  res.redirect('http://www.pathwaycommons.org/pc2/' + req.params.path + '?' + qs.stringify(req.query));
 });
 
 

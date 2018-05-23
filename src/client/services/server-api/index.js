@@ -34,9 +34,9 @@ const ServerAPI = {
       method:'POST',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/json'
       },
-      body:qs.stringify(query)
+      body:JSON.stringify(query)
     }).then(res => res.json()).then(ids=> _.assign(ids,{unrecognized:_.tail(ids.unrecognized)}));//remove padding
   },
 

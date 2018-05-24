@@ -34,12 +34,12 @@ class Search extends React.Component {
       dataSources: []
     };
 
-      ServerAPI.datasources()
-        .then(result => {
-          this.setState({
-            dataSources: Object.values(result)
-          });
-        });
+    ServerAPI.datasources()
+    .then(result => {
+      this.setState({
+        dataSources: Object.values(result).filter(ds => ds.hasPathways==true)
+      });
+    });
   }
 
   getSearchResult() {
@@ -110,7 +110,6 @@ class Search extends React.Component {
   }
 
   render() {
-    const props = this.props;
     const state = this.state;
     const landing=state.landing;
     const landingBox=Landing.landingBox;
@@ -131,9 +130,10 @@ class Search extends React.Component {
           h('img', {src: dsInfo.iconUrl})
         ]),
         h('div.search-item-content', [
-          h(Link, { to: { pathname: '/view', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' }, [
-            h('h3.search-item-content-title', result.name || 'N/A'),
-          ]),
+          h(Link, { to: { pathname: '/view', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' },
+            [
+              h('h3.search-item-content-title', result.name || 'N/A'),
+            ]),
           h('p.search-item-content-datasource', ` ${dsInfo.name}`),
           h('p.search-item-content-participants', `${result.numParticipants} Participants`)
         ])
@@ -149,7 +149,8 @@ class Search extends React.Component {
       return h('div.search-option-item-container', [
         h('div', {
           onClick: e => this.setAndSubmitSearchQuery({ type: searchType.value }),
-          className: classNames('search-option-item', { 'search-option-item-disabled': state.searchLoading }, { 'search-option-item-active': state.query.type === searchType.value })
+          className: classNames('search-option-item', { 'search-option-item-disabled': state.searchLoading },
+            { 'search-option-item-active': state.query.type === searchType.value })
         }, [
             h('a', searchType.name)
           ])

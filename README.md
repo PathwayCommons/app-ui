@@ -5,7 +5,28 @@
 
 - [Node.js](https://nodejs.org/en/) >=6.3.0
 
+## Running the App Locally
+1.  Install rethinkdb and run it by typing the command in your terminal
+```
+rethinkdb
+```
+2. Install the project dependencies by typing:
+```
+npm install
+```
 
+3.  Run the project using one of the defined package scripts:
+
+For development:
+```
+npm run watch 
+```
+
+For a production build:
+```
+npm run build-prod
+npm run start
+```
 
 ## Configuration
 
@@ -87,6 +108,53 @@ All files `/test` will be run by [Mocha](https://mochajs.org/).  You can `npm te
 [Chai](http://chaijs.com/) is included to make the tests easier to read and write.
 
 
+## Devloping a feature and making a pull request
+
+Students who work on the repo should follow these instructions for each feature that they work on:
+
+1. Initial prepartion (only needed once)
+    1. [Make a fork on Github](https://github.com/PathwayCommons/app-ui#fork-destination-box) (if you haven't already) under your personal account
+    1. Check out the fork repo: `git clone https://github.com/myusername/app-ui.git`
+    1. Change the directory to the project: `cd app-ui`
+    1. Check out the `development` branch: `git checkout -b development origin/development`
+    1. Add the `pc` remote: `git remote add pc https://github.com/PathwayCommons/app-ui.git`
+1. Make sure you have the latest code on the main PathwayCommons repo:
+    1. Using the console: `git fetch pc`
+    1. Or using GitUp: `Remotes > Fetch All Branches`, `Remotes > Fetch All Tags`
+1. Make sure your `development` branch is up-to-date:
+    1. Using the console: `git checkout development && git merge pc/development`
+    1. Using GitUp:
+        1. Right-click the commit that `pc/development` points to
+        1. Select `Merge into Current Branch`
+  1. Make a feature branch for the new feature or change you are working on.  Make sure to give your branch a clear, meaningful name.
+      1. Using the console: `git checkout -b name-of-feature`
+      1. Using GitUp: Right click the `HEAD` commit (which should be the top commit of your local `development` branch), then select `Create Branch...`
+1. Make commits as you're working on your feature:
+    1. Using the console: `git commit -am "My descriptive commit message"`
+    1. Using GitUp: Use the `Select View` tab (`View > Commit`)
+        1. Stage the files
+        1. Add a descriptive commit message
+        1. Press the `Commit` button
+1. Periodically (at least once just before making a pull request) make sure your feature branch takes into account the latest changes other people have made:
+    1. Make sure your `development` branch is up-to-date:
+        1. Using the console: `git checkout development && git merge pc/development`
+        1. Using GitUp:
+            1. Right-click the commit that `pc/development` points to
+            1. Select `Merge into Current Branch
+    1. Make sure your feature branch is up-to-date:
+        1. Using the console: `git checkout name-of-feature`, `git merge development`
+        1. Using GitUp:
+            1. Make sure your `HEAD` is the newest commit of your feature branch: Right-click the latest commit on `name-of-feature` branch and select `Checkout "name-of-feature" Branch`
+            1. Right-click the latest commit of the `development` branch and select `Merge into Current Branch` 
+1. Push your commits to GitHub:
+    1. Note: You can push as often as you'd like so that your code is backed up on GitHub.  You *must* push everything before you make a pull request.
+    1. Using the console: `git push`
+    1. Using GitUp: `Remotes > Push Current Branch`
+1. When your feature is done and ready to be reviewed, make a pull request:
+    1. Go to your fork on GitHub, e.g. https://github.com/myusername/app-ui
+    1. Select your feature branch
+    1. Click the `New pull request` button
+    1. Give your pull request a clear title and a meaningful description
 
 ## Publishing a release
 

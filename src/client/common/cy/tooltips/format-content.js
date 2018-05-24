@@ -322,7 +322,9 @@ function generateDBLink(dbName, dbId, isDbVisible) {
  */
 function noDataWarning(name) {
   return h('div.tooltip-image', [
-    h('div.tooltip-heading', name),
+    h('div.tooltip-heading', [
+      h('a.tooltip-heading-link',{href:"/search?&q=" + this.name,target:"_blank"},this.name),
+      ]),
     h('div.tooltip-internal', h('div.tooltip-warning', 'No Additional Information'))
   ]);
 }

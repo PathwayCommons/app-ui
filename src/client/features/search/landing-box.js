@@ -9,14 +9,14 @@ const _ = require('lodash');
 
 //usedDatabases=[['Uniprot lookup name',{configName:,gProfiler:}]]
 const usedDatabases=new Map ([
-  ['GeneCards',{configName:'Gene Cards',gProfiler:'HGNCSYMBOL'}],
-  ['HGNC',{configName:'HGNC',gProfiler:'HGNC'}],
-  ['GeneID',{configName:'NCBI Gene',gProfiler:'NCBIGene'}],
-  ['Uniprot',{configName:'Uniprot',gProfiler:'Uniprot'}]
+  ['GeneCards',{configName:'Gene Cards',gProfiler:'HGNCSYMBOL',displayName:'Gene Cards'}],
+  ['HGNC Symbol',{configName:'HGNC Symbol',gProfiler:'HGNCSymbol',displayName:'HGNC'}],
+  ['GeneID',{configName:'NCBI Gene',gProfiler:'NCBIGene',displayName:'NCBI Gene'}],
+  ['Uniprot',{configName:'Uniprot',gProfiler:'Uniprot',displayName:'Uniprot'}]
 ]);
 
 const idFormatter= (source,geneQuery)=>{
-  let genes={}; 
+  let genes={};
   const geneArray=geneQuery.geneInfo;
   genes.unrecognized=geneQuery.unrecognized;
   const duplicates = new Set();
@@ -29,28 +29,20 @@ const idFormatter= (source,geneQuery)=>{
   return genes;
 };
 
-const pcFallback = (unrecognized,genes) => {
- return unrecognized.map(entry=>{
-    if(!genes[entry]){
-     return ServerAPI.pcQuery('search', {q:entry,entry:'entityreference'}).then((search)=>{
-        const ids = _.compact(search.searchHit.map(hit=>{
-          hit =_.reverse(hit.uri.split('/'));
-          return hit[1]==='uniprot' ? hit[0] : false;
-        }));
-        const duplicateCheck = _.compact(ids.map(id=>_.filter(genes,{'Uniprot':id})));
-        if(!_.isEmpty(ids) && _.isEmpty(duplicateCheck)){
-          genes[entry]={'Uniprot': ids[0]};
-        }
-      });
-    }
-  });
-};
-
 const idToLinkConverter = (ids)  =>{
   const dbSet = databases.filter(databaseValue => ids[databaseValue.database]);
-  return _.assign({},
+  let dbs =  _.assign({},
     ...dbSet.map(database=>({[database.database]:database.url+database.search+ids[database.database].replace(/[^a-zA-Z0-9:]/g)}))
   );
+
+  let links = [];
+  usedDatabases.forEach((usedDatabase)=>{
+    let dbLink = dbs[usedDatabase.configName];
+    if (dbLink != null) {
+      links.push({link:dbLink,displayName:usedDatabase.displayName});
+    }
+  });
+  return links;
 };
 
 const getNcbiInfo = (ids,genes) => {
@@ -112,23 +104,34 @@ const getLandingResult= (query)=> {
   let q=query.trim().split(' ');
   let ncbiIds={},uniprotIds={},labeledId={};
   const genesToSearch = [];
-  q.forEach((id)=>{
+  q.forEach ((id)=> {
     const splitId=id.split(':');
-    if(/uniprot:\w+$/.test(id)){uniprotIds[splitId[1]]=splitId[1];}
-    else if(/(ncbi:[0-9]+|hgnc:\w+)$/.test(id)){labeledId[splitId[1]]=splitId[1]; genesToSearch.push(splitId[1]);}
-    else {genesToSearch.push(splitId[0]);}
+
+    //Evaluate the query based on the format
+    if(/uniprot:\w+$/.test(id)) {
+      uniprotIds[splitId[1]]=splitId[1];
+    } else if(/(ncbi:[0-9]+|hgnc:\w+)$/.test(id)) {
+      labeledId[splitId[1]]=splitId[1];
+      genesToSearch.push(splitId[1]);
+    } else {
+      genesToSearch.push(splitId[0]);
+    }
   });
+
+  //Populate gene IDs from each database
   const promises= [];
   usedDatabases.forEach((database)=>promises.push(
-    ServerAPI.geneQuery({genes: genesToSearch,target: database.gProfiler}).then(result=>idFormatter(database.configName,result))
+    ServerAPI.geneQuery({
+      genes: genesToSearch,
+      target: database.gProfiler
+    }).then(result=>idFormatter(database.configName,result))
   ));
-  return Promise.all(promises).then(values=>{
-    let genes=values[0];
-    _.tail(values).forEach(gene=>_.mergeWith(genes,gene,(objValue, srcValue)=>_.assign(objValue,srcValue)));
+
+  return Promise.all(promises).then(databaseResults=>{
+    let genes={};
+    databaseResults.forEach(databaseResult=>_.merge(genes,databaseResult)); //Merge the array of result into one json
     return genes;
-  })
-  .then(genes=>Promise.all(pcFallback(_.without(genes.unrecognized,genes,id=>!labeledId[id]),genes)).then(()=>genes))
-  .then((genes)=>{
+  }).then(genes=> {
     _.forEach(genes,(gene,search)=>{
       if(gene['NCBI Gene']){
         ncbiIds[gene['NCBI Gene']]=search;
@@ -156,7 +159,7 @@ const getLandingResult= (query)=> {
 
 const handelShowMoreClick= (controller,landing,varToToggle,index) => {
   landing[index].showMore[varToToggle]=!landing[index].showMore[varToToggle];
-  controller.setState({ landing:landing }); 
+  controller.setState({ landing:landing });
 };
 
 const expandableText = (controller,landing,length,text,separator,type,cssClass,toggleVar,index)=>{
@@ -167,19 +170,24 @@ const expandableText = (controller,landing,length,text,separator,type,cssClass,t
     result=[h(`${type}`,{className:cssClass,key:'text'},textToUse)];
   if(text.length>length){
     result.push(h(`${type}.search-landing-link`,{onClick: ()=> handelShowMoreClick(controller, landing, toggleVar, index),key:'showMore'},
-    varToToggle ? '« hide': 'show »'));
+    varToToggle ? '« less': 'more »'));
   }
   return result;
 };
 
-const interactionsLink = (source,text)=>{ 
-  return h(Link, {
-      to: { pathname:'/interactions', search:queryString.stringify({source: source})}, 
-      target: '_blank', className: 'search-landing-interactions', key:'interactions' 
-    }, 
-    [h('button.search-landing-button', text)]
-  );
+const expandableFunctionText = (controller,landing,text,toggleVar,index)=>{
+  let result = null;
+  const varToToggle= landing[index].showMore[toggleVar];
+  const cssClass = varToToggle ? 'search-landing-function-more' : 'search-landing-function-less';
+  result=[h('div', {key:'text', className:cssClass}, [h('span',text)])];
+  result.push(h('span.search-landing-link',{onClick: ()=> handelShowMoreClick(controller, landing, toggleVar, index),key:'showMore'}, varToToggle ? '« less': 'more »'));
+  return result;
 };
+
+const interactionsLink = (source,text)=>
+  h(Link, {to: { pathname: '/interactions',search: queryString.stringify({source: source})},
+    target: '_blank', className: 'search-landing-interactions', key:'interactions'
+  }, [h('button.search-landing-button', text)]);
 
 /*Generates a landing box
 input: {controller,[{
@@ -211,34 +219,34 @@ const landingBox = (props) => {
       title.push(h('strong.material-icons',{key:'arrow'},landing[index].showMore.full? 'expand_less': 'expand_more'));
     }
     let hgncSymbol='';
-    if(box.hgncSymbol){ 
+    if(box.hgncSymbol){
       hgncSymbol=h('i.search-landing-small','Official Symbol: '+box.hgncSymbol);
     }
     let otherNames=[];
-    if(box.otherNames){ 
+    if(box.otherNames){
       otherNames=expandableText(controller,landing,16,'Other Names: '+box.otherNames,',','i','search-landing-small','synonyms',index);
     }
     let functions=[];
     if(box.function){
-      functions=expandableText(controller,landing,260, box.function,/\s/g,'span','search-landing-function','function',index);
-    } 
+      functions=expandableFunctionText(controller,landing,box.function,'function',index);
+    }
     let links=[];
-    _.forIn((box.links),(value,key)=>{
-      links.push(h('a.search-landing-link',{key: key, href: value},key));
+    box.links.forEach((link)=>{
+      links.push(h('a.search-landing-link',{key: link.displayName, href: link.link},link.displayName));
     });
-    return [ 
+    return [
       h('div.search-landing-title',{key:'title',
         onClick: () => {if(multipleBoxes){handelShowMoreClick(controller,landing, 'full', index);}},
         className:classNames('search-landing-title',{'search-landing-title-multiple':multipleBoxes}),
       },[title]),
-      box.showMore.full && 
-      h('div.search-landing-innner',{key: box.databaseID},[ 
+      box.showMore.full &&
+      h('div.search-landing-innner',{key: box.databaseID},[
         h('div.search-landing-section',{key: 'ids'},[hgncSymbol,otherNames]),
         h('div.search-landing-section',{key: 'functions'},[functions]),
         h('div.search-landing-section',{key: 'links'},[links]),
         interactionsLink(box.databaseID,'View Interactions')
       ])
-    ];    
+    ];
   });
   if(landing.length>1){
     landingHTML.push(interactionsLink(landing.map(entry=>entry.databaseID),'View Interactions Between Entities'));

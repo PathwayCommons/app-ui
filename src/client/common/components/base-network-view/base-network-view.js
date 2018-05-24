@@ -36,7 +36,6 @@ class BaseNetworkView extends React.Component {
         nodeSearchValue: '',
         open: false,
         networkLoading: true,
-        searchOpen: false,
         updateBaseViewState: (nextState, next) => this.setState(nextState, next ? next() : null)
       }, props);
     this.state.open = this.state.activeMenu !== 'closeMenu';
@@ -52,7 +51,7 @@ class BaseNetworkView extends React.Component {
   componentWillUnmount() {
     this.state.cy.destroy();
   }
-  
+
   componentDidMount() {
     const state = this.state;
     const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
@@ -153,20 +152,6 @@ class BaseNetworkView extends React.Component {
 
 
     const nodeSearchBar = [
-      h(IconButton, {
-        icon: 'search',
-        key: 'search',
-        active: this.state.searchOpen,
-        onClick: () => {
-          !this.state.searchOpen || this.clearSearchBox();
-          this.setState({ searchOpen: !this.state.searchOpen }, () => {
-            if (this.state.searchOpen == true) {
-              this.searchField.focus();
-            }
-          });
-        },
-        desc: 'Search entities'
-      }),
       h('div', {
         className: classNames('search-nodes', { 'search-nodes-open': this.state.searchOpen }),
         onChange: e => {

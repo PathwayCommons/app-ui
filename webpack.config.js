@@ -22,7 +22,7 @@ let conf = {
   },
   resolve: {
     alias: {
-      cytoscape: 'cytoscape/src/umd'
+      cytoscape: 'cytoscape/src/cjs'
     }
   },
   plugins: [

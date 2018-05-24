@@ -29,7 +29,7 @@ const ServerAPI = {
   },
 
   geneQuery(query){
-    query.genes=_.concat(['padding'],query.genes.split(' '));
+    query.genes=query.genes.split(' ');
     return fetch('/api/validation', {
       method:'POST',
       headers: {

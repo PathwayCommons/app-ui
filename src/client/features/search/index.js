@@ -30,7 +30,6 @@ class Search extends React.Component {
       landingLoading: false,
       searchResults: [],
       searchLoading: false,
-      showFilters: [],
       dataSources: []
     };
 

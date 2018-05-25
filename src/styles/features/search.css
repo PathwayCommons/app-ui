@@ -187,9 +187,13 @@
   padding-left: 215px;
 }
 
-.search-result-info {
-  max-width: 100%;
+.search-result-filter {
   width: var(--search-width);
+  max-width: 100%;
+}
+
+.search-result-hit-count {
+  max-width: 100%;
 }
 
 .search-list {
@@ -214,12 +218,15 @@
   padding-right: 2em;
   font-size: 12px;
   text-overflow: ellipsis;
+  margin-left: auto;
+  margin-top:9px;
 }
 
 .search-datasource-filter > option {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .search-landing{
   max-width: var(--search-width);
   width: 100%;

@@ -33,6 +33,7 @@ npm run start
 The following environment variables can be used to configure the server:
 
 - `NODE_ENV` : the environment mode, either `production` or `development` (default)
+- `PC_URL`  :   Pathway Commons web service endpoint URL
 - `PORT` : the port on which the server runs (default 3000)
 
 ### Configure RethinkDB

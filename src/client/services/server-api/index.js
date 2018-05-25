@@ -32,19 +32,16 @@ const ServerAPI = {
 
   geneQuery(query){
     if(query.genes.length>=1){
-      const paddingAdded = _.max([2-query.genes.length,0]);
-      const padding = _.times(paddingAdded,()=>'p');
-      query.genes=_.concat(padding,query.genes);
+      query.genes= query.genes;
       return fetch('/api/validation', {
         method:'POST',
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/json'
         },
-        body:qs.stringify(query)
-      }).then(res => res.json()).then(ids=> _.assign(ids,{unrecognized:_.drop(ids.unrecognized,paddingAdded)}));//remove padding
-    }
-    else{
+        body:JSON.stringify(query)
+      }).then(res => res.json());
+    }else{
       return Promise.resolve({geneInfo:[],unrecognized:[]});
     }
   },

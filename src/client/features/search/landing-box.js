@@ -15,6 +15,12 @@ const usedDatabases=new Map ([
   ['Uniprot',{configName:'Uniprot',gProfiler:'Uniprot',displayName:'Uniprot'}]
 ]);
 
+/**
+ * Get database link and display name based on gene ids
+ * @param {string} source Database name
+ * @param {JSON} geneQuery User input string and matching gene id.
+ * @return {string: {string: string}} e.g.{MDM2: {Uiprot: Q00978}}
+ */
 const idFormatter= (source,geneQuery)=>{
   let genes={};
   const geneArray=geneQuery.geneInfo;
@@ -29,10 +35,16 @@ const idFormatter= (source,geneQuery)=>{
   return genes;
 };
 
+/**
+ * Get database link and display name based on gene ids
+ * @param {{string:string}} ids NCBI id to search, e.g.{GENE CARD:MDM2}
+ * @return {[{string:string,string,string}]} Array of database containing link and display name, e.g.{link: URI, displayName: MDM2}
+ */
 const idToLinkConverter = (ids)  =>{
   const dbSet = databases.filter(databaseValue => ids[databaseValue.database]);
-  let dbs =  _.assign({},
-    ...dbSet.map(database=>({[database.database]:database.url+database.search+ids[database.database].replace(/[^a-zA-Z0-9:]/g)}))
+  let dbs =  _.assign({}, ...dbSet.map(database=>({
+      [database.database]: database.url+database.search+ids[database.database].replace(/[^a-zA-Z0-9:]/g)
+  }))
   );
 
   let links = [];
@@ -45,6 +57,12 @@ const idToLinkConverter = (ids)  =>{
   return links;
 };
 
+/**
+ * Get gene information from NCBI
+ * @param {string:string} ids NCBI id to search, e.g.{4193:MDM2}
+ * @param {} genes Validated gene id from databse, e.g.{gene:{db1:id,db2:id}}
+ * @return {json} JSON of gene information.
+ */
 const getNcbiInfo = (ids,genes) => {
   const ncbiIds=_.map(ids,(search,id)=>id);
   return ServerAPI.getGeneInformation(ncbiIds).then(result=>{
@@ -65,6 +83,11 @@ const getNcbiInfo = (ids,genes) => {
   });
 };
 
+/**
+ * Get gene information from Uniprot
+ * @param {string:string} ids Uniprot accessions to search, e.g.{4193:MDM2}
+ * @return {json} JSON of gene information.
+ */
 const getUniprotInfo= (ids) => {
   const uniprotIds=_.map(ids,(search,id)=>id);
   return ServerAPI.getUniprotnformation(uniprotIds).then(result=>{
@@ -107,7 +130,7 @@ const getLandingResult= (query)=> {
   q.forEach ((id)=> {
     const splitId=id.split(':');
 
-    //Evaluate the query based on the format
+    //Parse the query based on the format
     if(/uniprot:\w+$/.test(id)) {
       uniprotIds[splitId[1]]=splitId[1];
     } else if(/(ncbi:[0-9]+|hgnc:\w+)$/.test(id)) {
@@ -118,7 +141,7 @@ const getLandingResult= (query)=> {
     }
   });
 
-  //Populate gene IDs from each database
+  //Get gene IDs from each database
   const promises= [];
   usedDatabases.forEach((database)=>promises.push(
     ServerAPI.geneQuery({

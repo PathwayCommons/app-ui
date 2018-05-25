@@ -3,6 +3,7 @@ const h = require('react-hyperscript');
 const _ = require('lodash');
 const queryString = require('query-string');
 const Loader = require('react-loader');
+
 const hideTooltips = require('../../common/cy/events/click').hideTooltips;
 const removeStyle= require('../../common/cy/manage-style').removeStyle;
 const make_cytoscape = require('../../common/cy/');
@@ -54,9 +55,18 @@ class Interactions extends React.Component {
     };    
 
     const query = queryString.parse(props.location.search);
-    const sources=_.uniq(_.concat([],query.source));
-    const kind = sources.length>1?'PATHSBETWEEN':'Neighborhood';
-    ServerAPI.getNeighborhood(sources,kind).then(res=>{ 
+    const sources = _.uniq(_.concat([],query.source)); //IDs or URIs
+    const params = {
+      source : sources,
+      pattern : ['controls-phosphorylation-of','in-complex-with','controls-expression-of', 'interacts-with'],
+      kind : sources.length>1 ? 'pathsbetween' : 'neighborhood',
+      format : 'txt',
+      //TODO: consider using direction:'bothstream' for neighborhood queries (or remove 'interacts-with' PPI-only pattern)
+      // direction:'bothstream' //ignored if it's pathsbetween
+    };
+    ServerAPI.pcQuery('graph', params)
+      .then(res=>res.text())
+      .then(res=>{
       const layoutConfig = getLayoutConfig('interactions');
       const network= this.parse(res);
       this.setState({
@@ -67,11 +77,16 @@ class Interactions extends React.Component {
       });
     });
     //get ids from uris 
-    const geneIds = sources.map(source=> 
-      source.includes('pathwaycommons')?
-      ServerAPI.pcQuery('traverse',{uri:source,path:`${_.last(source.split('/')).split('_')[0]}/displayName`}).then(result=>result.json())
-      .then(id=> _.words(id.traverseEntry[0].value[0]).length===1 ? id.traverseEntry[0].value[0].split('_')[0] : ''):
-      source.replace(/\//g,' ')
+    const geneIds = sources.map(source =>
+      source.includes('pathwaycommons')
+        ? ServerAPI.pcQuery('traverse',
+          {
+            uri:source,
+            path:`${_.last(source.split('/')).split('_')[0]}/displayName`
+          })
+          .then(result=>result.json())
+          .then(id=> _.words(id.traverseEntry[0].value[0]).length===1 ? id.traverseEntry[0].value[0].split('_')[0] : '')
+        : source.replace(/\//g,' ')
     );
     Promise.all(geneIds).then(geneIds=>{
       ServerAPI.geneQuery({genes:geneIds.join(' '),target: 'NCBIGENE'}).then(result=>{

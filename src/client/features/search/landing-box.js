@@ -8,10 +8,10 @@ const Loader = require('react-loader');
 const _ = require('lodash');
 //usedDatabases=[['Uniprot lookup name',{configName:,gProfiler:}]]
 const usedDatabases=new Map ([
-  ['GeneCards',{configName:'Gene Cards',gProfiler:'HGNCSYMBOL'}],
-  ['HGNC',{configName:'HGNC',gProfiler:'HGNC'}],
-  ['GeneID',{configName:'NCBI Gene',gProfiler:'NCBIGene'}],
-  ['Uniprot',{configName:'Uniprot',gProfiler:'Uniprot'}]
+  ['GeneCards',{configName:'Gene Cards',gProfiler:'HGNCSYMBOL',displayName:'Gene Cards'}],
+  ['HGNC Symbol',{configName:'HGNC Symbol',gProfiler:'HGNCSymbol',displayName:'HGNC'}],
+  ['GeneID',{configName:'NCBI Gene',gProfiler:'NCBIGene',displayName:'NCBI Gene'}],
+  ['Uniprot',{configName:'Uniprot',gProfiler:'Uniprot',displayName:'Uniprot'}]
 ]);
 
 const linkBuilder= (source,geneQuery)=>{
@@ -31,7 +31,7 @@ const linkBuilder= (source,geneQuery)=>{
 const pcFallback = (unrecognized,genes) => {
  return unrecognized.map(entry=>{
     if(!genes[entry]){
-     return ServerAPI.pcQuery('search', {q:entry,entry:'entityreference'}).then((search)=>{
+     return ServerAPI.pcQuery('search', {q:entry,type:'entityreference'}).then((search)=>{
         const ids = _.compact(search.searchHit.map(hit=>{
           hit =_.reverse(hit.uri.split('/'));
           return hit[1]==='uniprot' ? hit[0] : false;
@@ -47,9 +47,18 @@ const pcFallback = (unrecognized,genes) => {
 
 const idToLinkConverter = (ids)  =>{
   const dbSet = databases.filter(databaseValue => ids[databaseValue.database]);
-  return _.assign({},
+  let dbs =  _.assign({},
     ...dbSet.map(database=>({[database.database]:database.url+database.search+ids[database.database].replace(/[^a-zA-Z0-9:]/g)}))
   );
+
+  let links = [];
+  usedDatabases.forEach((usedDatabase)=>{
+    let dbLink = dbs[usedDatabase.configName];
+    if (dbLink != null) {
+      links.push({link:dbLink,displayName:usedDatabase.displayName});
+    }
+  });
+  return links;
 };
 
 const getNcbiInfo = (ids,genes) => {
@@ -122,7 +131,7 @@ const getLandingResult= (query)=> {
     let genes=values[0];
     _.tail(values).forEach(gene=>_.mergeWith(genes,gene,(objValue, srcValue)=>_.assign(objValue,srcValue)));
     return genes;
-  }).then(genes=>Promise.all(pcFallback(genes.unrecognized,genes)).then(()=>genes)).then((genes)=>{
+  }).then(genes=>{
       let ncbiIds={},uniprotIds={};
       _.forEach(genes,(gene,search)=>{
         if(gene['NCBI Gene']){
@@ -160,8 +169,17 @@ const expandableText = (controller,landing,length,text,separator,type,cssClass,t
     result=[h(`${type}`,{className:cssClass,key:'text'},textToUse)];
   if(text.length>length){
     result.push(h(`${type}.search-landing-link`,{onClick: ()=> handelShowMoreClick(controller, landing, toggleVar, index),key:'showMore'},
-    varToToggle ? '« hide': 'show »'));
+    varToToggle ? '« less': 'more »'));
   }
+  return result;
+};
+
+const expandableFunctionText = (controller,landing,text,toggleVar,index)=>{
+  let result = null;
+  const varToToggle= landing[index].showMore[toggleVar];
+  const cssClass = varToToggle ? 'search-landing-function-more' : 'search-landing-function-less';
+  result=[h('div', {key:'text', className:cssClass}, [h('span',text)])];
+  result.push(h('span.search-landing-link',{onClick: ()=> handelShowMoreClick(controller, landing, toggleVar, index),key:'showMore'}, varToToggle ? '« less': 'more »'));
   return result;
 };
 
@@ -209,11 +227,11 @@ const landingBox = (props) => {
     }
     let functions=[];
     if(box.function){
-      functions=expandableText(controller,landing,260, box.function,/\s/g,'span','search-landing-function','function',index);
+      functions=expandableFunctionText(controller,landing,box.function,'function',index);
     }
     let links=[];
-    _.forIn((box.links),(value,key)=>{
-      links.push(h('a.search-landing-link',{key: key, href: value},key));
+    box.links.forEach((link)=>{
+      links.push(h('a.search-landing-link',{key: link.displayName, href: link.link},link.displayName));
     });
     return [
       h('div.search-landing-title',{key:'title',

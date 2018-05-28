@@ -89,7 +89,7 @@ class Interactions extends React.Component {
         : source.replace(/\//g,' ')
     );
     Promise.all(geneIds).then(geneIds=>{
-      ServerAPI.geneQuery({genes:geneIds.join(' '),target: 'NCBIGENE'}).then(result=>{
+      ServerAPI.geneQuery({genes:geneIds,target: 'NCBIGENE'}).then(result=>{
         const ncbiIds=result.geneInfo.map(gene=> gene.convertedAlias);
         ServerAPI.getGeneInformation(ncbiIds).then(result=>{
           const geneResults=result.result;

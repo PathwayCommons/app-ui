@@ -25,19 +25,24 @@ const ServerAPI = {
   },
 
   querySearch(query){
-    return fetch(`/pc-client/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
+    const queryClone=_.assign({},query);
+    if(/(uniprot:\w+|ncbi:[0-9]+|hgnc:\w+)$/.test(queryClone.q)){queryClone.q=queryClone.q.split(':')[1];}
+    return fetch(`/pc-client/querySearch?${qs.stringify(queryClone)}`, defaultFetchOpts).then(res => res.json());
   },
 
   geneQuery(query){
-    query.genes=query.genes.split(' ');
-    return fetch('/api/validation', {
-      method:'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body:JSON.stringify(query)
-    }).then(res => res.json()).then(ids=> _.assign(ids,{unrecognized:_.tail(ids.unrecognized)}));//remove padding
+    if(query.genes.length>=1){
+      return fetch('/api/validation', {
+        method:'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body:JSON.stringify(query)
+      }).then(res => res.json());
+    }else{
+      return Promise.resolve({geneInfo:[],unrecognized:[]});
+    }
   },
 
   getGeneInformation(ids){

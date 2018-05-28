@@ -11,7 +11,7 @@ var swaggerDefinition = {
   info: {
     title: 'Enrichment Services',
     version: '1.0.0',
-    description: 'This is a sample enrichment service server. More detailed documentation can be found at [Wiki](https://github.com/PathwayCommons/app-ui/wiki/Enrichment-Services)',
+    description: 'This is a sample enrichment service server. More detailed documentation can be found at [Wiki](https://github.com/PathwayCommons/app-ui/wiki/Enrichment-Services).',
     license: {
       name: "MIT",
       url: "https://github.com/PathwayCommons/app-ui/blob/master/LICENSE"
@@ -25,7 +25,7 @@ var swaggerDefinition = {
     },
     {
       "name": "Analysis Service",
-      "description": "Summarize gene list as list of related pathways \n Only Gene Ontology Biological Process terms and Reactome pathways are queried \n Versions: Gene Ontolody: Ensembl v90 / Ensembl Genomes v37, Reactome: v56"
+      "description": "Determine related pathways based on gene list \n Only Gene Ontology Biological Processes and Reactome Pathways are queried \n Versions: Gene Ontology: Ensembl v90 / Ensembl Genomes v37, Reactome: v56"
     },
     {
       "name": "Visualization Service",

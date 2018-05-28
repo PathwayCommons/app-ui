@@ -131,9 +131,9 @@ const getLandingResult= (query)=> {
     const splitId=id.split(':');
 
     //Parse the query based on the format
-    if(/uniprot:\w+$/.test(id)) {
+    if(/uniprot:\w+$/i.test(id)) {
       uniprotIds[splitId[1]]=splitId[1];
-    } else if(/(ncbi:[0-9]+|hgnc:\w+)$/.test(id)) {
+    } else if(/(ncbi:[0-9]+|hgnc:\w+)$/i.test(id)) {
       labeledId[splitId[1]]=splitId[1];
       genesToSearch.push(splitId[1]);
     } else {
@@ -267,7 +267,7 @@ const landingBox = (props) => {
         h('div.search-landing-section',{key: 'ids'},[hgncSymbol,otherNames]),
         h('div.search-landing-section',{key: 'functions'},[functions]),
         h('div.search-landing-section',{key: 'links'},[links]),
-        interactionsLink(box.databaseID,'View Interactions')
+        interactionsLink(box.hgncSymbol,'View Interactions')
       ])
     ];
   });

@@ -32,7 +32,6 @@ const ServerAPI = {
 
   geneQuery(query){
     if(query.genes.length>=1){
-      query.genes= query.genes;
       return fetch('/api/validation', {
         method:'POST',
         headers: {

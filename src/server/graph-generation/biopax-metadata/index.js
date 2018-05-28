@@ -135,8 +135,9 @@ function getElementFromBioPax(biopaxFile, id) {
   }
 
   //Get element matching the id
-  let result = biopaxFile.get(id);
-  return result;
+  if(id)
+    return biopaxFile.get(id);
+  else return null;
 }
 
 //Get subtree for each node

@@ -1,14 +1,13 @@
 const metadataParser = require('./metadataParserJson');
-
+var biopaxFile = null;
 /**
  * 
- * @param {*} biopaxElement Metadata for a node in the network
+ * @param {*} biopaxElement Metadata for an entity from BioPAX
  * @param {*} biopaxFile BioPAX metadata `Map`
- * @param {*} visited Array containing all previously visited network nodes
- * @param {*} nodeType Is the node a cross-reference or not?
- * @returns A tree array containing metadata for the node
+ * @param {*} nodeType Is this a xref or entity?
  */
-function buildBioPaxSubtree(biopaxElement, biopaxFile, visited, nodeType = 'default') {
+function collectEntityMetadata(biopaxElement, nodeType = 'default'){
+  
   let result = [];
   //Collect relevant data on this node, and push it into output
   if (nodeType !== 'Reference') {
@@ -43,7 +42,7 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited, nodeType = 'defa
     //Get Cellular Location
     let cellLocation = biopaxElement['cellularLocation'];
     if (cellLocation && cellLocation.indexOf('http') !== -1) {
-      cellLocation = getElementFromBioPax(biopaxFile, cellLocation);
+      cellLocation = getElementFromBioPax(cellLocation);
       cellLocation = cellLocation['term'];
     }
     if (cellLocation) { result.push(['Cellular Location', cellLocation]); }
@@ -54,74 +53,57 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited, nodeType = 'defa
   let id = biopaxElement['id'];
   if (db && id) { result.push(['Database ID', [db, id]]); }
 
-  //Get any cross references
-  let xref = biopaxElement['xref'];
-
-  //Resolve String/Array Issue
-  if (typeof xref == 'string') { xref = [xref]; }
-  if (!(xref)) { xref = []; }
-
-  //Get entity reference and add it to xref
-  let eref = biopaxElement['entityReference'];
-  if (eref) xref.push(eref);
-
-
-  //Recurse on each cross reference (Lim it level depth to 2)
-  if (xref) {
-
-    for (let i = 0; i < xref.length; i++) {
-
-      let keyName = 'Reference';
-      if (i == (xref.length - 1) && eref) { keyName = 'EntityReference' };
-
-      //Get Referenced Element
-      let refElement = getElementFromBioPax(biopaxFile, xref[i]);
-
-      //Make a copy of visited
-      let visitCopy = visited.slice();
-
-      //Check validity of element
-      if (!(refElement)) { continue; }
-
-      //Recurse on current element
-      if (visitCopy.indexOf(xref[i]) <= -1 && visitCopy.length <= 2) {
-
-        visitCopy.push(xref[i]);
-        result.push([keyName, buildBioPaxSubtree(refElement, biopaxFile, visitCopy, keyName)]);
-
-      }
-    }
-  }
-  //Return subtree
   return result;
 }
 
 /**
  * 
- * @param {*} children Metadata for an entity in the network
+ * @param {*} entity Metadata for an entity in the network
  * @param {*} biopaxFile BioPAX metadata `Map`
  * @returns Tree array containing all metadata about the given entity
  */
-function buildBioPaxTree(children, biopaxFile) {
-  //Wrapper function for buildBioPaxSubtree recursion
-  
+function buildBioPaxTree(entity) {  
   let result = [];
 
   //make sure the metadata exists
-  if (!(children))
+  if (!(entity))
     return;
 
   //Get the node id, as defined in getProcessedBioPax
-  let id = children['pathid'];
-  if (!(id)) { id = children['about']; }
+  let id = entity['pathid'];
+  if (!(id)) { id = entity['about']; }
   if (!(id)) { return; }
 
-  //Build a subtree
-  let visited = [id];
-  let subtree = buildBioPaxSubtree(children, biopaxFile, visited);
-  result.push([id, subtree]);
+  //get BioPAX metadata for this node
+  let collectedData = collectEntityMetadata(entity);
 
-  //Return Biopax Tree
+  //Collect Data for cross-references
+  let xref = entity['xref'];
+  if (typeof xref == 'string')
+    xref = [xref];
+  if (!(xref))
+    xref = [];
+  let eref = entity['entityReference'];
+  if (eref) 
+    xref.push(eref);
+
+
+  for (let i = 0; i < xref.length; i++) {
+    //Check if this is a cross-reference or entity reference
+    let keyName = 'Reference';
+    if (i == (xref.length - 1) && eref)
+      keyName = 'EntityReference';
+
+    //Get Referenced element and make sure it's valid
+    let refElement = getElementFromBioPax(xref[i]);
+    if (!(refElement))
+      continue;
+    //Collect data and add to tree array
+    collectedData.push([keyName,collectEntityMetadata(refElement,keyName)]);
+  }
+
+  
+  result.push([id,collectedData]);
   return result;
 }
 
@@ -150,7 +132,7 @@ function removeAfterUnderscore(word, n) {
  * @param {*} id String representing potential BioPAX ID
  * @returns BioPAX metadata for that ID (if it exists) or null (if it doesn't)
  */
-function getElementFromBioPax(biopaxFile, id) {
+function getElementFromBioPax(id) {
 
   //Remove any URL stuff from the ID, just like getProcessedBioPax
   if (id.indexOf('http') !== -1 || id.indexOf('/') !== -1) {
@@ -171,20 +153,20 @@ function getElementFromBioPax(biopaxFile, id) {
  * @param {*} biopax BioPAX metadata `Map`
  * @returns Subtree containing BioPax metadata for the node
  */
-function getBioPaxSubtree(nodeId, biopax) {
+function getBioPaxSubtree(nodeId) {
 
   // The original entity IDs have been converted in the cytoscape network.
   // Need to first find the original BioPAX entity ID, then collect metadata.
 
   //Search for ID exactly as it appears
-  let searchTerm = getElementFromBioPax(biopax, nodeId);
+  let searchTerm = getElementFromBioPax(nodeId);
   if (searchTerm)
-    return buildBioPaxTree(searchTerm, biopax);
+    return buildBioPaxTree(searchTerm);
   
   //Search for ID after last underscore
-  searchTerm = getElementFromBioPax(biopax, nodeId.substring(nodeId.lastIndexOf("_") +1));
+  searchTerm = getElementFromBioPax(nodeId.substring(nodeId.lastIndexOf("_") +1));
   if (searchTerm)
-    return buildBioPaxTree(searchTerm, biopax);
+    return buildBioPaxTree(searchTerm);
   
 
   //Remove extra identifiers appended by Cytoscape
@@ -195,14 +177,14 @@ function getBioPaxSubtree(nodeId, biopax) {
     fixedNodeId = nodeId;
 
   //Search for ID in the first 2 underscores
-  searchTerm = getElementFromBioPax(biopax, fixedNodeId);
+  searchTerm = getElementFromBioPax(fixedNodeId);
   if (searchTerm)
-    return buildBioPaxTree(searchTerm, biopax);
+    return buildBioPaxTree(searchTerm);
 
   //Search for ID in between first and second underscore
-  searchTerm = getElementFromBioPax(biopax, fixedNodeId.substring(fixedNodeId.lastIndexOf("_") +1));
+  searchTerm = getElementFromBioPax(fixedNodeId.substring(fixedNodeId.lastIndexOf("_") +1));
   if (searchTerm)
-    return buildBioPaxTree(searchTerm, biopax);
+    return buildBioPaxTree(searchTerm);
 
   //Search Failed, return null
   return null;
@@ -239,14 +221,14 @@ function getProcessedBioPax(biopaxJsonText) {
  */
 function getBioPaxMetadata(biopaxJsonText, nodes) {
   //turn the biopax string into json
-  const biopaxElementMap = getProcessedBioPax(biopaxJsonText);
+  biopaxFile = getProcessedBioPax(biopaxJsonText);
   const nodeMetadataMap = {};
 
   //try to map each id in the biopax data to an id in the cytoscape json
   //add the data from biopax to the json
   nodes.forEach(node => {
     const id = node.data.id;
-    nodeMetadataMap[id] = metadataParser(getBioPaxSubtree(id, biopaxElementMap));
+    nodeMetadataMap[id] = metadataParser(getBioPaxSubtree(id));
   });
 
   return nodeMetadataMap;

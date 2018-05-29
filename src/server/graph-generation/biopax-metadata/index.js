@@ -217,9 +217,9 @@ function getBioPaxMetadata(biopaxJsonText, nodes) {
   nodes.forEach(node => {
     const CyId = node.data.id;
     //metadata for the Cytoscape node
-    const BiopaxId = matchCyIdToBiopax(CyId);
+    const BiopaxData = matchCyIdToBiopax(CyId);
     //build the tree for metadata and add it to the map
-    nodeMetadataMap[CyId] = metadataParser(buildBioPaxTree(BiopaxId));
+    nodeMetadataMap[CyId] = metadataParser(buildBioPaxTree(BiopaxData));
   });
 
   return nodeMetadataMap;

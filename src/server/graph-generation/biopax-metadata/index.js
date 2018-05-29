@@ -1,12 +1,19 @@
 const metadataParser = require('./metadataParserJson');
 
-//Build a sub tree array for a biopax element
+/**
+ * 
+ * @param {*} biopaxElement Metadata for a node in the network
+ * @param {*} biopaxFile BioPAX metadata `Map`
+ * @param {*} visited Array containing all previously visited network nodes
+ * @param {*} nodeType Is the node a cross-reference or not?
+ * @returns A tree array containing metadata for the node
+ */
 function buildBioPaxSubtree(biopaxElement, biopaxFile, visited, nodeType = 'default') {
   let result = [];
-
+  //Collect relevant data on this node, and push it into output
   if (nodeType !== 'Reference') {
     //Get type
-    let type = biopaxElement['@type']
+    let type = biopaxElement['@type'];
     if (type) { result.push(['Type', type]); }
 
     //Get data source
@@ -89,14 +96,23 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited, nodeType = 'defa
   return result;
 }
 
-//Build a tree array for a biopax file
+/**
+ * 
+ * @param {*} children Metadata for an entity in the network
+ * @param {*} biopaxFile BioPAX metadata `Map`
+ * @returns Tree array containing all metadata about the given entity
+ */
 function buildBioPaxTree(children, biopaxFile) {
+  //Wrapper function for buildBioPaxSubtree recursion
+  
   let result = [];
 
-  if (!(children)) { return };
+  //make sure the metadata exists
+  if (!(children))
+    return;
 
-  //Get the node id
-  let id = children['pathid']
+  //Get the node id, as defined in getProcessedBioPax
+  let id = children['pathid'];
   if (!(id)) { id = children['about']; }
   if (!(id)) { return; }
 
@@ -109,13 +125,17 @@ function buildBioPaxTree(children, biopaxFile) {
   return result;
 }
 
-//Remove all characters after nth instance of underscore
-//Requires the string to contain at least 1 underscore
-function removeAfterUnderscore(word, numberOfElements) {
+/**
+ * 
+ * @param {*} word A String containing at least n underscores
+ * @param {*} n The number of underscores to be removed
+ * @returns The same string, but with all characters after nth underscore removed
+ */
+function removeAfterUnderscore(word, n) {
   let splitWord = word.split('_');
   let newWord = '';
-  for (let i = 0; i < numberOfElements; i++) {
-    if (i != (numberOfElements - 1)) {
+  for (let i = 0; i < n; i++) {
+    if (i != (n - 1)) {
       newWord += splitWord[i] + '_';
     } else {
       newWord += splitWord[i];
@@ -124,68 +144,73 @@ function removeAfterUnderscore(word, numberOfElements) {
   return newWord;
 }
 
-//Check if ID even exists in the biopax file
-//Returns teh matching element or null
+/**
+ * 
+ * @param {*} biopaxFile BioPAX metadata `Map`
+ * @param {*} id String representing potential BioPAX ID
+ * @returns BioPAX metadata for that ID (if it exists) or null (if it doesn't)
+ */
 function getElementFromBioPax(biopaxFile, id) {
 
-  //Append pc2 address, if id is not already an uri
+  //Remove any URL stuff from the ID, just like getProcessedBioPax
   if (id.indexOf('http') !== -1 || id.indexOf('/') !== -1) {
     var lastIndex = id.lastIndexOf('/');
     id = id.substring(lastIndex + 1);
   }
 
-  //Get element matching the id
+  //Get element matching the ID
+  //make sure the ID isn't "" or null
   if(id)
     return biopaxFile.get(id);
   else return null;
 }
 
-//Get subtree for each node
-//Requires tree to be a valid biopax tree
+/**
+ * 
+ * @param {*} nodeId node ID from Cytoscape network JSON
+ * @param {*} biopax BioPAX metadata `Map`
+ * @returns Subtree containing BioPax metadata for the node
+ */
 function getBioPaxSubtree(nodeId, biopax) {
-  //Remove extra identifiers appended by cytoscape.js
+
+  // The original entity IDs have been converted in the cytoscape network.
+  // Need to first find the original BioPAX entity ID, then collect metadata.
+
+  //Search for ID exactly as it appears
+  let searchTerm = getElementFromBioPax(biopax, nodeId);
+  if (searchTerm) { return buildBioPaxTree(searchTerm, biopax); }
+
+  //Remove extra identifiers appended by Cytoscape
   let fixedNodeId = removeAfterUnderscore(nodeId, 2);
 
   //Resolve issues if there is no appended identifiers
-  if (nodeId.indexOf('_') <= -1) {
+  if (nodeId.indexOf('_') <= -1) 
     fixedNodeId = nodeId;
-  }
 
-  //Conduct a basic search
-  let basicSearch = getElementFromBioPax(biopax, fixedNodeId);
-  if (basicSearch) { return buildBioPaxTree(basicSearch, biopax); }
+  //Search for ID in the first 2 underscores
+  searchTerm = getElementFromBioPax(biopax, fixedNodeId);
+  if (searchTerm) { return buildBioPaxTree(searchTerm, biopax); }
 
-  //Check if id is an unification reference
-  fixedNodeId = 'UnificationXref_' + nodeId;
+  //Search for ID after the last underscore
+  searchTerm = getElementFromBioPax(biopax, fixedNodeId.substring(fixedNodeId.lastIndexOf("_") +1));
+  if (searchTerm) { return buildBioPaxTree(searchTerm, biopax); }
 
-  //Conduct a unification ref search
-  let uniSearch = getElementFromBioPax(biopax, fixedNodeId);
-  if (uniSearch) { return buildBioPaxTree(uniSearch, biopax); }
-
-  //Check if id is an external identifier
-  fixedNodeId = removeAfterUnderscore(nodeId, 2);
-  fixedNodeId = 'http://identifiers.org/' + fixedNodeId.replace(/_/g, '/');
-
-  //Conduct a external identifier search
-  let extSearch = getElementFromBioPax(biopax, fixedNodeId);
-  if (extSearch) { return buildBioPaxTree(extSearch, biopax); }
-
-  //Conduct a plain search with slashes
-  fixedNodeId = nodeId.replace(/_/g, '/');
-  let slashSearch = getElementFromBioPax(biopax, fixedNodeId);
-  if (slashSearch) { return buildBioPaxTree(slashSearch, biopax); }
-
-  //Conduct a plain search as a last resort (Only for Non Pathway URI's)
-  let regularSearch = getElementFromBioPax(biopax, nodeId);
-  if (regularSearch) { return buildBioPaxTree(regularSearch, biopax); }
-
+  //Search Failed, return no info found
   return null;
 }
 
+/**
+ * 
+ * @param {*} biopaxJsonText String containing BioPAX network metadata
+ * @returns `Map` containing BioPAX network metadata
+ */
 function getProcessedBioPax(biopaxJsonText) {
+  //parse String into JSON object, rename '@id' property to 'pathid'
   const graph = JSON.parse(biopaxJsonText.replace(new RegExp('@id', 'g'), 'pathid'))['@graph'];
   const biopaxElementMap = new Map();
 
+  //The 'pathid' property has a format like: http://pathwaycommons.org/pc2/someID
+  //Convert it to this format: someID, and make it the key for the map
   for (const element of graph) {
     const fullId = element['pathid'];
     const lastIndex = fullId.lastIndexOf('/');
@@ -197,12 +222,19 @@ function getProcessedBioPax(biopaxJsonText) {
   return biopaxElementMap;
 }
 
-
+/**
+ * 
+ * @param {*} biopaxJsonText String containing BioPAX metadata for the network
+ * @param {*} nodes JSON object containing all the nodes in the network
+ * @returns Processed metadata for each node in the network
+ */
 function getBioPaxMetadata(biopaxJsonText, nodes) {
+  //turn the biopax string into json
   const biopaxElementMap = getProcessedBioPax(biopaxJsonText);
-
   const nodeMetadataMap = {};
 
+  //try to map each id in the biopax data to an id in the cytoscape json
+  //add the data from biopax to the json
   nodes.forEach(node => {
     const id = node.data.id;
     nodeMetadataMap[id] = metadataParser(getBioPaxSubtree(id, biopaxElementMap));

@@ -20,8 +20,11 @@ function getPathwayMetadata(uri) {
   ]).then(() => ({ comments, dataSource, title, organism }));
 }
 
-//Get metadata enhanced cytoscape JSON
-//Requires a valid pathway uri
+/**
+ * 
+ * @param {*} uri URI representing the network
+ * @returns A Cytoscape JSON which represents the network, enhanced with BioPAX metadata
+ */
 function getPathwayElementJson(uri) {
   let baseElementJson, biopaxJson;
 
@@ -50,7 +53,11 @@ function getPathwayElementJson(uri) {
   });
 }
 
-//Return enhanced cytoscape json. Requires a valid pathway uri
+/**
+ * 
+ * @param {*} uri URI representing the network
+ * @returns A Cytoscape JSON which represents the network, enhanced with BioPAX metadata
+ */
 function getPathwayJson(uri) {
   let pathwayData, elementData;
 

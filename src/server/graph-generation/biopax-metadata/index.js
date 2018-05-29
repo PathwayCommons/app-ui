@@ -3,7 +3,6 @@ var biopaxFile = null;
 /**
  * 
  * @param {*} biopaxElement Metadata for an entity from BioPAX
- * @param {*} biopaxFile BioPAX metadata `Map`
  * @param {*} nodeType Is this a xref or entity?
  */
 function collectEntityMetadata(biopaxElement, nodeType = 'default'){
@@ -59,7 +58,6 @@ function collectEntityMetadata(biopaxElement, nodeType = 'default'){
 /**
  * 
  * @param {*} entity Metadata for an entity in the network
- * @param {*} biopaxFile BioPAX metadata `Map`
  * @returns Tree array containing all metadata about the given entity
  */
 function buildBioPaxTree(entity) {  
@@ -128,7 +126,6 @@ function removeAfterUnderscore(word, n) {
 
 /**
  * 
- * @param {*} biopaxFile BioPAX metadata `Map`
  * @param {*} id String representing potential BioPAX ID
  * @returns BioPAX metadata for that ID (if it exists) or null (if it doesn't)
  */
@@ -150,13 +147,14 @@ function getElementFromBioPax(id) {
 /**
  * 
  * @param {*} nodeId node ID from Cytoscape network JSON
- * @param {*} biopax BioPAX metadata `Map`
  * @returns Subtree containing BioPax metadata for the node
  */
-function getBioPaxSubtree(nodeId) {
+function matchCyIdToBiopax(nodeId) {
 
   // The original entity IDs have been converted in the cytoscape network.
   // Need to first find the original BioPAX entity ID, then collect metadata.
+
+  //all of these methods ARE NECESSARY to find the correct ID for tooltip info
 
   //Search for ID exactly as it appears
   let searchTerm = getElementFromBioPax(nodeId);
@@ -172,9 +170,9 @@ function getBioPaxSubtree(nodeId) {
   //Remove extra identifiers appended by Cytoscape
   let fixedNodeId = removeAfterUnderscore(nodeId, 2);
 
-  //Resolve issues if there is no appended identifiers
+  //The other two are unnecessary if the underscore method fails
   if (nodeId.indexOf('_') <= -1) 
-    fixedNodeId = nodeId;
+    return null;
 
   //Search for ID in the first 2 underscores
   searchTerm = getElementFromBioPax(fixedNodeId);
@@ -228,7 +226,7 @@ function getBioPaxMetadata(biopaxJsonText, nodes) {
   //add the data from biopax to the json
   nodes.forEach(node => {
     const id = node.data.id;
-    nodeMetadataMap[id] = metadataParser(getBioPaxSubtree(id));
+    nodeMetadataMap[id] = metadataParser(matchCyIdToBiopax(id));
   });
 
   return nodeMetadataMap;

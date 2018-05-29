@@ -107,25 +107,6 @@ function buildBioPaxTree(entity) {
 
 /**
  * 
- * @param {*} word A String containing at least n underscores
- * @param {*} n The number of underscores to be removed
- * @returns The same string, but with all characters after nth underscore removed
- */
-function removeAfterUnderscore(word, n) {
-  let splitWord = word.split('_');
-  let newWord = '';
-  for (let i = 0; i < n; i++) {
-    if (i != (n - 1)) {
-      newWord += splitWord[i] + '_';
-    } else {
-      newWord += splitWord[i];
-    }
-  }
-  return newWord;
-}
-
-/**
- * 
  * @param {*} id String representing potential BioPAX ID
  * @returns BioPAX metadata for that ID (if it exists) or null (if it doesn't)
  */
@@ -154,35 +135,43 @@ function matchCyIdToBiopax(nodeId) {
   // The original entity IDs have been converted in the cytoscape network.
   // Need to first find the original BioPAX entity ID, then collect metadata.
 
-  //all of these methods ARE NECESSARY to find the correct ID for tooltip info
+  //Alot of this stuff is strange but it is ALL NECESSARY to correctly map the IDs
 
   //Search for ID exactly as it appears
   let searchTerm = getElementFromBioPax(nodeId);
   if (searchTerm)
-    return buildBioPaxTree(searchTerm);
+    return searchTerm;
   
   //Search for ID after last underscore
   searchTerm = getElementFromBioPax(nodeId.substring(nodeId.lastIndexOf("_") +1));
   if (searchTerm)
-    return buildBioPaxTree(searchTerm);
+    return searchTerm;
   
 
-  //Remove extra identifiers appended by Cytoscape
-  let fixedNodeId = removeAfterUnderscore(nodeId, 2);
+  //Find index of second underscore
+  let i=0,index=null;
+  while(i<2 && index !==-1){
+    index = nodeId.indexOf("_", index +1);
+    i++;
+  }
 
-  //The other two are unnecessary if the underscore method fails
+  //Remove extra identifiers appended by Cytoscape
+  //i.e. everything after the second underscore
+  let fixedNodeId = nodeId.substring(0,index);
+
+  //The last two methods won't work if there are no underscores in the ID
   if (nodeId.indexOf('_') <= -1) 
     return null;
 
   //Search for ID in the first 2 underscores
   searchTerm = getElementFromBioPax(fixedNodeId);
   if (searchTerm)
-    return buildBioPaxTree(searchTerm);
+    return searchTerm;
 
   //Search for ID in between first and second underscore
   searchTerm = getElementFromBioPax(fixedNodeId.substring(fixedNodeId.lastIndexOf("_") +1));
   if (searchTerm)
-    return buildBioPaxTree(searchTerm);
+    return searchTerm;
 
   //Search Failed, return null
   return null;
@@ -218,15 +207,19 @@ function getProcessedBioPax(biopaxJsonText) {
  * @returns Processed metadata for each node in the network
  */
 function getBioPaxMetadata(biopaxJsonText, nodes) {
-  //turn the biopax string into json
+
+  //BioPAX metadata comes as a string, turn it into a Map
   biopaxFile = getProcessedBioPax(biopaxJsonText);
+
   const nodeMetadataMap = {};
 
-  //try to map each id in the biopax data to an id in the cytoscape json
-  //add the data from biopax to the json
+  //Iterate through nodes in Cy network, adding metadata to each
   nodes.forEach(node => {
-    const id = node.data.id;
-    nodeMetadataMap[id] = metadataParser(matchCyIdToBiopax(id));
+    const CyId = node.data.id;
+    //metadata for the Cytoscape node
+    const BiopaxId = matchCyIdToBiopax(CyId);
+    //build the tree for metadata and add it to the map
+    nodeMetadataMap[CyId] = metadataParser(buildBioPaxTree(BiopaxId));
   });
 
   return nodeMetadataMap;

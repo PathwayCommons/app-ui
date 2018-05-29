@@ -53,6 +53,42 @@ function processPublicationData(data) {
  */
 function getPublications(data) {
 
+    /*
+  Sometimes the PubMed citation info gets loaded in as an element in the "List" part of the "data" array.
+  It should be in the "Database IDs" section.
+  This mess properly adds the citation info into "Database IDs", and removes the citation info from "List".
+  */
+ for(let i in data){
+  if(data[i][0] === "List"){
+    for(let j in data[i][1]){
+      if(data[i][1][j][0] === "PubMed"){
+        //Is there already an element in 'data' which contains database info?
+        //if so add the new citation to that list
+        let databaseAlreadyStored = false;
+        for(let k in data){
+          if(data[k][0] === 'Database IDs'){
+            data[k][1].push(["pubmed",data[i][1][j][1]]);
+            databaseAlreadyStored = true;
+            break;
+          }
+        }
+        //otherwise create the list and add citation to it
+        if(!databaseAlreadyStored)
+          data.push([["Database IDs"], [["pubmed",data[i][1][j][1]]]]);
+        
+
+        //remove 'PubMed' from list
+        data[i][1].splice(j,1);
+        //Remove 'list' from data if there's nothing left
+        if(data[i][1].length < 1){
+          data.splice(i,1);
+        }
+      }
+    }
+  }
+}
+
+
   return new Promise(function (resolve, reject) {
     if (!(data)) { resolve(data); }
 

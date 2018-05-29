@@ -178,7 +178,8 @@ function getBioPaxSubtree(nodeId, biopax) {
 
   //Search for ID exactly as it appears
   let searchTerm = getElementFromBioPax(biopax, nodeId);
-  if (searchTerm) { return buildBioPaxTree(searchTerm, biopax); }
+  if (searchTerm)
+    return buildBioPaxTree(searchTerm, biopax);
 
   //Remove extra identifiers appended by Cytoscape
   let fixedNodeId = removeAfterUnderscore(nodeId, 2);
@@ -189,11 +190,13 @@ function getBioPaxSubtree(nodeId, biopax) {
 
   //Search for ID in the first 2 underscores
   searchTerm = getElementFromBioPax(biopax, fixedNodeId);
-  if (searchTerm) { return buildBioPaxTree(searchTerm, biopax); }
+  if (searchTerm)
+    return buildBioPaxTree(searchTerm, biopax);
 
   //Search for ID after the last underscore
   searchTerm = getElementFromBioPax(biopax, fixedNodeId.substring(fixedNodeId.lastIndexOf("_") +1));
-  if (searchTerm) { return buildBioPaxTree(searchTerm, biopax); }
+  if (searchTerm)
+    return buildBioPaxTree(searchTerm, biopax);
 
   //Search Failed, return no info found
   return null;

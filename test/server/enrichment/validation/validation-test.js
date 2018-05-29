@@ -4,7 +4,7 @@ const {validatorGconvert} = require('../../../../src/server/enrichment/validatio
 
 describe('test validatorGconvert', function() {
   this.timeout(500000);
-  it('valid gene, no parameters"', function() {
+  it('valid gene, no parameters', function() {
     return (validatorGconvert(['TP53', 'ATP', 'ATM', 'TP53'],{})).then(
       //resolved
       res => {
@@ -37,7 +37,7 @@ describe('test validatorGconvert', function() {
     );
   });
 
-  it('valid target and valid organism', function() {
+  it('valid targetDb and valid organism', function() {
     return (validatorGconvert(['TP53', 'ATP', 'ATM', 'TP53'], {target: "ensg", organism: "hsapiens" })).then(
       //resolved
       (res) => {
@@ -70,7 +70,7 @@ describe('test validatorGconvert', function() {
     );
   });
 
-  it('valid target and INVALID organism', function() {
+  it('valid targetDb and INVALID organism', function() {
     return (validatorGconvert(['TP53', 'ATP', 'ATM', 'TP53'], {target: "ENSG", organism: "dog" })).then(
         //resolved
         (res) => {
@@ -83,7 +83,7 @@ describe('test validatorGconvert', function() {
     );
   });
 
-  it('INVALID target and valid organism', function() {
+  it('INVALID targetDb and valid organism', function() {
     return (validatorGconvert(['TP53', 'ATP', 'ATM', 'TP53'], {target: "layman", organism: "hsapiens" })).then(
         //resolved
         (res) =>  {
@@ -96,7 +96,7 @@ describe('test validatorGconvert', function() {
     );
   });
 
-  it('INVALID target and INVALID organism', function() {
+  it('INVALID targetDb and INVALID organism', function() {
     return (validatorGconvert(['TP53', 'ATP', 'ATM', 'TP53'], {target: "layman", organism: "dog" })).then(
        //resolved
        (res) =>  {

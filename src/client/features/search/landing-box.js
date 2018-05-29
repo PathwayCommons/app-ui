@@ -146,7 +146,7 @@ const getLandingResult= (query)=> {
   usedDatabases.forEach((database)=>promises.push(
     ServerAPI.geneQuery({
       genes: genesToSearch,
-      target: database.gProfiler
+      targetDb: database.gProfiler
     }).then(result=>idFormatter(database.configName,result))
   ));
 

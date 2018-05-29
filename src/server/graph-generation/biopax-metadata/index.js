@@ -62,11 +62,11 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited, nodeType = 'defa
   if (!(xref)) { xref = []; }
 
   //Get entity reference and add it to xref
-  let eref = biopaxElement['entityReference']
+  let eref = biopaxElement['entityReference'];
   if (eref) xref.push(eref);
 
 
-  //Recurse on each cross reference (Lim it level depth to 4)
+  //Recurse on each cross reference (Lim it level depth to 2)
   if (xref) {
 
     for (let i = 0; i < xref.length; i++) {
@@ -180,6 +180,12 @@ function getBioPaxSubtree(nodeId, biopax) {
   let searchTerm = getElementFromBioPax(biopax, nodeId);
   if (searchTerm)
     return buildBioPaxTree(searchTerm, biopax);
+  
+  //Search for ID after last underscore
+  searchTerm = getElementFromBioPax(biopax, nodeId.substring(nodeId.lastIndexOf("_") +1));
+  if (searchTerm)
+    return buildBioPaxTree(searchTerm, biopax);
+  
 
   //Remove extra identifiers appended by Cytoscape
   let fixedNodeId = removeAfterUnderscore(nodeId, 2);
@@ -193,12 +199,12 @@ function getBioPaxSubtree(nodeId, biopax) {
   if (searchTerm)
     return buildBioPaxTree(searchTerm, biopax);
 
-  //Search for ID after the last underscore
+  //Search for ID in between first and second underscore
   searchTerm = getElementFromBioPax(biopax, fixedNodeId.substring(fixedNodeId.lastIndexOf("_") +1));
   if (searchTerm)
     return buildBioPaxTree(searchTerm, biopax);
 
-  //Search Failed, return no info found
+  //Search Failed, return null
   return null;
 }
 

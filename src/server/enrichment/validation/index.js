@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const _ = require('lodash');
 const { validOrganism } = require('./validity-info');
-const { validTarget } = require('./validity-info');
+const { validTargetDb } = require('./validity-info');
 const qs = require('query-string');
 const { cleanUpEntrez } = require('../helper');
 
@@ -13,9 +13,9 @@ const defaultOptions = {
 };
 
 class InvalidInfoError extends Error {
-  constructor(invalidOrganism, invalidTarget, message) {
+  constructor(invalidOrganism, invalidTargetDb, message) {
     super(message);
-    this.invalidTarget = invalidTarget;
+    this.invalidTargetDb = invalidTargetDb;
     this.invalidOrganism = invalidOrganism;
   }
 }
@@ -43,7 +43,7 @@ const validatorGconvert = (query, userOptions) => {
     formData.organism = formData.organism.toLowerCase();
     const initialTarget = formData.target.toUpperCase();
     formData.target = convertGConvertNames(initialTarget);
-    const invalidInfo = { invalidTarget: undefined, invalidOrganism: undefined };
+    const invalidInfo = { invalidTargetDb: undefined, invalidOrganism: undefined };
     const queryVal = formData.query;
     if (!Array.isArray(queryVal)) {
       reject(new Error('ERROR: genes should be an array'));
@@ -52,11 +52,11 @@ const validatorGconvert = (query, userOptions) => {
     if (!validOrganism.includes(formData.organism)) {
       invalidInfo.invalidOrganism = formData.organism;
     }
-    if (!validTarget.includes(formData.target)) {
-      invalidInfo.invalidTarget = formData.target;
+    if (!validTargetDb.includes(formData.target)) {
+      invalidInfo.invalidTargetDb = formData.target;
     }
-    if (invalidInfo.invalidOrganism != undefined || invalidInfo.invalidTarget != undefined) {
-      reject(new InvalidInfoError(invalidInfo.invalidOrganism, invalidInfo.invalidTarget, ''));
+    if (invalidInfo.invalidOrganism != undefined || invalidInfo.invalidTargetDb != undefined) {
+      reject(new InvalidInfoError(invalidInfo.invalidOrganism, invalidInfo.invalidTargetDb, ''));
     }
 
     fetch(gConvertURL, {

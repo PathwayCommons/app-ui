@@ -52,6 +52,32 @@ function processPublicationData(data) {
  * @description Gets publication titles, references, and authors from PubMed
  */
 function getPublications(data) {
+  /*
+  Sometimes the PubMed citation info gets loaded in as an element in the "List" part of the "data" array.
+  It should be in the "Database IDs" section.
+  This properly adds the citation info into "Database IDs", and removes the citation info from "List".
+  */
+
+  function checkForCitation(listItem){
+      if(listItem[0] === "PubMed")
+        return false;
+      else
+        return true;
+  }
+
+  let databaseInfo = [];
+  for(let i in data){
+    if(data[i][0] === "List"){
+      for(let j in data[i][0]){
+        if(data[i][1][j] && data[i][1][j][0] === "PubMed"){
+          databaseInfo.push(["pubmed",data[i][1][j][1]]);
+        }
+      }
+      data[i][1] = data[i][1].filter(checkForCitation);
+    }
+  }
+
+  data.push([["Database IDs"],databaseInfo]);
 
   return new Promise(function (resolve, reject) {
     if (!(data)) { resolve(data); }

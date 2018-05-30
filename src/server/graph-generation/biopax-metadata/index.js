@@ -37,14 +37,6 @@ function collectEntityMetadata(biopaxElement, nodeType = 'default'){
     //Get Chemical Formula
     let formula = biopaxElement['chemicalFormula'];
     if (formula) { result.push(['Chemical Formula', formula]); }
-
-    //Get Cellular Location
-    let cellLocation = biopaxElement['cellularLocation'];
-    if (cellLocation && cellLocation.indexOf('http') !== -1) {
-      cellLocation = getElementFromBioPax(cellLocation);
-      cellLocation = cellLocation['term'];
-    }
-    if (cellLocation) { result.push(['Cellular Location', cellLocation]); }
   }
 
   //Get database id

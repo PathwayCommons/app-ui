@@ -159,7 +159,7 @@ class Search extends React.Component {
     const searchResultFilter = h('div.search-filters', [
       h('select.search-datasource-filter', {
         value: state.query.datasource,
-        type: 'select-multiple',
+        multiple: false,
         onChange: e => this.setAndSubmitSearchQuery({ datasource: e.target.value })
       }, [
         h('option', { value: [] }, 'Any datasource')].concat(

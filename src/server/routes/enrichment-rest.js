@@ -11,7 +11,7 @@ var swaggerDefinition = {
   info: {
     title: 'Enrichment Services',
     version: '1.0.0',
-    description: 'This is a sample enrichment service server. You can find detailed documentation at [Wiki](https://github.com/PathwayCommons/app-ui/wiki/Enrichment-Services)',
+    description: 'This is a sample enrichment service server. More detailed documentation can be found at [Wiki](https://github.com/PathwayCommons/app-ui/wiki/Enrichment-Services).',
     license: {
       name: "MIT",
       url: "https://github.com/PathwayCommons/app-ui/blob/master/LICENSE"
@@ -21,15 +21,15 @@ var swaggerDefinition = {
   "tags": [
     {
       "name": "Validation Service",
-      "description": "Validate gene list"
+      "description": "Validate gene list for proper nomenclature"
     },
     {
       "name": "Analysis Service",
-      "description": "Summarize gene list as pathway list \n Only Gene Ontology Biological Process terms and Reactome pathways are queried. \n Versions: Gene Ontolody: Ensembl v90 / Ensembl Genomes v37, Reactome: v56"
+      "description": "Determine related pathways based on gene list \n Only Gene Ontology Biological Processes and Reactome Pathways are queried \n Versions: Gene Ontology: Ensembl v90 / Ensembl Genomes v37, Reactome: v56"
     },
     {
       "name": "Visualization Service",
-      "description": "Generate graph information \n Only Gene Ontology Biological Process and Reactome are supported. \n Arbitrary key-value pairs under a pathway ID are passed-through to nodes."
+      "description": "Generate network information \n Networks are comprised of Gene Ontology Biological Processes and Reactome Pathways \n Arbitrary key-value pairs under a pathway ID are passed-through to nodes."
     }
   ]
 };
@@ -66,13 +66,13 @@ enrichmentRouter.get('/swagger.json', function (req, res) {
  *     parameters:
  *     - in: body
  *       name: body
- *       description: query list and optional parameters
+ *       description: Query list and optional parameters for proper formatting
  *       required: true
  *       schema:
  *         "$ref": "#/definitions/input/validationObj"
  *     responses:
  *       '200':
- *         description: Success response
+ *         description: Successful operation
  *         schema:
  *           "$ref": "#/definitions/success/validationSuccess"
  *       '400':
@@ -114,13 +114,13 @@ enrichmentRouter.post('/validation', (req, res) => {
  *     parameters:
  *     - in: body
  *       name: body
- *       description: gene list and optional parameters
+ *       description: Gene list and optional parameters
  *       required: true
  *       schema:
  *         "$ref": "#/definitions/input/analysisObj"
  *     responses:
  *       '200':
- *         description: Success response
+ *         description: Successful operation
  *         schema:
  *           "$ref": "#/definitions/success/analysisSuccess"
  *       '400':
@@ -164,17 +164,17 @@ enrichmentRouter.post('/analysis', (req, res) => {
  *     parameters:
  *     - in: body
  *       name: body
- *       description: output from enrichment service
+ *       description: Display output from enrichment service
  *       required: true
  *       schema:
  *         "$ref": "#/definitions/input/visualizationObj"
  *     responses:
  *       '200':
- *         description: Success response
+ *         description: Successful operation
  *         schema:
  *           "$ref": "#/definitions/success/visualizationSuccess"
  *       '400':
- *         description: invalid input (cutoff, OCweight, JCWeight or JSON format)
+ *         description: Invalid input (cutoff, OCweight, JCWeight or JSON format)
  *         schema:
  *           "$ref": "#/definitions/error/visualizationError"
 */
@@ -219,14 +219,14 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *       properties:
  *         genes:
  *           type: array
- *           description: an array of genes, integers
- *             are interpreted as NCBIGENE
+ *           description: "Input genes as JSON array
+ *                        \n By default, numerical inputs will be interpreted as NCBIGENE notation unless specified, ex HGNC:11998"
  *           example: ["TP53", "111", "AFF4", "111", "11998"]
  *           items:
  *             type: string
  *         targetDb:
  *           type: string
- *           description: "target database (namespace) for conversion \n default: HGNC"
+ *           description: "Target database nomenclature to convert gene list to\n Default: HGNC"
  *           enum:
  *           - ENSG
  *           - HGNCSYMBOL
@@ -235,8 +235,10 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           - NCBIGENE
  *         organism:
  *           type: string
- *           description: "organism identifier \n default: hsapiens"
- *           example: hsapiens
+ *           description: "Organism to analyze
+ *                        \n Naming convention: first character of the full Latin name concatonated with the second portion of the name
+ *                        \n Default: hsapiens"
+ *           example: "hsapiens"
  *           enum:
  *           - aaegypti
  *           - acarolinensis

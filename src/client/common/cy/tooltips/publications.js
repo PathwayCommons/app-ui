@@ -69,7 +69,7 @@ function getPublications(data) {
   for(let i in data){
     if(data[i][0] === "List"){
       for(let j in data[i][0]){
-        if(data[i][1][j][0] === "PubMed"){
+        if(data[i][1][j] && data[i][1][j][0] === "PubMed"){
           databaseInfo.push(["pubmed",data[i][1][j][1]]);
         }
       }

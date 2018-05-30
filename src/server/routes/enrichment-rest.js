@@ -11,7 +11,7 @@ var swaggerDefinition = {
   info: {
     title: 'Enrichment Services',
     version: '1.0.0',
-    description: 'This is a sample enrichment service server. More detailed documentation can be found at [Wiki](https://github.com/PathwayCommons/app-ui/wiki/Enrichment-Services).',
+    description: 'This is a Pathway Commons enrichment application service server.',
     license: {
       name: "MIT",
       url: "https://github.com/PathwayCommons/app-ui/blob/master/LICENSE"
@@ -21,7 +21,7 @@ var swaggerDefinition = {
   "tags": [
     {
       "name": "Validation Service",
-      "description": "Validate gene list for proper nomenclature"
+      "description": "Validate gene list against a selection of target biological databases"
     },
     {
       "name": "Analysis Service",
@@ -219,8 +219,8 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *       properties:
  *         genes:
  *           type: array
- *           description: "Input genes as JSON array
- *                        \n By default, numerical inputs will be interpreted as NCBIGENE notation unless specified, ex HGNC:11998"
+ *           description: "Input genes as an array
+ *                        \n By default, numerical inputs will be interpreted as NCBI Gene IDs."
  *           example: ["TP53", "111", "AFF4", "111", "11998"]
  *           items:
  *             type: string

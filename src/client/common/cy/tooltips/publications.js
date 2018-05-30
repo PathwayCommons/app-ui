@@ -52,9 +52,6 @@ function processPublicationData(data) {
  * @description Gets publication titles, references, and authors from PubMed
  */
 function getPublications(data) {
-
-  console.log(data);
-
   /*
   Sometimes the PubMed citation info gets loaded in as an element in the "List" part of the "data" array.
   It should be in the "Database IDs" section.

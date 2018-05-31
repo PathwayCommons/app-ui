@@ -124,7 +124,7 @@ enrichmentRouter.post('/validation', (req, res) => {
  *         schema:
  *           "$ref": "#/definitions/success/analysisSuccess"
  *       '400':
- *         description: Invalid input (orderedQuery, userThr, minSetSize, maxSetSize, custbg or JSON format)
+ *         description: Invalid input (orderedQuery, minSetSize, maxSetSize, custbg or JSON format)
  *         schema:
  *           "$ref": "#/definitions/error/analysisError"
 */
@@ -133,10 +133,8 @@ enrichmentRouter.post('/analysis', (req, res) => {
   const genes = req.body.genes;
   const tmpOptions = {
     orderedQuery: req.body.orderedQuery,
-    userThr: req.body.userThr,
     minSetSize: req.body.minSetSize,
     maxSetSize: req.body.maxSetSize,
-    //thresholdAlgo: req.body.thresholdAlgo,
     custbg: req.body.custbg
   };
 
@@ -507,11 +505,6 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           description: "genes are placed in some biologically meaningful order \n
  *             default: false"
  *           example: false
- *         userThr:
- *           type: number
- *           description: "user-specified p-value threshold, results with a larger p-value
- *             are excluded \n default: 0.05"
- *           example: 0.07
  *         minSetSize:
  *           type: number
  *           description: "minimum size of functional category, smaller categories are

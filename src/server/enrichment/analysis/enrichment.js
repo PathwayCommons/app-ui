@@ -51,7 +51,6 @@ const enrichment = (query, userSetting) => {
   // map camelCase to snake case (g:Profiler uses snake case parameters)
   userSetting = _.mapKeys(userSetting, (value, key) => {
     if (key === 'orderedQuery') return 'ordered_query';
-    if (key === 'userThr') return 'user_thr';
     if (key === 'minSetSize') return 'min_set_size';
     if (key === 'maxSetSize') return 'max_set_size';
     return key;
@@ -64,7 +63,6 @@ const enrichment = (query, userSetting) => {
     const userThrVal = formData.user_thr;
     const minSetSizeVal = formData.min_set_size;
     const maxSetSizeVal = formData.max_set_size;
-    const thresholdAlgoVal = formData.threshold_algo;
     const custbgVal = formData.custbg;
     if (!Array.isArray(queryVal)) {
       reject(new Error('ERROR: genes should be an array'));
@@ -72,9 +70,6 @@ const enrichment = (query, userSetting) => {
     formData.query = query.join(" ");
     if (orderedQueryVal != 0 && orderedQueryVal != 1) {
       reject(new Error('ERROR: orderedQuery should be 0 / false or 1 / true'));
-    }
-    if (typeof(formData.user_thr) != 'number') {
-      reject(new Error('ERROR: userThr should be a number'));
     }
     if (userThrVal > 1 || userThrVal <= 0) {
       reject(new Error('ERROR: userThrVal should be in (0, 1]'));
@@ -90,9 +85,6 @@ const enrichment = (query, userSetting) => {
     }
     if (maxSetSizeVal < minSetSizeVal) {
       reject(new Error('ERROR: maxSetSize should be >= minSetSize'));
-    }
-    if (thresholdAlgoVal != 'analytical' && thresholdAlgoVal != 'bonferroni' && thresholdAlgoVal != 'fdr') {
-      reject(new Error('ERROR: thresholdAlgoVal should be one of analytical, bonferroni, fdr'));
     }
     if (!Array.isArray(custbgVal)) {
       reject(new Error('ERROR: custbg should be an array'));

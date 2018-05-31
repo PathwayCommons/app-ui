@@ -156,10 +156,15 @@ class Search extends React.Component {
       ]);
     });
 
+    let datasourceVal = "";
+    if(!Array.isArray(state.query.datasource)){
+      datasourceVal = state.query.datasource;
+    }
+
     const searchResultFilter = h('div.search-filters', [
       h('select.search-datasource-filter', {
-        value: state.query.datasource,
-        multiple: true,
+        value: datasourceVal,
+        multiple: false,
         onChange: e => this.setAndSubmitSearchQuery({ datasource: e.target.value })
       }, [
         h('option', { value: [] }, 'Any datasource')].concat(

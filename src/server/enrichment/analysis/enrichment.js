@@ -60,10 +60,9 @@ const enrichment = (query, userSetting) => {
     let formData = _.assign({}, defaultSetting, JSON.parse(JSON.stringify(userSetting)), { query: query });
     const queryVal = formData.query;
     const orderedQueryVal = formData.ordered_query;
-    const userThrVal = formData.user_thr;
     const minSetSizeVal = formData.min_set_size;
     const maxSetSizeVal = formData.max_set_size;
-    const custbgVal = formData.custbg;
+    const backgroundGenesVal = formData.backgroundGenes;
     if (!Array.isArray(queryVal)) {
       reject(new Error('ERROR: genes should be an array'));
     }
@@ -86,10 +85,10 @@ const enrichment = (query, userSetting) => {
     if (maxSetSizeVal < minSetSizeVal) {
       reject(new Error('ERROR: maxSetSize should be >= minSetSize'));
     }
-    if (!Array.isArray(custbgVal)) {
-      reject(new Error('ERROR: custbg should be an array'));
+    if (!Array.isArray(backgroundGenesVal)) {
+      reject(new Error('ERROR: backgroundGenes should be an array'));
     }
-    formData.custbg = custbgVal.join(" ");
+    formData.backgroundGenes = backgroundGenesVal.join(" ");
 
     fetch(gProfilerURL, {
       method: 'post',

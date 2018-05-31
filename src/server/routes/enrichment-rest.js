@@ -124,7 +124,7 @@ enrichmentRouter.post('/validation', (req, res) => {
  *         schema:
  *           "$ref": "#/definitions/success/analysisSuccess"
  *       '400':
- *         description: Invalid input (orderedQuery, minSetSize, maxSetSize, custbg or JSON format)
+ *         description: Invalid input (orderedQuery, minSetSize, maxSetSize, backgroundGenes or JSON format)
  *         schema:
  *           "$ref": "#/definitions/error/analysisError"
 */
@@ -135,7 +135,7 @@ enrichmentRouter.post('/analysis', (req, res) => {
     orderedQuery: req.body.orderedQuery,
     minSetSize: req.body.minSetSize,
     maxSetSize: req.body.maxSetSize,
-    custbg: req.body.custbg
+    custbg: req.body.backgroundGenes
   };
 
   enrichment(genes, tmpOptions).then(enrichmentResult => {
@@ -515,7 +515,7 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           description: "maximum size of functional category, larger categories are
  *             excluded \n default: 200"
  *           example: 400
- *         custbg:
+ *         backgroundGenes:
  *           type: array
  *           description: "an array of genes used
  *             as a custom statistical background \n default: []"

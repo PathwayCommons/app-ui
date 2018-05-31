@@ -62,16 +62,13 @@ const enrichment = (query, userSetting) => {
     const orderedQueryVal = formData.ordered_query;
     const minSetSizeVal = formData.min_set_size;
     const maxSetSizeVal = formData.max_set_size;
-    const backgroundGenesVal = formData.backgroundGenes;
+    const backgroundGenesVal = formData.custbg;
     if (!Array.isArray(queryVal)) {
       reject(new Error('ERROR: genes should be an array'));
     }
     formData.query = query.join(" ");
     if (orderedQueryVal != 0 && orderedQueryVal != 1) {
       reject(new Error('ERROR: orderedQuery should be 0 / false or 1 / true'));
-    }
-    if (userThrVal > 1 || userThrVal <= 0) {
-      reject(new Error('ERROR: userThrVal should be in (0, 1]'));
     }
     if (typeof(formData.min_set_size) != 'number') {
       reject(new Error('ERROR: minSetSize should be a number'));

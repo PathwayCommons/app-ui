@@ -3,16 +3,16 @@ const { generateEdgeInfo } = require('./generate-info');
 const _ = require('lodash');
 
 
-// generateGraphInfo(pathways, cutoff = 0.375, jaccardOverlapWeight) takes a
-// list of pathway information 'pathways', a number for cutoff point 'cutoff'
+// generateGraphInfo(pathways, similarityCutoff = 0.375, jaccardOverlapWeight) takes a
+// list of pathway information 'pathways', a number for cutoff point 'similarityCutoff'
 // and the weight for Jaccard coefficient 'jaccardOverlapWeight'
-// and returns the graph information for pathways based on 'cutoff' and 'jaccardOverlapWeight'
-const generateGraphInfo = (pathways, cutoff = 0.375, jaccardOverlapWeight) => {
-  if (cutoff < 0 || cutoff > 1) {
-    throw new Error('ERROR: cutoff out of range [0, 1]');
+// and returns the graph information for pathways based on 'similarityCutoff' and 'jaccardOverlapWeight'
+const generateGraphInfo = (pathways, similarityCutoff = 0.375, jaccardOverlapWeight) => {
+  if (similarityCutoff < 0 || similarityCutoff > 1) {
+    throw new Error('ERROR: similarityCutoff out of range [0, 1]');
   }
-  if (typeof(cutoff) != 'number') {
-    throw new Error('ERROR: cutoff is not a number');
+  if (typeof(similarityCutoff) != 'number') {
+    throw new Error('ERROR: similarityCutoff is not a number');
   }
   if (jaccardOverlapWeight < 0 || jaccardOverlapWeight > 1) {
     throw new Error('ERROR: jaccardOverlapWeight out of range [0, 1]');
@@ -47,7 +47,7 @@ const generateGraphInfo = (pathways, cutoff = 0.375, jaccardOverlapWeight) => {
     if (!pathways.hasOwnProperty(pathwayId)) continue;
     elements.nodes.push({ data: _.assign({ id: pathwayId }, pathways[pathwayId]) });
   }
-  const edgeInfo = generateEdgeInfo(pathwayIdList, jaccardOverlapWeight, cutoff);
+  const edgeInfo = generateEdgeInfo(pathwayIdList, jaccardOverlapWeight, similarityCutoff);
   _.forEach(edgeInfo, edge => {
     const sourceIndex = 0;
     const targetIndex = 1;

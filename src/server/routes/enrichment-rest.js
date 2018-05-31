@@ -174,17 +174,17 @@ enrichmentRouter.post('/analysis', (req, res) => {
  *         schema:
  *           "$ref": "#/definitions/success/visualizationSuccess"
  *       '400':
- *         description: invalid input (cutoff, jaccardOverlapWeight or JSON format)
+ *         description: invalid input (similarityCutoff, jaccardOverlapWeight or JSON format)
  *         schema:
  *           "$ref": "#/definitions/error/visualizationError"
 */
 // Expose a rest endpoint for visualization service
 enrichmentRouter.post('/visualization', (req, res) => {
   const pathways = req.body.pathways;
-  const cutoff = req.body.cutoff;
+  const similarityCutoff = req.body.similarityCutoff;
   const jaccardOverlapWeight = req.body.jaccardOverlapWeight;
   try {
-    res.json(generateGraphInfo(pathways, cutoff, jaccardOverlapWeight));
+    res.json(generateGraphInfo(pathways, similarityCutoff, jaccardOverlapWeight));
   } catch (err) {
     res.status(400).send(err.message);
   }
@@ -550,7 +550,7 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *             GO:0043525: {}
  *             GO:0043523:
  *               p-value: 0.05
- *         cutoff:
+ *         similarityCutoff:
  *           type: number
  *           description: "cutoff point used for filtering similaritiy rates of edges
  *             pairwise \n default: 0.375"

@@ -155,9 +155,9 @@ describe('test generateGraphInfo', function () {
   });
 
   it('two INVALID parameters', function () {
-    const res = generateGraphInfo({ "GO:0006354": { "p-value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }, JCWeight: 3.55, cutoff: 75 });
+    const res = generateGraphInfo({ "GO:0006354": { "p-value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }, JCWeight: 3.55, similarityCutoff: 75 });
     //Variable name will appear in output if unrecognized
-    expect(JSON.stringify(res)).to.include('JCWeight'&&'cutoff');
+    expect(JSON.stringify(res)).to.include('JCWeight'&&'similarityCutoff');
   });
 
 });

@@ -15,7 +15,7 @@ const pathwayPairGraph = (pathway1, pathway2, jaccardOverlapWeight) => {
       intersection.push(joinedPathway[i]);
     }
   }
-  // JC/OC calculation
+  //similarity calculation
   const pathway1Length = pathway1.genes.length;
   const pathway2Length = pathway2.genes.length;
   const similarity = jaccardOverlapWeight * (intersectionCount / (pathway1Length + pathway2Length - intersectionCount)) + (1 - jaccardOverlapWeight) * (intersectionCount / Math.min(pathway1Length, pathway2Length));
@@ -37,12 +37,12 @@ const pathwayListGraph = (pathwayList, jaccardOverlapWeight) => {
 };
 
 
-// filterEdges(edgeList, cutoff) takes a list of edges edgelist and
-// a number for cutoff point cutoff
-// and filters edges whose similarity rate is less than cutoff
-const filterEdges = (edgeList, cutoff) => {
+// filterEdges(edgeList, similarityCutoff) takes a list of edges edgelist and
+// a number for cutoff point 'similarityCutoff'
+// and filters edges whose similarity rate is less than similarityCutoff
+const filterEdges = (edgeList, similarityCutoff) => {
   return _.filter(edgeList, edge => {
-    return edge.similarity >= cutoff;
+    return edge.similarity >= similarityCutoff;
   });
 };
 

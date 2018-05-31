@@ -3,11 +3,11 @@ const { generateEdgeInfo } = require('./generate-info');
 const _ = require('lodash');
 
 
-// generateGraphInfo(pathwayInfoList, cutoff = 0.375, jaccardOverlapWeight) takes a
-// list of pathway information 'pathwayInfoList', a number for cutoff point 'cutoff'
+// generateGraphInfo(pathways, cutoff = 0.375, jaccardOverlapWeight) takes a
+// list of pathway information 'pathways', a number for cutoff point 'cutoff'
 // and the weight for Jaccard coefficient 'jaccardOverlapWeight'
-// and returns the graph information for pathwayInfoList based on 'cutoff' and 'jaccardOverlapWeight'
-const generateGraphInfo = (pathwayInfoList, cutoff = 0.375, jaccardOverlapWeight) => {
+// and returns the graph information for pathways based on 'cutoff' and 'jaccardOverlapWeight'
+const generateGraphInfo = (pathways, cutoff = 0.375, jaccardOverlapWeight) => {
   if (cutoff < 0 || cutoff > 1) {
     throw new Error('ERROR: cutoff out of range [0, 1]');
   }
@@ -27,25 +27,25 @@ const generateGraphInfo = (pathwayInfoList, cutoff = 0.375, jaccardOverlapWeight
 
   // check unrecognized and duplicates, modify pathwayIdList
   const unrecognized = new Set();
-  for (let pathwayId in pathwayInfoList) {
-    if (!pathwayInfoList.hasOwnProperty(pathwayId)) continue;
+  for (let pathwayId in pathways) {
+    if (!pathways.hasOwnProperty(pathwayId)) continue;
     if (!pathwayInfoTable.has(pathwayId)) {
       unrecognized.add(pathwayId);
-      delete pathwayInfoList[pathwayId];
+      delete pathways[pathwayId];
     }
   }
   const pathwayIdList = [];
-  for (let pathwayId in pathwayInfoList) {
-    if (!pathwayInfoList.hasOwnProperty(pathwayId)) continue;
+  for (let pathwayId in pathways) {
+    if (!pathways.hasOwnProperty(pathwayId)) continue;
     pathwayIdList.push(pathwayId);
   }
   // generate node and edge info
   const elements = {};
   elements.nodes = [];
   elements.edges = [];
-  for (let pathwayId in pathwayInfoList) {
-    if (!pathwayInfoList.hasOwnProperty(pathwayId)) continue;
-    elements.nodes.push({ data: _.assign({ id: pathwayId }, pathwayInfoList[pathwayId]) });
+  for (let pathwayId in pathways) {
+    if (!pathways.hasOwnProperty(pathwayId)) continue;
+    elements.nodes.push({ data: _.assign({ id: pathwayId }, pathways[pathwayId]) });
   }
   const edgeInfo = generateEdgeInfo(pathwayIdList, jaccardOverlapWeight, cutoff);
   _.forEach(edgeInfo, edge => {

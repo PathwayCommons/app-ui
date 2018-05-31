@@ -180,11 +180,11 @@ enrichmentRouter.post('/analysis', (req, res) => {
 */
 // Expose a rest endpoint for visualization service
 enrichmentRouter.post('/visualization', (req, res) => {
-  const pathwayInfoList = req.body.pathwayInfoList;
+  const pathways = req.body.pathways;
   const cutoff = req.body.cutoff;
   const jaccardOverlapWeight = req.body.jaccardOverlapWeight;
   try {
-    res.json(generateGraphInfo(pathwayInfoList, cutoff, jaccardOverlapWeight));
+    res.json(generateGraphInfo(pathways, cutoff, jaccardOverlapWeight));
   } catch (err) {
     res.status(400).send(err.message);
   }
@@ -540,9 +540,9 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *     visualizationObj:
  *       type: object
  *       required:
- *       - pathwayInfoList
+ *       - pathways
  *       properties:
- *         pathwayInfoList:
+ *         pathways:
  *           type: object
  *           description: pathway information keyed by pathway ID
  *           additionalProperties: object

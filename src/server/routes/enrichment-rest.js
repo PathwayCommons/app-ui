@@ -76,7 +76,7 @@ enrichmentRouter.get('/swagger.json', function (req, res) {
  *         schema:
  *           "$ref": "#/definitions/success/validationSuccess"
  *       '400':
- *         description: Invalid input (organism, target, or JSON format)
+ *         description: Invalid input (organism, targetDb, or JSON format)
  *         schema:
  *           "$ref": "#/definitions/error/validationError"
 */
@@ -85,7 +85,7 @@ enrichmentRouter.post('/validation', (req, res) => {
   const genes = req.body.genes;
   const tmpOptions = {};
   tmpOptions.organism = req.body.organism;
-  tmpOptions.target = req.body.target;
+  tmpOptions.target = req.body.targetDb;
   validatorGconvert(genes, tmpOptions).then(gconvertResult => {
     res.json(gconvertResult);
   }).catch((err) => {
@@ -224,7 +224,7 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           example: ["TP53", "111", "AFF4", "111", "11998"]
  *           items:
  *             type: string
- *         target:
+ *         targetDb:
  *           type: string
  *           description: "target database (namespace) for conversion \n default: HGNC"
  *           enum:

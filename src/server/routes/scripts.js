@@ -4,19 +4,16 @@ const db = require('./../database/utilities');
 const update = require('./../database/update');
 const logger = require('./../logger');
 const diffSaver = require('./../database/saveDiffs');
-
 const pathwayUris = require('../../scripts/valid_pathway_uris.json');
 const config = require('../database/config');
 const pcServices = require('../pathway-commons');
-
 const r = require('rethinkdb');
 
 
 function getPathwayLevelMetadata(uri) {
-
   let title, dataSource, comments, organism;
   let getValue = data => data.traverseEntry[0].value;
-  let get = path => pcServices.traverse({uri, path}).then(getValue);
+  let get = path => pcServices.query({cmd:'traverse', uri, path}).then(getValue);
 
   return Promise.all([
     get('Named/displayName').then(value => title = value),
@@ -27,8 +24,6 @@ function getPathwayLevelMetadata(uri) {
     return { dataSource, title };
   });
 }
-
-
 
 
 const generatePathways = async () => {

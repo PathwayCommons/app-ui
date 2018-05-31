@@ -133,8 +133,9 @@
   line-height: 1.5;
 }
 
-.tooltip-heading-link{
+.tooltip-search-link{
   text-decoration: underline;
+  font-weight:bold;
   display:inline;
   color: var(--link);
 }

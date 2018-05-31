@@ -13,11 +13,11 @@ const defaultFetchOpts = {
 
 const ServerAPI = {
   getGraphAndLayout(uri, version) {
-    return fetch(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`, defaultFetchOpts).then(res =>  res.json());
+    return fetch(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`, defaultFetchOpts).then(res => res.json());
   },
 
   pcQuery(method, params){
-    return fetch(`/pc-client/${method}?${qs.stringify(params)}`, defaultFetchOpts).then(res => res.json());
+    return fetch(`/pc-client/${method}?${qs.stringify(params)}`, defaultFetchOpts);
   },
 
   datasources(){
@@ -25,19 +25,24 @@ const ServerAPI = {
   },
 
   querySearch(query){
-    return fetch(`/pc-client/querySearch?${qs.stringify(query)}`, defaultFetchOpts).then(res => res.json());
+    const queryClone=_.assign({},query);
+    if(/(uniprot:\w+|ncbi:[0-9]+|hgnc:\w+)$/.test(queryClone.q)){queryClone.q=queryClone.q.split(':')[1];}
+    return fetch(`/pc-client/querySearch?${qs.stringify(queryClone)}`, defaultFetchOpts).then(res => res.json());
   },
 
   geneQuery(query){
-    query.genes=_.concat(['padding'],query.genes.split(' '));
-    return fetch('/api/validation', {
-      method:'POST', 
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body:qs.stringify(query)
-    }).then(res => res.json()).then(ids=> _.assign(ids,{unrecognized:_.tail(ids.unrecognized)}));//remove padding
+    if(query.genes.length>=1){
+      return fetch('/api/validation', {
+        method:'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body:JSON.stringify(query)
+      }).then(res => res.json());
+    }else{
+      return Promise.resolve({geneInfo:[],unrecognized:[]});
+    }
   },
 
   getGeneInformation(ids){
@@ -46,12 +51,6 @@ const ServerAPI = {
 
   getUniprotnformation(ids){
     return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&accession=${ids.join(',')}`, defaultFetchOpts).then(res => res.json());
-  },
-
-  getNeighborhood(ids,kind){
-   const source=ids.map(id=>`source=${id}`).join('&');
-   const patterns = '&pattern=controls-phosphorylation-of&pattern=in-complex-with&pattern=controls-expression-of&pattern=interacts-with';
-    return fetch(`http://www.pathwaycommons.org/pc2/graph?${source}&kind=${kind}&format=TXT${patterns}`,defaultFetchOpts).then(res => res.text());
   },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into

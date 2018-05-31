@@ -3,6 +3,7 @@ const h = require('react-hyperscript');
 const _ = require('lodash');
 const queryString = require('query-string');
 const Loader = require('react-loader');
+
 const hideTooltips = require('../../common/cy/events/click').hideTooltips;
 const removeStyle= require('../../common/cy/manage-style').removeStyle;
 const make_cytoscape = require('../../common/cy/');
@@ -51,12 +52,21 @@ class Interactions extends React.Component {
         Phosphorylation:true,
         Expression:true
       }
-    };    
+    };
 
     const query = queryString.parse(props.location.search);
-    const sources=_.uniq(_.concat([],query.source));
-    const kind = sources.length>1?'PATHSBETWEEN':'Neighborhood';
-    ServerAPI.getNeighborhood(sources,kind).then(res=>{ 
+    const sources = _.uniq(_.concat([],query.source)); //IDs or URIs
+    const params = {
+      source : sources,
+      pattern : ['controls-phosphorylation-of','in-complex-with','controls-expression-of', 'interacts-with'],
+      kind : sources.length>1 ? 'pathsbetween' : 'neighborhood',
+      format : 'txt',
+      //TODO: consider using direction:'bothstream' for neighborhood queries (or remove 'interacts-with' PPI-only pattern)
+      // direction:'bothstream' //ignored if it's pathsbetween
+    };
+    ServerAPI.pcQuery('graph', params)
+      .then(res=>res.text())
+      .then(res=>{
       const layoutConfig = getLayoutConfig('interactions');
       const network= this.parse(res);
       this.setState({
@@ -66,15 +76,20 @@ class Interactions extends React.Component {
         loaded:_.assign(this.state.loaded,{network:true})
       });
     });
-    //get ids from uris 
-    const geneIds = sources.map(source=> 
-      source.includes('pathwaycommons')?
-      ServerAPI.pcQuery('traverse',{uri:source,path:`${_.last(source.split('/')).split('_')[0]}/displayName`}).then(result=>result.json())
-      .then(id=> _.words(id.traverseEntry[0].value[0]).length===1 ? id.traverseEntry[0].value[0].split('_')[0] : ''):
-      source.replace(/\//g,' ')
+    //get ids from uris
+    const geneIds = sources.map(source =>
+      source.includes('pathwaycommons')
+        ? ServerAPI.pcQuery('traverse',
+          {
+            uri:source,
+            path:`${_.last(source.split('/')).split('_')[0]}/displayName`
+          })
+          .then(result=>result.json())
+          .then(id=> _.words(id.traverseEntry[0].value[0]).length===1 ? id.traverseEntry[0].value[0].split('_')[0] : '')
+        : source.replace(/\//g,' ')
     );
     Promise.all(geneIds).then(geneIds=>{
-      ServerAPI.geneQuery({genes:geneIds.join(' '),target: 'NCBIGENE'}).then(result=>{
+      ServerAPI.geneQuery({genes:geneIds,targetDb: 'NCBIGENE'}).then(result=>{
         const ncbiIds=result.geneInfo.map(gene=> gene.convertedAlias);
         ServerAPI.getGeneInformation(ncbiIds).then(result=>{
           const geneResults=result.result;
@@ -102,7 +117,7 @@ class Interactions extends React.Component {
         });
       });
     });
-  
+
     this.state.cy.on('trim', () => {
       const state = this.state;
       const ids = state.ids;
@@ -124,7 +139,7 @@ class Interactions extends React.Component {
         const nodes = edges.connectedNodes();
         edges.length?
         categories.set(type,{edges:edges,nodes:nodes}):
-        (categories.delete(type),delete filters[type]);      
+        (categories.delete(type),delete filters[type]);
       });
 
       _.tail(_.toPairs(filters)).map(pair=>this.filterUpdate(pair[0]));
@@ -170,7 +185,7 @@ class Interactions extends React.Component {
       if(!nodeMap.has(node)){
         const metadata=nodeMetadata.get(node);
         nodeMap.set(node,true);
-        const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');       
+        const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');
         network.nodes.push({data:{class: "ball",id: node,label: node, queried: this.state.ids.indexOf(node)!=-1 ,
         parsedMetadata:[['Type','bp:'+metadata[0].split(' ')[0].replace(/Reference/g,'').replace(/;/g,',')],['Database IDs', links]]}});
       }
@@ -222,11 +237,11 @@ class Interactions extends React.Component {
           cy.remove(edges);
           cy.remove(nodes.filter(nodes=>nodes.connectedEdges().empty()));
       }
-      else{ 
+      else{
         edges.union(nodes).restore();
       }
     });
-    
+
     filters[type]=!filters[type];
     this.setState({
       filters:filters
@@ -246,7 +261,7 @@ class Interactions extends React.Component {
       filterUpdate:(evt,type)=> this.filterUpdate(evt,type),
       filters: state.filters,
       download: {
-        types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'), 
+        types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'),
         promise: () => Promise.resolve(_.map(state.cy.edges(),edge=> edge.data().id).sort().join('\n'))
       },
     }):

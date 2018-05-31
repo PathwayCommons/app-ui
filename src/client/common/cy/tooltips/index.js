@@ -14,6 +14,16 @@ class MetadataTip {
   constructor(name, data, cyElement) {
     this.name = name;
     this.data = data.parsedMetadata;
+    //Add an extra piece of metadata to generate the search link
+    //search text needs to be generated differently for 'processes'
+      if(data.class === "process"){
+        for(let i in this.data){
+          if(this.data[i][0]==="Display Name")
+            this.data.push(["Search Link",this.data[i][1]]);
+        }
+      }else{
+        this.data.push(["Search Link",this.name]);
+      }
     this.cyElement = cyElement;
     this.db = config.databases;
     this.viewStatus = {};
@@ -83,9 +93,7 @@ class MetadataTip {
 
     if (!(this.data)) { this.data = []; }
     return h('div.tooltip-image', [
-      h('div.tooltip-heading', [
-        h('a.tooltip-heading-link',{href:"/search?&q="+this.name,target:"_blank"},this.name),
-        ]),
+      h('div.tooltip-heading', this.name),
       h('div.tooltip-internal', h('div', (data).map(item => formatContent.parseMetadata(item, true, expandFunction, this.name)), this))
     ]);
   }
@@ -112,9 +120,7 @@ class MetadataTip {
 
     if (!(this.data)) { this.data = []; }
     return h('div.tooltip-image', [
-      h('div.tooltip-heading', [
-      h('a.tooltip-heading-link',{href:"/search?&q="+this.name,target:"_blank"},this.name),
-      ]),
+      h('div.tooltip-heading', this.name),
       h('div.tooltip-internal', h('div', (data).map(item => formatContent.parseMetadata(item, !this.isExpanded(item[0]), getExpansionFunction(item), this.name), this)))
     ]
     );

@@ -6,15 +6,22 @@ const { ServerAPI } = require('../../services');
 const databases = require('../../common/config').databases;
 const Loader = require('react-loader');
 const _ = require('lodash');
+
 //usedDatabases=[['Uniprot lookup name',{configName:,gProfiler:}]]
 const usedDatabases=new Map ([
-  ['GeneCards',{configName:'Gene Cards',gProfiler:'HGNCSYMBOL'}],
-  ['HGNC',{configName:'HGNC',gProfiler:'HGNC'}],
-  ['GeneID',{configName:'NCBI Gene',gProfiler:'NCBIGene'}],
-  ['Uniprot',{configName:'Uniprot',gProfiler:'Uniprot'}]
+  ['GeneCards',{configName:'Gene Cards',gProfiler:'HGNCSYMBOL',displayName:'Gene Cards'}],
+  ['HGNC Symbol',{configName:'HGNC Symbol',gProfiler:'HGNCSymbol',displayName:'HGNC'}],
+  ['GeneID',{configName:'NCBI Gene',gProfiler:'NCBIGene',displayName:'NCBI Gene'}],
+  ['Uniprot',{configName:'Uniprot',gProfiler:'Uniprot',displayName:'Uniprot'}]
 ]);
 
-const linkBuilder= (source,geneQuery)=>{
+/**
+ * Get database link and display name based on gene ids
+ * @param {string} source Database name
+ * @param {JSON} geneQuery User input string and matching gene id.
+ * @return {string: {string: string}} e.g.{MDM2: {Uiprot: Q00978}}
+ */
+const idFormatter= (source,geneQuery)=>{
   let genes={};
   const geneArray=geneQuery.geneInfo;
   genes.unrecognized=geneQuery.unrecognized;
@@ -28,30 +35,34 @@ const linkBuilder= (source,geneQuery)=>{
   return genes;
 };
 
-const pcFallback = (unrecognized,genes) => {
- return unrecognized.map(entry=>{
-    if(!genes[entry]){
-     return ServerAPI.pcQuery('search', {q:entry,entry:'entityreference'}).then((search)=>{
-        const ids = _.compact(search.searchHit.map(hit=>{
-          hit =_.reverse(hit.uri.split('/'));
-          return hit[1]==='uniprot' ? hit[0] : false;
-        }));
-        const duplicateCheck = _.compact(ids.map(id=>_.findKey(genes,{'Uniprot':id})));
-        if(!_.isEmpty(ids) && _.isEmpty(duplicateCheck)){
-          genes[entry]={'Uniprot': ids[0]};
-        }
-      });
-    }
-  });
-};
-
+/**
+ * Get database link and display name based on gene ids
+ * @param {{string:string}} ids NCBI id to search, e.g.{GENE CARD:MDM2}
+ * @return {[{string:string,string,string}]} Array of database containing link and display name, e.g.{link: URI, displayName: MDM2}
+ */
 const idToLinkConverter = (ids)  =>{
   const dbSet = databases.filter(databaseValue => ids[databaseValue.database]);
-  return _.assign({},
-    ...dbSet.map(database=>({[database.database]:database.url+database.search+ids[database.database].replace(/[^a-zA-Z0-9:]/g)}))
+  let dbs =  _.assign({}, ...dbSet.map(database=>({
+      [database.database]: database.url+database.search+ids[database.database].replace(/[^a-zA-Z0-9:]/g)
+  }))
   );
+
+  let links = [];
+  usedDatabases.forEach((usedDatabase)=>{
+    let dbLink = dbs[usedDatabase.configName];
+    if (dbLink != null) {
+      links.push({link:dbLink,displayName:usedDatabase.displayName});
+    }
+  });
+  return links;
 };
 
+/**
+ * Get gene information from NCBI
+ * @param {string:string} ids NCBI id to search, e.g.{4193:MDM2}
+ * @param {} genes Validated gene id from databse, e.g.{gene:{db1:id,db2:id}}
+ * @return {json} JSON of gene information.
+ */
 const getNcbiInfo = (ids,genes) => {
   const ncbiIds=_.map(ids,(search,id)=>id);
   return ServerAPI.getGeneInformation(ncbiIds).then(result=>{
@@ -72,7 +83,12 @@ const getNcbiInfo = (ids,genes) => {
   });
 };
 
-const getUniprotInfo= (ids,genes) => {
+/**
+ * Get gene information from Uniprot
+ * @param {string:string} ids Uniprot accessions to search, e.g.{4193:MDM2}
+ * @return {json} JSON of gene information.
+ */
+const getUniprotInfo= (ids) => {
   const uniprotIds=_.map(ids,(search,id)=>id);
   return ServerAPI.getUniprotnformation(uniprotIds).then(result=>{
     return result.map(gene=>{
@@ -83,24 +99,19 @@ const getUniprotInfo= (ids,genes) => {
         }
       });
       const hgncSymbol = links['Gene Cards'];
-      const duplicateCheck = _.findKey(genes,{'Gene Cards':hgncSymbol});
-      if(!duplicateCheck || genes[duplicateCheck]['Uniprot']===gene.accession){
       links=idToLinkConverter(links);
-        return {
-          databaseID:gene.accession,
-          name:gene.gene[0].name.value,
-          function: gene.comments && gene.comments[0].type==='FUNCTION' ? gene.comments[0].text[0].value:'',
-          hgncSymbol:hgncSymbol,
-          showMore:{full:true,function:false,synonyms:false},
-          links:links
-        };
-      }
-      else{
-        return;
-      }
+      return {
+        databaseID:gene.accession,
+        name:gene.gene[0].name.value,
+        function: gene.comments && gene.comments[0].type==='FUNCTION' ? gene.comments[0].text[0].value:'',
+        hgncSymbol:hgncSymbol,
+        showMore:{full:true,function:false,synonyms:false},
+        links:links
+      };
     });
   });
 };
+
 /*Gets info for a landing box
 input: 'TP53'
 output: [{
@@ -113,37 +124,59 @@ synonyms:"TP53, BCC7, LFS1, P53, TRP53"
 }]
 */
 const getLandingResult= (query)=> {
-  const q=query.trim();
+  let q=query.trim().split(' ');
+  let ncbiIds={},uniprotIds={},labeledId={};
+  const genesToSearch = [];
+  q.forEach ((id)=> {
+    const splitId=id.split(':');
+
+    //Parse the query based on the format
+    if(/uniprot:\w+$/i.test(id)) {
+      uniprotIds[splitId[1]]=splitId[1];
+    } else if(/(ncbi:[0-9]+|hgnc:\w+)$/i.test(id)) {
+      labeledId[splitId[1]]=splitId[1];
+      genesToSearch.push(splitId[1]);
+    } else {
+      genesToSearch.push(splitId[0]);
+    }
+  });
+
+  //Get gene IDs from each database
   const promises= [];
   usedDatabases.forEach((database)=>promises.push(
-    ServerAPI.geneQuery({genes: q,target: database.gProfiler}).then(result=>linkBuilder(database.configName,result))
+    ServerAPI.geneQuery({
+      genes: genesToSearch,
+      targetDb: database.gProfiler
+    }).then(result=>idFormatter(database.configName,result))
   ));
-  return Promise.all(promises).then(values=>{
-    let genes=values[0];
-    _.tail(values).forEach(gene=>_.mergeWith(genes,gene,(objValue, srcValue)=>_.assign(objValue,srcValue)));
+
+  return Promise.all(promises).then(databaseResults=>{
+    let genes={};
+    databaseResults.forEach(databaseResult=>_.merge(genes,databaseResult)); //Merge the array of result into one json
     return genes;
-  }).then(genes=>Promise.all(pcFallback(genes.unrecognized,genes)).then(()=>genes)).then((genes)=>{
-      let ncbiIds={},uniprotIds={};
-      _.forEach(genes,(gene,search)=>{
-        if(gene['NCBI Gene']){
-          ncbiIds[gene['NCBI Gene']]=search;
-        }
-        else if(gene['Uniprot']){
-          uniprotIds[gene['Uniprot']]=search;
-        }
-      });
-      let landingBoxes=[];
-       if(!_.isEmpty(ncbiIds)){
-        landingBoxes.push(getNcbiInfo(ncbiIds,genes));
-       }
-       if(!_.isEmpty(uniprotIds)){
-        landingBoxes.push(getUniprotInfo(uniprotIds,genes));
-       }
-      return Promise.all(landingBoxes).then(landingBoxes=> {
-        landingBoxes=_.compact(_.flatten(landingBoxes));
-        if(landingBoxes.length>1){landingBoxes.forEach(box=>box.showMore.full=false);}
-        return landingBoxes;
-      });
+  }).then(genes=> {
+    _.forEach(genes,(gene,search)=>{
+      if(gene['NCBI Gene']){
+        ncbiIds[gene['NCBI Gene']]=search;
+      }
+      else if(gene['Uniprot']){
+        uniprotIds[gene['Uniprot']]=search;
+      }
+    });
+    let landingBoxes=[];
+     if(!_.isEmpty(ncbiIds)){
+      landingBoxes.push(getNcbiInfo(ncbiIds,genes));
+     }
+     if(!_.isEmpty(uniprotIds)){
+      landingBoxes.push(getUniprotInfo(uniprotIds));
+     }
+    return Promise.all(landingBoxes).then(landingBoxes=> {
+      landingBoxes=_.uniqWith(_.flatten(landingBoxes),(arrVal, othVal)=>
+        _.intersectionWith(_.values(arrVal.links),_.values(othVal.links),_.isEqual).length
+      );
+      if(landingBoxes.length>1){landingBoxes.forEach(box=>box.showMore.full=false);}
+      return landingBoxes;
+    });
   });
 };
 
@@ -162,6 +195,15 @@ const expandableText = (controller,landing,length,text,separator,type,cssClass,t
     result.push(h(`${type}.search-landing-link`,{onClick: ()=> handelShowMoreClick(controller, landing, toggleVar, index),key:'showMore'},
     varToToggle ? '« less': 'more »'));
   }
+  return result;
+};
+
+const expandableFunctionText = (controller,landing,text,toggleVar,index)=>{
+  let result = null;
+  const varToToggle= landing[index].showMore[toggleVar];
+  const cssClass = varToToggle ? 'search-landing-function-more' : 'search-landing-function-less';
+  result=[h('div', {key:'text', className:cssClass}, [h('span',text)])];
+  result.push(h('span.search-landing-link',{onClick: ()=> handelShowMoreClick(controller, landing, toggleVar, index),key:'showMore'}, varToToggle ? '« less': 'more »'));
   return result;
 };
 
@@ -209,11 +251,11 @@ const landingBox = (props) => {
     }
     let functions=[];
     if(box.function){
-      functions=expandableText(controller,landing,360, box.function,".",'span','search-landing-function','function',index);
+      functions=expandableFunctionText(controller,landing,box.function,'function',index);
     }
     let links=[];
-    _.forIn((box.links),(value,key)=>{
-      links.push(h('a.search-landing-link',{key: key, href: value},key));
+    box.links.forEach((link)=>{
+      links.push(h('a.search-landing-link',{key: link.displayName, href: link.link},link.displayName));
     });
     return [
       h('div.search-landing-title',{key:'title',
@@ -225,7 +267,7 @@ const landingBox = (props) => {
         h('div.search-landing-section',{key: 'ids'},[hgncSymbol,otherNames]),
         h('div.search-landing-section',{key: 'functions'},[functions]),
         h('div.search-landing-section',{key: 'links'},[links]),
-        interactionsLink(box.databaseID,'View Interactions')
+        interactionsLink(box.hgncSymbol,'View Interactions')
       ])
     ];
   });

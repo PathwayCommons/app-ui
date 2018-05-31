@@ -185,9 +185,13 @@
   padding-left: 215px;
 }
 
-.search-result-info {
-  max-width: 100%;
+.search-result-filter {
   width: var(--search-width);
+  max-width: 100%;
+}
+
+.search-result-hit-count {
+  max-width: 100%;
 }
 
 .search-list {
@@ -212,12 +216,15 @@
   padding-right: 2em;
   font-size: 12px;
   text-overflow: ellipsis;
+  margin-left: auto;
+  margin-top:9px;
 }
 
 .search-datasource-filter > option {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .search-landing{
   max-width: var(--search-width);
   width: 100%;
@@ -249,9 +256,18 @@
   margin-top: 0px;
 }
 
-.search-landing-function {
+.search-landing-function-less {
  margin-right: 5px ;
+ line-height: 1.2em;
+ max-height: 2.4em;
+ overflow: hidden;
 }
+
+.search-landing-function-more {
+  margin-right: 5px ;
+  line-height: 1.2em;
+  overflow: hidden;
+ }
 
 .search-landing-small{
   font-size: 10pt;

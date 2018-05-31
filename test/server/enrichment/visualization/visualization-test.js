@@ -4,7 +4,7 @@ const { generateGraphInfo } = require('../../../../src/server/enrichment/visuali
 
 
 describe('test generateGraphInfo', function () {
-  it('it should return an object', function () {
+  it('valid input', function () {
     const res = generateGraphInfo({ "GO:0006354": { "p-value": 1 }, "GO:0006368": { "intersection": ["AFF4"] } });
     const result = {
       "unrecognized": [],
@@ -146,5 +146,18 @@ describe('test generateGraphInfo', function () {
       }
     };
     expect(res).to.deep.equal(result);
-  })
+  });
+
+  it('one INVALID parameter', function () {
+    const res = generateGraphInfo({ "GO:0006354": { "p-value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }, JCWeight: 3.55 });
+    //Variable name will appear in output if unrecognized
+    expect(JSON.stringify(res)).to.include('JCWeight');
+  });
+
+  it('two INVALID parameters', function () {
+    const res = generateGraphInfo({ "GO:0006354": { "p-value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }, JCWeight: 3.55, cutoff: 75 });
+    //Variable name will appear in output if unrecognized
+    expect(JSON.stringify(res)).to.include('JCWeight'&&'cutoff');
+  });
+
 });

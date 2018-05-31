@@ -1,10 +1,10 @@
 const _ = require('lodash');
 
 
-// pathwayPairGraph(pathway1, pathway2, JCWeight) takes two pathway IDs
+// pathwayPairGraph(pathway1, pathway2, jaccardOverlapWeight) takes two pathway IDs
 // pathway1 and pathway1 and a weight for Jaccard coefficient
 // and generates the edge information between pathway1 and pathway2
-const pathwayPairGraph = (pathway1, pathway2, JCWeight) => {
+const pathwayPairGraph = (pathway1, pathway2, jaccardOverlapWeight) => {
   let intersectionCount = 0;
   const intersection = [];
   const joinedPathway = pathway1.genes.concat(pathway2.genes);
@@ -18,19 +18,19 @@ const pathwayPairGraph = (pathway1, pathway2, JCWeight) => {
   // JC/OC calculation
   const pathway1Length = pathway1.genes.length;
   const pathway2Length = pathway2.genes.length;
-  const similarity = JCWeight * (intersectionCount / (pathway1Length + pathway2Length - intersectionCount)) + (1 - JCWeight) * (intersectionCount / Math.min(pathway1Length, pathway2Length));
+  const similarity = jaccardOverlapWeight * (intersectionCount / (pathway1Length + pathway2Length - intersectionCount)) + (1 - jaccardOverlapWeight) * (intersectionCount / Math.min(pathway1Length, pathway2Length));
   return {edgeId: pathway1.pathwayId + '_' + pathway2.pathwayId, intersection: intersection, similarity: similarity};
 };
 
 
-// pathwayListGraph(pathwayList, JCWeight) takes a list of pathway IDs pathwayList
-// and a weight for Jaccard coefficient JCWeight
+// pathwayListGraph(pathwayList, jaccardOverlapWeight) takes a list of pathway IDs pathwayList
+// and a weight for Jaccard coefficient jaccardOverlapWeight
 // and generates all edge informatino pairwise
-const pathwayListGraph = (pathwayList, JCWeight) => {
+const pathwayListGraph = (pathwayList, jaccardOverlapWeight) => {
   const ret = [];
   for (let i = 0; i < pathwayList.length; ++i) {
     for (let j = i + 1; j < pathwayList.length; ++j) {
-      ret.push(pathwayPairGraph(pathwayList[i], pathwayList[j], JCWeight));
+      ret.push(pathwayPairGraph(pathwayList[i], pathwayList[j], jaccardOverlapWeight));
     }
   }
   return ret;

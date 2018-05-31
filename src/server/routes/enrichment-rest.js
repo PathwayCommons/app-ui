@@ -174,7 +174,7 @@ enrichmentRouter.post('/analysis', (req, res) => {
  *         schema:
  *           "$ref": "#/definitions/success/visualizationSuccess"
  *       '400':
- *         description: invalid input (cutoff, OCweight, JCWeight or JSON format)
+ *         description: invalid input (cutoff, jaccardOverlapWeight or JSON format)
  *         schema:
  *           "$ref": "#/definitions/error/visualizationError"
 */
@@ -182,10 +182,9 @@ enrichmentRouter.post('/analysis', (req, res) => {
 enrichmentRouter.post('/visualization', (req, res) => {
   const pathwayInfoList = req.body.pathwayInfoList;
   const cutoff = req.body.cutoff;
-  const JCWeight = req.body.JCWeight;
-  const OCWeight = req.body.OCWeight;
+  const jaccardOverlapWeight = req.body.jaccardOverlapWeight;
   try {
-    res.json(generateGraphInfo(pathwayInfoList, cutoff, JCWeight, OCWeight));
+    res.json(generateGraphInfo(pathwayInfoList, cutoff, jaccardOverlapWeight));
   } catch (err) {
     res.status(400).send(err.message);
   }
@@ -210,7 +209,7 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *       example: 'ERROR: orderedQuery should be 0 / false or 1 / true'
  *     visualizationError:
  *       type: string
- *       example: 'ERROR: OCWeight + JCWeight should be 1'
+ *       example: 'ERROR: jaccardOverlapWeight should be a number'
  *   input:
  *     validationObj:
  *       type: object
@@ -556,14 +555,11 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           description: "cutoff point used for filtering similaritiy rates of edges
  *             pairwise \n default: 0.375"
  *           example: 0.3
- *         JCWeight:
+ *         jaccardOverlapWeight:
  *           type: number
- *           description: weight for Jaccard coefficient
+ *           description: "weight for Jaccard coefficient
+ *             \n valid range: [0,1]"
  *           example: 0.55
- *         OCWeight:
- *           type: number
- *           description: weight for overlap coefficient
- *           example: 0.45
  *   success:
  *     validationSuccess:
  *       type: object

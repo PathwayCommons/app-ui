@@ -1,15 +1,12 @@
 const React = require('react');
 const h = require('react-hyperscript');
-const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
-
-const ValidatorUI = require('./validator');
-const EMapUI = require('./emap');
-const EnrichmentUI = require('./enrichment');
-
+const queryString = require('query-string');
+const _ = require('lodash');
+const Loader = require('react-loader');
 
 class EnrichmentMap extends React.Component {
   render() {
-    //test title to verify that page has loaded
+    //test title to verify that page has loaded, will appear in top right corner
     return h('div', "Enrichment");
   }
 }

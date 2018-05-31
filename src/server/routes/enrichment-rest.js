@@ -124,8 +124,7 @@ enrichmentRouter.post('/validation', (req, res) => {
  *         schema:
  *           "$ref": "#/definitions/success/analysisSuccess"
  *       '400':
- *         description: Invalid input (orderedQuery, userThr, minSetSize, maxSetSize,
- *           thresholdAlgo, custbg or JSON format)
+ *         description: Invalid input (orderedQuery, userThr, minSetSize, maxSetSize, custbg or JSON format)
  *         schema:
  *           "$ref": "#/definitions/error/analysisError"
 */
@@ -137,9 +136,10 @@ enrichmentRouter.post('/analysis', (req, res) => {
     userThr: req.body.userThr,
     minSetSize: req.body.minSetSize,
     maxSetSize: req.body.maxSetSize,
-    thresholdAlgo: req.body.thresholdAlgo,
+    //thresholdAlgo: req.body.thresholdAlgo,
     custbg: req.body.custbg
   };
+
   enrichment(genes, tmpOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
   }).catch((err) => {
@@ -522,14 +522,6 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           description: "maximum size of functional category, larger categories are
  *             excluded \n default: 200"
  *           example: 400
- *         thresholdAlgo:
- *           type: string
- *           description: "the algorithm used for determining the significance threshold
- *             \n default: fdr"
- *           enum:
- *           - fdr
- *           - analytical
- *           - bonferroni
  *         custbg:
  *           type: array
  *           description: "an array of genes used

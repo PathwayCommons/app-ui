@@ -54,7 +54,6 @@ const enrichment = (query, userSetting) => {
     if (key === 'userThr') return 'user_thr';
     if (key === 'minSetSize') return 'min_set_size';
     if (key === 'maxSetSize') return 'max_set_size';
-    if (key === 'thresholdAlgo') return 'threshold_algo';
     return key;
   });
 

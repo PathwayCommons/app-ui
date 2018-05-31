@@ -59,7 +59,7 @@ describe('test enrichment', function () {
   });
 
   it('all valid parameters', function () {
-    return (enrichment(['AFF4'], {orderedQuery: false, userThr: 0.07, minSetSize: 3, maxSetSize:400, thresholdAlgo: "fdr", custbg: []})).then(
+    return (enrichment(['AFF4'], {orderedQuery: false, userThr: 0.07, minSetSize: 3, maxSetSize:400, custbg: []})).then(
       //resolved
       res=> {
       const result = {
@@ -111,7 +111,7 @@ describe('test enrichment', function () {
   });
 
   it('INVALID parameters', function () {
-    return (enrichment(['AFF4'], {orderedQuery: false, minSetSize: 3, maxSetSize:400, thresholdAlgo: "fddddr", custbg: []})).then(
+    return (enrichment(['AFF4'], {orderedQuery: false, minSetSize: 3, maxSetSize:"not a number", custbg: []})).then(
       //resolved
       res => {
       console.log("resolved");

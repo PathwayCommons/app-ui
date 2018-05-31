@@ -9,30 +9,8 @@ const EnrichmentUI = require('./enrichment');
 
 class EnrichmentMap extends React.Component {
   render() {
-    return h('div', [
-      h(Tabs, [
-        h(TabList, [
-          h(Tab, 'Validator'),
-          h(Tab, 'Enrichment'),
-          h(Tab, 'EMap')
-        ]),
-        h(TabPanel, [
-          h('div', [
-            h(ValidatorUI)
-          ])
-        ]),
-        h(TabPanel, [
-          h('div', [
-            h(EnrichmentUI)
-          ])
-        ]),
-        h(TabPanel, [
-          h('div', [
-            h(EMapUI)
-          ])
-        ]),
-      ])
-    ]);
+    //test title to verify that page has loaded
+    return h('div', "Enrichment");
   }
 }
 module.exports = EnrichmentMap;

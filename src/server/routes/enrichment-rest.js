@@ -88,7 +88,7 @@ enrichmentRouter.post('/validation', (req, res) => {
   tmpOptions.target = req.body.targetDb;
   validatorGconvert(genes, tmpOptions).then(gconvertResult => {
     res.json(gconvertResult);
-  }).catch( err => console.log( err ));
+  }).catch( error => res.status( 400 ).send( error ) );
 });
 
 

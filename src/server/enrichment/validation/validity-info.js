@@ -255,7 +255,7 @@ const validOrganism = ['aaegypti',
   'zmays'];
 
 // all valid target databases
-const validTargetDb = ['ENSG', 'HGNC', 'HGNC_ACC', 'UNIPROTSWISSPROT', 'ENTREZGENE_ACC'];
+const validTargetDb = ['ENSG', 'HGNCSYMBOL', 'HGNC', 'UNIPROT', 'NCBIGENE'];
 
 
 module.exports = { validOrganism, validTargetDb };

@@ -44,13 +44,19 @@
 .title-container {
   padding-left: calc(1em - var(--icon-size) / 3);
   padding-right: 1em;
-
   color: var(--dark-base-colour);
 
   & h4 {
     font-weight: bold;
     font-size: 0.9em;
     margin: 0;
+
+    /* css for human icon */
+    & img {
+      vertical-align: middle;
+      height: var(--icon-size);
+      width: auto;
+    }
   }
 }
 
@@ -136,10 +142,32 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
 .view-search {
   height: 100% !important;
   width: 90%;
-
   padding: 0 0 1px 0 !important;
-
   border-width: 0px !important;
+}
+
+.gene-input{
+  height: 1.85em;
+  width: 175px;
+  background-color: white;
+  padding: 0em 0.5em;
+  box-sizing: border-box;
+  border: 1px solid var(--light-base-colour-dark);
+  border-right: none;
+  vertical-align: middle;
+}
+
+/* submit button for gene input */
+.submit{
+  background-color: var(--dark-base-colour);
+  /* background-color: #16A086; */
+  color: white;
+  font-weight: normal;
+  border: 1px solid var(--light-base-colour-dark);
+  border-left: none;
+  border-radius: 0 !important;
+  height: 1.85em;
+  vertical-align: middle;
 }
 
 .view-search-clear {

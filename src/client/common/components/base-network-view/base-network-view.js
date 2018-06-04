@@ -9,6 +9,7 @@ const IconButton = require('../icon-button');
 
 const debouncedSearchNodes = _.debounce(require('../../cy/match-style'), 300);
 
+
 // cytoscape
 // grapjson
 // metadata
@@ -163,14 +164,38 @@ class BaseNetworkView extends React.Component {
       }, [nodeSearchBarInput])
     ];
 
-
-
-
     const toolBar = [
       ...menuButtons,
       ...networkButtons,
       // ...(componentConfig.useLayoutDropdown ? layoutDropdown : []), // TODO re-add dropdown for edit
       ...(componentConfig.useSearchBar ? nodeSearchBar : [])
+    ];
+
+    //display pathway and database names
+    const metadataTitles = h('h4',[
+      h('span', state.networkMetadata.name),
+      ' | ',
+      h('a', state.networkMetadata.datasource)
+    ]);
+
+    //display human icon indicating human genome, gene input bar, and submit button
+    const geneInputBar =  [
+      h('h4', [
+        h('span', 'Pathway Enrichment   '),
+        h('img', {
+          src: '/img/humanIcon.png'
+          }),
+        h('input.gene-input', {
+           placeholder: 'Enter one gene per line',
+        }),
+        h('button.submit', 'submit'),
+      ])
+    ];
+
+    // if 'useGeneInput' is true from index file, input bar will be rendered in 'div.title-container'
+    // otherwise pathway name and database will be in title bar
+    const displayInfo = [
+      (componentConfig.useGeneInput ?  geneInputBar : metadataTitles)
     ];
 
 
@@ -184,13 +209,7 @@ class BaseNetworkView extends React.Component {
               })
             ])
           ]),
-          h('div.title-container', [
-            h('h4', [
-              h('span', state.networkMetadata.name),
-              ' | ',
-              h('a', state.networkMetadata.datasource)
-            ])
-          ])
+          h('div.title-container', displayInfo)
         ]),
         h('div.view-toolbar', toolBar)
       ]),

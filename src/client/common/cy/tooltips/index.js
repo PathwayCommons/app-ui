@@ -21,9 +21,8 @@ class MetadataTip {
           if(this.data[i][0]==="Display Name")
             this.data.push(["Search Link",this.data[i][1]]);
         }
-      }else{
+      }else if(this.data)
         this.data.push(["Search Link",this.name]);
-      }
     this.cyElement = cyElement;
     this.db = config.databases;
     this.viewStatus = {};

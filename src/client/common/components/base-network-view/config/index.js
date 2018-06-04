@@ -21,6 +21,71 @@ const resetToDefaultLayout = (props) => {
   cy.layout(props.layoutConfig.defaultLayout.options).run();
 };
 
+/**
+ * @description Hides all nodes that the user has selected
+ */
+const hideSelected = (props) => {
+  const cy = props.cy;
+  const nodeList = cy.nodes();
+  const userSelectedElements = cy.userSelectedElements;
+
+  //loop through all nodes in graph
+  //if a match is found in the user-selected nodes, hide it
+  for(let i in nodeList){
+    let node = nodeList[i];
+    if(!node.data)
+      continue;
+    if(userSelectedElements.includes(node.data()))
+      node.hide();
+  }
+};
+
+/**
+ * @description Hides all nodes that the user has NOT selected
+ */
+const onlyShowSelected = (props) => {
+  const cy = props.cy;
+  const nodeList = cy.nodes();
+  const userSelectedElements = cy.userSelectedElements;
+
+  //First, hide every node in the graph
+  for(let i in nodeList){
+    let node = nodeList[i];
+    if(!node.data)
+      continue;
+    node.hide();
+  }
+
+  //loop through the selected nodes, when a match has been found in the graph
+  //show that entity and all it's children
+
+  //TODO show partners if an interaction is selected
+  for(let i in userSelectedElements){
+    let userNode = userSelectedElements[i];
+    for(let j in nodeList){
+      let node = nodeList[j];
+      if(!node.data)
+        continue;
+      if(userNode === node.data()){
+        node.show();
+        node.parents().show();
+        showAllChildren(node);
+      }
+    }
+  }
+};
+
+//helper function to show children of an entity
+const showAllChildren = (node) => {
+  if(node.children){
+    const nodeChildren = node.children();
+    nodeChildren.show();
+    for(let x in nodeChildren){
+      showAllChildren(nodeChildren[x]);
+    }
+  }
+};
+
 
 // material icon name to func/description object
 const toolbarButtons = [
@@ -58,6 +123,22 @@ const toolbarButtons = [
     type: 'networkAction',
     func: resetToDefaultLayout,
     description: 'Reset network arrangement'
+  },
+  {
+    id:'hideSelected',
+    icon:'replay',
+    type:'networkAction',
+    func:hideSelected,
+    description:'Hide Selected Nodes',
+
+  },
+  {
+    id:'onlyShowSelected',
+    icon:'replay',
+    type:'networkAction',
+    func:onlyShowSelected,
+    description:'Only Show Selected Nodex',
+
   }
 ];
 

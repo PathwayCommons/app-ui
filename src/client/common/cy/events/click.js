@@ -18,11 +18,12 @@ const bindClick = (cy) => {
     const cy = evt.cy;
     const ele = evt.target;
 
+
+
     if(ele.data){
       const data = ele.data();
-      if(data && userSelectedElements.indexOf(data) === -1){
-        userSelectedElements.push(ele.data());
-      }
+      if(data && data.class !== "interaction" && userSelectedElements.indexOf(data) === -1)
+        userSelectedElements.push(ele.data()); 
     }
 
     cy.userSelectedElements = userSelectedElements;

@@ -80,7 +80,7 @@ const defaultHandler = (pair) => {
 const searchLinkHandler = (pair) => {
   let searchTerm = pair[1];
   return h('div.fake-paragraph',
-  h('a.tooltip-search-link',{href:"/search?q=" + searchTerm,target:"_blank"},'Search Pathway Commons for "' + searchTerm + '"')
+  h('a.tooltip-search-link',{href:"/search?q=" + searchTerm,target:"_blank"},'Find Pathways')
   );
 };
 

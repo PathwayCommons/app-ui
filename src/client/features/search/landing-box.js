@@ -274,7 +274,7 @@ const landingBox = (props) => {
         h('div.search-landing-section',{key: 'ids'},[officialSymbol,otherNames]),
         h('div.search-landing-section',{key: 'functions'},[functions]),
         h('div.search-landing-section',{key: 'links'},[links]),
-        interactionsLink(box.hgncSymbol,'View Interactions')
+        interactionsLink(box.officialSymbol,'View Interactions')
       ])
     ];
   });

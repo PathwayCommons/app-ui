@@ -23,26 +23,43 @@ const resultTemplate = ( unrecognized, duplicate, geneInfo ) => {
   };
 };
 
-/* errorHandler
- * This function routes errors in a rational manner: Fetch-related errors are gently handled
- * by returning the original gene list as 'unrecognized'; For input errors, the Promise is
- * rejected with the error info for the client; in all other cases an Error is thrown.
- * @param { object } data - 'error' and 'query' (optional) keys
- *
- */
-const errorHandler = ( data ) => {
-  if ( data.error instanceof Error ) {
-    switch ( data.error.name ) {
-      case 'InvalidParameterError':
-        return new Promise( ( _, reject ) => reject( { "Error": data.error.message } ) );
-      case 'FetchError':
-      default:
-        return new Promise( resolve => resolve( resultTemplate( data.query ) ) );
-    }
+const mapDBNames = officalSynonym  => {
+  officalSynonym = officalSynonym.toUpperCase();
+  if ( officalSynonym === 'HGNCSYMBOL' ) { return 'HGNC'; }
+  if ( officalSynonym === 'HGNC' ) { return 'HGNC_ACC'; }
+  if ( officalSynonym === 'UNIPROT' ) { return 'UNIPROTSWISSPROT'; }
+  if ( officalSynonym === 'NCBIGENE' ) { return 'ENTREZGENE_ACC'; }
+  return officalSynonym;
+};
 
-  } else {
-    throw new Error(' something wrong ');
+/*
+ * getForm
+ * @param { array } query - Gene IDs
+ * @param { object } userOptions
+ * @returns { object } error and form
+ */
+const getForm = ( query, defaultOptions, userOptions ) => {
+
+  const form = _.assign( {},
+    defaultOptions,
+    JSON.parse( JSON.stringify( userOptions ) ),
+    { query: query }
+  );
+
+  if (!Array.isArray( form.query )) {
+    throw new InvalidParameterError( 'Invalid genes: Must be an array' );
   }
+  if ( !validOrganism.includes( form.organism.toLowerCase() ) ) {
+    throw new InvalidParameterError( 'Invalid organism' );
+  }
+  if ( !validTargetDb.includes( form.target.toUpperCase() ) ) {
+    throw new InvalidParameterError( 'Invalid target' );
+  }
+
+  form.target = mapDBNames( form.target );
+  form.query = form.query.join(" ");
+
+  return form;
 };
 
 const bodyHandler = body =>  {
@@ -79,48 +96,22 @@ const bodyHandler = body =>  {
   return resultTemplate( unrecognized, duplicate, geneInfo );
 };
 
-const mapDBNames = officalSynonym  => {
-  officalSynonym = officalSynonym.toUpperCase();
-  if ( officalSynonym === 'HGNCSYMBOL' ) { return 'HGNC'; }
-  if ( officalSynonym === 'HGNC' ) { return 'HGNC_ACC'; }
-  if ( officalSynonym === 'UNIPROT' ) { return 'UNIPROTSWISSPROT'; }
-  if ( officalSynonym === 'NCBIGENE' ) { return 'ENTREZGENE_ACC'; }
-  return officalSynonym;
-};
-
-/*
- * getForm
- * @param { array } query - Gene IDs
- * @param { object } userOptions
- * @returns { object } error and form
+/* errorHandler
+ * This function routes errors in a rational manner: Fetch-related errors are gently handled
+ * by returning the original gene list as 'unrecognized'; For input errors, the Promise is
+ * rejected with the error info for the client; in all other cases an Error is thrown.
+ * @param { object } data - Error object and query (optional)
+ * @return { Promise }
  */
-const getForm = ( query, defaultOptions, userOptions ) => {
-
-  let error;
-  const form = _.assign( {},
-    defaultOptions,
-    JSON.parse( JSON.stringify( userOptions ) ),
-    { query: query }
-  );
-
-
-  if (!Array.isArray( form.query )) {
-    error = new InvalidParameterError( 'Invalid genes: Must be an array' );
+const errorHandler = ( error, query ) => {
+  console.error( error );
+  switch ( error.name ) {
+    case 'FetchError':
+      return new Promise( resolve => resolve( resultTemplate( query ) ) );
+    case 'InvalidParameterError':
+    default:
+      return new Promise( ( _, reject ) => reject( { "Error": error.message } ) );
   }
-  if ( !validOrganism.includes( form.organism.toLowerCase() ) ) {
-    error = new InvalidParameterError( 'Invalid organism' );
-  }
-  if ( !validTargetDb.includes( form.target.toUpperCase() ) ) {
-    error = new InvalidParameterError( 'Invalid target' );
-  }
-
-  form.target = mapDBNames( form.target );
-  form.query = form.query.join(" ");
-
-  return {
-    form: form,
-    error: error
-  };
 };
 
 
@@ -138,24 +129,20 @@ const validatorGconvert = ( query, userOptions ) => {
     'prefix': 'ENTREZGENE_ACC'
   };
 
-  return new Promise( ( resolve, reject ) => {
+  return new Promise(( resolve, reject ) => {
 
-    const formData = getForm( query, defaultOptions, userOptions );
-    if ( formData.error ) reject( { error: formData.error } );
+    const form = getForm( query, defaultOptions, userOptions );
     fetch( GCONVERT_URL, {
         method: 'post',
-        body: qs.stringify( formData.form ),
+        body: qs.stringify( form ),
         timeout: FETCH_TIMEOUT
     })
     .then( response => response.text() )
     .then( bodyHandler )
     .then( resolve )
-    .catch( error => {
-      reject( { error: error, query: query } );
-    });
+    .catch( reject );
   })
-  .catch( errorHandler );
+  .catch( error => errorHandler( error, query ) );
 };
-
 
 module.exports = { validatorGconvert };

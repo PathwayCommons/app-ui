@@ -43,7 +43,7 @@ const idFormatter= (source,geneQuery)=>{
 const idToLinkConverter = (ids)  =>{
   const dbSet = databases.filter(databaseValue => ids[databaseValue.database]);
   let dbs =  _.assign({}, ...dbSet.map(database=>({
-      [database.database]: database.url+database.search+ids[database.database].replace(/[^a-zA-Z0-9:]/g)
+      [database.database]: database.url+database.search+ids[database.database]
   }))
   );
 
@@ -74,7 +74,7 @@ const getNcbiInfo = (ids,genes) => {
         databaseID:gene,
         name:geneResults[gene].nomenclaturename,
         function: geneResults[gene].summary,
-        hgncSymbol:genes[originalSearch]['Gene Cards'],
+        officialSymbol:genes[originalSearch]['Gene Cards'],
         otherNames: geneResults[gene].otheraliases ? geneResults[gene].otheraliases:'',
         showMore:{full:!(geneResults.uids.length>1),function:false,synonyms:false},
         links:links
@@ -92,19 +92,25 @@ const getUniprotInfo= (ids) => {
   const uniprotIds=_.map(ids,(search,id)=>id);
   return ServerAPI.getUniprotnformation(uniprotIds).then(result=>{
     return result.map(gene=>{
-      let links={Uniprot:gene.accession};
+      let dbIds={Uniprot:gene.accession};
+      let hgncSymbol;
       gene.dbReferences.forEach(db=>{
         if(usedDatabases.has(db.type)){
-          _.assign(links,{[usedDatabases.get(db.type).configName]:db.id});
+          _.assign(dbIds,{[usedDatabases.get(db.type).configName]:db.id});
         }
+        if (db.type === "HGNC") hgncSymbol = db.properties["gene designation"];
       });
-      const hgncSymbol = links['Gene Cards'];
-      links=idToLinkConverter(links);
+
+      if (hgncSymbol != null) {
+        dbIds["HGNC Symbol"] = hgncSymbol;
+      }
+
+      const links=idToLinkConverter(dbIds);
       return {
         databaseID:gene.accession,
         name:gene.gene[0].name.value,
         function: gene.comments && gene.comments[0].type==='FUNCTION' ? gene.comments[0].text[0].value:'',
-        hgncSymbol:hgncSymbol,
+        officialSymbol: dbIds['Gene Cards'],
         showMore:{full:true,function:false,synonyms:false},
         links:links
       };
@@ -141,7 +147,8 @@ const getLandingResult= (query)=> {
     }
   });
 
-  //Get gene IDs from each database
+  //Validate search query in g:Converter
+  //Return gene IDs of each database
   const promises= [];
   usedDatabases.forEach((database)=>promises.push(
     ServerAPI.geneQuery({
@@ -241,9 +248,9 @@ const landingBox = (props) => {
     if(multipleBoxes){
       title.push(h('strong.material-icons',{key:'arrow'},landing[index].showMore.full? 'expand_less': 'expand_more'));
     }
-    let hgncSymbol='';
-    if(box.hgncSymbol){
-      hgncSymbol=h('i.search-landing-small','Official Symbol: '+box.hgncSymbol);
+    let officialSymbol='';
+    if(box.officialSymbol){
+      officialSymbol=h('i.search-landing-small','Official Symbol: '+box.officialSymbol);
     }
     let otherNames=[];
     if(box.otherNames){
@@ -255,7 +262,7 @@ const landingBox = (props) => {
     }
     let links=[];
     box.links.forEach((link)=>{
-      links.push(h('a.search-landing-link',{key: link.displayName, href: link.link},link.displayName));
+      links.push(h('a.search-landing-link',{key: link.displayName, href: link.link, target: "_blank"},link.displayName));
     });
     return [
       h('div.search-landing-title',{key:'title',
@@ -264,7 +271,7 @@ const landingBox = (props) => {
       },[title]),
       box.showMore.full &&
       h('div.search-landing-innner',{key: box.databaseID},[
-        h('div.search-landing-section',{key: 'ids'},[hgncSymbol,otherNames]),
+        h('div.search-landing-section',{key: 'ids'},[officialSymbol,otherNames]),
         h('div.search-landing-section',{key: 'functions'},[functions]),
         h('div.search-landing-section',{key: 'links'},[links]),
         interactionsLink(box.hgncSymbol,'View Interactions')

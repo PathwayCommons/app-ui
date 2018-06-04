@@ -76,8 +76,8 @@ function getPublications(data) {
       data[i][1] = data[i][1].filter(checkForCitation);
     }
   }
-
-  data.push([["Database IDs"],databaseInfo]);
+  if(data && databaseInfo !== [])
+    data.push([["Database IDs"],databaseInfo]);
 
   return new Promise(function (resolve, reject) {
     if (!(data)) { resolve(data); }

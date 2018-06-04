@@ -10,11 +10,22 @@ const hideTooltips = (cy) => {
   });
 };
 
+const userSelectedElements = [];
+
 const bindClick = (cy) => {
 
   cy.on('tap', evt => {
     const cy = evt.cy;
     const ele = evt.target;
+
+    if(ele.data){
+      const data = ele.data();
+      if(data && userSelectedElements.indexOf(data) === -1){
+        userSelectedElements.push(ele.data());
+      }
+    }
+
+    cy.userSelectedElements = userSelectedElements;
 
     if (!ele.scratch('_tooltip-opened')) {
       hideTooltips(cy);	

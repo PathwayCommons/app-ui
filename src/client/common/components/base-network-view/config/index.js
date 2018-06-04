@@ -21,6 +21,11 @@ const resetToDefaultLayout = (props) => {
   cy.layout(props.layoutConfig.defaultLayout.options).run();
 };
 
+const onlyShowSelected = (props) => {
+  const cy = props.cy;
+  console.log(cy.userSelectedElements);
+};
+
 
 // material icon name to func/description object
 const toolbarButtons = [
@@ -58,6 +63,14 @@ const toolbarButtons = [
     type: 'networkAction',
     func: resetToDefaultLayout,
     description: 'Reset network arrangement'
+  },
+  {
+    id:'onlyShowSelected',
+    icon:'replay',
+    type:'networkAction',
+    func:onlyShowSelected,
+    description:'Only Show selected nodes',
+
   }
 ];
 

@@ -57,8 +57,8 @@ const onlyShowSelected = (props) => {
   }
 
   //loop through the selected nodes, when a match has been found in the graph
-  //show that node and all it's children
-  
+  //show that entity and all it's children
+
   //TODO show partners if an interaction is selected
   for(let i in userSelectedElements){
     let userNode = userSelectedElements[i];
@@ -75,6 +75,7 @@ const onlyShowSelected = (props) => {
   }
 };
 
+//helper function to show children of an entity
 const showAllChildren = (node) => {
   if(node.children){
     const nodeChildren = node.children();

@@ -262,7 +262,7 @@ const landingBox = (props) => {
     }
     let links=[];
     box.links.forEach((link)=>{
-      links.push(h('a.search-landing-link',{key: link.displayName, href: link.link, target: "_blank"},link.displayName));
+      links.push(h('a.search-landing-link',{key: link.displayName, href: link.link, target:'_blank'},link.displayName));
     });
     return [
       h('div.search-landing-title',{key:'title',

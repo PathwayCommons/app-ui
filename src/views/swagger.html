@@ -3,11 +3,9 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>Swagger UI</title>
+    <title>Enrichment Services</title>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Source+Code+Pro:300,600|Titillium+Web:400,600,700" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="./api-docs/swagger-ui.css" >
-    <link rel="icon" type="image/png" href="./api-docs/favicon-32x32.png" sizes="32x32" />
-    <link rel="icon" type="image/png" href="./api-docs/favicon-16x16.png" sizes="16x16" />
 
     <script defer src="./api-docs/swagger-ui-bundle.js"> </script>
     <script defer src="./api-docs/swagger-ui-standalone-preset.js"> </script>
@@ -43,6 +41,7 @@
       // Build a system
       const ui = SwaggerUIBundle({
         url: "/api/swagger.json",
+        validatorUrl : null,
         dom_id: '#swagger-ui',
         deepLinking: true,
         presets: [

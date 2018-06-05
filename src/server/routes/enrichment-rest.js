@@ -11,7 +11,7 @@ var swaggerDefinition = {
   info: {
     title: 'Enrichment Services',
     version: '1.0.0',
-    description: 'This is a sample enrichment service server. You can find detailed documentation at [Wiki](https://github.com/PathwayCommons/app-ui/wiki/Enrichment-Services)',
+    description: 'This is a Pathway Commons enrichment application service server.',
     license: {
       name: "MIT",
       url: "https://github.com/PathwayCommons/app-ui/blob/master/LICENSE"
@@ -21,15 +21,15 @@ var swaggerDefinition = {
   "tags": [
     {
       "name": "Validation Service",
-      "description": "Validate gene list"
+      "description": "Validate gene list against a selection of target biological databases"
     },
     {
       "name": "Analysis Service",
-      "description": "Summarize gene list as pathway list \n Only Gene Ontology Biological Process terms and Reactome pathways are queried. \n Versions: Gene Ontolody: Ensembl v90 / Ensembl Genomes v37, Reactome: v56"
+      "description": "Determine related pathways based on gene list \n Only Gene Ontology Biological Processes and Reactome Pathways are queried \n Versions: Gene Ontology: Ensembl v90 / Ensembl Genomes v37, Reactome: v56"
     },
     {
       "name": "Visualization Service",
-      "description": "Generate graph information \n Only Gene Ontology Biological Process and Reactome are supported. \n Arbitrary key-value pairs under a pathway ID are passed-through to nodes."
+      "description": "Generate network information \n Networks are comprised of Gene Ontology Biological Processes and Reactome Pathways \n Arbitrary key-value pairs under a pathway ID are passed-through to nodes."
     }
   ]
 };
@@ -66,13 +66,13 @@ enrichmentRouter.get('/swagger.json', function (req, res) {
  *     parameters:
  *     - in: body
  *       name: body
- *       description: query list and optional parameters
+ *       description: Query list and optional parameters for proper formatting
  *       required: true
  *       schema:
  *         "$ref": "#/definitions/input/validationObj"
  *     responses:
  *       '200':
- *         description: Success response
+ *         description: Successful operation
  *         schema:
  *           "$ref": "#/definitions/success/validationSuccess"
  *       '400':
@@ -108,18 +108,17 @@ enrichmentRouter.post('/validation', (req, res) => {
  *     parameters:
  *     - in: body
  *       name: body
- *       description: gene list and optional parameters
+ *       description: Gene list and optional parameters
  *       required: true
  *       schema:
  *         "$ref": "#/definitions/input/analysisObj"
  *     responses:
  *       '200':
- *         description: Success response
+ *         description: Successful operation
  *         schema:
  *           "$ref": "#/definitions/success/analysisSuccess"
  *       '400':
- *         description: Invalid input (orderedQuery, userThr, minSetSize, maxSetSize,
- *           thresholdAlgo, custbg or JSON format)
+ *         description: Invalid input (orderedQuery, minSetSize, maxSetSize, backgroundGenes or JSON format)
  *         schema:
  *           "$ref": "#/definitions/error/analysisError"
 */
@@ -128,12 +127,11 @@ enrichmentRouter.post('/analysis', (req, res) => {
   const genes = req.body.genes;
   const tmpOptions = {
     orderedQuery: req.body.orderedQuery,
-    userThr: req.body.userThr,
     minSetSize: req.body.minSetSize,
     maxSetSize: req.body.maxSetSize,
-    thresholdAlgo: req.body.thresholdAlgo,
-    custbg: req.body.custbg
+    custbg: req.body.backgroundGenes
   };
+
   enrichment(genes, tmpOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
   }).catch((err) => {
@@ -158,28 +156,27 @@ enrichmentRouter.post('/analysis', (req, res) => {
  *     parameters:
  *     - in: body
  *       name: body
- *       description: output from enrichment service
+ *       description: Display output from enrichment service
  *       required: true
  *       schema:
  *         "$ref": "#/definitions/input/visualizationObj"
  *     responses:
  *       '200':
- *         description: Success response
+ *         description: Successful operation
  *         schema:
  *           "$ref": "#/definitions/success/visualizationSuccess"
  *       '400':
- *         description: invalid input (cutoff, OCweight, JCWeight or JSON format)
+ *         description: invalid input (similarityCutoff, jaccardOverlapWeight or JSON format)
  *         schema:
  *           "$ref": "#/definitions/error/visualizationError"
 */
 // Expose a rest endpoint for visualization service
 enrichmentRouter.post('/visualization', (req, res) => {
-  const pathwayInfoList = req.body.pathwayInfoList;
-  const cutoff = req.body.cutoff;
-  const JCWeight = req.body.JCWeight;
-  const OCWeight = req.body.OCWeight;
+  const pathways = req.body.pathways;
+  const similarityCutoff = req.body.similarityCutoff;
+  const jaccardOverlapWeight = req.body.jaccardOverlapWeight;
   try {
-    res.json(generateGraphInfo(pathwayInfoList, cutoff, JCWeight, OCWeight));
+    res.json(generateGraphInfo(pathways, similarityCutoff, jaccardOverlapWeight));
   } catch (err) {
     res.status(400).send(err.message);
   }
@@ -193,7 +190,7 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *     validationError:
  *       type: object
  *       properties:
- *         invalidTarget:
+ *         invalidTargetDb:
  *           type: string
  *           example: ENSGGGGG
  *         invalidOrganism:
@@ -204,7 +201,7 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *       example: 'ERROR: orderedQuery should be 0 / false or 1 / true'
  *     visualizationError:
  *       type: string
- *       example: 'ERROR: OCWeight + JCWeight should be 1'
+ *       example: 'ERROR: jaccardOverlapWeight should be a number'
  *   input:
  *     validationObj:
  *       type: object
@@ -213,14 +210,14 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *       properties:
  *         genes:
  *           type: array
- *           description: an array of genes, integers
- *             are interpreted as NCBIGENE
+ *           description: "Input genes as an array
+ *                        \n By default, numerical inputs will be interpreted as NCBI Gene IDs."
  *           example: ["TP53", "111", "AFF4", "111", "11998"]
  *           items:
  *             type: string
  *         targetDb:
  *           type: string
- *           description: "target database (namespace) for conversion \n default: HGNC"
+ *           description: "Target database nomenclature to convert gene list to\n Default: HGNC"
  *           enum:
  *           - ENSG
  *           - HGNCSYMBOL
@@ -229,8 +226,10 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           - NCBIGENE
  *         organism:
  *           type: string
- *           description: "organism identifier \n default: hsapiens"
- *           example: hsapiens
+ *           description: "Organism to analyze
+ *                        \n Naming convention: first character of the full Latin name concatonated with the second portion of the name
+ *                        \n Default: hsapiens"
+ *           example: "hsapiens"
  *           enum:
  *           - aaegypti
  *           - acarolinensis
@@ -502,11 +501,6 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           description: "genes are placed in some biologically meaningful order \n
  *             default: false"
  *           example: false
- *         userThr:
- *           type: number
- *           description: "user-specified p-value threshold, results with a larger p-value
- *             are excluded \n default: 0.05"
- *           example: 0.07
  *         minSetSize:
  *           type: number
  *           description: "minimum size of functional category, smaller categories are
@@ -517,15 +511,7 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           description: "maximum size of functional category, larger categories are
  *             excluded \n default: 200"
  *           example: 400
- *         thresholdAlgo:
- *           type: string
- *           description: "the algorithm used for determining the significance threshold
- *             \n default: fdr"
- *           enum:
- *           - fdr
- *           - analytical
- *           - bonferroni
- *         custbg:
+ *         backgroundGenes:
  *           type: array
  *           description: "an array of genes used
  *             as a custom statistical background \n default: []"
@@ -535,9 +521,9 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *     visualizationObj:
  *       type: object
  *       required:
- *       - pathwayInfoList
+ *       - pathways
  *       properties:
- *         pathwayInfoList:
+ *         pathways:
  *           type: object
  *           description: pathway information keyed by pathway ID
  *           additionalProperties: object
@@ -545,19 +531,16 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *             GO:0043525: {}
  *             GO:0043523:
  *               p-value: 0.05
- *         cutoff:
+ *         similarityCutoff:
  *           type: number
  *           description: "cutoff point used for filtering similaritiy rates of edges
  *             pairwise \n default: 0.375"
  *           example: 0.3
- *         JCWeight:
+ *         jaccardOverlapWeight:
  *           type: number
- *           description: weight for Jaccard coefficient
+ *           description: "weight for Jaccard coefficient
+ *             \n valid range: [0,1]"
  *           example: 0.55
- *         OCWeight:
- *           type: number
- *           description: weight for overlap coefficient
- *           example: 0.45
  *   success:
  *     validationSuccess:
  *       type: object

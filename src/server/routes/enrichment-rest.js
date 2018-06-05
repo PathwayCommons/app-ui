@@ -88,13 +88,7 @@ enrichmentRouter.post('/validation', (req, res) => {
   tmpOptions.target = req.body.targetDb;
   validatorGconvert(genes, tmpOptions).then(gconvertResult => {
     res.json(gconvertResult);
-  }).catch((err) => {
-    if (err.constructor.name === 'InvalidInfoError') {
-      res.status(400).send({ invalidTargetDb: err.invalidTargetDb, invalidOrganism: err.invalidOrganism });
-    } else {
-      res.status(400).send(err.message);
-    }
-  });
+  }).catch( error => res.status( 400 ).send( error ) );
 });
 
 

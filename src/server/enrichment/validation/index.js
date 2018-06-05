@@ -5,100 +5,136 @@ const { validTargetDb } = require('./validity-info');
 const qs = require('query-string');
 const { cleanUpEntrez } = require('../helper');
 
-const defaultOptions = {
-  'output': 'mini',
-  'organism': 'hsapiens',
-  'target': 'HGNC',
-  'prefix': 'ENTREZGENE_ACC'
+const GCONVERT_URL = 'https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/gconvert.cgi';
+const FETCH_TIMEOUT = 5000; //ms
+
+const resultTemplate = ( unrecognized, duplicate, geneInfo ) => {
+  return {
+    unrecognized: Array.from( unrecognized ) || [],
+    duplicate: duplicate || {},
+    geneInfo: geneInfo || []
+  };
 };
 
-class InvalidInfoError extends Error {
-  constructor(invalidOrganism, invalidTargetDb, message) {
-    super(message);
-    this.invalidTargetDb = invalidTargetDb;
-    this.invalidOrganism = invalidOrganism;
-  }
-}
-
-const gConvertURL = 'https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/gconvert.cgi';
-
-
-// convertGConvertNames(officalSynonym) takes a gene identifier officalSynonym
-// and converts it to gConvert names
-const convertGConvertNames = (officalSynonym) => {
-  if (officalSynonym === 'HGNCSYMBOL') { return 'HGNC'; }
-  if (officalSynonym === 'HGNC') { return 'HGNC_ACC'; }
-  if (officalSynonym === 'UNIPROT') { return 'UNIPROTSWISSPROT'; }
-  if (officalSynonym === 'NCBIGENE') { return 'ENTREZGENE_ACC'; }
+const mapDBNames = officalSynonym  => {
+  officalSynonym = officalSynonym.toUpperCase();
+  if ( officalSynonym === 'HGNCSYMBOL' ) { return 'HGNC'; }
+  if ( officalSynonym === 'HGNC' ) { return 'HGNC_ACC'; }
+  if ( officalSynonym === 'UNIPROT' ) { return 'UNIPROTSWISSPROT'; }
+  if ( officalSynonym === 'NCBIGENE' ) { return 'ENTREZGENE_ACC'; }
   return officalSynonym;
 };
 
+/*
+ * getForm
+ * @param { array } query - Gene IDs
+ * @param { object } userOptions
+ * @returns { object } error and form
+ */
+const getForm = ( query, defaultOptions, userOptions ) => {
 
-// validatorGconvert(query, userOptions) takes an identifier list query
-// and an object of options userOptions
-// and validates the query based on userOptions
-const validatorGconvert = (query, userOptions) => {
-  return new Promise((resolve, reject) => {
-    const formData = _.assign({}, defaultOptions, JSON.parse(JSON.stringify(userOptions)), { query: query });
-    formData.organism = formData.organism.toLowerCase();
-    const initialTarget = formData.target.toUpperCase();
-    formData.target = convertGConvertNames(initialTarget);
-    const invalidInfo = { invalidTargetDb: undefined, invalidOrganism: undefined };
-    const queryVal = formData.query;
-    if (!Array.isArray(queryVal)) {
-      reject(new Error('ERROR: genes should be an array'));
-    }
-    formData.query = queryVal.join(" ");
-    if (!validOrganism.includes(formData.organism)) {
-      invalidInfo.invalidOrganism = formData.organism;
-    }
-    if (!validTargetDb.includes(formData.target)) {
-      invalidInfo.invalidTargetDb = formData.target;
-    }
-    if (invalidInfo.invalidOrganism != undefined || invalidInfo.invalidTargetDb != undefined) {
-      reject(new InvalidInfoError(invalidInfo.invalidOrganism, invalidInfo.invalidTargetDb, ''));
-    }
+  const form = _.assign( {},
+    defaultOptions,
+    JSON.parse( JSON.stringify( userOptions ) ),
+    { query: query }
+  );
 
-    fetch(gConvertURL, {
-      method: 'post',
-      body: qs.stringify(formData)
-    }).then(gConvertResponse => gConvertResponse.text())
-      .then(body => {
-        const geneInfoList = _.map(body.split('\n'), ele => { return ele.split('\t'); });
-        geneInfoList.splice(-1, 1); // remove last element ''
-        const unrecognized = new Set();
-        let duplicate = {};
-        const previous = new Map();
-        let geneInfo = new Set();
-        const initialAliasIndex = 1;
-        const convertedAliasIndex = 3;
-        _.forEach(geneInfoList, info => {
-          const convertedAlias = info[convertedAliasIndex];
-          let initialAlias = info[initialAliasIndex];
-          initialAlias = cleanUpEntrez(initialAlias);
-          if (convertedAlias === 'N/A') {
-            unrecognized.add(initialAlias);
-          } else {
-            if (!previous.has(convertedAlias)) {
-              previous.set(convertedAlias, initialAlias);
-            } else {
-              if (!(convertedAlias in duplicate)) {
-                duplicate[convertedAlias] = new Set([previous.get(convertedAlias)]);
-              }
-              duplicate[convertedAlias].add(initialAlias);
-            }
-            geneInfo.add(JSON.stringify({initialAlias: initialAlias, convertedAlias: convertedAlias}));
-          }
-        });
-        for (const initialAlias in duplicate) {
-          duplicate[initialAlias] = Array.from(duplicate[initialAlias]);
+  if (!Array.isArray( form.query )) {
+    throw new Error( 'Invalid genes: Must be an array' );
+  }
+  if ( !validOrganism.includes( form.organism.toLowerCase() ) ) {
+    throw new Error( 'Invalid organism' );
+  }
+  if ( !validTargetDb.includes( form.target.toUpperCase() ) ) {
+    throw new Error( 'Invalid target' );
+  }
+
+  form.target = mapDBNames( form.target );
+  form.query = form.query.join(" ");
+
+  return form;
+};
+
+const bodyHandler = body =>  {
+  const geneInfoList = _.map(body.split('\n'), ele => { return ele.split('\t'); });
+  geneInfoList.splice(-1, 1); // remove last element ''
+  const unrecognized = new Set();
+  let duplicate = {};
+  const previous = new Map();
+  let geneInfo = new Set();
+  const initialAliasIndex = 1;
+  const convertedAliasIndex = 3;
+  _.forEach(geneInfoList, info => {
+    const convertedAlias = info[convertedAliasIndex];
+    let initialAlias = info[initialAliasIndex];
+    initialAlias = cleanUpEntrez(initialAlias);
+    if (convertedAlias === 'N/A') {
+      unrecognized.add(initialAlias);
+    } else {
+      if (!previous.has(convertedAlias)) {
+        previous.set(convertedAlias, initialAlias);
+      } else {
+        if (!(convertedAlias in duplicate)) {
+          duplicate[convertedAlias] = new Set([previous.get(convertedAlias)]);
         }
-        geneInfo = _.map(Array.from(geneInfo), ele => { return JSON.parse(ele); });
-        const ret = { unrecognized: Array.from(unrecognized), duplicate: duplicate, geneInfo: geneInfo };
-        resolve(ret);
-      });
+        duplicate[convertedAlias].add(initialAlias);
+      }
+      geneInfo.add(JSON.stringify({initialAlias: initialAlias, convertedAlias: convertedAlias}));
+    }
   });
+  for (const initialAlias in duplicate) {
+    duplicate[initialAlias] = Array.from(duplicate[initialAlias]);
+  }
+  geneInfo = _.map(Array.from(geneInfo), ele => { return JSON.parse(ele); });
+  return resultTemplate( unrecognized, duplicate, geneInfo );
+};
+
+/* errorHandler
+ * This function routes errors in a rational manner: Fetch-related errors are gently handled
+ * by returning the original gene list as 'unrecognized'; For input errors, the Promise is
+ * rejected with the error info for the client; in all other cases an Error is thrown.
+ * @param { object } data - Error object and query (optional)
+ * @return { Promise }
+ */
+const errorHandler = ( error, query ) => {
+  console.error( error );
+  switch ( error.name ) {
+    case 'FetchError':
+      return new Promise( resolve => resolve( resultTemplate( query ) ) );
+    default:
+      return new Promise( ( _, reject ) => reject( { "Error": error.message } ) );
+  }
 };
 
 
-module.exports = { validatorGconvert, InvalidInfoError };
+/* validatorGconvert
+ * @param { array } query - identifier list query
+ * @param { object } userOptions - options
+ * @return { object } list of unrecognized, object with duplicated and list of mapped IDs
+ */
+const validatorGconvert = ( query, userOptions ) => {
+
+  const defaultOptions = {
+    'output': 'mini',
+    'organism': 'hsapiens',
+    'target': 'HGNC',
+    'prefix': 'ENTREZGENE_ACC'
+  };
+
+  return new Promise(( resolve, reject ) => {
+
+    const form = getForm( query, defaultOptions, userOptions );
+    fetch( GCONVERT_URL, {
+        method: 'post',
+        body: qs.stringify( form ),
+        timeout: FETCH_TIMEOUT
+    })
+    .then( response => response.text() )
+    .then( bodyHandler )
+    .then( resolve )
+    .catch( reject );
+  })
+  .catch( error => errorHandler( error, query ) );
+};
+
+module.exports = { validatorGconvert };

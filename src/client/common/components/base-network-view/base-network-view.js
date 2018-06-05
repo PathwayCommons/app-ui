@@ -181,15 +181,15 @@ class BaseNetworkView extends React.Component {
     //display human icon indicating human genome, gene input bar, and submit button
     const geneInputBar =  [
       h('h4', [
-        h('span', 'Pathway Enrichment   '),
+        h('span', 'Pathway Enrichment   '),]),
         h('img', {
           src: '/img/humanIcon.png'
           }),
-        h('input.gene-input', {
+        h('textarea.gene-input', {
            placeholder: 'Enter one gene per line',
         }),
         h('button.submit', 'submit'),
-      ])
+
     ];
 
     // if 'useGeneInput' is true from index file, input bar will be rendered in 'div.title-container'

@@ -8,13 +8,6 @@ const { cleanUpEntrez } = require('../helper');
 const GCONVERT_URL = 'https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/gconvert.cgi';
 const FETCH_TIMEOUT = 5000; //ms
 
-class InvalidParameterError extends Error {
-  constructor( message ) {
-    super( message );
-    this.name = 'InvalidParameterError';
-  }
-}
-
 const resultTemplate = ( unrecognized, duplicate, geneInfo ) => {
   return {
     unrecognized: Array.from( unrecognized ) || [],
@@ -47,13 +40,13 @@ const getForm = ( query, defaultOptions, userOptions ) => {
   );
 
   if (!Array.isArray( form.query )) {
-    throw new InvalidParameterError( 'Invalid genes: Must be an array' );
+    throw new Error( 'Invalid genes: Must be an array' );
   }
   if ( !validOrganism.includes( form.organism.toLowerCase() ) ) {
-    throw new InvalidParameterError( 'Invalid organism' );
+    throw new Error( 'Invalid organism' );
   }
   if ( !validTargetDb.includes( form.target.toUpperCase() ) ) {
-    throw new InvalidParameterError( 'Invalid target' );
+    throw new Error( 'Invalid target' );
   }
 
   form.target = mapDBNames( form.target );
@@ -108,7 +101,6 @@ const errorHandler = ( error, query ) => {
   switch ( error.name ) {
     case 'FetchError':
       return new Promise( resolve => resolve( resultTemplate( query ) ) );
-    case 'InvalidParameterError':
     default:
       return new Promise( ( _, reject ) => reject( { "Error": error.message } ) );
   }

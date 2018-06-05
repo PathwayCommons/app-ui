@@ -26,7 +26,9 @@ const ServerAPI = {
 
   querySearch(query){
     const queryClone=_.assign({},query);
-    if(/(uniprot:\w+|ncbi:[0-9]+|hgnc:\w+)$/.test(queryClone.q)){queryClone.q=queryClone.q.split(':')[1];}
+    if (/^((uniprot|hgnc):\w+|ncbi:[0-9]+)$/i.test(queryClone.q)) {
+      queryClone.q=queryClone.q.replace(/^(uniprot|ncbi|hgnc):/i,"");
+    }
     return fetch(`/pc-client/querySearch?${qs.stringify(queryClone)}`, defaultFetchOpts).then(res => res.json());
   },
 

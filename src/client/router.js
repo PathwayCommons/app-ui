@@ -43,9 +43,9 @@ module.exports = () => {
         }
       },
       {
-        path: '/enrichment-map',
+        path: '/enrichment',
         render: props => {
-          return h(Features.EnrichmentMap, props);
+          return h(Features.Enrichment, props);
         }
       },
       {

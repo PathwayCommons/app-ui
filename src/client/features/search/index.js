@@ -108,6 +108,28 @@ class Search extends React.Component {
     this.getSearchResult();
   }
 
+  componentWillReceiveProps (nextProps) {
+    const nextSearch = nextProps.location.search;
+    if( this.props.location.search !==  nextSearch){
+      this.setState({
+        query: _.assign({
+          q: '',
+          gt: 0,
+          lt: 250,
+          type: 'Pathway',
+          datasource: []
+          }, queryString.parse(nextSearch))} , ()=>{
+            this.getSearchResult();
+          });
+    }
+ }
+
+buildExampleLink (search) {
+  let query = _.clone(this.state.query);
+  query.q = search;
+  return queryString.stringify(query);
+}
+
   render() {
     const state = this.state;
     const landing=state.landing;
@@ -115,9 +137,7 @@ class Search extends React.Component {
     const controller = this;
     const loaded= !(state.searchLoading || state.landingLoading);
 
-    let Example = props => h('span.search-example', {
-      onClick: () => this.setAndSubmitSearchQuery({q: props.search})
-    }, props.search);
+   let Example = props => h(Link, { to: { pathname: '/search', search: this.buildExampleLink(props.search) }}, props.search);
 
     const searchResults = state.searchResults.map(result => {
       const dsInfo =_.isEmpty(state.dataSources)? {iconUrl:null , name:''}: _.find(state.dataSources, ds => {
@@ -156,9 +176,14 @@ class Search extends React.Component {
       ]);
     });
 
+    let datasourceVal = "";
+    if(!Array.isArray(state.query.datasource)){
+      datasourceVal = state.query.datasource;
+    }
+
     const searchResultFilter = h('div.search-filters', [
       h('select.search-datasource-filter', {
-        value: state.query.datasource,
+        value: datasourceVal,
         multiple: false,
         onChange: e => this.setAndSubmitSearchQuery({ datasource: e.target.value })
       }, [
@@ -194,10 +219,8 @@ class Search extends React.Component {
                   onChange: e => this.onSearchValueChange(e),
                   onKeyPress: e => this.onSearchValueChange(e)
                 }),
-                h('div.search-search-button', [
-                  h('button', { onClick: e => this.submitSearchQuery(e) }, [
-                    h(Icon, { icon: 'search' })
-                  ])
+                h(Link, { to: { pathname: '/search', search: queryString.stringify(state.query)},className:"search-search-button"}, [
+                  h(Icon, { icon: 'search' })
                 ])
               ]),
               h('div.search-suggestions', [

@@ -124,8 +124,7 @@ enrichmentRouter.post('/validation', (req, res) => {
  *         schema:
  *           "$ref": "#/definitions/success/analysisSuccess"
  *       '400':
- *         description: Invalid input (orderedQuery, userThr, minSetSize, maxSetSize,
- *           thresholdAlgo, custbg or JSON format)
+ *         description: Invalid input (orderedQuery, minSetSize, maxSetSize, backgroundGenes or JSON format)
  *         schema:
  *           "$ref": "#/definitions/error/analysisError"
 */
@@ -134,12 +133,11 @@ enrichmentRouter.post('/analysis', (req, res) => {
   const genes = req.body.genes;
   const tmpOptions = {
     orderedQuery: req.body.orderedQuery,
-    userThr: req.body.userThr,
     minSetSize: req.body.minSetSize,
     maxSetSize: req.body.maxSetSize,
-    thresholdAlgo: req.body.thresholdAlgo,
-    custbg: req.body.custbg
+    custbg: req.body.backgroundGenes
   };
+
   enrichment(genes, tmpOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
   }).catch((err) => {
@@ -174,18 +172,17 @@ enrichmentRouter.post('/analysis', (req, res) => {
  *         schema:
  *           "$ref": "#/definitions/success/visualizationSuccess"
  *       '400':
- *         description: Invalid input (cutoff, OCweight, JCWeight or JSON format)
+ *         description: invalid input (similarityCutoff, jaccardOverlapWeight or JSON format)
  *         schema:
  *           "$ref": "#/definitions/error/visualizationError"
 */
 // Expose a rest endpoint for visualization service
 enrichmentRouter.post('/visualization', (req, res) => {
-  const pathwayInfoList = req.body.pathwayInfoList;
-  const cutoff = req.body.cutoff;
-  const JCWeight = req.body.JCWeight;
-  const OCWeight = req.body.OCWeight;
+  const pathways = req.body.pathways;
+  const similarityCutoff = req.body.similarityCutoff;
+  const jaccardOverlapWeight = req.body.jaccardOverlapWeight;
   try {
-    res.json(generateGraphInfo(pathwayInfoList, cutoff, JCWeight, OCWeight));
+    res.json(generateGraphInfo(pathways, similarityCutoff, jaccardOverlapWeight));
   } catch (err) {
     res.status(400).send(err.message);
   }
@@ -210,7 +207,7 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *       example: 'ERROR: orderedQuery should be 0 / false or 1 / true'
  *     visualizationError:
  *       type: string
- *       example: 'ERROR: OCWeight + JCWeight should be 1'
+ *       example: 'ERROR: jaccardOverlapWeight should be a number'
  *   input:
  *     validationObj:
  *       type: object
@@ -510,11 +507,6 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           description: "genes are placed in some biologically meaningful order \n
  *             default: false"
  *           example: false
- *         userThr:
- *           type: number
- *           description: "user-specified p-value threshold, results with a larger p-value
- *             are excluded \n default: 0.05"
- *           example: 0.07
  *         minSetSize:
  *           type: number
  *           description: "minimum size of functional category, smaller categories are
@@ -525,15 +517,7 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           description: "maximum size of functional category, larger categories are
  *             excluded \n default: 200"
  *           example: 400
- *         thresholdAlgo:
- *           type: string
- *           description: "the algorithm used for determining the significance threshold
- *             \n default: fdr"
- *           enum:
- *           - fdr
- *           - analytical
- *           - bonferroni
- *         custbg:
+ *         backgroundGenes:
  *           type: array
  *           description: "an array of genes used
  *             as a custom statistical background \n default: []"
@@ -543,9 +527,9 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *     visualizationObj:
  *       type: object
  *       required:
- *       - pathwayInfoList
+ *       - pathways
  *       properties:
- *         pathwayInfoList:
+ *         pathways:
  *           type: object
  *           description: pathway information keyed by pathway ID
  *           additionalProperties: object
@@ -553,19 +537,16 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *             GO:0043525: {}
  *             GO:0043523:
  *               p-value: 0.05
- *         cutoff:
+ *         similarityCutoff:
  *           type: number
  *           description: "cutoff point used for filtering similaritiy rates of edges
  *             pairwise \n default: 0.375"
  *           example: 0.3
- *         JCWeight:
+ *         jaccardOverlapWeight:
  *           type: number
- *           description: weight for Jaccard coefficient
+ *           description: "weight for Jaccard coefficient
+ *             \n valid range: [0,1]"
  *           example: 0.55
- *         OCWeight:
- *           type: number
- *           description: weight for overlap coefficient
- *           example: 0.45
  *   success:
  *     validationSuccess:
  *       type: object

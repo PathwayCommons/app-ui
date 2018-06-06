@@ -9,14 +9,14 @@ const {getNodesGeneSynonyms} = require('./generic-physical-entities');
 function getPathwayMetadata(uri) {
 
   let title, dataSource, comments, organism;
-  let getValue = data => data.traverseEntry[0].value;
-  let get = path => pcServices.query({cmd:'traverse', uri, path}).then(getValue);
+  let get = path => pcServices.query({cmd:'traverse', uri, path})
+    .then(data => _.get(data, 'traverseEntry.0.value', null));
 
   return Promise.all([
-    get('Named/displayName').then(value => title = value),
+    get('Entity/displayName').then(value => title = value),
     get('Entity/dataSource/displayName').then(value => dataSource = value),
     get('Entity/comment').then(value => comments = value),
-    get('Entity/organism/displayName').then(value => organism = value)
+    get('Pathway/organism/displayName').then(value => organism = value)
   ]).then(() => ({ comments, dataSource, title, organism }));
 }
 

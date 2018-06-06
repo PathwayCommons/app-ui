@@ -50,7 +50,12 @@ const query = async (queryObj) => {
   let cmd = queryObj.cmd || 'get';
   //TODO: (not critical) client app's sends useless parameters to the PC server: cmd, lt, gt
   const url = config.PC_URL + cmd + '?' + qs.stringify(queryObj);
-  return fetch(url, fetchOptions).then(res => (cmd=='get'||cmd=='graph')?res.text():res.json());
+  return fetch(url, fetchOptions)
+    .then(res => (cmd=='get'||cmd=='graph')?res.text():res.json())
+    .catch((e) => {
+      console.log('query ' + queryObj + ' failed - ' + e);
+      return null;
+    });
 };
 
 // A fine-tuned PC search to improve relevance of full-text search and filter out unwanted hits.

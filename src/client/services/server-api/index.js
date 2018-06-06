@@ -32,9 +32,9 @@ const ServerAPI = {
     return fetch(`/pc-client/querySearch?${qs.stringify(queryClone)}`, defaultFetchOpts).then(res => res.json());
   },
 
-  geneQuery(query){
+  enrich(query, type){
     if(query.genes.length>=1){
-      return fetch('/api/validation', {
+      return fetch(`/api/${type}`, {
         method:'POST',
         headers: {
           'Accept': 'application/json',
@@ -45,6 +45,10 @@ const ServerAPI = {
     }else{
       return Promise.resolve({geneInfo:[],unrecognized:[]});
     }
+  },
+
+  geneQuery(query){
+    return this.enrich(query, "validation");
   },
 
   getGeneInformation(ids){

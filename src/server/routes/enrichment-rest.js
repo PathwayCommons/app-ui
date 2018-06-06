@@ -527,7 +527,7 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *               p-value: 0.05
  *         similarityCutoff:
  *           type: number
- *           description: "cutoff point used for filtering similarity rates of edges
+ *           description: "cutoff point for filtering edge similarity rates
  *             pairwise \n default: 0.375"
  *           example: 0.3
  *         jaccardOverlapWeight:

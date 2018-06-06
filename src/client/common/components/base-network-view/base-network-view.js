@@ -36,11 +36,16 @@ class BaseNetworkView extends React.Component {
         nodeSearchValue: '',
         open: false,
         networkLoading: true,
-        searchOpen: false,
         updateBaseViewState: (nextState, next) => this.setState(nextState, next ? next() : null)
       }, props);
-
     this.state.open = this.state.activeMenu !== 'closeMenu';
+  }
+
+  componentWillReceiveProps(nextProps){//needed to updata metadata for interactions
+    this.setState({
+      networkMetadata: nextProps.networkMetadata,
+      filters:nextProps.filters
+    });
   }
 
   componentWillUnmount() {
@@ -56,7 +61,7 @@ class BaseNetworkView extends React.Component {
     cy.mount(container);
     cy.remove('*');
     cy.add(state.networkJSON);
-
+    cy.emit('trim');
     const layout = cy.layout(initialLayoutOpts);
     layout.on('layoutstop', () => {
       cy.emit('network-loaded');
@@ -66,16 +71,19 @@ class BaseNetworkView extends React.Component {
   }
 
   changeMenu(menu) {
+    let resizeCyImmediate = () => this.state.cy.resize();
+    let resizeCyDebounced = _.debounce( resizeCyImmediate, 500 );
+
     if (menu === this.state.activeMenu || menu === 'closeMenu') {
       this.setState({
         activeMenu: 'closeMenu',
         open: false
-      });
+      }, resizeCyImmediate);
     } else {
       this.setState({
         activeMenu: menu,
         open: true
-      });
+      }, resizeCyDebounced);
     }
   }
 
@@ -98,6 +106,7 @@ class BaseNetworkView extends React.Component {
     const menus = state.componentConfig.menus;
 
     const activeMenu = menus.filter(menu => menu.id === state.activeMenu)[0].func(state);
+    const menuWidth = menus.filter(menu => menu.id === state.activeMenu)[0].width;
 
     const menuButtons = toolbarButtons.filter(btn => btn.type === 'activateMenu').map(btn => {
       return (
@@ -123,7 +132,8 @@ class BaseNetworkView extends React.Component {
           onClick: () => {
             btn.func(state);
           },
-          desc: btn.description
+          desc: btn.description,
+          cy: state.cy
         })
       );
     });
@@ -142,20 +152,6 @@ class BaseNetworkView extends React.Component {
 
 
     const nodeSearchBar = [
-      h(IconButton, {
-        icon: 'search',
-        key: 'search',
-        active: this.state.searchOpen,
-        onClick: () => {
-          !this.state.searchOpen || this.clearSearchBox();
-          this.setState({ searchOpen: !this.state.searchOpen }, () => {
-            if (this.state.searchOpen == true) {
-              this.searchField.focus();
-            }
-          });
-        },
-        desc: 'Search entities'
-      }),
       h('div', {
         className: classNames('search-nodes', { 'search-nodes-open': this.state.searchOpen }),
         onChange: e => {
@@ -178,7 +174,7 @@ class BaseNetworkView extends React.Component {
     ];
 
 
-    return h('div.View', [
+    return h('div.view', [
       h('div', { className: classNames('menu-bar', { 'menu-bar-margin': state.activeMenu }) }, [
         h('div.menu-bar-inner-container', [
           h('div.pc-logo-container', [
@@ -202,18 +198,22 @@ class BaseNetworkView extends React.Component {
         loaded: !this.state.networkLoading,
         options: { left: '50%', color: '#16A085' },
       }),
-      h('div.Graph', [
-        h('div', {
-          ref: dom => this.graphDOM = dom,
-          style: {
-            width: '100vw',
-            height: '100vh',
-            visibility: this.state.networkLoading ? 'hidden' : undefined
-          }
-        })
-      ]),
+      h('div.graph', {
+          className: classNames({
+            'graph-network-loading': this.state.networkLoading,
+            'graph-sidebar-open': this.state.open
+          }),
+          style: { width: menuWidth?`${100-menuWidth}%`:'' }
+        },
+        [
+          h('div.graph-cy', {
+            ref: dom => this.graphDOM = dom,
+          })
+        ]
+      ),
       h('div', {
-        className: classNames('sidebar-menu', { 'sidebar-menu-open': this.state.open })
+        className: classNames('sidebar-menu',{'sidebar-menu-open': this.state.open }),
+        style: { width: menuWidth?`${menuWidth}%`:'' }
       }, [
           h('div', {
             className: classNames('sidebar-close-button-container', { 'sidebar-close-button-container-open': this.state.open })

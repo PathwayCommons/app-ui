@@ -3,7 +3,8 @@
 @import "./view/sidebarMenu.css";
 @import "./view/toolTip.css";
 
-.View {
+.view {
   width: 100vw;
   height: 100vh;
-}   
+  position: relative;
+}

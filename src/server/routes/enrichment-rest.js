@@ -118,7 +118,7 @@ enrichmentRouter.post('/validation', (req, res) => {
  *         schema:
  *           "$ref": "#/definitions/success/analysisSuccess"
  *       '400':
- *         description: Invalid input (orderedQuery, minSetSize, maxSetSize, backgroundGenes or JSON format)
+ *         description: Invalid input (minSetSize, maxSetSize, backgroundGenes or JSON format)
  *         schema:
  *           "$ref": "#/definitions/error/analysisError"
 */
@@ -126,7 +126,6 @@ enrichmentRouter.post('/validation', (req, res) => {
 enrichmentRouter.post('/analysis', (req, res) => {
   const genes = req.body.genes;
   const tmpOptions = {
-    orderedQuery: req.body.orderedQuery,
     minSetSize: req.body.minSetSize,
     maxSetSize: req.body.maxSetSize,
     custbg: req.body.backgroundGenes
@@ -198,7 +197,7 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           example: hsapiensss
  *     analysisError:
  *       type: string
- *       example: 'ERROR: orderedQuery should be 0 / false or 1 / true'
+ *       example: 'ERROR: minSetSize should be >= 0'
  *     visualizationError:
  *       type: string
  *       example: 'ERROR: jaccardOverlapWeight should be a number'
@@ -496,11 +495,6 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           example: ["AFF4"]
  *           items:
  *             type: string
- *         orderedQuery:
- *           type: boolean
- *           description: "genes are placed in some biologically meaningful order \n
- *             default: false"
- *           example: false
  *         minSetSize:
  *           type: number
  *           description: "minimum size of functional category, smaller categories are
@@ -533,12 +527,12 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *               p-value: 0.05
  *         similarityCutoff:
  *           type: number
- *           description: "cutoff point used for filtering similaritiy rates of edges
+ *           description: "cutoff point used for filtering similarity rates of edges
  *             pairwise \n default: 0.375"
  *           example: 0.3
  *         jaccardOverlapWeight:
  *           type: number
- *           description: "weight for Jaccard coefficient
+ *           description: "similarity measurement between sample sets calculated by dividing the area of intersection by the area of union
  *             \n valid range: [0,1]"
  *           example: 0.55
  *   success:

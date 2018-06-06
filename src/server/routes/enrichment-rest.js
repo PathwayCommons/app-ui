@@ -532,7 +532,7 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           example: 0.3
  *         jaccardOverlapWeight:
  *           type: number
- *           description: "similarity measurement between sample sets calculated by dividing the area of intersection by the area of union
+ *           description: "similarity measurement between sample sets, calculated by dividing the area of intersection by the area of union
  *             \n valid range: [0,1]"
  *           example: 0.55
  *   success:

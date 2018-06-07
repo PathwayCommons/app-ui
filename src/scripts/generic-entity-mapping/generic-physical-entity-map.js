@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const tmp = JSON.parse(fs.readFileSync(__dirname + '/processed_physical_entities.json'));
+const tmp = JSON.parse(fs.readFileSync('./generic_physical_entities.json'));
 
 const processed = {};
 

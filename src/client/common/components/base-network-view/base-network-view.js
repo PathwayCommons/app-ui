@@ -9,6 +9,7 @@ const IconButton = require('../icon-button');
 
 const debouncedSearchNodes = _.debounce(require('../../cy/match-style'), 300);
 
+
 // cytoscape
 // grapjson
 // metadata
@@ -163,14 +164,24 @@ class BaseNetworkView extends React.Component {
       }, [nodeSearchBarInput])
     ];
 
-
-
-
     const toolBar = [
       ...menuButtons,
       ...networkButtons,
       // ...(componentConfig.useLayoutDropdown ? layoutDropdown : []), // TODO re-add dropdown for edit
       ...(componentConfig.useSearchBar ? nodeSearchBar : [])
+    ];
+
+    //display pathway and database names
+    const metadataTitles = h('h4',[
+      h('span', state.networkMetadata.name),
+      ' | ',
+      h('a', state.networkMetadata.datasource)
+    ]);
+
+    // if 'titleContainer' exists from index file, unique title will render in 'div.title-container'
+    // default: metadata pathway name and database
+    const displayInfo = [
+      (this.props.titleContainer ?  this.props.titleContainer : metadataTitles)
     ];
 
 
@@ -184,13 +195,7 @@ class BaseNetworkView extends React.Component {
               })
             ])
           ]),
-          h('div.title-container', [
-            h('h4', [
-              h('span', state.networkMetadata.name),
-              ' | ',
-              h('a', state.networkMetadata.datasource)
-            ])
-          ])
+          h('div.title-container', displayInfo)
         ]),
         h('div.view-toolbar', toolBar)
       ]),

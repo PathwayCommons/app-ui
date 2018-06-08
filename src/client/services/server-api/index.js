@@ -32,7 +32,7 @@ const ServerAPI = {
     return fetch(`/pc-client/querySearch?${qs.stringify(queryClone)}`, defaultFetchOpts).then(res => res.json());
   },
 
-  enrich(query, type){
+  enrichmentAPI(query, type){
     return fetch(`/api/${type}`, {
       method:'POST',
       headers: {
@@ -40,7 +40,10 @@ const ServerAPI = {
         'Content-Type': 'application/json'
       },
       body:JSON.stringify(query)
-    }).then(res => res.json());
+    })
+    .then(res => res.json())
+    .catch((err) => {
+      res.status(400).send(err.message);
   },
 
   geneQuery(query){

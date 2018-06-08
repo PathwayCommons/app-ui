@@ -33,18 +33,14 @@ const ServerAPI = {
   },
 
   enrich(query, type){
-    if(query.genes.length>=1){
-      return fetch(`/api/${type}`, {
-        method:'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body:JSON.stringify(query)
-      }).then(res => res.json());
-    }else{
-      return Promise.resolve({geneInfo:[],unrecognized:[]});
-    }
+    return fetch(`/api/${type}`, {
+      method:'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body:JSON.stringify(query)
+    }).then(res => res.json());
   },
 
   geneQuery(query){

@@ -16,6 +16,10 @@ const ServerAPI = {
     return fetch(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`, defaultFetchOpts).then(res => res.json());
   },
 
+  getInteractionGraph(sources) {
+    return fetch(`/api/get-interaction-graph?${qs.stringify(sources)}`, defaultFetchOpts).then(res => res.json());
+  },
+
   pcQuery(method, params){
     return fetch(`/pc-client/${method}?${qs.stringify(params)}`, defaultFetchOpts);
   },
@@ -86,8 +90,7 @@ const ServerAPI = {
     socket.on('nodeChange', nodeDiff => {
       callback(nodeDiff);
     });
-  },
-
+  }
 };
 
 module.exports = ServerAPI;

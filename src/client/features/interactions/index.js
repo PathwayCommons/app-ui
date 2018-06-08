@@ -64,6 +64,8 @@ class Interactions extends React.Component {
       //TODO: consider using direction:'bothstream' for neighborhood queries (or remove 'interacts-with' PPI-only pattern)
       // direction:'bothstream' //ignored if it's pathsbetween
     };
+
+/*
     ServerAPI.pcQuery('graph', params)
       .then(res=>res.text())
       .then(res=>{
@@ -76,83 +78,106 @@ class Interactions extends React.Component {
         loaded:_.assign(this.state.loaded,{network:true})
       });
     });
-    //get ids from uris
-    const geneIds = sources.map(source =>
-      source.includes('pathwaycommons')
-        ? ServerAPI.pcQuery('traverse',
-          {
-            uri:source,
-            path:`${_.last(source.split('/')).split('_')[0]}/displayName`
-          })
-          .then(result=>result.json())
-          .then(id=> _.words(id.traverseEntry[0].value[0]).length===1 ? id.traverseEntry[0].value[0].split('_')[0] : '')
-        : source.replace(/\//g,' ')
-    );
-    Promise.all(geneIds).then(geneIds=>{
-      ServerAPI.geneQuery({genes:geneIds,targetDb: 'NCBIGENE'}).then(result=>{
-        const ncbiIds=result.geneInfo.map(gene=> gene.convertedAlias);
-        ServerAPI.getGeneInformation(ncbiIds).then(result=>{
-          const geneResults=result.result;
-          let hgncIds=[];
-          let comments=[];
-          if(!result.esummaryresult ){
-            comments=_.flatten(geneResults.uids.map(gene=>{
-              hgncIds.push(geneResults[gene].name);
-              return _.compact([
-                'Nomenclature Name: '+geneResults[gene].nomenclaturename,
-                'Other Aliases: '+geneResults[gene].name + (geneResults[gene].otheraliases ? ', '+geneResults[gene].otheraliases:''),
-                geneResults[gene].summary && 'Function: '+geneResults[gene].summary
-              ]);
-            }));
-          }
-          this.setState({
-            networkMetadata: {
-              name: hgncIds.length === sources.length ?(hgncIds+' Interactions'):' Interactions',
-              datasource: 'Pathway Commons',
-              comments: comments
-            },
-            ids:hgncIds,
-            loaded:_.assign(this.state.loaded,{ids:true})
-          });
-        });
-      });
-    });
-
-    this.state.cy.on('trim', () => {
-      const state = this.state;
-      const ids = state.ids;
-      if(ids.length === sources.length){
-        const cy = state.cy;
-        const mainNode = cy.nodes(node=> ids.indexOf(node.data().id) != -1);
-        const nodesToKeep = mainNode.merge(mainNode.connectedEdges().connectedNodes());
-        cy.remove(cy.nodes().difference(nodesToKeep));
-      }
-    });
-
-    this.state.cy.one('layoutstop',()=>{
-      const state = this.state;
-      const cy = this.state.cy;
-      const categories = state.categories;
-      const filters=state.filters;
-      _.forEach(filters,(value,type)=>{
-        const edges = cy.edges().filter(`.${type}`);
-        const nodes = edges.connectedNodes();
-        edges.length?
-        categories.set(type,{edges:edges,nodes:nodes}):
-        (categories.delete(type),delete filters[type]);
-      });
-
-      _.tail(_.toPairs(filters)).map(pair=>this.filterUpdate(pair[0]));
+*/
+/*
+   ServerAPI.getInteractionGraph({sources:sources})
+     .then(newwork=>{
+     const layoutConfig = getLayoutConfig('interactions');
+     const network= newwork;
+     this.setState({
+       componentConfig: interactionsConfig,
+       layoutConfig: layoutConfig,
+       networkJSON: network,
+       loaded:_.assign(this.state.loaded,{network:true})
+     });
+   });
+*/
+  ServerAPI.getInteractionGraph({sources:sources})
+    .then(result=>{
+      const layoutConfig = getLayoutConfig('interactions');
+      const network= result.network;
+      const metaData = result.metaData;
       this.setState({
-        categories:categories,
-        filters:filters
+        componentConfig : interactionsConfig,
+        layoutConfig : layoutConfig,
+        networkJSON : network,
+        networkMetadata : metaData.networkMetadata,
+        ids : metaData.ids,
+        loaded:_.assign(this.state.loaded,{network:true, ids:true})
       });
-      const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
-      const layout = cy.layout(initialLayoutOpts);
-      layout.run();
-    });
-  }
+  });
 
+  /*
+   //get ids from uris
+   const geneIds = sources.map(source =>
+      source.includes('pathwaycommons') ? this.getGeneIdFromPC(source) : source.replace(/\//g,' ')
+   );
+
+   Promise.all(geneIds).then(geneIds=>{
+     ServerAPI.geneQuery({genes:geneIds,targetDb: 'NCBIGENE'}).then(result=>{
+       const ncbiIds=result.geneInfo.map(gene=> gene.convertedAlias);
+       ServerAPI.getGeneInformation(ncbiIds).then(result=>{
+         const geneResults=result.result;
+         let hgncIds=[];
+         let comments=[];
+         if(!result.esummaryresult ){
+           comments=_.flatten(geneResults.uids.map(gene=>{
+             hgncIds.push(geneResults[gene].name);
+             return _.compact([
+               'Nomenclature Name: '+geneResults[gene].nomenclaturename,
+               'Other Aliases: '+geneResults[gene].name + (geneResults[gene].otheraliases ? ', '+geneResults[gene].otheraliases:''),
+               geneResults[gene].summary && 'Function: '+geneResults[gene].summary
+             ]);
+           }));
+         }
+         this.setState({
+           networkMetadata: {
+             name: hgncIds.length === sources.length ?(hgncIds+' Interactions'):' Interactions',
+             datasource: 'Pathway Commons',
+             comments: comments
+           },
+           ids:hgncIds,
+           loaded:_.assign(this.state.loaded,{ids:true})
+         });
+       });
+     });
+   });
+*/
+   this.state.cy.on('trim', () => {
+     const state = this.state;
+     const ids = state.ids;
+     if(ids.length === sources.length){
+       const cy = state.cy;
+       const mainNode = cy.nodes(node=> ids.indexOf(node.data().id) != -1);
+       const nodesToKeep = mainNode.merge(mainNode.connectedEdges().connectedNodes());
+       cy.remove(cy.nodes().difference(nodesToKeep));
+     }
+   });
+
+   this.state.cy.one('layoutstop',()=>{
+     const state = this.state;
+     const cy = this.state.cy;
+     const categories = state.categories;
+     const filters=state.filters;
+     _.forEach(filters,(value,type)=>{
+       const edges = cy.edges().filter(`.${type}`);
+       const nodes = edges.connectedNodes();
+       edges.length?
+       categories.set(type,{edges:edges,nodes:nodes}):
+       (categories.delete(type),delete filters[type]);
+     });
+     _.tail(_.toPairs(filters)).map(pair=>this.filterUpdate(pair[0]));
+     this.setState({
+       categories:categories,
+       filters:filters
+     });
+     const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
+     const layout = cy.layout(initialLayoutOpts);
+     layout.run();
+   });
+ }
+
+ /*
   edgeType(type){
     switch(type){
       case 'in-complex-with':
@@ -221,6 +246,18 @@ class Interactions extends React.Component {
       return {};
     }
   }
+  */
+
+  getGeneIdFromPC(source) {
+    const queryObj = {
+      uri:source,
+      path:`${_.last(source.split('/')).split('_')[0]}/displayName`
+    };
+    ServerAPI.pcQuery('traverse', queryObj)
+    .then(result=>result.json())
+    .then(id=> _.words(id.traverseEntry[0].value[0]).length===1 ? id.traverseEntry[0].value[0].split('_')[0] : '');
+  }
+
   filterUpdate(type) {
     const state=this.state;
     const categories = state.categories;

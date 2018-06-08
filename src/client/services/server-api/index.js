@@ -42,9 +42,7 @@ const ServerAPI = {
       body:JSON.stringify(query)
     })
     .then(res => res.json())
-    .catch((err) => {
-      res.status(400).send(err.message);
-  },
+    .catch((err) => { console.error('Error:', err); },
 
   geneQuery(query){
     return this.enrich(query, "validation");

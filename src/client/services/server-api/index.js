@@ -42,10 +42,11 @@ const ServerAPI = {
       body:JSON.stringify(query)
     })
     .then(res => res.json())
-    .catch((err) => { console.error('Error:', err); },
+    .catch((err) => console.error('Error:', err));
+  },
 
   geneQuery(query){
-    return this.enrich(query, "validation");
+    return this.enrichmentAPI(query, "validation");
   },
 
   getGeneInformation(ids){

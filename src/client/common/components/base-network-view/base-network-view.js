@@ -178,24 +178,10 @@ class BaseNetworkView extends React.Component {
       h('a', state.networkMetadata.datasource)
     ]);
 
-    //display human icon indicating human genome, gene input bar, and submit button
-    const geneInputBar =  [
-      h('h4', [
-        h('span', 'Pathway Enrichment   '),]),
-        h('img', {
-          src: '/img/humanIcon.png'
-          }),
-        h('textarea.gene-input', {
-           placeholder: 'Enter one gene per line',
-        }),
-        h('button.submit', 'submit'),
-
-    ];
-
-    // if 'useGeneInput' is true from index file, input bar will be rendered in 'div.title-container'
-    // otherwise pathway name and database will be in title bar
+    // if 'useCustomTitleContainer' is true from index file, unique title from idex's 'titleContainer' will render in 'div.title-container'
+    // default: metadata pathway name and database in title bar
     const displayInfo = [
-      (componentConfig.useGeneInput ?  geneInputBar : metadataTitles)
+      (componentConfig.useCustomTitleContainer ?  this.props.titleContainer : metadataTitles)
     ];
 
 

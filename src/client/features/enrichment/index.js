@@ -18,9 +18,7 @@ const enrichmentConfig={
   toolbarButtons: _.differenceBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'}, {'id': 'showInfo'}],'id'),
   menus: BaseNetworkView.config.menus,
   //allow for searching of nodes
-  useSearchBar: true,
-  //display custom title and input rather than default metadata (pathway and database names)
-  useCustomTitleContainer: true
+  useSearchBar: true
 };
 
 class Enrichment extends React.Component {
@@ -44,10 +42,10 @@ class Enrichment extends React.Component {
 
   geneInputSubmission(input){
     const geneArray = input.split(/\n/g);
-    console.log(geneArray);
     const inputObject = {genes: _.pull(geneArray,"")};
-    console.log(inputObject.genes);
-    console.log(ServerAPI.geneQuery(inputObject));
+    //console.log(geneArray);
+    //console.log(inputObject.genes);
+    //console.log(ServerAPI.geneQuery(inputObject));
     return inputObject.genes;
   }
 
@@ -73,7 +71,7 @@ class Enrichment extends React.Component {
           ])
       ]
     });
-    console.log(this.state.query);
+    //console.log(this.state.query);
     return h('div.main', [baseView]);
   }
 }

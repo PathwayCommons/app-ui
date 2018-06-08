@@ -178,10 +178,10 @@ class BaseNetworkView extends React.Component {
       h('a', state.networkMetadata.datasource)
     ]);
 
-    // if 'useCustomTitleContainer' is true from index file, unique title from idex's 'titleContainer' will render in 'div.title-container'
-    // default: metadata pathway name and database in title bar
+    // if 'titleContainer' exists from index file, unique title will render in 'div.title-container'
+    // default: metadata pathway name and database
     const displayInfo = [
-      (componentConfig.useCustomTitleContainer ?  this.props.titleContainer : metadataTitles)
+      (this.props.titleContainer ?  this.props.titleContainer : metadataTitles)
     ];
 
 

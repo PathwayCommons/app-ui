@@ -6,7 +6,7 @@ const _ = require('lodash');
 
 // const hideTooltips = require('../../common/cy/events/click').hideTooltips;
 // const removeStyle= require('../../common/cy/manage-style').removeStyle;
-// const make_cytoscape = require('../../common/cy/');
+const make_cytoscape = require('../../common/cy/');
 // const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
 const { ServerAPI } = require('../../services/');
 const { BaseNetworkView } = require('../../common/components');
@@ -21,21 +21,25 @@ const enrichmentConfig={
   useSearchBar: true
 };
 
-function validateInput(array, object)
+function validateInput(query, array, object)
 {
   //recognized input
-  if(_.isEmpty(object) && array.length == 0 ) alert("Thank you for your input. ***Service will continue to analysis");
-  //unrec gene
+  if(_.isEmpty(object) && array.length == 0 )
+  {
+    alert("Thank you for your input. ***Service will continue to analysis");
+    ServerAPI.enrichmentAPI(query, 'analysis');
+    console.log(ServerAPI.enrichmentAPI(query, 'analysis'));
+  }
+    //unrec gene
   else if(array.length != 0 && _.isEmpty(object) == true)
   {
     let errorMes = "";
     for (let i = 0; i < array.length; i++)
     {
-      errorMes += "\n" + array[i] + " is not a gene";
+      errorMes += "\n" + array[i] + " is not a recognized";
     }
     errorMes += "\nPlease fix your input and submit again";
     alert(errorMes);
-    return errorMes;
   }
   //duplicate
   else if(_.isEmpty(object) == false && array.length == 0)
@@ -49,7 +53,6 @@ function validateInput(array, object)
       }
       errorMes += "\nPlease fix your input and submit again";
       alert(errorMes);
-      return errorMes;
     }
   //unrec and duplicate
   else
@@ -63,11 +66,10 @@ function validateInput(array, object)
       }
     for (let i = 0; i < array.length; i++)
     {
-      errorMes += "\n" + array[i] + " is not a gene";
+      errorMes += "\n" + array[i] + " is not recognized";
     }
     errorMes += "\nPlease fix your input and submit again";
     alert(errorMes);
-    return errorMes;
   }
 }
 
@@ -75,7 +77,10 @@ class Enrichment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      cy: make_cytoscape({headless: true}),
       componentConfig: enrichmentConfig,
+      layoutConfig: {},
+      networkJSON: {},
       networkMetadata: {
         name: '',
         datasource: '',
@@ -104,7 +109,7 @@ class Enrichment extends React.Component {
       let unrecognized = result.unrecognized;
       console.log(unrecognized);
       console.log(duplicate);
-      validateInput(unrecognized, duplicate);
+      validateInput(inputObject, unrecognized, duplicate);
     });
   }
 

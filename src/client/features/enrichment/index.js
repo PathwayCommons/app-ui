@@ -20,6 +20,56 @@ const enrichmentConfig={
   useSearchBar: true
 };
 
+function validateInput(array, object)
+{
+  //recognized input
+  if(_.isEmpty(object) && array.length == 0 ) alert("Thank you for your input. ***Service will continue to analysis");
+  //unrec gene
+  else if(array.length != 0 && _.isEmpty(object) == true)
+  {
+    let errorMes = "";
+    for (let i = 0; i < array.length; i++)
+    {
+      errorMes += "\n" + array[i] + " is not a gene";
+    }
+    errorMes += "\nPlease fix your input and submit again";
+    alert(errorMes);
+    return errorMes;
+  }
+  //duplicate
+  else if(_.isEmpty(object) == false && array.length == 0)
+    {
+      let errorMes = "";
+      for (let i = 0; i < _.keys(object).length; i++ )
+      {
+        let propertyName = _.keys(object)[i];
+        let duplicateVal = object[propertyName];
+        errorMes += "\n" + duplicateVal[0] + " and " + duplicateVal[1] + " are duplicates ";
+      }
+      errorMes += "\nPlease fix your input and submit again";
+      alert(errorMes);
+      return errorMes;
+    }
+  //unrec and duplicate
+  else
+  {
+    let errorMes = "";
+    for (let i = 0; i < _.keys(object).length; i++ )
+      {
+        let propertyName = _.keys(object)[i];
+        let duplicateVal = object[propertyName];
+        errorMes += "\n" + duplicateVal[0] + " and " + duplicateVal[1] + " are duplicates ";
+      }
+    for (let i = 0; i < array.length; i++)
+    {
+      errorMes += "\n" + array[i] + " is not a gene";
+    }
+    errorMes += "\nPlease fix your input and submit again";
+    alert(errorMes);
+    return errorMes;
+  }
+}
+
 class Enrichment extends React.Component {
   constructor(props) {
     super(props);
@@ -42,10 +92,19 @@ class Enrichment extends React.Component {
   geneInputSubmission(input){
     const geneArray = input.split(/\n/g);
     const inputObject = {genes: _.pull(geneArray,"")};
-    //console.log(geneArray);
-    //console.log(inputObject.genes);
-    //console.log(ServerAPI.geneQuery(inputObject));
-    return inputObject.genes;
+    console.log(inputObject.genes);
+
+    ServerAPI.enrichmentAPI(inputObject, "validation").then(function(result) {
+      //object
+      let duplicate = result.duplicate;
+      //array of objects
+      let geneInfo = result.geneInfo;
+      //array
+      let unrecognized = result.unrecognized;
+      console.log(unrecognized);
+      console.log(duplicate);
+      validateInput(unrecognized, duplicate);
+    });
   }
 
   render() {
@@ -70,7 +129,7 @@ class Enrichment extends React.Component {
           ])
       ]
     });
-    //console.log(this.state.query);
+    //console.log(this.state);
     return h('div.main', [baseView]);
   }
 }

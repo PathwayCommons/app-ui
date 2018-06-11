@@ -6,7 +6,7 @@ const _ = require('lodash');
 
 // const hideTooltips = require('../../common/cy/events/click').hideTooltips;
 // const removeStyle= require('../../common/cy/manage-style').removeStyle;
-const make_cytoscape = require('../../common/cy/');
+// const make_cytoscape = require('../../common/cy/');
 // const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
 const { ServerAPI } = require('../../services/');
 const { BaseNetworkView } = require('../../common/components');
@@ -27,8 +27,9 @@ function validateInput(query, array, object)
   if(_.isEmpty(object) && array.length == 0 )
   {
     alert("Thank you for your input. ***Service will continue to analysis");
-    ServerAPI.enrichmentAPI(query, 'analysis');
-    console.log(ServerAPI.enrichmentAPI(query, 'analysis'));
+    //ServerAPI.enrichmentAPI(query, 'analysis');
+    //console.log(ServerAPI.enrichmentAPI(query, 'validate'));
+    //console.log(ServerAPI.enrichmentAPI(query, 'analysis'));
   }
     //unrec gene
   else if(array.length != 0 && _.isEmpty(object) == true)
@@ -77,10 +78,7 @@ class Enrichment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cy: make_cytoscape({headless: true}),
       componentConfig: enrichmentConfig,
-      layoutConfig: {},
-      networkJSON: {},
       networkMetadata: {
         name: '',
         datasource: '',
@@ -97,8 +95,10 @@ class Enrichment extends React.Component {
 
   geneInputSubmission(input){
     const geneArray = input.split(/\n/g);
+    if(geneArray.length < 5) return alert("Please input 4 or more tokens");
+    if(geneArray.length > 200)return alert("Please input less than 200 tokens");
     const inputObject = {genes: _.pull(geneArray,"")};
-    console.log(inputObject.genes);
+    //console.log(inputObject.genes);
 
     ServerAPI.enrichmentAPI(inputObject, "validation").then(function(result) {
       //object
@@ -107,8 +107,8 @@ class Enrichment extends React.Component {
       let geneInfo = result.geneInfo;
       //array
       let unrecognized = result.unrecognized;
-      console.log(unrecognized);
-      console.log(duplicate);
+      //console.log(unrecognized);
+      //console.log(duplicate);
       validateInput(inputObject, unrecognized, duplicate);
     });
   }

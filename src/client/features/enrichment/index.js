@@ -81,7 +81,7 @@ class Enrichment extends React.Component {
         comments: []
       },
       query: '',
-      titleContainer: []
+      titleContainer: [],
     };
   }
 
@@ -119,17 +119,23 @@ class Enrichment extends React.Component {
           h('img', {
             src: '/img/humanIcon.png'
             }),
-          h('textarea.gene-input', {
+          h('div.gene-input-container', [
+            h('textarea.gene-input-box', {
              placeholder: 'Enter one gene per line',
              onChange: e => this.geneInputChange(e),
-             onKeyPress: e => this.geneInputChange(e)
-          }),
-          h('submit-container', {onClick: () => this.geneInputSubmission(this.state.query) },[
+             onKeyPress: e => {
+               this.geneInputChange(e);
+             }
+            })]),
+          h('submit-container', {
+            onClick: () => {
+              this.geneInputSubmission(this.state.query);
+            }},
+          [
           h('button.submit', 'Submit'),
           ])
       ]
     });
-    //console.log(this.state);
     return h('div.main', [baseView]);
   }
 }

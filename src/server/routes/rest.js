@@ -1,17 +1,18 @@
 //Import Depedencies
 const express = require('express');
 const router = express.Router();
-
 const controller = require('./controller');
 const config = require('../../config');
+const { enrichmentRouter } = require('./enrichment-rest');
+
 
 
 const isAuthenticated = token => {
   return config.MASTER_PASSWORD != '' && config.MASTER_PASSWORD === token;
 };
-const errorMsg = {
-  error: 'Invalid access token'
-};
+
+
+router.use('/', enrichmentRouter);
 
 // Expose a rest endpoint for controller.submitLayout
 router.post('/submit-layout', function (req, res) {
@@ -29,9 +30,9 @@ router.post('/submit-layout', function (req, res) {
 router.post('/submit-graph', function (req, res) {
   if (isAuthenticated(req.body.token)) {
     controller.submitGraph(req.body.uri, req.body.version, req.body.graph)
-    .then((package) => {
-      res.json(package);
-    });
+      .then((package) => {
+        res.json(package);
+      });
   } else {
     res.json(errorMsg);
   }
@@ -63,5 +64,6 @@ router.get('/disconnect', function (req, res) {
       res.json(package);
     });
 });
+
 
 module.exports = router;

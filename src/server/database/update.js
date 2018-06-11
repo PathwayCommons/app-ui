@@ -2,7 +2,7 @@ const r = require('rethinkdb');
 const uuid = require('uuid/v4');
 const hash = require('object-hash');
 const db = require('./utilities');
-const pcServices = require('./../pathway-commons/');
+const pcServices = require('../pathway-commons');
 const _ = require('lodash');
 
 let config = require('./config');
@@ -23,14 +23,10 @@ function isExistingGraph(newGraph, connection) {
     });
 }
 
-// getLatestPCVersion(pcID) return the most recent release of the PC2 pathway
-// specified by the provided pcID.
+// Gets PC2 web service version (the latest release).
 // This is called when the version specified for retrieval is 'latest'
-function getLatestPCVersion(pcID) {
-  // Traverse queries to PC2 return the current PC2 version.
-  return pcServices.traverse({ format: 'JSON', path: 'Named/name', uri: pcID }).then((json) => {
-    return json.version;
-  });
+function getLatestPCVersion() {
+  return pcServices.metadata().then((json) => json.version);
 }
 
 // saveGraph(pcID, releaseID, graphID, existingGraph, newGraph,connection)
@@ -104,7 +100,7 @@ function updateGraph(pcID, releaseID, cyJson, connection, callback) {
   let result = isExistingGraph(newGraph, connection).then((existingGraph) => {
     // Grab the version to be used from Pathway Commons if 'latest' is the specified version
     if (releaseID === 'latest') {
-      return getLatestPCVersion(pcID).then((versionName) => {
+      return getLatestPCVersion().then((versionName) => {
         return saveGraph(pcID, versionName, graphID, existingGraph, newGraph, connection);
       });
       // Otherwise, just save the graph.

@@ -51,8 +51,22 @@ const defaultLayout = {
     animate: true,
     animationDuration: 500,
     fit: true,
-    padding: 100,
+    padding: 75,
     randomize: false
+  }
+};
+
+const interactionsLayout = {
+  displayName: 'Concentric',
+  description: 'Align the nodes in concentric circles',
+  options: {
+    name: 'concentric',
+    nodeDimensionsIncludeLabels: false,
+    animate: true,
+    animationDuration: 500,
+    fit: true,
+    padding: 0,
+    levelWidth:(nodes)=>nodes.maxDegree()/1000,
   }
 };
 
@@ -77,7 +91,14 @@ const getLayoutConfig = (presetLayoutJSON) => {
       defaultLayout: defaultLayout,
       layouts: [defaultLayout]
     };
-  } else {
+  }
+  else if(presetLayoutJSON === 'interactions'){
+    layoutConfig = {
+      defaultLayout: interactionsLayout,
+      layouts: [interactionsLayout]
+    };
+  }
+  else {
     layoutConfig = {
       defaultLayout: humanCreatedLayout,
       layouts: [humanCreatedLayout, defaultLayout]

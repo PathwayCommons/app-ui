@@ -32,15 +32,20 @@ class View extends React.Component {
 
     ServerAPI.getGraphAndLayout(query.uri, 'latest').then(networkJSON => {
       const layoutConfig = getLayoutConfig(networkJSON.layout);
-      const componentConfig = _.merge({}, BaseNetworkView.config, { useSearchBar: true});
+      if(query.removeInfoMenu){
+        BaseNetworkView.config.toolbarButtons.splice(
+          _.findIndex(BaseNetworkView.config.toolbarButtons, entry=>entry.id==='showInfo'),1
+        );
+      }
 
+      const componentConfig = _.merge({},BaseNetworkView.config, { useSearchBar: true});
       this.setState({
         componentConfig: componentConfig,
         layoutConfig: layoutConfig,
         networkJSON: networkJSON.graph,
         networkMetadata: {
           uri: query.uri,
-          name: _.get(networkJSON, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
+          name: query.title || _.get(networkJSON, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
           datasource: _.get(networkJSON, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
           comments: networkJSON.graph.pathwayMetadata.comments,
           organism: networkJSON.graph.pathwayMetadata.organism
@@ -60,9 +65,18 @@ class View extends React.Component {
       networkJSON: state.networkJSON,
       networkMetadata: state.networkMetadata
     });
+    
+    //If the network is empty, display an error message
+    if(Object.keys(state.networkJSON).length !== 0 && state.networkJSON.edges.length < 1 && state.networkJSON.nodes.length < 1){
+      return h("div.emptyNetwork",{style:{textAlign:"center"}},[
+        h("img",{src:"/img/icon.png",style:{height:"auto",width:"5%",padding:"20px 0px 0px 0px"}}),
+        h('h1',state.networkMetadata.name + " from " + state.networkMetadata.datasource + " is an empty network"),
+        h("a",{href:"http://apps.pathwaycommons.org",style:{color:"blue"}},"Return to PC Home")
+      ]);
+    }
 
     const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
-
+    
     // create a view shell loading view e.g looks like the view but its not
     const content = state.loading ? loadingView : baseView;
 

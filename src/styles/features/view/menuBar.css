@@ -44,14 +44,23 @@
 .title-container {
   padding-left: calc(1em - var(--icon-size) / 3);
   padding-right: 1em;
-
   color: var(--dark-base-colour);
+  display: flex;
+  flex-direction: row;
+  vertical-align: middle;
 
   & h4 {
     font-weight: bold;
     font-size: 0.9em;
     margin: 0;
+    margin-top: 5px;
   }
+    /* css for human icon */
+    & img {
+      margin-top: 2px;
+      height: var(--icon-size);
+      width: auto;
+    }
 }
 
 .sidebar-tool-button-container {
@@ -114,23 +123,12 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
   @extend %flex-center;
   @extend %no-select;
 
-  height: calc(var(--icon-size) * 3 / 2);
-  width: 0;
-  padding: 0;
-
-  box-sizing: border-box;
-  overflow: hidden;
-
+  width: 11em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  overflow: visible;
   font-size: 0.9em;
-
-  transition: all 0.1s ease-out;
-
-  &.search-nodes-open {
-    width: 11em;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-    overflow: visible;
-  }
+  box-sizing: border-box;
 }
 
 .view-search-bar {
@@ -147,10 +145,34 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
 .view-search {
   height: 100% !important;
   width: 90%;
-
   padding: 0 0 1px 0 !important;
-
   border-width: 0px !important;
+}
+
+.gene-input{
+  height: 1.85em;
+  width: 200px;
+  background-color: white;
+  padding: 0em 0.5em;
+  box-sizing: border-box;
+  border: 1px solid var(--light-base-colour-dark);
+  border-right: none;
+  vertical-align: middle;
+  font-weight: normal;
+  border-radius: 0 !important;
+}
+
+/* submit button for gene input */
+.submit{
+  background-color: var(--dark-base-colour);
+  /* background-color: #16A086; */
+  color: white;
+  font-weight: normal;
+  border: 1px solid var(--light-base-colour-dark);
+  border-left: none;
+  border-radius: 0 !important;
+  height: 1.85em;
+  vertical-align: middle;
 }
 
 .view-search-clear {
@@ -183,10 +205,6 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
 
   .title-container {
     padding-left: 1em;
-  }
-
-  .pc-logo-container {
-    display: none;
   }
 
   .sidebar-tool-button-container {

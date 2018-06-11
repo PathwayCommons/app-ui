@@ -82,6 +82,8 @@ function endSession(pcID, releaseID, userID) {
 // series of fallbacks if something goes wrong.
 function getInteractionGraph(interactionIDs) {
   return getInteractionInfoFromPC(interactionIDs);
+
+  //TODO: retrieve graph from database.
   /*
   return db.connect().then((connection) => {
     return Promise.all(

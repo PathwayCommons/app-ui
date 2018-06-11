@@ -33,17 +33,39 @@ function getInteractionInfoFromPC(sources) {
     source.includes('pathwaycommons') ? getGeneIdFromPC(source) : source.replace(/\//g,' ')
   );
 
-  return Promise.all([
-    getMetaDataFromPC(geneIds),
-    getInteractionGraphFromPC(geneIds)
-  ]).then(([metaData, network]) => {
-    return {
-      metaData : metaData,
-      network : network
+  return getGeneInfoFromNcbi(geneIds).then(result => {
+    const geneResults = result.result;
+    let hgncIds=[];
+    let comments=[];
+    if(!result.esummaryresult) {
+      comments=_.flatten(geneResults.uids.map(gene=>{
+        hgncIds.push(geneResults[gene].name);
+        return _.compact([
+          'Nomenclature Name: '+geneResults[gene].nomenclaturename,
+          'Other Aliases: '+geneResults[gene].name + (geneResults[gene].otheraliases ? ', '+geneResults[gene].otheraliases:''),
+          geneResults[gene].summary && 'Function: '+geneResults[gene].summary
+        ]);
+      }));
+    }
+
+    const metaData = {
+      networkMetadata: {
+        name : hgncIds.length === geneIds.length ? (hgncIds+' Interactions'):' Interactions',
+        datasource : 'Pathway Commons',
+        comments : comments
+      },
+      ids : hgncIds
     };
-  }).catch((e)=>{
-    logger.error(e);
-    return 'ERROR : could not retrieve interaction from PC';
+
+    return getInteractionGraphFromPC(hgncIds).then(network => {
+      return {
+        network : network,
+        metaData : metaData
+      };
+    }).catch((e)=>{
+      logger.error(e);
+      return 'ERROR : could not retrieve graph from PC';
+    });
   });
 }
 
@@ -52,49 +74,24 @@ function getGeneIdFromPC(source) {
     uri:source,
     path:`${_.last(source.split('/')).split('_')[0]}/displayName`
   };
-  //ServerAPI.pcQuery('traverse', queryObj)
+
   return fetch(config.PC_URL + 'traverse?' + qs.stringify(queryObj), fetchOptions)
   .then(result=>result.json())
   .then(id=> _.words(id.traverseEntry[0].value[0]).length===1 ? id.traverseEntry[0].value[0].split('_')[0] : '');
 }
 
-function getMetaDataFromPC(geneIds) {
-  //Get NCBI IDs of the genes.
+function getGeneInfoFromNcbi(geneIds) {
+  //Get NCBI IDs of the genes from g:Converter.
   return geneValidator(geneIds, {target:'NCBIGENE'}).then(result => {
     const ncbiIds = result.geneInfo.map(gene => gene.convertedAlias);
 
     //Get gene info from NCBI
     const ncbiUrl = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?retmode=json&db=gene&id=' + ncbiIds.join(',');
-    return fetch(ncbiUrl, {method: 'GET'})
-    .then(res => res.json())
-    .then(result=>{
-      const geneResults=result.result;
-      let hgncIds=[];
-      let comments=[];
-      if(!result.esummaryresult ){
-        comments=_.flatten(geneResults.uids.map(gene=>{
-          hgncIds.push(geneResults[gene].name);
-          return _.compact([
-            'Nomenclature Name: '+geneResults[gene].nomenclaturename,
-            'Other Aliases: '+geneResults[gene].name + (geneResults[gene].otheraliases ? ', '+geneResults[gene].otheraliases:''),
-            geneResults[gene].summary && 'Function: '+geneResults[gene].summary
-          ]);
-        }));
-      }
-
-      return {
-        networkMetadata: {
-          name : hgncIds.length === geneIds.length ? (hgncIds+' Interactions'):' Interactions',
-          datasource : 'Pathway Commons',
-          comments : comments
-        },
-        ids : hgncIds
-      };
-    });
-  });
+    return fetch(ncbiUrl, {method: 'GET'}).then(res => res.json());
+ });
 }
 
-function getInteractionGraphFromPC(interactionIDs) {
+function getInteractionGraphFromPC(interactionIDs){
   const params = {
     source : interactionIDs,
     pattern : ['controls-phosphorylation-of','in-complex-with','controls-expression-of', 'interacts-with'],
@@ -102,11 +99,18 @@ function getInteractionGraphFromPC(interactionIDs) {
     format : 'txt'
   };
 
+  //Fetch graph from PC
   return fetch(config.PC_URL + 'graph?' + qs.stringify(params))
   .then(res => res.text())
   .then(res => parse(res, interactionIDs));
 }
 
+/**
+ * Parse txt format to Json
+ * @param {string} data graph in txt format
+ * @param {String[]} Array of query Ids
+ * @return {json} JSON of graph
+ */
 function parse(data, queryIds){
   let network = {
     edges:[],
@@ -123,12 +127,10 @@ function parse(data, queryIds){
     });
     return network;
   }
-  else{
-    return {};
-  }
+  return {};
 }
 
-function interactionMetadata(mediatorIds,pubmedIds){
+function interactionMetadata(mediatorIds, pubmedIds){
   let metadata = [['List',[]],['Detailed Views',[]]];//Format expected by format-content
   mediatorIds.split(';').forEach( link => {
     const id=link.split('/')[4];

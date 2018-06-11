@@ -59,13 +59,7 @@ router.get('/get-graph-and-layout', function (req, res) {
 
 // Expose a rest endpoint for controller.getGraphAndLayout
 router.get('/get-interaction-graph', function (req, res) {
-  try {
-  controller.getInteractionGraph(req.query.sources).then((package) => {
-    res.json(package);
-  });
-} catch(err) {
-  console.log(err);
-}
+  controller.getInteractionGraph(req.query.sources).then((package) => res.json(package));
 });
 
 // Expose a rest endpoint for controller.endSession

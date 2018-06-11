@@ -50,7 +50,6 @@ const parseGProfilerResponse = (gProfilerResponse) => {
 const enrichment = (query, userSetting) => {
   // map camelCase to snake case (g:Profiler uses snake case parameters)
   userSetting = _.mapKeys(userSetting, (value, key) => {
-    if (key === 'orderedQuery') return 'ordered_query';
     if (key === 'minSetSize') return 'min_set_size';
     if (key === 'maxSetSize') return 'max_set_size';
     return key;
@@ -67,9 +66,6 @@ const enrichment = (query, userSetting) => {
       reject(new Error('ERROR: genes should be an array'));
     }
     formData.query = query.join(" ");
-    if (orderedQueryVal != 0 && orderedQueryVal != 1) {
-      reject(new Error('ERROR: orderedQuery should be 0 / false or 1 / true'));
-    }
     if (typeof(formData.min_set_size) != 'number') {
       reject(new Error('ERROR: minSetSize should be a number'));
     }

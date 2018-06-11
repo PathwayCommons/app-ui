@@ -36,19 +36,21 @@ const ServerAPI = {
     return fetch(`/pc-client/querySearch?${qs.stringify(queryClone)}`, defaultFetchOpts).then(res => res.json());
   },
 
+  enrichmentAPI(query, type){
+    return fetch(`/api/${type}`, {
+      method:'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body:JSON.stringify(query)
+    })
+    .then(res => res.json())
+    .catch((err) => console.error('Error:', err));
+  },
+
   geneQuery(query){
-    if(query.genes.length>=1){
-      return fetch('/api/validation', {
-        method:'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body:JSON.stringify(query)
-      }).then(res => res.json());
-    }else{
-      return Promise.resolve({geneInfo:[],unrecognized:[]});
-    }
+    return this.enrichmentAPI(query, "validation");
   },
 
   getGeneInformation(ids){

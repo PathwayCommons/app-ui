@@ -5,7 +5,6 @@ const update = require('./../database/update');
 const logger = require('./../logger');
 const diffSaver = require('./../database/saveDiffs');
 const { getInteractionInfoFromPC } = require('../graph-generation/interaction');
-const _ = require('lodash');
 
 // getGraphFallback(pcID, releaseID, connection)
 // Retrieves the graph specified by (pcID, releaseID) if something

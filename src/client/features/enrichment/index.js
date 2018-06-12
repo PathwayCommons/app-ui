@@ -21,53 +21,54 @@ const enrichmentConfig={
   useSearchBar: true
 };
 
-function validateInput(query, array, object)
+//provide user feedback after gene submission
+function interpretValidationResult(geneObject, unrecognized, duplicate)
 {
   //recognized input
-  if(_.isEmpty(object) && array.length == 0 )
+  if(_.isEmpty(duplicate) && unrecognized.length == 0 )
   {
     alert("Thank you for your input. ***Service will continue to analysis");
-    //ServerAPI.enrichmentAPI(query, 'analysis');
-    //console.log(ServerAPI.enrichmentAPI(query, 'validate'));
-    //console.log(ServerAPI.enrichmentAPI(query, 'analysis'));
+    // ServerAPI.enrichmentAPI(geneObject, 'analysis');
+    // console.log(ServerAPI.enrichmentAPI(geneObject, 'validation'));
+    // console.log(ServerAPI.enrichmentAPI(geneObject, 'analysis'));
   }
-    //unrec gene
-  else if(array.length != 0 && _.isEmpty(object) == true)
+  //unrecognized token
+  else if(unrecognized.length != 0 && _.isEmpty(duplicate) == true)
   {
     let errorMes = "";
-    for (let i = 0; i < array.length; i++)
+    for (let i = 0; i < unrecognized.length; i++)
     {
-      errorMes += "\n" + array[i] + " is not a recognized";
+      errorMes += "\n" + unrecognized[i] + " is not a recognized";
     }
     errorMes += "\nPlease fix your input and submit again";
     alert(errorMes);
   }
-  //duplicate
-  else if(_.isEmpty(object) == false && array.length == 0)
+  //duplicate tokens (different strings that map to same HGNC number)
+  else if(_.isEmpty(duplicate) == false && unrecognized.length == 0)
     {
       let errorMes = "";
-      for (let i = 0; i < _.keys(object).length; i++ )
+      for (let i = 0; i < _.keys(duplicate).length; i++ )
       {
-        let propertyName = _.keys(object)[i];
-        let duplicateVal = object[propertyName];
+        let propertyName = _.keys(duplicate)[i];
+        let duplicateVal = duplicate[propertyName];
         errorMes += "\n" + duplicateVal[0] + " and " + duplicateVal[1] + " are duplicates ";
       }
       errorMes += "\nPlease fix your input and submit again";
       alert(errorMes);
     }
-  //unrec and duplicate
+  //unrecognized and duplicates
   else
   {
     let errorMes = "";
-    for (let i = 0; i < _.keys(object).length; i++ )
+    for (let i = 0; i < _.keys(duplicate).length; i++ )
       {
-        let propertyName = _.keys(object)[i];
-        let duplicateVal = object[propertyName];
+        let propertyName = _.keys(duplicate)[i];
+        let duplicateVal = duplicate[propertyName];
         errorMes += "\n" + duplicateVal[0] + " and " + duplicateVal[1] + " are duplicates ";
       }
-    for (let i = 0; i < array.length; i++)
+    for (let i = 0; i < unrecognized.length; i++)
     {
-      errorMes += "\n" + array[i] + " is not recognized";
+      errorMes += "\n" + unrecognized[i] + " is not recognized";
     }
     errorMes += "\nPlease fix your input and submit again";
     alert(errorMes);
@@ -89,27 +90,35 @@ class Enrichment extends React.Component {
     };
   }
 
+  //update 'query' with text from input bar
   geneInputChange(e) {
     this.setState( {query: e.target.value});
   }
 
-  geneInputSubmission(input){
-    const geneArray = input.split(/\n/g);
-    if(geneArray.length < 5) return alert("Please input 5 or more tokens");
-    if(geneArray.length > 200)return alert("Please input 200 or less tokens");
-    const inputObject = {genes: _.pull(geneArray,"")};
-    //console.log(inputObject.genes);
+  //parse and process gene input onClick 'submit'
+  geneInputSubmission(query){
+    //string to array
+    let geneInput = query.split(/\n/g);
+    //remove duplicates of same string
+    geneInput = _.uniq(geneInput);
 
-    ServerAPI.enrichmentAPI(inputObject, "validation").then(function(result) {
+    //if(geneInput.length < 5) return alert("Please input 5 or more unique tokens");
+    //if(geneInput.length > 200)return alert("Please input 200 or less tokens");
+
+    //put array of genes in object format for validation service
+    const geneObject = {genes: _.pull(geneInput,"")};
+
+    //pass object of genes to validation service
+    ServerAPI.enrichmentAPI(geneObject, "validation").then(function(result) {
       //object
       let duplicate = result.duplicate;
       //array of objects
       let geneInfo = result.geneInfo;
       //array
       let unrecognized = result.unrecognized;
-      //console.log(unrecognized);
-      //console.log(duplicate);
-      validateInput(inputObject, unrecognized, duplicate);
+
+      //call function to provide user feedback
+      interpretValidationResult(geneObject, unrecognized, duplicate);
     });
   }
 

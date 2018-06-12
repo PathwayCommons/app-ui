@@ -74,9 +74,18 @@ function buildBioPaxTree(entity) {
   if (!(xref))
     xref = [];
   let eref = entity['entityReference'];
-  if (eref) 
+  if (eref)
     xref.push(eref);
 
+  processXrefs(xref,eref,collectedData);
+  
+  result.push([id,collectedData]);
+  return result;
+}
+
+function processXrefs(xref,eref,collectedData){
+
+  let ErefXref = [];
 
   for (let i = 0; i < xref.length; i++) {
     //Check if this is a cross-reference or entity reference
@@ -85,16 +94,36 @@ function buildBioPaxTree(entity) {
       keyName = 'EntityReference';
 
     //Get Referenced element and make sure it's valid
-    let refElement = getElementFromBioPax(xref[i]);
+    let refElement = getElementFromBioPax(xref[i]); 
     if (!(refElement))
       continue;
+
+    //create list of xrefs for eref
+    if(keyName === "EntityReference"){
+      ErefXref = refElement['xref'];
+      if (typeof ErefXref == 'string')
+      ErefXref = [ErefXref];
+      if (!(ErefXref))
+      ErefXref = [];
+    }
+
     //Collect data and add to tree array
     collectedData.push([keyName,collectEntityMetadata(refElement,keyName)]);
   }
 
-  
-  result.push([id,collectedData]);
-  return result;
+
+  //Also collect data for entity reference's cross-references
+  //almost identically to above
+  for(let i=0;i<ErefXref.length;i++){
+    let keyName = 'Reference';
+    let refElement = getElementFromBioPax(ErefXref[i]); 
+
+    if (!(refElement))
+      continue;
+
+    collectedData.push([keyName,collectEntityMetadata(refElement,keyName)]);
+  }
+
 }
 
 /**

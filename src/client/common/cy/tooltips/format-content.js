@@ -26,7 +26,7 @@ const nameHandler = (pair, expansionFunction, trim) => {
 const databaseHandler = (pair, expansionFunction, trim) => {
   const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, trimString(trim));
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDatabaseList(sortByDatabaseId(pair[1]), trim, expansionLink);
+  return generateDatabaseList(sortByDatabaseId(pair[1]),expansionLink,trim);
 };
 
 //Handle interaction/Detailed views related fields

@@ -95,8 +95,8 @@ class Enrichment extends React.Component {
 
   geneInputSubmission(input){
     const geneArray = input.split(/\n/g);
-    if(geneArray.length < 5) return alert("Please input 4 or more tokens");
-    if(geneArray.length > 200)return alert("Please input less than 200 tokens");
+    if(geneArray.length < 5) return alert("Please input 5 or more tokens");
+    if(geneArray.length > 200)return alert("Please input 200 or less tokens");
     const inputObject = {genes: _.pull(geneArray,"")};
     //console.log(inputObject.genes);
 

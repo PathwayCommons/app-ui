@@ -57,54 +57,54 @@ class Interactions extends React.Component {
     const query = queryString.parse(props.location.search);
     const sources = _.uniq(_.concat([],query.source)); //IDs or URIs
 
-  ServerAPI.getInteractionGraph({sources:sources})
-    .then(result=>{
-      const layoutConfig = getLayoutConfig('interactions');
-      const network= result.network;
-      const metaData = result.metaData;
-      this.setState({
-        componentConfig : interactionsConfig,
-        layoutConfig : layoutConfig,
-        networkJSON : network,
-        networkMetadata : metaData.networkMetadata,
-        ids : metaData.ids,
-        loaded:_.assign(this.state.loaded,{network:true, ids:true})
+    ServerAPI.getInteractionGraph({sources:sources})
+      .then(result=>{
+        const layoutConfig = getLayoutConfig('interactions');
+        const network= result.network;
+        const metaData = result.metaData;
+        this.setState({
+          componentConfig : interactionsConfig,
+          layoutConfig : layoutConfig,
+          networkJSON : network,
+          networkMetadata : metaData.networkMetadata,
+          ids : metaData.ids,
+          loaded:_.assign(this.state.loaded,{network:true, ids:true})
+        });
+    });
+
+    this.state.cy.on('trim', () => {
+      const state = this.state;
+      const ids = state.ids;
+      if(ids.length === sources.length){
+        const cy = state.cy;
+        const mainNode = cy.nodes(node=> ids.indexOf(node.data().id) != -1);
+        const nodesToKeep = mainNode.merge(mainNode.connectedEdges().connectedNodes());
+        cy.remove(cy.nodes().difference(nodesToKeep));
+      }
+    });
+
+    this.state.cy.one('layoutstop',()=>{
+      const state = this.state;
+      const cy = this.state.cy;
+      const categories = state.categories;
+      const filters=state.filters;
+      _.forEach(filters,(value,type)=>{
+        const edges = cy.edges().filter(`.${type}`);
+        const nodes = edges.connectedNodes();
+        edges.length?
+        categories.set(type,{edges:edges,nodes:nodes}):
+        (categories.delete(type),delete filters[type]);
       });
-  });
-
-   this.state.cy.on('trim', () => {
-     const state = this.state;
-     const ids = state.ids;
-     if(ids.length === sources.length){
-       const cy = state.cy;
-       const mainNode = cy.nodes(node=> ids.indexOf(node.data().id) != -1);
-       const nodesToKeep = mainNode.merge(mainNode.connectedEdges().connectedNodes());
-       cy.remove(cy.nodes().difference(nodesToKeep));
-     }
-   });
-
-   this.state.cy.one('layoutstop',()=>{
-     const state = this.state;
-     const cy = this.state.cy;
-     const categories = state.categories;
-     const filters=state.filters;
-     _.forEach(filters,(value,type)=>{
-       const edges = cy.edges().filter(`.${type}`);
-       const nodes = edges.connectedNodes();
-       edges.length?
-       categories.set(type,{edges:edges,nodes:nodes}):
-       (categories.delete(type),delete filters[type]);
-     });
-     _.tail(_.toPairs(filters)).map(pair=>this.filterUpdate(pair[0]));
-     this.setState({
-       categories:categories,
-       filters:filters
-     });
-     const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
-     const layout = cy.layout(initialLayoutOpts);
-     layout.run();
-   });
- }
+      _.tail(_.toPairs(filters)).map(pair=>this.filterUpdate(pair[0]));
+      this.setState({
+        categories:categories,
+        filters:filters
+      });
+      const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
+      const layout = cy.layout(initialLayoutOpts);
+      layout.run();
+    });
+  }
 
   getGeneIdFromPC(source) {
     const queryObj = {

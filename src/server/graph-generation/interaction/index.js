@@ -1,16 +1,8 @@
-const qs = require('querystring');
 const _ = require('lodash');
 const fetch = require('node-fetch');
-const config = require('../../../config');
+const pc = require('../../pathway-commons');
 const geneValidator = require('../../enrichment/validation').validatorGconvert;
 const logger = require('./../../logger');
-
-const fetchOptions = {
-  method: 'GET',
-  headers: {
-    'Accept': 'application/json'
-  }
-};
 
 function edgeType(type) {
   switch(type){
@@ -71,11 +63,12 @@ function getInteractionInfoFromPC(sources) {
 
 function getGeneIdFromPC(source) {
   const queryObj = {
-    uri:source,
+    cmd : 'traverse',
+    uri : source,
     path:`${_.last(source.split('/')).split('_')[0]}/displayName`
   };
 
-  return fetch(config.PC_URL + 'traverse?' + qs.stringify(queryObj), fetchOptions)
+  return pc.query(queryObj)
   .then(result=>result.json())
   .then(id=> _.words(id.traverseEntry[0].value[0]).length===1 ? id.traverseEntry[0].value[0].split('_')[0] : '');
 }
@@ -93,6 +86,7 @@ function getGeneInfoFromNcbi(geneIds) {
 
 function getInteractionGraphFromPC(interactionIDs){
   const params = {
+    cmd : 'graph',
     source : interactionIDs,
     pattern : ['controls-phosphorylation-of','in-complex-with','controls-expression-of', 'interacts-with'],
     kind : interactionIDs.length > 1 ? 'pathsbetween' : 'neighborhood',
@@ -100,8 +94,7 @@ function getInteractionGraphFromPC(interactionIDs){
   };
 
   //Fetch graph from PC
-  return fetch(config.PC_URL + 'graph?' + qs.stringify(params))
-  .then(res => res.text())
+  return pc.query(params)
   .then(res => parse(res, interactionIDs));
 }
 

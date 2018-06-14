@@ -41,7 +41,7 @@
     "classnames": "^2.2.5",
     "color": "^2.0.0",
     "cookie-parser": "^1.4.3",
-    "cytoscape": "git+https://github.com/cytoscape/cytoscape.js.git#unstable",
+    "cytoscape": "git+https://github.com/cytoscape/cytoscape.js.git#097f455d107472a3cfb09d91d63cf85aca75024a",
     "cytoscape-compound-collapse": "git+https://github.com/d2fong/cytoscape.js-compound-collapse.git#master",
     "cytoscape-cose-bilkent": "^3.0.2",
     "cytoscape-cxtmenu": "^2.10.3",

@@ -85,7 +85,7 @@ describe('Test update.js', function () {
 
 
   after(function () {
-    return connection.get().then(conn => 
+    return connection.get().then(conn =>
       r.dbDrop(mockConfig.databaseName).run(conn)
     );
   });
@@ -127,7 +127,7 @@ describe('Test update.js', function () {
       );
 
       let lookup = saveProm.then(() => conn).then((conn) => query.getGraph(newId, newVersion, conn));
-      
+
       return expect(lookup).to.eventually.deep.equal(existingG);
     });
 
@@ -160,7 +160,7 @@ describe('Test update.js', function () {
       let conn = connection.get();
 
       conn.then(connection => update.saveLayout(pc_id, version, newLayout, userID, connection, function () {
-        conn.then(conn => query.getLayout(pc_id, version, conn, null, function (res) {
+        conn.then(conn => query.getLayout(pc_id, version, conn, function (res) {
           expect(res).to.deep.equal(newLayout);
           done();
         }));

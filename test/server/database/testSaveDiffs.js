@@ -95,7 +95,7 @@ describe('Test saveDiffs.js', function () {
   });
 
   after(function () {
-    return connection.get().then(conn => 
+    return connection.get().then(conn =>
       r.dbDrop(mockConfig.databaseName).run(conn)
     );
   });
@@ -195,7 +195,7 @@ describe('Test saveDiffs.js', function () {
 
       conn.then(conn =>
         saveDiffs.saveDiff(version.pc_id, version.release_id, newPos, user, conn, function () {
-          return query.getLayout(version.pc_id, version.release_id, conn, null,function (res) {
+          return query.getLayout(version.pc_id, version.release_id, conn, function (res) {
             expect(res).to.deep.equal(mergeDiff(layout.positions, newPos));
             done();
           });

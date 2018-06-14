@@ -147,6 +147,7 @@ class Interactions extends React.Component {
       filters:filters
     });
   }
+
   render(){
     const state = this.state;
     const loaded = state.loaded.network && state.loaded.ids;

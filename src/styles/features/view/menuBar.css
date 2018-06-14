@@ -167,11 +167,16 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
   resize: vertical;
   z-index: 1;
   overflow-y:scroll;
+  line-height: 1.8;
 
   & span{
   text-decoration: underline;
   /* font-weight: bold; */
   }
+}
+
+.gene-input-box:empty:not(:focus):before {
+  content: attr(placeholder);
 }
 
 

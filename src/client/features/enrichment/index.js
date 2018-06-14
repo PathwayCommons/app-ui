@@ -20,50 +20,40 @@ const enrichmentConfig={
   useSearchBar: true
 };
 
-//process data from validation API service
-//if all valid, call analysis API
-//else, call to provide UI user feedback
-function checkIfValidInput(parsedQuery, unrecognizedRawData, duplicateRawData)
-{
-  if(_.isEmpty(duplicateRawData) && unrecognizedRawData.length == 0 ) // all tokens valid
-  {
-    alert("Thank you for your input. ***Service will continue to analysis***");
-    // ServerAPI.enrichmentAPI(parsedQuery, 'analysis');
-  }
-  else provideUIFeedback(parsedQuery, unrecognizedRawData, duplicateRawData); //some tokens invalid
-}
-
 //store data from input and validation service as a map
 function storeDataAsMap(parsedQuery, unrecognizedRawData, duplicateRawData)
 {
-  //record the first instance of a duplicate term in an array
-  //loop through object to access values from unknown property names
-  let duplicateTerms = [];
-  for (let i = 0; i < _.keys(duplicateRawData).length; i++ )
-      {
-        let propertyName = _.keys(duplicateRawData)[i]; //find unknown property name
-        let duplicateVal = duplicateRawData[propertyName]; //use name to find the value array
-        duplicateTerms.push(duplicateVal[0]); //record first occurance of the duplicate
-      }
+  //record all duplicate values in an array
+  //use foreach to access values from unknown property names
+  let duplicateTokens = [];
+  Object.keys(duplicateRawData).forEach((key)=> duplicateTokens = _.concat(duplicateTokens, duplicateRawData[key]));
 
   //store data in map 'validationData': all values are arrays []
-  let validationData = new Map([ ['allInputGenes', parsedQuery.genes.map(a => a.toUpperCase())],['unrecognizedGenes',unrecognizedRawData], ['duplicateGenes',duplicateTerms], ['invalidGenes', unrecognizedRawData.concat(duplicateTerms)] ]);
-  let allValid = _.difference(validationData.get('allInputGenes') , validationData.get('invalidGenes'));
-  validationData.set('validGenes', allValid);
+  let validationData = new Map([ ['allTokens', parsedQuery.genes.map(a => a.toUpperCase())],['unrecognizedTokens',unrecognizedRawData], ['duplicateTokens',duplicateTokens], ['invalidTokens', unrecognizedRawData.concat(duplicateTokens)] ]);
+  validationData.set('validTokens', _.difference(validationData.get('allTokens') , validationData.get('invalidTokens')));
 
   return validationData;
 }
 
-//extract important data from validation output
-//provide user feedback after gene submission
-function provideUIFeedback(parsedQuery, unrecognizedRawData, duplicateRawData)
+//if all tokens valid, call analysis API
+//else, call to update the text in the input box to reflect invalid tokens
+function checkIfValidInput(validationData)
 {
-  let validationData = storeDataAsMap(parsedQuery, unrecognizedRawData, duplicateRawData);
+  if(validationData.get('invalidTokens').length == 0 ) // all tokens valid
+  {
+    alert("Thank you for your input. ***Service will continue to analysis***"); //just for trouble shooting purposes
+    // ServerAPI.enrichmentAPI(parsedQuery, 'analysis');
+  }
+  else updateInputStatus(validationData); //some tokens invalid
+}
 
+//provide user feedback after gene submission
+function updateInputStatus(validationData)
+{
   //transform arrays to strings for user feedback
-  let duplicateTokens = (validationData.get("duplicateGenes")).join('<br/>'); //string
-  let unrecognizedTokens = (validationData.get("unrecognizedGenes")).join('<br/>'); //string
-  let validTokens = validationData.get("validGenes").join('<br/>'); //string
+  let duplicateTokens = (validationData.get("duplicateTokens")).join('<br/>'); //string
+  let unrecognizedTokens = (validationData.get("unrecognizedTokens")).join('<br/>'); //string
+  let validTokens = validationData.get("validTokens").join('<br/>'); //string
 
   //update contents of input box
   //span styled to identify unrecognized tokens with red font and duplicates with blue font, both are underlined
@@ -73,6 +63,7 @@ function provideUIFeedback(parsedQuery, unrecognizedRawData, duplicateRawData)
   else userFeedback = '<span style="color:red">' + unrecognizedTokens + '</span> <br/> <span style="color:blue">' + duplicateTokens + '</span> <br/>' + validTokens;
   document.getElementById('gene-input-box').innerHTML = userFeedback;
 }
+
 
 class Enrichment extends React.Component {
   constructor(props) {
@@ -94,25 +85,26 @@ class Enrichment extends React.Component {
     this.setState( {query: document.getElementById('gene-input-box').innerText});
   }
 
-  //parse user gene query from string to object
-  //remove string duplicates, empty elements, spaces
+  //parse and clean up user gene query
+  //removes lexical duplicates, empty elements, leading and trailing spaces
   parseQuery(query){
-    let geneInput = query.split(/\n/g); //create array of genes
-    geneInput = _.uniq(geneInput); //remove string duplicates
-    geneInput = geneInput.map(a => a.trim()); //remove leading and trailing spaces
-    const parsedQuery = {genes: _.pull(geneInput,"")}; //set query to object form and remove blank elements
+    let geneList = query.split(/\n/g); //create array of genes
+    geneList = _.uniq(geneList); //remove lexical duplicates
+    geneList = geneList.map(a => a.trim()); //remove leading and trailing spaces
+    const parsedQuery = {genes: _.pull(geneList,"")}; //set query to object form and remove blank elements
     this.retrieveValidationAPIResult(parsedQuery);
   }
 
-  //call enrichmentAPI validation service
-  //record results
+  //call enrichmentAPI validation service and store results in a map
+  //pass map to check if input is valid
   retrieveValidationAPIResult(parsedQuery)
   {
     //pass object of genes to validation service
     ServerAPI.enrichmentAPI(parsedQuery, "validation").then(function(result) {
       const duplicateRawData = result.duplicate; //object
       const unrecognizedRawData = result.unrecognized; //array
-      checkIfValidInput(parsedQuery, unrecognizedRawData, duplicateRawData);
+      let validationData = storeDataAsMap(parsedQuery, unrecognizedRawData, duplicateRawData);
+      checkIfValidInput(validationData);
     });
   }
 
@@ -131,7 +123,7 @@ class Enrichment extends React.Component {
             }),
           h('div.gene-input-container', [
             h('div.gene-input-box', {
-             //placeholder: 'Enter one gene per line',
+             placeholder: 'Enter one gene per line',
              contentEditable: true,
              id: 'gene-input-box',
              onInput: e => this.handleChange(e)

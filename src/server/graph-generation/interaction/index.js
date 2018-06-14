@@ -17,14 +17,11 @@ function edgeType(type) {
 }
 
 function getInteractionInfoFromPC(sources) {
-  const idArray = _.uniq(_.concat([], sources)); //convert sources to array
+  const geneIds = _.uniq(_.concat([], sources)); //convert sources to array
 
-  const geneIds = idArray.map(source =>
-    source.includes('pathwaycommons') ? getGeneIdFromPC(source) : source.replace(/\//g,' ')
-  );
    const metaData = {
      networkMetadata: {
-       name : geneIds.join(','),
+       name : geneIds+' Interactions',
        datasource : 'Pathway Commons'
      },
      ids : geneIds
@@ -39,18 +36,6 @@ function getInteractionInfoFromPC(sources) {
      logger.error(e);
      return 'ERROR : could not retrieve graph from PC';
    });
-}
-
-function getGeneIdFromPC(source) {
-  const queryObj = {
-    cmd : 'traverse',
-    uri : source,
-    path:`${_.last(source.split('/')).split('_')[0]}/displayName`
-  };
-
-  return pc.query(queryObj)
-  .then(result=>result.json())
-  .then(id=> _.words(id.traverseEntry[0].value[0]).length===1 ? id.traverseEntry[0].value[0].split('_')[0] : '');
 }
 
 function getInteractionGraphFromPC(interactionIDs){

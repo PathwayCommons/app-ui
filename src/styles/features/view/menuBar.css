@@ -169,11 +169,11 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
   overflow-y:scroll;
 
   & span{
-  color: red !important;
   text-decoration: underline;
   /* font-weight: bold; */
   }
 }
+
 
 /* submit button for gene input */
 .submit{

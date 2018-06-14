@@ -4,7 +4,7 @@ const db = require('./../database/utilities');
 const update = require('./../database/update');
 const logger = require('./../logger');
 const diffSaver = require('./../database/saveDiffs');
-const { getInteractionInfoFromPC } = require('../graph-generation/interaction');
+const { getInteractionGraphFromPC } = require('../graph-generation/interaction');
 
 // getGraphFallback(pcID, releaseID, connection)
 // Retrieves the graph specified by (pcID, releaseID) if something
@@ -81,7 +81,7 @@ function endSession(pcID, releaseID, userID) {
 // specified by interactionID. It wll execute a
 // series of fallbacks if something goes wrong.
 function getInteractionGraph(interactionIDs) {
-  return getInteractionInfoFromPC(interactionIDs);
+  return getInteractionGraphFromPC(interactionIDs);
 
   //TODO: retrieve graph from database.
   /*

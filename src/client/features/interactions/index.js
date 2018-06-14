@@ -35,18 +35,22 @@ const interactionsConfig={
 class Interactions extends React.Component {
   constructor(props) {
     super(props);
+
+    const query = queryString.parse(props.location.search);
+    const sources = _.uniq(_.concat([],query.source)); //IDs or URIs
+
     this.state = {
       cy: make_cytoscape({ headless: true, stylesheet: interactionsStylesheet, showTooltipsOnEdges:true, minZoom:0.01 }),
       componentConfig: {},
       layoutConfig: {},
       networkJSON: {},
       networkMetadata: {
-        name: '',
-        datasource: '',
+        name : sources+' Interactions',
+        datasource : 'Pathway Commons',
         comments: []
       },
-      ids:[],
-      loaded:{network:false, ids:false},
+      ids: sources,
+      loaded: false,
       categories: new Map (),
       filters:{
         Binding:true,
@@ -55,21 +59,15 @@ class Interactions extends React.Component {
       }
     };
 
-    const query = queryString.parse(props.location.search);
-    const sources = _.uniq(_.concat([],query.source)); //IDs or URIs
-
     ServerAPI.getInteractionGraph({sources:sources})
       .then(result=>{
         const layoutConfig = getLayoutConfig('interactions');
         const network= result.network;
-        const metaData = result.metaData;
         this.setState({
           componentConfig : interactionsConfig,
           layoutConfig : layoutConfig,
           networkJSON : network,
-          networkMetadata : metaData.networkMetadata,
-          ids : metaData.ids,
-          loaded:_.assign(this.state.loaded,{network:true, ids:true})
+          loaded: true
         });
     });
 
@@ -111,16 +109,6 @@ class Interactions extends React.Component {
     });
   }
 
-  getGeneIdFromPC(source) {
-    const queryObj = {
-      uri:source,
-      path:`${_.last(source.split('/')).split('_')[0]}/displayName`
-    };
-    ServerAPI.pcQuery('traverse', queryObj)
-    .then(result=>result.json())
-    .then(id=> _.words(id.traverseEntry[0].value[0]).length===1 ? id.traverseEntry[0].value[0].split('_')[0] : '');
-  }
-
   filterUpdate(type) {
     const state=this.state;
     const categories = state.categories;
@@ -150,7 +138,7 @@ class Interactions extends React.Component {
 
   render(){
     const state = this.state;
-    const loaded = state.loaded.network && state.loaded.ids;
+    const loaded = state.loaded;
     const baseView = !_.isEmpty(state.networkJSON) ? h(BaseNetworkView.component, {
       layoutConfig: state.layoutConfig,
       componentConfig: state.componentConfig,

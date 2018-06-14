@@ -16,40 +16,26 @@ function edgeType(type) {
   }
 }
 
-function getInteractionInfoFromPC(sources) {
-  const geneIds = _.uniq(_.concat([], sources)); //convert sources to array
-
-   const metaData = {
-     networkMetadata: {
-       name : geneIds+' Interactions',
-       datasource : 'Pathway Commons'
-     },
-     ids : geneIds
-   };
-
-   return getInteractionGraphFromPC(geneIds).then(network => {
-     return {
-       network : network,
-       metaData : metaData
-     };
-   }).catch((e)=>{
-     logger.error(e);
-     return 'ERROR : could not retrieve graph from PC';
-   });
-}
-
 function getInteractionGraphFromPC(interactionIDs){
+  const geneIds = _.uniq(_.concat([], interactionIDs)); //convert sources to array
+
   const params = {
     cmd : 'graph',
-    source : interactionIDs,
+    source : geneIds,
     pattern : ['controls-phosphorylation-of','in-complex-with','controls-expression-of', 'interacts-with'],
-    kind : interactionIDs.length > 1 ? 'pathsbetween' : 'neighborhood',
+    kind : geneIds.length > 1 ? 'pathsbetween' : 'neighborhood',
     format : 'txt'
   };
 
   //Fetch graph from PC
-  return pc.query(params)
-  .then(res => parse(res, interactionIDs));
+  return pc.query(params).then(res => {
+    return {
+      network : parse(res, geneIds)
+    };
+  }).catch((e)=>{
+    logger.error(e);
+    return 'ERROR : could not retrieve graph from PC';
+  });
 }
 
 /**
@@ -121,4 +107,4 @@ function addInteraction(nodes, edge, sources, network, nodeMap, nodeMetadata, in
   },classes:interaction});
 }
 
-module.exports = {getInteractionInfoFromPC};
+module.exports = {getInteractionGraphFromPC};

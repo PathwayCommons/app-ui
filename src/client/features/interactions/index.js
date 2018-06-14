@@ -15,8 +15,9 @@ const { getLayoutConfig } = require('../../common/cy/layout');
 const downloadTypes = require('../../common/config').downloadTypes;
 
 const filterMenuId='filter-menu';
+const toolbarButtons = _.differenceBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'},{'id':'showInfo'}],'id');
 const interactionsConfig={
-  toolbarButtons: _.differenceBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'}],'id').concat({
+  toolbarButtons: toolbarButtons.concat({
     id: 'filter',
     icon: 'filter_list',
     type: 'activateMenu',
@@ -91,9 +92,13 @@ class Interactions extends React.Component {
       _.forEach(filters,(value,type)=>{
         const edges = cy.edges().filter(`.${type}`);
         const nodes = edges.connectedNodes();
-        edges.length?
-        categories.set(type,{edges:edges,nodes:nodes}):
-        (categories.delete(type),delete filters[type]);
+
+        if (edges.length) {
+          categories.set(type,{edges:edges,nodes:nodes});
+        } else {
+          categories.delete(type);
+          delete filters[type];
+        }
       });
       _.tail(_.toPairs(filters)).map(pair=>this.filterUpdate(pair[0]));
       this.setState({

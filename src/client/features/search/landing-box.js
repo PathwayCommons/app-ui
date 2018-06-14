@@ -279,7 +279,7 @@ const landingBox = (props) => {
     ];
   });
   if(landing.length>1){
-    landingHTML.push(interactionsLink(landing.map(entry=>entry.databaseID),'View Interactions Between Entities'));
+    landingHTML.push(interactionsLink(landing.map(entry=>entry.officialSymbol),'View Interactions Between Entities'));
   }
 
   return h('div.search-landing',landingHTML);

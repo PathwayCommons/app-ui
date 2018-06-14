@@ -1,7 +1,5 @@
 const _ = require('lodash');
-const fetch = require('node-fetch');
 const pc = require('../../pathway-commons');
-const geneValidator = require('../../enrichment/validation').validatorGconvert;
 const logger = require('./../../logger');
 
 function edgeType(type) {
@@ -24,41 +22,23 @@ function getInteractionInfoFromPC(sources) {
   const geneIds = idArray.map(source =>
     source.includes('pathwaycommons') ? getGeneIdFromPC(source) : source.replace(/\//g,' ')
   );
+   const metaData = {
+     networkMetadata: {
+       name : geneIds.join(','),
+       datasource : 'Pathway Commons'
+     },
+     ids : geneIds
+   };
 
-  return getGeneInfoFromNcbi(geneIds).then(result => {
-    const geneResults = result.result;
-    let hgncIds=[];
-    let comments=[];
-    if(!result.esummaryresult) {
-      comments=_.flatten(geneResults.uids.map(gene=>{
-        hgncIds.push(geneResults[gene].name);
-        return _.compact([
-          'Nomenclature Name: '+geneResults[gene].nomenclaturename,
-          'Other Aliases: '+geneResults[gene].name + (geneResults[gene].otheraliases ? ', '+geneResults[gene].otheraliases:''),
-          geneResults[gene].summary && 'Function: '+geneResults[gene].summary
-        ]);
-      }));
-    }
-
-    const metaData = {
-      networkMetadata: {
-        name : hgncIds.length === geneIds.length ? (hgncIds+' Interactions'):' Interactions',
-        datasource : 'Pathway Commons',
-        comments : comments
-      },
-      ids : hgncIds
-    };
-
-    return getInteractionGraphFromPC(hgncIds).then(network => {
-      return {
-        network : network,
-        metaData : metaData
-      };
-    }).catch((e)=>{
-      logger.error(e);
-      return 'ERROR : could not retrieve graph from PC';
-    });
-  });
+   return getInteractionGraphFromPC(geneIds).then(network => {
+     return {
+       network : network,
+       metaData : metaData
+     };
+   }).catch((e)=>{
+     logger.error(e);
+     return 'ERROR : could not retrieve graph from PC';
+   });
 }
 
 function getGeneIdFromPC(source) {
@@ -71,17 +51,6 @@ function getGeneIdFromPC(source) {
   return pc.query(queryObj)
   .then(result=>result.json())
   .then(id=> _.words(id.traverseEntry[0].value[0]).length===1 ? id.traverseEntry[0].value[0].split('_')[0] : '');
-}
-
-function getGeneInfoFromNcbi(geneIds) {
-  //Get NCBI IDs of the genes from g:Converter.
-  return geneValidator(geneIds, {target:'NCBIGENE'}).then(result => {
-    const ncbiIds = result.geneInfo.map(gene => gene.convertedAlias);
-
-    //Get gene info from NCBI
-    const ncbiUrl = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?retmode=json&db=gene&id=' + ncbiIds.join(',');
-    return fetch(ncbiUrl, {method: 'GET'}).then(res => res.json());
- });
 }
 
 function getInteractionGraphFromPC(interactionIDs){

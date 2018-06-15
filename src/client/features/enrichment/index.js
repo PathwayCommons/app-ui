@@ -50,19 +50,15 @@ function checkIfValidInput(validationData)
 //provide user feedback after gene submission
 function updateInputStatus(validationData)
 {
-  //transform arrays to strings for user feedback
-  let duplicateTokens = (validationData.get("duplicateTokens")).join('<br/>'); //string
-  let unrecognizedTokens = (validationData.get("unrecognizedTokens")).join('<br/>'); //string
-  let validTokens = validationData.get("validTokens").join('<br/>'); //string
-
   //update contents of input box
   //span styled to identify invalid tokens with red font and underline
-  let userFeedback = "";
+  let inputStatus = "";
   validationData.get('allTokens').forEach(function(element) {
-    if( _.includes(validationData.get('invalidTokens'), element)) userFeedback += '<span>' + element + '</span> <br/>';
-    else userFeedback += element + '<br/>';
+    if( _.includes(validationData.get('unrecognizedTokens'), element)) inputStatus += '<span id="unrecognized" style="color:red;">' + element + '</span> <br/>'; //mark red unrecognized
+    else if (_.includes(validationData.get('duplicateTokens'), element)) inputStatus += '<span style="color:blue;">' + element + '</span> <br/>'; //mark blue duplicates
+    else inputStatus += element + '<br/>';
   });
-  document.getElementById('gene-input-box').innerHTML = userFeedback;
+  document.getElementById('gene-input-box').innerHTML = inputStatus; //return new status which indicates invalid tokens
 }
 
 

@@ -56,11 +56,12 @@ function updateInputStatus(validationData)
   let validTokens = validationData.get("validTokens").join('<br/>'); //string
 
   //update contents of input box
-  //span styled to identify unrecognized tokens with red font and duplicates with blue font, both are underlined
+  //span styled to identify invalid tokens with red font and underline
   let userFeedback = "";
-  if(duplicateTokens == "") userFeedback = '<span style="color:red">' + unrecognizedTokens + '</span> <br/>' + validTokens;
-  else if(unrecognizedTokens == "") userFeedback = '<span style="color:blue">' + duplicateTokens + '</span> <br/>' + validTokens;
-  else userFeedback = '<span style="color:red">' + unrecognizedTokens + '</span> <br/> <span style="color:blue">' + duplicateTokens + '</span> <br/>' + validTokens;
+  validationData.get('allTokens').forEach(function(element) {
+    if( _.includes(validationData.get('invalidTokens'), element)) userFeedback += '<span>' + element + '</span> <br/>';
+    else userFeedback += element + '<br/>';
+  });
   document.getElementById('gene-input-box').innerHTML = userFeedback;
 }
 

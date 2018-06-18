@@ -73,7 +73,10 @@ function buildBioPaxTree(entity) {
   let xref = entity['xref'];
   let eref = entity['entityReference'];
   if(xref)
-    xrefList = _.concat(xrefList,[xref]);
+    if(typeof xref === 'string')
+      xrefList = _.concat(xrefList,[xref]);
+    else
+      xrefList = _.concat(xrefList,xref);
   if(eref)
     xrefList = _.concat(xrefList,[eref]);
 
@@ -102,13 +105,12 @@ function processXrefs(xrefList,eref,collectedData){
     if(keyName === "EntityReference"){
       let erefXref = refElement['xref'];
       if(erefXref)
-        erefXrefList = _.concat(erefXrefList,[erefXref]);
+        erefXrefList = _.concat(erefXrefList,erefXref);
     }
 
     //Collect data and add to tree array
     collectedData.push([keyName,collectEntityMetadata(refElement,keyName)]);
   }
-
 
   //Also collect data for entity reference's cross-references
   //almost identically to above

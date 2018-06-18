@@ -105,7 +105,10 @@ function processXrefs(xrefList,eref,collectedData){
     if(keyName === "EntityReference"){
       let erefXref = refElement['xref'];
       if(erefXref)
-        erefXrefList = _.concat(erefXrefList,erefXref);
+        if(typeof erefXref === 'string')
+          erefXrefList = _.concat(erefXrefList,[erefXref]);
+        else
+          erefXrefList = _.concat(erefXrefList,erefXref);
     }
 
     //Collect data and add to tree array

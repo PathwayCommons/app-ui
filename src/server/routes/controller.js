@@ -4,6 +4,7 @@ const db = require('./../database/utilities');
 const update = require('./../database/update');
 const logger = require('./../logger');
 const diffSaver = require('./../database/saveDiffs');
+const { getInteractionGraphFromPC } = require('../graph-generation/interaction');
 
 // getGraphFallback(pcID, releaseID, connection)
 // Retrieves the graph specified by (pcID, releaseID) if something
@@ -75,12 +76,31 @@ function endSession(pcID, releaseID, userID) {
   });
 }
 
+// getInteractionGraph(interactionID)
+// return the latest graph
+// specified by interactionID. It wll execute a
+// series of fallbacks if something goes wrong.
+function getInteractionGraph(interactionIDs) {
+  return getInteractionGraphFromPC(interactionIDs);
 
+  //TODO: retrieve graph from database.
+  /*
+  return db.connect().then((connection) => {
+    return Promise.all(
+      query.getInteractionGraph(interactionID, connection).catch(() => getInteractionGraphFallback(interactionID, connection))
+    ).catch((e)=>{
+      logger.error(e);
+      return `ERROR : could not retrieve graph for ${interactionID}`;
+    });
+  });
+  */
+}
 
 module.exports = {
   submitLayout,
   submitGraph,
   submitDiff,
   endSession,
-  getGraphAndLayout
+  getGraphAndLayout,
+  getInteractionGraph
 };

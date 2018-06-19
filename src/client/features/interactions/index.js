@@ -15,8 +15,9 @@ const { getLayoutConfig } = require('../../common/cy/layout');
 const downloadTypes = require('../../common/config').downloadTypes;
 
 const filterMenuId='filter-menu';
+const toolbarButtons = _.differenceBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'},{'id':'showInfo'}],'id');
 const interactionsConfig={
-  toolbarButtons: _.differenceBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'}],'id').concat({
+  toolbarButtons: toolbarButtons.concat({
     id: 'filter',
     icon: 'filter_list',
     type: 'activateMenu',
@@ -34,18 +35,22 @@ const interactionsConfig={
 class Interactions extends React.Component {
   constructor(props) {
     super(props);
+
+    const query = queryString.parse(props.location.search);
+    const sources = _.uniq(_.concat([],query.source)); //IDs or URIs
+
     this.state = {
       cy: make_cytoscape({ headless: true, stylesheet: interactionsStylesheet, showTooltipsOnEdges:true, minZoom:0.01 }),
       componentConfig: {},
       layoutConfig: {},
       networkJSON: {},
       networkMetadata: {
-        name: '',
-        datasource: '',
+        name : sources+' Interactions',
+        datasource : 'Pathway Commons',
         comments: []
       },
-      ids:[],
-      loaded:{network:false, ids:false},
+      ids: sources,
+      loaded: false,
       categories: new Map (),
       filters:{
         Binding:true,
@@ -54,68 +59,16 @@ class Interactions extends React.Component {
       }
     };
 
-    const query = queryString.parse(props.location.search);
-    const sources = _.uniq(_.concat([],query.source)); //IDs or URIs
-    const params = {
-      source : sources,
-      pattern : ['controls-phosphorylation-of','in-complex-with','controls-expression-of', 'interacts-with'],
-      kind : sources.length>1 ? 'pathsbetween' : 'neighborhood',
-      format : 'txt',
-      //TODO: consider using direction:'bothstream' for neighborhood queries (or remove 'interacts-with' PPI-only pattern)
-      // direction:'bothstream' //ignored if it's pathsbetween
-    };
-    ServerAPI.pcQuery('graph', params)
-      .then(res=>res.text())
-      .then(res=>{
-      const layoutConfig = getLayoutConfig('interactions');
-      const network= this.parse(res);
-      this.setState({
-        componentConfig: interactionsConfig,
-        layoutConfig: layoutConfig,
-        networkJSON: network,
-        loaded:_.assign(this.state.loaded,{network:true})
-      });
-    });
-    //get ids from uris
-    const geneIds = sources.map(source =>
-      source.includes('pathwaycommons')
-        ? ServerAPI.pcQuery('traverse',
-          {
-            uri:source,
-            path:`${_.last(source.split('/')).split('_')[0]}/displayName`
-          })
-          .then(result=>result.json())
-          .then(id=> _.words(id.traverseEntry[0].value[0]).length===1 ? id.traverseEntry[0].value[0].split('_')[0] : '')
-        : source.replace(/\//g,' ')
-    );
-    Promise.all(geneIds).then(geneIds=>{
-      ServerAPI.geneQuery({genes:geneIds,targetDb: 'NCBIGENE'}).then(result=>{
-        const ncbiIds=result.geneInfo.map(gene=> gene.convertedAlias);
-        ServerAPI.getGeneInformation(ncbiIds).then(result=>{
-          const geneResults=result.result;
-          let hgncIds=[];
-          let comments=[];
-          if(!result.esummaryresult ){
-            comments=_.flatten(geneResults.uids.map(gene=>{
-              hgncIds.push(geneResults[gene].name);
-              return _.compact([
-                'Nomenclature Name: '+geneResults[gene].nomenclaturename,
-                'Other Aliases: '+geneResults[gene].name + (geneResults[gene].otheraliases ? ', '+geneResults[gene].otheraliases:''),
-                geneResults[gene].summary && 'Function: '+geneResults[gene].summary
-              ]);
-            }));
-          }
-          this.setState({
-            networkMetadata: {
-              name: hgncIds.length === sources.length ?(hgncIds+' Interactions'):' Interactions',
-              datasource: 'Pathway Commons',
-              comments: comments
-            },
-            ids:hgncIds,
-            loaded:_.assign(this.state.loaded,{ids:true})
-          });
+    ServerAPI.getInteractionGraph({sources:sources})
+      .then(result=>{
+        const layoutConfig = getLayoutConfig('interactions');
+        const network= result.network;
+        this.setState({
+          componentConfig : interactionsConfig,
+          layoutConfig : layoutConfig,
+          networkJSON : network,
+          loaded: true
         });
-      });
     });
 
     this.state.cy.on('trim', () => {
@@ -137,11 +90,14 @@ class Interactions extends React.Component {
       _.forEach(filters,(value,type)=>{
         const edges = cy.edges().filter(`.${type}`);
         const nodes = edges.connectedNodes();
-        edges.length?
-        categories.set(type,{edges:edges,nodes:nodes}):
-        (categories.delete(type),delete filters[type]);
-      });
 
+        if (edges.length) {
+          categories.set(type,{edges:edges,nodes:nodes});
+        } else {
+          categories.delete(type);
+          delete filters[type];
+        }
+      });
       _.tail(_.toPairs(filters)).map(pair=>this.filterUpdate(pair[0]));
       this.setState({
         categories:categories,
@@ -153,74 +109,6 @@ class Interactions extends React.Component {
     });
   }
 
-  edgeType(type){
-    switch(type){
-      case 'in-complex-with':
-      case 'interacts-with':
-        return 'Binding';
-      case 'controls-phosphorylation-of':
-        return 'Phosphorylation';
-      case 'controls-expression-of':
-        return 'Expression';
-      default:
-        return '';
-    }
-  }
-
-  interactionMetadata(mediatorIds,pubmedIds){
-    let metadata = [['List',[]],['Detailed Views',[]]];//Format expected by format-content
-    mediatorIds.split(';').forEach( link => {
-      const id=link.split('/')[4];
-      metadata[1][1].push(link.includes('reactome') ? ['Reactome',id]:['Pathway Commons',id]);
-    });
-    if(pubmedIds){
-     pubmedIds.split(';').forEach(id=>metadata[0][1].push(['PubMed',id]));
-    }
-   return metadata;
-}
-
-  addInteraction(nodes,edge,sources,network,nodeMap,nodeMetadata){
-    const interaction= this.edgeType(edge);
-    nodes.forEach((node)=>{
-      if(!nodeMap.has(node)){
-        const metadata=nodeMetadata.get(node);
-        nodeMap.set(node,true);
-        const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');
-        network.nodes.push({data:{class: "ball",id: node,label: node, queried: this.state.ids.indexOf(node)!=-1 ,
-        parsedMetadata:[['Type','bp:'+metadata[0].split(' ')[0].replace(/Reference/g,'').replace(/;/g,',')],['Database IDs', links]]}});
-      }
-    });
-
-    network.edges.push({data: {
-      id: nodes[0]+'\t'+edge+'\t'+nodes[1] ,
-      label: nodes[0]+' '+edge.replace(/-/g,' ')+' '+nodes[1] ,
-      source: nodes[0],
-      target: nodes[1],
-      class: interaction,
-      parsedMetadata:sources
-    },classes:interaction});
-  }
-
-  parse(data){
-    let network = {
-      edges:[],
-      nodes:[],
-    };
-    let nodeMap=new Map(); //keeps track of nodes that have already been added
-    if(data){
-      const dataSplit=data.split('\n\n');
-      const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
-      dataSplit[0].split('\n').slice(1).forEach(line => {
-        const splitLine=line.split('\t');
-        const edgeMetadata = this.interactionMetadata(splitLine[6],splitLine[4]);
-        this.addInteraction([splitLine[0],splitLine[2]],splitLine[1],edgeMetadata,network,nodeMap,nodeMetadata);
-      });
-      return network;
-    }
-    else{
-      return {};
-    }
-  }
   filterUpdate(type) {
     const state=this.state;
     const categories = state.categories;
@@ -247,9 +135,10 @@ class Interactions extends React.Component {
       filters:filters
     });
   }
+
   render(){
     const state = this.state;
-    const loaded = state.loaded.network && state.loaded.ids;
+    const loaded = state.loaded;
     const baseView = !_.isEmpty(state.networkJSON) ? h(BaseNetworkView.component, {
       layoutConfig: state.layoutConfig,
       componentConfig: state.componentConfig,

@@ -329,6 +329,7 @@ function generateDBLink(dbName, dbId, isDbVisible) {
  *    </div>
  * </div>
  */
+//TODO: rework to accept a name as input instead of using this.name
 function noDataWarning() {
   return h('div.tooltip-image', [
     h('div.tooltip-heading', [

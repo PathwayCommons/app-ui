@@ -1,4 +1,5 @@
-//Unused For Now
+//This function produces better results for most layouts that do not have compound support
+//unused currently.
 /*
 const pcGraphLayoutHack = (cy, layoutOpts) => {
   const complexes = cy.nodes().filter(node => node.isParent() && node.data('class') === 'complex');

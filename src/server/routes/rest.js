@@ -21,7 +21,6 @@ router.post('/submit-layout', function (req, res) {
         res.json(package);
       });
   } else {
-    let errorMsg = "Issue in exposing REST endpoint for controller.submitLayout.  See /src/server/routes/rest.js";
     res.json(errorMsg);
   }
 });
@@ -34,7 +33,6 @@ router.post('/submit-graph', function (req, res) {
         res.json(package);
       });
   } else {
-    let errorMsg = "Issue in exposing REST endpoint for controller.submitGraph.  See /src/server/routes/rest.js";
     res.json(errorMsg);
   }
 });
@@ -47,7 +45,6 @@ router.post('/submit-diff', function (req, res) {
         res.json(package);
       });
   } else {
-    let errorMsg = "Issue in exposing REST endpoint for controller.submitDiff.  See /src/server/routes/rest.js";
     res.json(errorMsg);
   }
 });

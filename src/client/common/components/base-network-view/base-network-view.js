@@ -183,6 +183,10 @@ class BaseNetworkView extends React.Component {
       (this.props.titleContainer ?  this.props.titleContainer : metadataTitles)
     ];
 
+    const toolBarContainer = [
+      (this.props.invalidTokenContainer ? this.props.invalidTokenContainer : h('div.view-toolbar', toolBar))
+    ];
+
 
     return h('div.view', [
       h('div', { className: classNames('menu-bar', { 'menu-bar-margin': state.activeMenu }) }, [
@@ -196,7 +200,7 @@ class BaseNetworkView extends React.Component {
           ]),
           h('div.title-container', displayInfo)
         ]),
-        h('div.view-toolbar', toolBar)
+        toolBarContainer
       ]),
       h(Loader, {
         loaded: !this.state.networkLoading,

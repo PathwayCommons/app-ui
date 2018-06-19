@@ -20,47 +20,6 @@ const enrichmentConfig={
   useSearchBar: true
 };
 
-//store data from input and validation service as a map
-function storeDataAsMap(parsedQuery, unrecognizedRawData, duplicateRawData)
-{
-  //record all duplicate values in an array
-  //use foreach to access values from unknown property names
-  let duplicateTokens = [];
-  Object.keys(duplicateRawData).forEach((key)=> duplicateTokens = _.concat(duplicateTokens, duplicateRawData[key]));
-
-  //store data in map 'validationData': all values are arrays []
-  let validationData = new Map([ ['allTokens', parsedQuery.genes.map(a => a.toUpperCase())],['unrecognizedTokens',unrecognizedRawData], ['duplicateTokens',duplicateTokens], ['invalidTokens', unrecognizedRawData.concat(duplicateTokens)] ]);
-  validationData.set('validTokens', _.difference(validationData.get('allTokens') , validationData.get('invalidTokens')));
-
-  return validationData;
-}
-
-//if all tokens valid, call analysis API
-//else, call to update the text in the input box to reflect invalid tokens
-function checkIfValidInput(validationData)
-{
-  if(validationData.get('invalidTokens').length == 0 ) // all tokens valid
-  {
-    alert("Thank you for your input. ***Service will continue to analysis***"); //just for trouble shooting purposes
-    // ServerAPI.enrichmentAPI(parsedQuery, 'analysis');
-  }
-  else updateInputStatus(validationData); //some tokens invalid
-}
-
-//provide user feedback after gene submission
-function updateInputStatus(validationData)
-{
-  //update contents of input box
-  //span styled to identify invalid tokens with red font and underline
-  let inputStatus = "";
-  validationData.get('allTokens').forEach(function(element) {
-    if( _.includes(validationData.get('unrecognizedTokens'), element)) inputStatus += '<span id="unrecognized" style="color:red;">' + element + '</span> <br/>'; //mark red unrecognized
-    else if (_.includes(validationData.get('duplicateTokens'), element)) inputStatus += '<span style="color:blue;">' + element + '</span> <br/>'; //mark blue duplicates
-    else inputStatus += element + '<br/>';
-  });
-  document.getElementById('gene-input-box').innerHTML = inputStatus; //return new status which indicates invalid tokens
-}
-
 
 class Enrichment extends React.Component {
   constructor(props) {
@@ -72,37 +31,76 @@ class Enrichment extends React.Component {
         datasource: '',
         comments: []
       },
-      query: '',
+      currentToken: '',
+      currentLine: '',
       titleContainer: [],
+      invalidTokenContainer: [],
+      tokenData: new Map()
     };
-  }
 
-  //update 'query' with text from input box
+  }
+  //update 'tokenData' map to remove keys that are no longer in the token list (ie deleted or altered token)
+  //display these changes in invalid gene box
   handleChange(e) {
-    this.setState( {query: document.getElementById('gene-input-box').innerText});
-  }
-
-  //parse and clean up user gene query
-  //removes lexical duplicates, empty elements, leading and trailing spaces
-  parseQuery(query){
-    let geneList = query.split(/\n/g); //create array of genes
-    geneList = _.uniq(geneList); //remove lexical duplicates
-    geneList = geneList.map(a => a.trim()); //remove leading and trailing spaces
-    const parsedQuery = {genes: _.pull(geneList,"")}; //set query to object form and remove blank elements
-    this.retrieveValidationAPIResult(parsedQuery);
-  }
-
-  //call enrichmentAPI validation service and store results in a map
-  //pass map to check if input is valid
-  retrieveValidationAPIResult(parsedQuery)
-  {
-    //pass object of genes to validation service
-    ServerAPI.enrichmentAPI(parsedQuery, "validation").then(function(result) {
-      const duplicateRawData = result.duplicate; //object
-      const unrecognizedRawData = result.unrecognized; //array
-      let validationData = storeDataAsMap(parsedQuery, unrecognizedRawData, duplicateRawData);
-      checkIfValidInput(validationData);
+    this.state.tokenData.forEach(function (value, key, mapObj) {
+      if (document.getElementById('gene-input-box').innerText.includes(key) == false ) mapObj.delete(key);
     });
+    //pass validation results and original token key
+    if(document.getElementById('invalid-tokens').innerText != "")this.updateInvalidStatus();
+  }
+
+  //update 'currentLine' with every key press to track typed input
+  //onkey 'enter' indicates end of token, so set 'currentLine' to 'currentToken'
+  //add token to map and then validate token
+  keyPress(e)
+  {
+    if(e.keyCode == 13 && this.state.currentLine != '')
+    {
+      this.state.currentToken = this.state.currentLine.replace("Enter", "");
+      console.log(this.state.currentToken);
+      //add token to map
+      this.state.tokenData.set(this.state.currentToken, this.state.currentToken);
+      this.retrieveValidationAPIResult(this.state.currentToken);
+      //reset 'currentLine'
+      this.state.currentLine = '';
+    }
+    //handle onKey 'delete'
+    else if(e.keyCode == 8 ) this.state.currentLine = this.state.currentLine.slice(0,-1);
+    //add other pressed keys to currentLine to track token input
+    else this.state.currentLine += e.key;
+  }
+
+  //pass token key to validation services
+  //remove all extra spaces
+  //put token in object with property 'gene': []
+  retrieveValidationAPIResult(tokenToValidate)
+  {
+    ServerAPI.enrichmentAPI({genes: [_.pull(tokenToValidate,"")]}, "validation").then((result) => {
+    //pass validation results and original token key
+    this.checkIfValidInput(tokenToValidate, result.unrecognized);
+    });
+  }
+
+  //update map value for token to true if valid, false if invalid
+  //updateInvalidStatus to update div with invalid token list
+  checkIfValidInput(tokenOfInterest, unrecognizedTokens)
+  {
+    if(unrecognizedTokens.length == 0 ) this.state.tokenData.set(String(tokenOfInterest), true);
+    else this.state.tokenData.set(String(tokenOfInterest), false);
+    this.updateInvalidStatus();
+    console.log(this.state.tokenData);
+  }
+
+  //provide dynamic user feedback
+  //display all invalid tokens in div.invalid-tokens
+  updateInvalidStatus()
+  {
+    let displayStatus = "Invalid Tokens:<br/>";
+    this.state.tokenData.forEach(function (value, key, mapObj) {
+      if (value == false) displayStatus += key +"<br/>";
+    });
+    document.getElementById('invalid-tokens').innerHTML = "";
+    document.getElementById('invalid-tokens').innerHTML += displayStatus;
   }
 
 
@@ -123,17 +121,15 @@ class Enrichment extends React.Component {
              placeholder: 'Enter one gene per line',
              contentEditable: true,
              id: 'gene-input-box',
-             onInput: e => this.handleChange(e)
+             onInput: e => this.handleChange(e),
+             onKeyDown: e => this.keyPress(e),
             })
           ]),
-          h('submit-container', {
-            onClick: () => {
-              this.parseQuery(this.state.query);
-            }},
-          [
-          h('button.submit', 'Submit'),
-          ])
-      ]
+      ],
+      invalidTokenContainer:
+        h('div.invalid-token-container', {
+          id: 'invalid-tokens'
+        })
     });
     return h('div.main', [baseView]);
   }

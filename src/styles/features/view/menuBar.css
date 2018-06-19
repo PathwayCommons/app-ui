@@ -148,18 +148,31 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
   padding: 0 0 1px 0 !important;
   border-width: 0px !important;
 }
-
-.gene-input{
+.gene-input-container{
   height: 1.85em;
+  width: 200px;
+}
+.gene-input-box{
+  min-height: 1.85em;
+  max-height: 80%;
   width: 200px;
   background-color: white;
   padding: 0em 0.5em;
   box-sizing: border-box;
   border: 1px solid var(--light-base-colour-dark);
-  border-right: none;
-  vertical-align: middle;
-  font-weight: normal;
   border-radius: 0 !important;
+  font-weight: normal;
+  position: fixed;
+  vertical-align: middle;
+  resize: vertical;
+  z-index: 1;
+  overflow-y:scroll;
+
+  & span{
+  color: red !important;
+  text-decoration: underline;
+  /* font-weight: bold; */
+  }
 }
 
 /* submit button for gene input */

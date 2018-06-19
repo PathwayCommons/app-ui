@@ -6,7 +6,6 @@ const config = require('../../config');
 const { enrichmentRouter } = require('./enrichment-rest');
 
 
-
 const isAuthenticated = token => {
   return config.MASTER_PASSWORD != '' && config.MASTER_PASSWORD === token;
 };

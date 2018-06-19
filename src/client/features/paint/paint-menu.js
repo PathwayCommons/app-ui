@@ -132,7 +132,7 @@ class PaintMenu extends React.Component {
 
     const paintSearchResults = props.searchResults.map(result => {
       return h('div', {
-          onClick: e => {
+          onClick: () => {
             if (!this.state.loading) {
               this.setState({
                 selectedSearchResult: result.json.graph.pathwayMetadata.uri

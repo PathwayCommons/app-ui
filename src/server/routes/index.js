@@ -12,7 +12,7 @@ router.get('/enrichment-docs', function (req, res) {
 
 /* GET home page.
 All URLS not specified earlier in server/index.js (e.g. REST URLs) get handled by the React UI */
-router.get('*', function (req, res, next) {
+router.get('*', function (req, res/*, next*/) {
   res.render('index.html');
 });
 

@@ -1,8 +1,8 @@
 :root {
   /* Pathway commons colors */
-  --green-sea: #16A085;
-  --midnight-blue: #212F3D;
-  --cloud: #ECF0F1;
+  --green-sea: #16a085;
+  --midnight-blue: #212f3d;
+  --cloud: #ecf0f1;
   --cloud-dark: #d3d8da;
   --cloud-darker: #b5b9bb;
 
@@ -12,17 +12,14 @@
   --light-base-colour-dark: var(--cloud-dark);
   --light-base-colour-darker: var(--cloud-darker);
   --dark-base-colour: var(--midnight-blue);
-
-  --box-shadow: 0px 0px 15px 2px rgba(0,0,0,0.4);
+  --box-shadow: 0 0 15px 2px rgba(0, 0, 0, 0.4);
   --icon-size: 24px;
   --icon-size-mobile: 7vmin;
   --number-of-sidebar-icons: 3;
   --search-width: 740px;
   --view-sidebar-width: 33%;
-
-  --link: #03A9F4;
-  --link-visited: #7E57C2;
-
+  --link: #03a9f4;
+  --link-visited: #7e57c2;
   --widgetBorderColor: #aaa;
   --widgetBorderRadius: 4px;
   --widgetDisabledBorderColor: #ddd;
@@ -56,14 +53,12 @@
 %button-styling {
   border-radius: 2px;
   border: 1px solid black;
-  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 5px 0px;
+  box-shadow: rgba(0, 0, 0, 0.4) 0 2px 5px 0;
   background-color: var(--light-base-colour);
-
   cursor: pointer;
-
   transition: box-shadow 0.1s linear;
 
   &:hover {
-    box-shadow: rgba(0, 0, 0, 0.4) 0px 5px 11px 0px;
+    box-shadow: rgba(0, 0, 0, 0.4) 0 5px 11px 0;
   }
 }

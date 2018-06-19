@@ -4,6 +4,7 @@ const { validOrganism } = require('./validity-info');
 const { validTargetDb } = require('./validity-info');
 const qs = require('query-string');
 const { cleanUpEntrez } = require('../helper');
+const logger = require('./../../logger');
 
 const GCONVERT_URL = 'https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/gconvert.cgi';
 const FETCH_TIMEOUT = 5000; //ms
@@ -97,7 +98,7 @@ const bodyHandler = body =>  {
  * @return { Promise }
  */
 const errorHandler = ( error, query ) => {
-  console.error( error );
+  logger.error( error );
   switch ( error.name ) {
     case 'FetchError':
       return new Promise( resolve => resolve( resultTemplate( query ) ) );

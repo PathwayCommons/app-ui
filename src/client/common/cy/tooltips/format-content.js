@@ -36,7 +36,7 @@ const viwerListHandler =(pair, expansionFunction, trim, title) => {
   const inner = (database, data, isDBVisble, index) => {
     let link = db.filter(value => database.toUpperCase() === value.database.toUpperCase());
     return h('a.db-link' ,{href:'/view?',search: queryString.stringify({
-      uri: link[0].url + link[0].search + data, 
+      uri: link[0].url + link[0].search + data,
       title:title, removeInfoMenu:true}),
     target: '_blank', }, 'Interaction '+(index+1));
   };
@@ -316,8 +316,7 @@ function generateDBLink(dbName, dbId, isDbVisible) {
 }
 
 /**
- * noDateWarning(name)
- * @param name A node name formatted as a string
+ * noDateWarning()
  * @returns HTMl Element
  * @description Generates an HTML Element for no data
  * Sample Input : noDataWarning('nucleoplasm')
@@ -329,7 +328,7 @@ function generateDBLink(dbName, dbId, isDbVisible) {
  *    </div>
  * </div>
  */
-function noDataWarning(name) {
+function noDataWarning() {
   return h('div.tooltip-image', [
     h('div.tooltip-heading', [
       h('a.tooltip-heading-link',{href:"/search?&q=" + this.name,target:"_blank"},this.name),
@@ -348,9 +347,9 @@ function noDataWarning(name) {
  */
 function filterChemicalFormulas(names) {
   //Filter out Chemical formulas
-  if (names instanceof Array) { return names.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig))); }
+  if (names instanceof Array) { return names.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-[\]()\\=#$]{6,})$/ig))); }
 
-  //Produce an array to avoid generation functions from throwing errors. 
+  //Produce an array to avoid generation functions from throwing errors.
   return [names];
 }
 
@@ -450,7 +449,7 @@ function interactionList(sortedArray, expansionLink, maxViews, inner, trim) {
   return sortedArray.map(entry=>{
     let list=entry.ids;
     if(trim){
-      list=list.slice(0,maxViews); 
+      list=list.slice(0,maxViews);
     }
     const links= list.map((link,index)=>inner(entry.database,link,false,index));
     return h('div.fake-paragraph', [h('div.span-field-name', entry.database+':'), _.concat(links,expansionLink)]);

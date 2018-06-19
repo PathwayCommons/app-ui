@@ -3,7 +3,7 @@
 //Note : - A empty array is returned if no match is found
 //       - Recurse indicates if other levels of the tree should be searched
 function searchTree(subtree, key, recurse = true) {
-  let result = []
+  let result = [];
 
   //Loop through all level nodes
   for (let i = 0; i < subtree.length; i++) {
@@ -109,4 +109,4 @@ module.exports = {
   searchMultiple,
   searchOne,
   searchTree
-}
+};

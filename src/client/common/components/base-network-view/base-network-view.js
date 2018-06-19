@@ -1,7 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const classNames = require('classnames');
-const Link = require('react-router-dom').Link;
 const Loader = require('react-loader');
 const _ = require('lodash');
 

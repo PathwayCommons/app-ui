@@ -76,7 +76,7 @@ class MetadataTip {
   }
 
   //Generate HTML Elements for tooltips
-  generateToolTip(zoom,isEdge,callback) {
+  generateToolTip(zoom,isEdge) {
     //Order the data array
     let data = collection.toTop(this.data, config.tooltipOrder);
     data = collection.toBottom(data, config.tooltipReverseOrder);
@@ -99,7 +99,7 @@ class MetadataTip {
   }
 
   //Generate HTML Elements for the side bar
-  generateExtendedToolTip(zoom,isEdge,callback) {
+  generateExtendedToolTip(zoom,isEdge) {
     //Order the data array
     let data = collection.toTop(this.data, config.tooltipOrder);
     data = collection.toBottom(data, config.tooltipReverseOrder);
@@ -112,7 +112,7 @@ class MetadataTip {
     //Ensure name is not blank
     this.validateName();
 
-    //Generate expansion and collapse functions 
+    //Generate expansion and collapse functions
     const expandFunction = this.displayMore(zoom,isEdge);
     const collapseFunction = this.displayLess(zoom,isEdge);
 
@@ -163,10 +163,10 @@ class MetadataTip {
     //Modify view status
     expansionObject.viewStatus[expansionField] = fieldStatus;
 
-    //Hide existing tooltip 
+    //Hide existing tooltip
     const existingToolTip = expansionObject.tooltipExt;
     existingToolTip.hide();
-  
+
     //Get tooltip objects
     let tooltip = expansionObject.tooltip;
     const expandedHTML = expansionObject.generateExtendedToolTip(zoom,isEdge);

@@ -12,7 +12,7 @@ function parseDatabaseIDs(subTree) {
     //Get Reference Child
     let child = subTree[i][1];
 
-    //Search for database id's 
+    //Search for database id's
     let dbIdObject = treeTraversal.searchForExactNode(child, 'Database ID');
     if (dbIdObject) result.push(dbIdObject);
   }
@@ -109,7 +109,7 @@ function parse(subTree) {
   let subTreeCopy = subTree.slice()[0][1];
 
   //Get Entity Reference
-  let entityRef = treeTraversal.searchForExactNodeWithObjectResult(subTreeCopy, 'EntityReference')
+  let entityRef = treeTraversal.searchForExactNodeWithObjectResult(subTreeCopy, 'EntityReference');
   if (entityRef) {
     //Remove un parsed copy
     subTreeCopy.splice(entityRef.index, 1);
@@ -117,8 +117,6 @@ function parse(subTree) {
     //Parse reference
     entityRef = parseEntityReference(entityRef.data);
   }
-
-  let check= treeTraversal.searchForExactNode(subTreeCopy, 'Names');
 
   //Get all references
   for (let i = 0; i < subTreeCopy.length; i++) {

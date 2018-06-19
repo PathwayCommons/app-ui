@@ -1,4 +1,5 @@
 const metadataParser = require('./metadataParserJson');
+const _ = require('lodash');
 var biopaxFile = null;
 /**
  * 
@@ -68,33 +69,64 @@ function buildBioPaxTree(entity) {
   let collectedData = collectEntityMetadata(entity);
 
   //Collect Data for cross-references
+  let xrefList = [];
   let xref = entity['xref'];
-  if (typeof xref == 'string')
-    xref = [xref];
-  if (!(xref))
-    xref = [];
   let eref = entity['entityReference'];
-  if (eref) 
-    xref.push(eref);
+  if(xref)
+    if(typeof xref === 'string')
+      xrefList = _.concat(xrefList,[xref]);
+    else
+      xrefList = _.concat(xrefList,xref);
+  if(eref)
+    xrefList = _.concat(xrefList,[eref]);
 
+  processXrefs(xrefList,eref,collectedData);
+  
+  result.push([id,collectedData]);
+  return result;
+}
 
-  for (let i = 0; i < xref.length; i++) {
+function processXrefs(xrefList,eref,collectedData){
+
+  let erefXrefList = [];
+
+  for (let i = 0; i < xrefList.length; i++) {
     //Check if this is a cross-reference or entity reference
     let keyName = 'Reference';
-    if (i == (xref.length - 1) && eref)
+    if (i == (xrefList.length - 1) && eref)
       keyName = 'EntityReference';
 
     //Get Referenced element and make sure it's valid
-    let refElement = getElementFromBioPax(xref[i]);
+    let refElement = getElementFromBioPax(xrefList[i]); 
     if (!(refElement))
       continue;
+
+    //create list of xrefs for eref
+    if(keyName === "EntityReference"){
+      let erefXref = refElement['xref'];
+      if(erefXref)
+        if(typeof erefXref === 'string')
+          erefXrefList = _.concat(erefXrefList,[erefXref]);
+        else
+          erefXrefList = _.concat(erefXrefList,erefXref);
+    }
+
     //Collect data and add to tree array
     collectedData.push([keyName,collectEntityMetadata(refElement,keyName)]);
   }
 
-  
-  result.push([id,collectedData]);
-  return result;
+  //Also collect data for entity reference's cross-references
+  //almost identically to above
+  for(let i=0;i<erefXrefList.length;i++){
+    let keyName = 'Reference';
+    let refElement = getElementFromBioPax(erefXrefList[i]); 
+
+    if (!(refElement))
+      continue;
+
+    collectedData.push([keyName,collectEntityMetadata(refElement,keyName)]);
+  }
+
 }
 
 /**

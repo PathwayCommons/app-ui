@@ -97,7 +97,6 @@ const bodyHandler = body =>  {
  * @return { Promise }
  */
 const errorHandler = ( error, query ) => {
-  console.error( error );
   switch ( error.name ) {
     case 'FetchError':
       return new Promise( resolve => resolve( resultTemplate( query ) ) );

@@ -1,4 +1,4 @@
-const fetch = require('node-fetch')
+const fetch = require('node-fetch');
 const _ = require('lodash');
 const qs = require('query-string');
 const { cleanUpEntrez } = require('../helper');
@@ -58,7 +58,7 @@ const enrichment = (query, userSetting) => {
   return new Promise((resolve, reject) => {
     let formData = _.assign({}, defaultSetting, JSON.parse(JSON.stringify(userSetting)), { query: query });
     const queryVal = formData.query;
-    const orderedQueryVal = formData.ordered_query;
+    //const orderedQueryVal = formData.ordered_query;
     const minSetSizeVal = formData.min_set_size;
     const maxSetSizeVal = formData.max_set_size;
     const backgroundGenesVal = formData.custbg;

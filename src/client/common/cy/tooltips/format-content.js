@@ -329,7 +329,7 @@ function generateDBLink(dbName, dbId, isDbVisible) {
  *    </div>
  * </div>
  */
-function noDataWarning(name) {
+function noDataWarning() {
   return h('div.tooltip-image', [
     h('div.tooltip-heading', [
       h('a.tooltip-heading-link',{href:"/search?&q=" + this.name,target:"_blank"},this.name),
@@ -348,7 +348,7 @@ function noDataWarning(name) {
  */
 function filterChemicalFormulas(names) {
   //Filter out Chemical formulas
-  if (names instanceof Array) { return names.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig))); }
+  if (names instanceof Array) { return names.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-[\]()\\=#$]{6,})$/ig))); }
 
   //Produce an array to avoid generation functions from throwing errors. 
   return [names];

@@ -111,7 +111,7 @@ const _datasources = () => {
     // console.log(output);
     return output; //filtered, simplified map
   })
-  .catch((e) => {
+  .catch(() => {
     return null;
   });
 };

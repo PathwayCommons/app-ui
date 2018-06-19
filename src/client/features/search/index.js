@@ -167,7 +167,7 @@ buildExampleLink (search) {
     ].map(searchType => {
       return h('div.search-option-item-container', [
         h('div', {
-          onClick: e => this.setAndSubmitSearchQuery({ type: searchType.value }),
+          onClick: () => this.setAndSubmitSearchQuery({ type: searchType.value }),
           className: classNames('search-option-item', { 'search-option-item-disabled': state.searchLoading },
             { 'search-option-item-active': state.query.type === searchType.value })
         }, [

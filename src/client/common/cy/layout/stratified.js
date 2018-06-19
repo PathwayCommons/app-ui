@@ -41,7 +41,7 @@ const stratifiedLayout = function (cy) {
     maxY = compartmentRegionY;
     children = children.move({parent: null});
 
-    children.positions(function (i, ele) {
+    children.positions(function () {
       const position = {x: compartmentRegion.x + 10, y: compartmentRegion.y + 10};
       return position;
     });

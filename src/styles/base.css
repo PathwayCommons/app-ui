@@ -24,7 +24,7 @@ input[type='search'],
 input[type='tel'],
 input[type='url'],
 textarea {
-  /*width: var(--defaultWidgetWidth);*/
+  /* width: var(--defaultWidgetWidth); */
 }
 
 input[type='text'],
@@ -143,12 +143,15 @@ select {
   background-position: calc(100% - 0.5em) 50%;
   background-size: 1em 1em;
   background-repeat: no-repeat;
-  /*background-blend-mode: overlay;*/
+
+  /* background-blend-mode: overlay; */
   cursor: pointer;
 
-  /*&:disabled {
+  /*
+  &:disabled {
     background-color: rgba(255, 255, 255, 0.5);
-  }*/
+  }
+  */
 
   /* removes dotted lines on ff */
   &:-moz-focusring {
@@ -261,7 +264,6 @@ button.button-joined {
   border-bottom-left-radius: 0;
   min-width: 2em;
 }
-
 
 input {
   &.input-joined {

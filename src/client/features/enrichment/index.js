@@ -8,7 +8,6 @@ const _ = require('lodash');
 // const removeStyle= require('../../common/cy/manage-style').removeStyle;
 // const make_cytoscape = require('../../common/cy/');
 // const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
-const { ServerAPI } = require('../../services/');
 const { BaseNetworkView } = require('../../common/components');
 //const { getLayoutConfig } = require('../../common/cy/layout');
 //const downloadTypes = require('../../common/config').downloadTypes;

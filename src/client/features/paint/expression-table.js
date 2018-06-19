@@ -96,8 +96,7 @@ class Expression {
     const selectedClassValues = this.classValues[selectedClass];
     const nonSelectedClasses = _.omit(this.classValues, [selectedClass]);
 
-    const nonSelectedClassesValues =_.flattenDeep(Object.entries(nonSelectedClasses)
-      .map(([className, values]) => values));
+    const nonSelectedClassesValues =_.flattenDeep(Object.values(nonSelectedClasses));
 
     const c1Val = selectedFunction(selectedClassValues);
 

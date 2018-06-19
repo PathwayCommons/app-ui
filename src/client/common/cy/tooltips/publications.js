@@ -79,7 +79,7 @@ function getPublications(data) {
 
   data.push([["Database IDs"],databaseInfo]);
 
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve) {
     if (!(data)) { resolve(data); }
 
     //Check if publication data already exists

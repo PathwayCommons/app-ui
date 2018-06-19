@@ -4,6 +4,7 @@ const _ = require('lodash');
 
 const config = require('../../config');
 const geneValidator = require('../enrichment/validation').validatorGconvert;
+const logger = require('./../logger');
 
 
 const fetchOptions = {
@@ -53,7 +54,7 @@ const query = async (queryObj) => {
   return fetch(url, fetchOptions)
     .then(res => (cmd=='get'||cmd=='graph')?res.text():res.json())
     .catch((e) => {
-      console.log('query ' + queryObj + ' failed - ' + e);
+      logger.log('query ' + queryObj + ' failed - ' + e);
       return null;
     });
 };
@@ -111,7 +112,7 @@ const _datasources = () => {
     // console.log(output);
     return output; //filtered, simplified map
   })
-  .catch((e) => {
+  .catch(() => {
     return null;
   });
 };

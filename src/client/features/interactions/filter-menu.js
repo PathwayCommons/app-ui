@@ -14,10 +14,18 @@ class InteractionsFilterMenu extends React.Component {
    * @param {*} degreeValues array returned by getUniqueDegreeValues
    * @description Hides nodes based on their degree, degree determined by on-screen slider
    */
-  sliderUpdate(e,degreeValues){
+  sliderUpdate(degreeValues,initial){
     const nodes = this.props.cy.nodes();
+
     //any nodes with less than this number of degrees will not show in view
-    let sliderVal = degreeValues[document.getElementById('selection-slider').value];
+    //default setting is 2
+    let sliderVal = null;
+    if(initial){
+      sliderVal = degreeValues[initial];
+    }else{
+      sliderVal = degreeValues[document.getElementById('selection-slider').value];
+    }
+
 
     //loop through each node in the network
     for(let i in nodes){
@@ -60,6 +68,7 @@ class InteractionsFilterMenu extends React.Component {
   render(){
     const props= this.props;
     let degreeValues = this.getUniqueDegreeValues();
+    this.sliderUpdate(degreeValues,2);
 
     const buttons= _.map(props.filters,(active,type)=>
     h('div',{
@@ -76,7 +85,7 @@ class InteractionsFilterMenu extends React.Component {
     //-2 so the last tick always shows at least 1 node
     //Slider listed under 'Visible Nodes' in the interaction viewer
     const slider = [
-      h("input",{type:"range",id:'selection-slider',min:0,max:degreeValues.length-2,step:1,defaultValue:0,onInput:(e) => this.sliderUpdate(e,degreeValues)}),
+      h("input",{type:"range",id:'selection-slider',min:0,max:degreeValues.length-2,step:1,defaultValue:2,onInput:() => this.sliderUpdate(degreeValues)}),
     ];
 
     return h('div',[

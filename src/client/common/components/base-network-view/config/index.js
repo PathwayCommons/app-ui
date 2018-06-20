@@ -21,6 +21,26 @@ const resetToDefaultLayout = (props) => {
   cy.layout(props.layoutConfig.defaultLayout.options).run();
 };
 
+const hideSelectedNodes = (props) => {
+  const cy = props.cy;
+  let nodesToHide = cy.selectedNodesToHide;
+  for(let i in nodesToHide){
+    let node = nodesToHide[i];
+    node.hide();
+  }
+  cy.selectedNodesToHide = [];
+};
+
+const showAllNodes = (props) => {
+  const cy = props.cy;
+  let nodes = cy.nodes();
+  for(let i in nodes){
+    let node = nodes[i];
+    if(node.show)
+      node.show();
+  }
+};
+
 
 // material icon name to func/description object
 const toolbarButtons = [
@@ -58,6 +78,20 @@ const toolbarButtons = [
     type: 'networkAction',
     func: resetToDefaultLayout,
     description: 'Reset network arrangement'
+  },
+  {
+    id:'hideSelected',
+    icon:'replay',
+    type: 'networkAction',
+    func: hideSelectedNodes,
+    description: 'Hide selected nodes (select with shift+drag)'
+  },
+  {
+    id:'showAll',
+    icon:'replay',
+    type:'networkAction',
+    func:showAllNodes,
+    description: 'Show all nodes'
   }
 ];
 

@@ -152,6 +152,7 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
   height: 1.85em;
   width: 200px;
 }
+
 .gene-input-box{
   min-height: 1.85em;
   max-height: 80%;
@@ -168,10 +169,6 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
   z-index: 1;
   overflow-y:scroll;
   line-height: 1.8;
-
-  & span{
-  text-decoration: underline;
-  }
 }
 
 .gene-input-box:empty:not(:focus):before {

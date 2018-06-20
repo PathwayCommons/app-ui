@@ -41,7 +41,7 @@ class TokenInput {
     });
     //display invalid tokens in 'invalid-token' div
     this.updateInvalidStatus();
-    console.log(this.state.tokenData);
+    //console.log(this.state.tokenData);
   }
 
   //display all invalid tokens in div.invalid-tokens

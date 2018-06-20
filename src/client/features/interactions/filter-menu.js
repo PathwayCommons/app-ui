@@ -8,18 +8,16 @@ class InteractionsFilterMenu extends React.Component {
     super(props);
   }
 
+  /**
+   * 
+   * @param {*} e onChange event
+   * @param {*} degreeValues array returned by getUniqueDegreeValues
+   */
   sliderUpdate(e,degreeValues){
     const nodes = this.props.cy.nodes();
-    let sliderVal = degreeValues.get(document.getElementById('selection-slider').value);
-    console.log(sliderVal);
+    let sliderVal = degreeValues[document.getElementById('selection-slider').value];
 
-    if(sliderVal < 1){
-        for(let i in nodes){
-            if(nodes[i].show)
-                nodes[i].show();
-        }
-        return;
-    }
+    //loop through each node in the network
     for(let i in nodes){
         //Get data needed to make decision about whether to hide or show the node
         let node = nodes[i];
@@ -32,11 +30,15 @@ class InteractionsFilterMenu extends React.Component {
 
     }
   }
-
+  /**
+   * @returns A sorted array containing each node in the array's degree exactly once
+   */
   getUniqueDegreeValues(){
     const nodes = this.props.cy.nodes();
-    let degreeList = [];
+    let degreeList = [0];
 
+
+    //Create an array containing every unique number of degrees
     for(let i in nodes){
       let node = nodes[i];
       if(node.degree){
@@ -45,16 +47,9 @@ class InteractionsFilterMenu extends React.Component {
           degreeList.push(degree);
       }
     }
+    //sort the array
     degreeList = degreeList.sort(function(a, b){return a - b;});
-
-    let degreeListMap = new Map();
-    degreeListMap.set((-1).toString(),-1);
-    degreeListMap.set((0).toString(),0);
-    for(let i in degreeList){
-      let degree = degreeList[i];
-      degreeListMap.set((parseInt(i) + 1).toString(),degree);
-    }
-    return degreeListMap;
+    return degreeList;
   }
 
 
@@ -74,8 +69,10 @@ class InteractionsFilterMenu extends React.Component {
       ]
     ));
 
+    //-2 so the last tick always shows at least 1 node
+    //Slider listed under 'Visible Nodes' in the interaction viewer
     const slider = [
-      h("input",{type:"range",id:'selection-slider',min:0,max:degreeValues.size-3,step:1,defaultValue:0,onInput:(e) => this.sliderUpdate(e,degreeValues)}),
+      h("input",{type:"range",id:'selection-slider',min:0,max:degreeValues.length-2,step:1,defaultValue:0,onInput:(e) => this.sliderUpdate(e,degreeValues)}),
     ];
 
     return h('div',[

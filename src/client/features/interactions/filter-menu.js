@@ -4,8 +4,6 @@ const classNames = require('classnames');
 const _ = require('lodash');
 
 class InteractionsFilterMenu extends React.Component {
-
-
   render(){
     const props= this.props;
     const buttons= _.map(props.filters,(active,type)=>
@@ -19,8 +17,6 @@ class InteractionsFilterMenu extends React.Component {
         h('h3.button-label',type),
       ]
     ));
-
-
     return h('div',[
       h('h2', 'Interaction Filters'),
       buttons

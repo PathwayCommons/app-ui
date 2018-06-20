@@ -6,7 +6,6 @@ const config = require('../../config');
 const { enrichmentRouter } = require('./enrichment-rest');
 
 
-
 const isAuthenticated = token => {
   return config.MASTER_PASSWORD != '' && config.MASTER_PASSWORD === token;
 };
@@ -55,6 +54,11 @@ router.get('/get-graph-and-layout', function (req, res) {
   controller.getGraphAndLayout(req.query.uri, req.query.version).then((package) => {
     res.json(package);
   });
+});
+
+// Expose a rest endpoint for controller.getGraphAndLayout
+router.get('/get-interaction-graph', function (req, res) {
+  controller.getInteractionGraph(req.query.sources).then((package) => res.json(package));
 });
 
 // Expose a rest endpoint for controller.endSession

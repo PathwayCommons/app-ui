@@ -76,10 +76,10 @@ function getPublications(data) {
       data[i][1] = data[i][1].filter(checkForCitation);
     }
   }
+  if(data && databaseInfo.length > 0)
+    data.push([["Database IDs"],databaseInfo]);
 
-  data.push([["Database IDs"],databaseInfo]);
-
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve) {
     if (!(data)) { resolve(data); }
 
     //Check if publication data already exists

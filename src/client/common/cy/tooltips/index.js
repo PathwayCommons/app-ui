@@ -21,7 +21,7 @@ class MetadataTip {
           if(this.data[i][0]==="Display Name")
             this.data.push(["Search Link",this.data[i][1]]);
         }
-      }else{
+      }else if(this.data){
         this.data.push(["Search Link",this.name]);
       }
     this.cyElement = cyElement;
@@ -30,7 +30,7 @@ class MetadataTip {
   }
 
   //Show Tippy Tooltip
-  show(cy, callback) {
+  show(cy) {
     //Get tooltip object from class
     let tooltip = this.tooltip;
     let tooltipExt = tooltip;
@@ -47,8 +47,8 @@ class MetadataTip {
       if (!tooltip||(zoom!=cy.zoom()&&isEdge)) {
         zoom=cy.zoom();
         //Generate HTML
-        let tooltipHTML = this.generateToolTip(zoom,isEdge,callback);
-        let expandedHTML = this.generateExtendedToolTip(zoom,isEdge,callback);
+        let tooltipHTML = this.generateToolTip(zoom,isEdge);
+        let expandedHTML = this.generateExtendedToolTip(zoom,isEdge);
 
         //Create tippy object
         let refObject = this.cyElement.popperRef();
@@ -76,13 +76,13 @@ class MetadataTip {
   }
 
   //Generate HTML Elements for tooltips
-  generateToolTip(zoom,isEdge,callback) {
+  generateToolTip(zoom,isEdge) {
     //Order the data array
     let data = collection.toTop(this.data, config.tooltipOrder);
     data = collection.toBottom(data, config.tooltipReverseOrder);
 
     if (!(data) || data.length === 0) {
-      return formatContent.noDataWarning(this.name);
+      return formatContent.noDataWarning();
     }
 
     //Ensure name is not blank
@@ -99,14 +99,14 @@ class MetadataTip {
   }
 
   //Generate HTML Elements for the side bar
-  generateExtendedToolTip(zoom,isEdge,callback) {
+  generateExtendedToolTip(zoom,isEdge) {
     //Order the data array
     let data = collection.toTop(this.data, config.tooltipOrder);
     data = collection.toBottom(data, config.tooltipReverseOrder);
     if (!(data)) data = [];
 
     if (!(data) || data.length === 0) {
-      return formatContent.noDataWarning(this.name);
+      return formatContent.noDataWarning();
     }
 
     //Ensure name is not blank

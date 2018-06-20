@@ -26,7 +26,7 @@ const nameHandler = (pair, expansionFunction, trim) => {
 const databaseHandler = (pair, expansionFunction, trim) => {
   const expansionLink = h('div.more-link', { onclick: () => expansionFunction(pair[0]) }, trimString(trim));
   if (pair[1].length < 1) { return h('div.error'); }
-  return generateDatabaseList(sortByDatabaseId(pair[1]), trim, expansionLink);
+  return generateDatabaseList(sortByDatabaseId(pair[1]),expansionLink,trim);
 };
 
 //Handle interaction/Detailed views related fields
@@ -329,7 +329,8 @@ function generateDBLink(dbName, dbId, isDbVisible) {
  *    </div>
  * </div>
  */
-function noDataWarning(name) {
+//TODO: rework to accept a name as input instead of using this.name
+function noDataWarning() {
   return h('div.tooltip-image', [
     h('div.tooltip-heading', [
       h('a.tooltip-heading-link',{href:"/search?&q=" + this.name,target:"_blank"},this.name),
@@ -348,7 +349,7 @@ function noDataWarning(name) {
  */
 function filterChemicalFormulas(names) {
   //Filter out Chemical formulas
-  if (names instanceof Array) { return names.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-\[\]\(\)\\=#$]{6,})$/ig))); }
+  if (names instanceof Array) { return names.filter(name => (!name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-[\]()\\=#$]{6,})$/ig))); }
 
   //Produce an array to avoid generation functions from throwing errors. 
   return [names];

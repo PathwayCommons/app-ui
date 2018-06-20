@@ -4,38 +4,6 @@ const classNames = require('classnames');
 const _ = require('lodash');
 
 class InteractionsFilterMenu extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-        value:-1,
-    };
-  }
-
-  sliderUpdate(e){
-
-    this.setState({value:e.target.value});
-    const nodes = this.props.cy.nodes();
-    let sliderVal = this.state.value;
-
-    if(sliderVal < 1){
-        for(let i in nodes){
-            if(nodes[i].show)
-                nodes[i].show();
-        }
-        return;
-    }
-    for(let i in nodes){
-        //Get data needed to make decision about whether to hide or show the node
-        let node = nodes[i];
-        //sometimes "nodes" are functions?? this fixes that
-        if(node.show){ node.show(); }
-        else{ continue; }
-        if(node.degree() <= sliderVal){
-          node.hide();
-        }
-
-    }
-  }
 
 
   render(){
@@ -52,19 +20,10 @@ class InteractionsFilterMenu extends React.Component {
       ]
     ));
 
-    const slider = [
-      h("input.selection-slider",{type:"range",min:"-1",max:"10",value:this.state.value,onChange:(e) => this.sliderUpdate(e)}),
-    ];
 
     return h('div',[
       h('h2', 'Interaction Filters'),
-      buttons,
-      h('h2.slider-heading','Visible Nodes'),
-      h('div.slider-wrapper',slider),
-      h('div.slider-bottom',[
-        h('span.most','Most'),
-        h('span.least','Least')
-      ])
+      buttons
     ]);
   }
 }

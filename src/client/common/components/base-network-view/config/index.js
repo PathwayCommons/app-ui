@@ -21,6 +21,7 @@ const resetToDefaultLayout = (props) => {
   cy.layout(props.layoutConfig.defaultLayout.options).run();
 };
 
+//This list of nodes is created from shift+drag box select.  See box-select.js
 const hideSelectedNodes = (props) => {
   const cy = props.cy;
   let nodesToHide = cy.selectedNodesToHide;
@@ -31,6 +32,7 @@ const hideSelectedNodes = (props) => {
   cy.selectedNodesToHide = [];
 };
 
+//resets any nodes hidden with hideSelectedNodes
 const showAllNodes = (props) => {
   const cy = props.cy;
   let nodes = cy.nodes();

@@ -1,12 +1,7 @@
 //const React = require('react');
 //const h = require('react-hyperscript');
 const _ = require('lodash');
-//const Loader = require('react-loader');
-//const queryString = require('query-string');
-
-
 const { ServerAPI } = require('../../services/');
-//const { BaseNetworkView } = require('../../common/components');
 
 
 class TokenInput {
@@ -15,69 +10,61 @@ class TokenInput {
     this.state = state;
   }
 
-
-  //update 'tokenData' map to remove keys that are no longer in the token list (ie deleted or altered token)
-  //display these changes in invalid gene box
-  handleChange() {
-    this.state.tokenData.forEach(function (value, key, mapObj) {
-      if (document.getElementById('gene-input-box').innerText.includes(key) == false ) mapObj.delete(key);
+  //called onClick 'submit'
+  //seperate div text input into an array, remove all elements that have already been validated
+  //this method will be altered later depending on the type/format of the final input box (slate or some other library)
+  parseTokenList() {
+    this.state.query = document.getElementById('gene-input-box').innerText;
+    let tokenList = this.state.query.split(/\n/g);
+    //parse tokenList to remove all elements that have already been processed and logged to map 'tokenData'
+    this.state.tokenData.forEach( (value, key) => {
+      if (tokenList.includes(key)) tokenList = _.pull(tokenList, key);
     });
-    //pass validation results and original token key
-    if(document.getElementById('invalid-tokens').innerText != "")this.updateInvalidStatus();
+    //send only new tokens to validation
+    this.retrieveValidationAPIResult(tokenList);
   }
 
-  //update 'currentLine' with every key press to track typed input
-  //onkey 'enter' indicates end of token, so set 'currentLine' to 'currentToken'
-  //add token to map and then validate token
-  keyPress(e)
-  {
-    if(e.keyCode == 13 && this.state.currentLine != '')
-    {
-      this.state.currentToken = this.state.currentLine.replace("Enter", "");
-      console.log(this.state.currentToken);
-      //add token to map
-      this.state.tokenData.set(this.state.currentToken, this.state.currentToken);
-      this.retrieveValidationAPIResult(this.state.currentToken);
-      //reset 'currentLine'
-      this.state.currentLine = '';
-    }
-    //handle onKey 'delete'
-    else if(e.keyCode == 8 ) this.state.currentLine = this.state.currentLine.slice(0,-1);
-    //add other pressed keys to currentLine to track token input
-    else this.state.currentLine += e.key;
+  //call validation service API to retrieve unrecognized tokens as an array
+  retrieveValidationAPIResult(tokensToValidate){
+    ServerAPI.enrichmentAPI({genes: _.pull(tokensToValidate,"")}, "validation").then((result) => {
+      //call checkIfValidInput to determine individual token validity
+      this.checkIfValidInput(tokensToValidate, result.unrecognized);
+      });
   }
 
-  //pass token key to validation services
-  //remove all extra spaces
-  //put token in object with property 'gene': []
-  retrieveValidationAPIResult(tokenToValidate)
+  //store input tokens in state map 'tokenData' with values 'true' for valid or 'false' for invalid
+  checkIfValidInput(tokensToValidate, unrecognizedTokens)
   {
-    ServerAPI.enrichmentAPI({genes: [_.pull(tokenToValidate,"")]}, "validation").then((result) => {
-    //pass validation results and original token key
-    this.checkIfValidInput(tokenToValidate, result.unrecognized);
+    tokensToValidate.forEach((element) => {
+      if( unrecognizedTokens.includes(element.toUpperCase()) ) this.state.tokenData.set(element, false);
+      else this.state.tokenData.set(element, true);
     });
-  }
-
-  //update map value for token to true if valid, false if invalid
-  //updateInvalidStatus to update div with invalid token list
-  checkIfValidInput(tokenOfInterest, unrecognizedTokens)
-  {
-    if(unrecognizedTokens.length == 0 ) this.state.tokenData.set(String(tokenOfInterest), true);
-    else this.state.tokenData.set(String(tokenOfInterest), false);
+    //display invalid tokens in 'invalid-token' div
     this.updateInvalidStatus();
     console.log(this.state.tokenData);
   }
 
-  //provide dynamic user feedback
   //display all invalid tokens in div.invalid-tokens
+  //the mechanism for providing userFeedback will be iterated upon in the future
+  //ideally, tokens will be marked in the input box
   updateInvalidStatus()
   {
     let displayStatus = "Invalid Tokens:<br/>";
-    this.state.tokenData.forEach(function (value, key, mapObj) {
+    this.state.tokenData.forEach((value, key) => {
       if (value == false) displayStatus += key +"<br/>";
     });
     document.getElementById('invalid-tokens').innerHTML = "";
     document.getElementById('invalid-tokens').innerHTML += displayStatus;
+  }
+
+  //called onInput in 'gene-input-box'
+  //dynamically update 'tokenData' map to remove any keys that are no longer present in the token list
+  //display these changes in 'invalid-tokens' div
+  handleChange() {
+    this.state.tokenData.forEach( (value, key, mapObj) => {
+      if (document.getElementById('gene-input-box').innerText.includes(key) == false ) mapObj.delete(key);
+      this.updateInvalidStatus();
+    });
   }
 
 }

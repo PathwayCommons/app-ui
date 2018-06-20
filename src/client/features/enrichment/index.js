@@ -32,8 +32,6 @@ class Enrichment extends React.Component {
         datasource: '',
         comments: []
       },
-      currentToken: '',
-      currentLine: '',
       titleContainer: [],
       invalidTokenContainer: [],
       tokenData: new Map()
@@ -60,14 +58,17 @@ class Enrichment extends React.Component {
              contentEditable: true,
              id: 'gene-input-box',
              onInput: () => tokenInput.handleChange(),
-             onKeyDown: e => tokenInput.keyPress(e),
             })
           ]),
+          h('submit-container', {
+            onClick: () => {tokenInput.parseTokenList(); } },
+            [h('button.submit', 'Submit'),]
+          )
       ],
       invalidTokenContainer:
-        h('div.invalid-token-container', {
-          id: 'invalid-tokens'
-        })
+      h('div.invalid-token-container', {
+        id: 'invalid-tokens'
+      })
     });
     return h('div.main', [baseView]);
   }

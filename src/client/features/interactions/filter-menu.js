@@ -6,16 +6,12 @@ const _ = require('lodash');
 class InteractionsFilterMenu extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-        value:-1,
-    };
   }
 
-  sliderUpdate(e){
-
-    this.setState({value:e.target.value});
+  sliderUpdate(e,degreeValues){
     const nodes = this.props.cy.nodes();
-    let sliderVal = this.state.value;
+    let sliderVal = degreeValues.get(document.getElementById('selection-slider').value);
+    console.log(sliderVal);
 
     if(sliderVal < 1){
         for(let i in nodes){
@@ -37,9 +33,35 @@ class InteractionsFilterMenu extends React.Component {
     }
   }
 
+  getUniqueDegreeValues(){
+    const nodes = this.props.cy.nodes();
+    let degreeList = [];
+
+    for(let i in nodes){
+      let node = nodes[i];
+      if(node.degree){
+        let degree = node.degree();
+        if(degreeList.indexOf(degree) === -1)
+          degreeList.push(degree);
+      }
+    }
+    degreeList = degreeList.sort(function(a, b){return a - b;});
+
+    let degreeListMap = new Map();
+    degreeListMap.set((-1).toString(),-1);
+    degreeListMap.set((0).toString(),0);
+    for(let i in degreeList){
+      let degree = degreeList[i];
+      degreeListMap.set((parseInt(i) + 1).toString(),degree);
+    }
+    return degreeListMap;
+  }
+
 
   render(){
     const props= this.props;
+    let degreeValues = this.getUniqueDegreeValues();
+
     const buttons= _.map(props.filters,(active,type)=>
     h('div',{
         key:type,
@@ -53,7 +75,7 @@ class InteractionsFilterMenu extends React.Component {
     ));
 
     const slider = [
-      h("input.selection-slider",{type:"range",min:"-1",max:"10",value:this.state.value,onChange:(e) => this.sliderUpdate(e)}),
+      h("input",{type:"range",id:'selection-slider',min:0,max:degreeValues.size-3,step:1,defaultValue:0,onInput:(e) => this.sliderUpdate(e,degreeValues)}),
     ];
 
     return h('div',[

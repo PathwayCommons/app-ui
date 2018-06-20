@@ -10,7 +10,6 @@ class InteractionsFilterMenu extends React.Component {
 
   /**
    * 
-   * @param {*} e onChange event
    * @param {*} degreeValues array returned by getUniqueDegreeValues
    * @description Hides nodes based on their degree, degree determined by on-screen slider
    */

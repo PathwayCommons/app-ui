@@ -12,21 +12,25 @@ class InteractionsFilterMenu extends React.Component {
    * 
    * @param {*} e onChange event
    * @param {*} degreeValues array returned by getUniqueDegreeValues
+   * @description Hides nodes based on their degree, degree determined by on-screen slider
    */
   sliderUpdate(e,degreeValues){
     const nodes = this.props.cy.nodes();
+    //any nodes with less than this number of degrees will not show in view
     let sliderVal = degreeValues[document.getElementById('selection-slider').value];
 
     //loop through each node in the network
     for(let i in nodes){
-        //Get data needed to make decision about whether to hide or show the node
         let node = nodes[i];
+        
         //sometimes "nodes" are functions?? this fixes that
         if(node.show){ node.show(); }
         else{ continue; }
+
         if(node.degree() <= sliderVal){
           node.hide();
         }
+
 
     }
   }

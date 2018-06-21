@@ -44,7 +44,15 @@ class Enrichment extends React.Component {
       componentConfig: state.componentConfig,
       //titles at top of toolbar
       networkMetadata: {},
-      titleContainer: h(TokenInput),
+      titleContainer: [
+        h('h4', [
+          h('span', 'Pathway Enrichment   ')
+        ]),
+        h('img', {
+          src: '/img/humanIcon.png'
+        }),
+        h(TokenInput)
+      ],
       invalidTokenContainer: h(InvalidTokenFeedback)
     });
     return h('div.main', [baseView]);

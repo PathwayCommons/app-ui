@@ -82,14 +82,14 @@ const toolbarButtons = [
   },
   {
     id:'hideSelected',
-    icon:'replay',
+    icon:'visibility_off',
     type: 'networkAction',
     func: hideSelectedNodes,
     description: 'Hide selected nodes (select with shift+drag)'
   },
   {
     id:'showAll',
-    icon:'replay',
+    icon:'visibility',
     type:'networkAction',
     func:showAllNodes,
     description: 'Show all nodes'

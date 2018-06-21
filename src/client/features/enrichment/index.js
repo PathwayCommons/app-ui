@@ -33,6 +33,8 @@ class Enrichment extends React.Component {
         datasource: '',
         comments: []
       },
+      titleContainer: [],
+      invalidTokenContainer: [],
     };
   }
 

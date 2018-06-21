@@ -17,8 +17,7 @@ class TokenInput extends React.Component {
   //seperate div text input into an array, remove all elements that have already been validated
   //this method will be altered later depending on the type/format of the final input box (slate or some other library)
   parseTokenList() {
-    this.state.query = document.getElementById('gene-input-box').innerText;
-    let tokenList = this.state.query.split(/\n/g);
+    let tokenList = this.state.query.split(/\s/g);
     //parse tokenList to remove all elements that have already been processed and logged to map 'tokenData'
     this.state.tokenData.forEach( (value, key) => {
       if (tokenList.includes(key)) tokenList = _.pull(tokenList, key);
@@ -64,8 +63,9 @@ class TokenInput extends React.Component {
   //dynamically update 'tokenData' map to remove any keys that are no longer present in the token list
   //display these changes in 'invalid-tokens' div
   handleChange() {
+    this.state.query = document.getElementById('gene-input-box').innerText;
     this.state.tokenData.forEach( (value, key, mapObj) => {
-      if (document.getElementById('gene-input-box').innerText.includes(key) == false ) mapObj.delete(key);
+      if (this.state.query.includes(key) == false ) mapObj.delete(key);
       this.updateInvalidStatus();
     });
   }

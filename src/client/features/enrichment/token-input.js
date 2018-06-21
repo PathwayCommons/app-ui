@@ -1,13 +1,16 @@
-//const React = require('react');
-//const h = require('react-hyperscript');
+const React = require('react');
+const h = require('react-hyperscript');
 const _ = require('lodash');
 const { ServerAPI } = require('../../services/');
 
 
-class TokenInput {
+class TokenInput extends React.Component {
 
-  constructor(state) {
-    this.state = state;
+  constructor(props) {
+    super(props);
+    this.state = {
+      tokenData: new Map()
+    };
   }
 
   //called onClick 'submit'
@@ -67,9 +70,44 @@ class TokenInput {
     });
   }
 
+
+ render() {
+
+  return (
+    //titleContainer: [
+      [h('h4', [
+        h('span', 'Pathway Enrichment   '),]),
+      h('img', {
+        src: '/img/humanIcon.png'
+        }),
+      h('div.gene-input-container', [
+        h('div.gene-input-box', {
+           placeholder: 'Enter one gene per line',
+           contentEditable: true,
+           id: 'gene-input-box',
+           onInput: () => this.handleChange(),
+        })
+      ]),
+      h('submit-container', {
+        onClick: () => {this.parseTokenList(); } },
+        [h('button.submit', 'Submit'),]
+      )]
+  );}
+
+
+ }
+ class InvalidTokenFeedback extends React.Component {
+  render(){
+    return(
+       h('div.invalid-token-container', {
+        id: 'invalid-tokens'
+       })
+    );
+  }
 }
 
-module.exports = TokenInput;
+
+module.exports = {TokenInput: TokenInput, InvalidTokenFeedback: InvalidTokenFeedback};
 
 
 

@@ -8,7 +8,8 @@ const _ = require('lodash');
 // const removeStyle= require('../../common/cy/manage-style').removeStyle;
 // const make_cytoscape = require('../../common/cy/');
 // const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
-const TokenInput = require('./token-input');
+const TokenInput = require('./token-input').TokenInput;
+const InvalidTokenFeedback = require('./token-input').InvalidTokenFeedback;
 const { BaseNetworkView } = require('../../common/components');
 //const { getLayoutConfig } = require('../../common/cy/layout');
 //const downloadTypes = require('../../common/config').downloadTypes;
@@ -32,47 +33,22 @@ class Enrichment extends React.Component {
         datasource: '',
         comments: []
       },
-      titleContainer: [],
-      invalidTokenContainer: [],
-      tokenData: new Map()
     };
-
   }
 
   render() {
-    const tokenInput = new TokenInput(this.state);
     const state = this.state;
     const baseView = h(BaseNetworkView.component, {
       componentConfig: state.componentConfig,
       //titles at top of toolbar
       networkMetadata: {},
-      titleContainer: [
-        h('h4', [
-          h('span', 'Pathway Enrichment   '),]),
-          h('img', {
-            src: '/img/humanIcon.png'
-            }),
-          h('div.gene-input-container', [
-            h('div.gene-input-box', {
-             placeholder: 'Enter one gene per line',
-             contentEditable: true,
-             id: 'gene-input-box',
-             onInput: () => tokenInput.handleChange(),
-            })
-          ]),
-          h('submit-container', {
-            onClick: () => {tokenInput.parseTokenList(); } },
-            [h('button.submit', 'Submit'),]
-          )
-      ],
-      invalidTokenContainer:
-      h('div.invalid-token-container', {
-        id: 'invalid-tokens'
-      })
+      titleContainer: h(TokenInput),
+      invalidTokenContainer: h(InvalidTokenFeedback)
     });
     return h('div.main', [baseView]);
   }
 }
+
 module.exports = Enrichment;
 
 //NOTE: CURRENTLY ONLY RENDERS ON PAGE WHEN base-network-view.js function 'componentDidMount(){}'

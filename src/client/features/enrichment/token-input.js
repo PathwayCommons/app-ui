@@ -18,7 +18,8 @@ class TokenInput extends React.Component {
   //this method will be altered later depending on the type/format of the final input box (slate or some other library)
   parseTokenList() {
     let tokenList = this.state.query.split(/\s/g);
-    //parse tokenList to remove all elements that have already been processed and logged to map 'tokenData'
+    //Allow for input edit: parse tokenList to remove all elements that have already been processed and logged to the map 'tokenData'
+    //will run when resubmitting data
     this.state.tokenData.forEach( (value, key) => {
       if (tokenList.includes(key)) tokenList = _.pull(tokenList, key);
     });
@@ -46,7 +47,7 @@ class TokenInput extends React.Component {
     //console.log(this.state.tokenData);
   }
 
-  //display all invalid tokens in div.invalid-tokens
+  //display all invalid tokens in 'div.invalid-tokens'
   //the mechanism for providing userFeedback will be iterated upon in the future
   //ideally, tokens will be marked in the input box
   updateInvalidStatus()
@@ -64,6 +65,8 @@ class TokenInput extends React.Component {
   //display these changes in 'invalid-tokens' div
   handleChange() {
     this.state.query = document.getElementById('gene-input-box').innerText;
+    //Allow for input edit: remove tokens from invalid box as soon as they are no longer present in input box
+    //will run when resubmitting data
     this.state.tokenData.forEach( (value, key, mapObj) => {
       if (this.state.query.includes(key) == false ) mapObj.delete(key);
       this.updateInvalidStatus();
@@ -71,31 +74,25 @@ class TokenInput extends React.Component {
   }
 
 
- render() {
+  render() {
+    return ([
+        h('div.gene-input-container', [
+          h('div.gene-input-box', {
+            placeholder: 'Enter one gene per line',
+            contentEditable: true,
+            id: 'gene-input-box',
+            onInput: () => this.handleChange(),
+          })
+        ]),
+        h('submit-container', {
+          onClick: () => {this.parseTokenList();} },
+          [h('button.submit', 'Submit')]
+        )
+    ]);
+  }
 
-  return (
-    //titleContainer: [
-      [h('h4', [
-        h('span', 'Pathway Enrichment   '),]),
-      h('img', {
-        src: '/img/humanIcon.png'
-        }),
-      h('div.gene-input-container', [
-        h('div.gene-input-box', {
-           placeholder: 'Enter one gene per line',
-           contentEditable: true,
-           id: 'gene-input-box',
-           onInput: () => this.handleChange(),
-        })
-      ]),
-      h('submit-container', {
-        onClick: () => {this.parseTokenList(); } },
-        [h('button.submit', 'Submit'),]
-      )]
-  );}
+}
 
-
- }
  class InvalidTokenFeedback extends React.Component {
   render(){
     return(

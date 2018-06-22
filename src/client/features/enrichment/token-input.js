@@ -63,8 +63,8 @@ class TokenInput extends React.Component {
   //called onInput in 'gene-input-box'
   //dynamically update 'tokenData' map to remove any keys that are no longer present in the token list
   //display these changes in 'invalid-tokens' div
-  handleChange() {
-    this.state.query = document.getElementById('gene-input-box').innerText;
+  handleChange(e) {
+    this.state.query = e.target.innerText;
     //Allow for input edit: remove tokens from invalid box as soon as they are no longer present in input box
     //will run when resubmitting data
     this.state.tokenData.forEach( (value, key, mapObj) => {
@@ -81,7 +81,7 @@ class TokenInput extends React.Component {
             placeholder: 'Enter one gene per line',
             contentEditable: true,
             id: 'gene-input-box',
-            onInput: () => this.handleChange(),
+            onInput: (e) => this.handleChange(e)
           })
         ]),
         h('submit-container', {
@@ -93,10 +93,10 @@ class TokenInput extends React.Component {
 
 }
 
- class InvalidTokenFeedback extends React.Component {
+class InvalidTokenFeedback extends React.Component {
   render(){
     return(
-       h('div.invalid-token-container', {
+      h('div.invalid-token-container', {
         id: 'invalid-tokens'
        })
     );

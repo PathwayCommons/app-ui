@@ -81,7 +81,7 @@ const enrichment = (query, userSetting) => {
     if (!Array.isArray(backgroundGenesVal)) {
       reject(new Error('ERROR: backgroundGenes should be an array'));
     }
-    formData.backgroundGenes = backgroundGenesVal.join(" ");
+    formData.custbg = backgroundGenesVal.join(" ");
 
     fetch(gProfilerURL, {
       method: 'post',

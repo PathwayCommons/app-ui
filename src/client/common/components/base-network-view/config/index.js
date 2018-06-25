@@ -29,17 +29,25 @@ const hideSelectedNodes = (props) => {
     let node = nodesToHide[i];
     node.hide();
   }
+  cy.selectedNodesToHide = [];
 };
 
 //resets any nodes hidden with hideSelectedNodes
 const showAllNodes = (props) => {
   const cy = props.cy;
   let nodes = cy.nodes();
-  for(let i in nodes){
-    let node = nodes[i];
+  let edges = cy.edges();
+  for(let n in nodes){
+    let node = nodes[n];
     if(node.show)
       node.show();
   }
+  for(let e in edges){
+    let edge = edges[e];
+    if(edge.show)
+      edge.show();
+  }
+  cy.selectedNodesToHide = [];
 };
 
 

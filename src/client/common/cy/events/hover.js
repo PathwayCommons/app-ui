@@ -65,12 +65,14 @@ const baseEdgeHoverStyle = {
 
 
 const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHoverStyle) => {
+  
   const hoverNode =  _.debounce(function (evt) { 
     const node = evt.target;
     const currZoom = cy.zoom();
   
     if (node.isParent() && node.isExpanded()) { return; }
-  
+    if(cy.selectedNodesToHide && cy.selectedNodesToHide.length > 1) { return; }
+
     const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
   
     node.neighborhood().nodes().union(node).forEach((node) => {
@@ -82,7 +84,6 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
         'width': w,
         'height': h
       });
-  
       applyStyle(cy, node, nodeHoverStyle, '_hover-style-before');
     });
   
@@ -107,6 +108,8 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
   const hoverEdge = _.debounce( function (evt) {
     const edge = evt.target;
     const currZoom = cy.zoom();
+
+    if(cy.selectedNodesToHide && cy.selectedNodesToHide.length > 1) { return; }
 
     const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
 

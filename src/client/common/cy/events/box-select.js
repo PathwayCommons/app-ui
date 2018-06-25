@@ -6,8 +6,15 @@ const bindBox = (cy) => {
         //add this to the cy object, so the data can be accessed by the button
             cy.selectedNodesToHide.push(evt.target);
     });
+    
+    //reset selection when user begins to draw a new box
+    cy.on('boxstart', () =>{
+        cy.selectedNodesToHide = [];
+    });
 
-    cy.on('boxstart', evt =>{
+    //reset selection on click, 
+    //this way the selected nodes array matches the built-in node highlighting
+    cy.on('click', () => {
         cy.selectedNodesToHide = [];
     });
 

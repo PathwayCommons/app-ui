@@ -44,6 +44,10 @@ const stylesheet = sbgnStyleSheet(cytoscape)
 .selector('node[class="and"],node[class="or"],node[class="not"]')
 .css({
   'label':node=>node.data('class')
+})
+.selector('.hidden')
+.css({
+  'display':'none',
 });
 
 module.exports = stylesheet;

@@ -3,6 +3,20 @@
   width: 100%;
 }
 
+.slider-heading{
+  padding-top:15px;
+}
+
+#selection-slider{
+  width:100% !important;
+}
+
+.slider-bottom{
+  padding-top: 5px;
+  display:flex;
+  justify-content:space-between;
+}
+
 .interaction-filter-button {
     align-items: center;
     display: flex;

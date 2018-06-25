@@ -25,17 +25,16 @@ class InteractionsFilterMenu extends React.Component {
       sliderVal = degreeValues[document.getElementById('selection-slider').value];
     }
 
-
     //loop through each node in the network
     for(let i in nodes){
         let node = nodes[i];
         
         //sometimes "nodes" are functions?? this fixes that
-        if(node.show){ node.show(); }
+        if(node.show){ node.removeClass('hidden'); }
         else{ continue; }
 
         if(node.degree() <= sliderVal){
-          node.hide();
+          node.addClass('hidden');
         }
 
 

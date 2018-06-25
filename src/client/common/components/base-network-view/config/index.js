@@ -18,6 +18,9 @@ const fit = (props) => {
 
 const resetToDefaultLayout = (props) => {
   const cy = props.cy;
+  showAllNodes(props);
+  //needs to be here twice - don't change
+  cy.layout(props.layoutConfig.defaultLayout.options).run();
   cy.layout(props.layoutConfig.defaultLayout.options).run();
 };
 
@@ -102,13 +105,6 @@ const toolbarButtons = [
     description: 'Fit network to screen'
   },
   {
-    id: 'layout',
-    icon: 'replay',
-    type: 'networkAction',
-    func: resetToDefaultLayout,
-    description: 'Reset network arrangement'
-  },
-  {
     id:'hideSelected',
     icon:'visibility_off',
     type: 'networkAction',
@@ -123,11 +119,11 @@ const toolbarButtons = [
     description:'Show only selected nodes (select with shift+drag)'
   },
   {
-    id:'showAll',
-    icon:'autorenew',
-    type:'networkAction',
-    func:showAllNodes,
-    description: 'Show all nodes'
+    id: 'layout',
+    icon: 'refresh',
+    type: 'networkAction',
+    func: resetToDefaultLayout,
+    description: 'Reset network arrangement'
   },
 ];
 

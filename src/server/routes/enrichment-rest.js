@@ -128,7 +128,7 @@ enrichmentRouter.post('/analysis', (req, res) => {
   const tmpOptions = {
     minSetSize: req.body.minSetSize,
     maxSetSize: req.body.maxSetSize,
-    custbg: req.body.backgroundGenes
+    backgroundGenes: req.body.backgroundGenes
   };
 
   enrichment(genes, tmpOptions).then(enrichmentResult => {

@@ -21,6 +21,19 @@ const resetToDefaultLayout = (props) => {
   cy.layout(props.layoutConfig.defaultLayout.options).run();
 };
 
+const showOnlySelected = (props) => {
+  const cy = props.cy;
+  let nodesToKeep = cy.$(':selected');
+  let nodes = cy.nodes();
+  for(let n in nodes){
+    let node = nodes[n];
+    //make sure its a real node
+    if(node.show)
+      if(node.data().class !== "compartment" && checkNodes(node,nodesToKeep))
+        node.hide();
+  }
+};
+
 //This list of nodes is created from shift+drag box select.  See box-select.js
 const hideSelectedNodes = (props) => {
   const cy = props.cy;
@@ -46,6 +59,15 @@ const showAllNodes = (props) => {
     if(edge.show)
       edge.show();
   }
+};
+
+const checkNodes = (nodeToHide, nodesToKeep) => {
+  for(let n in nodesToKeep){
+    let node = nodesToKeep[n];
+    if(nodeToHide === node)
+      return false;
+  }
+  return true;
 };
 
 
@@ -94,12 +116,19 @@ const toolbarButtons = [
     description: 'Hide selected nodes (select with shift+drag)'
   },
   {
-    id:'showAll',
+    id:'showOnly',
     icon:'visibility',
+    type:"networkAction",
+    func:showOnlySelected,
+    description:'Show only selected nodes (select with shift+drag)'
+  },
+  {
+    id:'showAll',
+    icon:'autorenew',
     type:'networkAction',
     func:showAllNodes,
     description: 'Show all nodes'
-  }
+  },
 ];
 
 // todo turn this into a map

@@ -49,5 +49,9 @@ const iStylesheet=cytoscape.stylesheet()
   'z-compound-depth': 'top',
   'color': 'white',
   'text-outline-color': 'black'
+})
+.selector('node:selected')
+.css({
+  'background-color':'orange',
 });
 module.exports = iStylesheet;

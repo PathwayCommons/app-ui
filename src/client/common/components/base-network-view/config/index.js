@@ -21,7 +21,6 @@ const resetToDefaultLayout = (props) => {
   showAllNodes(props);
   //needs to be here twice - don't change
   cy.layout(props.layoutConfig.defaultLayout.options).run();
-  cy.layout(props.layoutConfig.defaultLayout.options).run();
 };
 
 const showOnlySelected = (props) => {
@@ -33,7 +32,7 @@ const showOnlySelected = (props) => {
     //make sure its a real node
     if(node.show)
       if(node.data().class !== "compartment" && checkNodes(node,nodesToKeep))
-        node.hide();
+        node.addClass('hidden');
   }
 };
 
@@ -43,7 +42,7 @@ const hideSelectedNodes = (props) => {
   let nodesToHide = cy.$(':selected');
   for(let i in nodesToHide){
     let node = nodesToHide[i];
-    if(node.hide){ node.hide(); }
+    if(node.hide){ node.addClass('hidden'); }
   }
 };
 
@@ -54,13 +53,13 @@ const showAllNodes = (props) => {
   let edges = cy.edges();
   for(let n in nodes){
     let node = nodes[n];
-    if(node.show)
-      node.show();
+    if(node.show && node.hasClass('hidden'))
+      node.removeClass('hidden');
   }
   for(let e in edges){
     let edge = edges[e];
-    if(edge.show)
-      edge.show();
+    if(edge.show && edge.hasClass('hidden'))
+      edge.removeClass('hidden');
   }
 };
 
@@ -72,7 +71,6 @@ const checkNodes = (nodeToHide, nodesToKeep) => {
   }
   return true;
 };
-
 
 // material icon name to func/description object
 const toolbarButtons = [

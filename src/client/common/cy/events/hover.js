@@ -71,7 +71,7 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
     const currZoom = cy.zoom();
   
     if (node.isParent() && node.isExpanded()) { return; }
-    if(cy.selectedNodesToHide && cy.selectedNodesToHide.length > 1) { return; }
+    if(cy.$(':selected').length > 0) { return; }
 
     const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
   
@@ -109,7 +109,7 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
     const edge = evt.target;
     const currZoom = cy.zoom();
 
-    if(cy.selectedNodesToHide && cy.selectedNodesToHide.length > 1) { return; }
+    if(cy.$(':selected').length > 0) { return; }
 
     const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
 

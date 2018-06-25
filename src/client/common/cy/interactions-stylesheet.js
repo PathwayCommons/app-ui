@@ -53,5 +53,9 @@ const iStylesheet=cytoscape.stylesheet()
 .selector('node:selected')
 .css({
   'background-color':'orange',
+})
+.selector('.hidden')
+.css({
+  'display':'none',
 });
 module.exports = iStylesheet;

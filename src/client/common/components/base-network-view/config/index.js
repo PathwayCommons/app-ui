@@ -19,7 +19,6 @@ const fit = (props) => {
 const resetToDefaultLayout = (props) => {
   const cy = props.cy;
   showAllNodes(props);
-  //needs to be here twice - don't change
   cy.layout(props.layoutConfig.defaultLayout.options).run();
 };
 
@@ -36,26 +35,31 @@ const showOnlySelected = (props) => {
   }
 };
 
-//This list of nodes is created from shift+drag box select.  See box-select.js
+//This function hides all nodes which are currently selecting with box select
 const hideSelectedNodes = (props) => {
   const cy = props.cy;
+  //get selected nodes
   let nodesToHide = cy.$(':selected');
+  //hide everything in the list
   for(let i in nodesToHide){
     let node = nodesToHide[i];
     if(node.hide){ node.addClass('hidden'); }
   }
 };
 
-//resets any nodes hidden with hideSelectedNodes
+//resets any nodes hidden with hideSelectedNodes or showOnlySelected
 const showAllNodes = (props) => {
   const cy = props.cy;
+  //get all nodes and edges in graph
   let nodes = cy.nodes();
   let edges = cy.edges();
+  //show all nodes which have been hidden
   for(let n in nodes){
     let node = nodes[n];
     if(node.show && node.hasClass('hidden'))
       node.removeClass('hidden');
   }
+  //show all edges which have been hidden
   for(let e in edges){
     let edge = edges[e];
     if(edge.show && edge.hasClass('hidden'))
@@ -63,6 +67,8 @@ const showAllNodes = (props) => {
   }
 };
 
+//equivalent to indexOf() === -1 for Collection
+//helper function for showOnlySelected
 const checkNodes = (nodeToHide, nodesToKeep) => {
   for(let n in nodesToKeep){
     let node = nodesToKeep[n];

@@ -8,8 +8,7 @@ const _ = require('lodash');
 // const removeStyle= require('../../common/cy/manage-style').removeStyle;
 // const make_cytoscape = require('../../common/cy/');
 // const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
-const TokenInput = require('./token-input').TokenInput;
-const InvalidTokenFeedback = require('./token-input').InvalidTokenFeedback;
+const TokenInput = require('./token-input');
 const { BaseNetworkView } = require('../../common/components');
 //const { getLayoutConfig } = require('../../common/cy/layout');
 //const downloadTypes = require('../../common/config').downloadTypes;
@@ -53,7 +52,7 @@ class Enrichment extends React.Component {
         }),
         h(TokenInput)
       ],
-      invalidTokenContainer: h(InvalidTokenFeedback)
+      invalidTokenContainer: []
     });
     return h('div.main', [baseView]);
   }

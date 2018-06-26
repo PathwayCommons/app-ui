@@ -9,7 +9,8 @@ class TokenInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tokenData: new Map()
+      tokenData: new Map(),
+      invalidTokens: ""
     };
   }
 
@@ -52,12 +53,12 @@ class TokenInput extends React.Component {
   //ideally, tokens will be marked in the input box
   updateInvalidStatus()
   {
-    let displayStatus = "Invalid Tokens:<br/>";
     this.state.tokenData.forEach((value, key) => {
-      if (value == false) displayStatus += key +"<br/>";
+      if (value == false) this.state.invalidTokens += key + "\n";
     });
-    document.getElementById('invalid-tokens').innerHTML = "";
-    document.getElementById('invalid-tokens').innerHTML += displayStatus;
+    this.setState({invalidTokens: "invalid ex: \ngene1 \ngene2 \n"});
+    // console.log(this.state.invalidTokens);
+    // console.log(this.state.tokenData);
   }
 
   //called onInput in 'gene-input-box'
@@ -87,24 +88,18 @@ class TokenInput extends React.Component {
         h('submit-container', {
           onClick: () => {this.parseTokenList();} },
           [h('button.submit', 'Submit')]
-        )
+        ),
+        h('div.invalid-token-container', [
+          h('textarea.invalid-tokens-feedback',{
+            value: this.state.invalidTokens,
+            readOnly: true
+          })
+        ])
     ]);
   }
 
 }
 
-class InvalidTokenFeedback extends React.Component {
-  render(){
-    return(
-      h('div.invalid-token-container', {
-        id: 'invalid-tokens'
-       })
-    );
-  }
-}
-
-
-module.exports = {TokenInput: TokenInput, InvalidTokenFeedback: InvalidTokenFeedback};
-
+module.exports = TokenInput;
 
 

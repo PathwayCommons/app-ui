@@ -13,60 +13,41 @@ class InteractionsFilterMenu extends React.Component {
    * @param {*} degreeValues array returned by getUniqueDegreeValues
    * @description Hides nodes based on their degree, degree determined by on-screen slider
    */
-  sliderUpdate(degreeValues,initial){
-    const nodes = this.props.cy.nodes();
+  sliderUpdate(initial){
+    const cy = this.props.cy;
+    const nodes = cy.nodes();
+    const bc = cy.$().bc();
 
-    //any nodes with less than this number of degrees will not show in view
-    //default setting is 2
-    let sliderVal = null;
-    if(initial){
-      sliderVal = degreeValues[initial];
-    }else{
-      sliderVal = degreeValues[document.getElementById('selection-slider').value];
-    }
+    //Starts the slider at a non-zero value
+    let sliderVal;
+    if(initial)
+      sliderVal = initial;
+    else
+      sliderVal = document.getElementById('selection-slider').value;
 
     //loop through each node in the network
     for(let i in nodes){
         let node = nodes[i];
         
         //sometimes "nodes" are functions?? this fixes that
-        if(node.show){ node.removeClass('hidden'); }
-        else{ continue; }
+        if(node.show)
+          node.removeClass('hidden');
+        else
+          continue;
 
-        if(node.degree() <= sliderVal){
+        if(bc.betweenness(node) < sliderVal){
           node.addClass('hidden');
         }
 
 
     }
   }
-  /**
-   * @returns A sorted array containing each node in the array's degree exactly once
-   */
-  getUniqueDegreeValues(){
-    const nodes = this.props.cy.nodes();
-    let degreeList = [0];
-
-
-    //Create an array containing every unique number of degrees
-    for(let i in nodes){
-      let node = nodes[i];
-      if(node.degree){
-        let degree = node.degree();
-        if(degreeList.indexOf(degree) === -1)
-          degreeList.push(degree);
-      }
-    }
-    //sort the array
-    degreeList = degreeList.sort(function(a, b){return a - b;});
-    return degreeList;
-  }
 
 
   render(){
     const props= this.props;
-    let degreeValues = this.getUniqueDegreeValues();
-    this.sliderUpdate(degreeValues,2);
+    const defaultSliderVal = 0.15;
+    this.sliderUpdate(defaultSliderVal);
 
     const buttons= _.map(props.filters,(active,type)=>
     h('div',{
@@ -83,7 +64,7 @@ class InteractionsFilterMenu extends React.Component {
     //-2 so the last tick always shows at least 1 node
     //Slider listed under 'Visible Nodes' in the interaction viewer
     const slider = [
-      h("input",{type:"range",id:'selection-slider',min:0,max:degreeValues.length-2,step:1,defaultValue:2,onInput:() => this.sliderUpdate(degreeValues)}),
+      h("input",{type:"range",id:'selection-slider',min:0,max:1,step:0.01,defaultValue:defaultSliderVal,onInput:() => this.sliderUpdate()}),
     ];
 
     return h('div',[

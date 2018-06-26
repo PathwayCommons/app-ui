@@ -34,7 +34,20 @@ class Enrichment extends React.Component {
       },
       titleContainer: [],
       invalidTokenContainer: [],
+      validTokens: [],
+      invalidTokens: []
     };
+    this.handleValidTokenChange = this.handleValidTokenChange.bind(this);
+    this.handleInvalidTokenChange = this.handleInvalidTokenChange.bind(this);
+  }
+
+  handleValidTokenChange(validTokens)
+  {
+    this.state.validTokens = validTokens;
+  }
+  handleInvalidTokenChange(invalidTokens)
+  {
+    this.state.invalidTokens = invalidTokens;
   }
 
   render() {
@@ -50,7 +63,10 @@ class Enrichment extends React.Component {
         h('img', {
           src: '/img/humanIcon.png'
         }),
-        h(TokenInput)
+        h(TokenInput,{
+          updateValidTokenList: this.handleValidTokenChange,
+          updateInvalidTokenList: this.handleInvalidTokenChange
+        })
       ],
       invalidTokenContainer: []
     });

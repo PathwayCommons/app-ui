@@ -10,79 +10,73 @@ class TokenInput extends React.Component {
     super(props);
     this.state = {
       tokenData: new Map(),
-      invalidTokens: ""
+      query: '',
+      validTokens: ['test'],
+      invalidTokens: ['Invalid Tokens:']
     };
   }
 
+  //log input for validation onSubmit
+  //dynamic input editing, remove tokens from 'tokenData' and validity arrays 'validTokens' and 'invalidTokens' when token is altered or deleted from input box
+  handleChange(e) {
+    this.state.query = e.target.value;
+    this.state.tokenData.forEach( (value, key, mapObj) => {
+      if (e.target.value.includes(key) == false ) {
+        this.updateValidityArrays(_.pull, key);
+        mapObj.delete(key);
+      }
+    });
+  }
+
   //called onClick 'submit'
-  //seperate div text input into an array, remove all elements that have already been validated
-  //this method will be altered later depending on the type/format of the final input box (slate or some other library)
+  //seperate input into an array
+  //send only new tokens to validation
+  //****** NOTE: this method will be altered later depending on the type/format of the final input box (slate or some other library)
   parseTokenList() {
     let tokenList = this.state.query.split(/\s/g);
-    //Allow for input edit: parse tokenList to remove all elements that have already been processed and logged to the map 'tokenData'
-    //will run when resubmitting data
     this.state.tokenData.forEach( (value, key) => {
       if (tokenList.includes(key)) tokenList = _.pull(tokenList, key);
     });
-    //send only new tokens to validation
     this.retrieveValidationAPIResult(tokenList);
   }
 
-  //call validation service API to retrieve unrecognized tokens as an array
+  //call validation service API to retrieve validation result in the form of []
+  //****** NOTE: currently only checking for unrecognized tokens, not duplicates
   retrieveValidationAPIResult(tokensToValidate){
     ServerAPI.enrichmentAPI({genes: _.pull(tokensToValidate,"")}, "validation").then((result) => {
-      //call checkIfValidInput to determine individual token validity
-      this.checkIfValidInput(tokensToValidate, result.unrecognized);
+      this.updateMapWithNewTokens(tokensToValidate, result.unrecognized);
       });
   }
 
-  //store input tokens in state map 'tokenData' with values 'true' for valid or 'false' for invalid
-  checkIfValidInput(tokensToValidate, unrecognizedTokens)
+  //set new tokens in map 'tokenData' with values 'true' for valid or 'false' for invalid
+  updateMapWithNewTokens(tokensToSet, unrecognizedTokens)
   {
-    tokensToValidate.forEach((element) => {
+    tokensToSet.forEach((element) => {
       if( unrecognizedTokens.includes(element.toUpperCase()) ) this.state.tokenData.set(element, false);
       else this.state.tokenData.set(element, true);
+      this.updateValidityArrays(_.union, [element]);
     });
-    //display invalid tokens in 'invalid-token' div
-    this.updateInvalidStatus();
-    //console.log(this.state.tokenData);
   }
 
-  //display all invalid tokens in 'div.invalid-tokens'
-  //the mechanism for providing userFeedback will be iterated upon in the future
-  //ideally, tokens will be marked in the input box
-  updateInvalidStatus()
+  //store (action == _.union) and remove (action == _.pull) tokens in corresponding arrays, [invalidTokens] or [validTokens]
+  updateValidityArrays(action, token)
   {
-    this.state.tokenData.forEach((value, key) => {
-      if (value == false) this.state.invalidTokens += key + "\n";
-    });
-    this.setState({invalidTokens: "invalid ex: \ngene1 \ngene2 \n"});
-    // console.log(this.state.invalidTokens);
-    // console.log(this.state.tokenData);
+      if (this.state.tokenData.get(String(token)) == false) this.setState({invalidTokens: action(this.state.invalidTokens, token)});
+      else {this.setState({validTokens: action(this.state.validTokens, token)});}
   }
 
-  //called onInput in 'gene-input-box'
-  //dynamically update 'tokenData' map to remove any keys that are no longer present in the token list
-  //display these changes in 'invalid-tokens' div
-  handleChange(e) {
-    this.state.query = e.target.innerText;
-    //Allow for input edit: remove tokens from invalid box as soon as they are no longer present in input box
-    //will run when resubmitting data
-    this.state.tokenData.forEach( (value, key, mapObj) => {
-      if (this.state.query.includes(key) == false ) mapObj.delete(key);
-      this.updateInvalidStatus();
-    });
-  }
-
-
+//****** NOTE: input and feedback boxes are text areas
+//             user must manually drag textarea down to see all contents, use scroll for overflow
+//             this will be iterated upon
   render() {
+    //lift state to index.js /enrichment
+    this.props.updateValidTokenList(this.state.validTokens);
+    this.props.updateInvalidTokenList(this.state.invalidTokens);
     return ([
         h('div.gene-input-container', [
-          h('div.gene-input-box', {
+          h('textarea.gene-input-box', {
             placeholder: 'Enter one gene per line',
-            contentEditable: true,
-            id: 'gene-input-box',
-            onInput: (e) => this.handleChange(e)
+            onChange: (e) => this.handleChange(e)
           })
         ]),
         h('submit-container', {
@@ -91,13 +85,12 @@ class TokenInput extends React.Component {
         ),
         h('div.invalid-token-container', [
           h('textarea.invalid-tokens-feedback',{
-            value: this.state.invalidTokens,
+            value: this.state.invalidTokens.join("\n"),
             readOnly: true
           })
         ])
     ]);
   }
-
 }
 
 module.exports = TokenInput;

@@ -186,7 +186,7 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
 
 .invalid-tokens-feedback{
   min-height: 1.85em;
-  max-height: 800px !important;
+  max-height: 515px;
   width: 200px;
   background-color: white;
   padding: 0em 0.5em;

@@ -2,6 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
 const { ServerAPI } = require('../../services/');
+let Textarea = require('react-textarea-autosize').default;
 
 
 class TokenInput extends React.Component {
@@ -75,7 +76,8 @@ class TokenInput extends React.Component {
 
     return ([
         h('div.gene-input-container', [
-          h('textarea.gene-input-box', {
+          h(Textarea, {
+            className: 'gene-input-box',
             placeholder: 'Enter one gene per line',
             onChange: (e) => this.handleChange(e)
           })
@@ -85,7 +87,8 @@ class TokenInput extends React.Component {
           [h('button.submit', 'Submit')]
         ),
         h('div.invalid-token-container',[
-          h('textarea.invalid-tokens-feedback',{
+          h(Textarea, {
+            className:'invalid-tokens-feedback',
             value: this.state.invalidTokens.join("\n"),
             readOnly: true,
             //if invalidTokens is its default value (ie no tokens have been added), do not display feedback box

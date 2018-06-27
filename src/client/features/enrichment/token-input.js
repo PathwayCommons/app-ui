@@ -11,7 +11,7 @@ class TokenInput extends React.Component {
     this.state = {
       tokenData: new Map(),
       query: '',
-      validTokens: ['test'],
+      validTokens: [],
       invalidTokens: ['Invalid Tokens:']
     };
   }
@@ -72,6 +72,7 @@ class TokenInput extends React.Component {
     //lift state to index.js /enrichment
     this.props.updateValidTokenList(this.state.validTokens);
     this.props.updateInvalidTokenList(this.state.invalidTokens);
+
     return ([
         h('div.gene-input-container', [
           h('textarea.gene-input-box', {
@@ -83,10 +84,12 @@ class TokenInput extends React.Component {
           onClick: () => {this.parseTokenList();} },
           [h('button.submit', 'Submit')]
         ),
-        h('div.invalid-token-container', [
+        h('div.invalid-token-container',[
           h('textarea.invalid-tokens-feedback',{
             value: this.state.invalidTokens.join("\n"),
-            readOnly: true
+            readOnly: true,
+            //if invalidTokens is its default value (ie no tokens have been added), do not display feedback box
+            style: {display: this.state.invalidTokens == "Invalid Tokens:" ? 'none' : 'block' }
           })
         ])
     ]);

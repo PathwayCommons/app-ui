@@ -21,7 +21,7 @@ const enrichmentConfig={
   useSearchBar: true
 };
 
-
+// ***** NOTE: to run /enrichment, ComponentDidMount() must be commented out in Base-Network-View.js because the graph is not yet implemented
 class Enrichment extends React.Component {
   constructor(props) {
     super(props);
@@ -33,7 +33,7 @@ class Enrichment extends React.Component {
         comments: []
       },
       titleContainer: [],
-      invalidTokenContainer: [],
+      closeToolBar: true,
       validTokens: [],
       invalidTokens: []
     };
@@ -54,7 +54,6 @@ class Enrichment extends React.Component {
     const state = this.state;
     const baseView = h(BaseNetworkView.component, {
       componentConfig: state.componentConfig,
-      //titles at top of toolbar
       networkMetadata: {},
       titleContainer: [
         h('h4', [
@@ -68,7 +67,8 @@ class Enrichment extends React.Component {
           updateInvalidTokenList: this.handleInvalidTokenChange
         })
       ],
-      invalidTokenContainer: []
+      //will use state to set to false to render the toolbar once analysis is run and graph is displayed
+      closeToolBar: true
     });
     return h('div.main', [baseView]);
   }

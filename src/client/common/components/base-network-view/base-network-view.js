@@ -70,6 +70,7 @@ class BaseNetworkView extends React.Component {
     layout.run();
   }
 
+
   changeMenu(menu) {
     let resizeCyImmediate = () => this.state.cy.resize();
     let resizeCyDebounced = _.debounce( resizeCyImmediate, 500 );
@@ -183,10 +184,6 @@ class BaseNetworkView extends React.Component {
       (this.props.titleContainer ?  this.props.titleContainer : metadataTitles)
     ];
 
-    const toolBarContainer = [
-      (this.props.invalidTokenContainer ? this.props.invalidTokenContainer : h('div.view-toolbar', toolBar))
-    ];
-
 
     return h('div.view', [
       h('div', { className: classNames('menu-bar', { 'menu-bar-margin': state.activeMenu }) }, [
@@ -200,7 +197,7 @@ class BaseNetworkView extends React.Component {
           ]),
           h('div.title-container', displayInfo)
         ]),
-        toolBarContainer
+        h('div.view-toolbar', {style: {display: this.props.closeToolBar == true ? 'none': 'inherit'}}, toolBar)
       ]),
       h(Loader, {
         loaded: !this.state.networkLoading,

@@ -67,7 +67,7 @@ const toolbarButtons = [
 const menus = [
   {
     id: 'closeMenu',
-    func: props => null
+    func: () => null
   },
   {
     id: 'fileDownloadMenu',

@@ -1,7 +1,7 @@
 const qs = require('querystring');
 const fetch = require('node-fetch');
 const _ = require('lodash');
-
+const logger = require('./../logger');
 const config = require('../../config');
 const geneValidator = require('../enrichment/validation').validatorGconvert;
 
@@ -53,7 +53,7 @@ const query = async (queryObj) => {
   return fetch(url, fetchOptions)
     .then(res => (cmd=='get'||cmd=='graph')?res.text():res.json())
     .catch((e) => {
-      console.log('query ' + queryObj + ' failed - ' + e);
+      logger.error('query ' + queryObj + ' failed - ' + e);
       return null;
     });
 };

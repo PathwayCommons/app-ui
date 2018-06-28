@@ -6,11 +6,11 @@ const _ = require('lodash');
 
 // const hideTooltips = require('../../common/cy/events/click').hideTooltips;
 // const removeStyle= require('../../common/cy/manage-style').removeStyle;
-// const make_cytoscape = require('../../common/cy/');
+const make_cytoscape = require('../../common/cy/');
 // const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
 const TokenInput = require('./token-input');
 const { BaseNetworkView } = require('../../common/components');
-//const { getLayoutConfig } = require('../../common/cy/layout');
+const { getLayoutConfig } = require('../../common/cy/layout');
 //const downloadTypes = require('../../common/config').downloadTypes;
 
 const enrichmentConfig={
@@ -21,22 +21,42 @@ const enrichmentConfig={
   useSearchBar: true
 };
 
+//temporary empty network for development purposes
+const emptyNetwork = {
+  graph: {
+    edges: [],
+    nodes: [],
+    pathwayMetadata: {
+      title: [],
+      datasource: [],
+      comments: []
+    },
+    layout: null
+  }
+};
+const network = emptyNetwork;
+const layoutConfig = getLayoutConfig();
+
 // ***** NOTE: to run /enrichment, ComponentDidMount() must be commented out in Base-Network-View.js because the graph is not yet implemented
 class Enrichment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      cy: make_cytoscape({headless: true}),
       componentConfig: enrichmentConfig,
-      networkMetadata: {
-        name: '',
-        datasource: '',
-        comments: []
-      },
+      layoutConfig: layoutConfig,
+      networkJSON: network.graph,
+      networkMetadata: network.graph.pathwayMetadata,
+
+      //temporarily set to false so loading spinner is disabled
+      networkLoading: false,
+
       titleContainer: [],
       closeToolBar: true,
       validTokens: [],
       invalidTokens: []
     };
+
     this.handleValidTokenChange = this.handleValidTokenChange.bind(this);
     this.handleInvalidTokenChange = this.handleInvalidTokenChange.bind(this);
   }
@@ -53,8 +73,12 @@ class Enrichment extends React.Component {
   render() {
     const state = this.state;
     const baseView = h(BaseNetworkView.component, {
+      cy: state.cy,
       componentConfig: state.componentConfig,
-      networkMetadata: {},
+      layoutConfig: state.layoutConfig,
+      networkJSON: state.networkJSON,
+      networkMetadata: state.networkMetadata,
+      networkLoading: state.networkLoading,
       titleContainer: [
         h('h4', [
           h('span', 'Pathway Enrichment   ')

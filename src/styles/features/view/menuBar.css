@@ -168,7 +168,7 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
   z-index: 1;
   overflow-y:scroll;
   line-height: 1.8;
-  resize: vertical;
+  resize: none;
 }
 
 .gene-input-box:empty:not(:focus):before {
@@ -186,7 +186,7 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
 
 .invalid-tokens-feedback{
   min-height: 1.85em;
-  max-height: 515px;
+  max-height: 628px;
   width: 200px;
   background-color: white;
   padding: 0em 0.5em;
@@ -197,7 +197,7 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
   z-index: 1;
   overflow-y:scroll;
   line-height: 1.8;
-  resize: vertical;
+  resize: none;
 }
 
 .invalid-tokens-feedback:empty{

@@ -5,7 +5,8 @@ const { validTargetDb } = require('./validity-info');
 const qs = require('query-string');
 const { cleanUpEntrez } = require('../helper');
 const logger = require('./../../logger');
-const GCONVERT_URL = 'https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/gconvert.cgi';
+const config = require('../../../config');
+const GCONVERT_URL = config.GPROFILER_URL + 'gconvert.cgi';
 const FETCH_TIMEOUT = 5000; //ms
 
 const resultTemplate = ( unrecognized, duplicate, geneInfo ) => {

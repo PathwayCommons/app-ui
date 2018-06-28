@@ -2,6 +2,7 @@ const fetch = require('node-fetch');
 const _ = require('lodash');
 const qs = require('query-string');
 const { cleanUpEntrez } = require('../helper');
+const config = require('../../../config');
 
 const defaultSetting = {
   "output": "mini",
@@ -23,9 +24,6 @@ const defaultSetting = {
   "sf_REAC": 1,
   "prefix": 'ENTREZGENE_ACC'
 };
-
-const gProfilerURL = "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/";
-
 
 // parseGProfilerResponse(gProfilerResponse) takes the text response
 // from gProfiler gProfilerResponse and parses it into JSON format
@@ -83,7 +81,7 @@ const enrichment = (query, userSetting) => {
     }
     formData.custbg = backgroundGenesVal.join(" ");
 
-    fetch(gProfilerURL, {
+    fetch(config.GPROFILER_URL, {
       method: 'post',
       body: qs.stringify(formData)
     }).then(gProfilerResponse => gProfilerResponse.text())

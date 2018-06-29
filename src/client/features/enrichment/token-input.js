@@ -13,12 +13,12 @@ class TokenInput extends React.Component {
       tokenData: new Map(),
       query: '',
       validTokens: [],
-      invalidTokens: []
+      unrecognizedTokens: []
     };
   }
 
   //log input for validation onSubmit
-  //dynamic input editing, remove tokens from 'tokenData' and validity arrays 'validTokens' and 'invalidTokens' when token is altered or deleted from input box
+  //dynamic input editing, remove tokens from 'tokenData' and validity arrays 'validTokens' and 'unrecognizedTokens' when token is altered or deleted from input box
   handleChange(e) {
     this.state.query = e.target.value;
     this.state.tokenData.forEach( (value, key, mapObj) => {
@@ -49,7 +49,7 @@ class TokenInput extends React.Component {
       });
   }
 
-  //set new tokens in map 'tokenData' with values 'true' for valid or 'false' for invalid
+  //set new tokens in map 'tokenData' with values 'true' for valid or 'false' for unrecognized
   updateMapWithNewTokens(tokensToSet, unrecognizedTokens)
   {
     tokensToSet.forEach((element) => {
@@ -59,10 +59,10 @@ class TokenInput extends React.Component {
     });
   }
 
-  //store (action == _.union) and remove (action == _.pull) tokens in corresponding arrays, [invalidTokens] or [validTokens]
+  //store (action == _.union) and remove (action == _.pull) tokens in corresponding arrays, [unrecognizedTokens] or [validTokens]
   updateValidityArrays(action, token)
   {
-      if (this.state.tokenData.get(String(token)) == false) this.setState({invalidTokens: action(this.state.invalidTokens, token)});
+      if (this.state.tokenData.get(String(token)) == false) this.setState({unrecognizedTokens: action(this.state.unrecognizedTokens, token)});
       else {this.setState({validTokens: action(this.state.validTokens, token)});}
   }
 
@@ -70,7 +70,6 @@ class TokenInput extends React.Component {
   render() {
     //lift state to index.js /enrichment
     this.props.updateValidTokenList(this.state.validTokens);
-    this.props.updateInvalidTokenList(this.state.invalidTokens);
 
     return h('div.enrichmentInput', [
         h('h4', [
@@ -90,13 +89,13 @@ class TokenInput extends React.Component {
           onClick: () => {this.parseTokenList();} },
           [h('button.submit', 'Submit')]
         ),
-        h('div.invalid-token-container',[
+        h('div.unrecognized-token-container',[
           h(Textarea, {
-            className:'invalid-tokens-feedback',
-            value: "InvalidTokens: \n" + this.state.invalidTokens.join("\n"),
+            className:'unrecognized-tokens-feedback',
+            value: "Unrecognized Tokens: \n" + this.state.unrecognizedTokens.join("\n"),
             readOnly: true,
-            //if invalidTokens is its default value (ie no tokens have been added), feedback box not displayed
-            style: {display: _.isEmpty(this.state.invalidTokens) ? 'none' : 'block' }
+            //if unrecognizedTokens is its default value (ie no tokens have been added), feedback box not displayed
+            style: {display: _.isEmpty(this.state.unrecognizedTokens) ? 'none' : 'block' }
           })
         ])
     ]);

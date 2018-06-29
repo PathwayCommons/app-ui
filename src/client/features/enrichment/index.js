@@ -52,12 +52,10 @@ class Enrichment extends React.Component {
 
       closeToolBar: true,
 
-      validTokens: [],
-      invalidTokens: []
+      validTokens: []
     };
 
     this.handleValidTokenChange = this.handleValidTokenChange.bind(this);
-    this.handleInvalidTokenChange = this.handleInvalidTokenChange.bind(this);
   }
 
   handleValidTokenChange(validTokens)
@@ -65,17 +63,11 @@ class Enrichment extends React.Component {
     this.state.validTokens = validTokens;
     //console.log(this.state.validTokens);
   }
-  handleInvalidTokenChange(invalidTokens)
-  {
-    this.state.invalidTokens = invalidTokens;
-    //console.log(this.state.invalidTokens);
-  }
 
   render() {
     let { cy, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading } = this.state;
     let tokenInput = () => h(TokenInput,{
-        updateValidTokenList: this.handleValidTokenChange,
-        updateInvalidTokenList: this.handleInvalidTokenChange
+        updateValidTokenList: this.handleValidTokenChange
       });
 
     return h(BaseNetworkView.component, {

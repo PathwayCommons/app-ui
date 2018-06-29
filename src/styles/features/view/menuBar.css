@@ -179,7 +179,7 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
   content: attr(placeholder);
 }
 
-.invalid-token-container{
+.unrecognized-token-container{
   @extend %flex-center;
 
   min-width: 200px;
@@ -188,7 +188,7 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
   left: -1px;
 }
 
-.invalid-tokens-feedback{
+.unrecognized-tokens-feedback{
   min-height: 1.85em;
   max-height: 628px;
   width: 200px;
@@ -204,7 +204,7 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
   resize: none;
 }
 
-.invalid-tokens-feedback:empty{
+.unrecognized-tokens-feedback:empty{
   display:none;
 }
 

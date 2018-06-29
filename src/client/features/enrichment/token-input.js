@@ -13,7 +13,7 @@ class TokenInput extends React.Component {
       tokenData: new Map(),
       query: '',
       validTokens: [],
-      invalidTokens: ['Invalid Tokens:']
+      invalidTokens: []
     };
   }
 
@@ -66,15 +66,19 @@ class TokenInput extends React.Component {
       else {this.setState({validTokens: action(this.state.validTokens, token)});}
   }
 
-//****** NOTE: input and feedback boxes are text areas
-//             user must manually drag textarea down to see all contents, use scroll for overflow
-//             this will be iterated upon
+
   render() {
     //lift state to index.js /enrichment
     this.props.updateValidTokenList(this.state.validTokens);
     this.props.updateInvalidTokenList(this.state.invalidTokens);
 
-    return ([
+    return h('div.enrichmentInput', [
+        h('h4', [
+          h('span', 'Pathway Enrichment   ')
+        ]),
+        h('img', {
+          src: '/img/humanIcon.png'
+        }),
         h('div.gene-input-container', [
           h(Textarea, {
             className: 'gene-input-box',
@@ -89,10 +93,10 @@ class TokenInput extends React.Component {
         h('div.invalid-token-container',[
           h(Textarea, {
             className:'invalid-tokens-feedback',
-            value: this.state.invalidTokens.join("\n"),
+            value: "InvalidTokens: \n" + this.state.invalidTokens.join("\n"),
             readOnly: true,
-            //if invalidTokens is its default value (ie no tokens have been added), do not display feedback box
-            style: {display: this.state.invalidTokens == "Invalid Tokens:" ? 'none' : 'block' }
+            //if invalidTokens is its default value (ie no tokens have been added), feedback box not displayed
+            style: {display: _.isEmpty(this.state.invalidTokens) ? 'none' : 'block' }
           })
         ])
     ]);

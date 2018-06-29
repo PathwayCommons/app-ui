@@ -181,7 +181,7 @@ class BaseNetworkView extends React.Component {
     // if 'titleContainer' exists from index file, unique title will render in 'div.title-container'
     // default: metadata pathway name and database
     const displayInfo = [
-      (this.props.titleContainer ?  this.props.titleContainer : metadataTitles)
+      (this.props.titleContainer ?  this.props.titleContainer() : metadataTitles)
     ];
 
 

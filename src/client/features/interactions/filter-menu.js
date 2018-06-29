@@ -11,43 +11,55 @@ class InteractionsFilterMenu extends React.Component {
   /**
    * 
    * @param {*} degreeValues array returned by getUniqueDegreeValues
-   * @description Hides nodes based on their degree, degree determined by on-screen slider
+   * @description Hides nodes based on their betweenness centrality, determined by on-screen slider
    */
-  sliderUpdate(initial){
+  sliderUpdate(){
     const cy = this.props.cy;
-    const nodes = cy.nodes();
-    const bc = cy.$().bc();
 
     //Starts the slider at a non-zero value
-    let sliderVal;
-    if(initial)
-      sliderVal = initial;
-    else
-      sliderVal = document.getElementById('selection-slider').value;
+    let sliderVal = document.getElementById('selection-slider').value;
 
-    //loop through each node in the network
-    for(let i in nodes){
-        let node = nodes[i];
-        
-        //sometimes "nodes" are functions?? this fixes that
-        if(node.show)
-          node.removeClass('hidden');
-        else
-          continue;
+    cy.nodes().forEach(node => {
+      if(node.data('bcVal') < sliderVal)
+        node.addClass('hidden');
+      else 
+        node.removeClass('hidden');
+    });
+  }
 
-        if(bc.betweenness(node) < sliderVal){
-          node.addClass('hidden');
-        }
+  /**
+   * 
+   * @param {*} nodesToShow Number of nodes that should be visible to user on first load of network
+   * @description Hides all nodes based on betweenness centrality, keeping only `nodesToShow` visible.
+   * Also sets the default value for the slider, based on this number.
+   */
+  findDefaultAndUpdate(nodesToShow){
+    const cy = this.props.cy;
 
+    let sortedNodes = cy.nodes().sort(function( a, b ){
+      return b.data('bcVal') - a.data('bcVal');
+    });
 
-    }
+    let i = 0;
+    let returnValue = 0;
+    sortedNodes.forEach(node => {
+      if(i<nodesToShow)
+        returnValue =  node.data('bcVal');
+      i++;
+    });
+
+    cy.nodes().forEach(node => {
+      if(node.data('bcVal') < returnValue)
+        node.addClass('hidden');
+    });
+
+    return returnValue;
   }
 
 
   render(){
     const props= this.props;
-    const defaultSliderVal = 0.15;
-    this.sliderUpdate(defaultSliderVal);
+    const defaultSliderVal = this.findDefaultAndUpdate(20);
 
     const buttons= _.map(props.filters,(active,type)=>
     h('div',{

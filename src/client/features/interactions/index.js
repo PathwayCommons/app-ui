@@ -107,6 +107,7 @@ class Interactions extends React.Component {
       const layout = cy.layout(initialLayoutOpts);
       layout.run();
     });
+    
   }
 
   filterUpdate(type) {
@@ -136,9 +137,42 @@ class Interactions extends React.Component {
     });
   }
 
+  generateCentralityValues(){
+    const state = this.state;
+    const cy = state.cy;
+    const bc = cy.$().bc();
+    const nodes = cy.nodes();
+    if(nodes.length === 0) return;
+    
+    let centralityVals = [];
+    let centralityMap = [];
+    nodes.forEach( (ele) => {
+      if(ele.data){
+        let bcVal = bc.betweenness(ele);
+        centralityVals.push(bcVal);
+        centralityMap.push([ele,bcVal]);
+      }
+    });
+
+    const max = Math.max(...centralityVals);
+    const min = Math.min(...centralityVals);
+
+
+    centralityMap.forEach( (ele) => {
+      ele[0].data('bcVal',this.normalizeValue(ele[1],max,min));
+    });
+
+  }
+
+
+  normalizeValue(value,max,min){
+    return (value-min)/(max-min);
+  }
+
   render(){
     const state = this.state;
     const loaded = state.loaded;
+    this.generateCentralityValues();
     const baseView = !_.isEmpty(state.networkJSON) ? h(BaseNetworkView.component, {
       layoutConfig: state.layoutConfig,
       componentConfig: state.componentConfig,
@@ -160,6 +194,7 @@ class Interactions extends React.Component {
 
     // create a view shell loading view e.g looks like the view but its not
     const content = loaded ? baseView : loadingView;
+    
     return h('div.main', [content]);
   }
 }

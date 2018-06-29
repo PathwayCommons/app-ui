@@ -46,7 +46,7 @@ const ServerAPI = {
       body:JSON.stringify(query)
     })
     .then(res => res.json())
-    .catch((err) => console.error('Error:', err));
+    .catch(err => err);
   },
 
   geneQuery(query){

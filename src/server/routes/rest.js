@@ -10,6 +10,8 @@ const isAuthenticated = token => {
   return config.MASTER_PASSWORD != '' && config.MASTER_PASSWORD === token;
 };
 
+const errorMsg = { error: 'Not Authenticated' };
+
 
 router.use('/', enrichmentRouter);
 

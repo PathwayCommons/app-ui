@@ -205,7 +205,7 @@ class PaintMenu extends React.Component {
             id: 'foldChange',
             desc: true
           }],
-          onFilteredChange: (column, value) => {
+          onFilteredChange: (column) => {
             cysearch(cy, _.get(column, '0.value', ''), {'border-width': 8, 'border-color': 'red'});
           }
         })

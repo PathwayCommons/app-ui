@@ -78,7 +78,7 @@
     "react-tabs": "^2.1.1",
     "react-textarea-autosize": "^6.1.0",
     "rethinkdb": "^2.3.3",
-    "sbgnml-to-cytoscape": "^4.0.1",
+    "sbgnml-to-cytoscape": "^4.0.4",
     "serve-favicon": "^2.4.5",
     "socket.io": "^2.0.3",
     "tableify": "^1.1.0",

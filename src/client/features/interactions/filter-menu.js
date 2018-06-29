@@ -42,9 +42,13 @@ class InteractionsFilterMenu extends React.Component {
 
     let i = 0;
     let returnValue = 0;
+    let maxVal = 0;
     sortedNodes.forEach(node => {
-      if(i<nodesToShow)
+      if(i<nodesToShow){
         returnValue =  node.data('bcVal');
+        if(i === 1)
+          maxVal = node.data('bcVal');
+      }
       i++;
     });
 
@@ -53,13 +57,13 @@ class InteractionsFilterMenu extends React.Component {
         node.addClass('hidden');
     });
 
-    return returnValue;
+    return [returnValue,maxVal];
   }
 
 
   render(){
     const props= this.props;
-    const defaultSliderVal = this.findDefaultAndUpdate(20);
+    const [defaultSliderVal,maxSliderVal] = this.findDefaultAndUpdate(20);
 
     const buttons= _.map(props.filters,(active,type)=>
     h('div',{
@@ -76,7 +80,7 @@ class InteractionsFilterMenu extends React.Component {
     //-2 so the last tick always shows at least 1 node
     //Slider listed under 'Visible Nodes' in the interaction viewer
     const slider = [
-      h("input",{type:"range",id:'selection-slider',min:0,max:1,step:0.01,defaultValue:defaultSliderVal,onInput:() => this.sliderUpdate()}),
+      h("input",{type:"range",id:'selection-slider',min:0,max:maxSliderVal,step:0.001,defaultValue:defaultSliderVal,onInput:() => this.sliderUpdate()}),
     ];
 
     return h('div',[

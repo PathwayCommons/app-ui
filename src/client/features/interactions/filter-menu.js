@@ -89,7 +89,6 @@ class InteractionsFilterMenu extends React.Component {
       ]
     ));
 
-    //-2 so the last tick always shows at least 1 node
     //Slider listed under 'Visible Nodes' in the interaction viewer
     const slider = [
       h("input",{type:"range",id:'selection-slider',min:0,max:maxSliderVal,step:0.0001,defaultValue:defaultSliderVal,onInput:() => this.sliderUpdate()}),

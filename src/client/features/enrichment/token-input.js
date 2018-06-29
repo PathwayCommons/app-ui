@@ -4,72 +4,45 @@ const _ = require('lodash');
 const { ServerAPI } = require('../../services/');
 let Textarea = require('react-textarea-autosize').default;
 
-
 class TokenInput extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      tokenData: new Map(),
       query: '',
       validTokens: [],
       unrecognizedTokens: []
     };
   }
 
-  //log input for validation onSubmit
-  //dynamic input editing, remove tokens from 'tokenData' and validity arrays 'validTokens' and 'unrecognizedTokens' when token is altered or deleted from input box
+  //store 'gene-input-box' contents on state
   handleChange(e) {
     this.state.query = e.target.value;
-    this.state.tokenData.forEach( (value, key, mapObj) => {
-      if (e.target.value.includes(key) == false ) {
-        this.updateValidityArrays(_.pull, key);
-        mapObj.delete(key);
-      }
-    });
-  }
-
-  //called onClick 'submit'
-  //seperate input into an array
-  //send only new tokens to validation
-  //****** NOTE: this method will be altered later depending on the type/format of the final input box (slate or some other library)
-  parseTokenList() {
-    let tokenList = this.state.query.split(/\s/g);
-    this.state.tokenData.forEach( (value, key) => {
-      if (tokenList.includes(key)) tokenList = _.pull(tokenList, key);
-    });
-    this.retrieveValidationAPIResult(tokenList);
   }
 
   //call validation service API to retrieve validation result in the form of []
-  //****** NOTE: currently only checking for unrecognized tokens, not duplicates
-  retrieveValidationAPIResult(tokensToValidate){
-    ServerAPI.enrichmentAPI({genes: _.pull(tokensToValidate,"")}, "validation").then((result) => {
-      this.updateMapWithNewTokens(tokensToValidate, result.unrecognized);
+  retrieveValidationAPIResult(){
+    //reset state values
+    this.state.unrecognizedTokens = [];
+    this.state.validTokens = [];
+    let tokenList = this.state.query.split(/\s/g);
+    //send all tokens to validationAPI
+    ServerAPI.enrichmentAPI({genes: _.pull(tokenList,"")}, "validation").then((result) => {
+      this.interpretValidationResult(tokenList, result.unrecognized);
       });
   }
 
-  //set new tokens in map 'tokenData' with values 'true' for valid or 'false' for unrecognized
-  updateMapWithNewTokens(tokensToSet, unrecognizedTokens)
-  {
-    tokensToSet.forEach((element) => {
-      if( unrecognizedTokens.includes(element.toUpperCase()) ) this.state.tokenData.set(element, false);
-      else this.state.tokenData.set(element, true);
-      this.updateValidityArrays(_.union, [element]);
+  //store validation data on state as arrays [validTokens] and [unrecognizedTokens]
+  //lift [validTokens] to parent file index.js
+  interpretValidationResult(tokenList, unrecognizedTokens){
+    tokenList.forEach((element) => {
+      if (unrecognizedTokens.includes(element.toUpperCase()) ) this.setState({unrecognizedTokens: _.union(this.state.unrecognizedTokens, [element])});
+      else {this.setState({validTokens: _.union(this.state.validTokens, [element])});}
     });
+    this.props.updateValidTokenList(this.state.validTokens);
   }
-
-  //store (action == _.union) and remove (action == _.pull) tokens in corresponding arrays, [unrecognizedTokens] or [validTokens]
-  updateValidityArrays(action, token)
-  {
-      if (this.state.tokenData.get(String(token)) == false) this.setState({unrecognizedTokens: action(this.state.unrecognizedTokens, token)});
-      else {this.setState({validTokens: action(this.state.validTokens, token)});}
-  }
-
 
   render() {
-    //lift state to index.js /enrichment
-    this.props.updateValidTokenList(this.state.validTokens);
 
     return h('div.enrichmentInput', [
         h('h4', [
@@ -86,7 +59,7 @@ class TokenInput extends React.Component {
           })
         ]),
         h('submit-container', {
-          onClick: () => {this.parseTokenList();} },
+          onClick: () => { this.retrieveValidationAPIResult();} },
           [h('button.submit', 'Submit')]
         ),
         h('div.unrecognized-token-container',[

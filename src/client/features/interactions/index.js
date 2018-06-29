@@ -137,13 +137,20 @@ class Interactions extends React.Component {
     });
   }
 
+  /**
+   * @description This function generates normalized betweenness centrality values for each node in the network, 
+   * and adds the calculated information to each node as a new data field
+   */
   generateCentralityValues(){
+    //setting up base variables
     const state = this.state;
     const cy = state.cy;
     const bc = cy.$().bc();
     const nodes = cy.nodes();
     if(nodes.length === 0) return;
     
+
+    //loop through the nodes, collected betweenness centrality values
     let centralityVals = [];
     let centralityMap = [];
     nodes.forEach( (ele) => {
@@ -154,17 +161,21 @@ class Interactions extends React.Component {
       }
     });
 
+    //normalize the values and add as field in node data
     const max = Math.max(...centralityVals);
     const min = Math.min(...centralityVals);
-
-
     centralityMap.forEach( (ele) => {
       ele[0].data('bcVal',this.normalizeValue(ele[1],max,min));
     });
 
   }
 
-
+  /**
+   * @description Converts a number to a normalized value in the range [0,1]
+   * @param {} value The value to be normalized
+   * @param {*} max The maximum number this value can be
+   * @param {*} min The minimum number this value can be
+   */
   normalizeValue(value,max,min){
     return (value-min)/(max-min);
   }

@@ -16,9 +16,10 @@ class InteractionsFilterMenu extends React.Component {
   sliderUpdate(){
     const cy = this.props.cy;
 
-    //Starts the slider at a non-zero value
+    //get the value from the slider
     let sliderVal = document.getElementById('selection-slider').value;
 
+    //compare to pre-calculated centrality & hide if necessary
     cy.nodes().forEach(node => {
       if(node.data('bcVal') < sliderVal)
         node.addClass('hidden');
@@ -34,15 +35,19 @@ class InteractionsFilterMenu extends React.Component {
    * Also sets the default value for the slider, based on this number.
    */
   findDefaultAndUpdate(nodesToShow){
+    //setting up variables
     const cy = this.props.cy;
+    let i = 0;
+    let returnValue = 0;
+    let maxVal = 0;
 
+    //sort nodes based on betweenness centrality
     let sortedNodes = cy.nodes().sort(function( a, b ){
       return b.data('bcVal') - a.data('bcVal');
     });
 
-    let i = 0;
-    let returnValue = 0;
-    let maxVal = 0;
+    //get the first nodesToShow nodes
+    //also get the node with second-highest bcVal
     sortedNodes.forEach(node => {
       if(i<nodesToShow){
         returnValue =  node.data('bcVal');
@@ -52,17 +57,24 @@ class InteractionsFilterMenu extends React.Component {
       i++;
     });
 
+    //hide all nodes other than the ones with top `nodesToShow`th bcVal
     cy.nodes().forEach(node => {
       if(node.data('bcVal') < returnValue)
         node.addClass('hidden');
     });
 
+    //return the bcVal of the `nodesToShow`th highest bcVal
+    //return the bcVal of the second highest bcVal
     return [returnValue,maxVal];
   }
 
 
   render(){
     const props= this.props;
+
+    //Networks end up with all nodes next to 0 bcVal other than search term
+    //slider becomes a toggle since noone has the dexterity to distinguish values at the low end
+    //instead use the second highest bcVal as the maximum for slider, so its actually useful
     const [defaultSliderVal,maxSliderVal] = this.findDefaultAndUpdate(20);
 
     const buttons= _.map(props.filters,(active,type)=>

@@ -24,7 +24,7 @@ class TokenInput extends React.Component {
   retrieveValidationAPIResult(){
     let tokenList = _.pull(this.state.inputBoxContents.split(/\s/g), "");
     //send all tokens to validationAPI
-    ServerAPI.enrichmentAPI({gens: tokenList}, "validation").then((result) => {
+    ServerAPI.enrichmentAPI({genes: tokenList}, "validation").then((result) => {
       //set state inside of promise chain to ensure order of operation
       this.setState({submittedTokens: tokenList});
       this.setState({unrecognizedTokens: result.unrecognized.join("\n")});

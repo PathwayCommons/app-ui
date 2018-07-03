@@ -228,19 +228,22 @@ const expandableText = ( controller, landing, length, text, separator, type, css
   return result;
 };
 
-const expandableFunctionText = (controller,landing,text,toggleVar,index)=>{
+const expandableFunctionText = ( controller, landing, text, toggleVar, index ) => {
   let result = null;
-  const varToToggle= landing[index].showMore[toggleVar];
+  const varToToggle = landing[ index ].showMore[ toggleVar ];
   const cssClass = varToToggle ? 'search-landing-function-more' : 'search-landing-function-less';
-  result=[h('div', {key:'text', className:cssClass}, [h('span',text)])];
-  result.push(h('span.search-landing-link',{onClick: ()=> handelShowMoreClick(controller, landing, toggleVar, index),key:'showMore'}, varToToggle ? '« less': 'more »'));
+  result = [ h('div', { key:'text', className: cssClass }, [ h('span', text) ] ) ];
+  result.push( h('span.search-landing-link', { onClick: () => handelShowMoreClick( controller, landing, toggleVar, index ), key: 'showMore'}, varToToggle ? '« less': 'more »'));
   return result;
 };
 
-const interactionsLink = (source,text)=>
-  h(Link, {to: { pathname: '/interactions',search: queryString.stringify({source: source})},
+const interactionsLink = ( source, text ) => {
+  return h(Link, {
+    to: { pathname: '/interactions',search: queryString.stringify({source: source})},
     target: '_blank', className: 'search-landing-interactions', key:'interactions'
-  }, [h('button.search-landing-button', text)]);
+    }, [ h('button.search-landing-button', text) ]
+  );
+};
 
 /*Generates a landing box
 input: {controller,[{
@@ -255,57 +258,65 @@ synonyms:"TP53, BCC7, LFS1, P53, TRP53"
 }]}
 output: html for a landing box
 */
-const landingBox = (props) => {
-  const landing=props.landing;
-  const controller=props.controller;
-  if (controller.state.landingLoading ) {
+const landingBox = props => {
+  let { landing, controller } = props;
+
+  if( controller.state.landingLoading ) {
     return h('div.search-landing', [
       h('div.search-landing-innner',[
         h(Loader, { loaded:false , options: { color: '#16A085', position:'relative', top: '15px' }})]
       )]
     );
   }
-  const landingHTML= landing.map((box,index)=>{
-    const multipleBoxes = landing.length>1;
-    const title = [h('strong.search-landing-title-text',{key:'name'},box.name),];
-    if(multipleBoxes){
-      title.push(h('strong.material-icons',{key:'arrow'},landing[index].showMore.full? 'expand_less': 'expand_more'));
+
+  const landingHTML = landing.map( ( box, index ) => {
+    const multipleBoxes = landing.length > 1;
+    const title = [h('strong.search-landing-title-text', { key: 'name' }, box.name)];
+
+    if( multipleBoxes ){
+      title.push(h('strong.material-icons', { key: 'arrow' }, landing[ index ].showMore.full ? 'expand_less': 'expand_more'));
     }
-    let officialSymbol='';
-    if(box.officialSymbol){
-      officialSymbol=h('i.search-landing-small','Official Symbol: '+box.officialSymbol);
+    let officialSymbol = '';
+    if( box.officialSymbol ){
+      officialSymbol = h('i.search-landing-small', 'Official Symbol: ' + box.officialSymbol);
     }
-    let otherNames=[];
-    if(box.otherNames){
-      otherNames=expandableText(controller,landing,16,'Other Names: '+box.otherNames,',','i','search-landing-small','synonyms',index);
+
+    let otherNames = [];
+    if( box.otherNames ){
+      otherNames = expandableText(controller, landing, 16, 'Other Names: ' + box.otherNames, ',', 'i', 'search-landing-small', 'synonyms', index);
     }
-    let functions=[];
-    if(box.function){
-      functions=expandableFunctionText(controller,landing,box.function,'function',index);
+
+    let functions = [];
+    if( box.function ){
+      functions = expandableFunctionText(controller, landing, box.function, 'function', index);
     }
-    let links=[];
-    box.links.forEach((link)=>{
-      links.push(h('a.search-landing-link',{key: link.displayName, href: link.link, target:'_blank'},link.displayName));
+
+    let links = [];
+    box.links.forEach( link => {
+      links.push(h('a.search-landing-link', { key: link.displayName, href: link.link, target:'_blank' }, link.displayName));
     });
+
     return [
-      h('div.search-landing-title',{key:'title',
-        onClick: () => {if(multipleBoxes){handelShowMoreClick(controller,landing, 'full', index);}},
-        className:classNames('search-landing-title',{'search-landing-title-multiple':multipleBoxes}),
-      },[title]),
+      h('div.search-landing-title',{
+        key:'title',
+        onClick: () => { if( multipleBoxes ){ handelShowMoreClick(controller, landing, 'full', index); } },
+        className: classNames('search-landing-title', { 'search-landing-title-multiple': multipleBoxes}),
+      },[ title ]),
       box.showMore.full &&
-      h('div.search-landing-innner',{key: box.databaseID},[
-        h('div.search-landing-section',{key: 'ids'},[officialSymbol,otherNames]),
-        h('div.search-landing-section',{key: 'functions'},[functions]),
-        h('div.search-landing-section',{key: 'links'},[links]),
-        interactionsLink(box.officialSymbol,'View Interactions')
+      h('div.search-landing-innner', { key: box.databaseID },[
+        h('div.search-landing-section', { key: 'ids' }, [ officialSymbol, otherNames ]),
+        h('div.search-landing-section', { key: 'functions'}, [ functions ]),
+        h('div.search-landing-section', { key: 'links'}, [ links ]),
+        interactionsLink(box.officialSymbol, 'View Interactions')
       ])
     ];
   });
-  if(landing.length>1){
-    landingHTML.push(interactionsLink(landing.map(entry=>entry.officialSymbol),'View Interactions Between Entities'));
+
+  if( landing.length > 1 ){
+    landingHTML.push(interactionsLink(landing.map(entry => entry.officialSymbol), 'View Interactions Between Entities'));
   }
 
   return h('div.search-landing',landingHTML);
 };
 
-module.exports = {getLandingResult,landingBox};
+module.exports = { getLandingResult, landingBox };

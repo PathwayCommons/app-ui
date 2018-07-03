@@ -52,21 +52,26 @@ class Enrichment extends React.Component {
 
       closeToolBar: true,
       //all submitted tokens, includes valid and invalid tokens
-      submittedTokens: []
+      submittedTokens: [],
+      unrecognizedTokens: "",
+      inputBoxContents: ""
     };
 
-    this.storeSubmittedTokens = this.storeSubmittedTokens.bind(this);
+    this.storeTokenInputData = this.storeTokenInputData.bind(this);
   }
 
-  storeSubmittedTokens(submittedTokens)
+  storeTokenInputData(submittedTokens, unrecognizedTokens, inputBoxContents)
   {
-    this.setState({submittedTokens: submittedTokens});
+    this.setState({submittedTokens: submittedTokens, unrecognizedTokens: unrecognizedTokens, inputBoxContents: inputBoxContents});
   }
 
   render() {
     let { cy, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading } = this.state;
     let retrieveTokenInput = () => h(TokenInput,{
-      storeSubmittedTokens: this.storeSubmittedTokens
+      storeTokenInputData: this.storeTokenInputData,
+      unrecognizedTokens: this.state.unrecognizedTokens,
+      inputBoxContents: this.state.inputBoxContents
+
       });
 
     return h(BaseNetworkView.component, {

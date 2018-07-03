@@ -9,15 +9,15 @@ class TokenInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      inputBoxContents: '',
+      inputBoxContents: this.props.inputBoxContents,
       submittedTokens: [],
-      unrecognizedTokens: ''
+      unrecognizedTokens: this.props.unrecognizedTokens
     };
-  }
 
+  }
   //store 'gene-input-box' contents on state
   handleChange(e) {
-    this.state.inputBoxContents = e.target.value;
+    this.setState({inputBoxContents: e.target.value});
   }
 
   //call validation service API to retrieve validation result in the form of []
@@ -26,9 +26,8 @@ class TokenInput extends React.Component {
     //send all tokens to validationAPI
     ServerAPI.enrichmentAPI({genes: tokenList}, "validation").then((result) => {
       //set state inside of promise chain to ensure order of operation
-      this.setState({submittedTokens: tokenList});
-      this.setState({unrecognizedTokens: result.unrecognized.join("\n")});
-      this.props.storeSubmittedTokens(this.state.submittedTokens);
+      this.setState({submittedTokens: tokenList, unrecognizedTokens: result.unrecognized.join("\n")});
+      this.props.storeTokenInputData(this.state.submittedTokens, this.state.unrecognizedTokens, this.state.inputBoxContents);
       }).catch((error) => error);
   }
 
@@ -45,6 +44,7 @@ class TokenInput extends React.Component {
           h(Textarea, {
             className: 'gene-input-box',
             placeholder: 'Enter one gene per line',
+            value: this.state.inputBoxContents,
             onChange: (e) => this.handleChange(e)
           })
         ]),

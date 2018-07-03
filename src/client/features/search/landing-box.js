@@ -15,7 +15,7 @@ const usedDatabases=new Map ([
   ['Uniprot',{configName:'Uniprot',gProfiler:'Uniprot',displayName:'Uniprot'}]
 ]);
 
-var uniprotRegex = RegExp(/[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}/);
+const uniprotRegex = RegExp(/[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}/);
 
 /**
  * Get database link and display name based on gene ids

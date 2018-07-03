@@ -32,7 +32,7 @@
 # }
 ##
 
-DATA="http://www.pathwaycommons.org/archives/PC2/v$PC_VERSION/physical_entities.json.gz"
+DATA="http://www.pathwaycommons.org/archives/PC2/$PC_VERSION/physical_entities.json.gz"
 
 echo "Processing $DATA"
 

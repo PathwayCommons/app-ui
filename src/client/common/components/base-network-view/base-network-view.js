@@ -54,7 +54,9 @@ class BaseNetworkView extends React.Component {
 
   componentDidMount() {
     const state = this.state;
-    const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
+    const initialLayoutOpts = _.assign({}, state.layoutConfig.defaultLayout.options, {
+      animate: false
+    });
     const container = this.graphDOM;
 
     const cy = state.cy;

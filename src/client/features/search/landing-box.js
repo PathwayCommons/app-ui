@@ -274,13 +274,13 @@ const landingBox = (props) => {
         h('div.search-landing-section',{key: 'ids'},[officialSymbol,otherNames]),
         h('div.search-landing-section',{key: 'functions'},[functions]),
         h('div.search-landing-section',{key: 'links'},[links]),
-        interactionsLink(box.officialSymbol,'View Interactions')
+        // interactionsLink(box.officialSymbol,'View Interactions')
       ])
     ];
   });
-  if(landing.length>1){
-    landingHTML.push(interactionsLink(landing.map(entry=>entry.officialSymbol),'View Interactions Between Entities'));
-  }
+  // if(landing.length>1){
+  //   landingHTML.push(interactionsLink(landing.map(entry=>entry.officialSymbol),'View Interactions Between Entities'));
+  // }
 
   return h('div.search-landing',landingHTML);
 };

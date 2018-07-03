@@ -11,7 +11,7 @@ class TokenInput extends React.Component {
     this.state = {
       inputBoxContents: '',
       submittedTokens: [],
-      unrecognizedTokens: []
+      unrecognizedTokens: ''
     };
   }
 
@@ -24,12 +24,12 @@ class TokenInput extends React.Component {
   retrieveValidationAPIResult(){
     let tokenList = _.pull(this.state.inputBoxContents.split(/\s/g), "");
     //send all tokens to validationAPI
-    ServerAPI.enrichmentAPI({genes: tokenList}, "validation").then((result) => {
+    ServerAPI.enrichmentAPI({gens: tokenList}, "validation").then((result) => {
       //set state inside of promise chain to ensure order of operation
       this.setState({submittedTokens: tokenList});
-      this.setState({unrecognizedTokens: result.unrecognized});
+      this.setState({unrecognizedTokens: result.unrecognized.join("\n")});
       this.props.storeSubmittedTokens(this.state.submittedTokens);
-      });
+      }).catch((error) => error);
   }
 
   render() {
@@ -55,7 +55,7 @@ class TokenInput extends React.Component {
         h('div.unrecognized-token-container',[
           h(Textarea, {
             className:'unrecognized-tokens-feedback',
-            value: "Unrecognized Tokens: \n" + this.state.unrecognizedTokens.join("\n"),
+            value: "Unrecognized Tokens: \n" + this.state.unrecognizedTokens,
             readOnly: true,
             //if unrecognizedTokens is its default value (ie no tokens have been added), feedback box not displayed
             style: {display: _.isEmpty(this.state.unrecognizedTokens) ? 'none' : 'block' }

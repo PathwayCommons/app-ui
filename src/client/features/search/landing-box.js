@@ -15,6 +15,8 @@ const usedDatabases=new Map ([
   ['Uniprot',{configName:'Uniprot',gProfiler:'Uniprot',displayName:'Uniprot'}]
 ]);
 
+var uniprotRegex = RegExp(/[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}/);
+
 /**
  * Get database link and display name based on gene ids
  * @param {string} source Database name
@@ -69,12 +71,12 @@ const getNcbiInfo = (ids,genes) => {
     const geneResults=result.result;
     return geneResults.uids.map(gene=>{
       const originalSearch = ids[gene];
-      const links=idToLinkConverter(genes[originalSearch]);
+      const links= genes ? idToLinkConverter(genes[originalSearch]) : [];
       return {
         databaseID:gene,
         name:geneResults[gene].nomenclaturename,
         function: geneResults[gene].summary,
-        officialSymbol:genes[originalSearch]['Gene Cards'],
+        officialSymbol:geneResults[gene].name,
         otherNames: geneResults[gene].otheraliases ? geneResults[gene].otheraliases:'',
         showMore:{full:!(geneResults.uids.length>1),function:false,synonyms:false},
         links:links
@@ -90,6 +92,11 @@ const getNcbiInfo = (ids,genes) => {
  */
 const getUniprotInfo= (ids) => {
   const uniprotIds=_.map(ids,(search,id)=>id);
+  let containsInvalidId = false;
+  uniprotIds.forEach(uniprotId => {
+    if (!uniprotRegex.test(uniprotId)) containsInvalidId = true;
+  });
+  if (containsInvalidId) return;
   return ServerAPI.getUniprotnformation(uniprotIds).then(result=>{
     return result.map(gene=>{
       let dbIds={Uniprot:gene.accession};
@@ -158,11 +165,10 @@ const getLandingResult= (query)=> {
   ));
 
   return Promise.all(promises).then(databaseResults=>{
-    let genes={};
-    databaseResults.forEach(databaseResult=>_.merge(genes,databaseResult)); //Merge the array of result into one json
-    return genes;
-  }).then(genes=> {
-    _.forEach(genes,(gene,search)=>{
+    let validatedgGenes={};
+    databaseResults.forEach(databaseResult=>_.merge(validatedgGenes,databaseResult)); //Merge the array of result into one json
+
+    _.forEach(validatedgGenes,(gene,search)=>{
       if(gene['NCBI Gene']){
         ncbiIds[gene['NCBI Gene']]=search;
       }
@@ -170,21 +176,32 @@ const getLandingResult= (query)=> {
         uniprotIds[gene['Uniprot']]=search;
       }
     });
+
     let landingBoxes=[];
-     if(!_.isEmpty(ncbiIds)){
-      landingBoxes.push(getNcbiInfo(ncbiIds,genes));
-     }
-     if(!_.isEmpty(uniprotIds)){
+    if(!_.isEmpty(ncbiIds)){
+      landingBoxes.push(getNcbiInfo(ncbiIds,validatedgGenes));
+    }
+    if(!_.isEmpty(uniprotIds)){
       landingBoxes.push(getUniprotInfo(uniprotIds));
-     }
-    return Promise.all(landingBoxes).then(landingBoxes=> {
-      landingBoxes=_.uniqWith(_.flatten(landingBoxes),(arrVal, othVal)=>
-        _.intersectionWith(_.values(arrVal.links),_.values(othVal.links),_.isEqual).length
-      );
-      if(landingBoxes.length>1){landingBoxes.forEach(box=>box.showMore.full=false);}
-      return landingBoxes;
+    }
+
+    validatedgGenes.unrecognized.forEach(gene => {
+      let geneJson = {};
+      geneJson[gene] = gene;
+      landingBoxes.push(getNcbiInfo(geneJson));
+      landingBoxes.push(getUniprotInfo(geneJson));
     });
-  });
+
+   return Promise.all(landingBoxes).then(landingBoxes=> {
+
+    landingBoxes = _.compact(landingBoxes);
+     landingBoxes=_.uniqWith(_.flatten(landingBoxes),(arrVal, othVal)=>
+       _.intersectionWith(_.values(arrVal.links),_.values(othVal.links),_.isEqual).length
+     );
+     if(landingBoxes.length>1){landingBoxes.forEach(box=>box.showMore.full=false);}
+     return landingBoxes;
+   });
+ });
 };
 
 const handelShowMoreClick= (controller,landing,varToToggle,index) => {

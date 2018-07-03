@@ -60,7 +60,7 @@ class Enrichment extends React.Component {
 
   storeSubmittedTokens(submittedTokens)
   {
-    this.state.submittedTokens = submittedTokens;
+    this.setState({submittedTokens: submittedTokens});
   }
 
   render() {

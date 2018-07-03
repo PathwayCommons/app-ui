@@ -9,37 +9,27 @@ class TokenInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      query: '',
-      validTokens: [],
+      inputBoxContents: '',
+      submittedTokens: [],
       unrecognizedTokens: []
     };
   }
 
   //store 'gene-input-box' contents on state
   handleChange(e) {
-    this.state.query = e.target.value;
+    this.state.inputBoxContents = e.target.value;
   }
 
   //call validation service API to retrieve validation result in the form of []
   retrieveValidationAPIResult(){
-    //reset state values
-    this.state.unrecognizedTokens = [];
-    this.state.validTokens = [];
-    let tokenList = this.state.query.split(/\s/g);
+    let tokenList = _.pull(this.state.inputBoxContents.split(/\s/g), "");
     //send all tokens to validationAPI
-    ServerAPI.enrichmentAPI({genes: _.pull(tokenList,"")}, "validation").then((result) => {
-      this.interpretValidationResult(tokenList, result.unrecognized);
+    ServerAPI.enrichmentAPI({genes: tokenList}, "validation").then((result) => {
+      //set state inside of promise chain to ensure order of operation
+      this.setState({submittedTokens: tokenList});
+      this.setState({unrecognizedTokens: result.unrecognized});
+      this.props.storeSubmittedTokens(this.state.submittedTokens);
       });
-  }
-
-  //store validation data on state as arrays [validTokens] and [unrecognizedTokens]
-  //lift [validTokens] to parent file index.js
-  interpretValidationResult(tokenList, unrecognizedTokens){
-    tokenList.forEach((element) => {
-      if (unrecognizedTokens.includes(element.toUpperCase()) ) this.setState({unrecognizedTokens: _.union(this.state.unrecognizedTokens, [element])});
-      else {this.setState({validTokens: _.union(this.state.validTokens, [element])});}
-    });
-    this.props.updateValidTokenList(this.state.validTokens);
   }
 
   render() {

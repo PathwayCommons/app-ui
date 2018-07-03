@@ -51,23 +51,22 @@ class Enrichment extends React.Component {
       networkLoading: false,
 
       closeToolBar: true,
-
-      validTokens: []
+      //all submitted tokens, includes valid and invalid tokens
+      submittedTokens: []
     };
 
-    this.handleValidTokenChange = this.handleValidTokenChange.bind(this);
+    this.storeSubmittedTokens = this.storeSubmittedTokens.bind(this);
   }
 
-  handleValidTokenChange(validTokens)
+  storeSubmittedTokens(submittedTokens)
   {
-    this.state.validTokens = validTokens;
-    //console.log(this.state.validTokens);
+    this.state.submittedTokens = submittedTokens;
   }
 
   render() {
     let { cy, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading } = this.state;
-    let tokenInput = () => h(TokenInput,{
-        updateValidTokenList: this.handleValidTokenChange
+    let retrieveTokenInput = () => h(TokenInput,{
+      storeSubmittedTokens: this.storeSubmittedTokens
       });
 
     return h(BaseNetworkView.component, {
@@ -77,7 +76,7 @@ class Enrichment extends React.Component {
       networkJSON,
       networkMetadata,
       networkLoading,
-      titleContainer: () => h(tokenInput),
+      titleContainer: () => h(retrieveTokenInput),
       //will use state to set to false to render the toolbar once analysis is run and graph is displayed
       closeToolBar: true
     });

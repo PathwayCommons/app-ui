@@ -12,7 +12,10 @@ const make_cytoscape = (opts) => {
     minZoom: opts.minZoom || 0.08,
     maxZoom: 4,
     headless: opts.headless,
-    zoomingEnabled: true
+    zoomingEnabled: true,
+    layout: {
+      name: 'null'
+    }
   });
 
   bindEvents(cy,opts);

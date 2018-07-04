@@ -84,7 +84,7 @@ class Enrichment extends React.Component {
             edges: visualizationResult.graph.elements.edges,
             nodes: visualizationResult.graph.elements.nodes
             }
-          });
+        });
      })
      .catch(
        error => error

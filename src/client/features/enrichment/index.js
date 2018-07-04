@@ -1,15 +1,16 @@
 const React = require('react');
 const h = require('react-hyperscript');
-//const queryString = require('query-string');
 const _ = require('lodash');
 //const Loader = require('react-loader');
+//const queryString = require('query-string');
 
 // const hideTooltips = require('../../common/cy/events/click').hideTooltips;
 // const removeStyle= require('../../common/cy/manage-style').removeStyle;
-// const make_cytoscape = require('../../common/cy/');
+const make_cytoscape = require('../../common/cy/');
 // const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
+const TokenInput = require('./token-input');
 const { BaseNetworkView } = require('../../common/components');
-//const { getLayoutConfig } = require('../../common/cy/layout');
+const { getLayoutConfig } = require('../../common/cy/layout');
 //const downloadTypes = require('../../common/config').downloadTypes;
 
 const enrichmentConfig={
@@ -20,61 +21,81 @@ const enrichmentConfig={
   useSearchBar: true
 };
 
+//temporary empty network for development purposes
+const emptyNetwork = {
+  graph: {
+    edges: [],
+    nodes: [],
+    pathwayMetadata: {
+      title: [],
+      datasource: [],
+      comments: []
+    },
+    layout: null
+  }
+};
+const network = emptyNetwork;
+const layoutConfig = getLayoutConfig();
+
 class Enrichment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      cy: make_cytoscape({headless: true}),
       componentConfig: enrichmentConfig,
-      networkMetadata: {
-        name: '',
-        datasource: '',
-        comments: []
-      },
-      query: '',
-      titleContainer: []
+      layoutConfig: layoutConfig,
+      networkJSON: network.graph,
+      networkMetadata: network.graph.pathwayMetadata,
+
+      //temporarily set to false so loading spinner is disabled
+      networkLoading: false,
+
+      closeToolBar: true,
+      //all submitted tokens, includes valid and invalid tokens
+      genes: [],
+      unrecognized: [],
+      inputs: ""
     };
+
+    this.handleInputs = this.handleInputs.bind(this);
+    this.handleUnrecognized = this.handleUnrecognized.bind(this);
+    this.handleGenes = this.handleGenes.bind(this);
   }
 
-  geneInputChange(e) {
-    this.setState( {query: e.target.value});
+  handleInputs( inputs ) {
+    this.setState({ inputs });
   }
 
-  geneInputSubmission(input){
-    const geneArray = input.split(/\n/g);
-    const inputObject = {genes: _.pull(geneArray,"")};
-    //console.log(geneArray);
-    //console.log(inputObject.genes);
-    //console.log(ServerAPI.geneQuery(inputObject));
-    return inputObject.genes;
+  handleUnrecognized( unrecognized ) {
+    this.setState({ unrecognized });
+  }
+
+  handleGenes( genes ) {
+    this.setState( { genes } );console.log(genes);
   }
 
   render() {
-    const state = this.state;
-    const baseView = h(BaseNetworkView.component, {
-      componentConfig: state.componentConfig,
-      //titles at top of toolbar
-      networkMetadata: {},
-      titleContainer: [
-        h('h4', [
-          h('span', 'Pathway Enrichment   '),]),
-          h('img', {
-            src: '/img/humanIcon.png'
-            }),
-          h('textarea.gene-input', {
-             placeholder: 'Enter one gene per line',
-             onChange: e => this.geneInputChange(e),
-             onKeyPress: e => this.geneInputChange(e)
-          }),
-          h('submit-container', {onClick: () => this.geneInputSubmission(this.state.query) },[
-          h('button.submit', 'Submit'),
-          ])
-      ]
+    let { cy, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading } = this.state;
+    let retrieveTokenInput = () => h(TokenInput,{
+      inputs: this.state.inputs,
+      handleInputs: this.handleInputs,
+      handleUnrecognized: this.handleUnrecognized,
+      unrecognized: this.state.unrecognized,
+      handleGenes: this.handleGenes
     });
-    //console.log(this.state.query);
-    return h('div.main', [baseView]);
+
+    return h(BaseNetworkView.component, {
+      cy,
+      componentConfig,
+      layoutConfig,
+      networkJSON,
+      networkMetadata,
+      networkLoading,
+      titleContainer: () => h(retrieveTokenInput),
+      //will use state to set to false to render the toolbar once analysis is run and graph is displayed
+      closeToolBar: true
+    });
   }
 }
-module.exports = Enrichment;
 
-//NOTE: CURRENTLY ONLY RENDERS ON PAGE WHEN base-network-view.js function 'componentDidMount(){}'
-//      IS COMMENTED OUT
+module.exports = Enrichment;

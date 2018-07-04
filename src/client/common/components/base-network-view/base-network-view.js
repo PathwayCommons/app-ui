@@ -77,6 +77,7 @@ class BaseNetworkView extends React.Component {
     layout.run();
   }
 
+
   changeMenu(menu) {
     let resizeCyImmediate = () => this.state.cy.resize();
     let resizeCyDebounced = _.debounce( resizeCyImmediate, 500 );
@@ -187,7 +188,7 @@ class BaseNetworkView extends React.Component {
     // if 'titleContainer' exists from index file, unique title will render in 'div.title-container'
     // default: metadata pathway name and database
     const displayInfo = [
-      (this.props.titleContainer ?  this.props.titleContainer : metadataTitles)
+      (this.props.titleContainer ?  this.props.titleContainer() : metadataTitles)
     ];
 
 
@@ -203,7 +204,7 @@ class BaseNetworkView extends React.Component {
           ]),
           h('div.title-container', displayInfo)
         ]),
-        h('div.view-toolbar', toolBar)
+        h('div.view-toolbar', {style: {display: this.props.closeToolBar == true ? 'none': 'inherit'}}, toolBar)
       ]),
       h(Loader, {
         loaded: !this.state.networkLoading,

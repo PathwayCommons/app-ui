@@ -1,8 +1,8 @@
+const React = require('react');
 const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
 const classNames = require('classnames');
 const queryString = require('query-string');
-const Loader = require('react-loader');
 const _ = require('lodash');
 
 const { ServerAPI } = require('../../services');
@@ -10,6 +10,7 @@ const { databases } = require('../../common/config');
 
 //usedDatabases=[['Uniprot lookup name',{configName:,gProfiler:}]]
 const usedDatabases=new Map ([
+  ['GeneCards',{configName:'Gene Cards',gProfiler:'HGNCSYMBOL',displayName:'Gene Cards'}],
   ['HGNC Symbol',{configName:'HGNC Symbol',gProfiler:'HGNCSymbol',displayName:'HGNC'}],
   ['GeneID',{configName:'NCBI Gene',gProfiler:'NCBIGene',displayName:'NCBI Gene'}],
   ['Uniprot',{configName:'Uniprot',gProfiler:'Uniprot',displayName:'UniProt'}]
@@ -210,32 +211,6 @@ const getLandingResult= (query)=> {
   );
 };
 
-const handelShowMoreClick = ( controller, landing, varToToggle, index) => {
-  landing[index].showMore[varToToggle] =! landing[index].showMore[varToToggle];
-  controller.setState({ landing:landing });
-};
-
-const expandableText = ( controller, landing, length, text, separator, type, cssClass, toggleVar, index ) => {
-  let result = null;
-  const varToToggle = landing[ index ].showMore[ toggleVar ];
-  const textToUse = ( varToToggle || text.length <= length) ?
-    text + ' ' : _.truncate( text, { length: length, separator: separator } );
-    result=[h(`${type}`,{className:cssClass,key:'text'},textToUse)];
-  if(text.length>length){
-    result.push(h(`${type}.search-landing-link`,{onClick: ()=> handelShowMoreClick(controller, landing, toggleVar, index),key:'showMore'},
-    varToToggle ? '« less': 'more »'));
-  }
-  return result;
-};
-
-const expandableFunctionText = ( controller, landing, text, toggleVar, index ) => {
-  let result = null;
-  const varToToggle = landing[ index ].showMore[ toggleVar ];
-  const cssClass = varToToggle ? 'search-landing-function-more' : 'search-landing-function-less';
-  result = [ h('div', { key:'text', className: cssClass }, [ h('span', text) ] ) ];
-  result.push( h('span.search-landing-link', { onClick: () => handelShowMoreClick( controller, landing, toggleVar, index ), key: 'showMore'}, varToToggle ? '« less': 'more »'));
-  return result;
-};
 
 const interactionsLink = ( source, text ) => {
   return h(Link, {
@@ -245,78 +220,47 @@ const interactionsLink = ( source, text ) => {
   );
 };
 
-/*Generates a landing box
-input: {controller,[{
-function:"This gene encodes ..."
-databaseID:"7157"
-hgncSymbol:TP53
-otherNames:'...,...'
-links:{Gene Cards:"http://identifiers.org/genecards/TP53"...}
-name:"tumor protein p53"
-showMore:{full:false,function:false,synonyms:false}
-synonyms:"TP53, BCC7, LFS1, P53, TRP53"
-}]}
-output: html for a landing box
-*/
-const landingBox = props => {
-  let { landing, controller } = props;
 
-  if( controller.state.landingLoading ) {
-    return h('div.search-landing', [
-      h('div.search-landing-innner',[
-        h(Loader, { loaded:false , options: { color: '#16A085', position:'relative', top: '15px' }})]
-      )]
-    );
-  }
+class EntityInfoBox extends React.Component {
+  render(){
+    let { entity } = this.props;
+    let { name, databaseID, officialSymbol, otherNames, links, function: description } = entity;
 
-  const landingHTML = landing.map( ( box, index ) => {
-    const multipleBoxes = landing.length > 1;
-    const title = [h('strong.search-landing-title-text', { key: 'name' }, box.name)];
-
-    if( multipleBoxes ){
-      title.push(h('strong.material-icons', { key: 'arrow' }, landing[ index ].showMore.full ? 'expand_less': 'expand_more'));
-    }
-    let officialSymbol = '';
-    if( box.officialSymbol ){
-      officialSymbol = h('i.search-landing-small', 'Official Symbol: ' + box.officialSymbol);
-    }
-
-    let otherNames = [];
-    if( box.otherNames ){
-      otherNames = expandableText(controller, landing, 16, 'Other Names: ' + box.otherNames, ',', 'i', 'search-landing-small', 'synonyms', index);
-    }
-
-    let functions = [];
-    if( box.function ){
-      functions = expandableFunctionText(controller, landing, box.function, 'function', index);
-    }
-
-    let links = [];
-    box.links.forEach( link => {
-      links.push(h('a.search-landing-link', { key: link.displayName, href: link.link, target:'_blank' }, link.displayName));
-    });
-
-    return [
-      h('div.search-landing-title',{
-        key:'title',
-        onClick: () => { if( multipleBoxes ){ handelShowMoreClick(controller, landing, 'full', index); } },
-        className: classNames('search-landing-title', { 'search-landing-title-multiple': multipleBoxes}),
-      },[ title ]),
-      box.showMore.full &&
-      h('div.search-landing-innner', { key: box.databaseID },[
-        h('div.search-landing-section', { key: 'ids' }, [ officialSymbol, otherNames ]),
-        h('div.search-landing-section', { key: 'functions'}, [ functions ]),
-        h('div.search-landing-section', { key: 'links'}, [ links ]),
-        interactionsLink(box.officialSymbol, 'View Interactions')
+    return (
+      h('div.entity-info-box', [
+        h('div.entity-info-title', [
+          h('h2.entity-title', name)
+        ]),
+        h('div.entity-info-extra-info', { key: databaseID },[
+          h('div', [ officialSymbol, otherNames ]),
+          h('div', [ description ]),
+          h('div', links.map( link => h('a.entity-info-link', { href: link.link, target:'_blank' }, link.displayName))),
+          h(Link, {
+            to: { pathname: '/interactions', search: queryString.stringify({ source: officialSymbol }), target: '_blank' },
+            target: '_blank',
+            className: 'interactions-link'
+          }, 'VIEW INTERACTIONS')
+        ])
       ])
-    ];
-  });
+    );
 
-  if( landing.length > 1 ){
-    landingHTML.push(interactionsLink(landing.map(entry => entry.officialSymbol), 'View Interactions Between Entities'));
   }
+}
 
-  return h('div.search-landing',landingHTML);
-};
 
-module.exports = { getLandingResult, landingBox };
+class LandingBox extends React.Component {
+  render(){
+    let { entityInfoList } = this.props;
+
+    console.log(entityInfoList);
+
+    let entityInfoBoxes = entityInfoList.map( entity => h(EntityInfoBox, { entity }));
+
+    return h('div.entity-info-list', [
+      h('div.entity-info-list-entries', entityInfoBoxes),
+      entityInfoBoxes.length > 1 ? interactionsLink(entityInfoList.map(entry => entry.officialSymbol), 'View Interactions Between Entities') : null
+    ]);
+  }
+}
+
+module.exports = { getLandingResult, LandingBox };

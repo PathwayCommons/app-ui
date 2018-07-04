@@ -9,7 +9,7 @@ const classNames = require('classnames');
 
 const Icon = require('../../common/components').Icon;
 const { ServerAPI } = require('../../services');
-const Landing = require('./landing-box');
+const Landing = require('./entity-info-box');
 
 class Search extends React.Component {
 
@@ -133,7 +133,7 @@ buildExampleLink (search) {
   render() {
     const state = this.state;
     const landing=state.landing;
-    const landingBox=Landing.landingBox;
+    const LandingBox = Landing.LandingBox;
     const controller = this;
     const loaded= !(state.searchLoading || state.landingLoading);
 
@@ -238,7 +238,7 @@ buildExampleLink (search) {
         h('div.search-list-container', [
           h('div.search-result-filter', [searchResultFilter]),
           h('div.search-result-hit-count', [searchResultHitCount]),
-          h(landingBox,{controller,landing}),
+          h(LandingBox, {controller, entityInfoList: landing}),
           h('div.search-list', searchResults)
         ])
       ])

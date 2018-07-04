@@ -83,7 +83,7 @@ class Enrichment extends React.Component {
           networkJSON: {
             edges: visualizationResult.graph.elements.edges,
             nodes: visualizationResult.graph.elements.nodes
-            }
+          }
         });
      })
      .catch(

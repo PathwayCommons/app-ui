@@ -8,12 +8,11 @@ class TokenInput extends React.Component {
 
   constructor(props) {
     super(props);
+    // Note on input contents: Set the initial value here from parent
+    // in order to maintain contents on re-render.
     this.state = {
-      inputBoxContents: this.props.inputBoxContents,
-      submittedTokens: [],
-      unrecognizedTokens: this.props.unrecognizedTokens
+      inputBoxContents: this.props.inputs
     };
-
   }
   //store 'gene-input-box' contents on state
   handleChange(e) {
@@ -23,15 +22,26 @@ class TokenInput extends React.Component {
   //call validation service API to retrieve validation result in the form of []
   retrieveValidationAPIResult(){
     let tokenList = _.pull(this.state.inputBoxContents.split(/\s/g), "");
-    //send all tokens to validationAPI
-    ServerAPI.enrichmentAPI({genes: tokenList}, "validation").then((result) => {
-      //set state inside of promise chain to ensure order of operation
-      this.setState({submittedTokens: tokenList, unrecognizedTokens: result.unrecognized.join("\n")});
-      this.props.storeTokenInputData(this.state.submittedTokens, this.state.unrecognizedTokens, this.state.inputBoxContents);
-      }).catch((error) => error);
+     ServerAPI.enrichmentAPI({
+       genes: tokenList,
+       targetDb: "HGNCSYMBOL"
+      }, "validation")
+    .then( result => {
+      const aliases = result.geneInfo.map( value => {
+        return value.convertedAlias;
+      });
+      this.props.handleGenes( aliases );
+      this.props.handleUnrecognized( result.unrecognized );
+      this.props.handleInputs( this.state.inputBoxContents );
+    })
+    .catch(
+      error => error
+    );
   }
 
   render() {
+
+    const unrecognized = this.props.unrecognized;
 
     return h('div.enrichmentInput', [
         h('h4', [
@@ -55,10 +65,10 @@ class TokenInput extends React.Component {
         h('div.unrecognized-token-container',[
           h(Textarea, {
             className:'unrecognized-tokens-feedback',
-            value: "Unrecognized Tokens: \n" + this.state.unrecognizedTokens,
+            value: "Unrecognized Tokens: \n" + unrecognized.join("\n"),
             readOnly: true,
             //if unrecognizedTokens is its default value (ie no tokens have been added), feedback box not displayed
-            style: {display: _.isEmpty(this.state.unrecognizedTokens) ? 'none' : 'block' }
+            style: {display: _.isEmpty( unrecognized ) ? 'none' : 'block' }
           })
         ])
     ]);

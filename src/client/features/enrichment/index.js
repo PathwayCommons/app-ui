@@ -52,27 +52,37 @@ class Enrichment extends React.Component {
 
       closeToolBar: true,
       //all submitted tokens, includes valid and invalid tokens
-      submittedTokens: [],
-      unrecognizedTokens: "",
-      inputBoxContents: ""
+      genes: [],
+      unrecognized: [],
+      inputs: ""
     };
 
-    this.storeTokenInputData = this.storeTokenInputData.bind(this);
+    this.handleInputs = this.handleInputs.bind(this);
+    this.handleUnrecognized = this.handleUnrecognized.bind(this);
+    this.handleGenes = this.handleGenes.bind(this);
   }
 
-  storeTokenInputData(submittedTokens, unrecognizedTokens, inputBoxContents)
-  {
-    this.setState({submittedTokens: submittedTokens, unrecognizedTokens: unrecognizedTokens, inputBoxContents: inputBoxContents});
+  handleInputs( inputs ) {
+    this.setState({ inputs });
+  }
+
+  handleUnrecognized( unrecognized ) {
+    this.setState({ unrecognized });
+  }
+
+  handleGenes( genes ) {
+    this.setState( { genes } );console.log(genes);
   }
 
   render() {
     let { cy, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading } = this.state;
     let retrieveTokenInput = () => h(TokenInput,{
-      storeTokenInputData: this.storeTokenInputData,
-      unrecognizedTokens: this.state.unrecognizedTokens,
-      inputBoxContents: this.state.inputBoxContents
-
-      });
+      inputs: this.state.inputs,
+      handleInputs: this.handleInputs,
+      handleUnrecognized: this.handleUnrecognized,
+      unrecognized: this.state.unrecognized,
+      handleGenes: this.handleGenes
+    });
 
     return h(BaseNetworkView.component, {
       cy,

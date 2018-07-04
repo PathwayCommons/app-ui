@@ -6,6 +6,7 @@ const _ = require('lodash');
 class InteractionsFilterMenu extends React.Component {
   constructor(props) {
     super(props);
+    this.sliderUpdate = _.debounce(this.sliderUpdate,150);
   }
 
   /**
@@ -72,11 +73,11 @@ class InteractionsFilterMenu extends React.Component {
   render(){
     const props= this.props;
 
+
     //Networks end up with all nodes next to 0 bcVal other than search term
     //slider becomes a toggle since noone has the dexterity to distinguish values at the low end
     //instead use the second highest bcVal as the maximum for slider, so its actually useful
     const [defaultSliderVal,maxSliderVal] = this.findDefaultAndUpdate(20);
-
     const buttons= _.map(props.filters,(active,type)=>
     h('div',{
         key:type,
@@ -91,7 +92,8 @@ class InteractionsFilterMenu extends React.Component {
 
     //Slider listed under 'Visible Nodes' in the interaction viewer
     const slider = [
-      h("input",{type:"range",id:'selection-slider',min:0,max:maxSliderVal,step:0.0001,defaultValue:defaultSliderVal,onInput:() => this.sliderUpdate()}),
+      h("input",{type:"range",id:'selection-slider',min:0,max:maxSliderVal,step:0.0001,defaultValue:defaultSliderVal,
+      onInput:() => this.sliderUpdate() }),
     ];
 
     return h('div',[

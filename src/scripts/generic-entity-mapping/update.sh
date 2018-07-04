@@ -30,9 +30,11 @@
 #       "synonyms":["GNGT1","GNG3","GNG10","GNG2","GNGT2","GNG5","GNG4","GNG7","GNG8","GNG12","GNG13"]},
 #   ...
 # }
+#
+# Note: BioPAX xml:base ("http://pathwaycommons.org/pc2/" in this case) can be different for different PC web servers!
 ##
 
-DATA="http://www.pathwaycommons.org/archives/PC2/v$PC_VERSION/physical_entities.json.gz"
+DATA="http://www.pathwaycommons.org/archives/PC2/$PC_VERSION/physical_entities.json.gz"
 
 echo "Processing $DATA"
 

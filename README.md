@@ -52,8 +52,9 @@ needs to be updated. Also, purge the RethinkDb db tables or simply switch the da
 The following script downloads and processes physical_entities.json.gz file from Pathway Commons:
 ```sh
 cd src/scripts/generic-entity-mapping/
-PC_VERSION=10 sh update.sh
+PC_VERSION=v10 sh update.sh
 ```
+(PC_VERSION should be set to the name of a sub-directory in `www.pathwaycommons.org/archives/PC2/`) 
 
 ## Run targets
 

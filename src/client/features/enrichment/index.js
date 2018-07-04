@@ -11,6 +11,8 @@ const make_cytoscape = require('../../common/cy/');
 const TokenInput = require('./token-input');
 const { BaseNetworkView } = require('../../common/components');
 const { getLayoutConfig } = require('../../common/cy/layout');
+const { ServerAPI } = require('../../services/');
+
 //const downloadTypes = require('../../common/config').downloadTypes;
 
 const enrichmentConfig={
@@ -22,20 +24,10 @@ const enrichmentConfig={
 };
 
 //temporary empty network for development purposes
-const emptyNetwork = {
-  graph: {
+const emptyNetworkJSON = {
     edges: [],
-    nodes: [],
-    pathwayMetadata: {
-      title: [],
-      datasource: [],
-      comments: []
-    },
-    layout: null
-  }
+    nodes: []
 };
-const network = emptyNetwork;
-const layoutConfig = getLayoutConfig();
 
 class Enrichment extends React.Component {
   constructor(props) {
@@ -43,15 +35,18 @@ class Enrichment extends React.Component {
     this.state = {
       cy: make_cytoscape({headless: true}),
       componentConfig: enrichmentConfig,
-      layoutConfig: layoutConfig,
-      networkJSON: network.graph,
-      networkMetadata: network.graph.pathwayMetadata,
+      layoutConfig: getLayoutConfig(),
+      networkJSON: emptyNetworkJSON,
+      networkMetadata: {
+        name: [],
+        datasource: [],
+        comments: []
+      },
 
       //temporarily set to false so loading spinner is disabled
       networkLoading: false,
 
       closeToolBar: true,
-      //all submitted tokens, includes valid and invalid tokens
       genes: [],
       unrecognized: [],
       inputs: ""
@@ -71,7 +66,33 @@ class Enrichment extends React.Component {
   }
 
   handleGenes( genes ) {
-    this.setState( { genes } );console.log(genes);
+    this.setState( { genes } );
+    this.updateNetworkJSON();
+  }
+
+  updateNetworkJSON(){
+    ServerAPI.enrichmentAPI({
+      genes: this.state.genes
+     }, "analysis")
+   .then( analysisResult => {
+      ServerAPI.enrichmentAPI({
+        pathways: analysisResult.pathwayInfo
+      }, "visualization")
+     .then( visualizationResult => {
+        this.setState({
+          networkJSON: {
+            edges: visualizationResult.graph.elements.edges,
+            nodes: visualizationResult.graph.elements.nodes
+            }
+          });
+     })
+     .catch(
+       error => error
+    );
+   })
+   .catch(
+     error => error
+   );
   }
 
   render() {

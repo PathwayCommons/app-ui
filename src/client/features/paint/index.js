@@ -185,7 +185,7 @@ class Paint extends React.Component {
             }, () => {
               const selectedFn = this.state.selectedFunction.func;
               const selectedClass = this.state.selectedClass;
-              this.state.cy.on('network-loaded', () => applyExpressionData(this.state.cy, expressionTable, selectedClass, selectedFn));
+              applyExpressionData(this.state.cy, expressionTable, selectedClass, selectedFn);
           });
         });
       });

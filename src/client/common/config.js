@@ -25,7 +25,7 @@ const databases = [
   {database:'RefSeq',url:'http://identifiers.org/refseq/',search:''},
   {database:'Pathway Commons',url:'http://pathwaycommons.org/pc2/',search:''},
   {database:'NCBI Gene',url:'http://identifiers.org/ncbigene/',search:''},
-  {database:'Gene Cards',url:'http://identifiers.org/genecards/',search:''}
+  {database:'Gene Cards',url:'https://www.genecards.org/cgi-bin/',search:'carddisp.pl?gene='}
 ];
 
 const publicationsURL = 'http://identifiers.org/pubmed/';

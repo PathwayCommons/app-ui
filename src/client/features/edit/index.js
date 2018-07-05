@@ -6,7 +6,7 @@ const Loader = require('react-loader');
 
 const { BaseNetworkView, Popup } = require('../../common/components');
 const { getLayoutConfig, applyHumanLayout } = require('../../common/cy/layout');
-const make_cytoscape = require('../../common/cy/');
+const CytoscapeService = require('../../common/cy/');
 
 const { ServerAPI } = require('../../services/');
 
@@ -36,8 +36,9 @@ const bindSyncEditChanges = cy => {
 class Edit extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
-      cy: make_cytoscape({ headless: true }),
+      cySrv: new CytoscapeService(),
       networkJSON: {},
       networkMetadata: {
         name: '',
@@ -52,13 +53,13 @@ class Edit extends React.Component {
     };
 
     const query = queryString.parse(props.location.search);
-    const cy = this.state.cy;
+    const cySrv = this.state.cySrv;
 
-    cy.on('network-loaded', () => {
+    cySrv.loadPromise().then(cy => {
       bindMove(cy, query.uri);
       bindSyncEditChanges(cy);
 
-      // if there is no layout from the repsonse, assume that this is the first time editing the 
+      // if there is no layout from the repsonse, assume that this is the first time editing the
       // network and submit the results of the default layout after the network has been loaded
       if (this.state.networkLayoutJSON == null) {
         const layoutPositions = {};
@@ -98,7 +99,7 @@ class Edit extends React.Component {
     const baseView = h(BaseNetworkView.component, {
       layoutConfig: state.layoutConfig,
       componentConfig: state.componentConfig,
-      cy: state.cy,
+      cySrv: state.cySrv,
       networkJSON: state.networkJSON,
       networkMetadata: state.networkMetadata
     });

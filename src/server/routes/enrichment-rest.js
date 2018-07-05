@@ -671,6 +671,9 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *             p-value:
  *               type: number
  *               example: 0.2
+ *             gene-number:
+ *               type: number
+ *               example: 51
 */
 
 

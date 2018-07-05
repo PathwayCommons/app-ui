@@ -52,6 +52,7 @@ class Interactions extends React.Component {
       ids: sources,
       loaded: false,
       categories: new Map (),
+      //enable all filters by default
       filters:{
         Binding:true,
         Phosphorylation:true,
@@ -82,27 +83,40 @@ class Interactions extends React.Component {
       }
     });
 
+    //when the event 'layoutstop' happens, run this code
     this.state.cy.one('layoutstop',()=>{
+      //get variables from state
       const state = this.state;
       const cy = this.state.cy;
       const categories = state.categories;
       const filters=state.filters;
+      //for each filter (binding, phosphorylation, expression)
+      //value: true/false
+      //type: binding/expression etc..
       _.forEach(filters,(value,type)=>{
+        //Filter each edge based on which category they belong to
+        //get all nodes connected to those edges
         const edges = cy.edges().filter(`.${type}`);
         const nodes = edges.connectedNodes();
 
+        //if the list of edges has a length >0
+        //collect data for which edges and nodes are associated with each filter type
         if (edges.length) {
           categories.set(type,{edges:edges,nodes:nodes});
         } else {
+        //if there are no edges for this filter, delete the filter
           categories.delete(type);
           delete filters[type];
         }
       });
-      _.tail(_.toPairs(filters)).map(pair=>this.filterUpdate(pair[0]));
+
+      //update state with new values
       this.setState({
         categories:categories,
         filters:filters
       });
+
+      //set the layout?
       const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
       const layout = cy.layout(initialLayoutOpts);
       layout.run();
@@ -111,17 +125,23 @@ class Interactions extends React.Component {
   }
 
   filterUpdate(type) {
+    //get variables
     const state=this.state;
     const categories = state.categories;
     const filters=state.filters;
     const cy= state.cy;
     const edges=categories.get(type).edges;
     const nodes=categories.get(type).nodes;
-
+    //hide all tooltips
     hideTooltips(cy);
+    //???
     const hovered = cy.filter(ele=>ele.scratch('_hover-style-before'));
+
     cy.batch(()=>{
+      //"you probably do not want to use eles.style() et cetera" - cytoscape documentation
       removeStyle(cy, hovered, '_hover-style-before');
+      //remove all nodes & edges matching the passed filter, if set to true
+      //if set to false, restore all nodes associated with the filter
       if(filters[type]){
           cy.remove(edges);
           cy.remove(nodes.filter(nodes=>nodes.connectedEdges().empty()));
@@ -130,7 +150,8 @@ class Interactions extends React.Component {
         edges.union(nodes).restore();
       }
     });
-
+    
+    //toggle the filter
     filters[type]=!filters[type];
     this.setState({
       filters:filters

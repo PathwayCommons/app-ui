@@ -65,32 +65,17 @@ class Enrichment extends React.Component {
   }
 
   handleGenes( genes ) {
-    this.updateNetworkJSON( genes );
-  }
-
-  updateNetworkJSON( genes ){
-    ServerAPI.enrichmentAPI({
-      genes: genes
-     }, "analysis")
-   .then( analysisResult => {
-      ServerAPI.enrichmentAPI({
-        pathways: analysisResult.pathwayInfo
-      }, "visualization")
-     .then( visualizationResult => {
-        this.setState({
-          networkJSON: {
-            edges: visualizationResult.graph.elements.edges,
-            nodes: visualizationResult.graph.elements.nodes
-          }
-        });
-     })
-     .catch(
-       error => error
-    );
-   })
-   .catch(
-     error => error
-   );
+    const updateNetworkJSON = async () => {
+      const analysisResult = await ServerAPI.enrichmentAPI({ genes: genes }, "analysis");
+      const visualizationResult = await ServerAPI.enrichmentAPI({ pathways: analysisResult.pathwayInfo}, "visualization");
+      this.setState({
+        networkJSON: {
+          edges: visualizationResult.graph.elements.edges,
+          nodes: visualizationResult.graph.elements.nodes
+        }
+      });
+    };
+    updateNetworkJSON();
   }
 
   render() {

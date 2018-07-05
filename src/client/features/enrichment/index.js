@@ -7,6 +7,7 @@ const _ = require('lodash');
 // const hideTooltips = require('../../common/cy/events/click').hideTooltips;
 // const removeStyle= require('../../common/cy/manage-style').removeStyle;
 const make_cytoscape = require('../../common/cy/');
+const enrichmentStylesheet= require('../../common/cy/enrichment-stylesheet');
 // const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
 const TokenInput = require('./token-input');
 const { BaseNetworkView } = require('../../common/components');
@@ -29,16 +30,34 @@ const emptyNetworkJSON = {
     nodes: []
 };
 
+const testNetwork = {
+  edges: [
+    {data:{id: 'edge1', source:"node3", target: "node4" }},
+    {data:{id: 'edge2', source:"node1", target: "node2" }},
+    {data:{id: 'edge3', source:"node1", target: "node4" }},
+    {data:{id: 'edge4', source:"node2", target: "node4" }}
+  ],
+  nodes: [
+    {data: {id: "node1"}},
+    {data: {id: "node2"}},
+    {data: {id: "node3"}},
+    {data: {id: "node4"}}
+  ]
+};
+
+
 class Enrichment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cy: make_cytoscape({headless: true}),
+      cy: make_cytoscape({headless: true, stylesheet: enrichmentStylesheet, showTooltipsOnEdges:true, minZoom:0.01 }),
       componentConfig: enrichmentConfig,
       layoutConfig: getLayoutConfig(),
       networkJSON: emptyNetworkJSON,
+      //networkJSON: testNetwork,
+
       networkMetadata: {
-        name: [],
+        name: "enrichment",
         datasource: [],
         comments: []
       },
@@ -66,13 +85,16 @@ class Enrichment extends React.Component {
   }
 
   handleGenes( genes ) {
-    this.setState( { genes } );
-    this.updateNetworkJSON();
+    //this.setState( { genes } );
+    this.updateNetworkJSON( genes );
   }
 
-  updateNetworkJSON(){
+  updateNetworkJSON( genes ){
     ServerAPI.enrichmentAPI({
-      genes: this.state.genes
+      genes: genes,
+      //set min and max for testing to decrease render time
+      minSetSize: 3,
+	    maxSetSize: 50,
      }, "analysis")
    .then( analysisResult => {
       ServerAPI.enrichmentAPI({

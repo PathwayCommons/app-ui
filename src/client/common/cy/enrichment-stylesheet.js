@@ -9,7 +9,7 @@ const iStylesheet=cytoscape.stylesheet()
   'line-color': '#555',
   'target-arrow-fill': 'hollow',
   'source-arrow-fill': 'hollow',
-  'width':  node => node.data('similarity') * 2,
+  'width':  node => node.data('similarity') ? node.data('similarity') * 2 : 1.5,
   'target-arrow-color': '#555',
   'source-arrow-color': '#555',
   'text-border-color': '#555',
@@ -27,7 +27,7 @@ const iStylesheet=cytoscape.stylesheet()
   'text-max-width': 175,
   'width': node => node.data('size') ? node.data('size') : 30,
   'height': node => node.data('size') ? node.data('size') : 30,
-  'label': node => node.data('label'),
+  'label': node => node.data('description'),
   'text-halign': 'center',
   'text-valign': 'center',
 })

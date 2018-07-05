@@ -47,7 +47,6 @@ class Enrichment extends React.Component {
       networkLoading: false,
 
       closeToolBar: true,
-      genes: [],
       unrecognized: [],
       inputs: ""
     };
@@ -84,8 +83,6 @@ class Enrichment extends React.Component {
             nodes: visualizationResult.graph.elements.nodes
           }
         });
-   console.log(this.state.networkJSON);
-
      })
      .catch(
        error => error

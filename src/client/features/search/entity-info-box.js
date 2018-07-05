@@ -8,13 +8,29 @@ const _ = require('lodash');
 const { ServerAPI } = require('../../services');
 const { databases } = require('../../common/config');
 
-//usedDatabases=[['Uniprot lookup name',{configName:,gProfiler:}]]
-const usedDatabases=new Map ([
+const usedDatabases = new Map ([
   ['GeneCards',{configName:'Gene Cards',gProfiler:'HGNCSYMBOL',displayName:'Gene Cards'}],
   ['HGNC Symbol',{configName:'HGNC Symbol',gProfiler:'HGNCSymbol',displayName:'HGNC'}],
   ['GeneID',{configName:'NCBI Gene',gProfiler:'NCBIGene',displayName:'NCBI Gene'}],
   ['Uniprot',{configName:'Uniprot',gProfiler:'Uniprot',displayName:'UniProt'}]
 ]);
+
+
+// two types of searches:
+// * general searches
+// * db specific link in searches
+
+// link in examples
+// http://localhost:3000/search?q=uniprot:q99988
+// http://localhost:3000/search?q=ncbi:7157
+// http://localhost:3000/search?q=hgnc:tp53
+// * dont use the validator for these special searches
+// * use db specific info for each corresponding link  e.g uniprot uses a uniprot speciifc entity info box
+
+// general searches
+// * use validator
+// * the validator defaults to ncbi because it is the most general db
+
 
 /**
  * Get database link and display name based on gene ids
@@ -131,35 +147,25 @@ const getUniprotInfo = ids => {
   });
 };
 
-/*Gets info for a landing box
-input: 'TP53'
-output: [{
-function:"This gene encodes ..."
-id:"7157"
-links:{Gene Cards:"http://identifiers.org/genecards/TP53"...}
-name:"tumor protein p53"
-showMore:{full:false,function:false,synonyms:false}
-synonyms:"TP53, BCC7, LFS1, P53, TRP53"
-}]
-*/
-const getLandingResult= (query)=> {
-  let q = query.trim().split(' ');
+// Expects strings of the form
+const queryEntityInfo = query => {
+  let rawEntitiyValues = query.trim().split(' ');
   let ncbiIds = {};
   let uniprotIds = {};
   let labeledId = {};
   const genesToSearch = [];
 
-  q.forEach( id => {
-    const splitId = id.split(':');
 
-    //Parse the query based on the format
-    if( /uniprot:\w+$/i.test(id) ){
-      uniprotIds[ splitId[ 1 ] ] = splitId[ 1 ];
-    } else if( /(ncbi:[0-9]+|hgnc:\w+)$/i.test( id ) ){
-      labeledId[ splitId[ 1 ] ] = splitId[ 1 ];
-      genesToSearch.push( splitId[ 1 ] );
+  let entities = rawEntitiyValues.map(entity => {
+    let idParts = entity.split(':');
+
+    if( /uniprot:\w+$/i.test(entity) ){
+      uniprotIds[ idParts[ 1 ] ] = idParts[ 1 ];
+    } else if( /(ncbi:[0-9]+|hgnc:\w+)$/i.test( entity ) ){
+      labeledId[ idParts[ 1 ] ] = idParts[ 1 ];
+      genesToSearch.push( idParts[ 1 ] );
     } else {
-      genesToSearch.push( splitId[ 0 ] );
+      genesToSearch.push( idParts[ 0 ] );
     }
   });
 
@@ -182,7 +188,7 @@ const getLandingResult= (query)=> {
     .then( genes => {
       _.forEach( genes, ( gene, search ) => {
         if( gene['NCBI Gene'] ){
-          ncbiIds[ gene['NCBI Gene'] ]= search;
+          ncbiIds[ gene['NCBI Gene'] ] = search;
         }
         else if( gene['Uniprot'] ){
           uniprotIds[ gene['Uniprot'] ] = search;
@@ -211,16 +217,6 @@ const getLandingResult= (query)=> {
   );
 };
 
-
-const interactionsLink = ( source, text ) => {
-  return h(Link, {
-    to: { pathname: '/interactions',search: queryString.stringify({source: source})},
-    target: '_blank', className: 'search-landing-interactions', key:'interactions'
-    }, [ h('button.search-landing-button', text) ]
-  );
-};
-
-
 class EntityInfoBox extends React.Component {
   render(){
     let { entity } = this.props;
@@ -234,12 +230,8 @@ class EntityInfoBox extends React.Component {
         h('div.entity-info-extra-info', { key: databaseID },[
           h('div', [ officialSymbol, otherNames ]),
           h('div', [ description ]),
-          h('div', links.map( link => h('a.entity-info-link', { href: link.link, target:'_blank' }, link.displayName))),
-          h(Link, {
-            to: { pathname: '/interactions', search: queryString.stringify({ source: officialSymbol }), target: '_blank' },
-            target: '_blank',
-            className: 'interactions-link'
-          }, 'VIEW INTERACTIONS')
+          h('div', links.map( link => h('a.entity-info-link', { href: link.link, target:'_blank' }, link.displayName)))
+
         ])
       ])
     );
@@ -247,20 +239,34 @@ class EntityInfoBox extends React.Component {
   }
 }
 
+// props:
+//  - entityQuery (List of strings representing genes)
+class EntityInfoBoxList extends React.Component {
 
-class LandingBox extends React.Component {
   render(){
     let { entityInfoList } = this.props;
 
-    console.log(entityInfoList);
+    let interactionsLinkQuery = ents => queryString.stringify({source: ents.map( ent => ent.officalSymbol )});
+    let viewMultipleInteractionsLink = (
+      h(Link, {
+          to: { pathname: '/interactions', search: interactionsLinkQuery },
+          target: '_blank',
+        }, [
+        h('button.search-landing-button', 'View Interactions Between Entities')
+      ])
+    );
 
-    let entityInfoBoxes = entityInfoList.map( entity => h(EntityInfoBox, { entity }));
+    let entityInfoBoxes = [
+      ...entityInfoList.map( entity => h(EntityInfoBox, { entity })),
+      // entityInfoList.length > 1 ? viewMultipleInteractionsLink : null
+    ];
+
+    let content = entityInfoBoxes;
 
     return h('div.entity-info-list', [
-      h('div.entity-info-list-entries', entityInfoBoxes),
-      entityInfoBoxes.length > 1 ? interactionsLink(entityInfoList.map(entry => entry.officialSymbol), 'View Interactions Between Entities') : null
+      h('div.entity-info-list-entries', content)
     ]);
   }
 }
 
-module.exports = { getLandingResult, LandingBox };
+module.exports = { queryEntityInfo, EntityInfoBoxList };

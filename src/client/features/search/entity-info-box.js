@@ -218,21 +218,53 @@ const queryEntityInfo = query => {
 };
 
 class EntityInfoBox extends React.Component {
+  constructor(props){
+    super(props);
+
+    this.state = {
+      expanded: props.expanded || false,
+      descriptionExpanded: false
+    };
+
+  }
   render(){
     let { entity } = this.props;
-    let { name, databaseID, officialSymbol, otherNames, links, function: description } = entity;
+    let { name, officialSymbol, otherNames, links, function: description } = entity;
+
+    let moreInfo = h('div.entity-more-info',[
+      h('div.entity-names', [
+        h('div.entity-official-symbol', [
+          h('h4', 'Official Symbol'),
+          officialSymbol
+        ]),
+        h('div.entity-other-names', [
+          h('h4', 'Other Names'),
+          otherNames.split(',').slice(0, 4).join(',')
+        ])
+      ]),
+      h('div.entity-description', [
+        h('h4', 'Description'),
+        this.state.descriptionExpanded ? description : description.split(' ', 40).join(' ') + '...'
+      ]),
+      h('div.entity-description-more', {
+        onClick: () => {
+          this.setState({descriptionExpanded: !this.state.descriptionExpanded});
+        } }, [
+        h('i.material-icons', this.state.descriptionExpanded ? 'expand_less' : 'expand_more'),
+        !this.state.descriptionExpanded ? h('div', 'View full description') : h('div', 'Hide full description')
+      ]),
+      h('div.entity-links', [
+        h('div.entity-links-container', links.map( link => h('a.plain-link.entity-info-link', { href: link.link, target:'_blank' }, link.displayName)))
+      ])
+    ]);
 
     return (
       h('div.entity-info-box', [
-        h('div.entity-info-title', [
-          h('h2.entity-title', name)
+        h('div.entity-info-title', { onClick: () => this.setState({ expanded: !this.state.expanded }) }, [
+          h('h3.entity-title', name),
+          this.state.expanded ? h('i.material-icons', 'expand_more') : h('i.material-icons', 'keyboard_arrow_right')
         ]),
-        h('div.entity-info-extra-info', { key: databaseID },[
-          h('div', [ officialSymbol, otherNames ]),
-          h('div', [ description ]),
-          h('div', links.map( link => h('a.entity-info-link', { href: link.link, target:'_blank' }, link.displayName)))
-
-        ])
+        this.state.expanded ? moreInfo : null
       ])
     );
 
@@ -249,22 +281,23 @@ class EntityInfoBoxList extends React.Component {
     let interactionsLinkQuery = ents => queryString.stringify({source: ents.map( ent => ent.officalSymbol )});
     let viewMultipleInteractionsLink = (
       h(Link, {
-          to: { pathname: '/interactions', search: interactionsLinkQuery },
+          to: { pathname: '/interactions', search: interactionsLinkQuery(entityInfoList) },
           target: '_blank',
         }, [
         h('button.search-landing-button', 'View Interactions Between Entities')
       ])
     );
 
-    let entityInfoBoxes = [
-      ...entityInfoList.map( entity => h(EntityInfoBox, { entity })),
-      // entityInfoList.length > 1 ? viewMultipleInteractionsLink : null
-    ];
+    let entityInfoBoxes = entityInfoList.map( (entity, index) => {
+      if( index === 0 ){
+        return h(EntityInfoBox, { entity, expanded: true });
+      }
+      return h(EntityInfoBox, { entity });
+    });
 
-    let content = entityInfoBoxes;
 
     return h('div.entity-info-list', [
-      h('div.entity-info-list-entries', content)
+      h('div.entity-info-list-entries', entityInfoBoxes)
     ]);
   }
 }

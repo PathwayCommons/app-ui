@@ -194,8 +194,10 @@ class Search extends React.Component {
       ]),
       h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' } }, [
         h('div.search-list-container', [
-          h('div.search-result-filter', [searchResultFilter]),
-          h('div.search-result-hit-count', [searchResultHitCount]),
+          h('div.search-tools', [
+            h('div.search-result-filter', [searchResultFilter]),
+            h('div.search-result-hit-count', [searchResultHitCount])
+          ]),
           h(EntityInfoBoxList, { entityInfoList: entityInfoResults}),
           h('div.search-list', searchResults)
         ])

@@ -50,7 +50,7 @@ class Enrichment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cy: make_cytoscape({headless: true, stylesheet: enrichmentStylesheet, showTooltipsOnEdges:true, minZoom:0.01 }),
+      cy: make_cytoscape({headless: true, stylesheet: enrichmentStylesheet, showTooltipsOnEdges:false, minZoom:0.01 }),
       componentConfig: enrichmentConfig,
       layoutConfig: getLayoutConfig(),
       networkJSON: emptyNetworkJSON,
@@ -85,7 +85,6 @@ class Enrichment extends React.Component {
   }
 
   handleGenes( genes ) {
-    //this.setState( { genes } );
     this.updateNetworkJSON( genes );
   }
 
@@ -93,12 +92,13 @@ class Enrichment extends React.Component {
     ServerAPI.enrichmentAPI({
       genes: genes,
       //set min and max for testing to decrease render time
-      minSetSize: 3,
-	    maxSetSize: 50,
+      // minSetSize: 3,
+	    // maxSetSize: 50,
      }, "analysis")
    .then( analysisResult => {
       ServerAPI.enrichmentAPI({
-        pathways: analysisResult.pathwayInfo
+        pathways: analysisResult.pathwayInfo,
+        //similarityCutoff: .9
       }, "visualization")
      .then( visualizationResult => {
         this.setState({

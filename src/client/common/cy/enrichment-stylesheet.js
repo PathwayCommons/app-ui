@@ -6,20 +6,20 @@ const iStylesheet=cytoscape.stylesheet()
   'opacity': 0.3,
   'arrow-scale': 1.75,
   'curve-style': 'bezier',
-  'line-color': '#555',
+  'line-color': 'blue',
   'target-arrow-fill': 'hollow',
   'source-arrow-fill': 'hollow',
-  'width':  node => node.data('similarity') ? node.data('similarity') * 2 : 1.5,
+  'width':  edge => edge.data('similarity') ? edge.data('similarity') * 2 : 1.5,
   'target-arrow-color': '#555',
   'source-arrow-color': '#555',
   'text-border-color': '#555',
   'color': '#555'
 })
-.selector('node[class="ball"]')
+.selector('node')
 .css({
   'font-size': 20,
   'color': 'black',
-  'background-color': 'grey', //TODO: Colored accoriding to p-value
+  'background-color': 'green', //TODO: Colored accoriding to p-value
   'background-opacity':0.8,
   'text-outline-color': 'white',
   'text-outline-width': 2,

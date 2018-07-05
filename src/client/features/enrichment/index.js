@@ -66,13 +66,12 @@ class Enrichment extends React.Component {
   }
 
   handleGenes( genes ) {
-    this.setState( { genes } );
-    this.updateNetworkJSON();
+    this.updateNetworkJSON( genes );
   }
 
-  updateNetworkJSON(){
+  updateNetworkJSON( genes ){
     ServerAPI.enrichmentAPI({
-      genes: this.state.genes
+      genes: genes
      }, "analysis")
    .then( analysisResult => {
       ServerAPI.enrichmentAPI({
@@ -85,6 +84,8 @@ class Enrichment extends React.Component {
             nodes: visualizationResult.graph.elements.nodes
           }
         });
+   console.log(this.state.networkJSON);
+
      })
      .catch(
        error => error

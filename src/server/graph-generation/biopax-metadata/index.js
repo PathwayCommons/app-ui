@@ -1,6 +1,9 @@
+const fs = require('fs');
 const metadataParser = require('./metadataParserJson');
 const _ = require('lodash');
+const config = require('../../../config');
 var biopaxFile = null;
+
 /**
  * 
  * @param {*} biopaxElement Metadata for an entity from BioPAX
@@ -142,24 +145,22 @@ function getElementFromBioPax(id) {
     id = id.substring(lastIndex + 1);
   }
 
-  //Get element matching the ID
-  //make sure the ID isn't "" or null
+  //Get element matching the ID; make sure the ID isn't "" or null
   if(id)
     return biopaxFile.get(id);
-  else return null;
+  else
+    return null;
 }
 
 /**
  * 
  * @param {*} nodeId node ID from Cytoscape network JSON
- * @returns Subtree containing BioPax metadata for the node
+ * @returns Subtree containing BioPAX model metadata for the node
  */
-function matchCyIdToBiopax(nodeId) {
-
-  // The original entity IDs have been converted in the cytoscape network.
-  // Need to first find the original BioPAX entity ID, then collect metadata.
-
-  //Alot of this stuff is strange but it is ALL NECESSARY to correctly map the IDs
+function getBiopaxObjectByNodeId(nodeId) {
+  // Original entity IDs were converted to SBGN ids and then cytoscape network ids...
+  // First, we need to find the original BioPAX entity ID, then collect metadata.
+  //TODO: simplify stuff (which is weird but ALLOWS mapping of a node ID to the BioPAX element)
 
   //Search for ID exactly as it appears
   let searchTerm = getElementFromBioPax(nodeId);
@@ -202,8 +203,8 @@ function matchCyIdToBiopax(nodeId) {
 }
 
 /**
- * 
- * @param {*} biopaxJsonText String containing BioPAX network metadata
+ *
+ * @param {*} biopaxJsonText String containing BioPAX network metadata (JSON-LD format)
  * @returns `Map` containing BioPAX network metadata
  */
 function getProcessedBioPax(biopaxJsonText) {
@@ -211,13 +212,11 @@ function getProcessedBioPax(biopaxJsonText) {
   const graph = JSON.parse(biopaxJsonText.replace(new RegExp('@id', 'g'), 'pathid'))['@graph'];
   const biopaxElementMap = new Map();
 
-  //The 'pathid' property has a format like: http://pathwaycommons.org/pc2/someID
-  //Convert it to this format: someID, and make it the key for the map
+  //The 'pathid' property contains URI (URL format by design);
+  //we extract the localID part to make it the key for the map:
   for (const element of graph) {
     const fullId = element['pathid'];
-    const lastIndex = fullId.lastIndexOf('/');
-    const subId = fullId.substring(lastIndex + 1);
-
+    const subId = fullId.substring(config.PC_XMLBASE.length+1);
     biopaxElementMap.set(subId, element);
   }
 
@@ -239,14 +238,47 @@ function getBioPaxMetadata(biopaxJsonText, nodes) {
 
   //Iterate through nodes in Cy network, adding metadata to each
   nodes.forEach(node => {
-    const CyId = node.data.id;
     //metadata for the Cytoscape node
-    const BiopaxData = matchCyIdToBiopax(CyId);
+    const BiopaxData = getBiopaxObjectByNodeId(node.data.id);
     //build the tree for metadata and add it to the map
-    nodeMetadataMap[CyId] = metadataParser(buildBioPaxTree(BiopaxData));
+    nodeMetadataMap[node.data.id] = metadataParser(buildBioPaxTree(BiopaxData));
   });
 
   return nodeMetadataMap;
 }
 
-module.exports = { getProcessedBioPax, getBioPaxMetadata};
+/**
+ * Normalize node/edge (originated from the SBGN model) ids
+ * if needed.
+ * @param cyId
+ */
+function trimXmlBaseCyId(cyId) {
+  const prefix = config.PC_XMLBASE.replace(/[^-\w]/g,"_"); //same as Paxtools/sbgn-converter (java) does
+
+  if(cyId.includes(prefix))
+    return cyId.replace(new RegExp(prefix,'g'),'');
+  else
+    return cyId;
+}
+
+const getGenericPhysicalEntityMap = _.memoize(() => JSON.parse(
+  fs.readFileSync(__dirname + '/generic-physical-entity-map.json', 'utf-8')
+));
+
+/**
+ *
+ * @param nodes
+ */
+const getNodesGeneSynonyms = nodes => {
+  const nodeGeneSynonyms = {};
+  const genericPhysicalEntityMap = getGenericPhysicalEntityMap();
+
+  nodes.forEach(node => {
+    const lookupId = config.PC_XMLBASE + trimXmlBaseCyId(node.data.id);
+    nodeGeneSynonyms[node.data.id] = _.get(genericPhysicalEntityMap[lookupId], 'synonyms', []);
+  });
+  return nodeGeneSynonyms;
+};
+
+
+module.exports = {getBioPaxMetadata, getNodesGeneSynonyms};

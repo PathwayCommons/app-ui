@@ -1,7 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
-//const Loader = require('react-loader');
+const Loader = require('react-loader');
 //const queryString = require('query-string');
 
 // const hideTooltips = require('../../common/cy/events/click').hideTooltips;
@@ -32,16 +32,16 @@ const emptyNetworkJSON = {
 
 const testNetwork = {
   edges: [
-    {data:{id: 'edge1', source:"node3", target: "node4" }},
-    {data:{id: 'edge2', source:"node1", target: "node2" }},
+    {data:{id: 'edge1', source:"node3", target: "node4", similarity: 3 }},
+    {data:{id: 'edge2', source:"node1", target: "node2", similarity: .4 }},
     {data:{id: 'edge3', source:"node1", target: "node4" }},
     {data:{id: 'edge4', source:"node2", target: "node4" }}
   ],
   nodes: [
-    {data: {id: "node1"}},
-    {data: {id: "node2"}},
-    {data: {id: "node3"}},
-    {data: {id: "node4"}}
+    {data: {id: "node1", description: "node1"}},
+    {data: {id: "node2", description: "node2"}},
+    {data: {id: "node3", description: "node3"}},
+    {data: {id: "node4", description: "node4"}}
   ]
 };
 
@@ -53,8 +53,8 @@ class Enrichment extends React.Component {
       cy: make_cytoscape({headless: true, stylesheet: enrichmentStylesheet, showTooltipsOnEdges:false, minZoom:0.01 }),
       componentConfig: enrichmentConfig,
       layoutConfig: getLayoutConfig(),
-      networkJSON: emptyNetworkJSON,
-      //networkJSON: testNetwork,
+      //networkJSON: emptyNetworkJSON,
+      networkJSON: testNetwork,
 
       networkMetadata: {
         name: "enrichment",
@@ -63,7 +63,7 @@ class Enrichment extends React.Component {
       },
 
       //temporarily set to false so loading spinner is disabled
-      networkLoading: false,
+      loaded: true,
 
       closeToolBar: true,
       unrecognized: [],
@@ -77,6 +77,7 @@ class Enrichment extends React.Component {
 
   handleInputs( inputs ) {
     this.setState({ inputs });
+    this.setState({loaded: true});
   }
 
   handleUnrecognized( unrecognized ) {
@@ -88,6 +89,8 @@ class Enrichment extends React.Component {
       const analysisResult = await ServerAPI.enrichmentAPI({ genes: genes }, "analysis");
       const visualizationResult = await ServerAPI.enrichmentAPI({ pathways: analysisResult.pathwayInfo}, "visualization");
       this.setState({
+        closeToolBar: false,
+        loaded: true,
         networkJSON: {
           edges: visualizationResult.graph.elements.edges,
           nodes: visualizationResult.graph.elements.nodes
@@ -98,7 +101,7 @@ class Enrichment extends React.Component {
   }
 
   render() {
-    let { cy, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading } = this.state;
+    let { cy, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading, closeToolBar, loaded } = this.state;
     let retrieveTokenInput = () => h(TokenInput,{
       inputs: this.state.inputs,
       handleInputs: this.handleInputs,
@@ -107,17 +110,21 @@ class Enrichment extends React.Component {
       handleGenes: this.handleGenes
     });
 
-    return h(BaseNetworkView.component, {
+    const baseView = h(BaseNetworkView.component, {
       cy,
       componentConfig,
       layoutConfig,
       networkJSON,
       networkMetadata,
       networkLoading,
-      titleContainer: () => h(retrieveTokenInput),
-      //will use state to set to false to render the toolbar once analysis is run and graph is displayed
-      closeToolBar: true
+      closeToolBar,
+      titleContainer: () => h(retrieveTokenInput)
     });
+    const loadingView = h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' }});
+
+     // create a view shell loading view e.g looks like the view but its not
+    const content = loaded ? baseView : loadingView;
+    return h('div.main', [content]);
   }
 }
 

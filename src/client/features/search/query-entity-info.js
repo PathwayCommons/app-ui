@@ -18,16 +18,27 @@ const { databases } = require('../../common/config');
 // * use validator
 // * the validator defaults to ncbi because it is the most general db
 
-// let determineSearchType = query => {
-// };
+let isUniprotId = token => {
+  return /uniprot:\w+$/i.test(token);
+};
+
+let isNcbiId = token => {
+  return /ncbi:[0-9]+$/i.test( token );
+};
+
+let isHgncId = token => {
+
+};
+
+// databases that have special link ins for the search
+const linkInDbs = [
+  {configName:'Gene Cards',gProfiler:'HGNCSYMBOL',displayName:'Gene Cards'},
+  {configName:'HGNC Symbol',gProfiler:'HGNCSymbol',displayName:'HGNC'},
+  {configName:'NCBI Gene',gProfiler:'NCBIGene',displayName:'NCBI Gene'},
+  {configName:'Uniprot',gProfiler:'Uniprot',displayName:'UniProt'}
+];
 
 
-const usedDatabases = new Map ([
-  ['GeneCards',{configName:'Gene Cards',gProfiler:'HGNCSYMBOL',displayName:'Gene Cards'}],
-  ['HGNC Symbol',{configName:'HGNC Symbol',gProfiler:'HGNCSymbol',displayName:'HGNC'}],
-  ['GeneID',{configName:'NCBI Gene',gProfiler:'NCBIGene',displayName:'NCBI Gene'}],
-  ['Uniprot',{configName:'Uniprot',gProfiler:'Uniprot',displayName:'UniProt'}]
-]);
 
 /**
  * Get database link and display name based on gene ids
@@ -64,7 +75,7 @@ const idToLinkConverter = ids => {
       })
     )
   );
-  let dbConfigValues = [...usedDatabases.values()];
+  let dbConfigValues = [...linkInDbs.values()];
 
   return dbConfigValues.filter(db => dbs[db.configName] != null).map(db => {
     let link = dbs[ db.configName ];
@@ -118,8 +129,8 @@ const getUniprotInfo = ids => {
       let hgncSymbol;
 
       gene.dbReferences.forEach( db => {
-        if( usedDatabases.has( db.type ) ){
-          _.assign( dbIds, { [ usedDatabases.get( db.type ).configName ]: db.id } );
+        if( linkInDbs.map(db => db.config).includes( db.type ) ){
+          _.assign( dbIds, { [ linkInDbs.get( db.type ).configName ]: db.id } );
         }
         if( db.type === 'HGNC' ){
           hgncSymbol = db.properties['gene designation'];
@@ -137,6 +148,7 @@ const getUniprotInfo = ids => {
         name:gene.gene[0].name.value,
         function: gene.comments && gene.comments[0].type === 'FUNCTION' ? gene.comments[0].text[0].value : '',
         officialSymbol: dbIds['Gene Cards'],
+        otherNames: '',
         showMore: { full: true, function: false, synonyms: false },
         links: links
       };
@@ -146,72 +158,59 @@ const getUniprotInfo = ids => {
 
 // Expects strings of the form
 const queryEntityInfo = query => {
-  let rawEntitiyValues = query.trim().split(' ');
+  let tokens = query.trim().split(' ');
   let ncbiIds = {};
   let uniprotIds = {};
-  let labeledId = {};
-  const genesToSearch = [];
+  let genes = [];
 
 
-  let entities = rawEntitiyValues.map(entity => {
-    let idParts = entity.split(':');
+  tokens.forEach(token => {
+    let [ dbId, entityId ] = token.split(':');
 
-    if( /uniprot:\w+$/i.test(entity) ){
-      uniprotIds[ idParts[ 1 ] ] = idParts[ 1 ];
-    } else if( /(ncbi:[0-9]+|hgnc:\w+)$/i.test( entity ) ){
-      labeledId[ idParts[ 1 ] ] = idParts[ 1 ];
-      genesToSearch.push( idParts[ 1 ] );
+    if( isUniprotId( token ) ){
+      uniprotIds[ entityId ] = entityId;
+    } else if( isNcbiId( token ) ){
+      genes.push( entityId );           
     } else {
-      genesToSearch.push( idParts[ 0 ] );
+      genes.push( dbId );
     }
   });
 
-  //Validate search query in g:Converter
-  //Return gene IDs of each database
-  const promises = [];
-  usedDatabases.forEach( database => promises.push(
-    ServerAPI.geneQuery({
-      genes: genesToSearch,
-      targetDb: database.gProfiler
-    }).then(result => idFormatter( database.configName, result ) )
-  ));
+  let entityQueries = linkInDbs.map( db => {
+    return ServerAPI.geneQuery({
+      genes: genes,
+      targetDb: db.gProfiler
+    }).then(res => idFormatter( db.configName, res ));
+  });
 
-  return (
-    Promise.all( promises ).then( databaseResults => {
-      let genes={};
-      databaseResults.forEach( databaseResult => _.merge( genes, databaseResult ) ); //Merge the array of result into one json
-      return genes;
-    })
-    .then( genes => {
-      _.forEach( genes, ( gene, search ) => {
-        if( gene['NCBI Gene'] ){
-          ncbiIds[ gene['NCBI Gene'] ] = search;
-        }
-        else if( gene['Uniprot'] ){
-          uniprotIds[ gene['Uniprot'] ] = search;
-        }
-      });
+  return Promise.all( entityQueries ).then( results => {
+    let entityInfos = {};
+    results.forEach( dbResult => _.merge( entityInfos, dbResult ) ); //Merge the array of result into one json
 
-      let landingBoxes = [];
-      if( !_.isEmpty(ncbiIds) ){
-        landingBoxes.push( getNcbiInfo( ncbiIds, genes ) );
+    Object.entries(entityInfos).forEach(entityInfo => {
+      let [ originalSearchTerm, mappedGene ] = entityInfo;
+
+      if( mappedGene['NCBI Gene'] ){
+        ncbiIds[ mappedGene['NCBI Gene'] ] = originalSearchTerm;
       }
-      if( !_.isEmpty( uniprotIds ) ){
-        landingBoxes.push( getUniprotInfo( uniprotIds ) );
+      else if( mappedGene['Uniprot'] ){
+        uniprotIds[ mappedGene['Uniprot'] ] = originalSearchTerm;
       }
-      return Promise.all(landingBoxes).then( landingBoxes => {
-        landingBoxes = _.uniqWith( _.flatten( landingBoxes ), ( arrVal, othVal ) => {
+    });
+
+      let providerSpecificEntityInfo = [];
+      if( Object.keys(ncbiIds).length > 0 ){
+        providerSpecificEntityInfo.push( getNcbiInfo( ncbiIds, entityInfos ) );
+      }
+      if( Object.keys(uniprotIds).length > 0 ){
+        providerSpecificEntityInfo.push( getUniprotInfo( uniprotIds ) );
+      }
+      return Promise.all(providerSpecificEntityInfo).then( providerInfo => {
+        return _.uniqWith( _.flatten( providerInfo ), ( arrVal, othVal ) => {
           return _.intersectionWith(_.values(arrVal.links),_.values(othVal.links),_.isEqual).length;
         });
-
-        if( landingBoxes.length > 1 ){
-          landingBoxes.forEach( box => box.showMore.full = false);
-        }
-
-        return landingBoxes;
       });
-  })
-  );
+  });
 };
 
 module.exports = queryEntityInfo;

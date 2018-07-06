@@ -9,7 +9,8 @@ const classNames = require('classnames');
 
 const Icon = require('../../common/components').Icon;
 const { ServerAPI } = require('../../services');
-const { queryEntityInfo, EntityInfoBoxList } = require('./entity-info-box');
+const queryEntityInfo = require('./query-entity-info');
+const EntityInfoBoxList = require('./entity-info-box');
 
 class Search extends React.Component {
 

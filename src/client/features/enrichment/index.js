@@ -77,7 +77,7 @@ class Enrichment extends React.Component {
 
   handleInputs( inputs ) {
     this.setState({ inputs });
-    this.setState({ loaded: true });
+    this.setState({ loaded: false });
   }
 
   handleUnrecognized( unrecognized ) {
@@ -89,14 +89,14 @@ class Enrichment extends React.Component {
       const analysisResult = await ServerAPI.enrichmentAPI({ genes: genes }, "analysis");
 
       if( !analysisResult || !analysisResult.pathwayInfo ) {
-        this.setState({ timedOut: true });
+        this.setState({ timedOut: true, loaded: true });
         return;
       }
 
       const visualizationResult = await ServerAPI.enrichmentAPI({ pathways: analysisResult.pathwayInfo}, "visualization");
 
       if( !visualizationResult ) {
-        this.setState({ timedOut: true });
+        this.setState({ timedOut: true, loaded: true });
         return;
       }
 
@@ -134,7 +134,10 @@ class Enrichment extends React.Component {
       titleContainer: () => h(retrieveTokenInput)
     })
     :
-    h('div.no-network',[h('strong.title','Network currently unavailable'),h('span','Try a diffrent set of genes')]);
+    h('div.no-network',[
+      h('strong.title','Network currently unavailable'),
+      h('a', { href: location.href },'Try a diffrent set of genes')
+    ]);
 
     const loadingView = h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' }});
 

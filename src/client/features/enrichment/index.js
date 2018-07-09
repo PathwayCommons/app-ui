@@ -8,7 +8,6 @@ const Loader = require('react-loader');
 // const removeStyle= require('../../common/cy/manage-style').removeStyle;
 const make_cytoscape = require('../../common/cy/');
 const enrichmentStylesheet= require('../../common/cy/enrichment-stylesheet');
-// const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
 const TokenInput = require('./token-input');
 const { BaseNetworkView } = require('../../common/components');
 const { getLayoutConfig } = require('../../common/cy/layout');
@@ -53,8 +52,8 @@ class Enrichment extends React.Component {
       cy: make_cytoscape({headless: true, stylesheet: enrichmentStylesheet, showTooltipsOnEdges:false, minZoom:0.01 }),
       componentConfig: enrichmentConfig,
       layoutConfig: getLayoutConfig(),
-      //networkJSON: emptyNetworkJSON,
-      networkJSON: testNetwork,
+      networkJSON: emptyNetworkJSON,
+      //networkJSON: testNetwork,
 
       networkMetadata: {
         name: "enrichment",
@@ -88,7 +87,6 @@ class Enrichment extends React.Component {
   handleGenes( genes ) {
     const updateNetworkJSON = async () => {
       const analysisResult = await ServerAPI.enrichmentAPI({ genes: genes }, "analysis");
-      console.log(analysisResult);
       if( analysisResult === undefined ) {
         this.setState({ timedOut: true });
         return;
@@ -96,7 +94,8 @@ class Enrichment extends React.Component {
       const visualizationResult = await ServerAPI.enrichmentAPI({ pathways: analysisResult.pathwayInfo}, "visualization");
       if( visualizationResult === undefined ) {
         this.setState({ timedOut: true });
-        return;}
+        return;
+      }
       this.setState({
         closeToolBar: false,
         loaded: true,

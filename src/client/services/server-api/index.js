@@ -5,7 +5,7 @@ const fetch = require('node-fetch');
 
 const socket = io.connect('/');
 const FETCH_TIMEOUT = 5000; //ms
-const timedOutMessage = "ERROR: service timed out after "+ FETCH_TIMEOUT+ "ms";
+
 let absoluteURL = (href) => {
   return ( location.origin + href) ;
 };
@@ -50,8 +50,7 @@ const ServerAPI = {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(query),
-      timeout: 3
-      //FETCH_TIMEOUT
+      timeout: FETCH_TIMEOUT
     })
     .then(res => res.json())
     .catch(err => {

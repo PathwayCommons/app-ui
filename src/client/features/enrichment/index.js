@@ -13,7 +13,7 @@ const { BaseNetworkView } = require('../../common/components');
 const { getLayoutConfig } = require('../../common/cy/layout');
 const { ServerAPI } = require('../../services/');
 
-//const downloadTypes = require('../../common/config').downloadTypes;
+const downloadTypes = require('../../common/config').downloadTypes;
 
 const enrichmentConfig={
   //extablish toolbar and declare features to not include
@@ -77,7 +77,7 @@ class Enrichment extends React.Component {
 
   handleInputs( inputs ) {
     this.setState({ inputs });
-    this.setState({ loaded: false });
+    this.setState({ loaded: true });
   }
 
   handleUnrecognized( unrecognized ) {
@@ -131,7 +131,11 @@ class Enrichment extends React.Component {
       networkMetadata,
       networkLoading,
       closeToolBar,
-      titleContainer: () => h(retrieveTokenInput)
+      titleContainer: () => h(retrieveTokenInput),
+      download: {
+        types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'),
+        promise: () => Promise.resolve(_.map(this.state.cy.edges(),edge=> edge.data().id).sort().join('\n'))
+      },
     })
     :
     h('div.no-network',[

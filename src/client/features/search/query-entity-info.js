@@ -30,12 +30,6 @@ let isHgncId = token => {
 };
 
 let dbInfos = {
-  'Gene Cards': {
-    name: 'Gene Cards',
-    displayName: 'Gene Cards',
-    url: 'http://identifiers.org/genecards/',
-    gProfiler: 'HGNCSYMBOL'
-  },
   'HGNC Symbol': {
     name: 'HGNC Symbol',
     displayName: 'HGNC',
@@ -44,7 +38,7 @@ let dbInfos = {
   },
   'NCBI Gene': {
     name: 'NCBI Gene',
-    displayName: 'NCBIGene',
+    displayName: 'NCBI Gene',
     url: 'http://identifiers.org/ncbigene/',
     gProfiler: 'NCBIGene'
   },
@@ -120,7 +114,7 @@ const getNcbiInfo = ( ids, genes ) => {
         databaseID: gene,
         name: geneResults[ gene ].nomenclaturename,
         function: geneResults[ gene ].summary,
-        officialSymbol: genes[ originalSearch ]['Gene Cards'],
+        officialSymbol: genes[ originalSearch ]['HGNC Symbol'],
         otherNames: geneResults[ gene ].otheraliases ? geneResults[gene].otheraliases : '',
         links: links
       };
@@ -146,7 +140,10 @@ const getUniprotInfo = ids => {
       uniprotInfo.dbReferences.forEach( db => {
         let matchedDb = dbInfos[ db.type ];
         if( matchedDb != null ){
-          dbIds[ matchedDb.name ] = db.id;
+          dbIds[ db.type ] = db.id;
+        }
+        if( db.type === 'GeneID' ){
+          dbIds['NCBI Gene'] = db.id;
         }
         if( db.type === 'HGNC' ){
           hgncSymbol = db.properties['gene designation'];

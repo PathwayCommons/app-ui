@@ -67,7 +67,8 @@ class Enrichment extends React.Component {
 
       closeToolBar: true,
       unrecognized: [],
-      inputs: ""
+      inputs: "",
+      timedOut: false
     };
 
     this.handleInputs = this.handleInputs.bind(this);
@@ -87,7 +88,15 @@ class Enrichment extends React.Component {
   handleGenes( genes ) {
     const updateNetworkJSON = async () => {
       const analysisResult = await ServerAPI.enrichmentAPI({ genes: genes }, "analysis");
+      console.log(analysisResult);
+      if( analysisResult === undefined ) {
+        this.setState({ timedOut: true });
+        return;
+      }
       const visualizationResult = await ServerAPI.enrichmentAPI({ pathways: analysisResult.pathwayInfo}, "visualization");
+      if( visualizationResult === undefined ) {
+        this.setState({ timedOut: true });
+        return;}
       this.setState({
         closeToolBar: false,
         loaded: true,
@@ -110,7 +119,8 @@ class Enrichment extends React.Component {
       handleGenes: this.handleGenes
     });
 
-    const baseView = h(BaseNetworkView.component, {
+    const baseView = !this.state.timedOut ?
+    h(BaseNetworkView.component, {
       cy,
       componentConfig,
       layoutConfig,
@@ -119,7 +129,10 @@ class Enrichment extends React.Component {
       networkLoading,
       closeToolBar,
       titleContainer: () => h(retrieveTokenInput)
-    });
+    })
+    :
+    h('div.no-network',[h('strong.title','Network currently unavailable'),h('span','Try a diffrent set of genes')]);
+
     const loadingView = h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' }});
 
      // create a view shell loading view e.g looks like the view but its not

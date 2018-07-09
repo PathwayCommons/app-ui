@@ -4,7 +4,8 @@ const _ = require('lodash');
 const fetch = require('node-fetch');
 
 const socket = io.connect('/');
-
+const FETCH_TIMEOUT = 5000; //ms
+const timedOutMessage = "ERROR: service timed out after "+ FETCH_TIMEOUT+ "ms";
 let absoluteURL = (href) => {
   return ( location.origin + href) ;
 };
@@ -48,10 +49,15 @@ const ServerAPI = {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body:JSON.stringify(query)
+      body: JSON.stringify(query),
+      timeout: 3
+      //FETCH_TIMEOUT
     })
     .then(res => res.json())
-    .catch(err => err);
+    .catch(err => {
+      if (err.type == 'body-timeout') return undefined ;
+      else err;
+    });
   },
 
   geneQuery(query){

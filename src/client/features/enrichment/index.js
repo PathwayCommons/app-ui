@@ -75,18 +75,16 @@ class Enrichment extends React.Component {
       }
 
       const visualizationResult = await ServerAPI.enrichmentAPI({ pathways: analysisResult.pathwayInfo}, "visualization");
-      const edges = visualizationResult.graph.elements.edges;
-      const nodes = visualizationResult.graph.elements.nodes;
 
-      if( !visualizationResult || !nodes ) {
+      if( !visualizationResult ) {
         this.setState({ timedOut: true });
         return;
       }
 
       this.setState({
         networkJSON: {
-          edges: edges,
-          nodes: nodes
+          edges: visualizationResult.graph.elements.edges,
+          nodes: visualizationResult.graph.elements.nodes
         }
       });
     };

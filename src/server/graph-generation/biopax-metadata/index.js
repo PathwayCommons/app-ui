@@ -1,7 +1,6 @@
 const fs = require('fs');
 const metadataParser = require('./metadataParserJson');
 const _ = require('lodash');
-// const config = require('../../../config');
 
 var biopaxMap = null;
 

@@ -107,7 +107,6 @@ const _datasources = () => {
         hasPathways: (ds.numPathways>0)?true:false
       };
     });
-    // console.log(output);
     return output; //filtered, simplified map
   })
   .catch(() => {

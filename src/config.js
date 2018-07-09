@@ -5,7 +5,6 @@ let defaults = {
   PORT: 3000,
   MASTER_PASSWORD: '',
   PC_URL: 'http://www.pathwaycommons.org/pc2/',
-  PC_XMLBASE: 'http://pathwaycommons.org/pc2/',
   GPROFILER_URL: "http://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/",
   PC_CACHE_MAX_SIZE: 1000
 };

@@ -34,7 +34,6 @@ The following environment variables can be used to configure the server:
 
 - `NODE_ENV` : the environment mode, either `production` or `development` (default)
 - `PC_URL` : actual Pathway Commons web service endpoint URL (default: 'http://www.pathwaycommons.org/pc2/')
-- `PC_XMLBASE` : actual Pathway Commons BioPAX xml:base (e.g., 'http://pathwaycommons.org/pc2/' for the v9; it's not address)
 - `PORT` : the port on which the server runs (default 3000)
 
 ### Configure RethinkDB
@@ -46,7 +45,7 @@ The following environment variables can be used to configure the server:
 ### Switching Pathway Commons Versions (release/other)
 
 If Pathway Commons data and files have been updated since this app's last built and run,
-or you simply want to connect to a different PC2 instance (don't forget to set PC_URL and PC_XMLBASE), 
+or you simply want to connect to a different PC2 instance (don't forget to set PC_URL), 
 then the file `src/server/graph-generation/biopax-metadata/generic-physical-entity-map.json` 
 needs to be updated. Also, purge the RethinkDb db tables or simply switch the database.
 

@@ -93,7 +93,7 @@ class Enrichment extends React.Component {
         return;
       }
 
-      const visualizationResult = await ServerAPI.enrichmentAPI({ pathways: analysisResult.pathwayInfo}, "visualization");
+      const visualizationResult = await ServerAPI.enrichmentAPI({ pathways: analysisResult.pathwayInfo }, "visualization");
 
       if( !visualizationResult ) {
         this.setState({ timedOut: true, loaded: true });

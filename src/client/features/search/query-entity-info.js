@@ -1,7 +1,6 @@
 const _ = require('lodash');
 
 const { ServerAPI } = require('../../services');
-const { databases } = require('../../common/config');
 
 // two types of searches:
 // * general searches
@@ -30,13 +29,32 @@ let isHgncId = token => {
 
 };
 
-// databases that have special link ins for the search
-const linkInDbs = [
-  {configName:'Gene Cards',gProfiler:'HGNCSYMBOL',displayName:'Gene Cards'},
-  {configName:'HGNC Symbol',gProfiler:'HGNCSymbol',displayName:'HGNC'},
-  {configName:'NCBI Gene',gProfiler:'NCBIGene',displayName:'NCBI Gene'},
-  {configName:'Uniprot',gProfiler:'Uniprot',displayName:'UniProt'}
-];
+let dbInfos = {
+  'Gene Cards': {
+    name: 'Gene Cards',
+    displayName: 'Gene Cards',
+    url: 'http://identifiers.org/genecards/',
+    gProfiler: 'HGNCSYMBOL'
+  },
+  'HGNC Symbol': {
+    name: 'HGNC Symbol',
+    displayName: 'HGNC',
+    url: 'http://identifiers.org/hgnc.symbol/',
+    gProfiler: 'HGNCSYMBOL'
+  },
+  'NCBI Gene': {
+    name: 'NCBI Gene',
+    displayName: 'NCBIGene',
+    url: 'http://identifiers.org/ncbigene/',
+    gProfiler: 'NCBIGene'
+  },
+  'Uniprot': {
+    name: 'Uniprot',
+    displayName: 'UniProt',
+    url: 'http://identifiers.org/uniprot/',
+    gProfiler: 'Uniprot'
+  }
+};
 
 
 
@@ -68,20 +86,18 @@ const idFormatter = ( source, geneQuery ) => {
  * @return {[{string:string,string,string}]} Array of database containing link and display name, e.g.{link: URI, displayName: MDM2}
  */
 const idToLinkConverter = ids => {
-  let dbSet = databases.filter(databaseValue => ids[databaseValue.database]);
-  let dbs =  _.assign({},
-    ...dbSet.map(database=> ({
-        [database.database]: database.url+database.search+ids[database.database]
-      })
-    )
-  );
-  let dbConfigValues = [...linkInDbs.values()];
 
-  return dbConfigValues.filter(db => dbs[db.configName] != null).map(db => {
-    let link = dbs[ db.configName ];
-    let { displayName } = db;
-    return { link, displayName };
+  let links = Object.entries(ids).map( ( entry ) => {
+    let [ dbName, geneId ] = entry;
+    let dbInfo = dbInfos[ dbName ];
+
+    return  {
+      link: dbInfo.url + geneId,
+      displayName: dbInfo.displayName
+    };
   });
+
+  return links;
 };
 
 /**
@@ -106,7 +122,6 @@ const getNcbiInfo = ( ids, genes ) => {
         function: geneResults[ gene ].summary,
         officialSymbol: genes[ originalSearch ]['Gene Cards'],
         otherNames: geneResults[ gene ].otheraliases ? geneResults[gene].otheraliases : '',
-        showMore: { full: !(geneResults.uids.length > 1) , function: false, synonyms: false },
         links: links
       };
     });
@@ -121,16 +136,17 @@ const getUniprotInfo = ids => {
 
   let uniprotIds = Object.keys( ids );
 
-  return ServerAPI.getUniprotInformation( uniprotIds ).then( result => {
+  return ServerAPI.getUniprotInformation( uniprotIds ).then( uniprotInfos => {
 
-    return result.map( gene => {
+    return uniprotInfos.map( uniprotInfo => {
 
-      let dbIds = { Uniprot: gene.accession };
+      let dbIds = { Uniprot: uniprotInfo.accession };
       let hgncSymbol;
 
-      gene.dbReferences.forEach( db => {
-        if( linkInDbs.map(db => db.config).includes( db.type ) ){
-          _.assign( dbIds, { [ linkInDbs.get( db.type ).configName ]: db.id } );
+      uniprotInfo.dbReferences.forEach( db => {
+        let matchedDb = dbInfos[ db.type ];
+        if( matchedDb != null ){
+          dbIds[ matchedDb.name ] = db.id;
         }
         if( db.type === 'HGNC' ){
           hgncSymbol = db.properties['gene designation'];
@@ -141,15 +157,14 @@ const getUniprotInfo = ids => {
         dbIds['HGNC Symbol'] = hgncSymbol;
       }
 
-      const links = idToLinkConverter( dbIds );
+      let links = idToLinkConverter( dbIds );
 
       return {
-        databaseID:gene.accession,
-        name:gene.gene[0].name.value,
-        function: gene.comments && gene.comments[0].type === 'FUNCTION' ? gene.comments[0].text[0].value : '',
-        officialSymbol: dbIds['Gene Cards'],
+        databaseID: uniprotInfo.accession,
+        name: uniprotInfo.gene[0].name.value,
+        function: uniprotInfo.comments && uniprotInfo.comments[0].type === 'FUNCTION' ? uniprotInfo.comments[0].text[0].value : '',
+        officialSymbol: dbIds['HGNC Symbol'],
         otherNames: '',
-        showMore: { full: true, function: false, synonyms: false },
         links: links
       };
     });
@@ -170,17 +185,33 @@ const queryEntityInfo = query => {
     if( isUniprotId( token ) ){
       uniprotIds[ entityId ] = entityId;
     } else if( isNcbiId( token ) ){
-      genes.push( entityId );           
+      genes.push( entityId );
     } else {
       genes.push( dbId );
     }
   });
 
-  let entityQueries = linkInDbs.map( db => {
+  let dbsToQuery = Object.entries(dbInfos).map(([k, v]) => v);
+
+  let entityQueries = dbsToQuery.map( db => {
     return ServerAPI.geneQuery({
       genes: genes,
       targetDb: db.gProfiler
-    }).then(res => idFormatter( db.configName, res ));
+    }).then(res => {
+      let { geneInfo: entityInfos, unrecognized: unrecognizedEntities } = res;
+      let duplicates = new Set();
+      let entities = { unrecognizedEntities };
+
+      entityInfos.forEach( entityInfo => {
+        let { convertedAlias } = entityInfo;
+        if( !duplicates.has( convertedAlias ) ){
+          entities[ entityInfo.initialAlias ] = { [db.name]: convertedAlias };
+          duplicates.add( convertedAlias );
+        }
+      });
+
+      return entities;
+    });
   });
 
   return Promise.all( entityQueries ).then( results => {

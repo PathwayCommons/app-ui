@@ -4,6 +4,7 @@ const _ = require('lodash');
 const fetch = require('node-fetch');
 
 const socket = io.connect('/');
+const FETCH_TIMEOUT = 5000; //ms
 
 let absoluteURL = (href) => {
   return ( location.origin + href) ;
@@ -48,11 +49,14 @@ const ServerAPI = {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body:JSON.stringify(query),
-      timeout: 1000
+      body: JSON.stringify(query),
+      timeout: FETCH_TIMEOUT
     })
     .then(res => res.json())
-    .catch(err => err);
+    .catch(err => {
+      if (err.type == 'body-timeout') return undefined ;
+      else err;
+    });
   },
 
   geneQuery(query){

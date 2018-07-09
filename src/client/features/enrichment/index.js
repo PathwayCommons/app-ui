@@ -48,7 +48,8 @@ class Enrichment extends React.Component {
 
       closeToolBar: true,
       unrecognized: [],
-      inputs: ""
+      inputs: "",
+      timedOut: false
     };
 
     this.handleInputs = this.handleInputs.bind(this);
@@ -67,7 +68,15 @@ class Enrichment extends React.Component {
   handleGenes( genes ) {
     const updateNetworkJSON = async () => {
       const analysisResult = await ServerAPI.enrichmentAPI({ genes: genes }, "analysis");
+      if( analysisResult === undefined ) {
+        this.setState({ timedOut: true });
+        return;
+      }
       const visualizationResult = await ServerAPI.enrichmentAPI({ pathways: analysisResult.pathwayInfo}, "visualization");
+      if( visualizationResult === undefined ) {
+        this.setState({ timedOut: true });
+        return;
+      }
       this.setState({
         networkJSON: {
           edges: visualizationResult.graph.elements.edges,
@@ -79,7 +88,7 @@ class Enrichment extends React.Component {
   }
 
   render() {
-    let { cy, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading } = this.state;
+    let { cy, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading, closeToolBar } = this.state;
     let retrieveTokenInput = () => h(TokenInput,{
       inputs: this.state.inputs,
       handleInputs: this.handleInputs,
@@ -88,17 +97,21 @@ class Enrichment extends React.Component {
       handleGenes: this.handleGenes
     });
 
-    return h(BaseNetworkView.component, {
+    const baseView = !this.state.timedOut ?
+    h(BaseNetworkView.component, {
       cy,
       componentConfig,
       layoutConfig,
       networkJSON,
       networkMetadata,
       networkLoading,
-      titleContainer: () => h(retrieveTokenInput),
-      //will use state to set to false to render the toolbar once analysis is run and graph is displayed
-      closeToolBar: true
-    });
+      closeToolBar,
+      titleContainer: () => h(retrieveTokenInput)
+    })
+    :
+    h('div.no-network',[h('strong.title','Network currently unavailable'),h('span','Try a diffrent set of genes')]);
+
+    return h('div.main', [baseView]);
   }
 }
 

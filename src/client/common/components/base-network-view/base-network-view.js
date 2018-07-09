@@ -55,22 +55,28 @@ class BaseNetworkView extends React.Component {
   componentDidMount() {
     const state = this.state;
     const initialLayoutOpts = _.assign({}, state.layoutConfig.defaultLayout.options, {
-      animate: false
+      animate: false // no animations on init load
     });
     const container = this.graphDOM;
 
     const cy = state.cy;
+
     cy.mount(container);
+
     cy.remove('*');
+
     cy.add(state.networkJSON);
-    cy.emit('trim');
+
     const layout = cy.layout(initialLayoutOpts);
+
     layout.on('layoutstop', () => {
       cy.emit('network-loaded');
       this.setState({networkLoading: false});
     });
+
     layout.run();
   }
+
 
   changeMenu(menu) {
     let resizeCyImmediate = () => this.state.cy.resize();

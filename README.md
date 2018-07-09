@@ -33,7 +33,7 @@ npm run start
 The following environment variables can be used to configure the server:
 
 - `NODE_ENV` : the environment mode, either `production` or `development` (default)
-- `PC_URL`  :   Pathway Commons web service endpoint URL (default: http://www.pathwaycommons.org/pc2/)
+- `PC_URL` : actual Pathway Commons web service endpoint URL (default: 'http://www.pathwaycommons.org/pc2/')
 - `PORT` : the port on which the server runs (default 3000)
 
 ### Configure RethinkDB
@@ -54,7 +54,7 @@ The following script downloads and processes physical_entities.json.gz file from
 cd src/scripts/generic-entity-mapping/
 PC_VERSION=v10 sh update.sh
 ```
-(PC_VERSION is in fact a directory name in `www.pathwaycommons.org/archives/PC2/`)
+(PC_VERSION should be set to the name of a sub-directory in `www.pathwaycommons.org/archives/PC2/`) 
 
 ## Run targets
 

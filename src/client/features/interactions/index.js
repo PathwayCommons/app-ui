@@ -71,17 +71,6 @@ class Interactions extends React.Component {
         });
     });
 
-    this.state.cy.on('trim', () => {
-      const state = this.state;
-      const ids = state.ids;
-      if(ids.length === sources.length){
-        const cy = state.cy;
-        const mainNode = cy.nodes(node=> ids.indexOf(node.data().id) != -1);
-        const nodesToKeep = mainNode.merge(mainNode.connectedEdges().connectedNodes());
-        cy.remove(cy.nodes().difference(nodesToKeep));
-      }
-    });
-
     this.state.cy.one('layoutstop',()=>{
       const state = this.state;
       const cy = this.state.cy;

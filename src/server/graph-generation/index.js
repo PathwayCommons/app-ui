@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const sbgn2CyJson = require('sbgnml-to-cytoscape');
 const pcServices = require('../pathway-commons');
-const {getBioPaxMetadata, getNodesGeneSynonyms} = require('./biopax-metadata');
+const {getBiopaxMetadata, getGeneSymbolsForGenericNodes} = require('./biopax-metadata');
 
 //Get pathway name, description, and datasource
 //Requires a valid pathway uri
@@ -28,30 +28,29 @@ function getPathwayMetadata(uri) {
  * @param {*} uri URI representing the network (query)
  * @returns A Cytoscape JSON which represents the network, enhanced with BioPAX metadata
  */
-function getPathwayElementJson(uri) {
-  let baseElementJson, biopaxJson;
+function getPathwayNodesAndEdges(uri) {
+  let cyJson, biopaxJson;
 
   return Promise.all([
     pcServices.query({uri, format: 'sbgn'}).then(file => {
-      baseElementJson = sbgn2CyJson(file);
+      cyJson = sbgn2CyJson(file);
     }),
     pcServices.query({uri, format: 'jsonld'}).then(file => biopaxJson = file)
   ]).then(() => {
 
-    const nodesMetadata = getBioPaxMetadata(biopaxJson, baseElementJson.nodes);
-    const nodesGeneSynonyms = getNodesGeneSynonyms(baseElementJson.nodes);
+    const nodesMetadata = getBiopaxMetadata(biopaxJson, cyJson.nodes);
+    const nodesGeneSynonyms = getGeneSymbolsForGenericNodes(cyJson.nodes);
 
-    const augmentedNodes = baseElementJson.nodes.map(node => {
+    const augmentedNodes = cyJson.nodes.map(node => {
       const augmentedNode = node;
       augmentedNode.data.parsedMetadata = nodesMetadata[node.data.id];
       augmentedNode.data.geneSynonyms = nodesGeneSynonyms[node.data.id];
-
       return augmentedNode;
     });
 
     return {
       nodes: augmentedNodes,
-      edges: baseElementJson.edges
+      edges: cyJson.edges
     };
   });
 }
@@ -66,7 +65,7 @@ function getPathwayJson(uri) {
 
   return Promise.all([
     getPathwayMetadata(uri).then(data => pathwayData = _.assign({}, data, { uri: uri })),
-    getPathwayElementJson(uri).then(data => elementData = data)
+    getPathwayNodesAndEdges(uri).then(data => elementData = data)
   ]).then(() => {
     return _.assign({}, elementData, { pathwayMetadata: pathwayData });
   });

@@ -2,15 +2,17 @@ const fs = require('fs');
 const metadataParser = require('./metadataParserJson');
 const _ = require('lodash');
 const config = require('../../../config');
-var biopaxFile = null;
+
+//map keys are rdfIDs (PC xml:base prefix is removed) or standard (absolute) URIs
+var biopaxMap = null;
 
 /**
- * 
+ *
  * @param {*} biopaxElement Metadata for an entity from BioPAX
  * @param {*} nodeType Is this a xref or entity?
  */
 function collectEntityMetadata(biopaxElement, nodeType = 'default'){
-  
+
   let result = [];
   //Collect relevant data on this node, and push it into output
   if (nodeType !== 'Reference') {
@@ -52,11 +54,11 @@ function collectEntityMetadata(biopaxElement, nodeType = 'default'){
 }
 
 /**
- * 
+ *
  * @param {*} entity Metadata for an entity in the network
  * @returns Tree array containing all metadata about the given entity
  */
-function buildBioPaxTree(entity) {  
+function buildBioPaxTree(entity) {
   let result = [];
 
   //make sure the metadata exists
@@ -84,7 +86,7 @@ function buildBioPaxTree(entity) {
     xrefList = _.concat(xrefList,[eref]);
 
   processXrefs(xrefList,eref,collectedData);
-  
+
   result.push([id,collectedData]);
   return result;
 }
@@ -100,7 +102,7 @@ function processXrefs(xrefList,eref,collectedData){
       keyName = 'EntityReference';
 
     //Get Referenced element and make sure it's valid
-    let refElement = getElementFromBioPax(xrefList[i]); 
+    let refElement = getBiopaxElement(xrefList[i]);
     if (!(refElement))
       continue;
 
@@ -122,8 +124,7 @@ function processXrefs(xrefList,eref,collectedData){
   //almost identically to above
   for(let i=0;i<erefXrefList.length;i++){
     let keyName = 'Reference';
-    let refElement = getElementFromBioPax(erefXrefList[i]); 
-
+    let refElement = getBiopaxElement(erefXrefList[i]);
     if (!(refElement))
       continue;
 
@@ -133,118 +134,39 @@ function processXrefs(xrefList,eref,collectedData){
 }
 
 /**
- * 
- * @param {*} id String representing potential BioPAX ID
+ * Gets element from the biopax JSON-LD map.
+ *
+ * @param {*} id String representing potential BioPAX rdf:ID (without xml:base prefix)
+ * or absolute URI (for identifiers.org type URIs)
  * @returns BioPAX metadata for that ID (if it exists) or null (if it doesn't)
  */
-function getElementFromBioPax(id) {
-
-  //Remove any URL stuff from the ID, just like getProcessedBioPax
-  if (id.indexOf('http') !== -1 || id.indexOf('/') !== -1) {
-    var lastIndex = id.lastIndexOf('/');
-    id = id.substring(lastIndex + 1);
-  }
-
-  //Get element matching the ID; make sure the ID isn't "" or null
+function getBiopaxElement(id) {
+  //make sure id isn't empty string or null
   if(id)
-    return biopaxFile.get(id);
-  else
+    return biopaxMap.get(id);
+  else {
     return null;
-}
-
-/**
- * 
- * @param {*} nodeId node ID from Cytoscape network JSON
- * @returns Subtree containing BioPAX model metadata for the node
- */
-function getBiopaxObjectByNodeId(nodeId) {
-  // Original entity IDs were converted to SBGN ids and then cytoscape network ids...
-  // First, we need to find the original BioPAX entity ID, then collect metadata.
-  //TODO: simplify stuff (which is weird but ALLOWS mapping of a node ID to the BioPAX element)
-
-  //Search for ID exactly as it appears
-  let searchTerm = getElementFromBioPax(nodeId);
-  if (searchTerm)
-    return searchTerm;
-  
-  //Search for ID after last underscore
-  searchTerm = getElementFromBioPax(nodeId.substring(nodeId.lastIndexOf("_") +1));
-  if (searchTerm)
-    return searchTerm;
-  
-
-  //Find index of second underscore
-  let i=0,index=null;
-  while(i<2 && index !==-1){
-    index = nodeId.indexOf("_", index +1);
-    i++;
   }
-
-  //Remove extra identifiers appended by Cytoscape
-  //i.e. everything after the second underscore
-  let fixedNodeId = nodeId.substring(0,index);
-
-  //The last two methods won't work if there are no underscores in the ID
-  if (nodeId.indexOf('_') <= -1) 
-    return null;
-
-  //Search for ID in the first 2 underscores
-  searchTerm = getElementFromBioPax(fixedNodeId);
-  if (searchTerm)
-    return searchTerm;
-
-  //Search for ID in between first and second underscore
-  searchTerm = getElementFromBioPax(fixedNodeId.substring(fixedNodeId.lastIndexOf("_") +1));
-  if (searchTerm)
-    return searchTerm;
-
-  //Search Failed, return null
-  return null;
 }
 
 /**
- *
- * @param {*} biopaxJsonText String containing BioPAX network metadata (JSON-LD format)
+ * Builds a localId-to-biopaxElement map from a biopax JSON-LD model.
+ * @param {*} biopaxJsonText String - BioPAX sub-network in JSON-LD format
  * @returns `Map` containing BioPAX network metadata
  */
-function getProcessedBioPax(biopaxJsonText) {
+function getBiopaxMap(biopaxJsonText) {
   //parse String into JSON object, rename '@id' property to 'pathid'
   const graph = JSON.parse(biopaxJsonText.replace(new RegExp('@id', 'g'), 'pathid'))['@graph'];
-  const biopaxElementMap = new Map();
-
-  //The 'pathid' property contains URI (URL format by design);
-  //we extract the localID part to make it the key for the map:
+  const biopaxMap = new Map();
+  //The 'pathid' property contains absolute URI (URL format by design);
+  //here we extract only localID part to make it the key for the map:
   for (const element of graph) {
     const fullId = element['pathid'];
-    const subId = fullId.substring(config.PC_XMLBASE.length+1);
-    biopaxElementMap.set(subId, element);
+    const subId = fullId.substring(config.PC_XMLBASE.length);
+    biopaxMap.set(subId, element);
   }
 
-  return biopaxElementMap;
-}
-
-/**
- * 
- * @param {*} biopaxJsonText String containing BioPAX metadata for the network
- * @param {*} nodes JSON object containing all the nodes in the network
- * @returns Processed metadata for each node in the network
- */
-function getBioPaxMetadata(biopaxJsonText, nodes) {
-
-  //BioPAX metadata comes as a string, turn it into a Map
-  biopaxFile = getProcessedBioPax(biopaxJsonText);
-
-  const nodeMetadataMap = {};
-
-  //Iterate through nodes in Cy network, adding metadata to each
-  nodes.forEach(node => {
-    //metadata for the Cytoscape node
-    const BiopaxData = getBiopaxObjectByNodeId(node.data.id);
-    //build the tree for metadata and add it to the map
-    nodeMetadataMap[node.data.id] = metadataParser(buildBioPaxTree(BiopaxData));
-  });
-
-  return nodeMetadataMap;
+  return biopaxMap;
 }
 
 /**
@@ -252,9 +174,8 @@ function getBioPaxMetadata(biopaxJsonText, nodes) {
  * if needed.
  * @param cyId
  */
-function trimXmlBaseCyId(cyId) {
+function trimXmlBaseFromNodeId(cyId) {
   const prefix = config.PC_XMLBASE.replace(/[^-\w]/g,"_"); //same as Paxtools/sbgn-converter (java) does
-
   if(cyId.includes(prefix))
     return cyId.replace(new RegExp(prefix,'g'),'');
   else
@@ -265,20 +186,60 @@ const getGenericPhysicalEntityMap = _.memoize(() => JSON.parse(
   fs.readFileSync(__dirname + '/generic-physical-entity-map.json', 'utf-8')
 ));
 
+
+/**
+ *
+ * @param {*} biopaxJsonText String containing BioPAX metadata for the network
+ * @param {*} nodes JSON object containing all the nodes in the network
+ * @returns Processed metadata for each node in the network
+ */
+function getBiopaxMetadata(biopaxJsonText, nodes) {
+
+  //BioPAX metadata comes as a string, turn it into a Map
+  biopaxMap = getBiopaxMap(biopaxJsonText);
+
+  const nodeMetadataMap = {};
+
+  //Iterate through nodes in Cy network, adding metadata to each
+  nodes.forEach(node => {
+    //remove xml:base if any (depends on Paxtools/sbgn-converter version of the PC server)
+    let xmlid = trimXmlBaseFromNodeId(node.data.id);
+    //get by local part rdf:ID (e.g., by "Complex_3177c97899ae28fcb27056b4ccbfcbbb" w/o xml:base)
+    let bpe = getBiopaxElement(xmlid);
+    if (!bpe) {
+      //remove the last underscore and everything after it and search again
+      //(generics' or complex components' xml ids look like: Protein_4c4358ebaabf0f39e1e5325a4178d931_830703244edf74707f84842e080f965d)
+      xmlid = xmlid.substring(0, xmlid.lastIndexOf("_"));
+      //Search for ID in the first 2 underscores
+      bpe = getBiopaxElement(xmlid);
+    }
+    //build the tree for metadata and add it to the map
+    nodeMetadataMap[node.data.id] = metadataParser(buildBioPaxTree(bpe));
+  });
+
+  return nodeMetadataMap;
+}
+
 /**
  *
  * @param nodes
  */
-const getNodesGeneSynonyms = nodes => {
+const getGeneSymbolsForGenericNodes = nodes => {
   const nodeGeneSynonyms = {};
   const genericPhysicalEntityMap = getGenericPhysicalEntityMap();
 
   nodes.forEach(node => {
-    const lookupId = config.PC_XMLBASE + trimXmlBaseCyId(node.data.id);
-    nodeGeneSynonyms[node.data.id] = _.get(genericPhysicalEntityMap[lookupId], 'synonyms', []);
+    let xmlId = trimXmlBaseFromNodeId(node.data.id);
+    let syns = _.get(genericPhysicalEntityMap[config.PC_XMLBASE + xmlId], 'synonyms', []);
+    if(!syns || syns.length==0) { //can be a complex/generic member id
+      xmlId = xmlId.substring(0, xmlId.lastIndexOf("_"));
+      syns = _.get(genericPhysicalEntityMap[config.PC_XMLBASE + xmlId], 'synonyms', []);
+    }
+    nodeGeneSynonyms[node.data.id] = syns;
   });
+
   return nodeGeneSynonyms;
 };
 
 
-module.exports = {getBioPaxMetadata, getNodesGeneSynonyms};
+module.exports = {getBiopaxMetadata, getGeneSymbolsForGenericNodes};

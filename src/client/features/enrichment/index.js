@@ -77,7 +77,7 @@ class Enrichment extends React.Component {
 
   handleInputs( inputs ) {
     this.setState({ inputs });
-    this.setState({loaded: true});
+    this.setState({ loaded: true });
   }
 
   handleUnrecognized( unrecognized ) {
@@ -87,21 +87,27 @@ class Enrichment extends React.Component {
   handleGenes( genes ) {
     const updateNetworkJSON = async () => {
       const analysisResult = await ServerAPI.enrichmentAPI({ genes: genes }, "analysis");
-      if( analysisResult === undefined ) {
+
+      if( !analysisResult || !analysisResult.pathwayInfo ) {
         this.setState({ timedOut: true });
         return;
       }
+
       const visualizationResult = await ServerAPI.enrichmentAPI({ pathways: analysisResult.pathwayInfo}, "visualization");
-      if( visualizationResult === undefined ) {
+      const edges = visualizationResult.graph.elements.edges;
+      const nodes = visualizationResult.graph.elements.nodes;
+
+      if( !visualizationResult || !nodes ) {
         this.setState({ timedOut: true });
         return;
       }
+
       this.setState({
         closeToolBar: false,
         loaded: true,
         networkJSON: {
-          edges: visualizationResult.graph.elements.edges,
-          nodes: visualizationResult.graph.elements.nodes
+          edges: edges,
+          nodes: nodes
         }
       });
     };

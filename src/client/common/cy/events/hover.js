@@ -2,144 +2,100 @@ const _ = require('lodash');
 
 const {applyStyle, removeStyle} = require('../manage-style');
 
-const dynamicScalingfactors = (zoom) => {
-  const scalingFactor = (1 / zoom);
-  const defaults = {
-    fontSize: 40,
-    outlineWidth: 4,
-    arrowScale: 3,
-    edgeWidth: 2,
-  };
-
-  const dynamicFontSize = Math.min(defaults.fontSize, Math.max(scalingFactor * 18, 18));
-  const dynamicFontOutlineWidth = Math.min(defaults.outlineWidth, Math.max(scalingFactor * 3, 3));
-  const dynamicArrowScale = Math.min(defaults.arrowScale, Math.max(scalingFactor * 2.5, 2.5));
-  const dynamicEdgewidth = Math.min(defaults.edgeWidth, Math.max(scalingFactor * 2.5, 2.5));
-
-  return {
-    fontSize: dynamicFontSize,
-    outlineWidth: dynamicFontOutlineWidth,
-    arrowScale: dynamicArrowScale,
-    edgeWidth: dynamicEdgewidth
-  };
-};
-
-const scaledDimensions = (node, zoom) => {
-  const nw = node.width();
-  const nh = node.height();
-
-  if (nw === 0 || nh === 0) { return { w: 0, h: 0 }; }
-
-  const scaledVal = (1 / zoom) * 8;
-  const aspectRatio = nw / nh;
-  let xIncr = 0;
-  let yIncr = 0;
-
-  if (aspectRatio > 1) {
-    xIncr = nw + scaledVal;
-    yIncr = nh + (scaledVal / aspectRatio);
-  } else {
-    xIncr = nw + (scaledVal / aspectRatio);
-    yIncr = nh + scaledVal;
-  }
-
-  return {
-    w: xIncr,
-    h: yIncr
-  };
-};
-
-
-const baseNodeHoverStyle = {
-  'background-color': 'blue',
+//style for nodes which are highligted on hover
+const baseHoverStyle = {
   'opacity': 1,
-  'z-compound-depth': 'top',
-  'color': 'white',
-  'text-outline-color': 'black'
+  'background-color':'green'
+};
+//style for all nodes which are NOT highlighted on hover
+const baseNotHoverStyle = {
+  'opacity':1,
+  'background-color':'blue'
 };
 
-const baseEdgeHoverStyle = {
-  'line-color': 'orange',
-  'opacity': 1
-};
 
+const bindHover = (cy) => {
 
-const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHoverStyle) => {
-  const hoverNode =  _.debounce(function (evt) { 
+  /**
+   * @description Apply style modifications after 200ms delay on `mouseover` for non-compartment nodes.
+   * Currently highlights hovered node & its neighbourhood in green.
+   */
+  cy.on('mouseover', 'node[class!="compartment"]',_.debounce(evt => {
     const node = evt.target;
-    const currZoom = cy.zoom();
-  
+
+    //If node has children and is expanded, do not highlight
     if (node.isParent() && node.isExpanded()) { return; }
-  
-    const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
-  
-    node.neighborhood().nodes().union(node).forEach((node) => {
-      const { w, h } = scaledDimensions(node, currZoom);
-  
-      const nodeHoverStyle = _.assign({}, nodeStyle, {
-        'font-size': fontSize,
-        'text-outline-width': outlineWidth,
-        'width': w,
-        'height': h
-      });
-  
-      applyStyle(cy, node, nodeHoverStyle, '_hover-style-before');
-    });
-  
-    const edgeHoverStyle = _.assign({}, edgeStyle, {
-      'arrow-scale': arrowScale,
-      'width': edgeWidth
-    });
-    applyStyle(cy, node.neighborhood().edges(), edgeHoverStyle, '_hover-style-before');
-  },200, {leading:false, trailing:true});
 
-  cy.on('mouseover', 'node[class!="compartment"]',hoverNode);
+    //Apply 'no hover' style to all nodes & edges
+    //applyStyle(cy,cy.nodes(),baseNotHoverStyle,'_unhighlighted');
+    //applyStyle(cy,cy.edges(),baseNotHoverStyle,'_unhighlighted');
 
-  cy.on('mouseout', 'node[class!="compartment"]', function (evt) {
+    //Highlight the hovered node & it's neighbourhood
+    node.neighborhood().nodes().union(node).forEach(node => {
+      applyStyle(cy, node, baseHoverStyle, '_highlighted');
+    });
+
+    //highlight all edges connecting nodes in the neighbourhood
+    applyStyle(cy, node.neighborhood().edges(), baseHoverStyle, '_highlighted');
+
+
+  },200,{leading:false,trailing:true}));
+
+  /**
+   * @description Remove any style modifications made from a non-compartment node hover on `mouseout`
+   */
+  cy.on('mouseout', 'node[class!="compartment"]', evt => {
     const node = evt.target;
-    const neighborhood = node.neighborhood();
-    hoverNode.cancel();
-    removeStyle(cy, neighborhood.nodes(), '_hover-style-before');
-    removeStyle(cy, node, '_hover-style-before');
-    removeStyle(cy, neighborhood.edges(), '_hover-style-before');
+
+    //Remove 'no hover' style from all nodes & edges
+    //removeStyle(cy,cy.nodes(),'_unhighlighted');
+    //removeStyle(cy,cy.edges(),'_unhighlighted');
+    
+    //De-Highlight the hovered node & it's neighbourhood
+    node.neighborhood().nodes().union(node).forEach(node => {
+      removeStyle(cy, node, '_highlighted');
+    });
+    
+    //De-Highlight all edges connecting nodes in the neighbourhood
+    removeStyle(cy, node.neighborhood().edges(), '_hover-style-highlighted');
   });
 
-  const hoverEdge = _.debounce( function (evt) {
+  /**
+   * @description Apply style modifications after 200ms delay on `mouseover` for edges.
+   * Currently highlights hovered edge & its neighbourhood in green.
+   */
+  cy.on('mouseover', 'edge',_.debounce(evt => {
     const edge = evt.target;
-    const currZoom = cy.zoom();
 
-    const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
-
-    const edgeHoverStyle = _.assign({}, edgeStyle, {
-      'arrow-scale': arrowScale,
-      'width': edgeWidth
-    });
-    applyStyle(cy, edge, edgeHoverStyle, '_hover-style-before');
-
+    //Apply 'no hover' style to all nodes & edges
+    //applyStyle(cy,cy.nodes(),baseNotHoverStyle,'_unhighlighted');
+    //applyStyle(cy,cy.edges(),baseNotHoverStyle,'_unhighlighted');
+    
+    //Highlight the hovered edge
+    applyStyle(cy, edge, baseHoverStyle, '_highlighted');
+    //Highlight the nodes connected to the hovered edge
     edge.source().union(edge.target()).forEach((node) => {
-      const { w, h } = scaledDimensions(node, currZoom);
-      const nodeHoverStyle = _.assign({}, nodeStyle, {
-        'width': w,
-        'height': h,
-        'font-size': fontSize,
-        'color': 'white',
-        'text-outline-color': 'black',
-        'text-outline-width': outlineWidth,
-        'opacity': 1,
-        'background-color': 'blue',
-        'z-compound-depth': 'top'
-      });
-      applyStyle(cy, node, nodeHoverStyle, '_hover-style-before');
+      applyStyle(cy, node, baseHoverStyle, '_highlighted');
     });
-  },200, {leading:false, trailing:true});
-  cy.on('mouseover', 'edge',hoverEdge);
 
-  cy.on('mouseout', 'edge', function (evt) {
+  },200,{leading:false,trailing:true}));
+
+  /**
+   * @description Remove any style modifications made from an edge hover on `mouseout`
+   */
+  cy.on('mouseout', 'edge', evt => {
     const edge = evt.target;
-    hoverEdge.cancel();
-    removeStyle(cy, edge, '_hover-style-before');
-    removeStyle(cy, edge.source(), '_hover-style-before');
-    removeStyle(cy, edge.target(), '_hover-style-before');
+
+    //Remove 'no hover' style from all nodes & edges
+    //removeStyle(cy,cy.nodes(),'_unhighlighted');
+    //removeStyle(cy,cy.edges(),'_unhighlighted');
+    
+    //De-Highlight the hovered edge
+    removeStyle(cy, edge, '_highlighted');
+    //De-Highlight the nodes connected to the hovered edge
+    edge.source().union(edge.target()).forEach((node) => {
+      removeStyle(cy, node, '_highlighted');
+    });
   });
 };
 

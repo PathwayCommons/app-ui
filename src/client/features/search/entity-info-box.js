@@ -21,6 +21,8 @@ class EntityInfoBox extends React.Component {
     let { entity } = this.props;
     let { name, officialSymbol, otherNames, links, function: description } = entity;
 
+    let sortedLinks = links.sort((l1, l2) => l1.displayName > l2.displayName).map( link => h('a.plain-link.entity-info-link', { href: link.link, target:'_blank' }, link.displayName));
+
     let moreInfo = h('div.entity-more-info',[
       h('div.entity-names', [
         h('div.entity-official-symbol', [
@@ -44,7 +46,7 @@ class EntityInfoBox extends React.Component {
         !this.state.descriptionExpanded ? h('div', 'View full description') : h('div', 'Hide full description')
       ]),
       h('div.entity-links', [
-        h('div.entity-links-container', links.map( link => h('a.plain-link.entity-info-link', { href: link.link, target:'_blank' }, link.displayName)))
+        h('div.entity-links-container', sortedLinks)
       ])
     ]);
 

@@ -1,21 +1,6 @@
 const _ = require('lodash');
-
 const { ServerAPI } = require('../../services');
 
-// two types of searches:
-// * general searches
-// * db specific link in searches
-
-// link in examples
-// http://localhost:3000/search?q=uniprot:q99988
-// http://localhost:3000/search?q=ncbi:7157
-// http://localhost:3000/search?q=hgnc:tp53
-// * dont use the validator for these special searches
-// * use db specific info for each corresponding link  e.g uniprot uses a uniprot speciifc entity info box
-
-// general searches
-// * use validator
-// * the validator defaults to ncbi because it is the most general db
 
 let isUniprotId = token => {
   return /uniprot:\w+$/i.test(token);
@@ -121,9 +106,10 @@ const getNcbiInfo = ( ids, genes ) => {
     });
   });
 };
+
 /**
- * Get gene information from Uniprot
- * @param {string:string} ids Uniprot accessions to search, e.g.{4193:MDM2}
+ * Get entity information from Uniprot
+ * @param {string:string} ids Uniprot accessions to search, e.g.{ 4193: MDM2 }
  * @return {json} JSON of gene information.
  */
 const getUniprotInfo = ids => {
@@ -168,7 +154,25 @@ const getUniprotInfo = ids => {
   });
 };
 
-// Expects strings of the form
+// two types of searches:
+// * general searches
+// * db specific link in searches
+
+// link in examples
+// http://localhost:3000/search?q=uniprot:q99988
+// http://localhost:3000/search?q=ncbi:7157
+// http://localhost:3000/search?q=hgnc:tp53
+// * dont use the validator for these special searches
+// * use db specific info for each corresponding link  e.g uniprot uses a uniprot speciifc entity info box
+
+// general searches
+// * use validator
+// * the validator defaults to ncbi because it is the most general db
+
+// takes in a string and looks for substrings of the form:
+// * uniprot:<uniprot_id>
+// * ncbi:<ncbi_id>
+// * <hgnc_id>
 const queryEntityInfo = query => {
   let tokens = query.trim().split(' ');
   let ncbiIds = {};
@@ -176,12 +180,14 @@ const queryEntityInfo = query => {
   let genes = [];
 
 
+  // look for special tokens
   tokens.forEach(token => {
     let [ dbId, entityId ] = token.split(':');
 
     if( isUniprotId( token ) ){
       uniprotIds[ entityId ] = entityId;
     } else if( isNcbiId( token ) ){
+      ncbiIds[ entityId ] = entityId;
       genes.push( entityId );
     } else {
       genes.push( dbId );
@@ -190,6 +196,7 @@ const queryEntityInfo = query => {
 
   let dbsToQuery = Object.entries(dbInfos).map(([k, v]) => v);
 
+  // create entity recognizer queries
   let entityQueries = dbsToQuery.map( db => {
     return ServerAPI.geneQuery({
       genes: genes,
@@ -211,6 +218,7 @@ const queryEntityInfo = query => {
     });
   });
 
+  // send queries and return entity info
   return Promise.all( entityQueries ).then( results => {
     let entityInfos = {};
     results.forEach( dbResult => _.merge( entityInfos, dbResult ) ); //Merge the array of result into one json
@@ -226,18 +234,19 @@ const queryEntityInfo = query => {
       }
     });
 
-      let providerSpecificEntityInfo = [];
-      if( Object.keys(ncbiIds).length > 0 ){
-        providerSpecificEntityInfo.push( getNcbiInfo( ncbiIds, entityInfos ) );
-      }
-      if( Object.keys(uniprotIds).length > 0 ){
-        providerSpecificEntityInfo.push( getUniprotInfo( uniprotIds ) );
-      }
-      return Promise.all(providerSpecificEntityInfo).then( providerInfo => {
-        return _.uniqWith( _.flatten( providerInfo ), ( arrVal, othVal ) => {
-          return _.intersectionWith(_.values(arrVal.links),_.values(othVal.links),_.isEqual).length;
-        });
+    let providerSpecificEntityInfo = [];
+    if( Object.keys(ncbiIds).length > 0 ){
+      providerSpecificEntityInfo.push( getNcbiInfo( ncbiIds, entityInfos ) );
+    }
+    if( Object.keys(uniprotIds).length > 0 ){
+      providerSpecificEntityInfo.push( getUniprotInfo( uniprotIds ) );
+    }
+    return Promise.all(providerSpecificEntityInfo).then( providerInfo => {
+      // legacy computation that is hard to understand
+      return _.uniqWith( _.flatten( providerInfo ), ( arrVal, othVal ) => {
+        return _.intersectionWith(_.values(arrVal.links),_.values(othVal.links),_.isEqual).length;
       });
+    });
   });
 };
 

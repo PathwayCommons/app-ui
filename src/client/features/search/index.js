@@ -159,23 +159,6 @@ buildExampleLink (search) {
       ]);
     });
 
-    const searchTypeTabs = [
-      { name: 'Pathways', value: 'Pathway' },
-      // { name: 'Molecular Interactions', value: 'MolecularInteraction' },
-      // { name: 'Reactions', value: 'Control' },
-      // { name: 'Transcription/Translation', value: 'TemplateReactionRegulation' }
-    ].map(searchType => {
-      return h('div.search-option-item-container', [
-        h('div', {
-          onClick: () => this.setAndSubmitSearchQuery({ type: searchType.value }),
-          className: classNames('search-option-item', { 'search-option-item-disabled': state.searchLoading },
-            { 'search-option-item-active': state.query.type === searchType.value })
-        }, [
-            h('a', searchType.name)
-          ])
-      ]);
-    });
-
     let datasourceVal = "";
     if(!Array.isArray(state.query.datasource)){
       datasourceVal = state.query.datasource;
@@ -229,8 +212,6 @@ buildExampleLink (search) {
                 h(Example, {search: 'TP53 MDM2'}), ', ',
                 h(Example, {search: 'P04637'})
               ]),
-              h('div.search-tabs', searchTypeTabs.concat([
-              ]))
             ])
         ])
       ]),

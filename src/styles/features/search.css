@@ -9,7 +9,7 @@
   box-sizing: border-box;
   padding: 10px;
   padding-bottom: 0;
-  // border-bottom: 2px solid black;
+  border-bottom: 1px solid var(--light-base-colour-dark);
 }
 
 .search-header {
@@ -68,12 +68,12 @@
   display: flex;
   align-content: space-around;
   background-color: white;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  box-shadow: 0 2px 3px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.2);
   transition: box-shadow 0.15s ease-in-out;
 }
 
 .search-searchbar:hover {
-  box-shadow: 0 4px 8px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 6px 6px rgba(0,0,0,0.2);
 }
 .search-searchbar > input {
   background: none;
@@ -96,8 +96,7 @@
 }
 
 .search-suggestions {
-  padding-top: 15px;
-  padding-bottom:15px;
+  padding: 10px 0;
   font-size: 0.75em;
   color: var(--dark-base-colour);
 }
@@ -107,12 +106,6 @@
   &:hover {
     color: var(--accent-1-colour);
   }
-}
-
-.search-tabs {
-  padding-top: 10px;
-  display: flex;
-  flex-direction: row;
 }
 
 .search-option-item-container {
@@ -171,12 +164,6 @@
   color: var(--accent-1-colour);
 }
 
-.search-tools {
-  margin-left: auto;
-  border: 0;
-  font-size: 14px;
-}
-
 .search-list-container {
   display: flex;
   justify-content: center;
@@ -186,13 +173,16 @@
   padding-left: 215px;
 }
 
-.search-result-filter {
+.search-tools {
   width: var(--search-width);
-  max-width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .search-result-hit-count {
-  max-width: 100%;
+  margin-top: 10px;
 }
 
 .search-list {
@@ -214,11 +204,9 @@
 
 .search-datasource-filter {
   border: none;
-  padding-right: 2em;
   font-size: 12px;
   text-overflow: ellipsis;
-  margin-left: auto;
-  margin-top:9px;
+  padding: 0;
 }
 
 .search-datasource-filter > option {
@@ -226,115 +214,11 @@
   text-overflow: ellipsis;
 }
 
-.search-landing{
-  max-width: var(--search-width);
-  width: 100%;
-  background-color: var(--light-base-colour);
-  margin-top: 20px;
-}
-
-.search-landing-innner{
-  box-sizing: border-box;
-  margin-bottom: 1px;
-  border:1px var(--light-base-colour-dark) solid;
-  padding:10px;
-  padding-top: 5px;
-  max-width: var(--search-width);
-  width: 100%;
-  min-height: 50px;
-  background-color: var(--light-base-colour);
-  display: flex;
-  vertical-align: center;
-  justify-content: baseline;
-  flex-direction: column;
-}
-
-.search-landing-section{
-  display: inline-block;
-  margin-top: 3px;
-}
-.search-landing-section:first-of-type{
-  margin-top: 0px;
-}
-
-.search-landing-function-less {
- margin-right: 5px ;
- line-height: 1.2em;
- max-height: 2.4em;
- overflow: hidden;
-}
-
-.search-landing-function-more {
-  margin-right: 5px ;
-  line-height: 1.2em;
-  overflow: hidden;
- }
-
-.search-landing-small{
-  font-size: 10pt;
-  margin-right: 5px;
-}
-.search-landing-small:first-of-type{
-  margin-right: 10px;
-}
-
-.search-landing-title{
-  font-size: 15pt;
-  padding:10px;
-  background-color: var(--light-base-colour-dark);
-  border-bottom:1px var(--light-base-colour-darker) solid;
-}
-
-.search-landing-title-text{
-  text-transform: capitalize;
-}
-
-.search-landing-title-multiple{
-  cursor:pointer;
-}
-
-.search-landing-title:last-of-type{
-  border-bottom-width:0px
-}
-
-.search-landing-link {
-  color: var(--link);
-  font-weight: lighter;
-  text-decoration: underline;
-  font-style: italic;
-  white-space: pre;
-  padding-right: 5px;
-  display: inline-flex;
-  cursor: pointer;
-}
-
-.search-landing-button{
-  background-color: #0073BF;
-  color: white;
-  border-radius: 0px;
-  display: inline-flex;
-  border: 2px solid #0073BF;
-  width: 100%;
-  font-size: 13pt;
-  align-items: center;
-  justify-content: center;
-}
-.search-landing-button:hover {
-  background-color: #6E9ABD;
-  color: white;
-}
-
-.search-landing-interactions {
-  margin-top: 5px;
-  width: 100%;
-}
-
 .search-item {
   display: flex;
   vertical-align: middle;
   align-items: center;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding: 1em 0;
 }
 
 .search-item-icon {

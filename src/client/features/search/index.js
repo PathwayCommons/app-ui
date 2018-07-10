@@ -9,7 +9,8 @@ const classNames = require('classnames');
 
 const Icon = require('../../common/components').Icon;
 const { ServerAPI } = require('../../services');
-const Landing = require('./landing-box');
+const queryEntityInfo = require('./query-entity-info');
+const EntityInfoBoxList = require('./entity-info-box');
 
 class Search extends React.Component {
 
@@ -26,8 +27,8 @@ class Search extends React.Component {
         type: 'Pathway',
         datasource: []
       }, query),
-      landing: [],
-      landingLoading: false,
+      entityInfoResults: [],
+      entityInfoResultsLoading: false,
       searchResults: [],
       searchLoading: false,
       dataSources: []
@@ -46,29 +47,22 @@ class Search extends React.Component {
     const query = state.query;
     if (query.q !== '') {
       this.setState({
-        searchLoading: true
+        searchLoading: true,
+        entityInfoResultsLoading: true
       });
-     this.getLandingResult(query.q);
-      ServerAPI.querySearch(query)
-        .then(searchResults => {
-           this.setState({
-             searchResults: searchResults,
-             searchLoading: false
-           });
-        });
+      queryEntityInfo(query.q).then(entityInfoResults =>
+        this.setState({
+          entityInfoResultsLoading: false,
+          entityInfoResults: entityInfoResults
+        })
+      );
+      ServerAPI.querySearch(query).then(searchResults => {
+          this.setState({
+            searchResults: searchResults,
+            searchLoading: false
+          });
+      });
     }
-  }
-
-  getLandingResult(query){
-    this.setState({
-      landingLoading:true
-    });
-    Landing.getLandingResult(query).then(landing=>
-      this.setState({
-        landingLoading:false,
-        landing:landing
-      })
-    );
   }
 
   componentDidMount() {
@@ -97,7 +91,6 @@ class Search extends React.Component {
   submitSearchQuery() {
     const props = this.props;
     const state = this.state;
-
     const query = state.query;
 
     props.history.push({
@@ -122,22 +115,12 @@ class Search extends React.Component {
             this.getSearchResult();
           });
     }
- }
-
-buildExampleLink (search) {
-  let query = _.clone(this.state.query);
-  query.q = search;
-  return queryString.stringify(query);
-}
+  }
 
   render() {
     const state = this.state;
-    const landing=state.landing;
-    const landingBox=Landing.landingBox;
-    const controller = this;
-    const loaded= !(state.searchLoading || state.landingLoading);
-
-   let Example = props => h(Link, { to: { pathname: '/search', search: this.buildExampleLink(props.search) }}, props.search);
+    const entityInfoResults = state.entityInfoResults;
+    const loaded = !(state.searchLoading || state.entityInfoResultsLoading);
 
     const searchResults = state.searchResults.map(result => {
       const dsInfo =_.isEmpty(state.dataSources)? {iconUrl:null , name:''}: _.find(state.dataSources, ds => {
@@ -159,14 +142,9 @@ buildExampleLink (search) {
       ]);
     });
 
-    let datasourceVal = "";
-    if(!Array.isArray(state.query.datasource)){
-      datasourceVal = state.query.datasource;
-    }
-
     const searchResultFilter = h('div.search-filters', [
       h('select.search-datasource-filter', {
-        value: datasourceVal,
+        value: !Array.isArray(state.query.datasource) ? state.query.datasource : '',
         multiple: false,
         onChange: e => this.setAndSubmitSearchQuery({ datasource: e.target.value })
       }, [
@@ -208,18 +186,20 @@ buildExampleLink (search) {
               ]),
               h('div.search-suggestions', [
                 'e.g. ',
-                h(Example, {search: 'cell cycle'}), ', ',
-                h(Example, {search: 'TP53 MDM2'}), ', ',
-                h(Example, {search: 'P04637'})
-              ]),
+                h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, state.query, {q: 'cell cycle'})) }}, 'cell cycle, '),
+                h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, state.query, {q: 'TP53 MDM2'})) }}, 'TP53 MDM2, '),
+                h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, state.query, {q: 'P04637'})) }}, 'P04637')
+              ])
             ])
         ])
       ]),
       h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' } }, [
         h('div.search-list-container', [
-          h('div.search-result-filter', [searchResultFilter]),
-          h('div.search-result-hit-count', [searchResultHitCount]),
-          h(landingBox,{controller,landing}),
+          h('div.search-tools', [
+            h('div.search-result-filter', [searchResultFilter]),
+            h('div.search-result-hit-count', [searchResultHitCount])
+          ]),
+          h(EntityInfoBoxList, { entityInfoList: entityInfoResults}),
           h('div.search-list', searchResults)
         ])
       ])

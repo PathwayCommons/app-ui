@@ -7,64 +7,97 @@ const formatContent = require('./format-content');
 const collection = require('./collection');
 const getPublications = require('./publications');
 
+
+
+class Metadata {
+  constructor(node){
+    let nodeMetadata = node.data('parsedMetadata');
+    let nodeLabel = node.data('label');
+    let nodeClass = node.data('class');
+    this.data = new Map();
+    this.rawData = nodeMetadata;
+
+    nodeMetadata.forEach( datum => {
+      this.data.set(datum[0],  datum[1]);
+    });
+
+    if( nodeClass === 'process'){
+      this.data.set('Search Link', this.data['Display Name']);
+    } else {
+      this.data.set('Search Link', nodeLabel);
+    }
+  }
+  isEmpty(){
+    return this.rawData == null || this.rawData.length === 0;
+  }
+
+  type(){
+    let type = this.data.get('Type');
+    console.log(type);
+    if( type ){
+      return type.substring(3);
+    }
+    return '';
+  }
+  standardName(){
+    return this.data.get('Standard Name') || '';
+  }
+  displayName(){
+    return this.data.get('Display Name') || '';
+  }
+  synonyms(){
+    return this.data.get('Names');
+  }
+  databaseIds(){
+    return this.data.get('Database IDs');
+  }
+  publications(){
+    return this.data.get('publications');
+  }
+  searchLink(){
+    return this.data.get('Search Link') || '';
+  }
+}
+
 //Manage the creation and display of metadata HTML content
 //Requires a valid name, cytoscape element, and parsedMetadata array
 class MetadataTip {
 
-  constructor(name, data, cyElement) {
+  constructor(cyElement) {
     this.name = name;
-    this.data = data.parsedMetadata;
-    //Add an extra piece of metadata to generate the search link
-    //search text needs to be generated differently for 'processes'
-      if(data.class === "process"){
-        for(let i in this.data){
-          if(this.data[i][0]==="Display Name")
-            this.data.push(["Search Link",this.data[i][1]]);
-        }
-      }else if(this.data){
-        this.data.push(["Search Link",this.name]);
-      }
+    this.data = new Metadata(cyElement);
     this.cyElement = cyElement;
     this.db = config.databases;
     this.viewStatus = {};
+    this.visible = false;
+    this.zoom = cyElement._private.cy.zoom();
   }
 
   //Show Tippy Tooltip
-  show(cy) {
-    //Get tooltip object from class
+  show() {
+    let cy = this.cyElement._private.cy;
     let tooltip = this.tooltip;
-    let tooltipExt = tooltip;
-    let zoom= this.zoom;
-    let isEdge=this.cyElement.isEdge();
+    let zoom = this.zoom;
+    let isEdge = this.cyElement.isEdge();
 
-    getPublications(this.data).then(function (data) {
-      this.data = data;
+    //If no tooltip exists create one
+    if ( !tooltip|| ( zoom != cy.zoom() && isEdge ) ) {
+      zoom = cy.zoom();
+      //Generate HTML
+      let tooltipHTML = this.generateToolTip(zoom,isEdge);
 
-      //Hide all other tooltips
-      this.hideAll(cy);
+      //Create tippy object
+      let refObject = this.cyElement.popperRef();
+      tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow: true, placement: 'bottom',distance: isEdge? -25*zoom+7:10}).tooltips[0];
 
-      //If no tooltip exists create one
-      if (!tooltip||(zoom!=cy.zoom()&&isEdge)) {
-        zoom=cy.zoom();
-        //Generate HTML
-        let tooltipHTML = this.generateToolTip(zoom,isEdge);
-        let expandedHTML = this.generateExtendedToolTip(zoom,isEdge);
+      //Save tooltips
+      this.tooltip = tooltip;
+      this.zoom = zoom;
+    }
 
-        //Create tippy object
-        let refObject = this.cyElement.popperRef();
-        tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow: true, placement: 'bottom',distance: isEdge? -25*zoom+7:10}).tooltips[0];
-        tooltipExt = tippy(refObject, { html: expandedHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow: true, placement: 'bottom',distance: isEdge?-25*zoom+7:10}).tooltips[0];
-
-        //Save tooltips
-        this.tooltip = tooltip;
-        this.zoom=zoom;
-        this.tooltipExt = tooltipExt;
-      }
-
-      //Show Tooltip
-      tooltip.show();
-      this.visible = true;
-    }.bind(this));
+    //Show Tooltip
+    tooltip.show();
+    this.visible = true;
   }
 
   //Validate the name of object and use Display Name as the fall back option
@@ -76,73 +109,51 @@ class MetadataTip {
   }
 
   //Generate HTML Elements for tooltips
-  generateToolTip(zoom,isEdge) {
-    //Order the data array
-    let data = collection.toTop(this.data, config.tooltipOrder);
-    data = collection.toBottom(data, config.tooltipReverseOrder);
+  generateToolTip(zoom, isEdge) {
+    let data = this.data;
+    let name = data.displayName();
 
-    if (!(data) || data.length === 0) {
-      return formatContent.noDataWarning();
+    if ( this.data.isEmpty() ) {
+      return h('div.tooltip-image', [
+        h('div.tooltip-heading', [
+          h('a.tooltip-heading-link',{ href:"/search?&q=" + name, target:"_blank"}, name),
+          ]),
+        h('div.tooltip-internal', h('div.tooltip-warning', 'No Additional Information'))
+      ]);
     }
+    const tooltipOrder = ['Type', 'Standard Name', 'Display Name', 'Names', 'Database IDs', 'Publications'];
 
-    //Ensure name is not blank
-    this.validateName();
+    console.log(data.databaseIds());
 
-    //Generate the expand field option
-    const expandFunction = this.displayMore(zoom,isEdge);
-
-    if (!(this.data)) { this.data = []; }
     return h('div.tooltip-image', [
-      h('div.tooltip-heading', this.name),
-      h('div.tooltip-internal', h('div', (data).map(item => formatContent.parseMetadata(item, true, expandFunction, this.name)), this))
+      h('div.tooltip-heading', name),
+      h('div.tooltip-internal', [
+        h('div.tooltip-type', data.type()),
+      ]),
+      h('div.fake-paragraph', [
+        h('div.field-name', 'Name: '),
+        h('div.tooltip-value', data.standardName())
+      ]),
+      h('div.fake-paragraph', [
+        h('div.field-name', 'Display Name: '),
+        h('div.tooltip-value', data.displayName())
+      ]),
+      h('div.fake-paragraph', [
+        h('div.field-name', 'Synonyms: '),
+        h('div.tooltip-value', data.synonyms().slice(0, 3))
+      ]),
+
+
+        // (data).map(item => formatContent.parseMetadata(item, true, null, name)), this))
     ]);
   }
-
-  //Generate HTML Elements for the side bar
-  generateExtendedToolTip(zoom,isEdge) {
-    //Order the data array
-    let data = collection.toTop(this.data, config.tooltipOrder);
-    data = collection.toBottom(data, config.tooltipReverseOrder);
-    if (!(data)) data = [];
-
-    if (!(data) || data.length === 0) {
-      return formatContent.noDataWarning();
-    }
-
-    //Ensure name is not blank
-    this.validateName();
-
-    //Generate expansion and collapse functions 
-    const expandFunction = this.displayMore(zoom,isEdge);
-    const collapseFunction = this.displayLess(zoom,isEdge);
-
-    const getExpansionFunction = item => !this.isExpanded(item[0]) ? expandFunction : collapseFunction;
-
-    if (!(this.data)) { this.data = []; }
-    return h('div.tooltip-image', [
-      h('div.tooltip-heading', this.name),
-      h('div.tooltip-internal', h('div', (data).map(item => formatContent.parseMetadata(item, !this.isExpanded(item[0]), getExpansionFunction(item), this.name), this)))
-    ]
-    );
-  }
-
-  //Hide all tooltip objects
-  hideAll(cy) {
-    cy.elements().each(function (element) {
-      var tempElement = element.scratch('_tooltip');
-      if (tempElement && tempElement.isVisible()) { tempElement.hide(); }
-    });
-  }
-
 
   //Hide Tippy tooltip
   hide() {
     if (this.tooltip) {
       this.tooltip.hide();
-      this.tooltipExt.hide();
     }
     this.visible = false;
-    this.viewStatus = {};
   }
 
   //Destroy Tippy tooltip
@@ -152,64 +163,6 @@ class MetadataTip {
       this.tooltip = null;
     }
   }
-
-  //Get display status of tooltip
-  isVisible() {
-    return this.visible;
-  }
-
-  //Display the expanded tooltip
-  expandToolTip(expansionObject, expansionField, fieldStatus,zoom,isEdge) {
-    //Modify view status
-    expansionObject.viewStatus[expansionField] = fieldStatus;
-
-    //Hide existing tooltip 
-    const existingToolTip = expansionObject.tooltipExt;
-    existingToolTip.hide();
-  
-    //Get tooltip objects
-    let tooltip = expansionObject.tooltip;
-    const expandedHTML = expansionObject.generateExtendedToolTip(zoom,isEdge);
-
-    //Create tippy object
-    let refObject = expansionObject.cyElement.popperRef();
-    let tooltipExt = tippy(refObject, { html: expandedHTML,
-      theme: 'light',
-      interactive: true,
-      trigger: 'manual',
-      hideOnClick: false,
-      arrow: true,
-      placement: 'bottom',
-      animation: 'shift',
-      duration : 1,
-      distance: isEdge? -25*zoom+7:10
-    }).tooltips[0];
-
-    //Hide and show
-    tooltip.hide();
-    tooltipExt.show();
-
-    //Save extended tooltip
-    expansionObject.tooltipExt = tooltipExt;
-  }
-
-  //Return a function that binds a tooltip to the expanded tooltip view
-  displayMore(zoom,isEdge) {
-    let that = this;
-    return (field) => that.expandToolTip(that, field, true,zoom,isEdge);
-  }
-
-  //Return a function that binds an expanded tooltip to the minimized view.
-  displayLess(zoom,isEdge) {
-    let that = this;
-    return (field) => that.expandToolTip(that, field, false,zoom,isEdge);
-  }
-
-  //Return the expansion status of a specified field
-  isExpanded(field) {
-    return this.viewStatus[field];
-  }
-
 }
 
 module.exports = MetadataTip;

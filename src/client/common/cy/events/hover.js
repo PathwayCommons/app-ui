@@ -65,27 +65,31 @@ const baseEdgeHoverStyle = {
 
 
 const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHoverStyle) => {
-  const hoverNode =  _.debounce(function (evt) { 
+  const hoverNode =  _.debounce(function (evt) {
     const node = evt.target;
     const currZoom = cy.zoom();
-  
-    if (node.isParent() && node.isExpanded()) { return; }
-  
+    const ecAPI = cy.expandCollapse('get');
+
+
+    // if (node.isParent()) { return; }
+
+    if (node.isParent() && ecAPI.isCollapsible(node)) { return; }
+
     const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
-  
+
     node.neighborhood().nodes().union(node).forEach((node) => {
       const { w, h } = scaledDimensions(node, currZoom);
-  
+
       const nodeHoverStyle = _.assign({}, nodeStyle, {
         'font-size': fontSize,
         'text-outline-width': outlineWidth,
         'width': w,
         'height': h
       });
-  
+
       applyStyle(cy, node, nodeHoverStyle, '_hover-style-before');
     });
-  
+
     const edgeHoverStyle = _.assign({}, edgeStyle, {
       'arrow-scale': arrowScale,
       'width': edgeWidth

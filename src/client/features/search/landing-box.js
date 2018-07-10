@@ -1,7 +1,7 @@
 const h = require('react-hyperscript');
-const Link = require('react-router-dom').Link;
+// const Link = require('react-router-dom').Link;
 const classNames = require('classnames');
-const queryString = require('query-string');
+// const queryString = require('query-string');
 const { ServerAPI } = require('../../services');
 const databases = require('../../common/config').databases;
 const Loader = require('react-loader');
@@ -213,10 +213,10 @@ const expandableFunctionText = (controller,landing,text,toggleVar,index)=>{
   return result;
 };
 
-const interactionsLink = (source,text)=>
-  h(Link, {to: { pathname: '/interactions',search: queryString.stringify({source: source})},
-    target: '_blank', className: 'search-landing-interactions', key:'interactions'
-  }, [h('button.search-landing-button', text)]);
+// const interactionsLink = (source,text)=>
+//   h(Link, {to: { pathname: '/interactions',search: queryString.stringify({source: source})},
+//     target: '_blank', className: 'search-landing-interactions', key:'interactions'
+//   }, [h('button.search-landing-button', text)]);
 
 /*Generates a landing box
 input: {controller,[{

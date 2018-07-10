@@ -96,7 +96,8 @@
 }
 
 .search-suggestions {
-  padding-top: 10px;
+  padding-top: 15px;
+  padding-bottom:15px;
   font-size: 0.75em;
   color: var(--dark-base-colour);
 }

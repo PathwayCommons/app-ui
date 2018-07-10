@@ -98,12 +98,12 @@ class Interactions extends React.Component {
   }
 
   filterUpdate(type) {
-    const state=this.state;
+    const state = this.state;
     const categories = state.categories;
-    const filters=state.filters;
-    const cy= state.cy;
-    const edges=categories.get(type).edges;
-    const nodes=categories.get(type).nodes;
+    const filters = state.filters;
+    const cy = state.cySrv.get();
+    const edges = categories.get(type).edges;
+    const nodes = categories.get(type).nodes;
 
     hideTooltips(cy);
     const hovered = cy.filter(ele=>ele.scratch('_hover-style-before'));

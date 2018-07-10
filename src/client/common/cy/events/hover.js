@@ -21,6 +21,9 @@ const bindHover = (cy) => {
    * Currently highlights hovered node & its neighbourhood in green.
    */
   cy.on('mouseover', 'node[class!="compartment"]',_.debounce(evt => {
+
+    console.log("node mouseover");
+
     const node = evt.target;
 
     //If node has children and is expanded, do not highlight
@@ -45,19 +48,19 @@ const bindHover = (cy) => {
    * @description Remove any style modifications made from a non-compartment node hover on `mouseout`
    */
   cy.on('mouseout', 'node[class!="compartment"]', evt => {
+
+    console.log("node mouseout");
+
     const node = evt.target;
+    const neighborhood = node.neighborhood();
 
     //Remove 'no hover' style from all nodes & edges
     //removeStyle(cy,cy.nodes(),'_unhighlighted');
     //removeStyle(cy,cy.edges(),'_unhighlighted');
     
-    //De-Highlight the hovered node & it's neighbourhood
-    node.neighborhood().nodes().union(node).forEach(node => {
-      removeStyle(cy, node, '_highlighted');
-    });
-    
-    //De-Highlight all edges connecting nodes in the neighbourhood
-    removeStyle(cy, node.neighborhood().edges(), '_hover-style-highlighted');
+    removeStyle(cy, neighborhood.nodes(), '_highlighted');
+    removeStyle(cy, node, '_highlighted');
+    removeStyle(cy, neighborhood.edges(), '_highlighted');
   });
 
   /**

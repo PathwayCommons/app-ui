@@ -70,9 +70,6 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
     const currZoom = cy.zoom();
     const ecAPI = cy.expandCollapse('get');
 
-
-    // if (node.isParent()) { return; }
-
     if (node.isParent() && ecAPI.isCollapsible(node)) { return; }
 
     const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);

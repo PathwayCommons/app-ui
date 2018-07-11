@@ -44,6 +44,22 @@ const removeStyleFromChildren = (cy,node) => {
   });
 };
 
+const applyStyleToParents = (cy,node) => {
+  let parent = node.parent();
+  if(parent.length === 0)
+    return;
+  applyStyle(cy,parent,hoverStyle,'_highlighted');
+  applyStyleToParents(cy,parent);
+};
+
+const removeStyleFromParents = (cy,node) => {
+  let parent = node.parent();
+  if(parent.length === 0)
+    return;
+  removeStyle(cy,parent,'_highlighted');
+  removeStyleFromParents(cy,parent);
+};
+
 
 const bindHover = (cy) => {
 
@@ -64,6 +80,7 @@ const bindHover = (cy) => {
     //Highlight the hovered node & it's neighbourhood
     node.neighborhood().nodes().union(node).forEach(node => {
       applyStyleToChildren(cy,node);
+      applyStyleToParents(cy,node);
     });
 
     //highlight all edges connecting nodes in the neighbourhood
@@ -82,6 +99,7 @@ const bindHover = (cy) => {
     //remove hover style modifications from highlighted nodes & edges
     node.neighborhood().nodes().union(node).forEach(node => {
       removeStyleFromChildren(cy,node);
+      removeStyleFromParents(cy,node);
     });
     removeStyle(cy, node.neighborhood().edges(), '_highlighted');
 
@@ -107,6 +125,7 @@ const bindHover = (cy) => {
     //Highlight the nodes connected to the hovered edge
     edge.source().union(edge.target()).forEach((node) => {
       applyStyleToChildren(cy, node);
+      applyStyleToParents(cy,node);
     });
 
   },200,{leading:false,trailing:true});
@@ -122,6 +141,7 @@ const bindHover = (cy) => {
     removeStyle(cy, edge);
     edge.source().union(edge.target()).forEach((node) => {
       removeStyleFromChildren(cy, node);
+      removeStyleFromParents(cy,node);
     });
 
     //Remove 'no hover' style from all nodes & edges

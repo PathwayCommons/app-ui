@@ -2,6 +2,8 @@ const h = require('react-hyperscript');
 const hh = require('hyperscript');
 const ReactDom = require('react-dom');
 const React = require('react');
+const { Link } = require('react-router');
+const queryString = require('query-string');
 const tippy = require('tippy.js');
 
 const {databases} = require('../../config');
@@ -41,6 +43,8 @@ class EntityMetadata {
       return aggregatedDbIds;
     };
 
+    this.data.set('Label', node.data('label'));
+
     this.data.set('Publications', []);
 
     this.data.set('Search Link', determineSearchLinkQuery( node, this.data.get('DisplayName')));
@@ -50,13 +54,15 @@ class EntityMetadata {
   isEmpty(){
     return this.data.entries().length === 0;
   }
-
   type(){
     let type = this.data.get('Type');
     if( type ){
       return type.substring(3);
     }
     return '';
+  }
+  label(){
+    return this.data.get('Label') || '';
   }
   standardName(){
     return this.data.get('Standard Name') || '';
@@ -136,11 +142,18 @@ class EntityMetaDataView extends React.Component {
     let name = metadata.displayName();
 
     if ( metadata.isEmpty() ) {
-      return h('div.tooltip', [
+      return h('div.metadata-tooltip', [
         h('div.tooltip-heading', [
-          h('a.tooltip-heading-link',{ href:"/search?&q=" + name, target:"_blank"}, name),
-          ]),
-        h('div.tooltip-internal', h('div.tooltip-warning', 'No Additional Information'))
+          h(Link, {
+            className: 'tooltip-heading-link',
+            target: '_blank',
+            to: {
+              pathname: '/search',
+              search: queryString.stringify({q: name})
+            }
+          }, name),
+        ]),
+        h('div.tooltip-internal', h('div.metadata-tooltip-warning', 'No Additional Information'))
       ]);
     }
 
@@ -155,31 +168,32 @@ class EntityMetaDataView extends React.Component {
     });
 
     return h('div.metadata-tooltip', [
-      h('div.tooltip-heading', name),
-      h('div.tooltip-internal', [
-        h('div.tooltip-type', metadata.type()),
-      ]),
-      h('div.fake-paragraph', [
-        h('div.field-name', 'Name: '),
-        h('div.tooltip-value', metadata.standardName())
-      ]),
-      h('div.fake-paragraph', [
-        h('div.field-name', 'Display Name: '),
-        h('div.tooltip-value', metadata.displayName())
-      ]),
-      h('div.fake-paragraph', [
-        h('div.field-name', 'Synonyms: '),
-        h('div.tooltip-value', metadata.synonyms().slice(0, 3))
-      ]),
-      h('div.fake-paragraph', [
-        h('div.field-name', 'Links: '),
-        h('div.tooltip-value', metadata.databaseLinks().map(link => {
+      h('div.metadata-tooltip-content', [
+        h('div.metadata-tooltip-heading', [
+          h(Link, {
+              className: 'plain-link',
+              href: '/search?q=' + metadata.searchLink(),
+              target: '_blank'
+            }, metadata.label() || metadata.displayName()
+          )
+        ]),
+        h('div.metadata-tooltip-type', metadata.type()),
+        h('div.metadata-tooltip-section', [
+          h('div.metadata-field-name', 'Name:  '),
+          h('div.metadata-field-value', metadata.standardName())
+        ]),
+        h('div.metadata-tooltip-section', [
+          h('div.metadata-field-name', 'Display Name:  '),
+          h('div.metadata-field-value', metadata.displayName())
+        ]),
+        h('div.metadata-tooltip-section', [
+          h('div.metadata-field-name', 'Synonyms:  '),
+          h('div.metadata-field-value', metadata.synonyms().slice(0, 3).join(', '))
+        ]),
+        h('div.metadata-tooltip-section', publications),
+        h('div.metadata-tooltip-section.metadata-links', metadata.databaseLinks().map(link => {
           return h('a.plain-link', { href: link.url}, link.name);
         }))
-      ]),
-      h('div.fake-paragraph', publications),
-      h('div.fake-paragraph', [
-        h('a.plain-link', { href: '/search?q=' + metadata.searchLink(), target: '_blank'}, 'Find Pathways')
       ])
     ]);
   }

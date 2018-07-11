@@ -2,8 +2,6 @@ const _ = require('lodash');
 
 const {applyStyle, removeStyle} = require('../manage-style');
 
-
-
 const hoverStyle = {
   //'background-color': 'green',
   'opacity': 1,
@@ -12,6 +10,38 @@ const hoverStyle = {
 const notHoverStyle = {
   //'background-color':'blue',
   'opacity':0.4
+};
+
+/**
+ * @description Recursively applies a style to a node & all its children
+ * @param {*} cy Cytoscape network object
+ * @param {*} node Node which style is to be applied
+ */
+const applyStyleToChildren = (cy,node) => {
+  applyStyle(cy, node, hoverStyle, '_highlighted');
+  let children = node.children();
+  if(!children)
+    return;
+  children.forEach(child => {
+    applyStyle(cy,child,hoverStyle,'_highlighted');
+    applyStyleToChildren(cy,child);
+  });
+};
+
+/**
+ * @description Recursively removes a style from a node & all its children
+ * @param {*} cy Cytoscape network object
+ * @param {*} node Node which style is to be applied
+ */
+const removeStyleFromChildren = (cy,node) => {
+  removeStyle(cy, node, '_highlighted');
+  let children = node.children();
+  if(!children)
+    return;
+  children.forEach(child => {
+    removeStyle(cy,child,'_highlighted');
+    removeStyleFromChildren(cy,child);
+  });
 };
 
 
@@ -33,7 +63,7 @@ const bindHover = (cy) => {
 
     //Highlight the hovered node & it's neighbourhood
     node.neighborhood().nodes().union(node).forEach(node => {
-      applyStyle(cy, node, hoverStyle, '_highlighted');
+      applyStyleToChildren(cy,node);
     });
 
     //highlight all edges connecting nodes in the neighbourhood
@@ -46,15 +76,14 @@ const bindHover = (cy) => {
    */
   const nodeHoverMouseOut = evt => {
     const node = evt.target;
-    const neighborhood = node.neighborhood();
-
     //Cancel the mouseover function, so the node is not highlighted later
     nodeHoverMouseOver.cancel();
     
     //remove hover style modifications from highlighted nodes & edges
-    removeStyle(cy, neighborhood.nodes(), '_highlighted');
-    removeStyle(cy, node, '_highlighted');
-    removeStyle(cy, neighborhood.edges(), '_highlighted');
+    node.neighborhood().nodes().union(node).forEach(node => {
+      removeStyleFromChildren(cy,node);
+    });
+    removeStyle(cy, node.neighborhood().edges(), '_highlighted');
 
     //Remove 'no hover' style from all nodes & edges
     removeStyle(cy,cy.nodes(),'_unhighlighted');
@@ -77,7 +106,7 @@ const bindHover = (cy) => {
 
     //Highlight the nodes connected to the hovered edge
     edge.source().union(edge.target()).forEach((node) => {
-      applyStyle(cy, node, hoverStyle, '_highlighted');
+      applyStyleToChildren(cy, node);
     });
 
   },200,{leading:false,trailing:true});
@@ -90,9 +119,10 @@ const bindHover = (cy) => {
     edgeHoverMouseOver.cancel();
 
     //remove hover style modifications from highlighted nodes & edges
-    removeStyle(cy, edge, '_highlighted');
-    removeStyle(cy, edge.source(), '_highlighted');
-    removeStyle(cy, edge.target(), '_highlighted');
+    removeStyle(cy, edge);
+    edge.source().union(edge.target()).forEach((node) => {
+      removeStyleFromChildren(cy, node);
+    });
 
     //Remove 'no hover' style from all nodes & edges
     removeStyle(cy,cy.nodes(),'_unhighlighted');

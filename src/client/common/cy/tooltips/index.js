@@ -6,34 +6,54 @@ const config = require('../../config');
 const formatContent = require('./format-content');
 const collection = require('./collection');
 const getPublications = require('./publications');
+ 
 
+// const pair2Obj = twoValArray => { 
+//   let o = {};
+//   o[twoValArray[0]] = twoValArray[1]; 
+//   return o;
+// };
 
+// Node metadata should contain the following fields:
+// 'Type', 
+// 'Standard Name', 
+// 'Display Name', 
+// 'Names', 
+// 'Database IDs',
+// 'Publications'
+// Publications are queried via pubmed using a network call
 
-class Metadata {
+class NodeMetadata {
   constructor(node){
     let nodeMetadata = node.data('parsedMetadata');
     let nodeLabel = node.data('label');
     let nodeClass = node.data('class');
-    this.data = new Map();
+    this.data = new Map(nodeMetadata);
     this.rawData = nodeMetadata;
 
-    nodeMetadata.forEach( datum => {
-      this.data.set(datum[0],  datum[1]);
-    });
-
     if( nodeClass === 'process'){
-      this.data.set('Search Link', this.data['Display Name']);
+      this.data.set('Search Link', this.data.get('Display Name'));
     } else {
       this.data.set('Search Link', nodeLabel);
     }
+
+    let aggregatedDbIds = {};
+    this.databaseIds().forEach(dbEntry => {
+      let [dbName, dbId ] = dbEntry;
+      if( Object.keys(aggregatedDbIds).includes(dbName) ){
+        aggregatedDbIds[dbName].push(dbId);
+      } else {
+        aggregatedDbIds[dbName] = [dbId];
+      }
+    });
+    this.data.set('Database IDs', new Map(Object.entries(aggregatedDbIds)));
   }
   isEmpty(){
-    return this.rawData == null || this.rawData.length === 0;
+    return this.data.entries().length === 0;
   }
 
   type(){
     let type = this.data.get('Type');
-    console.log(type);
     if( type ){
       return type.substring(3);
     }
@@ -46,13 +66,24 @@ class Metadata {
     return this.data.get('Display Name') || '';
   }
   synonyms(){
-    return this.data.get('Names');
+    return this.data.get('Names') || [];
   }
   databaseIds(){
-    return this.data.get('Database IDs');
+    return this.data.get('Database IDs') || [];
+  }
+  databaseLinks(){
+    let dbEntries = this.databaseIds().entries();
+    let findDbBaseUrl = dbId => {};
+
+    let links = [...dbEntries].forEach(([k, v]) => {
+      let dbBaseUrl = findDbBaseUrl(k);
+      return dbBaseUrl + v;
+    });
+
+    return links;
   }
   publications(){
-    return this.data.get('publications');
+    return this.data.get('publications') || [];
   }
   searchLink(){
     return this.data.get('Search Link') || '';
@@ -63,53 +94,48 @@ class Metadata {
 //Requires a valid name, cytoscape element, and parsedMetadata array
 class MetadataTip {
 
-  constructor(cyElement) {
+  constructor(node) {
     this.name = name;
-    this.data = new Metadata(cyElement);
-    this.cyElement = cyElement;
+    this.node = node;
+    this.data = new NodeMetadata(node);
+    this.node = node;
     this.db = config.databases;
     this.viewStatus = {};
     this.visible = false;
-    this.zoom = cyElement._private.cy.zoom();
+    this.zoom = node._private.cy.zoom();
   }
 
   //Show Tippy Tooltip
   show() {
-    let cy = this.cyElement._private.cy;
+    let cy = this.node._private.cy;
     let tooltip = this.tooltip;
     let zoom = this.zoom;
-    let isEdge = this.cyElement.isEdge();
 
-    //If no tooltip exists create one
-    if ( !tooltip|| ( zoom != cy.zoom() && isEdge ) ) {
-      zoom = cy.zoom();
-      //Generate HTML
-      let tooltipHTML = this.generateToolTip(zoom,isEdge);
+    if ( !tooltip|| ( zoom != cy.zoom() ) ) {
+      let tooltipHTML = this.generateToolTip( cy.zoom() );
+      let refObject = this.node.popperRef();
 
-      //Create tippy object
-      let refObject = this.cyElement.popperRef();
-      tooltip = tippy(refObject, { html: tooltipHTML, theme: 'light', interactive: true, trigger: 'manual', hideOnClick: false, arrow: true, placement: 'bottom',distance: isEdge? -25*zoom+7:10}).tooltips[0];
+      tooltip = tippy(refObject, { 
+        html: tooltipHTML, 
+        theme: 'light', 
+        interactive: true, 
+        trigger: 'manual', 
+        hideOnClick: false, 
+        arrow: true, 
+        placement: 'bottom',
+        distance: 10}
+      ).tooltips[0];
 
-      //Save tooltips
       this.tooltip = tooltip;
       this.zoom = zoom;
     }
 
-    //Show Tooltip
     tooltip.show();
     this.visible = true;
   }
 
-  //Validate the name of object and use Display Name as the fall back option
-  validateName() {
-    if (!(this.name)) {
-      let displayName = this.data.filter(pair => pair[0] === 'Display Name');
-      if (displayName.length > 0) { this.name = displayName[0][1].toString(); }
-    }
-  }
-
   //Generate HTML Elements for tooltips
-  generateToolTip(zoom, isEdge) {
+  generateToolTip() {
     let data = this.data;
     let name = data.displayName();
 
@@ -124,6 +150,7 @@ class MetadataTip {
     const tooltipOrder = ['Type', 'Standard Name', 'Display Name', 'Names', 'Database IDs', 'Publications'];
 
     console.log(data.databaseIds());
+
 
     return h('div.tooltip-image', [
       h('div.tooltip-heading', name),
@@ -142,6 +169,7 @@ class MetadataTip {
         h('div.field-name', 'Synonyms: '),
         h('div.tooltip-value', data.synonyms().slice(0, 3))
       ]),
+      h('div.fake-')
 
 
         // (data).map(item => formatContent.parseMetadata(item, true, null, name)), this))

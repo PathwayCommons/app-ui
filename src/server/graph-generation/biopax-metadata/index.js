@@ -1,12 +1,21 @@
+const fs = require('fs');
 const metadataParser = require('./metadataParserJson');
+const _ = require('lodash');
 
-//Build a sub tree array for a biopax element
-function buildBioPaxSubtree(biopaxElement, biopaxFile, visited, nodeType = 'default') {
+var biopaxMap = null;
+
+/**
+ *
+ * @param {*} biopaxElement Metadata for an entity from BioPAX
+ * @param {*} nodeType Is this a xref or entity?
+ */
+function collectEntityMetadata(biopaxElement, nodeType = 'default'){
+
   let result = [];
-
+  //Collect relevant data on this node, and push it into output
   if (nodeType !== 'Reference') {
     //Get type
-    let type = biopaxElement['@type']
+    let type = biopaxElement['@type'];
     if (type) { result.push(['Type', type]); }
 
     //Get data source
@@ -32,14 +41,6 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited, nodeType = 'defa
     //Get Chemical Formula
     let formula = biopaxElement['chemicalFormula'];
     if (formula) { result.push(['Chemical Formula', formula]); }
-
-    //Get Cellular Location
-    let cellLocation = biopaxElement['cellularLocation'];
-    if (cellLocation && cellLocation.indexOf('http') !== -1) {
-      cellLocation = getElementFromBioPax(biopaxFile, cellLocation);
-      cellLocation = cellLocation['term'];
-    }
-    if (cellLocation) { result.push(['Cellular Location', cellLocation]); }
   }
 
   //Get database id
@@ -47,167 +48,185 @@ function buildBioPaxSubtree(biopaxElement, biopaxFile, visited, nodeType = 'defa
   let id = biopaxElement['id'];
   if (db && id) { result.push(['Database ID', [db, id]]); }
 
-  //Get any cross references
-  let xref = biopaxElement['xref'];
-
-  //Resolve String/Array Issue
-  if (typeof xref == 'string') { xref = [xref]; }
-  if (!(xref)) { xref = []; }
-
-  //Get entity reference and add it to xref
-  let eref = biopaxElement['entityReference']
-  if (eref) xref.push(eref);
-
-
-  //Recurse on each cross reference (Lim it level depth to 4)
-  if (xref) {
-
-    for (let i = 0; i < xref.length; i++) {
-
-      let keyName = 'Reference';
-      if (i == (xref.length - 1) && eref) { keyName = 'EntityReference' };
-
-      //Get Referenced Element
-      let refElement = getElementFromBioPax(biopaxFile, xref[i]);
-
-      //Make a copy of visited
-      let visitCopy = visited.slice();
-
-      //Check validity of element
-      if (!(refElement)) { continue; }
-
-      //Recurse on current element
-      if (visitCopy.indexOf(xref[i]) <= -1 && visitCopy.length <= 2) {
-
-        visitCopy.push(xref[i]);
-        result.push([keyName, buildBioPaxSubtree(refElement, biopaxFile, visitCopy, keyName)]);
-
-      }
-    }
-  }
-  //Return subtree
   return result;
 }
 
-//Build a tree array for a biopax file
-function buildBioPaxTree(children, biopaxFile) {
+/**
+ *
+ * @param {*} entity Metadata for an entity in the network
+ * @returns Tree array containing all metadata about the given entity
+ */
+function buildBiopaxTree(entity) {
   let result = [];
 
-  if (!(children)) { return };
+  //make sure the metadata exists
+  if (!(entity))
+    return;
 
-  //Get the node id
-  let id = children['pathid']
-  if (!(id)) { id = children['about']; }
+  //Get the node id, as defined in getProcessedBioPax
+  let id = entity['pathid'];
+  if (!(id)) { id = entity['about']; }
   if (!(id)) { return; }
 
-  //Build a subtree
-  let visited = [id];
-  let subtree = buildBioPaxSubtree(children, biopaxFile, visited);
-  result.push([id, subtree]);
+  //get BioPAX metadata for this node
+  let collectedData = collectEntityMetadata(entity);
 
-  //Return Biopax Tree
+  //Collect Data for cross-references
+  let xrefList = [];
+  let xref = entity['xref'];
+  let eref = entity['entityReference'];
+  if(xref)
+    if(typeof xref === 'string')
+      xrefList = _.concat(xrefList,[xref]);
+    else
+      xrefList = _.concat(xrefList,xref);
+  if(eref)
+    xrefList = _.concat(xrefList,[eref]);
+
+  processXrefs(xrefList,eref,collectedData);
+
+  result.push([id,collectedData]);
   return result;
 }
 
-//Remove all characters after nth instance of underscore
-//Requires the string to contain at least 1 underscore
-function removeAfterUnderscore(word, numberOfElements) {
-  let splitWord = word.split('_');
-  let newWord = '';
-  for (let i = 0; i < numberOfElements; i++) {
-    if (i != (numberOfElements - 1)) {
-      newWord += splitWord[i] + '_';
-    } else {
-      newWord += splitWord[i];
+function processXrefs(xrefList,eref,collectedData){
+  let erefXrefList = [];
+
+  for (let i = 0; i < xrefList.length; i++) {
+    //Check if this is a cross-reference or entity reference
+    //(- the last item (if eref is defined) is treated in a special way that
+    //TODO: saves a couple of lines but sacrifices clarity...)
+    let keyName = 'Reference';
+    if (i == (xrefList.length - 1) && eref)
+      keyName = 'EntityReference';
+
+    //Get Referenced element and make sure it's valid
+    let refElement = getByNodeId(xrefList[i], biopaxMap);
+    if (!(refElement)) {
+      continue;
     }
-  }
-  return newWord;
-}
 
-//Check if ID even exists in the biopax file
-//Returns teh matching element or null
-function getElementFromBioPax(biopaxFile, id) {
+    //create list of xrefs for eref
+    if(keyName === "EntityReference") {
+      let erefXref = refElement['xref'];
+      if(erefXref)
+        if(typeof erefXref === 'string')
+          erefXrefList = _.concat(erefXrefList,[erefXref]);
+        else
+          erefXrefList = _.concat(erefXrefList,erefXref);
+    }
 
-  //Append pc2 address, if id is not already an uri
-  if (id.indexOf('http') !== -1 || id.indexOf('/') !== -1) {
-    var lastIndex = id.lastIndexOf('/');
-    id = id.substring(lastIndex + 1);
-  }
-
-  //Get element matching the id
-  let result = biopaxFile.get(id);
-  return result;
-}
-
-//Get subtree for each node
-//Requires tree to be a valid biopax tree
-function getBioPaxSubtree(nodeId, biopax) {
-  //Remove extra identifiers appended by cytoscape.js
-  let fixedNodeId = removeAfterUnderscore(nodeId, 2);
-
-  //Resolve issues if there is no appended identifiers
-  if (nodeId.indexOf('_') <= -1) {
-    fixedNodeId = nodeId;
+    //Collect data and add to tree array
+    collectedData.push([keyName,collectEntityMetadata(refElement,keyName)]);
   }
 
-  //Conduct a basic search
-  let basicSearch = getElementFromBioPax(biopax, fixedNodeId);
-  if (basicSearch) { return buildBioPaxTree(basicSearch, biopax); }
+  //Also collect data for entity reference's cross-references
+  //almost identically to above
+  for(let i=0;i<erefXrefList.length;i++){
+    let keyName = 'Reference';
+    let refElement = getByNodeId(erefXrefList[i], biopaxMap);
+    if (!(refElement)) {
+      continue;
+    }
 
-  //Check if id is an unification reference
-  fixedNodeId = 'UnificationXref_' + nodeId;
+    collectedData.push([keyName,collectEntityMetadata(refElement,keyName)]);
+  }
 
-  //Conduct a unification ref search
-  let uniSearch = getElementFromBioPax(biopax, fixedNodeId);
-  if (uniSearch) { return buildBioPaxTree(uniSearch, biopax); }
-
-  //Check if id is an external identifier
-  fixedNodeId = removeAfterUnderscore(nodeId, 2);
-  fixedNodeId = 'http://identifiers.org/' + fixedNodeId.replace(/_/g, '/');
-
-  //Conduct a external identifier search
-  let extSearch = getElementFromBioPax(biopax, fixedNodeId);
-  if (extSearch) { return buildBioPaxTree(extSearch, biopax); }
-
-  //Conduct a plain search with slashes
-  fixedNodeId = nodeId.replace(/_/g, '/');
-  let slashSearch = getElementFromBioPax(biopax, fixedNodeId);
-  if (slashSearch) { return buildBioPaxTree(slashSearch, biopax); }
-
-  //Conduct a plain search as a last resort (Only for Non Pathway URI's)
-  let regularSearch = getElementFromBioPax(biopax, nodeId);
-  if (regularSearch) { return buildBioPaxTree(regularSearch, biopax); }
-
-  return null;
 }
 
-function getProcessedBioPax(biopaxJsonText) {
+/**
+ * Gets an object from the given map by biopax URI or Cy node id;
+ * node id is mapped onto the biopax URI using several rules
+ * (knowing how the SBGN xml ids and CyJson node ids were generated).
+ *
+ * @param id String representing a BioPAX absolute URI or Cy node id
+ * @param  map Map/Object - biopax URI (string) to some objects map (e.g., to elements or metadata)
+ * @returns matching value from the Map (if it exists) or null
+ */
+function getByNodeId(id, map) {
+  // shortcut
+  if(!id || !map)
+    return null;
+
+  let bpe = (map instanceof Map) ? map.get(id) : map[id];
+  if (!bpe) {
+    //remove the last underscore and everything after, and search again (as generics/complex component ids
+    //are sometimes like ..Protein_4c4358ebaabf0f39e1e5325a4178d931_830703244edf74707f84842e080f965d)
+    id = id.substring(0, id.lastIndexOf("_"));
+    bpe = (map instanceof Map) ? map.get(id) : map[id];
+  }
+
+  return (bpe) ? bpe : null;
+}
+
+/**
+ * Builds a URI-to-biopaxElement map from a biopax JSON-LD model.
+ * @param {*} biopaxJsonText String - BioPAX sub-network in JSON-LD format
+ * @returns `Map` containing BioPAX JSON objects
+ */
+function getBiopaxMap(biopaxJsonText) {
+
+  //parse String into JSON object, rename '@id' property to 'pathid'
   const graph = JSON.parse(biopaxJsonText.replace(new RegExp('@id', 'g'), 'pathid'))['@graph'];
-  const biopaxElementMap = new Map();
 
+  const biopaxMap = new Map();
+
+  //'pathid' is the absolute URI (URL, by design) of a biopax object, and so we use it as map key:
   for (const element of graph) {
-    const fullId = element['pathid'];
-    const lastIndex = fullId.lastIndexOf('/');
-    const subId = fullId.substring(lastIndex + 1);
-
-    biopaxElementMap.set(subId, element);
+    const uri = element['pathid'];
+    biopaxMap.set(uri, element);
   }
 
-  return biopaxElementMap;
+  return biopaxMap;
 }
 
+const getGenericPhysicalEntityMap = _.memoize(() => JSON.parse(
+  fs.readFileSync(__dirname + '/generic-physical-entity-map.json', 'utf-8')
+));
 
-function getBioPaxMetadata(biopaxJsonText, nodes) {
-  const biopaxElementMap = getProcessedBioPax(biopaxJsonText);
+
+/**
+ * Extracts additional BioPAX properties, for cy nodes,
+ * from the corresp. JSON-LD representation
+ * (these were missing from the initial SBGN-ML result, converted to CyJson.)
+ *
+ * @param {*} biopaxJsonText String containing BioPAX metadata for the network
+ * @param {*} nodes JSON object containing all the nodes in the network
+ * @returns Processed metadata for each node in the network
+ */
+function getBiopaxMetadata(biopaxJsonText, nodes) {
+
+  //BioPAX metadata comes as a string, turn it into a Map
+  biopaxMap = getBiopaxMap(biopaxJsonText);
 
   const nodeMetadataMap = {};
 
+  //Iterate through nodes in Cy network, adding metadata to each
   nodes.forEach(node => {
-    const id = node.data.id;
-    nodeMetadataMap[id] = metadataParser(getBioPaxSubtree(id, biopaxElementMap));
+    const bpe = getByNodeId(node.data.id, biopaxMap);
+    //build the tree for metadata and add it to the map
+    nodeMetadataMap[node.data.id] = metadataParser(buildBiopaxTree(bpe));
   });
 
   return nodeMetadataMap;
 }
 
-module.exports = { getProcessedBioPax, getBioPaxMetadata};
+/**
+ *
+ * @param nodes
+ */
+const getGeneSymbolsForGenericNodes = nodes => {
+  const nodeGeneSynonyms = {};
+  const genericPhysicalEntityMap = getGenericPhysicalEntityMap();
+
+  nodes.forEach(node => {
+    const genericPE = getByNodeId(node.data.id, genericPhysicalEntityMap);
+    const syns = _.get(genericPE, 'synonyms', []);
+    nodeGeneSynonyms[node.data.id] = syns;
+  });
+
+  return nodeGeneSynonyms;
+};
+
+
+module.exports = {getBiopaxMetadata, getGeneSymbolsForGenericNodes};

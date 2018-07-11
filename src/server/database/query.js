@@ -1,12 +1,8 @@
-
 const r = require('rethinkdb');
-const sbgn2CyJson = require('sbgnml-to-cytoscape');
-
 const heuristics = require('./heuristics');
 const db = require('./utilities');
 const pc = require('../pathway-commons');
 const { getPathwayJson } = require('../graph-generation/');
-
 const update = require('./update');
 
 let config = require('./config');
@@ -54,16 +50,14 @@ Entry specficed by the tuple of pcID and releaseID.
 Accepts 'latest' as a valid releaseID
 */
 
-function getLatestPCVersion(pcID) {
-  // Traverse queries to PC2 return the current PC2 version.
-  return pc.traverse({ format: 'JSON', path: 'Named/name', uri: pcID }).then((json) => {
-    return json.version;
-  });
+
+function getLatestPCVersion() {
+  return pc.metadata().then(meta => meta.version);
 }
 
 
 function getGraph(pcID, releaseID, connection, callback) {
-  let latestVersion = getLatestPCVersion(pcID);
+  let latestVersion = getLatestPCVersion();
 
   let graph = db.queryRoot(pcID, releaseID, config)
     .eqJoin('graph_id', r.db(config.databaseName).table('graph'))
@@ -86,11 +80,11 @@ function getGraph(pcID, releaseID, connection, callback) {
   return db.handleResult(newerGraph, callback);
 }
 
-function getGraphFromPC(pcID, releaseID, connection) {
-  return getPathwayJson(pcID)
+function getGraphFromPC(pcURI, releaseID, connection) {
+  return getPathwayJson(pcURI)
     .then(result => {
       if (connection && result.pathwayMetadata) {
-        update.updateGraph(pcID, releaseID, result, connection);
+        update.updateGraph(pcURI, releaseID, result, connection);
       }
       return result;
     });

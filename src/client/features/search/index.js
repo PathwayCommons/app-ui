@@ -9,6 +9,7 @@ const classNames = require('classnames');
 
 const Icon = require('../../common/components').Icon;
 const { ServerAPI } = require('../../services');
+const Landing = require('./landing-box');
 
 class Search extends React.Component {
 
@@ -25,36 +26,49 @@ class Search extends React.Component {
         type: 'Pathway',
         datasource: []
       }, query),
+      landing: [],
+      landingLoading: false,
       searchResults: [],
-      loading: false,
-      showFilters: false,
+      searchLoading: false,
       dataSources: []
     };
 
     ServerAPI.datasources()
-      .then(result => {
-        this.setState({
-          dataSources: Object.values(result)
-        });
+    .then(result => {
+      this.setState({
+        dataSources: Object.values(result).filter(ds => ds.hasPathways==true)
       });
+    });
   }
 
   getSearchResult() {
     const state = this.state;
     const query = state.query;
-
     if (query.q !== '') {
       this.setState({
-        loading: true
+        searchLoading: true
       });
+     this.getLandingResult(query.q);
       ServerAPI.querySearch(query)
         .then(searchResults => {
-          this.setState({
-            searchResults: searchResults,
-            loading: false
-          });
+           this.setState({
+             searchResults: searchResults,
+             searchLoading: false
+           });
         });
     }
+  }
+
+  getLandingResult(query){
+    this.setState({
+      landingLoading:true
+    });
+    Landing.getLandingResult(query).then(landing=>
+      this.setState({
+        landingLoading:false,
+        landing:landing
+      })
+    );
   }
 
   componentDidMount() {
@@ -74,7 +88,7 @@ class Search extends React.Component {
 
   setAndSubmitSearchQuery(query) {
     const state = this.state;
-    if (!state.loading) {
+    if (!state.searchLoading) {
       const newQueryState = _.assign({}, state.query, query);
       this.setState({ query: newQueryState }, () => this.submitSearchQuery());
     }
@@ -91,30 +105,54 @@ class Search extends React.Component {
       search: queryString.stringify(query),
       state: {}
     });
-
     this.getSearchResult();
   }
 
+  componentWillReceiveProps (nextProps) {
+    const nextSearch = nextProps.location.search;
+    if( this.props.location.search !==  nextSearch){
+      this.setState({
+        query: _.assign({
+          q: '',
+          gt: 0,
+          lt: 250,
+          type: 'Pathway',
+          datasource: []
+          }, queryString.parse(nextSearch))} , ()=>{
+            this.getSearchResult();
+          });
+    }
+ }
+
+buildExampleLink (search) {
+  let query = _.clone(this.state.query);
+  query.q = search;
+  return queryString.stringify(query);
+}
+
   render() {
-    const props = this.props;
     const state = this.state;
-    
-    let Example = props => h('span.search-example', {
-      onClick: () => this.setAndSubmitSearchQuery({q: props.search})
-    }, props.search);
+    const landing=state.landing;
+    const landingBox=Landing.landingBox;
+    const controller = this;
+    const loaded= !(state.searchLoading || state.landingLoading);
+
+   let Example = props => h(Link, { to: { pathname: '/search', search: this.buildExampleLink(props.search) }}, props.search);
 
     const searchResults = state.searchResults.map(result => {
-      const dsInfo = _.find(state.dataSources, ds => {
+      const dsInfo =_.isEmpty(state.dataSources)? {iconUrl:null , name:''}: _.find(state.dataSources, ds => {
         return ds.uri === result.dataSource[0];
       });
+
       return h('div.search-item', [
-        h('div.search-item-icon',[
+       h('div.search-item-icon',[
           h('img', {src: dsInfo.iconUrl})
         ]),
         h('div.search-item-content', [
-          h(Link, { to: { pathname: '/view', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' }, [
-            h('h3.search-item-content-title', result.name || 'N/A'),
-          ]),
+          h(Link, { to: { pathname: '/view', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' },
+            [
+              h('h3.search-item-content-title', result.name || 'N/A'),
+            ]),
           h('p.search-item-content-datasource', ` ${dsInfo.name}`),
           h('p.search-item-content-participants', `${result.numParticipants} Participants`)
         ])
@@ -129,25 +167,32 @@ class Search extends React.Component {
     ].map(searchType => {
       return h('div.search-option-item-container', [
         h('div', {
-          onClick: e => this.setAndSubmitSearchQuery({ type: searchType.value }),
-          className: classNames('search-option-item', { 'search-option-item-disabled': state.loading }, { 'search-option-item-active': state.query.type === searchType.value })
+          onClick: () => this.setAndSubmitSearchQuery({ type: searchType.value }),
+          className: classNames('search-option-item', { 'search-option-item-disabled': state.searchLoading },
+            { 'search-option-item-active': state.query.type === searchType.value })
         }, [
             h('a', searchType.name)
           ])
       ]);
     });
 
-    const searchResultInfo = state.showFilters ? h('div.search-filters', [
+    let datasourceVal = "";
+    if(!Array.isArray(state.query.datasource)){
+      datasourceVal = state.query.datasource;
+    }
+
+    const searchResultFilter = h('div.search-filters', [
       h('select.search-datasource-filter', {
-        value: state.query.datasource,
+        value: datasourceVal,
+        multiple: false,
         onChange: e => this.setAndSubmitSearchQuery({ datasource: e.target.value })
       }, [
         h('option', { value: [] }, 'Any datasource')].concat(
           _.sortBy(state.dataSources, 'name').map(ds => h('option', { value: [ds.id] }, ds.name))
           )),
-    ]) :
-      h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
+    ]);
 
+    const searchResultHitCount = h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
 
     return h('div.search', [
       h('div.search-header-container', [
@@ -174,32 +219,26 @@ class Search extends React.Component {
                   onChange: e => this.onSearchValueChange(e),
                   onKeyPress: e => this.onSearchValueChange(e)
                 }),
-                h('div.search-search-button', [
-                  h('button', { onClick: e => this.submitSearchQuery(e) }, [
-                    h(Icon, { icon: 'search' })
-                  ])
+                h(Link, { to: { pathname: '/search', search: queryString.stringify(state.query)},className:"search-search-button"}, [
+                  h(Icon, { icon: 'search' })
                 ])
               ]),
               h('div.search-suggestions', [
                 'e.g. ',
                 h(Example, {search: 'cell cycle'}), ', ',
-                h(Example, {search: 'p53 MDM2'}), ', ',
+                h(Example, {search: 'TP53 MDM2'}), ', ',
                 h(Example, {search: 'P04637'})
               ]),
               h('div.search-tabs', searchTypeTabs.concat([
-                h('div', {
-                  className: classNames('search-option-item', 'search-option-item-tools', { 'search-option-item-tools-active': state.showFilters }),
-                  onClick: e => this.setState({ showFilters: !state.showFilters })
-                }, [
-                    h('a', 'Tools')
-                  ])
               ]))
             ])
         ])
       ]),
-      h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' } }, [
+      h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' } }, [
         h('div.search-list-container', [
-          h('div.search-result-info', [searchResultInfo]),
+          h('div.search-result-filter', [searchResultFilter]),
+          h('div.search-result-hit-count', [searchResultHitCount]),
+          h(landingBox,{controller,landing}),
           h('div.search-list', searchResults)
         ])
       ])

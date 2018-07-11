@@ -1,6 +1,6 @@
 {
   "name": "app-ui",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "App UI",
   "repository": {
     "type": "git",
@@ -31,7 +31,8 @@
     "clean": "rimraf build/*",
     "lint": "run-s lint:*",
     "watch": "run-p watch:*",
-    "test": "mocha --recursive"
+    "test": "mocha --recursive",
+    "test:travis": "run-s test lint"
   },
   "dependencies": {
     "async": "^2.5.0",
@@ -41,13 +42,14 @@
     "classnames": "^2.2.5",
     "color": "^2.0.0",
     "cookie-parser": "^1.4.3",
-    "cytoscape": "git+https://github.com/cytoscape/cytoscape.js.git#295f66f7db85681670b03937a8dc6da2130a1f2e",
-    "cytoscape-compound-collapse": "git+https://github.com/d2fong/cytoscape.js-compound-collapse.git",
+    "cytoscape": "git+https://github.com/cytoscape/cytoscape.js.git#097f455d107472a3cfb09d91d63cf85aca75024a",
+    "cytoscape-compound-collapse": "git+https://github.com/d2fong/cytoscape.js-compound-collapse.git#master",
     "cytoscape-cose-bilkent": "^3.0.2",
     "cytoscape-cxtmenu": "^2.10.3",
     "cytoscape-dagre": "^2.1.0",
-    "cytoscape-fisheye": "git+https://github.com/d2fong/cytoscape.js-fisheye.git",
+    "cytoscape-fisheye": "git+https://github.com/d2fong/cytoscape.js-fisheye.git#master",
     "cytoscape-klay": "^3.0.0",
+    "cytoscape-popper": "^1.0.1",
     "cytoscape-sbgn-stylesheet": "^3.0.0",
     "cytosnap": "^2.0.1",
     "express": "^4.16.2",
@@ -60,12 +62,13 @@
     "jsonpath": "^0.2.12",
     "klayjs": "^0.4.1",
     "lodash": "^4.17.4",
+    "lru-cache": "^4.1.3",
     "match-sorter": "^2.2.0",
     "morgan": "^1.9.0",
     "multispinner": "^0.2.1",
     "node-fetch": "^1.7.3",
+    "node-object-hash": "^1.4.1",
     "object-hash": "^1.2.0",
-    "pathway-commons": "^1.5.4",
     "query-string": "^5.0.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
@@ -75,12 +78,13 @@
     "react-router-dom": "^4.2.2",
     "react-table": "^6.7.4",
     "react-tabs": "^2.1.1",
+    "react-textarea-autosize": "^6.1.0",
     "rethinkdb": "^2.3.3",
-    "sbgnml-to-cytoscape": "^4.0.1",
+    "sbgnml-to-cytoscape": "^4.0.4",
     "serve-favicon": "^2.4.5",
     "socket.io": "^2.0.3",
     "tableify": "^1.1.0",
-    "tippy.js": "^1.4.1",
+    "tippy.js": "^2.0.8",
     "unique-concat": "^0.2.2",
     "uuid": "^3.1.0",
     "whatwg-fetch": "^2.0.3",
@@ -98,7 +102,6 @@
     "chai": "^4.1.2",
     "cross-env": "^5.0.5",
     "cssnano": "^3.10.0",
-    "cytoscape-popper": "git+https://github.com/cytoscape/cytoscape.js-popper.git",
     "echo-cli": "^1.0.8",
     "eslint": "^4.8.0",
     "eslint-config-standard": "^10.2.1",
@@ -121,6 +124,8 @@
     "rimraf": "^2.6.2",
     "stylelint": "^8.2.0",
     "stylelint-config-standard": "^17.0.0",
+    "swagger-jsdoc": "^1.9.7",
+    "swagger-ui-express": "^3.0.8",
     "uglifyjs-webpack-plugin": "^0.4.6",
     "webpack": "^3.6.0",
     "webpack-bundle-analyzer": "^2.9.0"
@@ -159,6 +164,18 @@
     {
       "name": "wanxin Li",
       "email": "wanxin.li@edu.uwaterloo.ca"
+    },
+    {
+      "name": "Caitlin O'Callaghan",
+      "email": "ccocalla@uwaterloo.ca"
+    },
+    {
+      "name": "Michael Wrana",
+      "email": "wranamichael@gmail.com"
+    },
+    {
+      "name": "Rex Wen",
+      "email": "q4wen@uwaterloo.ca"
     }
   ],
   "license": "MIT"

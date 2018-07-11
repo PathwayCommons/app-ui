@@ -1,3 +1,6 @@
+//This function produces better results for most layouts that do not have compound support
+//unused currently.
+/*
 const pcGraphLayoutHack = (cy, layoutOpts) => {
   const complexes = cy.nodes().filter(node => node.isParent() && node.data('class') === 'complex');
   complexes.forEach(node => {
@@ -38,6 +41,7 @@ const pcGraphLayoutHack = (cy, layoutOpts) => {
   });
   layout.run();
 };
+*/
 
 
 const defaultLayout = {
@@ -51,8 +55,22 @@ const defaultLayout = {
     animate: true,
     animationDuration: 500,
     fit: true,
-    padding: 100,
+    padding: 75,
     randomize: false
+  }
+};
+
+const interactionsLayout = {
+  displayName: 'Concentric',
+  description: 'Align the nodes in concentric circles',
+  options: {
+    name: 'concentric',
+    nodeDimensionsIncludeLabels: false,
+    animate: true,
+    animationDuration: 500,
+    fit: true,
+    padding: 0,
+    levelWidth:(nodes)=>nodes.maxDegree()/1000,
   }
 };
 
@@ -77,7 +95,14 @@ const getLayoutConfig = (presetLayoutJSON) => {
       defaultLayout: defaultLayout,
       layouts: [defaultLayout]
     };
-  } else {
+  }
+  else if(presetLayoutJSON === 'interactions'){
+    layoutConfig = {
+      defaultLayout: interactionsLayout,
+      layouts: [interactionsLayout]
+    };
+  }
+  else {
     layoutConfig = {
       defaultLayout: humanCreatedLayout,
       layouts: [humanCreatedLayout, defaultLayout]

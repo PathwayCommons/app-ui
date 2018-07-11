@@ -109,7 +109,7 @@ function parse(subTree) {
   let subTreeCopy = subTree.slice()[0][1];
 
   //Get Entity Reference
-  let entityRef = treeTraversal.searchForExactNodeWithObjectResult(subTreeCopy, 'EntityReference')
+  let entityRef = treeTraversal.searchForExactNodeWithObjectResult(subTreeCopy, 'EntityReference');
   if (entityRef) {
     //Remove un parsed copy
     subTreeCopy.splice(entityRef.index, 1);
@@ -118,7 +118,7 @@ function parse(subTree) {
     entityRef = parseEntityReference(entityRef.data);
   }
 
-  let check= treeTraversal.searchForExactNode(subTreeCopy, 'Names');
+  //let check= treeTraversal.searchForExactNode(subTreeCopy, 'Names');
 
   //Get all references
   for (let i = 0; i < subTreeCopy.length; i++) {

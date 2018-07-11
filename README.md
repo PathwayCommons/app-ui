@@ -1,4 +1,4 @@
-# app-ui
+# Pathway Commons App(s)
 
 
 ## Required software
@@ -19,7 +19,7 @@ npm install
 
 For development:
 ```
-npm run watch
+npm run watch 
 ```
 
 For a production build:
@@ -33,14 +33,28 @@ npm run start
 The following environment variables can be used to configure the server:
 
 - `NODE_ENV` : the environment mode, either `production` or `development` (default)
+- `PC_URL` : actual Pathway Commons web service endpoint URL (default: 'http://www.pathwaycommons.org/pc2/')
 - `PORT` : the port on which the server runs (default 3000)
 
 ### Configure RethinkDB
  1. Download [RethinkDB](https://www.rethinkdb.com/docs/install/)
  2. Start your RethinkDB server by following the steps [here](https://www.rethinkdb.com/docs/start-a-server/)
  3. Go to `src/server/database/config.js`  and modify the ip field to match your server address
- 4. Start the project : `npm run start` or `npm run watch`, then the server will auto create all the required tables for you.
+ 4. Start the project : `npm run start` or `npm run watch`, then the server will auto create all the required tables for you. 
 
+### Switching Pathway Commons Versions (release/other)
+
+If Pathway Commons data and files have been updated since this app's last built and run,
+or you simply want to connect to a different PC2 instance (and set PC_URL environment variable), 
+then the file `src/server/graph-generation/generic-physical-entities/generic-physical-entity-map.json` 
+needs to be updated. Also, purge the RethinkDb db tables or simply switch the database.
+
+The following script downloads and processes physical_entities.json.gz file from Pathway Commons:
+```sh
+cd src/scripts/generic-entity-mapping/
+PC_VERSION=v10 sh update.sh
+```
+(PC_VERSION should be set to the name of a sub-directory in `www.pathwaycommons.org/archives/PC2/`) 
 
 ## Run targets
 
@@ -86,7 +100,7 @@ Notes:
 
 ### Run image hosted on Docker Hub using Docker Compose
 
-Pathway Commons maintains a [Docker Hub](https://hub.docker.com/) image for [app-ui](https://hub.docker.com/r/pathwaycommons/app-ui/) that is automatically built each time a commit is pushed to GitHub.
+Pathway Commons maintains a [Docker Hub](https://hub.docker.com/) image for [app-ui](https://hub.docker.com/r/pathwaycommons/app-ui/) that is automatically built each time a commit is pushed to GitHub. 
 
 To run the GitHub development branch:
 
@@ -94,7 +108,7 @@ To run the GitHub development branch:
 docker-compose --file docker-compose.yml up --detach
 ```
 
-Access the app instance at port `9090`.The default configuration declared in `docker-compose.yml` also runs a [rethinkdb](https://hub.docker.com/_/rethinkdb/) image; access the UI at port `8020`.
+Access the app instance at port `9090`.The default configuration declared in `docker-compose.yml` also runs a [rethinkdb](https://hub.docker.com/_/rethinkdb/) image; access the UI at port `8020`. 
 
 Notes:
 - References:
@@ -145,7 +159,7 @@ Students who work on the repo should follow these instructions for each feature 
         1. Using the console: `git checkout name-of-feature`, `git merge development`
         1. Using GitUp:
             1. Make sure your `HEAD` is the newest commit of your feature branch: Right-click the latest commit on `name-of-feature` branch and select `Checkout "name-of-feature" Branch`
-            1. Right-click the latest commit of the `development` branch and select `Merge into Current Branch`
+            1. Right-click the latest commit of the `development` branch and select `Merge into Current Branch` 
 1. Push your commits to GitHub:
     1. Note: You can push as often as you'd like so that your code is backed up on GitHub.  You *must* push everything before you make a pull request.
     1. Using the console: `git push`
@@ -166,3 +180,4 @@ Students who work on the repo should follow these instructions for each feature 
   1. For a breaking API change, run `npm version major.`
   1. For a specific version number (e.g. 1.2.3), run `npm version 1.2.3`.
 1. Push the release: `git push origin --tags`
+

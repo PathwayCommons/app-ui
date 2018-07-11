@@ -22,8 +22,6 @@ const bindHover = (cy) => {
    */
   cy.on('mouseover', 'node[class!="compartment"]',_.debounce(evt => {
 
-    console.log("node mouseover");
-
     const node = evt.target;
 
     //If node has children and is expanded, do not highlight
@@ -48,9 +46,6 @@ const bindHover = (cy) => {
    * @description Remove any style modifications made from a non-compartment node hover on `mouseout`
    */
   cy.on('mouseout', 'node[class!="compartment"]', evt => {
-
-    console.log("node mouseout");
-
     const node = evt.target;
     const neighborhood = node.neighborhood();
 

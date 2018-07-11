@@ -13,7 +13,7 @@ const notHoverStyle = {
 };
 
 /**
- * @description Recursively applies a style to a node & all its children
+ * @description Applies a style to a node & all its children
  * @param {*} cy Cytoscape network object
  * @param {*} node Node which style is to be applied
  */
@@ -29,7 +29,7 @@ const applyStyleToChildren = (cy,node) => {
 };
 
 /**
- * @description Recursively removes a style from a node & all its children
+ * @description Removes a style from a node & all its children
  * @param {*} cy Cytoscape network object
  * @param {*} node Node which style is to be applied
  */
@@ -44,6 +44,11 @@ const removeStyleFromChildren = (cy,node) => {
   });
 };
 
+/**
+ * @description Applies a style to all the parents of a node
+ * @param {*} cy Cytoscape Network Object
+ * @param {*} node Node which style is to be applied
+ */
 const applyStyleToParents = (cy,node) => {
   let parent = node.parent();
   if(parent.length === 0)
@@ -52,6 +57,11 @@ const applyStyleToParents = (cy,node) => {
   applyStyleToParents(cy,parent);
 };
 
+/**
+ * @description Removes a style from all the parents of a node
+ * @param {*} cy Cytoscape Network Object
+ * @param {*} node Node which style is to be applied
+ */
 const removeStyleFromParents = (cy,node) => {
   let parent = node.parent();
   if(parent.length === 0)

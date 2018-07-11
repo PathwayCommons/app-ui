@@ -2,8 +2,6 @@ const h = require('react-hyperscript');
 const hh = require('hyperscript');
 const ReactDom = require('react-dom');
 const React = require('react');
-const { Link } = require('react-router');
-const queryString = require('query-string');
 const tippy = require('tippy.js');
 
 const {databases} = require('../../config');
@@ -139,19 +137,14 @@ class EntityMetaDataView extends React.Component {
 
   render(){
     let { metadata } = this.props;
-    let name = metadata.displayName();
 
     if ( metadata.isEmpty() ) {
       return h('div.metadata-tooltip', [
         h('div.tooltip-heading', [
-          h(Link, {
-            className: 'tooltip-heading-link',
+          h('a.tooltip-heading-link', {
             target: '_blank',
-            to: {
-              pathname: '/search',
-              search: queryString.stringify({q: name})
-            }
-          }, name),
+            href: '/search?q=' + metadata.searchLink(),
+          }, metadata.label() || metadata.displayName()),
         ]),
         h('div.tooltip-internal', h('div.metadata-tooltip-warning', 'No Additional Information'))
       ]);
@@ -170,12 +163,10 @@ class EntityMetaDataView extends React.Component {
     return h('div.metadata-tooltip', [
       h('div.metadata-tooltip-content', [
         h('div.metadata-tooltip-heading', [
-          h(Link, {
-              className: 'plain-link',
-              href: '/search?q=' + metadata.searchLink(),
-              target: '_blank'
-            }, metadata.label() || metadata.displayName()
-          )
+          h('a.plain-link', {
+            target: '_blank',
+            href: '/search/?q=' + metadata.searchLink(),
+          }, metadata.label() || metadata.displayName())
         ]),
         h('div.metadata-tooltip-type', metadata.type()),
         h('div.metadata-tooltip-section', [

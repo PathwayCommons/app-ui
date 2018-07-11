@@ -1,9 +1,10 @@
-const h = require('hyperscript');
+const h = require('react-hyperscript');
+const hh = require('hyperscript');
+const ReactDom = require('react-dom');
+const React = require('react');
 const tippy = require('tippy.js');
 
 const {databases} = require('../../config');
-
-const formatContent = require('./format-content');
 const getPublications = require('./publications');
 
 // Node metadata should contain the following fields:
@@ -125,59 +126,64 @@ class EntityMetadata {
 }
 
 
-// Function that creates a html view of a metadata class object
-// Please keep this function pure (no side effects)
-let createMetadataTooltipContent = metadata => {
-  let name = metadata.displayName();
-
-  if ( metadata.isEmpty() ) {
-    return h('div.tooltip-image', [
-      h('div.tooltip-heading', [
-        h('a.tooltip-heading-link',{ href:"/search?&q=" + name, target:"_blank"}, name),
-        ]),
-      h('div.tooltip-internal', h('div.tooltip-warning', 'No Additional Information'))
-    ]);
+class EntityMetaDataView extends React.Component {
+  constructor(props){
+    super(props);
   }
 
-  let publications = metadata.publications().map(publication => {
-    let { id, title, firstAuthor, date, source } = publication;
-    return h('div', [
-      h('a.plain-link', { href: 'http://identifiers.org/pubmed/' + id }, title),
-      h('div', firstAuthor +  'et al.'),
-      h('div', source),
-      h('div', date.split('/')[0])
-    ]);
-  });
+  render(){
+    let { metadata } = this.props;
+    let name = metadata.displayName();
 
-  return h('div.tooltip-image', [
-    h('div.tooltip-heading', name),
-    h('div.tooltip-internal', [
-      h('div.tooltip-type', metadata.type()),
-    ]),
-    h('div.fake-paragraph', [
-      h('div.field-name', 'Name: '),
-      h('div.tooltip-value', metadata.standardName())
-    ]),
-    h('div.fake-paragraph', [
-      h('div.field-name', 'Display Name: '),
-      h('div.tooltip-value', metadata.displayName())
-    ]),
-    h('div.fake-paragraph', [
-      h('div.field-name', 'Synonyms: '),
-      h('div.tooltip-value', metadata.synonyms().slice(0, 3))
-    ]),
-    h('div.fake-paragraph', [
-      h('div.field-name', 'Links: '),
-      h('div.tooltip-value', metadata.databaseLinks().map(link => {
-        return h('a.plain-link', { href: link.url}, link.name);
-      }))
-    ]),
-    h('div.fake-paragraph', publications),
-    h('div.fake-paragraph', [
-      h('a.plain-link', { href: '/search?q=' + metadata.searchLink(), target: '_blank'}, 'Find Pathways')
-    ])
-  ]);
-};
+    if ( metadata.isEmpty() ) {
+      return h('div.tooltip', [
+        h('div.tooltip-heading', [
+          h('a.tooltip-heading-link',{ href:"/search?&q=" + name, target:"_blank"}, name),
+          ]),
+        h('div.tooltip-internal', h('div.tooltip-warning', 'No Additional Information'))
+      ]);
+    }
+
+    let publications = metadata.publications().map(publication => {
+      let { id, title, firstAuthor, date, source } = publication;
+      return h('div', [
+        h('a.plain-link', { href: 'http://identifiers.org/pubmed/' + id }, title),
+        h('div', firstAuthor +  'et al.'),
+        h('div', source),
+        h('div', date.split('/')[0])
+      ]);
+    });
+
+    return h('div.metadata-tooltip', [
+      h('div.tooltip-heading', name),
+      h('div.tooltip-internal', [
+        h('div.tooltip-type', metadata.type()),
+      ]),
+      h('div.fake-paragraph', [
+        h('div.field-name', 'Name: '),
+        h('div.tooltip-value', metadata.standardName())
+      ]),
+      h('div.fake-paragraph', [
+        h('div.field-name', 'Display Name: '),
+        h('div.tooltip-value', metadata.displayName())
+      ]),
+      h('div.fake-paragraph', [
+        h('div.field-name', 'Synonyms: '),
+        h('div.tooltip-value', metadata.synonyms().slice(0, 3))
+      ]),
+      h('div.fake-paragraph', [
+        h('div.field-name', 'Links: '),
+        h('div.tooltip-value', metadata.databaseLinks().map(link => {
+          return h('a.plain-link', { href: link.url}, link.name);
+        }))
+      ]),
+      h('div.fake-paragraph', publications),
+      h('div.fake-paragraph', [
+        h('a.plain-link', { href: '/search?q=' + metadata.searchLink(), target: '_blank'}, 'Find Pathways')
+      ])
+    ]);
+  }
+}
 
 // This metadata tip is only for entities i.e. nodes
 // TODO make an edge metadata tip for edges (for the interactions app)
@@ -190,14 +196,18 @@ class EntityMetadataTooltip {
   }
 
   show() {
+    let getContentDiv = component => {
+      let div = hh('div');
+      ReactDom.render( component, div );
+      return div;
+    };
+
     if( this.tooltip == null ){
       // publication data needs to be fetched from pubmed before we can display the tooltip
       this.metadata.getPublicationData().then( () => {
-        let tooltipHTML = createMetadataTooltipContent( this.metadata );
         let refObject = this.node.popperRef();
-
         let tooltip = tippy(refObject, {
-          html: tooltipHTML,
+          html: getContentDiv( h(EntityMetaDataView, { metadata: this.metadata, } )),
           theme: 'light',
           interactive: true,
           trigger: 'manual',

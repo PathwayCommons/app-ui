@@ -1,5 +1,5 @@
 const { pathwayInfoTable } = require('./pathway-table');
-const { generateEdgeInfo } = require('./generate-info');
+const { generateEdgeInfo, fetchPathwayInfo } = require('./generate-info');
 const _ = require('lodash');
 
 
@@ -43,11 +43,15 @@ const generateGraphInfo = (pathways, similarityCutoff = 0.375, jaccardOverlapWei
   const elements = {};
   elements.nodes = [];
   elements.edges = [];
+
+  const pathywayInfo = fetchPathwayInfo(pathwayIdList);
   for (let pathwayId in pathways) {
     if (!pathways.hasOwnProperty(pathwayId)) continue;
-    elements.nodes.push({ data: _.assign({ id: pathwayId }, pathways[pathwayId]) });
+    const geneCount = _.find(pathywayInfo, {pathwayId: pathwayId}).genes.length;
+    elements.nodes.push({ data: _.assign({ id: pathwayId }, pathways[pathwayId], {'gene-count': geneCount }) });
   }
-  const edgeInfo = generateEdgeInfo(pathwayIdList, jaccardOverlapWeight, similarityCutoff);
+
+  const edgeInfo = generateEdgeInfo(pathywayInfo, jaccardOverlapWeight, similarityCutoff);
   _.forEach(edgeInfo, edge => {
     const sourceIndex = 0;
     const targetIndex = 1;

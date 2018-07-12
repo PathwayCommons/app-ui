@@ -16,13 +16,13 @@ const fetchPathwayInfo = (pathwayList) => {
 };
 
 
-// generateEdgeInfo(pathwayIdList, jaccardOverlapWeight, similarityCutoff) takes a list of pathway IDs,
+// generateEdgeInfo(pathwayInfo, jaccardOverlapWeight, similarityCutoff) takes a list of pathway IDs,
 // a weight for jaccardOverlapWeight, and a number for similarityCutoff point
 // and returns the edge information for pathwayIdList where the similarity rate
 // is calcaulated by jaccardOverlapWeight and filtered by similarityCutoff
-const generateEdgeInfo = (pathwayIdList, jaccardOverlapWeight, similarityCutoff = 0.375) => {
-  return filterEdges(pathwayListGraph(fetchPathwayInfo(pathwayIdList), jaccardOverlapWeight), similarityCutoff);
+const generateEdgeInfo = (pathwayInfo, jaccardOverlapWeight, similarityCutoff = 0.375) => {
+  return filterEdges(pathwayListGraph(pathwayInfo, jaccardOverlapWeight), similarityCutoff);
 };
 
 
-module.exports = { generateEdgeInfo };
+module.exports = { generateEdgeInfo, fetchPathwayInfo };

@@ -6,7 +6,7 @@ const Loader = require('react-loader');
 
 const hideTooltips = require('../../common/cy/events/click').hideTooltips;
 const removeStyle= require('../../common/cy/manage-style').removeStyle;
-const make_cytoscape = require('../../common/cy/');
+const CytoscapeService = require('../../common/cy/');
 const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
 const { ServerAPI } = require('../../services/');
 const FilterMenu= require('./filter-menu');
@@ -40,7 +40,7 @@ class Interactions extends React.Component {
     const sources = _.uniq(_.concat([],query.source)); //IDs or URIs
 
     this.state = {
-      cy: make_cytoscape({ headless: true, stylesheet: interactionsStylesheet, showTooltipsOnEdges:true, minZoom:0.01 }),
+      cySrv: new CytoscapeService({ style: interactionsStylesheet, showTooltipsOnEdges:true, minZoom:0.01 }),
       componentConfig: {},
       layoutConfig: {},
       networkJSON: {},
@@ -71,9 +71,8 @@ class Interactions extends React.Component {
         });
     });
 
-    this.state.cy.one('layoutstop',()=>{
+    this.state.cySrv.loadPromise().then(cy => {
       const state = this.state;
-      const cy = this.state.cy;
       const categories = state.categories;
       const filters=state.filters;
       _.forEach(filters,(value,type)=>{
@@ -99,12 +98,12 @@ class Interactions extends React.Component {
   }
 
   filterUpdate(type) {
-    const state=this.state;
+    const state = this.state;
     const categories = state.categories;
-    const filters=state.filters;
-    const cy= state.cy;
-    const edges=categories.get(type).edges;
-    const nodes=categories.get(type).nodes;
+    const filters = state.filters;
+    const cy = state.cySrv.get();
+    const edges = categories.get(type).edges;
+    const nodes = categories.get(type).nodes;
 
     hideTooltips(cy);
     const hovered = cy.filter(ele=>ele.scratch('_hover-style-before'));
@@ -131,7 +130,7 @@ class Interactions extends React.Component {
     const baseView = !_.isEmpty(state.networkJSON) ? h(BaseNetworkView.component, {
       layoutConfig: state.layoutConfig,
       componentConfig: state.componentConfig,
-      cy: state.cy,
+      cySrv: state.cySrv,
       networkJSON: state.networkJSON,
       networkMetadata: state.networkMetadata,
       //interaction specific
@@ -140,7 +139,7 @@ class Interactions extends React.Component {
       filters: state.filters,
       download: {
         types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'),
-        promise: () => Promise.resolve(_.map(state.cy.edges(),edge=> edge.data().id).sort().join('\n'))
+        promise: () => Promise.resolve(_.map(state.cySrv.get().edges(),edge=> edge.data().id).sort().join('\n'))
       },
     }):
     h('div.no-network',[h('strong.title','No interactions to display'),h('span','Try a diffrent set of entities')]);

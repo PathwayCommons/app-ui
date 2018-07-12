@@ -27,7 +27,7 @@ class BaseNetworkView extends React.Component {
     super(props);
 
     if( process.env.NODE_ENV !== 'production' ){
-      window.cy = props.cy;
+      props.cySrv.getPromise().then(cy => window.cy = cy);
     }
 
     this.state = _.merge({},
@@ -75,7 +75,7 @@ class BaseNetworkView extends React.Component {
   }
 
   componentWillUnmount() {
-    this.state.cy.destroy();
+    this.state.cySrv.destroy();
   }
 
   componentDidMount() {
@@ -85,9 +85,11 @@ class BaseNetworkView extends React.Component {
     });
     const container = this.graphDOM;
 
-    const cy = state.cy;
+    const cySrv = state.cySrv;
 
-    cy.mount(container);
+    cySrv.mount(container);
+
+    const cy = cySrv.get();
 
     cy.remove('*');
 
@@ -96,7 +98,7 @@ class BaseNetworkView extends React.Component {
     const layout = cy.layout(initialLayoutOpts);
 
     layout.on('layoutstop', () => {
-      cy.emit('network-loaded');
+      cySrv.load(); // indicate loaded
       this.setState({networkLoading: false});
     });
 
@@ -105,7 +107,7 @@ class BaseNetworkView extends React.Component {
 
 
   changeMenu(menu) {
-    let resizeCyImmediate = () => this.state.cy.resize();
+    let resizeCyImmediate = () => this.state.cySrv.get().resize();
     let resizeCyDebounced = _.debounce( resizeCyImmediate, 500 );
 
     if (menu === this.state.activeMenu || menu === 'closeMenu') {
@@ -122,7 +124,7 @@ class BaseNetworkView extends React.Component {
   }
 
   searchCyNodes(queryString) {
-    debouncedSearchNodes(this.state.cy, queryString);
+    debouncedSearchNodes(this.state.cySrv.get(), queryString);
   }
 
   clearSearchBox() {
@@ -133,7 +135,10 @@ class BaseNetworkView extends React.Component {
 
 
   render() {
-    const state = this.state;
+    const state = Object.assign({}, this.state, {
+      cy: this.state.cySrv.get()
+    });
+
     const componentConfig = state.componentConfig;
 
     const toolbarButtons = componentConfig.toolbarButtons;
@@ -152,7 +157,8 @@ class BaseNetworkView extends React.Component {
             onClick: () => {
               this.changeMenu(btn.menuId);
             },
-            desc: btn.description
+            desc: btn.description,
+            cy: state.cySrv.get()
           })
         ])
       );
@@ -167,7 +173,7 @@ class BaseNetworkView extends React.Component {
             btn.func(state);
           },
           desc: btn.description,
-          cy: state.cy
+          cy: state.cySrv.get()
         })
       );
     });

@@ -71,7 +71,6 @@ const _querySearch = async (args) => {
   const queryString = args.q.trim();
   const queries = await _processQueryString(queryString);
   for (let q of queries) {
-    // console.log(q);//TODO remove
     args.cmd = 'search'; //PC command
     args.q = q; //override initial query.q string with the sub-query q
     const searchResult = await query(args); //up to 100 hits at once; if we need more, then must use 'page' parameter...
@@ -108,7 +107,6 @@ const _datasources = () => {
         hasPathways: (ds.numPathways>0)?true:false
       };
     });
-    // console.log(output);
     return output; //filtered, simplified map
   })
   .catch(() => {

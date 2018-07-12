@@ -6,7 +6,7 @@ const Loader = require('react-loader');
 
 const { BaseNetworkView } = require('../../common/components');
 const { getLayoutConfig } = require('../../common/cy/layout');
-const make_cytoscape = require('../../common/cy');
+const CytoscapeService = require('../../common/cy');
 
 const { ServerAPI } = require('../../services');
 
@@ -68,7 +68,6 @@ class Paint extends React.Component {
     super(props);
 
     this.state = {
-      cy: {},
       componentConfig: {},
       layoutConfig: {},
       networkJSON: {},
@@ -106,7 +105,7 @@ class Paint extends React.Component {
       const componentConfig = PaintViewConfig;
 
       this.state = {
-        cy: make_cytoscape({headless: true}),
+        cySrv: new CytoscapeService(),
         componentConfig: componentConfig,
         layoutConfig: layoutConfig,
         networkJSON: network.graph,
@@ -135,7 +134,8 @@ class Paint extends React.Component {
 
       const selectedFn = this.state.selectedFunction.func;
       const selectedClass = this.state.selectedClass;
-      this.state.cy.on('network-loaded', () => applyExpressionData(this.state.cy, demoExpressionTable, selectedClass, selectedFn));
+
+      this.state.cySrv.loadPromise().then(cy => applyExpressionData(cy, demoExpressionTable, selectedClass, selectedFn));
     } else {
       fetch(enrichmentsURI)
       .then(res => res.json())
@@ -161,7 +161,7 @@ class Paint extends React.Component {
           const componentConfig = PaintViewConfig;
 
           this.setState({
-            cy: make_cytoscape({headless: true}),
+            cySrv: new CytoscapeService(),
             componentConfig: componentConfig,
             layoutConfig: layoutConfig,
             networkJSON: network.graph,
@@ -185,7 +185,7 @@ class Paint extends React.Component {
             }, () => {
               const selectedFn = this.state.selectedFunction.func;
               const selectedClass = this.state.selectedClass;
-              this.state.cy.on('network-loaded', () => applyExpressionData(this.state.cy, expressionTable, selectedClass, selectedFn));
+              applyExpressionData(this.state.cy, expressionTable, selectedClass, selectedFn);
           });
         });
       });
@@ -199,7 +199,7 @@ class Paint extends React.Component {
       // generic base view props
       layoutConfig: state.layoutConfig,
       componentConfig: state.componentConfig,
-      cy: state.cy,
+      cySrv: state.cySrv,
       networkJSON: state.networkJSON,
       networkMetadata: state.networkMetadata,
 

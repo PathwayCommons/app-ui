@@ -4,7 +4,7 @@ const _ = require('lodash');
 const queryString = require('query-string');
 const Loader = require('react-loader');
 
-const make_cytoscape = require('../../common/cy/');
+const CytoscapeService = require('../../common/cy/');
 
 const { ServerAPI } = require('../../services/');
 
@@ -16,7 +16,7 @@ class View extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cy: make_cytoscape({ headless: true }),
+      cySrv: new CytoscapeService(),
       componentConfig: {},
       layoutConfig: {},
       networkJSON: {},
@@ -61,11 +61,11 @@ class View extends React.Component {
     const baseView = h(BaseNetworkView.component, {
       layoutConfig: state.layoutConfig,
       componentConfig: state.componentConfig,
-      cy: state.cy,
+      cySrv: state.cySrv,
       networkJSON: state.networkJSON,
       networkMetadata: state.networkMetadata
     });
-    
+
     //If the network is empty, display an error message
     if(Object.keys(state.networkJSON).length !== 0 && state.networkJSON.edges.length < 1 && state.networkJSON.nodes.length < 1){
       return h("div.emptyNetwork",{style:{textAlign:"center"}},[
@@ -76,7 +76,7 @@ class View extends React.Component {
     }
 
     const loadingView = h(Loader, { loaded: !state.loading, options: { left: '50%', color: '#16A085' }});
-    
+
     // create a view shell loading view e.g looks like the view but its not
     const content = state.loading ? loadingView : baseView;
 

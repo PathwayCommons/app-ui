@@ -1,5 +1,5 @@
 const formatContent = require('./format-content');
-
+const _ = require('lodash');
 /**
  * fetchPubMedPublication(id)
  * @param id A publication id formatted as a string
@@ -95,7 +95,7 @@ function getPublications(data) {
     const pubMedReferences = sorted.filter(item => item.database.toUpperCase() === 'PUBMED');
     if (!(pubMedReferences) || pubMedReferences.length === 0) { resolve(null); }
 
-    const pubMedIds = pubMedReferences[0].ids;
+    const pubMedIds = _.get(pubMedReferences, '0.ids', []);
 
     //Get publication data in bulk and process publication data
     return fetchPubMedPublication(pubMedIds).then(publications => {

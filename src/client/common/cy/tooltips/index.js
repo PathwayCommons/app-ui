@@ -45,7 +45,7 @@ class EntityMetadata {
 
     this.data.set('Publications', []);
 
-    this.data.set('Search Link', determineSearchLinkQuery( node, this.data.get('DisplayName')));
+    this.data.set('Search Link', determineSearchLinkQuery( node, this.data.get('Display Name')));
 
     this.data.set('Database IDs', new Map(Object.entries(processDbIds(this.databaseIds()))));
   }
@@ -55,7 +55,7 @@ class EntityMetadata {
   type(){
     let type = this.data.get('Type');
     if( type ){
-      return type.substring(3);
+      return type.substring(3).replace(/([A-Z])/g, ' $1').trim();
     }
     return '';
   }
@@ -69,7 +69,15 @@ class EntityMetadata {
     return this.data.get('Display Name') || '';
   }
   synonyms(){
-    return this.data.get('Names') || [];
+    let s = this.data.get('Names');
+    if( typeof s === 'string' ){
+      return [ s ];
+    }
+    if( Array.isArray(s) ){
+      return s;
+    }
+
+    return [];
   }
   databaseIds(){
     return this.data.get('Database IDs') || [];
@@ -98,7 +106,11 @@ class EntityMetadata {
     [...dbEntries].forEach(([k, v]) => {
       let matchedDb = findMatchingDb(k);
       if( matchedDb != null ){
-        formattedUrls.push({ name: matchedDb.database, url: matchedDb.url + v});
+        if( Array.isArray(v) ){
+          v.forEach( entityId => formattedUrls.push({ name: matchedDb.database, url: matchedDb.url + entityId } ));
+        } else {
+          formattedUrls.push({ name: matchedDb.database, url: matchedDb.url + v});
+        }
       }
     });
 
@@ -130,6 +142,8 @@ class EntityMetadata {
 }
 
 
+let DEFAULT_NUM_LINKS = 3;
+let DEFAULT_NUM_NAMES = 3;
 class EntityMetaDataView extends React.Component {
   constructor(props){
     super(props);
@@ -152,39 +166,71 @@ class EntityMetaDataView extends React.Component {
 
     let publications = metadata.publications().map(publication => {
       let { id, title, firstAuthor, date, source } = publication;
-      return h('div', [
-        h('a.plain-link', { href: 'http://identifiers.org/pubmed/' + id }, title),
-        h('div', firstAuthor +  'et al.'),
-        h('div', source),
-        h('div', date.split('/')[0])
+      return h('div.metadata-publication', [
+        h('a', { href: 'http://identifiers.org/pubmed/' + id }, title),
+        h('div', firstAuthor +  ' et al. | ' + source + ' - ' + date.split('/')[0])
       ]);
     });
 
+    let showType = metadata.type() !== '';
+
+    let showStdName = metadata.standardName() !== '';
+    let showDispName = metadata.displayName() !== '' && metadata.displayName() !== metadata.label();
+    let showSynonyms = metadata.synonyms().length > 0;
+    let showPubs = publications.length > 0;
+
+    let showBody = showStdName || showDispName || showSynonyms || showPubs;
+    let showLinks = metadata.databaseLinks().length > 0;
+
     return h('div.metadata-tooltip', [
       h('div.metadata-tooltip-content', [
-        h('div.metadata-tooltip-heading', [
-          h('a.plain-link', {
+        h('div.metadata-tooltip-header', [
+          h('h2',  `${metadata.label() || metadata.displayName() || 'Unknown Entity'}`),
+          showType ? h('div.metadata-tooltip-type-chip', metadata.type()) : null,
+        ]),
+        showBody ? h('div.metadata-tooltip-body', [
+          showStdName ? h('div.metadata-tooltip-section', [
+            h('div.metadata-field-name', 'Name'),
+            h('div.metadata-field-value', metadata.standardName())
+          ]) : null,
+          showDispName ? h('div.metadata-tooltip-section', [
+            h('div.metadata-field-name', 'Display Name'),
+            h('div.metadata-field-value', metadata.displayName())
+          ]) : null,
+          showSynonyms ? h('div.metadata-tooltip-section', [
+            h('div.metadata-field-name', [
+              'Synonyms',
+              // h('i.material-icons', 'expand_more')
+            ]),
+            h('div.metadata-field-value', metadata.synonyms().slice(0, DEFAULT_NUM_NAMES).join(', '))
+          ]) : null,
+          showPubs ? h('div.metadata-tooltip-section', [
+            h('div.metadata-field-name', [
+              'Publications',
+              // h('i.material-icons', 'keyboard_arrow_right')
+            ]),
+            h('div', publications)
+          ]) : null
+        ]): null,
+        h('div.metadata-tooltip-footer', [
+          showLinks ? h('div.metadata-tooltip-section', [
+            h('div.metadata-field-name', [
+              'Links',
+              // h('i.material-icons', 'keyboard_arrow_right')
+            ]),
+            h('div.metadata-links', metadata.databaseLinks().slice(0, DEFAULT_NUM_LINKS).map(link => {
+              return h('a.plain-link', { href: link.url}, link.name);
+            }))
+          ]) : null
+        ]),
+        h('div.metadata-search-call-to-action', [
+          h('a.metadata-find-pathways', {
             target: '_blank',
-            href: '/search/?q=' + metadata.searchLink(),
-          }, metadata.label() || metadata.displayName())
-        ]),
-        h('div.metadata-tooltip-type', metadata.type()),
-        h('div.metadata-tooltip-section', [
-          h('div.metadata-field-name', 'Name:  '),
-          h('div.metadata-field-value', metadata.standardName())
-        ]),
-        h('div.metadata-tooltip-section', [
-          h('div.metadata-field-name', 'Display Name:  '),
-          h('div.metadata-field-value', metadata.displayName())
-        ]),
-        h('div.metadata-tooltip-section', [
-          h('div.metadata-field-name', 'Synonyms:  '),
-          h('div.metadata-field-value', metadata.synonyms().slice(0, 3).join(', '))
-        ]),
-        h('div.metadata-tooltip-section', publications),
-        h('div.metadata-tooltip-section.metadata-links', metadata.databaseLinks().map(link => {
-          return h('a.plain-link', { href: link.url}, link.name);
-        }))
+            href: '/search?q=' + metadata.searchLink()
+            },
+            `FIND RELATED PATHWAYS`
+          )
+        ])
       ])
     ]);
   }

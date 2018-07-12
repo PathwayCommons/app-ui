@@ -97,7 +97,7 @@ class Expression {
     const nonSelectedClasses = _.omit(this.classValues, [selectedClass]);
 
     const nonSelectedClassesValues =_.flattenDeep(Object.entries(nonSelectedClasses)
-      .map(([className, values]) => values));
+      .map(([className, values]) => values));// eslint-disable-line no-unused-vars
 
     const c1Val = selectedFunction(selectedClassValues);
 

@@ -46,7 +46,7 @@ const ServerAPI = {
       body:JSON.stringify(query)
     })
     .then(res => res.json())
-    .catch((err) => console.error('Error:', err));
+    .catch(err => err);
   },
 
   geneQuery(query){
@@ -57,7 +57,7 @@ const ServerAPI = {
     return fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?retmode=json&db=gene&id=${ids.join(',')}`, {method: 'GET'}).then(res => res.json());
   },
 
-  getUniprotnformation(ids){
+  getUniprotInformation(ids){
     return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&accession=${ids.join(',')}`, defaultFetchOpts).then(res => res.json());
   },
 

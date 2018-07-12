@@ -1,6 +1,9 @@
 const _ = require('lodash');
 const pc = require('../../pathway-commons');
 const logger = require('./../../logger');
+const LRUCache = require('lru-cache');
+const cache = require('../../cache');
+const { PC_CACHE_MAX_SIZE } = require('../../../config');
 
 function edgeType(type) {
   switch(type){
@@ -16,7 +19,7 @@ function edgeType(type) {
   }
 }
 
-function getInteractionGraphFromPC(interactionIDs){
+function rawGetInteractionGraphFromPC(interactionIDs){
   const geneIds = _.uniq(_.concat([], interactionIDs)); //convert sources to array
 
   const params = {
@@ -37,6 +40,10 @@ function getInteractionGraphFromPC(interactionIDs){
     return 'ERROR : could not retrieve graph from PC';
   });
 }
+
+const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
+
+const getInteractionGraphFromPC = cache(rawGetInteractionGraphFromPC, pcCache);
 
 /**
  * Parse txt format to Json

@@ -1,7 +1,7 @@
 const qs = require('querystring');
 const fetch = require('node-fetch');
 const _ = require('lodash');
-
+const logger = require('./../logger');
 const config = require('../../config');
 const geneValidator = require('../enrichment/validation').validatorGconvert;
 
@@ -53,7 +53,7 @@ const query = async (queryObj) => {
   return fetch(url, fetchOptions)
     .then(res => (cmd=='get'||cmd=='graph')?res.text():res.json())
     .catch((e) => {
-      console.log('query ' + queryObj + ' failed - ' + e);
+      logger.error('query ' + queryObj + ' failed - ' + e);
       return null;
     });
 };
@@ -71,7 +71,6 @@ const _querySearch = async (args) => {
   const queryString = args.q.trim();
   const queries = await _processQueryString(queryString);
   for (let q of queries) {
-    // console.log(q);//TODO remove
     args.cmd = 'search'; //PC command
     args.q = q; //override initial query.q string with the sub-query q
     const searchResult = await query(args); //up to 100 hits at once; if we need more, then must use 'page' parameter...
@@ -108,7 +107,6 @@ const _datasources = () => {
         hasPathways: (ds.numPathways>0)?true:false
       };
     });
-    // console.log(output);
     return output; //filtered, simplified map
   })
   .catch(() => {

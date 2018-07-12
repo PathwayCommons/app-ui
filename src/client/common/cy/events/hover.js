@@ -69,15 +69,16 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
   const hoverNode =  _.debounce(function (evt) { 
     const node = evt.target;
     const currZoom = cy.zoom();
-  
-    if (node.isParent() && node.isExpanded()) { return; }
+    const ecAPI = cy.expandCollapse('get');
+
+    if (node.isParent() && ecAPI.isCollapsible(node)) { return; }
     if(cy.$(':selected').length > 0) { return; }
 
     const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
-  
+
     node.neighborhood().nodes().union(node).forEach((node) => {
       const { w, h } = scaledDimensions(node, currZoom);
-  
+
       const nodeHoverStyle = _.assign({}, nodeStyle, {
         'font-size': fontSize,
         'text-outline-width': outlineWidth,
@@ -86,7 +87,7 @@ const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHover
       });
       applyStyle(cy, node, nodeHoverStyle, '_hover-style-before');
     });
-  
+
     const edgeHoverStyle = _.assign({}, edgeStyle, {
       'arrow-scale': arrowScale,
       'width': edgeWidth

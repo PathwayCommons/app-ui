@@ -27,7 +27,7 @@ class BaseNetworkView extends React.Component {
     super(props);
 
     if( process.env.NODE_ENV !== 'production' ){
-      window.cy = props.cy;
+      props.cySrv.getPromise().then(cy => window.cy = cy);
     }
 
     this.state = _.merge({},
@@ -49,29 +49,39 @@ class BaseNetworkView extends React.Component {
   }
 
   componentWillUnmount() {
-    this.state.cy.destroy();
+    this.state.cySrv.destroy();
   }
 
   componentDidMount() {
     const state = this.state;
-    const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
+    const initialLayoutOpts = _.assign({}, state.layoutConfig.defaultLayout.options, {
+      animate: false // no animations on init load
+    });
     const container = this.graphDOM;
 
-    const cy = state.cy;
-    cy.mount(container);
+    const cySrv = state.cySrv;
+
+    cySrv.mount(container);
+
+    const cy = cySrv.get();
+
     cy.remove('*');
+
     cy.add(state.networkJSON);
-    cy.emit('trim');
+
     const layout = cy.layout(initialLayoutOpts);
+
     layout.on('layoutstop', () => {
-      cy.emit('network-loaded');
+      cySrv.load(); // indicate loaded
       this.setState({networkLoading: false});
     });
+
     layout.run();
   }
 
+
   changeMenu(menu) {
-    let resizeCyImmediate = () => this.state.cy.resize();
+    let resizeCyImmediate = () => this.state.cySrv.get().resize();
     let resizeCyDebounced = _.debounce( resizeCyImmediate, 500 );
 
     if (menu === this.state.activeMenu || menu === 'closeMenu') {
@@ -88,7 +98,7 @@ class BaseNetworkView extends React.Component {
   }
 
   searchCyNodes(queryString) {
-    debouncedSearchNodes(this.state.cy, queryString);
+    debouncedSearchNodes(this.state.cySrv.get(), queryString);
   }
 
   clearSearchBox() {
@@ -99,7 +109,10 @@ class BaseNetworkView extends React.Component {
 
 
   render() {
-    const state = this.state;
+    const state = Object.assign({}, this.state, {
+      cy: this.state.cySrv.get()
+    });
+
     const componentConfig = state.componentConfig;
 
     const toolbarButtons = componentConfig.toolbarButtons;
@@ -118,7 +131,8 @@ class BaseNetworkView extends React.Component {
             onClick: () => {
               this.changeMenu(btn.menuId);
             },
-            desc: btn.description
+            desc: btn.description,
+            cy: state.cySrv.get()
           })
         ])
       );
@@ -133,7 +147,7 @@ class BaseNetworkView extends React.Component {
             btn.func(state);
           },
           desc: btn.description,
-          cy: state.cy
+          cy: state.cySrv.get()
         })
       );
     });
@@ -180,7 +194,7 @@ class BaseNetworkView extends React.Component {
     // if 'titleContainer' exists from index file, unique title will render in 'div.title-container'
     // default: metadata pathway name and database
     const displayInfo = [
-      (this.props.titleContainer ?  this.props.titleContainer : metadataTitles)
+      (this.props.titleContainer ?  this.props.titleContainer() : metadataTitles)
     ];
 
 
@@ -196,7 +210,7 @@ class BaseNetworkView extends React.Component {
           ]),
           h('div.title-container', displayInfo)
         ]),
-        h('div.view-toolbar', toolBar)
+        h('div.view-toolbar', {style: {display: this.props.closeToolBar == true ? 'none': 'inherit'}}, toolBar)
       ]),
       h(Loader, {
         loaded: !this.state.networkLoading,

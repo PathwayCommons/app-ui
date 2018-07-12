@@ -20,11 +20,6 @@ let conf = {
       { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' }
     ]
   },
-  resolve: {
-    alias: {
-      cytoscape: 'cytoscape/src/cjs'
-    }
-  },
   plugins: [
     isProfile ? new BundleAnalyzerPlugin() : null,
 

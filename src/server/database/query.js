@@ -80,11 +80,11 @@ function getGraph(pcID, releaseID, connection, callback) {
   return db.handleResult(newerGraph, callback);
 }
 
-function getGraphFromPC(pcID, releaseID, connection) {
-  return getPathwayJson(pcID)
+function getGraphFromPC(pcURI, releaseID, connection) {
+  return getPathwayJson(pcURI)
     .then(result => {
       if (connection && result.pathwayMetadata) {
-        update.updateGraph(pcID, releaseID, result, connection);
+        update.updateGraph(pcURI, releaseID, result, connection);
       }
       return result;
     });

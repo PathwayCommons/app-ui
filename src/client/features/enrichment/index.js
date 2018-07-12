@@ -71,7 +71,8 @@ class Enrichment extends React.Component {
   }
 
   handleGenes( genes ) {
-    this.setState( { genes } );console.log(genes);
+    this.setState( { genes } );
+    // console.log(genes);
   }
 
   render() {

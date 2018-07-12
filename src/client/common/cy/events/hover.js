@@ -148,7 +148,7 @@ const bindHover = (cy) => {
     edgeHoverMouseOver.cancel();
 
     //remove hover style modifications from highlighted nodes & edges
-    removeStyle(cy, edge);
+    removeStyle(cy, edge,'_highlighted');
     edge.source().union(edge.target()).forEach((node) => {
       removeStyleFromChildren(cy, node);
       removeStyleFromParents(cy,node);

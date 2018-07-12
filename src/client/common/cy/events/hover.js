@@ -79,9 +79,10 @@ const bindHover = (cy) => {
    */
   const nodeHoverMouseOver = _.debounce(evt => {
     const node = evt.target;
+    const ecAPI = cy.expandCollapse('get');
 
     //If node has children and is expanded, do not highlight
-    if (node.isParent() && node.isExpanded()) { return; }
+    if (node.isParent() && ecAPI.isCollapsible(node)) { return; }
 
     //Apply 'no hover' style to all nodes & edges
     applyStyle(cy,cy.nodes(),notHoverStyle,'_unhighlighted');

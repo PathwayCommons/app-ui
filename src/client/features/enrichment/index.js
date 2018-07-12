@@ -6,7 +6,7 @@ const _ = require('lodash');
 
 // const hideTooltips = require('../../common/cy/events/click').hideTooltips;
 // const removeStyle= require('../../common/cy/manage-style').removeStyle;
-const make_cytoscape = require('../../common/cy/');
+const CytoscapeService = require('../../common/cy/');
 // const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
 const TokenInput = require('./token-input');
 const { BaseNetworkView } = require('../../common/components');
@@ -41,7 +41,7 @@ class Enrichment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cy: make_cytoscape({headless: true}),
+      cySrv: new CytoscapeService(),
       componentConfig: enrichmentConfig,
       layoutConfig: layoutConfig,
       networkJSON: network.graph,
@@ -71,11 +71,12 @@ class Enrichment extends React.Component {
   }
 
   handleGenes( genes ) {
-    this.setState( { genes } );console.log(genes);
+    this.setState( { genes } );
+    // console.log(genes);
   }
 
   render() {
-    let { cy, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading } = this.state;
+    let { cySrv, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading } = this.state;
     let retrieveTokenInput = () => h(TokenInput,{
       inputs: this.state.inputs,
       handleInputs: this.handleInputs,
@@ -85,7 +86,7 @@ class Enrichment extends React.Component {
     });
 
     return h(BaseNetworkView.component, {
-      cy,
+      cySrv,
       componentConfig,
       layoutConfig,
       networkJSON,

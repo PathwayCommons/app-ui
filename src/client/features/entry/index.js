@@ -3,8 +3,6 @@ const h = require('react-hyperscript');
 const queryString = require('query-string');
 const _ = require('lodash');
 
-const Icon = require('../../common/components').Icon;
-
 
 // requires react router props
 class Entry extends React.Component {
@@ -64,7 +62,7 @@ class Entry extends React.Component {
           h('button', {
             onClick: e => this.submitSearchQuery(e)
             },[
-            h(Icon, {icon: 'search'})
+            h('i.material-icons', 'search')
           ])
         ])
       ])

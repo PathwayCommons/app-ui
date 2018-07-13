@@ -4,8 +4,6 @@ const classNames = require('classnames');
 const Loader = require('react-loader');
 const _ = require('lodash');
 
-const IconButton = require('../icon-button');
-
 const debouncedSearchNodes = _.debounce(require('../../cy/match-style'), 300);
 
 
@@ -153,32 +151,27 @@ class BaseNetworkView extends React.Component {
 
     const menuButtons = toolbarButtons.filter(btn => btn.type === 'activateMenu').map(btn => {
       return (
-        h('div.sidebar-tool-button-container', [
-          h(IconButton, {
+          h('div.icon-button', {
             key: btn.id,
-            icon: btn.icon,
-            active: state.activeMenu === btn.menuId,
-            onClick: () => {
-              this.changeMenu(btn.menuId);
-            },
-            desc: btn.description,
-            cy: state.cySrv.get()
-          })
-        ])
+            onClick: () => this.changeMenu(btn.menuId),
+            className: classNames({'icon-button-active': state.activeMenu === btn.menuId })
+          }, [
+            h('i.material-icons', btn.icon)
+          ])
       );
     });
 
     const networkButtons = toolbarButtons.filter(btn => btn.type === 'networkAction').map(btn => {
       return (
-        h(IconButton, {
+        h('div.icon-button', {
           key: btn.id,
-          icon: btn.icon,
           onClick: () => {
             btn.func(state);
           },
-          desc: btn.description,
           cy: state.cySrv.get()
-        })
+        }, [
+          h('i.material-icons', btn.icon)
+        ])
       );
     });
 
@@ -266,12 +259,12 @@ class BaseNetworkView extends React.Component {
           h('div', {
             className: classNames('sidebar-close-button-container', { 'sidebar-close-button-container-open': this.state.open })
           }, [
-              h(IconButton, {
+              h('div.icon-button', {
                 key: 'close',
-                icon: 'close',
                 onClick: () => this.changeMenu('closeMenu'),
-                desc: 'Close the sidebar'
-              })
+              }, [
+                h('i.material-icons', 'close')
+              ])
             ]),
           h('div.sidebar-content', [
             h('div.sidebar-resize'),

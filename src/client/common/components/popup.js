@@ -2,8 +2,6 @@ const React = require('react');
 const h = require('react-hyperscript');
 const classNames = require('classnames');
 
-const IconButton = require('./icon-button');
-
 /* Props
 - active
 - deactivate()
@@ -46,11 +44,9 @@ class Popup extends React.Component {
       }, [
         h('div.common-popup', [
           this.props.children,
-          h(IconButton, {
-            icon: 'close',
-            onClick: () => this.closePopup(),
-            desc: 'Dismiss'
-          })
+          h('div.icon-button', { onClick: () => this.closePopup() }, [
+            h('i.material-icons', 'close')
+          ])
         ])
       ])
     );

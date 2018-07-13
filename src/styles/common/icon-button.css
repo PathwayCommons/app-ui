@@ -1,4 +1,4 @@
-.common-icon-button {
+.icon-button {
   @extend %flex-center;
   @extend %no-select;
 
@@ -6,28 +6,22 @@
   width: calc(var(--icon-size) * 3 / 2.2);
   margin-left: 0.12em;
   margin-right: 0.12em;
-
-  position: relative;
-
-  //border: 1px solid var(--light-base-colour-dark);
-  border-radius: 50%;
+  border-radius: 50% !important;
   transition: all 0.1s linear;
-
-  
-  font-size: var(--icon-size);
   color: var(--dark-base-colour);
-
   cursor: pointer;
 
-  &.common-icon-button-light {
-    color: var(--light-base-colour);
-  }
-
-  &:hover {
+  & :hover {
     background-color: var(--light-base-colour-dark);
   }
 
-  &.common-icon-button-active {
+  & .icon-button-active {
     color: var(--accent-1-colour);
+  }
+
+  & i {
+    font-size: var(--icon-size);
+    border-radius: 50%;
+    padding: 0.12em;
   }
 }

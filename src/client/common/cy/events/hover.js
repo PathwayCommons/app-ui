@@ -1,9 +1,9 @@
 const _ = require('lodash');
 
 /**
- * @description Adds a node and all its children to an array
- * @param {*} cy Cytoscape network object
+ * @description Adds a node and all its children to a `Set`
  * @param {*} node Starting node for list
+ * @param {*} elesList `Set` children should be added to
  */
 const addChildrenToList = (node,elesList) => {
   elesList.add(node);
@@ -17,9 +17,9 @@ const addChildrenToList = (node,elesList) => {
 };
 
 /**
- * @description Applies a style to all the parents of a node
- * @param {*} cy Cytoscape Network Object
+ * @description Adds all the parents of a node to a `Set`
  * @param {*} node Node which style is to be applied
+ * @param {*} elesList `Set` parents should be added to
  */
 const addParentsToList = (node,elesList) => {
   let parent = node.parent();
@@ -33,7 +33,7 @@ const bindHover = (cy) => {
 
   /**
    * @description Apply style modifications after 200ms delay on `mouseover` for non-compartment nodes.
-   * Currently highlights hovered node & its neighbourhood in green.
+   * Currently puts opacity of hovered node & neighbourhood to 1, everything else to 0.3
    */
   const nodeHoverMouseOver = _.debounce(evt => {
     const node = evt.target;
@@ -61,7 +61,7 @@ const bindHover = (cy) => {
 
     /**
    * @description Apply style modifications after 200ms delay on `mouseover` for edges.
-   * Currently highlights hovered edge & its neighbourhood in green.
+   * Currently puts opacity of hovered edge & neighbourhood to 1, everything else to 0.3
    */
   const edgeHoverMouseOver = _.debounce(evt => {
     const edge = evt.target;
@@ -83,14 +83,14 @@ const bindHover = (cy) => {
 
   },200,{leading:false,trailing:true});
 
-  //apply & remove styling on mouseover and mouseout cytoscape js events for nodes
+  //call style-applying and style-removing functions on 'mouseover' and 'mouseout' for non-compartment nodes
   cy.on('mouseover', 'node[class!="compartment"]',nodeHoverMouseOver);
   cy.on('mouseout', 'node[class!="compartment"]', () => {
     nodeHoverMouseOver.cancel();
     cy.elements().removeClass('highlighted unhighlighted');
   });
 
-  //apply & remove styling on mouseover and mouseout cytoscape js events for nodes
+  //call style-applying and style-removing functions on 'mouseover' and 'mouseout' for edges
   cy.on('mouseover', 'edge',edgeHoverMouseOver);
   cy.on('mouseout', 'edge', () => {
     edgeHoverMouseOver.cancel();

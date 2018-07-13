@@ -1,8 +1,8 @@
-.common-flat-button {
+.text-button {
   @extend %flex-center;
 
-  padding: 0.5em 0.5em;
-
+  border: 0;
+  border-radius: 0;
   cursor: pointer;
 
   transition: background-color 0.1s linear;
@@ -13,11 +13,5 @@
 
   & i {
     font-size: 1em;
-    margin-right: 0.5em;
-    
-    &.common-flat-button-right-icon {
-      margin-right: 0;
-      margin-left: 0.5em;
-    }
   }
 }

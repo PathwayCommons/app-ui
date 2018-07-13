@@ -77,7 +77,6 @@ class Enrichment extends React.Component {
         comments: []
       },
 
-      //temporarily set to false so loading spinner is disabled
       loaded: true,
 
       filters: {
@@ -97,8 +96,7 @@ class Enrichment extends React.Component {
   }
 
   handleInputs( inputs ) {
-    this.setState({ inputs });
-    this.setState({ loaded: true });
+    this.setState({ inputs, loaded: true });
   }
 
   handleUnrecognized( unrecognized ) {
@@ -168,7 +166,7 @@ class Enrichment extends React.Component {
 
     const loadingView = h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' }});
 
-     // create a view shell loading view e.g looks like the view but its not
+    //display baseView or loading spinner
     const content = loaded ? baseView : loadingView;
     return h('div.main', [content]);
   }

@@ -1,0 +1,24 @@
+.enrichment-legend {
+  padding: 0px 5px 0px 5px;
+  height: 40px;
+  color: white;
+  /* background: linear-gradient(to right, #0A872C, white 33%, white 66%, #880E7C); */
+  background: linear-gradient(to right, rgb(153,255,102), rgb(0,184,230), rgb(115,0,230) 10%,  rgb(255,0,102) 100%);
+  /* var percentColors = [
+    { pct: 0.0, color: { r: 17, g: 213, b: 183 } },
+    { pct: 0.5, color: { r: 215, g: 122, b: 87 } },
+    { pct: 1.0, color: { r: 151, g: 253, b: 87 } } ]; */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.enrichment-legend > p {
+  margin: 0;
+  padding-top: 10px;
+  text-shadow:
+  -1px -1px 0 #000,
+  1px -1px 0 #000,
+  -1px 1px 0 #000,
+  1px 1px 0 #000;
+}

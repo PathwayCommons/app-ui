@@ -36,7 +36,7 @@ class Enrichment extends React.Component {
     this.state = {
       cySrv: new CytoscapeService( {style: enrichmentStylesheet, showTooltipsOnEdges:true, minZoom:0.01 }),
       componentConfig: enrichmentConfig,
-      layoutConfig: getLayoutConfig(),
+      layoutConfig: getLayoutConfig('enrichment'),
       networkJSON: emptyNetworkJSON,
 
       networkMetadata: {

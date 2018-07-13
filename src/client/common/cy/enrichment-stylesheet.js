@@ -1,5 +1,13 @@
 const cytoscape = require('cytoscape');
 
+function nodeSize(geneCount){
+  console.log(geneCount);
+  //let size = geneCount;
+  let size = (5*Math.sqrt(geneCount -1)+30);
+  //let size = (geneCount/2) + 30;
+  return size;
+}
+
 const iStylesheet=cytoscape.stylesheet()
 .selector('edge')
 .css({
@@ -25,8 +33,8 @@ const iStylesheet=cytoscape.stylesheet()
   'text-outline-width': 2,
   'text-wrap': 'wrap',
   'text-max-width': 175,
-  'width': node => node.data('size') ? node.data('size') : 30,
-  'height': node => node.data('size') ? node.data('size') : 30,
+  'width': node => node.data('geneCount') ? nodeSize(node.data('geneCount')) : 30,
+  'height': node => node.data('geneCount') ? nodeSize(node.data('geneCount')) : 30,
   'label': node => node.data('description'),
   'text-halign': 'center',
   'text-valign': 'center',

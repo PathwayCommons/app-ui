@@ -9,16 +9,28 @@ const Loader = require('react-loader');
 const CytoscapeService = require('../../common/cy/');
 const enrichmentStylesheet= require('../../common/cy/enrichment-stylesheet');
 const TokenInput = require('./token-input');
+const EnrichmentMenu= require('./enrichment-menu');
 const { BaseNetworkView } = require('../../common/components');
 const { getLayoutConfig } = require('../../common/cy/layout');
 const { ServerAPI } = require('../../services/');
 
 const downloadTypes = require('../../common/config').downloadTypes;
+const toolbarButtons = _.differenceBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'}, {'id': 'showInfo'}],'id');
 
+const enrichmentMenuId = 'enrichmentMenu';
 const enrichmentConfig={
   //extablish toolbar and declare features to not include
-  toolbarButtons: _.differenceBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'}, {'id': 'showInfo'}],'id'),
-  menus: BaseNetworkView.config.menus,
+  toolbarButtons: toolbarButtons.concat({
+    icon: '', //TODO: pick icon for p-value
+    id: 'showEnrichmentMenu',
+    type: 'activateMenu',
+    menuId: 'enrichmentMenu',
+    description: 'View p-value data'
+  }),
+  menus: BaseNetworkView.config.menus.concat({
+    id: enrichmentMenuId,
+    func: props => h(EnrichmentMenu, props)
+  }),
   //allow for searching of nodes
   useSearchBar: true
 };
@@ -37,10 +49,14 @@ const testNetwork = {
     {data:{id: 'edge4', source:"node2", target: "node4" }}
   ],
   nodes: [
-    {data: {id: "node1", description: "node1"}},
-    {data: {id: "node2", description: "node2"}},
-    {data: {id: "node3", description: "node3"}},
-    {data: {id: "node4", description: "node4"}}
+    {data: {id: "node1", description: "node1", p_value: ".1"}},
+    {data: {id: "node2", description: "node2", p_value: ".05"}},
+    {data: {id: "node3", description: "node3", p_value: ".05"}},
+    {data: {id: "node4", description: "node4", p_value: ".025"}},
+    {data: {id: "node5", description: "node5", p_value: ".75"}},
+    {data: {id: "node6", description: "node6", p_value: ".9999"}}
+
+
   ]
 };
 
@@ -49,11 +65,11 @@ class Enrichment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cySrv: new CytoscapeService( {style: enrichmentStylesheet, showTooltipsOnEdges:true, minZoom:0.01 }),
+      cySrv: new CytoscapeService( {style: enrichmentStylesheet, showTooltipsOnEdges:true, minZoom:0.01}),
       componentConfig: enrichmentConfig,
       layoutConfig: getLayoutConfig(),
-      networkJSON: emptyNetworkJSON,
-      //networkJSON: testNetwork,
+      //networkJSON: emptyNetworkJSON,
+      networkJSON: testNetwork,
 
       networkMetadata: {
         name: "enrichment",
@@ -64,7 +80,12 @@ class Enrichment extends React.Component {
       //temporarily set to false so loading spinner is disabled
       loaded: true,
 
-      closeToolBar: true,
+      filters: {
+        Binding:true,
+        Phosphorylation:true,
+        Expression:true
+      },
+      closeToolBar: false,
       unrecognized: [],
       inputs: "",
       timedOut: false
@@ -113,7 +134,7 @@ class Enrichment extends React.Component {
   }
 
   render() {
-    let { cySrv, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading, closeToolBar, loaded } = this.state;
+    let { cySrv, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading, closeToolBar, loaded, filters } = this.state;
 
     let retrieveTokenInput = () => h(TokenInput,{
       inputs: this.state.inputs,
@@ -132,6 +153,7 @@ class Enrichment extends React.Component {
       networkMetadata,
       networkLoading,
       closeToolBar,
+      filters,
       titleContainer: () => h(retrieveTokenInput),
       download: {
         types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'),

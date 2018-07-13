@@ -1,6 +1,39 @@
 const cytoscape = require('cytoscape');
 
-const iStylesheet=cytoscape.stylesheet()
+var p_valueColorScale = [
+  { p_value: 0.0, color: { r: 153, g: 255, b: 102 } },
+  { p_value: 0.05, color: { r: 0, g: 184, b: 230 } },
+  { p_value: .1, color: { r: 115, g: 0, b: 230 } },
+  { p_value: 1, color: { r: 255, g: 0, b: 102 } },
+ ];
+
+var getColorForP_Value = function(p_value) {
+  if(p_value > 1) return '#555'; //should never happen
+
+  //iterate through to find upperColor and lowerColor color bound
+  for (var i = 1; i < p_valueColorScale.length - 1; i++) {
+      if (p_value < p_valueColorScale[i].p_value) {
+          break;
+      }
+  }
+  var lowerColor = p_valueColorScale[i - 1];
+  var upperColor = p_valueColorScale[i];
+  var colorRange = upperColor.p_value - lowerColor.p_value;
+
+  //create a linear scale with upper and lower colors
+  var rangePct = (p_value - lowerColor.p_value) / colorRange;
+  var pctLower = 1 - rangePct;
+  var pctUpper = rangePct;
+  var color = {
+      r: Math.floor(lowerColor.color.r * pctLower + upperColor.color.r * pctUpper),
+      g: Math.floor(lowerColor.color.g * pctLower + upperColor.color.g * pctUpper),
+      b: Math.floor(lowerColor.color.b * pctLower + upperColor.color.b * pctUpper)
+  };
+  return 'rgb(' + [color.r, color.g, color.b].join(',') + ')';
+};
+
+
+const enrichmentStylesheet=cytoscape.stylesheet()
 .selector('edge')
 .css({
   'opacity': 0.3,
@@ -19,7 +52,7 @@ const iStylesheet=cytoscape.stylesheet()
 .css({
   'font-size': 20,
   'color': 'black',
-  'background-color': 'green', //TODO: Colored accoriding to p-value
+  'background-color': node => getColorForP_Value(node.data('p_value')),
   'background-opacity':0.8,
   'text-outline-color': 'white',
   'text-outline-width': 2,
@@ -39,4 +72,4 @@ const iStylesheet=cytoscape.stylesheet()
   'color': 'white',
   'text-outline-color': 'black'
 });
-module.exports = iStylesheet;
+module.exports = enrichmentStylesheet;

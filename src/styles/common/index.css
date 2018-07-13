@@ -1,5 +1,5 @@
-@import "./dropdown/dropdown.css";
-@import "./flatButton/flatButton.css";
-@import "./asyncButton/asyncButton.css";
-@import "./iconButton/iconButton.css";
-@import "./popup/popup.css";
+@import "./dropdown.css";
+@import "./flat-button.css";
+@import "./async-button.css";
+@import "./icon-buttoncss";
+@import "./popup.css";

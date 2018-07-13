@@ -4,6 +4,8 @@ const classNames = require('classnames');
 const Loader = require('react-loader');
 const _ = require('lodash');
 
+const Tooltip = require('../tooltip');
+
 const debouncedSearchNodes = _.debounce(require('../../cy/match-style'), 300);
 
 
@@ -151,6 +153,7 @@ class BaseNetworkView extends React.Component {
 
     const menuButtons = toolbarButtons.filter(btn => btn.type === 'activateMenu').map(btn => {
       return (
+        h(Tooltip, { description: btn.description }, [
           h('div.icon-button', {
             key: btn.id,
             onClick: () => this.changeMenu(btn.menuId),
@@ -158,19 +161,22 @@ class BaseNetworkView extends React.Component {
           }, [
             h('i.material-icons', btn.icon)
           ])
+        ])
       );
     });
 
     const networkButtons = toolbarButtons.filter(btn => btn.type === 'networkAction').map(btn => {
       return (
-        h('div.icon-button', {
-          key: btn.id,
-          onClick: () => {
-            btn.func(state);
-          },
-          cy: state.cySrv.get()
-        }, [
-          h('i.material-icons', btn.icon)
+        h(Tooltip, { description: btn.description }, [
+          h('div.icon-button', {
+            key: btn.id,
+            onClick: () => {
+              btn.func(state);
+            },
+            cy: state.cySrv.get()
+          }, [
+            h('i.material-icons', btn.icon)
+          ])
         ])
       );
     });
@@ -259,13 +265,15 @@ class BaseNetworkView extends React.Component {
           h('div', {
             className: classNames('sidebar-close-button-container', { 'sidebar-close-button-container-open': this.state.open })
           }, [
+            h(Tooltip, { description: 'Close the sidebar' }, [
               h('div.icon-button', {
                 key: 'close',
                 onClick: () => this.changeMenu('closeMenu'),
               }, [
                 h('i.material-icons', 'close')
-              ])
-            ]),
+              ])              
+            ])
+          ]),
           h('div.sidebar-content', [
             h('div.sidebar-resize'),
             h('div.sidebar-text', [activeMenu])

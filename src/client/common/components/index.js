@@ -3,7 +3,7 @@ const h = require('react-hyperscript');
 const Dropdown = require('./dropdown');
 const Popover = require('./popover');
 const Popup = require('./popup');
-const TextTooltip = require('./text-tooltip');
+const Tooltip = require('./tooltip');
 
 const BaseNetworkView = require('./base-network-view');
 
@@ -16,5 +16,5 @@ module.exports = {
   Icon,
   Popover,
   Popup,
-  TextTooltip
+  Tooltip
 };

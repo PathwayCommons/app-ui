@@ -44,11 +44,15 @@ const iStylesheet=cytoscape.stylesheet()
     'text-valign': 'center',
   })
 .selector('node[?queried]')
-  .css({
-    'background-color': 'blue',
-    'opacity': 1,
-    'z-compound-depth': 'top',
-    'color': 'white',
-    'text-outline-color': 'black'
-  });
+.css({
+  'background-color': 'blue',
+  'opacity': 1,
+  'z-compound-depth': 'top',
+  'color': 'white',
+  'text-outline-color': 'black'
+})
+.selector('.hidden')
+.css({
+  'display':'none',
+});
 module.exports = iStylesheet;

@@ -61,16 +61,14 @@ const defaultLayout = {
 };
 
 const interactionsLayout = {
-  displayName: 'Concentric',
-  description: 'Align the nodes in concentric circles',
+  displayName: 'cose-bilkent',
+  description: 'The CoSE layout for Cytoscape.js by the i-Vis Lab in Bilkent University',
   options: {
-    name: 'concentric',
-    nodeDimensionsIncludeLabels: false,
-    animate: true,
-    animationDuration: 500,
-    fit: true,
-    padding: 0,
-    levelWidth:(nodes)=>nodes.maxDegree()/1000,
+    name: 'cose-bilkent',
+    nodeRepulsion: 20000,
+    edgeElasticity: 0.05,
+    idealEdgeLength: 200,
+    animate:false,
   }
 };
 

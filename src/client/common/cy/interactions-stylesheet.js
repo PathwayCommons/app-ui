@@ -57,6 +57,6 @@ const iStylesheet=cytoscape.stylesheet()
 })
 .selector('.unhighlighted')
 .css({
-  'opacity':0.4,
+  'opacity':0.2,
 });
 module.exports = iStylesheet; 

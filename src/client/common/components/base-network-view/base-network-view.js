@@ -44,8 +44,38 @@ class BaseNetworkView extends React.Component {
   componentWillReceiveProps(nextProps){//needed to updata metadata for interactions
     this.setState({
       networkMetadata: nextProps.networkMetadata,
-      filters:nextProps.filters
+      filters:nextProps.filters,
+      networkJSON: nextProps.networkJSON
     });
+  }
+
+  //note: cannot use setState in componentWillUpdate
+  componentWillUpdate(nextProps){
+
+    //re-render graph for enrichment app when networkJSON updated
+    if(this.state.networkMetadata.name === "enrichment" && nextProps.networkJSON !== this.state.networkJSON)
+    {
+      const state = this.state;
+      const initialLayoutOpts = _.assign({}, state.layoutConfig.defaultLayout.options, {
+        animate: false // no animations on init load
+      });
+
+      const cySrv = state.cySrv;
+
+      const cy = cySrv.get();
+
+      cy.elements().remove();
+
+      cy.add(nextProps.networkJSON);
+
+      const layout = cy.layout(initialLayoutOpts);
+
+      layout.on('layoutstop', () => {
+        cySrv.load(); // indicate loaded
+      });
+
+      layout.run();
+    }
   }
 
   componentWillUnmount() {

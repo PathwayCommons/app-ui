@@ -179,6 +179,10 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
   content: attr(placeholder);
 }
 
+.gene-input-box:not(:focus) {
+  max-height: 1.85em;
+}
+
 .unrecognized-token-container{
   @extend %flex-center;
 

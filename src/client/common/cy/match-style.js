@@ -9,7 +9,7 @@ const {applyStyle, removeStyle} = require('./manage-style');
 const getNames = (node) => {
   const parsedMetadata = node.data('parsedMetadata');
   const geneSynonyms = node.data('geneSynonyms');
-  let label = [node.data('label')];
+  let label = node.data('label')? [node.data('label')]:[node.data('description')];
 
   if (!parsedMetadata) return label;
 
@@ -46,7 +46,7 @@ const evaluateNode = (node, matchingFn) => {
 const matchedStyle = {
   'overlay-color': 'yellow',
   'overlay-padding': 0,
-  'overlay-opacity': 0.5  
+  'overlay-opacity': 0.5
 };
 
 const matchedScratchKey = '_matched-style-before';

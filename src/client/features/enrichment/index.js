@@ -1,19 +1,19 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
-//const Loader = require('react-loader');
+const Loader = require('react-loader');
 //const queryString = require('query-string');
 
 // const hideTooltips = require('../../common/cy/events/click').hideTooltips;
 // const removeStyle= require('../../common/cy/manage-style').removeStyle;
 const CytoscapeService = require('../../common/cy/');
-// const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
+const enrichmentStylesheet= require('../../common/cy/enrichment-stylesheet');
 const TokenInput = require('./token-input');
 const { BaseNetworkView } = require('../../common/components');
 const { getLayoutConfig } = require('../../common/cy/layout');
 const { ServerAPI } = require('../../services/');
 
-//const downloadTypes = require('../../common/config').downloadTypes;
+const downloadTypes = require('../../common/config').downloadTypes;
 
 const enrichmentConfig={
   //extablish toolbar and declare features to not include
@@ -29,22 +29,23 @@ const emptyNetworkJSON = {
     nodes: []
 };
 
+
 class Enrichment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cySrv: new CytoscapeService(),
+      cySrv: new CytoscapeService( {style: enrichmentStylesheet, showTooltipsOnEdges:true, minZoom:0.01 }),
       componentConfig: enrichmentConfig,
       layoutConfig: getLayoutConfig(),
       networkJSON: emptyNetworkJSON,
+
       networkMetadata: {
-        name: [],
+        name: "enrichment",
         datasource: [],
         comments: []
       },
 
-      //temporarily set to false so loading spinner is disabled
-      networkLoading: false,
+      loaded: true,
 
       closeToolBar: true,
       unrecognized: [],
@@ -58,7 +59,7 @@ class Enrichment extends React.Component {
   }
 
   handleInputs( inputs ) {
-    this.setState({ inputs });
+    this.setState({ inputs, loaded: true });
   }
 
   handleUnrecognized( unrecognized ) {
@@ -70,18 +71,20 @@ class Enrichment extends React.Component {
       const analysisResult = await ServerAPI.enrichmentAPI({ genes: genes }, "analysis");
 
       if( !analysisResult || !analysisResult.pathwayInfo ) {
-        this.setState({ timedOut: true });
+        this.setState({ timedOut: true, loaded: true });
         return;
       }
 
-      const visualizationResult = await ServerAPI.enrichmentAPI({ pathways: analysisResult.pathwayInfo}, "visualization");
+      const visualizationResult = await ServerAPI.enrichmentAPI({ pathways: analysisResult.pathwayInfo }, "visualization");
 
       if( !visualizationResult ) {
-        this.setState({ timedOut: true });
+        this.setState({ timedOut: true, loaded: true });
         return;
       }
 
       this.setState({
+        closeToolBar: false,
+        loaded: true,
         networkJSON: {
           edges: visualizationResult.graph.elements.edges,
           nodes: visualizationResult.graph.elements.nodes
@@ -92,7 +95,8 @@ class Enrichment extends React.Component {
   }
 
   render() {
-    let { cySrv, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading, closeToolBar } = this.state;
+    let { cySrv, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading, closeToolBar, loaded } = this.state;
+
     let retrieveTokenInput = () => h(TokenInput,{
       inputs: this.state.inputs,
       handleInputs: this.handleInputs,
@@ -110,12 +114,23 @@ class Enrichment extends React.Component {
       networkMetadata,
       networkLoading,
       closeToolBar,
-      titleContainer: () => h(retrieveTokenInput)
+      titleContainer: () => h(retrieveTokenInput),
+      download: {
+        types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'),
+        promise: () => Promise.resolve(_.map(this.state.cy.edges(),edge=> edge.data().id).sort().join('\n'))
+      },
     })
     :
-    h('div.no-network',[h('strong.title','Network currently unavailable'),h('span','Try a diffrent set of genes')]);
+    h('div.no-network',[
+      h('strong.title','Network currently unavailable'),
+      h('a', { href: location.href },'Try a diffrent set of genes')
+    ]);
 
-    return h('div.main', [baseView]);
+    const loadingView = h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' }});
+
+    //display baseView or loading spinner
+    const content = loaded ? baseView : loadingView;
+    return h('div.main', [content]);
   }
 }
 

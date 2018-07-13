@@ -29,21 +29,6 @@ const emptyNetworkJSON = {
     nodes: []
 };
 
-const testNetwork = {
-  edges: [
-    {data:{id: 'edge1', source:"node3", target: "node4", similarity: 3 }},
-    {data:{id: 'edge2', source:"node1", target: "node2", similarity: .4 }},
-    {data:{id: 'edge3', source:"node1", target: "node4" }},
-    {data:{id: 'edge4', source:"node2", target: "node4" }}
-  ],
-  nodes: [
-    {data: {id: "node1", description: "node1"}},
-    {data: {id: "node2", description: "node2"}},
-    {data: {id: "node3", description: "node3"}},
-    {data: {id: "node4", description: "node4"}}
-  ]
-};
-
 
 class Enrichment extends React.Component {
   constructor(props) {
@@ -61,7 +46,6 @@ class Enrichment extends React.Component {
         comments: []
       },
 
-      //temporarily set to false so loading spinner is disabled
       loaded: true,
 
       closeToolBar: true,
@@ -76,8 +60,7 @@ class Enrichment extends React.Component {
   }
 
   handleInputs( inputs ) {
-    this.setState({ inputs });
-    this.setState({ loaded: true });
+    this.setState({ inputs, loaded: true });
   }
 
   handleUnrecognized( unrecognized ) {
@@ -146,7 +129,7 @@ class Enrichment extends React.Component {
 
     const loadingView = h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' }});
 
-     // create a view shell loading view e.g looks like the view but its not
+    //display baseView or loading spinner
     const content = loaded ? baseView : loadingView;
     return h('div.main', [content]);
   }

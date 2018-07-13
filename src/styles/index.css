@@ -7,7 +7,6 @@
 @import "./base.css";
 @import "./app.css";
 @import "./common/index.css";
-@import "./features/entry.css";
 @import "./features/search.css";
 @import "./features/paint.css";
 @import "./features/view.css";

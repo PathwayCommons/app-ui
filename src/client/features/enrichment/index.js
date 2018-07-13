@@ -38,7 +38,6 @@ class Enrichment extends React.Component {
       componentConfig: enrichmentConfig,
       layoutConfig: getLayoutConfig(),
       networkJSON: emptyNetworkJSON,
-      //networkJSON: testNetwork,
 
       networkMetadata: {
         name: "enrichment",

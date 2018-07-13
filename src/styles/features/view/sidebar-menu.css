@@ -1,6 +1,6 @@
-@import "./sidebarMenus/help.css";
-@import "./sidebarMenus/downloadMenu.css";
-@import "./sidebarMenus/interactionFilterMenu.css";
+@import "./sidebar-menus/help.css";
+@import "./sidebar-menus/download-menu.css";
+@import "./sidebar-menus/interaction-filter-menu.css";
 
 .sidebar-menu {
   height: 100%;

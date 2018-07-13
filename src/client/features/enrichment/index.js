@@ -11,6 +11,8 @@ const CytoscapeService = require('../../common/cy/');
 const TokenInput = require('./token-input');
 const { BaseNetworkView } = require('../../common/components');
 const { getLayoutConfig } = require('../../common/cy/layout');
+const { ServerAPI } = require('../../services/');
+
 //const downloadTypes = require('../../common/config').downloadTypes;
 
 const enrichmentConfig={
@@ -22,20 +24,10 @@ const enrichmentConfig={
 };
 
 //temporary empty network for development purposes
-const emptyNetwork = {
-  graph: {
+const emptyNetworkJSON = {
     edges: [],
-    nodes: [],
-    pathwayMetadata: {
-      title: [],
-      datasource: [],
-      comments: []
-    },
-    layout: null
-  }
+    nodes: []
 };
-const network = emptyNetwork;
-const layoutConfig = getLayoutConfig();
 
 class Enrichment extends React.Component {
   constructor(props) {
@@ -43,18 +35,21 @@ class Enrichment extends React.Component {
     this.state = {
       cySrv: new CytoscapeService(),
       componentConfig: enrichmentConfig,
-      layoutConfig: layoutConfig,
-      networkJSON: network.graph,
-      networkMetadata: network.graph.pathwayMetadata,
+      layoutConfig: getLayoutConfig(),
+      networkJSON: emptyNetworkJSON,
+      networkMetadata: {
+        name: [],
+        datasource: [],
+        comments: []
+      },
 
       //temporarily set to false so loading spinner is disabled
       networkLoading: false,
 
       closeToolBar: true,
-      //all submitted tokens, includes valid and invalid tokens
-      genes: [],
       unrecognized: [],
-      inputs: ""
+      inputs: "",
+      timedOut: false
     };
 
     this.handleInputs = this.handleInputs.bind(this);
@@ -71,12 +66,33 @@ class Enrichment extends React.Component {
   }
 
   handleGenes( genes ) {
-    this.setState( { genes } );
-    // console.log(genes);
+    const updateNetworkJSON = async () => {
+      const analysisResult = await ServerAPI.enrichmentAPI({ genes: genes }, "analysis");
+
+      if( !analysisResult || !analysisResult.pathwayInfo ) {
+        this.setState({ timedOut: true });
+        return;
+      }
+
+      const visualizationResult = await ServerAPI.enrichmentAPI({ pathways: analysisResult.pathwayInfo}, "visualization");
+
+      if( !visualizationResult ) {
+        this.setState({ timedOut: true });
+        return;
+      }
+
+      this.setState({
+        networkJSON: {
+          edges: visualizationResult.graph.elements.edges,
+          nodes: visualizationResult.graph.elements.nodes
+        }
+      });
+    };
+    updateNetworkJSON();
   }
 
   render() {
-    let { cySrv, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading } = this.state;
+    let { cySrv, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading, closeToolBar } = this.state;
     let retrieveTokenInput = () => h(TokenInput,{
       inputs: this.state.inputs,
       handleInputs: this.handleInputs,
@@ -85,17 +101,21 @@ class Enrichment extends React.Component {
       handleGenes: this.handleGenes
     });
 
-    return h(BaseNetworkView.component, {
+    const baseView = !this.state.timedOut ?
+    h(BaseNetworkView.component, {
       cySrv,
       componentConfig,
       layoutConfig,
       networkJSON,
       networkMetadata,
       networkLoading,
-      titleContainer: () => h(retrieveTokenInput),
-      //will use state to set to false to render the toolbar once analysis is run and graph is displayed
-      closeToolBar: true
-    });
+      closeToolBar,
+      titleContainer: () => h(retrieveTokenInput)
+    })
+    :
+    h('div.no-network',[h('strong.title','Network currently unavailable'),h('span','Try a diffrent set of genes')]);
+
+    return h('div.main', [baseView]);
   }
 }
 

@@ -164,6 +164,10 @@ class EntityMetaDataView extends React.Component {
       ]);
     }
 
+    let isChemicalFormula = name => !name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-[\]()\\=#$]{6,})$/ig);
+
+    let synonyms = metadata.synonyms().filter(isChemicalFormula) .slice(0, DEFAULT_NUM_NAMES).join(', ')
+
     let publications = metadata.publications().map(publication => {
       let { id, title, firstAuthor, date, source } = publication;
       return h('div.metadata-publication', [
@@ -176,7 +180,7 @@ class EntityMetaDataView extends React.Component {
 
     let showStdName = metadata.standardName() !== '';
     let showDispName = metadata.displayName() !== '' && metadata.displayName() !== metadata.label();
-    let showSynonyms = metadata.synonyms().length > 0;
+    let showSynonyms = synonyms.length > 0;
     let showPubs = publications.length > 0;
 
     let showBody = showStdName || showDispName || showSynonyms || showPubs;
@@ -202,7 +206,7 @@ class EntityMetaDataView extends React.Component {
               'Synonyms',
               // h('i.material-icons', 'expand_more')
             ]),
-            h('div.metadata-field-value', metadata.synonyms().slice(0, DEFAULT_NUM_NAMES).join(', '))
+            h('div.metadata-field-value', synonyms)
           ]) : null,
           showPubs ? h('div.metadata-tooltip-section', [
             h('div.metadata-field-name', [

@@ -15,9 +15,6 @@
   left: 0;
   word-wrap: break-word;
   text-align: left;
-  overflow: hidden;
-  max-height: 40vh;
-
 }
 
 .metadata-tooltip-header {
@@ -53,6 +50,8 @@
   border-top: 1px solid var(--light-base-colour-dark);
   margin-bottom: 10px;
   padding-top: 10px;
+  max-height: 20em;
+  overflow-y: scroll;
 }
 
 .metadata-tooltip-warning {

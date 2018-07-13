@@ -4,10 +4,16 @@ const { NetworkInfoMenu, FileDownloadMenu } = require('./menus');
 
 let expanded = true;
 const expandCollapseAll = (props) => {
+  let cy = props.cy;
+  let api = cy.expandCollapse('get');
+
   if (expanded) {
-    props.cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isExpanded()).collapse();
+    let nodesToCollapse = cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => api.isCollapsible(node));
+    api.collapse(nodesToCollapse);
+
   } else {
-    props.cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => node.isCollapsed()).expand();
+    let nodesToExpand = cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => api.isExpandable(node));
+    api.expand(nodesToExpand);
   }
   expanded = !expanded;
 };
@@ -67,7 +73,7 @@ const toolbarButtons = [
 const menus = [
   {
     id: 'closeMenu',
-    func: props => null
+    func: () => null
   },
   {
     id: 'fileDownloadMenu',

@@ -1,8 +1,14 @@
 const io = require('socket.io-client');
 const qs = require('querystring');
 const _ = require('lodash');
+const fetch = require('node-fetch');
 
 const socket = io.connect('/');
+const FETCH_TIMEOUT = 5000; //ms
+
+let absoluteURL = (href) => {
+  return ( location.origin + href) ;
+};
 
 const defaultFetchOpts = {
   method: 'GET', headers: {
@@ -13,19 +19,19 @@ const defaultFetchOpts = {
 
 const ServerAPI = {
   getGraphAndLayout(uri, version) {
-    return fetch(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`, defaultFetchOpts).then(res => res.json());
+    return fetch(absoluteURL(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`), defaultFetchOpts).then(res => res.json());
   },
 
   getInteractionGraph(sources) {
-    return fetch(`/api/get-interaction-graph?${qs.stringify(sources)}`, defaultFetchOpts).then(res => res.json());
+    return fetch(absoluteURL(`/api/get-interaction-graph?${qs.stringify(sources)}`), defaultFetchOpts).then(res => res.json());
   },
 
   pcQuery(method, params){
-    return fetch(`/pc-client/${method}?${qs.stringify(params)}`, defaultFetchOpts);
+    return fetch(absoluteURL(`/pc-client/${method}?${qs.stringify(params)}`), defaultFetchOpts);
   },
 
   datasources(){
-    return fetch('/pc-client/datasources', defaultFetchOpts).then(res => res.json());
+    return fetch(absoluteURL('/pc-client/datasources'), defaultFetchOpts).then(res => res.json());
   },
 
   querySearch(query){
@@ -33,20 +39,24 @@ const ServerAPI = {
     if (/^((uniprot|hgnc):\w+|ncbi:[0-9]+)$/i.test(queryClone.q)) {
       queryClone.q=queryClone.q.replace(/^(uniprot|ncbi|hgnc):/i,"");
     }
-    return fetch(`/pc-client/querySearch?${qs.stringify(queryClone)}`, defaultFetchOpts).then(res => res.json());
+    return fetch(absoluteURL(`/pc-client/querySearch?${qs.stringify(queryClone)}`), defaultFetchOpts).then(res => res.json());
   },
 
   enrichmentAPI(query, type){
-    return fetch(`/api/${type}`, {
+    return fetch(absoluteURL(`/api/${type}`), {
       method:'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body:JSON.stringify(query)
+      body: JSON.stringify(query),
+      timeout: FETCH_TIMEOUT
     })
     .then(res => res.json())
-    .catch((err) => console.error('Error:', err));
+    .catch(err => {
+      if (err.type == 'body-timeout') return undefined ;
+      else err;
+    });
   },
 
   geneQuery(query){
@@ -57,7 +67,7 @@ const ServerAPI = {
     return fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?retmode=json&db=gene&id=${ids.join(',')}`, {method: 'GET'}).then(res => res.json());
   },
 
-  getUniprotnformation(ids){
+  getUniprotInformation(ids){
     return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&accession=${ids.join(',')}`, defaultFetchOpts).then(res => res.json());
   },
 

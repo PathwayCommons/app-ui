@@ -1,11 +1,7 @@
-const formatContent = require('./format-content');
+const _ = require('lodash');
 
-/**
- * fetchPubMedPublication(id)
- * @param id A publication id formatted as a string
- * @returns Publication JSON
- * @description Fetches Publication Json from PubMed
- */
+
+// LEGACY CODE TO GET PUBLICATIONS FROM PUBMED.  THIS SHOULD BE DEELETED / REFACTORED EVENTUALLY
 function fetchPubMedPublication(id) {
   const options = {
     method: 'GET',
@@ -16,13 +12,20 @@ function fetchPubMedPublication(id) {
   return fetch(urlPrefix + id.toString(), options).then(res => res.json());
 }
 
+function sortByDatabaseId(dbArray) {
+  //Sort by database name
+  let sorted = [];
+  let databases = _.groupBy(dbArray, entry => entry[0]);
 
-/**
- * processPublicationData(data)
- * @param data Publication JSON
- * @returns Array of Objects
- * @description Parses the publication json from PubMed and extracts relevant information
- */
+  //Remove dbName from each entry
+  _.forEach(databases, function (value, key) {
+    databases[key] = _.map(databases[key], entry => entry[1]);
+    sorted.push({ database: key, ids: databases[key] });
+  });
+
+  return sorted;
+}
+
 
 function processPublicationData(data) {
   const result = data.result;
@@ -45,12 +48,6 @@ function processPublicationData(data) {
   return extractedData;
 }
 
-/**
- * getPublications(data)
- * @param data A node metadata array
- * @returns Array of Pairs
- * @description Gets publication titles, references, and authors from PubMed
- */
 function getPublications(data) {
   /*
   Sometimes the PubMed citation info gets loaded in as an element in the "List" part of the "data" array.
@@ -80,28 +77,27 @@ function getPublications(data) {
     data.push([["Database IDs"],databaseInfo]);
 
   return new Promise(function (resolve) {
-    if (!(data)) { resolve(data); }
+    if (!(data)) { resolve(null); }
 
     //Check if publication data already exists
     const existingData = data.filter(pair => pair[0] == 'Publications');
-    if (existingData.length > 0) { resolve(data); }
+    if (existingData.length > 0) { resolve(null); }
 
     //Get Database Ids
     const databaseIds = data.filter(pair => pair[0] == 'Database IDs')[0];
-    if (!(databaseIds)) { resolve(data); }
+    if (!(databaseIds)) { resolve(null); }
 
     //Get PubMed References
-    const sorted = formatContent.sortByDatabaseId(databaseIds[1]);
+    const sorted = sortByDatabaseId(databaseIds[1]);
     const pubMedReferences = sorted.filter(item => item.database.toUpperCase() === 'PUBMED');
-    if (!(pubMedReferences) || pubMedReferences.length === 0) { resolve(data); }
+    if (!(pubMedReferences) || pubMedReferences.length === 0) { resolve(null); }
 
-    const pubMedIds = pubMedReferences[0].ids;
+    const pubMedIds = _.get(pubMedReferences, '0.ids', []);
 
     //Get publication data in bulk and process publication data
     return fetchPubMedPublication(pubMedIds).then(publications => {
-      data.push(['Publications', processPublicationData(publications)]);
-      resolve(data);
-    }).catch(() => resolve(data));
+      resolve(['Publications', processPublicationData(publications)]);
+    }).catch(() => resolve(null));
   });
 
 }

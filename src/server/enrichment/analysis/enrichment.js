@@ -2,6 +2,7 @@ const fetch = require('node-fetch');
 const _ = require('lodash');
 const qs = require('query-string');
 const { cleanUpEntrez } = require('../helper');
+const config = require('../../../config');
 
 const defaultSetting = {
   "output": "mini",
@@ -23,9 +24,6 @@ const defaultSetting = {
   "sf_REAC": 1,
   "prefix": 'ENTREZGENE_ACC'
 };
-
-const gProfilerURL = "https://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/";
-
 
 // parseGProfilerResponse(gProfilerResponse) takes the text response
 // from gProfiler gProfilerResponse and parses it into JSON format
@@ -52,13 +50,13 @@ const enrichment = (query, userSetting) => {
   userSetting = _.mapKeys(userSetting, (value, key) => {
     if (key === 'minSetSize') return 'min_set_size';
     if (key === 'maxSetSize') return 'max_set_size';
+    if (key === 'backgroundGenes') return 'custbg';
     return key;
   });
 
   return new Promise((resolve, reject) => {
     let formData = _.assign({}, defaultSetting, JSON.parse(JSON.stringify(userSetting)), { query: query });
     const queryVal = formData.query;
-    //const orderedQueryVal = formData.ordered_query;
     const minSetSizeVal = formData.min_set_size;
     const maxSetSizeVal = formData.max_set_size;
     const backgroundGenesVal = formData.custbg;
@@ -81,9 +79,9 @@ const enrichment = (query, userSetting) => {
     if (!Array.isArray(backgroundGenesVal)) {
       reject(new Error('ERROR: backgroundGenes should be an array'));
     }
-    formData.backgroundGenes = backgroundGenesVal.join(" ");
+    formData.custbg = backgroundGenesVal.join(" ");
 
-    fetch(gProfilerURL, {
+    fetch(config.GPROFILER_URL, {
       method: 'post',
       body: qs.stringify(formData)
     }).then(gProfilerResponse => gProfilerResponse.text())

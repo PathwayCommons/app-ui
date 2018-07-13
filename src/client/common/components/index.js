@@ -1,5 +1,3 @@
-const h = require('react-hyperscript');
-
 const Dropdown = require('./dropdown');
 const Popover = require('./popover');
 const Tooltip = require('./tooltip');

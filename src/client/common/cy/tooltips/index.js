@@ -166,7 +166,7 @@ class EntityMetaDataView extends React.Component {
 
     let isChemicalFormula = name => !name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-[\]()\\=#$]{6,})$/ig);
 
-    let synonyms = metadata.synonyms().filter(isChemicalFormula) .slice(0, DEFAULT_NUM_NAMES).join(', ')
+    let synonyms = metadata.synonyms().filter(isChemicalFormula) .slice(0, DEFAULT_NUM_NAMES).join(', ');
 
     let publications = metadata.publications().map(publication => {
       let { id, title, firstAuthor, date, source } = publication;

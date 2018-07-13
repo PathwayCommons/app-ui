@@ -172,7 +172,7 @@ class EntityMetaDataView extends React.Component {
       let { id, title, firstAuthor, date, source } = publication;
       return h('div.metadata-publication', [
         h('a', { href: 'http://identifiers.org/pubmed/' + id }, title),
-        h('div', firstAuthor +  ' et al. | ' + source + ' - ' + date.split('/')[0])
+        h('div', firstAuthor +  ' et al. | ' + source + ' - ' + new Date(date).getFullYear().toString())
       ]);
     });
 

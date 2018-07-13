@@ -24,9 +24,65 @@ const fit = (props) => {
 
 const resetToDefaultLayout = (props) => {
   const cy = props.cy;
+  showAllNodes(props);
   cy.layout(props.layoutConfig.defaultLayout.options).run();
 };
 
+const showOnlySelected = (props) => {
+  const cy = props.cy;
+  let nodesToKeep = cy.$(':selected');
+  let nodes = cy.nodes();
+  for(let n in nodes){
+    let node = nodes[n];
+    //make sure its a real node
+    if(node.show)
+      if(node.data().class !== "compartment" && checkNodes(node,nodesToKeep))
+        node.addClass('hidden');
+  }
+};
+
+//This function hides all nodes which are currently selecting with box select
+const hideSelectedNodes = (props) => {
+  const cy = props.cy;
+  //get selected nodes
+  let nodesToHide = cy.$(':selected');
+  //hide everything in the list
+  for(let i in nodesToHide){
+    let node = nodesToHide[i];
+    if(node.hide){ node.addClass('hidden'); }
+  }
+};
+
+//resets any nodes hidden with hideSelectedNodes or showOnlySelected
+const showAllNodes = (props) => {
+  const cy = props.cy;
+  //get all nodes and edges in graph
+  let nodes = cy.nodes();
+  let edges = cy.edges();
+  //show all nodes which have been hidden
+  for(let n in nodes){
+    let node = nodes[n];
+    if(node.show && node.hasClass('hidden'))
+      node.removeClass('hidden');
+  }
+  //show all edges which have been hidden
+  for(let e in edges){
+    let edge = edges[e];
+    if(edge.show && edge.hasClass('hidden'))
+      edge.removeClass('hidden');
+  }
+};
+
+//equivalent to indexOf() === -1 for Collection
+//helper function for showOnlySelected
+const checkNodes = (nodeToHide, nodesToKeep) => {
+  for(let n in nodesToKeep){
+    let node = nodesToKeep[n];
+    if(nodeToHide === node)
+      return false;
+  }
+  return true;
+};
 
 // material icon name to func/description object
 const toolbarButtons = [
@@ -59,12 +115,26 @@ const toolbarButtons = [
     description: 'Fit network to screen'
   },
   {
+    id:'hideSelected',
+    icon:'visibility_off',
+    type: 'networkAction',
+    func: hideSelectedNodes,
+    description: 'Hide selected nodes (select with shift+drag)'
+  },
+  {
+    id:'showOnly',
+    icon:'visibility',
+    type:"networkAction",
+    func:showOnlySelected,
+    description:'Show only selected nodes (select with shift+drag)'
+  },
+  {
     id: 'layout',
-    icon: 'replay',
+    icon: 'refresh',
     type: 'networkAction',
     func: resetToDefaultLayout,
     description: 'Reset network arrangement'
-  }
+  },
 ];
 
 // todo turn this into a map

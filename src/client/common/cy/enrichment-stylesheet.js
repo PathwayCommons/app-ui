@@ -4,7 +4,9 @@ var p_valueColorScale = [
   { p_value: 0.0, color: { r: 153, g: 255, b: 102 } },
   { p_value: 0.05, color: { r: 0, g: 184, b: 230 } },
   { p_value: .1, color: { r: 115, g: 0, b: 230 } },
-  { p_value: 1, color: { r: 255, g: 0, b: 102 } },
+  { p_value: .5, color: { r: 255, g: 0, b: 102 } },
+  { p_value: 1, color: { r: 255, g: 255, b: 153 } },
+
  ];
 
 var getColorForP_Value = function(p_value) {

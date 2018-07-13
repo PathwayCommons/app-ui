@@ -1,5 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
+const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
 
 class EnrichmentMenu extends React.Component {
   constructor(props) {
@@ -29,12 +30,27 @@ class EnrichmentMenu extends React.Component {
     let min = this.getMinPvalue();
     let max = this.getMaxPvalue();
 
-    return h('div',[
-      h('h2', 'P-value'),
-      h('div.enrichment-legend', [
-        h('p', `0`),
-        h('p', `1`)
-      ])
+
+    return h(Tabs, [
+      h('div.enrichment-drawer-header', [
+        h('h2', 'Enriched Network'),
+        h(TabList, [
+          h(Tab, {
+            className: 'enrichment-drawer-tab',
+            selectedClassName: 'enrichment-drawer-tab-selected'
+            }, 'Pathway Data')
+        ])
+      ]),
+      h(TabPanel, [
+        h('h4', 'P-Value Legend'),
+        h('div.enrichment-legend', [
+          h('p', `0`),
+          //h('p.p_value-label-1', '.1'),
+          h('p', '.5'),
+          h('p', `1`)
+        ])
+      ]),
+      h(TabPanel)
     ]);
   }
 }

@@ -1,0 +1,14 @@
+.empty-network {
+  text-align: center;
+
+  & i {
+    src: url("../image/pc_log_dark.svg");
+    height: auto;
+    width: 5%;
+    padding: 20px 0px 0px 0px;
+  }
+}
+
+.empty-network-link {
+  color: blue;
+}

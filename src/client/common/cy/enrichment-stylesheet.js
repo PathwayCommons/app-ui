@@ -1,8 +1,7 @@
 const cytoscape = require('cytoscape');
 
 function getNodeSize( geneCount ){
-  let size = ( geneCount <= 1000 ) ? mapGeneCountToSize(geneCount) : mapGeneCountToSize(1000);
-  return size;
+  return mapGeneCountToSize(Math.min( geneCount, 1000 ));
 }
 
 function mapGeneCountToSize( geneCount ){

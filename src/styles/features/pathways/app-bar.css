@@ -1,0 +1,47 @@
+.app-bar {
+  max-width: 80vw;
+  position: absolute;
+  top: 0;
+  left: 30px;
+  background-color: var(--light-base-colour);
+  border: 1px solid var(--light-base-colour-dark);
+  border-radius: 0 0 0.25em 0;
+  /* padding: 3px 15px 15px 15px; */
+  padding: 4px 8px;
+}
+
+.app-bar-branding {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.app-bar-logo {
+  flex-shrink: 0;
+  height: 1.8em;
+  width:  1.8em;
+  background-image: url("../../image/pc_logo_dark.svg");
+  background-repeat: no-repeat;
+}
+
+.app-bar-title {
+  flex-shrink: 0;
+  color: var(--dark-base-colour);
+  font-weight: bold;
+  font-size: 0.9em;
+  flex-basis: 80vw;
+}
+
+.view-toolbar {
+  position: absolute;
+  top: calc(1.8em + 20px);
+  left: 30px;
+  border-radius: 0 0 0.25em 0.25em;
+  border-color: var(--light-base-colour-dark);
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  border-top: none;
+
+  background-color: rgba(255, 255, 255, 0.5);
+}
+

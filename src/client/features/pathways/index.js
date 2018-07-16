@@ -15,14 +15,14 @@ const { defaultLayout } = require('../../common/cy/layout');
 class Pathways extends React.Component {
   constructor(props) {
     super(props);
-    let { uri, title } = queryString.parse(props.location.search);
+    let { uri } = queryString.parse(props.location.search);
 
     this.state = {
       cySrv: new CytoscapeService(),
       pathwayJSON: {},
       pathwayMetadata: {
         uri: uri,
-        name: title || '',
+        name: '',
         datasource: '',
         comments: []
       },
@@ -36,7 +36,7 @@ class Pathways extends React.Component {
 
   componentDidMount(){
     let { pathwayMetadata, cySrv} = this.state;
-    let { uri, title } = pathwayMetadata;
+    let { uri } = pathwayMetadata;
 
     ServerAPI.getPathway(uri, 'latest').then( pathwayJSON => {
       cySrv.mount(this.network);
@@ -48,12 +48,12 @@ class Pathways extends React.Component {
 
       layout.on('layoutstop', () => {
         cySrv.load();
-
+        console.log(pathwayJSON);
         this.setState({
           pathwayJSON: _.get(pathwayJSON, 'graph', { nodes: [], edges: [] }),
           pathwayMetadata: {
-            name: title !== '' ? title : _.get(pathwayJSON, 'graph.pathwayMetada.title.0', 'Untitled Pathway'),
-            datasource: _.get(pathwayJSON, 'graph.pathwayMetada.dataSource.0', 'Unknown data source'),
+            name: _.get(pathwayJSON, 'graph.pathwayMetadata.title.0', 'Untitled Pathway'),
+            datasource: _.get(pathwayJSON, 'graph.pathwayMetadata.dataSource.0', 'Unknown data source'),
             comments: _.get(pathwayJSON, 'graph.pathwayMetadata.comments', [])
           },
           loading: false
@@ -71,14 +71,26 @@ class Pathways extends React.Component {
   render() {
     let state = this.state;
 
+    console.log( this.state);
     let network = h('div.network', [
       h('div.network-cy', {
         ref: dom => this.network = dom
       })
     ]);
 
+    let appBar = h('div.app-bar', [
+      h('div.app-bar-branding', [
+        h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
+        h('div.app-bar-title', state.pathwayMetadata.name + ' | ' + state.pathwayMetadata.datasource)
+      ])
+    ]);
+    // h('div.view-toolbar', [
+      // '1','2','3','4'
+    // ])
+
     return h('div.pathways', [
-      network
+      network,
+      appBar
     ]);
   }
 

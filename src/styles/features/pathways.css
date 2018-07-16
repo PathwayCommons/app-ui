@@ -2,6 +2,7 @@
 @import "./pathways/network.css";
 @import "./pathways/sidebar-menu.css";
 @import "./pathways/tooltip.css";
+@import "./pathways/app-bar.css";
 
 .pathways {
   width: 100vw;

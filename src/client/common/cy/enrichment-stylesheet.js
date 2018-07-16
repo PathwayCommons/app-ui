@@ -28,7 +28,7 @@ const enrichmentStylesheet=cytoscape.stylesheet()
 .css({
   'font-size': 20,
   'color': 'black',
-  'background-color': '	#00bfff', //TODO: Colored accoriding to p-value
+  'background-color': '#00bfff', //TODO: Colored accoriding to p-value
   'background-opacity':0.8,
   'text-outline-color': 'white',
   'text-outline-width': 2,

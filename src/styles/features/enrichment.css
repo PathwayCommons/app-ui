@@ -1,76 +1,5 @@
-.enrichment-legend {
-  display: flex;
-  flex-direction: row;
-}
+/*  ********ENRICHMENT INPUT BAR********   */
 
-.enrichment-legend-1 {
-  padding: 0px 5px 0px 5px;
-  height: 40px;
-  color: white;
-  background: linear-gradient(to right,
-  rgb(0,0,255),
-  rgb(179, 255, 255)
-  );
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 75%;
-}
-
-.enrichment-legend-1 > p {
-  margin: 0;
-  padding-top: 10px;
-  text-shadow:
-  -1px -1px 0 #000,
-  1px -1px 0 #000,
-  -1px 1px 0 #000,
-  1px 1px 0 #000;
-}
-
-.enrichment-legend-2 {
-  padding: 0px 5px 0px 5px;
-  margin-left: 10px;
-  height: 40px;
-  color: white;
-  background: #555;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  width: 10%;
-}
-
-.enrichment-legend-2 > p {
-  margin: 0;
-  padding-top: 10px;
-  text-shadow:
-  -1px -1px 0 #000,
-  1px -1px 0 #000,
-  -1px 1px 0 #000,
-  1px 1px 0 #000;
-}
-
-.enrichment-drawer-tab {
-  display: inline-block;
-  border: 1px solid transparent;
-  border-bottom: none;
-  bottom: -1px;
-  position: relative;
-  list-style: none;
-  padding: 6px 0;
-  cursor: pointer;
-  margin-bottom: 0;
-  margin-right: 10px;
-}
-
-.enrichment-drawer-tab-selected {
-  font-weight: bold;
-  color: var(--accent-1-colour);
-  border-bottom: 3px solid var(--accent-1-colour);
-}
-
-.react-tabs{
-  width: 100%;
-  /* padding: 15px; */
 .enrichmentInput {
   display: flex;
 }
@@ -147,3 +76,72 @@
   height: 1.85em;
   vertical-align: middle;
 }
+
+/*   ********ENRICHMENT SIDE MENU********  */
+
+.enrichment-legend-container {
+  display: flex;
+  flex-direction: row;
+
+  & p {
+    margin: 0;
+    padding-top: 10px;
+    text-shadow:
+      -1px -1px 0 #000,
+       1px -1px 0 #000,
+      -1px 1px 0 #000,
+       1px 1px 0 #000;
+  }
+}
+
+/* for p_value <= 0.05 */
+.enrichment-legend-stat-significant {
+  padding: 0px 5px 0px 5px;
+  height: 40px;
+  color: white;
+  background: linear-gradient(to right,
+    rgb(0,0,255),
+    rgb(179, 255, 255)
+  );
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 75%;
+}
+
+/* for p_value > 0.05 */
+.enrichment-legend-not-significant {
+  padding: 0px 5px 0px 5px;
+  margin-left: 10px;
+  height: 40px;
+  color: white;
+  background: #555;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 10%;
+}
+
+.enrichment-drawer-tab {
+  display: inline-block;
+  border: 1px solid transparent;
+  border-bottom: none;
+  bottom: -1px;
+  position: relative;
+  list-style: none;
+  padding: 6px 0;
+  cursor: pointer;
+  margin-bottom: 0;
+  margin-right: 10px;
+}
+
+.enrichment-drawer-tab-selected {
+  font-weight: bold;
+  color: var(--accent-1-colour);
+  border-bottom: 3px solid var(--accent-1-colour);
+}
+
+.react-tabs{
+  width: 100%;
+}
+

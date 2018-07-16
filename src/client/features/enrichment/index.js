@@ -21,7 +21,7 @@ const enrichmentMenuId = 'enrichmentMenu';
 const enrichmentConfig={
   //extablish toolbar and declare features to not include
   toolbarButtons: toolbarButtons.concat({
-    icon: '', //TODO: pick icon for p-value
+    icon: 'palette', //TODO: pick icon for p-value
     id: 'showEnrichmentMenu',
     type: 'activateMenu',
     menuId: 'enrichmentMenu',
@@ -83,7 +83,7 @@ class Enrichment extends React.Component {
         Phosphorylation:true,
         Expression:true
       },
-      closeToolBar: false,
+      closeToolBar: true,
       unrecognized: [],
       inputs: "",
       timedOut: false

@@ -1,20 +1,48 @@
 .enrichment-legend {
+  display: flex;
+  flex-direction: row;
+}
+
+.enrichment-legend-1 {
   padding: 0px 5px 0px 5px;
   height: 40px;
   color: white;
   background: linear-gradient(to right,
     rgb(153,255,102),
-    rgb(0,184,230) 5%,
-    rgb(115,0,230) 10%,
-    rgb(255,0,102) 50%,
+    rgb(0,184,230) 25%,
+    rgb(115,0,230) 50%,
+    rgb(255,0,102) 75%,
     rgb(255,255,153) 100%
   );
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  width: 75%;
 }
 
-.enrichment-legend > p {
+.enrichment-legend-1 > p {
+  margin: 0;
+  padding-top: 10px;
+  text-shadow:
+  -1px -1px 0 #000,
+  1px -1px 0 #000,
+  -1px 1px 0 #000,
+  1px 1px 0 #000;
+}
+
+.enrichment-legend-2 {
+  padding: 0px 5px 0px 5px;
+  margin-left: 10px;
+  height: 40px;
+  color: white;
+  background: #555;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 10%;
+}
+
+.enrichment-legend-2 > p {
   margin: 0;
   padding-top: 10px;
   text-shadow:

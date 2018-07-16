@@ -2,15 +2,35 @@ const cytoscape = require('cytoscape');
 
 var p_valueColorScale = [
   { p_value: 0.0, color: { r: 153, g: 255, b: 102 } },
-  { p_value: 0.05, color: { r: 0, g: 184, b: 230 } },
-  { p_value: .1, color: { r: 115, g: 0, b: 230 } },
-  { p_value: .5, color: { r: 255, g: 0, b: 102 } },
-  { p_value: 1, color: { r: 255, g: 255, b: 153 } },
+  { p_value: 0.0125, color: { r: 0, g: 184, b: 230 } },
+  { p_value: .025, color: { r: 115, g: 0, b: 230 } },
+  { p_value: .0375, color: { r: 255, g: 0, b: 102 } },
+  { p_value: .05, color: { r: 255, g: 255, b: 153 } },
 
  ];
 
 var getColorForP_Value = function(p_value) {
-  if(p_value > 1) return '#555'; //should never happen
+  // let i = 0;
+
+  // switch(true) {
+  //   case (p_value < .0125):
+  //     i = 1;
+  //     break;
+  //   case (p_value < .025):
+  //     i = 2;
+  //     break;
+  //   case (p_value < .0375):
+  //     i = 3;
+  //     break;
+  //   case (p_value < .05):
+  //     i = 4;
+  //     break;
+  //   default:
+  //     return '#555';
+  // }
+
+
+  if(p_value > 0.05) return '#555'; //should never happen
 
   //iterate through to find upperColor and lowerColor color bound
   for (var i = 1; i < p_valueColorScale.length - 1; i++) {
@@ -18,6 +38,9 @@ var getColorForP_Value = function(p_value) {
           break;
       }
   }
+
+  // while(p_value > p_valueColorScale[i].p_value) i++;
+
   var lowerColor = p_valueColorScale[i - 1];
   var upperColor = p_valueColorScale[i];
   var colorRange = upperColor.p_value - lowerColor.p_value;

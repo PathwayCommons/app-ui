@@ -44,13 +44,16 @@ class EnrichmentMenu extends React.Component {
       h(TabPanel, [
         h('h4', 'P-Value Legend'),
         h('div.enrichment-legend', [
-          h('p', `0`),
-          //h('p.p_value-label-1', '.1'),
-          h('p', '.5'),
-          h('p', `1`)
+          h('div.enrichment-legend-1', [
+            h('p', `0`),
+            h('p', '.025'),
+            h('p', `.05`)
+          ]),
+          h('div.enrichment-legend-2', [
+            h('p', `>.05`)
+          ])
         ])
-      ]),
-      h(TabPanel)
+      ])
     ]);
   }
 }

@@ -143,4 +143,4 @@ const applyHumanLayout = (cy, layoutJSON, animateOpts = {}) => {
   cy.animate(animateOpts);
 };
 
-module.exports = { getLayoutConfig, applyHumanLayout };
+module.exports = { defaultLayout, getLayoutConfig, applyHumanLayout };

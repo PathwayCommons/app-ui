@@ -5,9 +5,7 @@ const Loader = require('react-loader');
 
 const queryString = require('query-string');
 const _ = require('lodash');
-const classNames = require('classnames');
 
-const Icon = require('../../common/components').Icon;
 const { ServerAPI } = require('../../services');
 const queryEntityInfo = require('./query-entity-info');
 const EntityInfoBoxList = require('./entity-info-box');
@@ -181,7 +179,7 @@ class Search extends React.Component {
                   onKeyPress: e => this.onSearchValueChange(e)
                 }),
                 h(Link, { to: { pathname: '/search', search: queryString.stringify(state.query)},className:"search-search-button"}, [
-                  h(Icon, { icon: 'search' })
+                  h('i.material-icons', 'search')
                 ])
               ]),
               h('div.search-suggestions', [

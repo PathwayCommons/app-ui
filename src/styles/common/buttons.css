@@ -1,0 +1,46 @@
+.icon-button {
+  @extend %flex-center;
+  @extend %no-select;
+
+  height: calc(var(--icon-size) * 3 / 2.2);
+  width: calc(var(--icon-size) * 3 / 2.2);
+  margin-left: 0.12em;
+  margin-right: 0.12em;
+  border-radius: 50% !important;
+  transition: all 0.1s linear;
+  color: var(--dark-base-colour);
+  cursor: pointer;
+
+  & :hover {
+    background-color: var(--light-base-colour-dark);
+  }
+
+  & i {
+    font-size: var(--icon-size);
+    border-radius: 50%;
+    padding: 0.12em;
+  }
+}
+
+.icon-button-active {
+  color: var(--accent-1-colour);
+}
+
+
+.text-button {
+  @extend %flex-center;
+
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+
+  transition: background-color 0.1s linear;
+
+  &:hover {
+    background-color: var(--light-base-colour-dark);
+  }
+
+  & i {
+    font-size: 1em;
+  }
+}

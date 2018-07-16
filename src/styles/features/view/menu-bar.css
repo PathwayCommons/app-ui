@@ -63,9 +63,6 @@
   }
 }
 
-.enrichmentInput {
-  display: flex;
-}
 
 .sidebar-tool-button-container {
   @extend %flex-center;
@@ -95,33 +92,6 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
 
 }
 
-.layout-dropdown {
-  @extend %flex-center;
-
-  height: calc(var(--icon-size) * 3 / 2);
-  width: 0;
-  padding: 0;
-
-  box-sizing: border-box;
-  overflow: hidden;
-
-  font-size: 0.9em;
-
-  transition: all 0.1s ease-out;
-
-  & select {
-    width: 100%;
-    background-color: white;
-    padding-right: 1.75em;
-  }
-
-  &.layout-dropdown-open {
-    width: 11em;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-    overflow: visible;
-  }
-}
 
 .search-nodes {
   @extend %flex-center;
@@ -151,78 +121,6 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
   width: 90%;
   padding: 0 0 1px 0 !important;
   border-width: 0px !important;
-}
-.gene-input-container{
-  height: 1.85em;
-  width: 200px;
-}
-
-.gene-input-box{
-  min-height: 1.85em;
-  max-height: 80%;
-  width: 200px;
-  background-color: white;
-  padding: 0em 0.5em;
-  box-sizing: border-box;
-  border: 1px solid var(--light-base-colour-dark);
-  border-radius: 0 !important;
-  font-weight: normal;
-  position: fixed;
-  vertical-align: middle;
-  z-index: 1;
-  overflow-y:scroll;
-  line-height: 1.8;
-  resize: none;
-}
-
-.gene-input-box:empty:not(:focus):before {
-  content: attr(placeholder);
-}
-
-.gene-input-box:not(:focus) {
-  max-height: 1.85em;
-}
-
-.unrecognized-token-container{
-  @extend %flex-center;
-
-  min-width: 200px;
-  position: absolute;
-  top: 100%;
-  left: -1px;
-}
-
-.unrecognized-tokens-feedback{
-  min-height: 1.85em;
-  max-height: 628px;
-  width: 200px;
-  background-color: white;
-  padding: 0em 0.5em;
-  border: 1px solid var(--light-base-colour-dark);
-  border-radius: 0 !important;
-  font-weight: normal;
-  vertical-align: middle;
-  z-index: 1;
-  overflow-y:scroll;
-  line-height: 1.8;
-  resize: none;
-}
-
-.unrecognized-tokens-feedback:empty{
-  display:none;
-}
-
-/* submit button for gene input */
-.submit{
-  background-color: var(--dark-base-colour);
-  /* background-color: #16A086; */
-  color: white;
-  font-weight: normal;
-  border: 1px solid var(--light-base-colour-dark);
-  border-left: none;
-  border-radius: 0 !important;
-  height: 1.85em;
-  vertical-align: middle;
 }
 
 .view-search-clear {
@@ -256,10 +154,6 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
   .title-container {
     padding-left: 1em;
   }
-
-  .sidebar-tool-button-container {
-    display: none;
-  }
 }
 
 /* Portrait-specific */
@@ -277,9 +171,5 @@ _::-webkit-full-page-media, _:future, :root .view-toolbar{
   .layout-dropdown {
     padding-top: 1em;
     padding-bottom: 1em;
-  }
-
-  .sidebar-tool-button-container {
-    display: none;
   }
 }

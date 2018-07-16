@@ -1,4 +1,42 @@
-.common-async-button {
+.file-download-menu {
+  height: 100%;
+  width: 100%;
+}
+
+.file-download-content {
+  margin-bottom: 1em;
+}
+
+.toggle-extra-downloads-container {
+  @extend %no-select;
+
+  width: 100%;
+  margin: 0.5em 0;
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.file-download-extras {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+
+  transform-origin: top center;
+  transform: scaleY(100%);
+  overflow: hidden;
+
+  transition: max-height 0s linear 0s, transform 0.25s ease-out;
+
+  &.file-download-extras-hide {
+    max-height: 0;
+    transform: scaleY(0);
+    transition: transform 0.25s ease-out, max-height 0s linear 0.25s;
+  }
+}
+
+.download-option {
   width: 100%;
   padding: 1em;
 
@@ -25,7 +63,7 @@
   }
 }
 
-.common-async-button-header {
+.download-option-header {
   margin-bottom: 0.25em;
 
   display: flex;
@@ -41,24 +79,7 @@
 
 }
 
-.common-async-button-loader-container {
-  @extend %flex-center;
-  @extend %no-select;
-
-  height: 2em;
-  width: 2em;
-
-  padding: 1em;
-  box-sizing: border-box;
-
-  cursor: pointer;
-
-  & .loader {
-    position: relative;
-  }
-}
-
-.common-async-button-description {
+.download-option-description {
   @extend %no-select;
 
   width: 100%;

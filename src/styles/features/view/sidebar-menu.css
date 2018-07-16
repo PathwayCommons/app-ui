@@ -31,7 +31,7 @@
   }
 }
 
-.sidebar-close-button-container {
+.sidebar-close {
   @extend %flex-center;
 
   height: calc(var(--icon-size) * 3 / 2);

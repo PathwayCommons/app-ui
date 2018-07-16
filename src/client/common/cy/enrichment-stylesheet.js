@@ -10,34 +10,34 @@ var p_valueColorScale = [
  ];
 
 var getColorForP_Value = function(p_value) {
-  // let i = 0;
+  let i = 0;
 
-  // switch(true) {
-  //   case (p_value < .0125):
-  //     i = 1;
-  //     break;
-  //   case (p_value < .025):
-  //     i = 2;
-  //     break;
-  //   case (p_value < .0375):
-  //     i = 3;
-  //     break;
-  //   case (p_value < .05):
-  //     i = 4;
-  //     break;
-  //   default:
-  //     return '#555';
-  // }
-
-
-  if(p_value > 0.05) return '#555'; //should never happen
-
-  //iterate through to find upperColor and lowerColor color bound
-  for (var i = 1; i < p_valueColorScale.length - 1; i++) {
-      if (p_value < p_valueColorScale[i].p_value) {
-          break;
-      }
+  switch(true) {
+    case (p_value <= .0125):
+      i = 1;
+      break;
+    case (p_value <= .025):
+      i = 2;
+      break;
+    case (p_value <= .0375):
+      i = 3;
+      break;
+    case (p_value <= .05):
+      i = 4;
+      break;
+    default:
+      return '#555';
   }
+
+
+  // if(p_value > 0.05) return '#555'; //should never happen
+
+  // //iterate through to find upperColor and lowerColor color bound
+  // for (var i = 1; i < p_valueColorScale.length - 1; i++) {
+  //     if (p_value < p_valueColorScale[i].p_value) {
+  //         break;
+  //     }
+  // }
 
   // while(p_value > p_valueColorScale[i].p_value) i++;
 

@@ -41,26 +41,6 @@ const emptyNetworkJSON = {
     nodes: []
 };
 
-<<<<<<< HEAD
-const testNetwork = {
-  edges: [
-    {data:{id: 'edge1', source:"node3", target: "node4", similarity: 3 }},
-    {data:{id: 'edge2', source:"node1", target: "node2", similarity: .4 }},
-    {data:{id: 'edge3', source:"node1", target: "node4" }},
-    {data:{id: 'edge4', source:"node2", target: "node4" }}
-  ],
-  nodes: [
-    {data: {id: "node1", description: "node1", p_value: ".1"}},
-    {data: {id: "node2", description: "node2", p_value: ".05"}},
-    {data: {id: "node3", description: "node3", p_value: ".05"}},
-    {data: {id: "node4", description: "node4", p_value: ".025"}},
-    {data: {id: "node5", description: "node5", p_value: ".75"}},
-    {data: {id: "node6", description: "node6", p_value: ".9999"}}
-
-
-  ]
-};
-=======
 // for testing purposes
 // const testNetwork = {
 //   edges: [
@@ -78,7 +58,6 @@ const testNetwork = {
 //     {data: {id: "node6", description: "node6", p_value: ".9999"}}
 //   ]
 // };
->>>>>>> nodeSize
 
 
 class Enrichment extends React.Component {
@@ -87,15 +66,9 @@ class Enrichment extends React.Component {
     this.state = {
       cySrv: new CytoscapeService( {style: enrichmentStylesheet, showTooltipsOnEdges:true, minZoom:0.01}),
       componentConfig: enrichmentConfig,
-<<<<<<< HEAD
-      layoutConfig: getLayoutConfig(),
-      //networkJSON: emptyNetworkJSON,
-      networkJSON: testNetwork,
-=======
       layoutConfig: getLayoutConfig('enrichment'),
       networkJSON: emptyNetworkJSON,
       // networkJSON: testNetwork,
->>>>>>> nodeSize
 
       networkMetadata: {
         name: "enrichment",

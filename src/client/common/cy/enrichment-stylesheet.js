@@ -1,6 +1,5 @@
 const cytoscape = require('cytoscape');
 
-<<<<<<< HEAD
 var p_valueColorScale = [
   { p_value: 0.0, color: { r: 0, g: 255, b: 0 } },
   { p_value: 0.0125, color: { r: 0, g: 184, b: 230 } },
@@ -58,7 +57,6 @@ var getColorForP_Value = function(p_value) {
   return 'rgb(' + [color.r, color.g, color.b].join(',') + ')';
 };
 
-=======
 function getNodeSize( geneCount ){
   return mapGeneCountToSize(Math.min( geneCount, 1000 ));
 }
@@ -66,7 +64,6 @@ function getNodeSize( geneCount ){
 function mapGeneCountToSize( geneCount ){
   return ( (5 * Math.sqrt( geneCount -1 )) + 30 );
 }
->>>>>>> nodeSize
 
 const enrichmentStylesheet=cytoscape.stylesheet()
 .selector('edge')
@@ -87,11 +84,7 @@ const enrichmentStylesheet=cytoscape.stylesheet()
 .css({
   'font-size': 20,
   'color': 'black',
-<<<<<<< HEAD
   'background-color': node => getColorForP_Value(node.data('p_value')),
-=======
-  'background-color': '#00bfff', //TODO: Colored accoriding to p-value
->>>>>>> nodeSize
   'background-opacity':0.8,
   'text-outline-color': 'white',
   'text-outline-width': 2,

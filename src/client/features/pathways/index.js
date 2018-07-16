@@ -12,7 +12,7 @@ const { EmptyNetwork } = require('../../common/components/empty-network');
 const { defaultLayout } = require('../../common/cy/layout');
 
 
-class View extends React.Component {
+class Pathways extends React.Component {
   constructor(props) {
     super(props);
     let { uri, title } = queryString.parse(props.location.search);
@@ -62,30 +62,27 @@ class View extends React.Component {
 
       layout.run();
     });
+  }
 
-
-
+  componentWillUnmount(){
+    this.state.cySrv.destroy();
   }
 
   render() {
     let state = this.state;
 
+    let network = h('div.network', [
+      h('div.network-cy', {
+        ref: dom => this.network = dom
+      })
+    ]);
 
-    return h('div.view', [
-      h('div.network', {
-        className: classNames({
-          'network-loading': false,
-          'newtwork-sidebar-open': false
-        }),
-      }, [
-        h('div.network-cy', {
-          ref: dom => this.network = dom
-        })
-      ])
+    return h('div.pathways', [
+      network
     ]);
   }
 
 }
 
 
-module.exports = View;
+module.exports = Pathways;

@@ -1,0 +1,10 @@
+@import "./pathways/menu-bar.css";
+@import "./pathways/network.css";
+@import "./pathways/sidebar-menu.css";
+@import "./pathways/tooltip.css";
+
+.pathways {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}

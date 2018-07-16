@@ -1,14 +1,15 @@
 const cytoscape = require('cytoscape');
 
-function nodeSize(geneCount){
-  console.log(geneCount);
-  //let size = geneCount;
-  let size = (5*Math.sqrt(geneCount -1)+30);
-  //let size = (geneCount/2) + 30;
+function getNodeSize( geneCount ){
+  let size = ( geneCount <= 1000 ) ? mapGeneCountToSize(geneCount) : mapGeneCountToSize(1000);
   return size;
 }
 
-const iStylesheet=cytoscape.stylesheet()
+function mapGeneCountToSize( geneCount ){
+  return ( (5 * Math.sqrt( geneCount -1 )) + 30 );
+}
+
+const enrichmentStylesheet=cytoscape.stylesheet()
 .selector('edge')
 .css({
   'opacity': 0.3,
@@ -33,8 +34,8 @@ const iStylesheet=cytoscape.stylesheet()
   'text-outline-width': 2,
   'text-wrap': 'wrap',
   'text-max-width': 175,
-  'width': node => node.data('geneCount') ? nodeSize(node.data('geneCount')) : 30,
-  'height': node => node.data('geneCount') ? nodeSize(node.data('geneCount')) : 30,
+  'width': node => node.data('geneCount') ? getNodeSize(node.data('geneCount')) : 30,
+  'height': node => node.data('geneCount') ? getNodeSize(node.data('geneCount')) : 30,
   'label': node => node.data('description'),
   'text-halign': 'center',
   'text-valign': 'center',
@@ -47,4 +48,4 @@ const iStylesheet=cytoscape.stylesheet()
   'color': 'white',
   'text-outline-color': 'black'
 });
-module.exports = iStylesheet;
+module.exports = enrichmentStylesheet;

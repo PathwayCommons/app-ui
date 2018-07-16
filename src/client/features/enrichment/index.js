@@ -7,25 +7,26 @@ const Loader = require('react-loader');
 // const hideTooltips = require('../../common/cy/events/click').hideTooltips;
 // const removeStyle= require('../../common/cy/manage-style').removeStyle;
 const CytoscapeService = require('../../common/cy/');
-const enrichmentStylesheet= require('../../common/cy/enrichment-stylesheet');
+const enrichmentStylesheet = require('../../common/cy/enrichment-stylesheet');
 const TokenInput = require('./token-input');
-const EnrichmentMenu= require('./enrichment-menu');
+const EnrichmentMenu = require('./enrichment-menu');
 const { BaseNetworkView } = require('../../common/components');
 const { getLayoutConfig } = require('../../common/cy/layout');
 const { ServerAPI } = require('../../services/');
 
 const downloadTypes = require('../../common/config').downloadTypes;
+
+//extablish toolbar and declare features to not include
 const toolbarButtons = _.differenceBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'}, {'id': 'showInfo'}],'id');
 
 const enrichmentMenuId = 'enrichmentMenu';
 const enrichmentConfig={
-  //extablish toolbar and declare features to not include
+  //add icon for p_value legend on side bar
   toolbarButtons: toolbarButtons.concat({
-    icon: 'palette', //TODO: pick icon for p-value
     id: 'showEnrichmentMenu',
     type: 'activateMenu',
     menuId: 'enrichmentMenu',
-    description: 'View p-value data'
+    description: 'View p-value legend'
   }),
   menus: BaseNetworkView.config.menus.concat({
     id: enrichmentMenuId,
@@ -78,11 +79,6 @@ class Enrichment extends React.Component {
 
       loaded: true,
 
-      filters: {
-        Binding:true,
-        Phosphorylation:true,
-        Expression:true
-      },
       closeToolBar: true,
       unrecognized: [],
       inputs: "",
@@ -131,7 +127,7 @@ class Enrichment extends React.Component {
   }
 
   render() {
-    let { cySrv, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading, closeToolBar, loaded, filters } = this.state;
+    let { cySrv, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading, closeToolBar, loaded } = this.state;
 
     let retrieveTokenInput = () => h(TokenInput,{
       inputs: this.state.inputs,
@@ -150,7 +146,6 @@ class Enrichment extends React.Component {
       networkMetadata,
       networkLoading,
       closeToolBar,
-      filters,
       titleContainer: () => h(retrieveTokenInput),
       download: {
         types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'),

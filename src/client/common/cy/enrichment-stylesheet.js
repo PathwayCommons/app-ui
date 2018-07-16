@@ -3,7 +3,6 @@ const cytoscape = require('cytoscape');
 var p_valueColorScale = [
   { p_value: 0, color: { r: 0, g: 0, b: 255 } },
   { p_value: .05, color: { r: 179, g: 230, b: 255 } }
-
  ];
 
 var getColorForP_Value = function(p_value) {

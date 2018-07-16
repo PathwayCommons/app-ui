@@ -9,7 +9,7 @@
 }
 
 @media (--small-width-viewport) {
-  .graph{
+  .network{
     width: 100% !important;
   }
 }

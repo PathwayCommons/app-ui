@@ -12,11 +12,10 @@ class EnrichmentMenu extends React.Component {
           h(Tab, {
             className: 'enrichment-drawer-tab',
             selectedClassName: 'enrichment-drawer-tab-selected'
-            }, 'Pathway Data')
+            }, 'P-Value Legend')
         ])
       ]),
       h(TabPanel, [
-        h('h4', 'P-Value Legend'),
         h('div.enrichment-legend-container', [
           h('div.enrichment-legend-stat-significant', [
             h('p', `0`),

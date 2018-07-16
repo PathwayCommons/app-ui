@@ -7,6 +7,9 @@ var p_valueColorScale = [
 
 var getColorForP_Value = function(p_value) {
 
+  if( p_value > 0.05 ) return '#555';
+
+  //NOTE: if > 2 colors in scale, iterate through p_valueColorScale.p_value to find upper and lower color bounds
   var lowerColor = p_valueColorScale[0];
   var upperColor = p_valueColorScale[1];
   var colorRange = upperColor.p_value - lowerColor.p_value;

@@ -21,9 +21,10 @@ const toolbarButtons = _.differenceBy(BaseNetworkView.config.toolbarButtons,[{'i
 
 const enrichmentMenuId = 'enrichmentMenu';
 const enrichmentConfig={
-  //add icon for p_value legend on side bar
+  //add icon for p_value legend
   toolbarButtons: toolbarButtons.concat({
     id: 'showEnrichmentMenu',
+    icon: 'palette',
     type: 'activateMenu',
     menuId: 'enrichmentMenu',
     description: 'View p-value legend'
@@ -51,11 +52,11 @@ const emptyNetworkJSON = {
 //     {data:{id: 'edge4', source:"node2", target: "node4" }}
 //   ],
 //   nodes: [
-//     {data: {id: "node1", description: "node1", p_value: ".1", geneCount: "100000"}},
+//     {data: {id: "node1", description: "node1", p_value: ".01", geneCount: "100000"}},
 //     {data: {id: "node2", description: "node2", p_value: ".05", geneCount: "1"}},
-//     {data: {id: "node3", description: "node3", p_value: ".05", geneCount: "100"}},
+//     {data: {id: "node3", description: "node3", p_value: ".04", geneCount: "100"}},
 //     {data: {id: "node4", description: "node4", p_value: ".025", geneCount: "500"}},
-//     {data: {id: "node5", description: "node5", p_value: ".75", geneCount: "300"}},
+//     {data: {id: "node5", description: "node5", p_value: ".00005", geneCount: "300"}},
 //     {data: {id: "node6", description: "node6", p_value: ".9999"}}
 //   ]
 // };

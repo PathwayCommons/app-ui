@@ -1,6 +1,6 @@
-@import "./view/menuBar.css";
+@import "./view/menu-bar.css";
 @import "./view/graph.css";
-@import "./view/sidebarMenu.css";
+@import "./view/sidebar-menu.css";
 @import "./view/tooltip.css";
 
 .view {

@@ -109,12 +109,7 @@ class Edit extends React.Component {
     const content = state.loading ? loadingView : baseView;
 
     return h('div', [
-      content,
-      h(Popup, {
-        active: state.activateWarning,
-        deactivate: () => this.setState({ activateWarning: false }),
-        duration: 5000
-      }, state.warningMessage)
+      content
     ]);
   }
 }

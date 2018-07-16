@@ -12,7 +12,7 @@ Optional
 - tippy (an object with tippy.js options)
 - popover props (props you want the popover to have, see popover)
 */
-class TextTooltip extends React.Component {
+class Tooltip extends React.Component {
   render() {
     let props = this.props;
 
@@ -41,4 +41,4 @@ class TextTooltip extends React.Component {
   }
 }
 
-module.exports = TextTooltip;
+module.exports = Tooltip;

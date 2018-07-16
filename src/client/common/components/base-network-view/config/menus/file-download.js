@@ -2,8 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const saveAs = require('file-saver').saveAs;
 const _ = require('lodash');
-
-const AsyncButton = require('../../../async-button');
+const Loader = require('react-loader');
 
 const { ServerAPI } = require('../../../../../services/');
 
@@ -15,7 +14,8 @@ class FileDownloadMenu extends React.Component {
     super(props);
     this.state = {
       downloadTypes: this.props.download?this.props.download.types :downloadTypesFull,
-      loadingOptions: []
+      loadingOptions: [],
+      loading: false
     };
   }
 
@@ -33,7 +33,7 @@ class FileDownloadMenu extends React.Component {
             bg: 'white',
             full: true
           }), `${this.props.networkMetadata.name}.${optionObj.ext}`);
-          this.setState({ loadingOptions: _.filter(this.state.loadingOptions, item => item !== 'png') });
+          this.setState({ loading: false, loadingOptions: _.filter(this.state.loadingOptions, item => item !== 'png') });
         }, 1);
       });
     } else if (type) {
@@ -56,7 +56,7 @@ class FileDownloadMenu extends React.Component {
         fileContent = JSON.stringify(content);
       }
       this.saveDownload(fileExt, fileContent);
-      this.setState({ loadingOptions: _.filter(this.state.loadingOptions, item => item !== fileType) });
+      this.setState({ loading: false, loadingOptions: _.filter(this.state.loadingOptions, item => item !== fileType) });
     });
   }
 
@@ -71,20 +71,26 @@ class FileDownloadMenu extends React.Component {
   }
 
   render() {
-    let getMenuContents = () => this.state.downloadTypes.reduce((result, option) => {
-        result.push(
-          h(AsyncButton, {
-            header: option.displayName,
-            onClick: header => this.downloadFromDisplayName(header),
-            loading: _.includes(this.state.loadingOptions, option.type)
-          }, option.description)
-        );
-      return result;
-    }, []);
+    let menuContents = this.state.downloadTypes.map( dt => {
+      let dlOption = h('div.download-option', 
+        { 
+          onClick: () => { this.setState({loading: true}, () => this.downloadFromDisplayName( dt.displayName )); } 
+        }, [
+          h('div.download-option-header', [
+            h('h3', dt.displayName),
+          ]),
+          h('div.download-option-description', dt.description)
+      ]);
+
+      return dlOption;
+    } );
 
     return h('div.file-download-menu', [
       h('h2', 'Network Downloads'),
-      h('div.file-download-content', getMenuContents())
+      h('div.file-download-content', [
+        ...menuContents,
+        h(Loader, { loaded: !this.state.loading })
+      ])
     ]);
   }
 }

@@ -2,6 +2,8 @@ const cytoscape = require('cytoscape');
 const sbgnStyleSheet = require('cytoscape-sbgn-stylesheet');
 const _ = require('lodash');
 
+const PathwayNodeMetadataTip = require('./pathway-node-metadata-tooltip');
+
 const DEFAULT_LAYOUT_OPTS = {
   name: 'cose-bilkent',
   nodeRepulsion: 5000,
@@ -30,6 +32,8 @@ const NODE_HIGHLIGHTED_STYLE = {
 };
 
 const NODE_STYLE_SCRATCH_KEY = '_matched-style-before';
+
+const SHOW_TOOLTIPS_EVENT = 'showtooltip';
 
 const storeStyle = (ele, keys) => {
   const storedStyleProps = {};
@@ -90,7 +94,49 @@ let layout = cy => {
 };
 
 let bindCyEvents = cy => {
+  let hideTooltips = () => {
+    cy.elements().forEach(ele => {
+      const tooltip = ele.scratch('_tooltip');
+      if (tooltip) {
+        tooltip.hide();
+        ele.scratch('_tooltip-opened', false);
+      }
+      ele.unselect();
+    });
+  };
+
   cy.expandCollapse(EXPAND_COLLAPSE_OPTS);
+  cy.on(SHOW_TOOLTIPS_EVENT, 'node', function (evt) {
+    const node = evt.target;
+
+    if(node.data('class') !== "compartment"){
+      //Create or get tooltip HTML object
+      let tooltip = node.scratch('_tooltip');
+      if (!(tooltip)) {
+        tooltip = new PathwayNodeMetadataTip(node);
+        node.scratch('_tooltip', tooltip);
+      }
+      tooltip.show();
+    }
+  });
+
+  cy.on('tap', 'node', evt => {
+    const node = evt.target;
+
+    hideTooltips();
+    if( !node.scratch('_tooltip-opened') ){
+      node.emit(SHOW_TOOLTIPS_EVENT);
+      node.scratch('_tooltip-opened', true);
+    } else {
+      node.scratch('_tooltip-opened', false);
+    }
+  });
+
+  //Hide Tooltips on various graph movements
+  cy.on('tap', () => hideTooltips());
+  cy.on('drag', () => hideTooltips());
+  cy.on('pan', () => hideTooltips());
+  cy.on('zoom', () => hideTooltips());
 };
 
 let searchNodes = _.debounce((cy, query) => {

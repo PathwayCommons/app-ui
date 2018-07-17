@@ -74,8 +74,6 @@ class CytoscapeService {
     let options = container == null ? this.options : Object.assign({}, this.options, { container });
     let cy = this.cy = cytoscape(options);
 
-    bindEvents(cy, this.options);
-
     this.resolveMount(cy);
   }
 

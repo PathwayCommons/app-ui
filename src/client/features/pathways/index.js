@@ -2,6 +2,8 @@ const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
 const queryString = require('query-string');
+const EventEmitter = require('eventemitter3');
+
 const Loader = require('react-loader');
 const classNames = require('classNames');
 
@@ -9,8 +11,11 @@ const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services/');
 
 const { EmptyNetwork } = require('../../common/components/empty-network');
+const Tooltip = require('../../common/components/tooltip');
 const { defaultLayout } = require('../../common/cy/layout');
 
+const PathwaysButtons = require('./pathways-buttons');
+const { stylesheet, bindPathwaysEvents } = require('./pathways-cy');
 
 class Pathways extends React.Component {
   constructor(props) {
@@ -18,7 +23,8 @@ class Pathways extends React.Component {
     let { uri } = queryString.parse(props.location.search);
 
     this.state = {
-      cySrv: new CytoscapeService(),
+      cySrv: new CytoscapeService({ style: stylesheet }),
+      bus: new EventEmitter(),
       pathwayJSON: {},
       pathwayMetadata: {
         uri: uri,
@@ -41,6 +47,7 @@ class Pathways extends React.Component {
     ServerAPI.getPathway(uri, 'latest').then( pathwayJSON => {
       cySrv.mount(this.network);
       let cy = cySrv.get();
+      bindPathwaysEvents(cy);
 
       cy.remove('*');
       cy.add(pathwayJSON.graph);
@@ -48,7 +55,6 @@ class Pathways extends React.Component {
 
       layout.on('layoutstop', () => {
         cySrv.load();
-        console.log(pathwayJSON);
         this.setState({
           pathwayJSON: _.get(pathwayJSON, 'graph', { nodes: [], edges: [] }),
           pathwayMetadata: {
@@ -69,9 +75,8 @@ class Pathways extends React.Component {
   }
 
   render() {
-    let state = this.state;
+    let { pathwayMetadata, cySrv, bus } = this.state;
 
-    console.log( this.state);
     let network = h('div.network', [
       h('div.network-cy', {
         ref: dom => this.network = dom
@@ -81,16 +86,18 @@ class Pathways extends React.Component {
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
         h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
-        h('div.app-bar-title', state.pathwayMetadata.name + ' | ' + state.pathwayMetadata.datasource)
+        h('div.app-bar-title', pathwayMetadata.name + ' | ' + pathwayMetadata.datasource)
       ])
     ]);
-    // h('div.view-toolbar', [
-      // '1','2','3','4'
-    // ])
+
+    let toolbar = h('div.view-toolbar', [
+      h(PathwaysButtons, { cySrv, bus })
+    ]);
 
     return h('div.pathways', [
       network,
-      appBar
+      appBar,
+      toolbar
     ]);
   }
 

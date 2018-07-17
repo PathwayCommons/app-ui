@@ -69,10 +69,22 @@
 }
 
 .view-toolbar {
-  @extend %flex-center;
+  /* @extend %flex-center;
+
+  position: absolute;
+  top: 1.8em;
+  left: 30px;
+  border-radius: 0 0 0.25em 0.25em;
+  border-color: var(--light-base-colour-dark);
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  border-top: none;
+
+  background-color: rgba(255, 255, 255, 0.5); */
+  /* @extend %flex-center;
 
   height: calc(var(--icon-size) * 3 / 2);
-  //width: calc((var(--icon-size) * 3 / 2) * var(--number-of-sidebar-icons));
+  width: calc((var(--icon-size) * 3 / 2) * var(--number-of-sidebar-icons));
 
   position: absolute;
   top: 100%;
@@ -83,7 +95,7 @@
   border-style: solid;
   border-width: 1px 1px 1px 1px;
 
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.5); */
 }
 
 _::-webkit-full-page-media, _:future, :root .view-toolbar{

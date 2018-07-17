@@ -9,3 +9,7 @@
   height: 100vh;
   position: relative;
 }
+
+.pathways-buttons { 
+  @extend %flex-center;
+}

@@ -135,8 +135,8 @@ class Enrichment extends React.Component {
       closeToolBar,
       titleContainer: () => h(retrieveTokenInput),
       download: {
-        types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'),
-        promise: () => Promise.resolve(_.map(this.state.cy.edges(),edge=> edge.data().id).sort().join('\n'))
+        types: downloadTypes.filter(ele=>ele.type==='png' || ele.type==='sif'),
+        promise: () => cySrv.get().edges().map( edge => (edge.source().id() + '\t' + 'TODO_EDGE_TYPE' + '\t' + edge.target().id()) ).sort().join('\n')
       },
     })
     :

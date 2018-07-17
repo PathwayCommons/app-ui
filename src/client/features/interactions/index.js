@@ -121,7 +121,7 @@ class Interactions extends React.Component {
       const layout = cy.layout(initialLayoutOpts);
       layout.run();
     });
-    
+
   }
 
   filterUpdate(type) {
@@ -133,7 +133,7 @@ class Interactions extends React.Component {
     const edges = categories.get(type).edges;
     const nodes = categories.get(type).nodes;
     //hide all tooltips
-    
+
     hideTooltips(cy);
     //???
     const hovered = cy.filter(ele=>ele.scratch('_hover-style-before'));
@@ -151,7 +151,7 @@ class Interactions extends React.Component {
         edges.union(nodes).restore();
       }
     });
-    
+
     //toggle the filter
     filters[type]=!filters[type];
     this.setState({
@@ -160,7 +160,7 @@ class Interactions extends React.Component {
   }
 
   /**
-   * @description This function generates normalized betweenness centrality values for each node in the network, 
+   * @description This function generates normalized betweenness centrality values for each node in the network,
    * and adds the calculated information to each node as a new data field
    */
   generateCentralityValues(){
@@ -170,7 +170,7 @@ class Interactions extends React.Component {
     const bc = cy.$().bc();
     const nodes = cy.nodes();
     if(nodes.length === 0) return;
-    
+
 
     //loop through the nodes, collected betweenness centrality values
     let centralityVals = [];
@@ -217,8 +217,8 @@ class Interactions extends React.Component {
       filterUpdate:(evt,type)=> this.filterUpdate(evt,type),
       filters: state.filters,
       download: {
-        types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'),
-        promise: () => Promise.resolve(_.map(state.cySrv.get().edges(),edge=> edge.data().id).sort().join('\n'))
+        types: downloadTypes.filter(ele=>ele.type==='png' || ele.type==='sif'),
+        promise: () => state.cySrv.get().edges().map( edge => edge.data().id() ).sort().join('\n')
       },
     }):
     h('div.no-network',[h('strong.title','No interactions to display'),h('span','Try a diffrent set of entities')]);
@@ -227,7 +227,7 @@ class Interactions extends React.Component {
 
     // create a view shell loading view e.g looks like the view but its not
     const content = loaded ? baseView : loadingView;
-    
+
     return h('div.main', [content]);
   }
 }

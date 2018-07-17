@@ -72,6 +72,18 @@ const interactionsLayout = {
   }
 };
 
+const enrichmentLayout = {
+  displayName: 'cose-bilkent',
+  description: 'The CoSE layout for Cytoscape.js by the i-Vis Lab in Bilkent University',
+  options: {
+    name: 'cose-bilkent',
+    nodeRepulsion: 300000,
+    edgeElasticity: 0.05,
+    idealEdgeLength: 200,
+    animate:false,
+  }
+};
+
 const getLayoutConfig = (presetLayoutJSON) => {
   const humanCreatedLayout = {
     name: 'preset',
@@ -98,6 +110,12 @@ const getLayoutConfig = (presetLayoutJSON) => {
     layoutConfig = {
       defaultLayout: interactionsLayout,
       layouts: [interactionsLayout]
+    };
+  }
+  else if(presetLayoutJSON === 'enrichment'){
+    layoutConfig = {
+      defaultLayout: enrichmentLayout,
+      layouts: [enrichmentLayout]
     };
   }
   else {

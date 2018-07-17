@@ -14,6 +14,7 @@ const { EmptyNetwork } = require('../../common/components/empty-network');
 const Tooltip = require('../../common/components/tooltip');
 
 const PathwaysToolbar = require('./pathways-toolbar');
+const PathwaysSidebar = require('./pathways-sidebar');
 const { stylesheet, bindCyEvents, DEFAULT_LAYOUT_OPTS } = require('./pathways-cy');
 
 class Pathways extends React.Component {
@@ -30,7 +31,7 @@ class Pathways extends React.Component {
         datasource: '',
         comments: []
       },
-
+      activeMenu: 'closeMenu',
       loading: true
     };
 
@@ -75,10 +76,23 @@ class Pathways extends React.Component {
     this.state.cySrv.destroy();
   }
 
-  render() {
-    let { pathwayMetadata, cySrv, bus } = this.state;
+  changeMenu(menu){
+    let resizeCyImmediate = () => this.state.cySrv.get().resize();
+    let resizeCyDebounced = _.debounce( resizeCyImmediate, 500 );
+    if( menu === this.state.activeMenu ){
+      this.setState({ activeMenu: 'closeMenu' }, resizeCyDebounced);
+    } else {
+      this.setState({ activeMenu: menu }, resizeCyDebounced);
+    }
+  }
 
-    let network = h('div.network', [
+  render() {
+    let { loading, pathwayMetadata, cySrv, bus, activeMenu } = this.state;
+
+    let network = h('div.network', { className: classNames({
+      'network-loading': loading,
+      'network-sidebar-open': activeMenu !== 'closeMenu'
+    })}, [
       h('div.network-cy', {
         ref: dom => this.network = dom
       })
@@ -92,14 +106,18 @@ class Pathways extends React.Component {
     ]);
 
     let toolbar = h('div.app-toolbar', [
-      h(PathwaysToolbar, { cySrv, bus })
+      h(PathwaysToolbar, { cySrv, bus, activeMenu, controller: this })
     ]);
 
+    let sidebar = h('div.app-sidebar', [
+      h(PathwaysSidebar, {  controller: this, activeMenu })
+    ]);
 
     return h('div.pathways', [
       network,
       appBar,
-      toolbar
+      toolbar,
+      sidebar
     ]);
   }
 

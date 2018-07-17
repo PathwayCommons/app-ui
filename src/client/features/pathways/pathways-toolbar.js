@@ -1,10 +1,9 @@
 
 const React = require('react');
 const h = require('react-hyperscript');
+const classNames = require('classNames');
 
 const Tooltip = require('../../common/components/tooltip');
-
-const events = require('./pathways-events');
 
 const { fit, expandCollapse, layout, searchNodes } = require('./pathways-cy');
 
@@ -21,25 +20,26 @@ class PathwaysToolbar extends React.Component {
   }
 
   render(){
-    let { cySrv, bus, controller } = this.props;
+    let { cySrv, controller, activeMenu } = this.props;
     let { searchValue } = this.state;
     let cy = cySrv.get();
 
     return h('div.pathways-toolbar', [
       h(Tooltip, { description: 'Extra Information' }, [
         h('div.icon-button', {
-          onClick: () => { bus.emit(events.SHOW_INFO); },
+          onClick: () => { controller.changeMenu('infoMenu'); },
+          className: classNames({'icon-button-active': activeMenu === 'infoMenu' })
         }, [
           h('i.material-icons', 'info')
         ])
       ]),
-      h(Tooltip, { description: 'Downloads' }, [
-        h('div.icon-button', {
-          onClick: () => { bus.emit(events.SHOW_DOWNLOADS); },
-          // className: classNames({'icon-button-active': state.activeMenu === btn.menuId })
-        }, [
-          h('i.material-icons', 'file_download')
-        ])
+        h(Tooltip, { description: 'Downloads '}, [
+          h('div.icon-button', {
+            onClick: () => { controller.changeMenu('downloadMenu'); },
+            className: classNames({'icon-button-active': activeMenu === 'downloadMenu' })
+          }, [
+            h('i.material-icons', 'file_download')
+          ])
       ]),
       h(Tooltip, { description: 'Expand/Collapse all complex nodes' }, [
         h('div.icon-button', {

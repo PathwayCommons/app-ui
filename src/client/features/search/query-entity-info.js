@@ -3,7 +3,7 @@ const { ServerAPI } = require('../../services');
 
 
 let isUniprotId = token => {
-  return /uniprot:\w+$/i.test(token);
+  return /uniprot:\w+$/i.test( token );
 };
 
 let isNcbiId = token => {
@@ -72,7 +72,7 @@ const getNcbiInfo = ( ids, genes ) => {
 
     return geneResults.uids.map( gene => {
       const originalSearch = ids[ gene ];
-      const geneId = genes ? genes[ originalSearch ] : {"NCBI Gene" : originalSearch};
+      const geneId = genes ? genes[ originalSearch ] : {'NCBI Gene': originalSearch};
       let links = idToLinkConverter( geneId );
 
       return {
@@ -137,7 +137,7 @@ const getUniprotInfo = ids => {
 const getHgncInfo = (hgncSymbols) => {
   const hgncSymbol = Object.keys(hgncSymbols)[0];
 
-  return ServerAPI.getHgncInformation(hgncSymbol).then(result=>{
+  return ServerAPI.getHgncInformation(hgncSymbol).then(result => {
     const geneResults = result.response.docs;
     return geneResults.map(gene => {
 
@@ -148,13 +148,17 @@ const getHgncInfo = (hgncSymbols) => {
       const links= idToLinkConverter(databaseId);
 
       return {
-        databaseID:gene,
+        databaseID: gene,
         name: gene.name,
         function: '',
         officialSymbol: gene.symbol,
         otherNames: gene.alias_symbol.join(', '),
-        showMore:{full:!(geneResults.length>1),function:false,synonyms:false},
-        links:links
+        showMore: {
+          full: !( geneResults.length> 1 ),
+          function: false,
+          synonyms: false
+        },
+        links: links
       };
     });
   });
@@ -209,7 +213,7 @@ const queryEntityInfo = query => {
   let entityQueries;
 
   // look for special tokens
-  tokens.forEach(token => {
+  tokens.forEach( token => {
     let [ dbId, entityId ] = token.split(':');
 
     if( isUniprotId( token ) ){
@@ -224,11 +228,11 @@ const queryEntityInfo = query => {
     }
   });
 
-  if (prefix) {
-    return getProviderSpecificEntityInfo(ncbiIds, uniprotIds, hgncId);
+  if ( prefix ) {
+    return getProviderSpecificEntityInfo( ncbiIds, uniprotIds, hgncId );
   }
   else {
-   let dbsToQuery = Object.entries(dbInfos).map(([k, v]) => v);
+   let dbsToQuery = Object.entries(dbInfos).map( ( [k, v]) => v );
 
    // create entity recognizer queries
    entityQueries = dbsToQuery.map( db => {
@@ -257,7 +261,7 @@ const queryEntityInfo = query => {
      let entityInfos = {};
      results.forEach( dbResult => _.merge( entityInfos, dbResult ) ); //Merge the array of result into one json
 
-     Object.entries(entityInfos).forEach(entityInfo => {
+     Object.entries( entityInfos ).forEach( entityInfo => {
        let [ originalSearchTerm, mappedGene ] = entityInfo;
 
        if( mappedGene['NCBI Gene'] ){

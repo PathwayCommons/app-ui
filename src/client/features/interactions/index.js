@@ -73,23 +73,10 @@ class Interactions extends React.Component {
     });
 
     this.state.cySrv.loadPromise().then(cy => {
-      const state = this.state;
-      const ids = state.ids;
-      if(ids.length === sources.length){
-        const cy = state.cy;
-        const mainNode = cy.nodes(node=> ids.indexOf(node.data().id) != -1);
-        const nodesToKeep = mainNode.merge(mainNode.connectedEdges().connectedNodes());
-        cy.remove(cy.nodes().difference(nodesToKeep));
-      }
-    });
+      const { categories, filters, layoutConfig } = this.state;
 
-    //when the event 'layoutstop' happens, run this code
-    this.state.cy.one('layoutstop',()=>{
-      //get variables from state
-      const state = this.state;
-      const cy = this.state.cy;
-      const categories = state.categories;
-      const filters=state.filters;
+      this.generateCentralityValues();
+
       //for each filter (binding, phosphorylation, expression)
       //value: true/false
       //type: binding/expression etc..
@@ -117,7 +104,7 @@ class Interactions extends React.Component {
       });
 
       //set the layout?
-      const initialLayoutOpts = state.layoutConfig.defaultLayout.options;
+      const initialLayoutOpts = layoutConfig.defaultLayout.options;
       const layout = cy.layout(initialLayoutOpts);
       layout.run();
     });
@@ -166,7 +153,7 @@ class Interactions extends React.Component {
   generateCentralityValues(){
     //setting up base variables
     const state = this.state;
-    const cy = state.cy;
+    const cy = state.cySrv.get();
     const bc = cy.$().bc();
     const nodes = cy.nodes();
     if(nodes.length === 0) return;
@@ -205,7 +192,7 @@ class Interactions extends React.Component {
   render(){
     const state = this.state;
     const loaded = state.loaded;
-    this.generateCentralityValues();
+
     const baseView = !_.isEmpty(state.networkJSON) ? h(BaseNetworkView.component, {
       layoutConfig: state.layoutConfig,
       componentConfig: state.componentConfig,

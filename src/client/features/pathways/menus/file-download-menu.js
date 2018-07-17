@@ -14,20 +14,19 @@ class FileDownloadMenu extends React.Component {
     super(props);
     this.state = {
       downloadTypes: downloadTypesFull,
-      loadingOptions: [],
       loading: false
     };
   }
 
   downloadFromDisplayName(displayName) {
     let { cySrv, fileName } = this.props;
-    let { downloadTypes, loadingOptions, } = this.state;
+    let { downloadTypes, } = this.state;
     let option = _.find(downloadTypes, ['displayName', displayName]);
-    let { type, pc2Name, ext } = option;
+    let { pc2Name, ext, type } = option;
 
     if (type === 'png') {
       // The setTimeout triggers a rerender so that the loader appears on screen
-      this.setState({ loadingOptions: loadingOptions.concat('png') }, () => {
+      this.setState( { loading: true } , () => {
         setTimeout(() => {
           saveAs(cySrv.get().png({
             output: 'blob',
@@ -35,44 +34,34 @@ class FileDownloadMenu extends React.Component {
             bg: 'white',
             full: true
           }), `${fileName}.${ext}`);
-          this.setState({ loading: false, loadingOptions: _.filter(loadingOptions, item => item !== 'png') });
+          this.setState({ loading: false });
         }, 1);
       });
-    } else if (type) {
-      this.initiatePCDownload(pc2Name, ext, type);
+    } else {
+      this.downloadFileFromPC(pc2Name, ext);
     }
-
   }
 
-  initiatePCDownload(format, fileExt, fileType) {
-    let {  uri } = this.props;
-    let { loadingOptions } = this.state;
-    this.setState({ loadingOptions: loadingOptions.concat(fileType) });
-   
-    let downloadFetch = ServerAPI.pcQuery('get', { uri: uri, format: format }).then(res => res.text());
-
-    downloadFetch.then(content => {
-      this.saveDownload(fileExt, typeof content === 'object' ? JSON.stringify(content) : content);
-      this.setState({ loading: false, loadingOptions: _.filter(loadingOptions, item => item !== fileType) });
-    });
-  }
-
-  saveDownload(file_ext, content) {
-    saveAs(new File([content], this.generatePathwayName() + '.' + file_ext, { type: 'text/plain;charset=utf-8' }));
-  }
-
-  generatePathwayName() {
+  downloadFileFromPC(format, fileExt) {
     const FILENAME_CUTOFF = 20;
-    let { fileName }  =  this.props;
-    return fileName.substr(0, fileName.length < FILENAME_CUTOFF ? fileName.length : FILENAME_CUTOFF).replace(/ /g, '_');
+    let { fileName, uri }  =  this.props;
+    fileName = fileName.substr(0, fileName.length < FILENAME_CUTOFF ? fileName.length : FILENAME_CUTOFF).replace(/ /g, '_');
+
+    let downloadFetch = ServerAPI.pcQuery('get', { uri: uri, format: format }).then(res => res.text());
+    this.setState({loading: true}, () => {
+      downloadFetch.then(content => {
+        content = typeof content === 'object' ? JSON.stringify(content) : content;
+        let fileContent = new File([content], `${fileName}.${fileExt}`, { type:'text/plain;charset=utf-8' });
+  
+        saveAs(fileContent);
+        this.setState({ loading: false});
+      });  
+    });
   }
 
   render() {
     let menuContents = this.state.downloadTypes.map( dt => {
-      let dlOption = h('div.download-option', 
-        { 
-          onClick: () => { this.setState({loading: true}, () => this.downloadFromDisplayName( dt.displayName )); } 
-        }, [
+      let dlOption = h('div.download-option', { onClick: () => this.downloadFromDisplayName( dt.displayName ) }, [
           h('div.download-option-header', [
             h('h3', dt.displayName),
           ]),

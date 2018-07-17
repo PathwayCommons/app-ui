@@ -57,11 +57,11 @@ class Pathways extends React.Component {
         cySrv.load();
         this.setState({
           pathwayJSON: graphJSON,
-          pathwayMetadata: {
+          pathwayMetadata: _.assign({}, this.state.pathwayMetadata, {
             name: _.get(graphJSON, 'pathwayMetadata.title.0', 'Untitled Pathway'),
             datasource: _.get(graphJSON, 'pathwayMetadata.dataSource.0', 'Unknown data source'),
             comments: _.get(graphJSON, 'pathwayMetadata.comments', [])
-          },
+          }),
           loading: false
         });
       });
@@ -87,15 +87,15 @@ class Pathways extends React.Component {
 
   render() {
     let { loading, pathwayMetadata, cySrv, activeMenu } = this.state;
-    let { name, datasource } = pathwayMetadata;
+    let { name, datasource, uri } = pathwayMetadata;
 
     let menus = {
       'infoMenu': h(InfoMenu, { infoList: pathwayMetadata.comments } ),
       'closeMenu': null,
       'downloadMenu': h(FileDownloadMenu, { 
-        cy: cySrv,
-        fileName: pathwayMetadata.name, 
-        uri: pathwayMetadata.uri
+        cySrv,
+        fileName: name, 
+        uri: uri
       })
     };
 

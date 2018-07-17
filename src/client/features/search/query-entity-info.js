@@ -72,7 +72,7 @@ const getNcbiInfo = ( ids, genes ) => {
 
     return geneResults.uids.map( gene => {
       const originalSearch = ids[ gene ];
-      const geneId = genes ? genes[ originalSearch ] : {'NCBI Gene': originalSearch};
+      const geneId = genes ? genes[ originalSearch ] : { 'NCBI Gene': originalSearch };
       let links = idToLinkConverter( geneId );
 
       return {
@@ -80,7 +80,7 @@ const getNcbiInfo = ( ids, genes ) => {
         name: geneResults[ gene ].nomenclaturename,
         function: geneResults[ gene ].summary,
         officialSymbol: geneResults[ gene ].nomenclaturesymbol,
-        otherNames: geneResults[ gene ].otheraliases ? geneResults[gene].otheraliases : '',
+        otherNames: geneResults[ gene ].otheraliases ? geneResults[ gene ].otheraliases : '',
         links: links
       };
     });
@@ -134,18 +134,18 @@ const getUniprotInfo = ids => {
   });
 };
 
-const getHgncInfo = (hgncSymbols) => {
+const getHgncInfo = hgncSymbols => {
   const hgncSymbol = Object.keys(hgncSymbols)[0];
 
-  return ServerAPI.getHgncInformation(hgncSymbol).then(result => {
+  return ServerAPI.getHgncInformation( hgncSymbol ).then( result => {
     const geneResults = result.response.docs;
     return geneResults.map(gene => {
 
       let databaseId = {};
-      Object.entries(dbInfos).forEach(([k,v]) => {
-        if (gene[v.hgncName]) databaseId[v.name] = gene[v.hgncName];
+      Object.entries(dbInfos).forEach( ( [k,v] ) => {
+        if ( gene[ v.hgncName ] ) databaseId[ v.name ] = gene[ v.hgncName ];
       });
-      const links= idToLinkConverter(databaseId);
+      const links = idToLinkConverter( databaseId );
 
       return {
         databaseID: gene,
@@ -164,7 +164,7 @@ const getHgncInfo = (hgncSymbols) => {
   });
 };
 
-const getProviderSpecificEntityInfo = (ncbiIds, uniprotIds, hgncIds, entityInfos) => {
+const getProviderSpecificEntityInfo = ( ncbiIds, uniprotIds, hgncIds, entityInfos ) => {
   let providerSpecificEntityInfo = [];
 
   if( Object.keys(ncbiIds).length > 0 ){
@@ -176,10 +176,10 @@ const getProviderSpecificEntityInfo = (ncbiIds, uniprotIds, hgncIds, entityInfos
   if ( Object.keys(hgncIds).length > 0 ) {
    providerSpecificEntityInfo.push( getHgncInfo( hgncIds ) );
   }
-  return Promise.all(providerSpecificEntityInfo).then( providerInfo => {
+  return Promise.all( providerSpecificEntityInfo ).then( providerInfo => {
    // legacy computation that is hard to understand
-   return _.uniqWith( _.flatten( providerInfo ), ( arrVal, othVal ) => {
-     return _.intersectionWith(_.values(arrVal.links),_.values(othVal.links),_.isEqual).length;
+   return _.uniqWith(  _.flatten( providerInfo ), ( arrVal, othVal ) => {
+     return _.intersectionWith( _.values( arrVal.links ), _.values( othVal.links ), _.isEqual ).length;
    });
  });
 };
@@ -271,7 +271,7 @@ const queryEntityInfo = query => {
          uniprotIds[ mappedGene['Uniprot'] ] = originalSearchTerm;
        }
      });
-     return getProviderSpecificEntityInfo(ncbiIds, uniprotIds, hgncId, entityInfos);
+     return getProviderSpecificEntityInfo( ncbiIds, uniprotIds, hgncId, entityInfos );
    });
   }
 };

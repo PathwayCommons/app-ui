@@ -24,8 +24,7 @@ class PathwaysSidebar extends React.Component {
         ])
       ]),
       h('div.sidebar-content', [
-        h('div.sidebar-text', [
-        ])
+        h('div.sidebar-text', [this.props.children])
       ])
   ]);
 

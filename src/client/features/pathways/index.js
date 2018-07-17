@@ -15,6 +15,9 @@ const Tooltip = require('../../common/components/tooltip');
 
 const PathwaysToolbar = require('./pathways-toolbar');
 const PathwaysSidebar = require('./pathways-sidebar');
+const InfoMenu = require('./menus/network-info-menu');
+const FileDownloadMenu = require('./menus/file-download-menu');
+
 const { stylesheet, bindCyEvents, DEFAULT_LAYOUT_OPTS } = require('./pathways-cy');
 
 class Pathways extends React.Component {
@@ -89,6 +92,16 @@ class Pathways extends React.Component {
   render() {
     let { loading, pathwayMetadata, cySrv, bus, activeMenu } = this.state;
 
+    let menus = {
+      'infoMenu': h(InfoMenu, { infoList: pathwayMetadata.comments } ),
+      'closeMenu': null,
+      'downloadMenu': h(FileDownloadMenu, { 
+        cy: cySrv,
+        fileName: pathwayMetadata.name, 
+        uri: pathwayMetadata.uri
+      })
+    };
+
     let network = h('div.network', { className: classNames({
       'network-loading': loading,
       'network-sidebar-open': activeMenu !== 'closeMenu'
@@ -110,7 +123,9 @@ class Pathways extends React.Component {
     ]);
 
     let sidebar = h('div.app-sidebar', [
-      h(PathwaysSidebar, {  controller: this, activeMenu })
+      h(PathwaysSidebar, {  controller: this, activeMenu }, [
+        menus[activeMenu]
+      ])
     ]);
 
     return h('div.pathways', [

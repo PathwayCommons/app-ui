@@ -70,12 +70,41 @@ class BaseNetworkView extends React.Component {
 
       const layout = cy.layout(initialLayoutOpts);
 
+      this.state.cySrv.loadPromise().then(() => {
+        this.displayDefaultNodes(50);
+      });
+
       layout.on('layoutstop', () => {
         cySrv.load(); // indicate loaded
       });
 
       layout.run();
     }
+  }
+
+    displayDefaultNodes(nodesToShow){
+    const cy = this.state.cySrv.get();
+    let i = 0;
+    let returnValue = 0;
+
+    //sort nodes based on betweenness centrality
+    let sortedNodes = cy.nodes().sort(function( a, b ){
+      return a.data('p_value') - b.data('p_value');
+    });
+
+    //get the first nodesToShow nodes
+    //also get the node with second-highest p_value
+    sortedNodes.forEach(node => {
+      if(i<nodesToShow)
+        returnValue =  node.data('p_value');
+      i++;
+    });
+
+      //hide all nodes other than the ones with top `nodesToShow`th p_value
+    cy.nodes().forEach(node => {
+      if(node.data('p_value') > returnValue)
+        node.addClass('hidden');
+     });
   }
 
   componentWillUnmount() {
@@ -271,7 +300,7 @@ class BaseNetworkView extends React.Component {
                 onClick: () => this.changeMenu('closeMenu'),
               }, [
                 h('i.material-icons', 'close')
-              ])              
+              ])
             ])
           ]),
           h('div.sidebar-content', [

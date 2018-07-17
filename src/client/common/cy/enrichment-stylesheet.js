@@ -72,5 +72,9 @@ const enrichmentStylesheet=cytoscape.stylesheet()
   'z-compound-depth': 'top',
   'color': 'white',
   'text-outline-color': 'black'
+})
+.selector('.hidden')
+.css({
+  'display':'none',
 });
 module.exports = enrichmentStylesheet;

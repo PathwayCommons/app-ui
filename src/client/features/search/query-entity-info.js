@@ -11,7 +11,7 @@ let isNcbiId = token => {
 };
 
 let isHgncId = token => {
-
+  return /hgnc:\w+$/i.test( token );
 };
 
 let dbInfos = {
@@ -19,44 +19,23 @@ let dbInfos = {
     name: 'HGNC Symbol',
     displayName: 'HGNC',
     url: 'http://identifiers.org/hgnc.symbol/',
-    gProfiler: 'HGNCSYMBOL'
+    gProfiler: 'HGNCSYMBOL',
+    hgncName:'symbol'
   },
   'NCBI Gene': {
     name: 'NCBI Gene',
     displayName: 'NCBI Gene',
     url: 'http://identifiers.org/ncbigene/',
-    gProfiler: 'NCBIGene'
+    gProfiler: 'NCBIGene',
+    hgncName:'entrez_id'
   },
   'Uniprot': {
     name: 'Uniprot',
     displayName: 'UniProt',
     url: 'http://identifiers.org/uniprot/',
-    gProfiler: 'Uniprot'
+    gProfiler: 'Uniprot',
+    hgncName:'uniprot_ids'
   }
-};
-
-
-
-/**
- * Get database link and display name based on gene ids
- * @param {string} source Database name
- * @param {JSON} geneQuery User input string and matching gene id.
- * @return {string: {string: string}} e.g.{MDM2: {Uniprot: Q00978}}
- */
-const idFormatter = ( source, geneQuery ) => {
-  let { geneInfo, unrecognized } = geneQuery;
-  let duplicates = new Set();
-  let genes = { unrecognized };
-
-  geneInfo.forEach(gene => {
-    let { convertedAlias } = gene;
-    if( !duplicates.has( convertedAlias ) ){
-      genes[ gene.initialAlias ] = { [ source ]: convertedAlias };
-      duplicates.add( convertedAlias );
-    }
-  });
-
-  return genes;
 };
 
 /**
@@ -92,14 +71,15 @@ const getNcbiInfo = ( ids, genes ) => {
     let geneResults = result.result;
 
     return geneResults.uids.map( gene => {
-      let originalSearch = ids[ gene ];
-      let links = idToLinkConverter( genes[ originalSearch ] );
+      const originalSearch = ids[ gene ];
+      const geneId = genes ? genes[ originalSearch ] : {"NCBI Gene" : originalSearch};
+      let links = idToLinkConverter( geneId );
 
       return {
         databaseID: gene,
         name: geneResults[ gene ].nomenclaturename,
         function: geneResults[ gene ].summary,
-        officialSymbol: genes[ originalSearch ]['HGNC Symbol'],
+        officialSymbol: geneResults[ gene ].nomenclaturesymbol,
         otherNames: geneResults[ gene ].otheraliases ? geneResults[gene].otheraliases : '',
         links: links
       };
@@ -154,6 +134,52 @@ const getUniprotInfo = ids => {
   });
 };
 
+const getHgncInfo = (hgncSymbols) => {
+  const hgncSymbol = Object.keys(hgncSymbols)[0];
+
+  return ServerAPI.getHgncInformation(hgncSymbol).then(result=>{
+    const geneResults = result.response.docs;
+    return geneResults.map(gene => {
+
+      let databaseId = {};
+      Object.entries(dbInfos).forEach(([k,v]) => {
+        if (gene[v.hgncName]) databaseId[v.name] = gene[v.hgncName];
+      });
+      const links= idToLinkConverter(databaseId);
+
+      return {
+        databaseID:gene,
+        name: gene.name,
+        function: '',
+        officialSymbol: gene.symbol,
+        otherNames: gene.alias_symbol.join(', '),
+        showMore:{full:!(geneResults.length>1),function:false,synonyms:false},
+        links:links
+      };
+    });
+  });
+};
+
+const getProviderSpecificEntityInfo = (ncbiIds, uniprotIds, hgncIds, entityInfos) => {
+  let providerSpecificEntityInfo = [];
+
+  if( Object.keys(ncbiIds).length > 0 ){
+    providerSpecificEntityInfo.push( getNcbiInfo( ncbiIds, entityInfos ) );
+  }
+  if( Object.keys(uniprotIds).length > 0 ){
+    providerSpecificEntityInfo.push( getUniprotInfo( uniprotIds ) );
+  }
+  if ( Object.keys(hgncIds).length > 0 ) {
+   providerSpecificEntityInfo.push( getHgncInfo( hgncIds ) );
+  }
+  return Promise.all(providerSpecificEntityInfo).then( providerInfo => {
+   // legacy computation that is hard to understand
+   return _.uniqWith( _.flatten( providerInfo ), ( arrVal, othVal ) => {
+     return _.intersectionWith(_.values(arrVal.links),_.values(othVal.links),_.isEqual).length;
+   });
+ });
+};
+
 // two types of searches:
 // * general searches
 // * db specific link in searches
@@ -177,8 +203,10 @@ const queryEntityInfo = query => {
   let tokens = query.trim().split(' ');
   let ncbiIds = {};
   let uniprotIds = {};
+  let hgncId = {};
   let genes = [];
-
+  let prefix = true;
+  let entityQueries;
 
   // look for special tokens
   tokens.forEach(token => {
@@ -188,66 +216,60 @@ const queryEntityInfo = query => {
       uniprotIds[ entityId ] = entityId;
     } else if( isNcbiId( token ) ){
       ncbiIds[ entityId ] = entityId;
-      genes.push( entityId );
+    } else if (isHgncId( token ) ){
+      hgncId[ entityId ] = entityId;
     } else {
+      prefix = false;
       genes.push( dbId );
     }
   });
 
-  let dbsToQuery = Object.entries(dbInfos).map(([k, v]) => v);
+  if (prefix) {
+    return getProviderSpecificEntityInfo(ncbiIds, uniprotIds, hgncId);
+  }
+  else {
+   let dbsToQuery = Object.entries(dbInfos).map(([k, v]) => v);
 
-  // create entity recognizer queries
-  let entityQueries = dbsToQuery.map( db => {
-    return ServerAPI.geneQuery({
-      genes: genes,
-      targetDb: db.gProfiler
-    }).then(res => {
-      let { geneInfo: entityInfos, unrecognized: unrecognizedEntities } = res;
-      let duplicates = new Set();
-      let entities = { unrecognizedEntities };
+   // create entity recognizer queries
+   entityQueries = dbsToQuery.map( db => {
+     return ServerAPI.geneQuery({
+       genes: genes,
+       targetDb: db.gProfiler
+     }).then(res => {
+       let { geneInfo: entityInfos, unrecognized: unrecognizedEntities } = res;
+       let duplicates = new Set();
+       let entities = { unrecognizedEntities };
 
-      entityInfos.forEach( entityInfo => {
-        let { convertedAlias } = entityInfo;
-        if( !duplicates.has( convertedAlias ) ){
-          entities[ entityInfo.initialAlias ] = { [db.name]: convertedAlias };
-          duplicates.add( convertedAlias );
-        }
-      });
+       entityInfos.forEach( entityInfo => {
+         let { convertedAlias } = entityInfo;
+         if( !duplicates.has( convertedAlias ) ){
+           entities[ entityInfo.initialAlias ] = { [db.name]: convertedAlias };
+           duplicates.add( convertedAlias );
+         }
+       });
 
-      return entities;
-    });
-  });
+       return entities;
+     });
+   });
 
-  // send queries and return entity info
-  return Promise.all( entityQueries ).then( results => {
-    let entityInfos = {};
-    results.forEach( dbResult => _.merge( entityInfos, dbResult ) ); //Merge the array of result into one json
+   // send queries and return entity info
+   return Promise.all( entityQueries ).then( results => {
+     let entityInfos = {};
+     results.forEach( dbResult => _.merge( entityInfos, dbResult ) ); //Merge the array of result into one json
 
-    Object.entries(entityInfos).forEach(entityInfo => {
-      let [ originalSearchTerm, mappedGene ] = entityInfo;
+     Object.entries(entityInfos).forEach(entityInfo => {
+       let [ originalSearchTerm, mappedGene ] = entityInfo;
 
-      if( mappedGene['NCBI Gene'] ){
-        ncbiIds[ mappedGene['NCBI Gene'] ] = originalSearchTerm;
-      }
-      else if( mappedGene['Uniprot'] ){
-        uniprotIds[ mappedGene['Uniprot'] ] = originalSearchTerm;
-      }
-    });
-
-    let providerSpecificEntityInfo = [];
-    if( Object.keys(ncbiIds).length > 0 ){
-      providerSpecificEntityInfo.push( getNcbiInfo( ncbiIds, entityInfos ) );
-    }
-    if( Object.keys(uniprotIds).length > 0 ){
-      providerSpecificEntityInfo.push( getUniprotInfo( uniprotIds ) );
-    }
-    return Promise.all(providerSpecificEntityInfo).then( providerInfo => {
-      // legacy computation that is hard to understand
-      return _.uniqWith( _.flatten( providerInfo ), ( arrVal, othVal ) => {
-        return _.intersectionWith(_.values(arrVal.links),_.values(othVal.links),_.isEqual).length;
-      });
-    });
-  });
+       if( mappedGene['NCBI Gene'] ){
+         ncbiIds[ mappedGene['NCBI Gene'] ] = originalSearchTerm;
+       }
+       else if( mappedGene['Uniprot'] ){
+         uniprotIds[ mappedGene['Uniprot'] ] = originalSearchTerm;
+       }
+     });
+     return getProviderSpecificEntityInfo(ncbiIds, uniprotIds, hgncId, entityInfos);
+   });
+  }
 };
 
 module.exports = queryEntityInfo;

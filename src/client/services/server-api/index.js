@@ -71,6 +71,10 @@ const ServerAPI = {
     return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&accession=${ids.join(',')}`, defaultFetchOpts).then(res => res.json());
   },
 
+  getHgncInformation(id) {
+    return fetch(`https://rest.genenames.org/fetch/symbol/${id}`, {headers: {'Accept': 'application/json'}}).then(res => res.json());
+  },
+
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into
   // a layout
   submitNodeChange(uri, version, nodeId, bbox) {

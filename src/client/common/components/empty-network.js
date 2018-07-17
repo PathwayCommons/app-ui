@@ -1,5 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
+const { Link } = require('react-router-dom');
 
 
 
@@ -10,9 +11,9 @@ class EmptyNetwork extends React.Component {
     return h('div.empty-network',[
       h('i.pc-logo'),
       h('h1.empty-network-message', msg),
-      h('a.plain-link', { href:'http://apps.pathwaycommons.org' }, 'Return to PC Home')
+      h(Link, { to: { pathname: '/' } }, 'Return to PC Home')
     ]);
   }
 }
 
-module.export = EmptyNetwork;
+module.exports = EmptyNetwork;

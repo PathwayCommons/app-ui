@@ -2,16 +2,11 @@ const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
 const queryString = require('query-string');
-const EventEmitter = require('eventemitter3');
-
 const Loader = require('react-loader');
 const classNames = require('classNames');
 
 const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services/');
-
-const { EmptyNetwork } = require('../../common/components/empty-network');
-const Tooltip = require('../../common/components/tooltip');
 
 const PathwaysToolbar = require('./pathways-toolbar');
 const PathwaysSidebar = require('./pathways-sidebar');
@@ -27,7 +22,7 @@ class Pathways extends React.Component {
 
     this.state = {
       cySrv: new CytoscapeService({ style: stylesheet }),
-      bus: new EventEmitter(),
+      pathwayJSON: {},
       pathwayMetadata: {
         uri: uri,
         name: '',
@@ -61,6 +56,7 @@ class Pathways extends React.Component {
       layout.on('layoutstop', () => {
         cySrv.load();
         this.setState({
+          pathwayJSON: graphJSON,
           pathwayMetadata: {
             name: _.get(graphJSON, 'pathwayMetadata.title.0', 'Untitled Pathway'),
             datasource: _.get(graphJSON, 'pathwayMetadata.dataSource.0', 'Unknown data source'),
@@ -90,7 +86,8 @@ class Pathways extends React.Component {
   }
 
   render() {
-    let { loading, pathwayMetadata, cySrv, bus, activeMenu } = this.state;
+    let { loading, pathwayMetadata, cySrv, activeMenu } = this.state;
+    let { name, datasource } = pathwayMetadata;
 
     let menus = {
       'infoMenu': h(InfoMenu, { infoList: pathwayMetadata.comments } ),
@@ -114,12 +111,12 @@ class Pathways extends React.Component {
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
         h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
-        h('div.app-bar-title', pathwayMetadata.name + ' | ' + pathwayMetadata.datasource)
+        h('div.app-bar-title', name + ' | ' + datasource)
       ])
     ]);
 
     let toolbar = h('div.app-toolbar', [
-      h(PathwaysToolbar, { cySrv, bus, activeMenu, controller: this })
+      h(PathwaysToolbar, { cySrv, activeMenu, controller: this })
     ]);
 
     let sidebar = h('div.app-sidebar', [
@@ -128,12 +125,16 @@ class Pathways extends React.Component {
       ])
     ]);
 
-    return h('div.pathways', [
+    let content = [
+      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [
+        appBar,
+        toolbar,
+      ]),
       network,
-      appBar,
-      toolbar,
       sidebar
-    ]);
+    ];
+
+    return h('div.pathways', content);
   }
 
 }

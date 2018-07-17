@@ -14,8 +14,8 @@ const { EmptyNetwork } = require('../../common/components/empty-network');
 const Tooltip = require('../../common/components/tooltip');
 const { defaultLayout } = require('../../common/cy/layout');
 
-const PathwaysButtons = require('./pathways-buttons');
-const { stylesheet, bindPathwaysEvents } = require('./pathways-cy');
+const PathwaysToolbar = require('./pathways-toolbar');
+const { stylesheet, bindCyEvents } = require('./pathways-cy');
 
 class Pathways extends React.Component {
   constructor(props) {
@@ -47,7 +47,7 @@ class Pathways extends React.Component {
     ServerAPI.getPathway(uri, 'latest').then( pathwayJSON => {
       cySrv.mount(this.network);
       let cy = cySrv.get();
-      bindPathwaysEvents(cy);
+      bindCyEvents(cy);
 
       cy.remove('*');
       cy.add(pathwayJSON.graph);
@@ -91,8 +91,9 @@ class Pathways extends React.Component {
     ]);
 
     let toolbar = h('div.app-toolbar', [
-      h(PathwaysButtons, { cySrv, bus })
+      h(PathwaysToolbar, { cySrv, bus })
     ]);
+
 
     return h('div.pathways', [
       network,

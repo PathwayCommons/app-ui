@@ -1,5 +1,6 @@
 const cytoscape = require('cytoscape');
 const sbgnStyleSheet = require('cytoscape-sbgn-stylesheet');
+const _ = require('lodash');
 
 const DEFAULT_LAYOUT_OPTS = {
   name: 'cose-bilkent',
@@ -20,6 +21,46 @@ const EXPAND_COLLAPSE_OPTS = {
   animate: true,
   undoable: false,
   cueEnabled: false
+};
+
+const NODE_HIGHLIGHTED_STYLE = {
+    'overlay-color': 'yellow',
+    'overlay-padding': 0,
+    'overlay-opacity': 0.5
+};
+
+const NODE_STYLE_SCRATCH_KEY = '_matched-style-before';
+
+const storeStyle = (ele, keys) => {
+  const storedStyleProps = {};
+
+  for (let key of keys) {
+    storedStyleProps[key] = ele.style(key);
+  }
+
+  return storedStyleProps;
+};
+
+const applyStyle = (cy, eles, style, scratchKey) => {
+  const stylePropNames = Object.keys(style);
+
+  eles.forEach((ele) => {
+    ele.scratch(scratchKey, storeStyle(ele, stylePropNames));
+  });
+
+  cy.batch(function () {
+    eles.style(style);
+  });
+};
+
+const removeStyle = (cy, eles, scratchKey) => {
+
+  cy.batch(function () {
+    eles.forEach((ele) => {
+      ele.style(ele.scratch(scratchKey));
+      ele.removeScratch(scratchKey);
+    });
+  });
 };
 
 let expandCollapseAll = () => {
@@ -48,9 +89,51 @@ let layout = cy => {
   cy.layout(DEFAULT_LAYOUT_OPTS).run();
 };
 
-let bindPathwaysEvents = cy => {
+let bindCyEvents = cy => {
   cy.expandCollapse(EXPAND_COLLAPSE_OPTS);
 };
+
+let searchNodes = _.debounce((cy, query) => {
+  let queryEmpty = _.trim(query) === '';
+  let ecAPI = cy.expandCollapse('get');
+  let allNodes = cy.nodes().union(ecAPI.getAllCollapsedChildrenRecursively());
+
+  let getSynonyms = node => {
+    let parsedMetadata = node.data('parsedMetadata');
+    let geneSynonyms = node.data('geneSynonyms');
+    let labels = node.data('label')? [node.data('label')]:[node.data('description')];
+  
+    if (!parsedMetadata) return labels;
+  
+    //Get Various Names
+    let standardName = parsedMetadata.filter(pair => pair[0] === 'Standard Name');
+    let names = parsedMetadata.filter(pair => pair[0] === 'Names');
+    let displayName = parsedMetadata.filter(pair => pair[0] === 'Display Name');
+  
+    //Append names to main array
+    if (standardName.length > 0){ labels = labels.concat(standardName[0][1]); }
+    if (names.length > 0){ labels = labels.concat(names[0][1]); }
+    if (displayName.length > 0){ labels = labels.concat(displayName[0][1]); }
+  
+    if(_.isArray(geneSynonyms)){ labels = labels.concat(node.data('geneSynonyms')); }
+  
+    return labels.filter(synonym => synonym != null);
+  };
+
+  let matched = allNodes.filter(node => {
+    let synonyms = getSynonyms(node).filter( synonym => synonym != null);
+
+    let synonymMatch = synonyms.find( synonym => synonym.toUpperCase().includes( query.toUpperCase() ));
+
+    return synonymMatch != null;
+  });
+
+  removeStyle(cy, allNodes, NODE_STYLE_SCRATCH_KEY);
+
+  if ( matched.length > 0 && !queryEmpty ) {
+    applyStyle(cy, matched, NODE_HIGHLIGHTED_STYLE, NODE_STYLE_SCRATCH_KEY);
+  }
+}, 300);
 
 let stylesheet = sbgnStyleSheet(cytoscape)
 .selector('node')
@@ -106,6 +189,7 @@ module.exports = {
   fit,
   layout,
   stylesheet,
-  bindPathwaysEvents,
+  bindCyEvents,
+  searchNodes,
   DEFAULT_LAYOUT_OPTS
 };

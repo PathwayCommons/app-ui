@@ -6,12 +6,26 @@ const Tooltip = require('../../common/components/tooltip');
 
 const events = require('./pathways-events');
 
-const { fit, expandCollapse, layout } = require('./pathways-cy');
+const { fit, expandCollapse, layout, searchNodes } = require('./pathways-cy');
 
-class PathwaysButtons extends React.Component {
+class PathwaysToolbar extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      searchValue: ''
+    };
+  }
+
+  handleNodeSearchChange(searchVal){
+    console.log('here');
+    this.setState({ searchValue: searchVal }, () => searchNodes( this.props.cySrv.get(), searchVal));
+  }
+
   render(){
-    let { cySrv, bus } = this.props;
+    let { cySrv, bus, controller } = this.props;
+    let { searchValue } = this.state;
     let cy = cySrv.get();
+
     return h('div.pathways-buttons', [
       h(Tooltip, { description: 'Extra Information' }, [
         h('div.icon-button', {
@@ -48,9 +62,24 @@ class PathwaysButtons extends React.Component {
         }, [
           h('i.material-icons', 'replay')
         ])
+      ]),
+      h('div.search-nodes', {
+        onChange: e => this.handleNodeSearchChange(e.target.value)
+      }, [
+        h('div.view-search-bar', [
+          h('input.view-search', {
+            value: this.state.searchVal,
+            type: 'search',
+            placeholder: 'Search entities',
+          }),
+          searchValue !== '' ? h('div.view-search-clear', {
+            onClick: () => this.handleNodeSearchChange('')}, [ // check if the search bar is empty
+            h('i.material-icons', 'close')
+          ]) : null
+        ])
       ])
     ]);    
   }
 }
 
-module.exports = PathwaysButtons;
+module.exports = PathwaysToolbar;

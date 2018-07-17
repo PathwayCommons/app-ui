@@ -27,7 +27,7 @@ const enrichmentConfig={
     icon: 'palette',
     type: 'activateMenu',
     menuId: 'enrichmentMenu',
-    description: 'View p-value legend'
+    description: 'View legend'
   }),
   menus: BaseNetworkView.config.menus.concat({
     id: enrichmentMenuId,

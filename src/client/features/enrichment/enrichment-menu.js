@@ -12,18 +12,19 @@ class EnrichmentMenu extends React.Component {
           h(Tab, {
             className: 'enrichment-drawer-tab',
             selectedClassName: 'enrichment-drawer-tab-selected'
-            }, 'P-Value Legend')
+            }, 'Legend')
         ])
       ]),
       h(TabPanel, [
+        h('h4', 'Significance'),
         h('div.enrichment-legend-container', [
           h('div.enrichment-legend-stat-significant', [
-            h('p', `0`),
+            h('p', `high 0`),
             h('p', '.025'),
-            h('p', `.05`)
+            h('p', `low .05`)
           ]),
           h('div.enrichment-legend-not-significant', [
-            h('p', `>.05`)
+            h('p', ` none >.05`)
           ])
         ])
       ])

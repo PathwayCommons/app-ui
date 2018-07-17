@@ -12,10 +12,9 @@ const { ServerAPI } = require('../../services/');
 
 const { EmptyNetwork } = require('../../common/components/empty-network');
 const Tooltip = require('../../common/components/tooltip');
-const { defaultLayout } = require('../../common/cy/layout');
 
 const PathwaysToolbar = require('./pathways-toolbar');
-const { stylesheet, bindCyEvents } = require('./pathways-cy');
+const { stylesheet, bindCyEvents, DEFAULT_LAYOUT_OPTS } = require('./pathways-cy');
 
 class Pathways extends React.Component {
   constructor(props) {
@@ -25,13 +24,13 @@ class Pathways extends React.Component {
     this.state = {
       cySrv: new CytoscapeService({ style: stylesheet }),
       bus: new EventEmitter(),
-      pathwayJSON: {},
       pathwayMetadata: {
         uri: uri,
         name: '',
         datasource: '',
         comments: []
       },
+
       loading: true
     };
 
@@ -44,30 +43,32 @@ class Pathways extends React.Component {
     let { pathwayMetadata, cySrv} = this.state;
     let { uri } = pathwayMetadata;
 
-    ServerAPI.getPathway(uri, 'latest').then( pathwayJSON => {
-      cySrv.mount(this.network);
+    let initializeCytoscape = graphJSON => {
+      let networkDiv = this.network;
+      cySrv.mount(networkDiv);
+      
       let cy = cySrv.get();
       bindCyEvents(cy);
 
       cy.remove('*');
-      cy.add(pathwayJSON.graph);
-      let layout = cy.layout(defaultLayout.options);
+      cy.add(graphJSON);
 
+      let layout = cy.layout(DEFAULT_LAYOUT_OPTS);
       layout.on('layoutstop', () => {
         cySrv.load();
         this.setState({
-          pathwayJSON: _.get(pathwayJSON, 'graph', { nodes: [], edges: [] }),
           pathwayMetadata: {
-            name: _.get(pathwayJSON, 'graph.pathwayMetadata.title.0', 'Untitled Pathway'),
-            datasource: _.get(pathwayJSON, 'graph.pathwayMetadata.dataSource.0', 'Unknown data source'),
-            comments: _.get(pathwayJSON, 'graph.pathwayMetadata.comments', [])
+            name: _.get(graphJSON, 'pathwayMetadata.title.0', 'Untitled Pathway'),
+            datasource: _.get(graphJSON, 'pathwayMetadata.dataSource.0', 'Unknown data source'),
+            comments: _.get(graphJSON, 'pathwayMetadata.comments', [])
           },
           loading: false
         });
       });
-
       layout.run();
-    });
+    };
+
+    ServerAPI.getPathway(uri, 'latest').then( pathwayJSON => initializeCytoscape( pathwayJSON.graph ));
   }
 
   componentWillUnmount(){

@@ -17,7 +17,6 @@ class PathwaysToolbar extends React.Component {
   }
 
   handleNodeSearchChange(searchVal){
-    console.log('here');
     this.setState({ searchValue: searchVal }, () => searchNodes( this.props.cySrv.get(), searchVal));
   }
 
@@ -26,7 +25,7 @@ class PathwaysToolbar extends React.Component {
     let { searchValue } = this.state;
     let cy = cySrv.get();
 
-    return h('div.pathways-buttons', [
+    return h('div.pathways-toolbar', [
       h(Tooltip, { description: 'Extra Information' }, [
         h('div.icon-button', {
           onClick: () => { bus.emit(events.SHOW_INFO); },
@@ -63,17 +62,17 @@ class PathwaysToolbar extends React.Component {
           h('i.material-icons', 'replay')
         ])
       ]),
-      h('div.search-nodes', {
+      h('div.pathways-search-nodes', {
         onChange: e => this.handleNodeSearchChange(e.target.value)
       }, [
-        h('div.view-search-bar', [
-          h('input.view-search', {
-            value: this.state.searchVal,
+        h('div.pathways-search-bar', [
+          h('input.pathways-search-input', {
+            value: searchValue,
             type: 'search',
             placeholder: 'Search entities',
           }),
-          searchValue !== '' ? h('div.view-search-clear', {
-            onClick: () => this.handleNodeSearchChange('')}, [ // check if the search bar is empty
+          searchValue !== '' ? h('div.pathways-search-clear', {
+            onClick: () => this.handleNodeSearchChange('')}, [
             h('i.material-icons', 'close')
           ]) : null
         ])

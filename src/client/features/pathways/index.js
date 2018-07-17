@@ -90,7 +90,7 @@ class Pathways extends React.Component {
       ])
     ]);
 
-    let toolbar = h('div.view-toolbar', [
+    let toolbar = h('div.app-toolbar', [
       h(PathwaysButtons, { cySrv, bus })
     ]);
 

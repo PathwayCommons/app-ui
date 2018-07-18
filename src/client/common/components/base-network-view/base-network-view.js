@@ -72,7 +72,7 @@ class BaseNetworkView extends React.Component {
 
       //set default view for filtering nodes by p_value when new network is rendered
       this.state.cySrv.loadPromise().then(() => {
-        //by default, on load only display nodes w p_value < 0.025
+        //by default, only display nodes with p_value <= 0.025
         this.displayDefaultNodes(0.025);
       });
 

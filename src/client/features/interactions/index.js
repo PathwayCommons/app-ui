@@ -76,6 +76,7 @@ class Interactions extends React.Component {
       const { categories, filters, layoutConfig } = this.state;
 
       this.generateCentralityValues();
+      this.displayDefaultNodes(cy,20);
 
       //for each filter (binding, phosphorylation, expression)
       //value: true/false
@@ -146,6 +147,30 @@ class Interactions extends React.Component {
     });
   }
 
+  displayDefaultNodes(cy,nodesToShow){
+    let i = 0;
+    let returnValue = 0;
+
+    //sort nodes based on betweenness centrality
+    let sortedNodes = cy.nodes().sort(function( a, b ){
+      return b.data('bcVal') - a.data('bcVal');
+    });
+
+    //get the first nodesToShow nodes
+    //also get the node with second-highest bcVal
+    sortedNodes.forEach(node => {
+      if(i<nodesToShow)
+        returnValue =  node.data('bcVal');
+      i++;
+    });
+
+      //hide all nodes other than the ones with top `nodesToShow`th bcVal
+    cy.nodes().forEach(node => {
+      if(node.data('bcVal') < returnValue)
+        node.addClass('hidden');
+     });
+  };
+
   /**
    * @description This function generates normalized betweenness centrality values for each node in the network,
    * and adds the calculated information to each node as a new data field
@@ -154,6 +179,7 @@ class Interactions extends React.Component {
     //setting up base variables
     const state = this.state;
     const cy = state.cySrv.get();
+
     const bc = cy.$().bc();
     const nodes = cy.nodes();
     if(nodes.length === 0) return;

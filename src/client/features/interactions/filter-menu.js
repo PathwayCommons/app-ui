@@ -9,6 +9,25 @@ class InteractionsFilterMenu extends React.Component {
     this.state = _.merge({defaultSliderVal:0,maxSliderVal:0},props);
     this.sliderUpdate = _.debounce(this.sliderUpdate,150);
 
+    this.state.cySrv.loadPromise().then( cy => {
+        let i=0;
+  
+        let sortedNodes = cy.nodes().sort(function( a, b ){
+          return b.data('bcVal') - a.data('bcVal');
+        });
+  
+        sortedNodes.forEach(node => {
+          if(i<20)
+            this.state.defaultSliderVal =  node.data('bcVal');
+          i++;
+          if(i === 1)
+            this.state.maxSliderVal = node.data('bcVal');  
+        });
+
+        console.log(this.state.defaultSliderVal);
+        console.log(this.state.maxSliderVal);
+      });
+  
   }
 
   /**
@@ -81,6 +100,9 @@ class InteractionsFilterMenu extends React.Component {
   render(){
     const props= this.props;
 
+    console.log('Default: ' + this.state.defaultSliderVal);
+    console.log('Maximum: ' + this.state.maxSliderVal);
+
     //Networks end up with all nodes next to 0 bcVal other than search term
     //slider becomes a toggle since noone has the dexterity to distinguish values at the low end
     //instead use the second highest bcVal as the maximum for slider, so its actually useful
@@ -98,12 +120,12 @@ class InteractionsFilterMenu extends React.Component {
 
     //Slider listed under 'Visible Nodes' in the interaction viewer
     const slider = [
-      h('input', {type: 'range', id: 'selection-slider', min: 0, max: 1, step: 0.0001, defaultValue: 0.9,
+      h('input', {type: 'range', id: 'selection-slider', min: 0, max: 1, step: 0.0001, defaultValue: 1,
       onInput:() => this.sliderUpdate() }),
     ];
     
 
-    return h('div',[
+    return h('div.sidebar-container',{style:{width:'100%'}},[
       h('h2', 'Interaction Filters'),
       buttons,
       h('h2.slider-heading','Visible Nodes'),

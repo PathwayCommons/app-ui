@@ -25,7 +25,7 @@ class EnrichmentMenu extends React.Component {
   render(){
 
     const slider = [
-      //set min = 0.0001 to prevent all nodes from being hidden which occurs when min = 0
+      //set min = 0.0001 to prevent all nodes from being hidden which will occur if min = 0
       h("input",{type:"range",id:'enrichment-selection-slider',min:0.0001,max:0.05,step:0.0001,defaultValue:0.025,
       onInput:() => this.sliderUpdate() }),
     ];
@@ -41,7 +41,7 @@ class EnrichmentMenu extends React.Component {
         ])
       ]),
       h(TabPanel, [
-        h('h3', 'Visibile Nodes By Significance'),
+        h('h3', 'Visible Nodes By Significance'),
         h('div.enrichment-legend-container', [
           h('div.enrichment-legend-stat-significant', [
             h('p', `most 0`),

@@ -85,6 +85,7 @@ class BaseNetworkView extends React.Component {
   }
 
     displayDefaultNodes(defaultSliderVal){
+
     //match position on slider with default value
     document.getElementById('enrichment-selection-slider').value = defaultSliderVal;
 

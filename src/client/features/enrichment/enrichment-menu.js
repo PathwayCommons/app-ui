@@ -5,9 +5,7 @@ const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
 class EnrichmentMenu extends React.Component {
 
   /**
-   *
-   * @param {*} degreeValues array returned by getUniqueDegreeValues
-   * @description Hides nodes based on their betweenness centrality, determined by on-screen slider
+   *  @description Hides nodes based on their p_value, determined by on-screen slider
    */
   sliderUpdate(){
     const cy = this.props.cySrv.get();
@@ -15,7 +13,7 @@ class EnrichmentMenu extends React.Component {
     //get the value from the slider
     let sliderVal = document.getElementById('enrichment-selection-slider').value;
 
-    //compare to pre-calculated centrality & hide if necessary
+    //compare p_values and hide if outside of chosen threshold
     cy.nodes().forEach(node => {
       if(node.data('p_value') > sliderVal)
         node.addClass('hidden');
@@ -27,8 +25,8 @@ class EnrichmentMenu extends React.Component {
   render(){
 
     const slider = [
-      //set min=0.0001 not to prevent all nodes from being hidden
-      h("input",{type:"range",id:'enrichment-selection-slider',min:0.0001,max:0.05,step:0.0001,defaultValue:0,
+      //set min = 0.0001 to prevent all nodes from being hidden which occurs when min = 0
+      h("input",{type:"range",id:'enrichment-selection-slider',min:0.0001,max:0.05,step:0.0001,defaultValue:0.025,
       onInput:() => this.sliderUpdate() }),
     ];
 

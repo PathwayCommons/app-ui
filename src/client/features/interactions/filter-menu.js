@@ -114,7 +114,7 @@ class InteractionsFilterMenu extends React.Component {
 
     //Slider listed under 'Visible Nodes' in the interaction viewer
     const slider = [
-      h('input', {type: 'range', id: 'selection-slider', min: 0, max: 0.5, step: 0.0001,
+      h('input', {type: 'range', id: 'selection-slider', min: 0, max: 0.3, step: 0.0001,
       onInput:() => this.sliderUpdate() }),
     ];
     

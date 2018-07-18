@@ -1,8 +1,9 @@
 const cytoscape = require('cytoscape');
 
+//match 'p_valueColorScale' with .enrichment-legend-stat-significant background
 const p_valueColorScale = [
-  { p_value: 0, color: { r: 0, g: 0, b: 255 } },
-  { p_value: .05, color: { r: 179, g: 230, b: 255 } }
+  { p_value: 0, color: { r: 0, g: 128, b: 0 } }, //html green
+  { p_value: .05, color: { r: 230, g: 255, b: 230 } }
  ];
 
 function getNodeColor( p_value ){

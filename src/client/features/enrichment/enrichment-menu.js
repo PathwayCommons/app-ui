@@ -13,7 +13,7 @@ class EnrichmentMenu extends React.Component {
     const cy = this.props.cySrv.get();
 
     //get the value from the slider
-    let sliderVal = document.getElementById('selection-slider').value;
+    let sliderVal = document.getElementById('enrichment-selection-slider').value;
 
     //compare to pre-calculated centrality & hide if necessary
     cy.nodes().forEach(node => {
@@ -26,9 +26,9 @@ class EnrichmentMenu extends React.Component {
 
   render(){
 
-    //Slider listed under 'Visible Nodes' in the interaction viewer
     const slider = [
-      h("input",{type:"range",id:'selection-slider',min:0,max:0.05,step:0.0001,defaultValue:0,
+      //set min=0.0001 not to prevent all nodes from being hidden
+      h("input",{type:"range",id:'enrichment-selection-slider',min:0.0001,max:0.05,step:0.0001,defaultValue:0,
       onInput:() => this.sliderUpdate() }),
     ];
 
@@ -43,23 +43,18 @@ class EnrichmentMenu extends React.Component {
         ])
       ]),
       h(TabPanel, [
-        h('h3', 'Significance'),
+        h('h3', 'Visibile Nodes By Significance'),
         h('div.enrichment-legend-container', [
           h('div.enrichment-legend-stat-significant', [
-            h('p', `high 0`),
+            h('p', `most 0`),
             h('p', '.025'),
-            h('p', `low .05`)
+            h('p', `least .05`)
           ]),
           h('div.enrichment-legend-not-significant', [
-            h('p', ` none >.05`)
+            h('p', `none >.05`)
           ])
-        ])
-      ]),
-      h('h3.slider-heading','Visible Nodes'),
-      h('div.slider-wrapper',slider),
-      h('div.slider-bottom',[
-        h('span.most','Least'),
-        h('span.least','Most')
+        ]),
+        h('div.enrichment-slider-wrapper', slider)
       ])
     ]);
   }

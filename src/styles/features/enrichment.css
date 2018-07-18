@@ -99,8 +99,8 @@
   height: 40px;
   color: white;
   background: linear-gradient(to right,
-    rgb(0,0,255),
-    rgb(179, 255, 255)
+  rgb(0,0,255),
+  rgb(179, 255, 255)
   );
   display: flex;
   flex-direction: row;
@@ -149,3 +149,11 @@
   width: 100%;
 }
 
+.enrichment-slider-wrapper{
+  width: 77%;
+  margin-top: 5px;
+}
+
+#enrichment-selection-slider{
+  width: 100% !important;
+}

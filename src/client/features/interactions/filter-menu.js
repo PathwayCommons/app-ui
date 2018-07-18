@@ -23,9 +23,6 @@ class InteractionsFilterMenu extends React.Component {
           if(i === 1)
             this.state.maxSliderVal = node.data('bcVal');  
         });
-
-        console.log(this.state.defaultSliderVal);
-        console.log(this.state.maxSliderVal);
       });
   
   }
@@ -100,9 +97,6 @@ class InteractionsFilterMenu extends React.Component {
   render(){
     const props= this.props;
 
-    console.log('Default: ' + this.state.defaultSliderVal);
-    console.log('Maximum: ' + this.state.maxSliderVal);
-
     //Networks end up with all nodes next to 0 bcVal other than search term
     //slider becomes a toggle since noone has the dexterity to distinguish values at the low end
     //instead use the second highest bcVal as the maximum for slider, so its actually useful
@@ -120,7 +114,7 @@ class InteractionsFilterMenu extends React.Component {
 
     //Slider listed under 'Visible Nodes' in the interaction viewer
     const slider = [
-      h('input', {type: 'range', id: 'selection-slider', min: 0, max: 1, step: 0.0001, defaultValue: 1,
+      h('input', {type: 'range', id: 'selection-slider', min: 0, max: 0.5, step: 0.0001,
       onInput:() => this.sliderUpdate() }),
     ];
     

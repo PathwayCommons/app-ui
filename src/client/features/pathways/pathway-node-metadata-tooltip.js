@@ -4,7 +4,7 @@ const h = require('react-hyperscript');
 const tippy = require('tippy.js');
 
 const PathwayNodeMetadataView = require('./pathways-node-metadata-view');
-const PathwayNodeMetadata = require('../../models/pathway-node-metadata');
+const PathwayNodeMetadata = require('../../models/pathway/pathway-node-metadata');
 // This metadata tip is only for entities i.e. nodes
 // TODO make an edge metadata tip for edges (for the interactions app)
 class PathwayNodeMetadataTooltip {

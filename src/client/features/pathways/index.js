@@ -13,22 +13,17 @@ const PathwaysSidebar = require('./pathways-sidebar');
 const InfoMenu = require('./menus/network-info-menu');
 const FileDownloadMenu = require('./menus/file-download-menu');
 
+const Pathway = require('../../models/pathway/pathway-model');
+
 const { stylesheet, bindCyEvents, DEFAULT_LAYOUT_OPTS } = require('./pathways-cy');
 
 class Pathways extends React.Component {
   constructor(props) {
     super(props);
-    let { uri } = queryString.parse(props.location.search);
 
     this.state = {
       cySrv: new CytoscapeService({ style: stylesheet }),
-      pathwayJSON: {},
-      pathwayMetadata: {
-        uri: uri,
-        name: '',
-        datasource: '',
-        comments: []
-      },
+      pathway: new Pathway(),
       activeMenu: 'closeMenu',
       loading: true
     };
@@ -39,36 +34,34 @@ class Pathways extends React.Component {
   }
 
   componentDidMount(){
-    let { pathwayMetadata, cySrv} = this.state;
-    let { uri } = pathwayMetadata;
+    let { pathway, cySrv} = this.state;
+    let { uri } = queryString.parse(this.props.location.search);
 
-    let initializeCytoscape = graphJSON => {
+    let initializeCytoscape = pathway => {
       let networkDiv = this.network;
       cySrv.mount(networkDiv);
-      
+
       let cy = cySrv.get();
       bindCyEvents(cy);
 
       cy.remove('*');
-      cy.add(graphJSON);
+      cy.add( pathway.cyJson() );
 
       let layout = cy.layout(DEFAULT_LAYOUT_OPTS);
       layout.on('layoutstop', () => {
         cySrv.load();
         this.setState({
-          pathwayJSON: graphJSON,
-          pathwayMetadata: _.assign({}, this.state.pathwayMetadata, {
-            name: _.get(graphJSON, 'pathwayMetadata.title.0', 'Untitled Pathway'),
-            datasource: _.get(graphJSON, 'pathwayMetadata.dataSource.0', 'Unknown data source'),
-            comments: _.get(graphJSON, 'pathwayMetadata.comments', [])
-          }),
-          loading: false
+          loading: false,
+          pathway: pathway
         });
       });
       layout.run();
     };
 
-    ServerAPI.getPathway(uri, 'latest').then( pathwayJSON => initializeCytoscape( pathwayJSON.graph ));
+    ServerAPI.getPathway(uri, 'latest').then( pathwayJSON => {
+      pathway.load( pathwayJSON, uri );
+      initializeCytoscape( pathway );
+    });
   }
 
   componentWillUnmount(){
@@ -86,16 +79,15 @@ class Pathways extends React.Component {
   }
 
   render() {
-    let { loading, pathwayMetadata, cySrv, activeMenu } = this.state;
-    let { name, datasource, uri } = pathwayMetadata;
+    let { loading, pathway, cySrv, activeMenu } = this.state;
 
     let menus = {
-      'infoMenu': h(InfoMenu, { infoList: pathwayMetadata.comments } ),
+      'infoMenu': h(InfoMenu, { infoList: pathway.comments() } ),
       'closeMenu': null,
-      'downloadMenu': h(FileDownloadMenu, { 
+      'downloadMenu': h(FileDownloadMenu, {
         cySrv,
-        fileName: name, 
-        uri: uri
+        fileName: pathway.name(),
+        uri: pathway.uri()
       })
     };
 
@@ -111,7 +103,7 @@ class Pathways extends React.Component {
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
         h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
-        h('div.app-bar-title', name + ' | ' + datasource)
+        h('div.app-bar-title', pathway.name() + ' | ' + pathway.datasource())
       ])
     ]);
 

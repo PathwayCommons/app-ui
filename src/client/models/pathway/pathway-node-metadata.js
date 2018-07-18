@@ -1,7 +1,7 @@
 const _ = require('lodash');
 
-const { databases } = require('../common/config');
-const { ServerAPI } = require('../services');
+const { databases } = require('../../common/config');
+const { ServerAPI } = require('../../services');
 
 
 

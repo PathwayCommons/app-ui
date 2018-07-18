@@ -22,6 +22,7 @@ class CytoscapeService {
       minZoom: 0.08,
       maxZoom: 4,
       zoomingEnabled: true,
+      bindEvents: bindEvents,
       layout: {
         name: 'null'
       }
@@ -73,6 +74,8 @@ class CytoscapeService {
 
     let options = container == null ? this.options : Object.assign({}, this.options, { container });
     let cy = this.cy = cytoscape(options);
+
+    options.bindEvents(cy);
 
     this.resolveMount(cy);
   }

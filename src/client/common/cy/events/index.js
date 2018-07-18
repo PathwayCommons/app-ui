@@ -20,7 +20,7 @@ const bindEvents = (cy, opts, callback) => {
   });
   bindHover(cy);
   bindClick(cy, callback);
-  bindShowTooltip(cy,opts.showTooltipsOnEdges);
+  bindShowTooltip(cy);
 };
 
 module.exports = bindEvents;

@@ -22,7 +22,7 @@ class Pathways extends React.Component {
     super(props);
 
     this.state = {
-      cySrv: new CytoscapeService({ style: stylesheet, bindEvents: bindCyEvents }),
+      cySrv: new CytoscapeService({ style: stylesheet, onMount: bindCyEvents }),
       pathway: new Pathway(),
       activeMenu: 'closeMenu',
       loading: true
@@ -38,11 +38,9 @@ class Pathways extends React.Component {
     let { uri } = queryString.parse(this.props.location.search);
 
     let initializeCytoscape = pathway => {
-      let networkDiv = this.network;
-      cySrv.mount(networkDiv);
+      cySrv.mount(this.network);
 
       let cy = cySrv.get();
-
       cy.remove('*');
       cy.add( pathway.cyJson() );
 

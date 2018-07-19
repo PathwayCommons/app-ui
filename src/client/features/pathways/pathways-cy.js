@@ -94,6 +94,7 @@ let layout = cy => {
 };
 
 let bindCyEvents = cy => {
+
   let hideTooltips = () => {
     cy.elements().forEach(ele => {
       const tooltip = ele.scratch('_tooltip');
@@ -101,7 +102,6 @@ let bindCyEvents = cy => {
         tooltip.hide();
         ele.scratch('_tooltip-opened', false);
       }
-      ele.unselect();
     });
   };
 
@@ -117,26 +117,33 @@ let bindCyEvents = cy => {
         node.scratch('_tooltip', tooltip);
       }
       tooltip.show();
+      node.scratch('_tooltip-opened', true);
     }
   });
 
-  cy.on('tap', 'node', evt => {
-    const node = evt.target;
+  cy.on('tap', evt => {
+    const tgt = evt.target;
 
-    hideTooltips();
-    if( !node.scratch('_tooltip-opened') ){
-      node.emit(SHOW_TOOLTIPS_EVENT);
-      node.scratch('_tooltip-opened', true);
+    // if we didn't click a node, close all tooltips
+    if( evt.target === cy || evt.target.isEdge() ){
+      hideTooltips();
+      return;
+    }
+
+    // we clicked a node that has a tooltip open -> close it
+    if( tgt.scratch('_tooltip-opened') ){
+      hideTooltips();
     } else {
-      node.scratch('_tooltip-opened', false);
+      // open the tooltip for the clicked node
+      hideTooltips();
+      tgt.emit(SHOW_TOOLTIPS_EVENT);  
     }
   });
 
   //Hide Tooltips on various graph movements
-  cy.on('tap', () => hideTooltips());
   cy.on('drag', () => hideTooltips());
   cy.on('pan', () => hideTooltips());
-  cy.on('zoom', () => hideTooltips());
+  cy.on('zoom', () => hideTooltips());  
 };
 
 let searchNodes = _.debounce((cy, query) => {

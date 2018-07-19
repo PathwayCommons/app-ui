@@ -212,8 +212,6 @@ class PathwayNodeMetadata {
   }
   getPublicationData(){
     // append publications to the metadata model
-    // todo why does this need to be fetched here, why can't it be done
-    // at the time that the metadata is processed?
     let getRawPublications = async rawMetadata => {
       let pubs = await getPublications(rawMetadata);
       if( pubs != null ){

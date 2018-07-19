@@ -22,41 +22,35 @@ class PathwayNodeMetadataTooltip {
       return div;
     };
 
-    if( this.tooltip == null ){
-      // publication data needs to be fetched from pubmed before we can display the tooltip
-      this.metadata.getPublicationData().then( () => {
-        let refObject = this.node.popperRef();
-        let tooltip = tippy(refObject, {
-          html: getContentDiv( h(PathwayNodeMetadataView, { metadata: this.metadata, } )),
-          theme: 'light',
-          interactive: true,
-          trigger: 'manual',
-          hideOnClick: false,
-          arrow: true,
-          placement: 'bottom',
-          distance: 10}
-        ).tooltips[0];
-
-        this.tooltip = tooltip;
-        this.tooltip.show();
-      });
-    } else {
-      this.tooltip.show();
+    if( this.tooltip != null ){
+      this.tooltip.destroy();
+      this.tooltip = null;
     }
+
+    // publication data needs to be fetched from pubmed before we can display the tooltip
+    this.metadata.getPublicationData().then( () => {
+      let refObject = this.node.popperRef();
+      let tooltip = tippy(refObject, {
+        html: getContentDiv( h(PathwayNodeMetadataView, { metadata: this.metadata, } )),
+        theme: 'light',
+        interactive: true,
+        trigger: 'manual',
+        hideOnClick: false,
+        arrow: true,
+        placement: 'bottom',
+        distance: 10}
+      ).tooltips[0];
+
+      this.tooltip = tooltip;
+      this.tooltip.show();
+    });
   }
 
   hide() {
     if (this.tooltip) {
       this.tooltip.hide();
     }
-  }
-
-  destroy() {
-    if (this.tooltip) {
-      this.tooltip.destroy(this.tooltip.store[0].popper);
-      this.tooltip = null;
-    }
-  }
+  } 
 }
 
 module.exports = PathwayNodeMetadataTooltip;

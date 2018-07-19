@@ -15,7 +15,7 @@ const FileDownloadMenu = require('./menus/file-download-menu');
 
 const Pathway = require('../../models/pathway/pathway-model');
 
-const { stylesheet, bindCyEvents, DEFAULT_LAYOUT_OPTS } = require('./pathways-cy');
+const { stylesheet, bindCyEvents, PATHWAYS_LAYOUT_OPTS } = require('./cy');
 
 class Pathways extends React.Component {
   constructor(props) {
@@ -44,7 +44,7 @@ class Pathways extends React.Component {
       cy.remove('*');
       cy.add( pathway.cyJson() );
 
-      let layout = cy.layout(DEFAULT_LAYOUT_OPTS);
+      let layout = cy.layout(PATHWAYS_LAYOUT_OPTS);
       layout.on('layoutstop', () => {
         cySrv.load();
         this.setState({

@@ -5,7 +5,7 @@ const classNames = require('classNames');
 
 const Tooltip = require('../../common/components/tooltip');
 
-const { fit, expandCollapse, layout, searchNodes } = require('./pathways-cy');
+const { fit, expandCollapse, layout, searchNodes } = require('./cy');
 
 class PathwaysToolbar extends React.Component {
   constructor(props){

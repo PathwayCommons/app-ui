@@ -36,8 +36,6 @@
 }
 
 .unrecognized-token-container{
-  @extend %flex-center;
-
   min-width: 200px;
   position: absolute;
   top: 100%;
@@ -54,6 +52,7 @@
   border-radius: 0 !important;
   font-weight: normal;
   vertical-align: middle;
+  position: relative;
   z-index: 1;
   overflow-y:scroll;
   line-height: 1.8;

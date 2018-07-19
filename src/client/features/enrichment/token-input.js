@@ -65,6 +65,7 @@ class TokenInput extends React.Component {
         ),
         h('div.unrecognized-token-container',[
           h(Textarea, {
+            id: 'unrecognized-tokens-feedback',
             className:'unrecognized-tokens-feedback',
             value: "Unrecognized Tokens: \n" + unrecognized.join("\n"),
             readOnly: true,

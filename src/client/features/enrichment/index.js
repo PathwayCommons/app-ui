@@ -165,7 +165,13 @@ class Enrichment extends React.Component {
     const content = loaded ? baseView : loadingView;
     return h('div.enrichment-main', {
       id: 'enrichment-main',
-      onClick: (e) => { if(e.target.id !== 'gene-input-box') document.getElementById("gene-input-box").blur(); }
+      onClick: (e) => {
+        if(e.target.id !== 'gene-input-box') {
+          document.getElementById('gene-input-box').blur();
+          document.getElementById('unrecognized-tokens-feedback').style.display = "none";
+        }
+        else if(closeToolBar == false) document.getElementById('unrecognized-tokens-feedback').style.display = "block";
+      }
     },
     [content]);
   }

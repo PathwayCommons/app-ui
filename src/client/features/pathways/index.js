@@ -56,7 +56,7 @@ class Pathways extends React.Component {
     };
 
     ServerAPI.getPathway(uri, 'latest').then( pathwayJSON => {
-      pathway.load( pathwayJSON, uri );
+      pathway.load( pathwayJSON );
       initializeCytoscape( pathway );
     });
   }
@@ -77,16 +77,6 @@ class Pathways extends React.Component {
 
   render() {
     let { loading, pathway, cySrv, activeMenu } = this.state;
-
-    let menus = {
-      'infoMenu': h(InfoMenu, { infoList: pathway.comments() } ),
-      'closeMenu': null,
-      'downloadMenu': h(FileDownloadMenu, {
-        cySrv,
-        fileName: pathway.name(),
-        uri: pathway.uri()
-      })
-    };
 
     let network = h('div.network', { className: classNames({
       'network-loading': loading,
@@ -110,7 +100,8 @@ class Pathways extends React.Component {
 
     let sidebar = h('div.app-sidebar', [
       h(PathwaysSidebar, {  controller: this, activeMenu }, [
-        menus[activeMenu]
+        h(InfoMenu, { key: 'infoMenu', infoList: pathway.comments() }),
+        h(FileDownloadMenu, { key: 'downloadMenu', cySrv, fileName: pathway.name(), uri: pathway.uri() }),
       ])
     ]);
 

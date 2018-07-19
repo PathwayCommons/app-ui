@@ -10,14 +10,13 @@ class Pathway {
     this.loaded = false;
   }
 
-  load(pathwayJSON, uri){
+  load(pathwayJSON){
     this.raw = pathwayJSON,
-    this.pcId = uri;
     this.loaded = true;
   }
 
   uri(){
-    return this.pcId || 'Unknown uri';
+    return _.get(this.raw, 'graph.pathwayMetadata.uri', 'Unknown uri');
   }
 
   cyJson(){
@@ -39,6 +38,7 @@ class Pathway {
   comments(){
     return _.get(this.raw, 'graph.pathwayMetadata.comments', []);
   }
+
 }
 
 module.exports = Pathway;

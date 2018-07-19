@@ -11,15 +11,18 @@ let absoluteURL = (href) => {
 };
 
 const defaultFetchOpts = {
-  method: 'GET', headers: {
-    'Content-type': 'application/json',
-    'Accept': 'application/json'
-  }
+  method: 'GET',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
 };
 
 const ServerAPI = {
-  getGraphAndLayout(uri, version) {
+  getPathway(uri, version) {
     return fetch(absoluteURL(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`), defaultFetchOpts).then(res => res.json());
+  },
+
+  getPubmedPublications( pubmedIds ){
+    return fetch('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id=' + pubmedIds.toString(), defaultFetchOpts).then(res => res.json());  
   },
 
   getInteractionGraph(sources) {

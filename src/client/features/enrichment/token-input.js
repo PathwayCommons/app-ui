@@ -52,7 +52,8 @@ class TokenInput extends React.Component {
         }),
         h('div.gene-input-container', [
           h(Textarea, {
-            className: 'gene-input-box',
+            id: 'gene-input-box', // for focus() and blur()
+            className: 'gene-input-box', // used for styling
             placeholder: 'Enter one gene per line',
             value: this.state.inputBoxContents,
             onChange: (e) => this.handleChange(e)

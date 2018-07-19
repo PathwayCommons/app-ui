@@ -79,6 +79,8 @@ class Enrichment extends React.Component {
       },
 
       loaded: true,
+      activeMenu: 'closeMenu',
+      open: false,
 
       closeToolBar: true,
       unrecognized: [],
@@ -117,6 +119,8 @@ class Enrichment extends React.Component {
 
       this.setState({
         closeToolBar: false,
+        activeMenu: enrichmentMenuId,
+        open: true,
         loaded: true,
         networkJSON: {
           edges: visualizationResult.graph.elements.edges,
@@ -128,7 +132,7 @@ class Enrichment extends React.Component {
   }
 
   render() {
-    let { cySrv, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading, closeToolBar, loaded } = this.state;
+    let { cySrv, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading, closeToolBar, loaded, activeMenu, open } = this.state;
 
     let retrieveTokenInput = () => h(TokenInput,{
       inputs: this.state.inputs,
@@ -147,6 +151,8 @@ class Enrichment extends React.Component {
       networkMetadata,
       networkLoading,
       closeToolBar,
+      activeMenu,
+      open,
       titleContainer: () => h(retrieveTokenInput),
       download: {
         types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'),

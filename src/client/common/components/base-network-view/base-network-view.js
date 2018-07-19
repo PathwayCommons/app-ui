@@ -44,8 +44,10 @@ class BaseNetworkView extends React.Component {
   componentWillReceiveProps(nextProps){//needed to updata metadata for interactions
     this.setState({
       networkMetadata: nextProps.networkMetadata,
-      filters:nextProps.filters,
-      networkJSON: nextProps.networkJSON
+      filters: nextProps.filters,
+      networkJSON: nextProps.networkJSON,
+      activeMenu: nextProps.activeMenu,
+      open: nextProps.open
     });
   }
 
@@ -276,7 +278,7 @@ class BaseNetworkView extends React.Component {
         },
         [
           h('div.graph-cy', {
-            ref: dom => this.graphDOM = dom,
+            ref: dom => this.graphDOM = dom
           })
         ]
       ),

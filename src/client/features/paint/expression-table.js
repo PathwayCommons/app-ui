@@ -151,16 +151,23 @@ class ExpressionTable {
 
   load( rawJsonData ){
     this.raw = rawJsonData;
-    let expressionClasses = _.get(rawJsonData.dataSetClassList, '0.classes', []);
-    this.classes = _.uniq(expressionClasses);
+    let rawExpressionClasses = _.get(rawJsonData.dataSetClassList, '0.classes', []);
+    let rawExpressions = _.get(rawJsonData.dataSetExpressionList, '0.expressions', []);
+
+    this.rawExpressions = rawExpressions;
+    this.rawExpressionClasses = rawExpressionClasses;
+    this.classes = _.uniq(rawExpressionClasses);
+    this.loaded = true;
 
   }
 
   loadPathway( pathwayJSON ){
-    let rawJsonData = this.raw;
-    let expressionClasses = _.get(rawJsonData.dataSetClassList, '0.classes', []);
-    let expressions = createRawExpressions(_.get(rawJsonData.dataSetExpressionList, '0.expressions', []), pathwayJSON);
-    
+    if( !this.loaded ){
+      throw new Error('You must call load() with enrichment JSON first');
+    }
+
+    let expressionClasses = this.rawExpressionClasses;
+    let expressions = createRawExpressions(this.rawExpressions, pathwayJSON);
     this.rows = [];
     this.expressionMap = new Map();
 

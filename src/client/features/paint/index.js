@@ -86,38 +86,39 @@ class Paint extends React.Component {
     let { cySrv, expressionTable  } = this.state;
     cySrv.mount(this.network);
     cySrv.load();
-  
-    fetch(enrichmentsUri).then( res => res.json() ).then( json =>  {
-      let expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
-      expressionTable.load( json );
 
-      let findBestPathway = results => {
-        // pathway results are sorted by how many genes they have in common
-        // with the expression table
-
-        // see if there is a pathway that has the same title as the search param
-        let bestResult = results.find( r => r.pathway.name() === searchParam );
-
-        if( bestResult == null ){
-          bestResult = results.sort((p0, p1) => p1.geneIntersection.length > p0.geneIntersection.length);
-        }
-
-        return bestResult;
-      };
-
-      getPathwaysRelevantTo( searchParam, expressions ).then( results => {
-        let { pathway } = findBestPathway( results );
-        this.setState({
-          paintMenuCtrls: _.assign({}, this.state.paintMenuCtrls, { exprClass: expressionTable.classes[0] }),
-          pathways: results,
-          curPathway: pathway
-        }, () => {
-          this.loadPathway(pathway);
-        });
-  
+    let getEnrichments = () => {
+      return fetch(enrichmentsUri).then( res => res.json() ).then( json =>  {
+        expressionTable.load( json );
       });
+    };
 
-    } );
+    let getPathways = () => {
+      return getPathwaysRelevantTo( searchParam, expressionTable.rawExpressions ).then( results => {
+        let findBestPathway = results => {
+          // pathway results are sorted by how many genes they have in common
+          // with the expression table
+  
+          // see if there is a pathway that has the same title as the search param
+          let bestResult = results.find( r => r.pathway.name() === searchParam );
+  
+          if( bestResult == null ){
+            bestResult = results.sort((p0, p1) => p1.geneIntersection.length > p0.geneIntersection.length);
+          }
+  
+          return bestResult;
+        };
+        return { pathways: results, bestPathway: findBestPathway( results ).pathway };
+      });
+    };
+  
+    getEnrichments().then( () => getPathways() ).then( ({pathways, bestPathway}) => {
+      this.setState({
+        paintMenuCtrls: _.assign({}, this.state.paintMenuCtrls, { exprClass: expressionTable.classes[0] }),
+        pathways: pathways,
+        curPathway: bestPathway
+      }, () => this.loadPathway(bestPathway));
+    });
   }
 
   loadPathway(pathway){

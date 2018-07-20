@@ -22,7 +22,7 @@ class TokenInput extends React.Component {
 
   //only open unrecognized feedback if unrecognized tokens exist
   handleFocus(){
-    if( _.isEmpty(this.props.unrecognized) == false ) this.setState({openUnrecognized: true});
+    this.setState({openUnrecognized: true});
   }
 
   //close unrecognized feedback when input box is closed
@@ -77,13 +77,14 @@ class TokenInput extends React.Component {
           onClick: () => { this.retrieveValidationAPIResult();} },
           [h('button.submit', 'Submit')]
         ),
-        h('div.unrecognized-token-container',[
+        h('div.unrecognized-token-container',{ style: { display: state.openUnrecognized ? 'block' : 'none' }},[
           h(Textarea, {
+            id: 'unrecognized-tokens-feedback',
             className:'unrecognized-tokens-feedback',
             value: "Unrecognized Tokens: \n" + unrecognized.join("\n"),
             readOnly: true,
             //only display when input box is open and unrecognized tokens exist
-            style: { display: state.openUnrecognized ? 'block' : 'none' }
+            style: { display: _.isEmpty(this.props.unrecognized) ? 'none' : 'block' }
           })
         ])
     ]);

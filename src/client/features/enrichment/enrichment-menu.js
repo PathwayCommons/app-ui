@@ -41,12 +41,12 @@ class EnrichmentMenu extends React.Component {
         ])
       ]),
       h(TabPanel, [
-        h('h3', 'Visible Nodes By Significance'),
+        h('h3', 'P-Value Cutoff'),
         h('div.enrichment-legend-container', [
           h('div.enrichment-legend', [
-            h('p', `most 0`),
+            h('p', '0'),
             h('p', '.025'),
-            h('p', `least .05`)
+            h('p', '.05')
           ])
         ]),
         h('div.enrichment-slider-wrapper', slider)

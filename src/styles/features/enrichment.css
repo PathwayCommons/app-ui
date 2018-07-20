@@ -105,15 +105,6 @@
 .enrichment-legend-container {
   display: flex;
   flex-direction: row;
-
-  & p {
-    margin: 0;
-    text-shadow:
-      -1px -1px 0 #000,
-       1px -1px 0 #000,
-      -1px 1px 0 #000,
-       1px 1px 0 #000;
-  }
 }
 
 /* for p_value <= 0.05 */
@@ -133,6 +124,13 @@
 
   & p {
     padding-top: 10px;
+    font-size: 1em;
+    margin: 0;
+    text-shadow:
+      -1px -1px 0 #000,
+       1px -1px 0 #000,
+      -1px 1px 0 #000,
+       1px 1px 0 #000;
   }
 }
 

@@ -70,10 +70,10 @@ class BaseNetworkView extends React.Component {
 
       const layout = cy.layout(initialLayoutOpts);
 
-      //set default view for filtering nodes by p_value when new network is rendered
       this.state.cySrv.loadPromise().then(() => {
-        //by default, only display nodes with p_value <= 0.025
-        this.displayDefaultNodes(0.025);
+      //by default, display all nodes (p-value <= .05)
+      //match position on slider to that of default value
+      document.getElementById('enrichment-selection-slider').value = 0.05;
       });
 
       layout.on('layoutstop', () => {
@@ -84,21 +84,6 @@ class BaseNetworkView extends React.Component {
     }
   }
 
-    displayDefaultNodes(defaultSliderVal){
-
-    //match position on slider with default value
-    document.getElementById('enrichment-selection-slider').value = defaultSliderVal;
-
-    const cy = this.state.cySrv.get();
-
-    //hide nodes outside of value range
-    cy.nodes().forEach(node => {
-      if(node.data('p_value') > defaultSliderVal)
-        node.addClass('hidden');
-      else
-        node.removeClass('hidden');
-    });
-  }
 
   componentWillUnmount() {
     this.state.cySrv.destroy();

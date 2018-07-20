@@ -26,7 +26,7 @@ class EnrichmentMenu extends React.Component {
 
     const slider = [
       //set min = 0.0001 to prevent all nodes from being hidden which will occur if min = 0
-      h("input",{type:"range",id:'enrichment-selection-slider',min:0.0001,max:0.05,step:0.0001,defaultValue:0.025,
+      h("input",{type:"range",id:'enrichment-selection-slider',min:0.0001,max:0.05,step:0.0001,defaultValue:0.05,
       onInput:() => this.sliderUpdate() }),
     ];
 

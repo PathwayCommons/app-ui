@@ -43,13 +43,10 @@ class EnrichmentMenu extends React.Component {
       h(TabPanel, [
         h('h3', 'Visible Nodes By Significance'),
         h('div.enrichment-legend-container', [
-          h('div.enrichment-legend-stat-significant', [
+          h('div.enrichment-legend', [
             h('p', `most 0`),
             h('p', '.025'),
             h('p', `least .05`)
-          ]),
-          h('div.enrichment-legend-not-significant', [
-            h('p', `none >.05`)
           ])
         ]),
         h('div.enrichment-slider-wrapper', slider)

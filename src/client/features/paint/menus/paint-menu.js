@@ -10,6 +10,47 @@ const _ = require('lodash');
 
 // const { ExpressionTable, applyExpressionData } = require('./expression-table');
 
+class ExpressionColourLegend extends React.Component {
+  render(){
+    let { min, max } = this.props;
+
+    return h('div.paint-legend', [
+      h('p', `low ${min}`),
+      h('p', `high ${max}`)
+    ]);
+  }
+}
+
+class ExpressionTableView extends React.Component {
+  render(){
+    let {expressionTable, cySrv, paintMenuCtrls} = this.props;
+    let { exprClass, exprFn } = paintMenuCtrls;
+
+    let foldChangeExpressions = expressionTable.expressions().map(e => {
+      return {
+        geneName: e.geneName,
+        foldChange: e.foldChange( exprClass, exprFn, 'N/A')
+      };
+    });
+
+    return h('div.expression-table-view', [
+      h('div.expression-table-header', [
+        h('div.expression-table-header-column', 'Gene'),
+        h('div.expression-table-header-column', 'Expression Ratio'),  
+      ]),
+      h('div.expression-search-filter', [
+        h('input', { placeholder: 'Filter by gene' })
+      ]),
+      h('div.expression-list', foldChangeExpressions.map( e => {
+        return h('div.expression-entry', [
+          h('div.gene', e.geneName),
+          h('div.fold-change', e.foldChange)
+        ]);
+      }))
+    ]);
+  }
+}
+
 class PaintMenu extends React.Component {
   constructor(props) {
     super(props);
@@ -70,14 +111,21 @@ class PaintMenu extends React.Component {
 
 
   render() {
-    let { cySrv, controller,  curPathway, pathways } = this.props;
+    let { cySrv, controller, expressionTable, paintMenuCtrls, curPathway, pathways } = this.props;
+    let { exprClass, exprFn } = paintMenuCtrls;
+    let { min, max } = expressionTable.computeFoldChangeRange(exprClass, exprFn);
 
-    return h('div.paint-menu', pathways.map(p => {
-      return h('div', { onClick: () => controller.loadPathway(p) }, [
-        h('div', p.name())
+    let pathwayResults = pathways.map(result => {
+      return h('div', { onClick: () => controller.loadPathway(result.pathway) }, [
+        h('div', result.pathway.name())
       ]);
-      })
-    );
+    });
+
+    return h('div.paint-menu', [
+      h(ExpressionColourLegend, { min, max }),
+      h(ExpressionTableView, { cySrv, expressionTable, paintMenuCtrls} ),
+      pathwayResults
+    ]);
   }
 }
 

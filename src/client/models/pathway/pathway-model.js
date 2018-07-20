@@ -39,6 +39,10 @@ class Pathway {
     return _.get(this.raw, 'graph.pathwayMetadata.comments', []);
   }
 
+  macromolecules(){
+    return _.get(this.raw, 'graph.nodes', []).filter( node => node.data.class === 'macromolecule' );
+  }
+
 }
 
 module.exports = Pathway;

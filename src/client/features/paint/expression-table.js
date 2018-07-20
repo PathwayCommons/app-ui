@@ -145,19 +145,31 @@ const createRawExpressions = (expressionJSON, networkJSON) => {
 };
 
 class ExpressionTable {
-  constructor(rawJsonData, networkJSON) {
-    const expressionClasses = _.get(rawJsonData.dataSetClassList, '0.classes', []);
-    const expressions = createRawExpressions(_.get(rawJsonData.dataSetExpressionList, '0.expressions', []), networkJSON);
+  constructor() {
+    this.loaded = false;
+  }
 
+  load( rawJsonData ){
+    this.raw = rawJsonData;
+    let expressionClasses = _.get(rawJsonData.dataSetClassList, '0.classes', []);
     this.classes = _.uniq(expressionClasses);
+
+  }
+
+  loadPathway( pathwayJSON ){
+    let rawJsonData = this.raw;
+    let expressionClasses = _.get(rawJsonData.dataSetClassList, '0.classes', []);
+    let expressions = createRawExpressions(_.get(rawJsonData.dataSetExpressionList, '0.expressions', []), pathwayJSON);
+    
     this.rows = [];
     this.expressionMap = new Map();
 
-    for (const rawExpression of expressions) {
-      const exp = new Expression(rawExpression, expressionClasses);
+    for (let rawExpression of expressions) {
+      let exp = new Expression(rawExpression, expressionClasses);
       this.rows.push(exp);
       this.expressionMap.set(rawExpression.geneName, exp);
     }
+
   }
 
   expressions(geneName = null) {

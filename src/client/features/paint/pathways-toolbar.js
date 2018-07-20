@@ -5,23 +5,11 @@ const classNames = require('classNames');
 
 const Tooltip = require('../../common/components/tooltip');
 
-const { fit, expandCollapse, layout, searchNodes } = require('./cy');
+const { fit, expandCollapse, layout } = require('./cy');
 
 class PathwaysToolbar extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      searchValue: ''
-    };
-  }
-
-  handleNodeSearchChange(searchVal){
-    this.setState({ searchValue: searchVal }, () => searchNodes( this.props.cySrv.get(), searchVal));
-  }
-
   render(){
     let { cySrv, controller, activeMenu } = this.props;
-    let { searchValue } = this.state;
     let cy = cySrv.get();
 
     return h('div.pathways-toolbar', [
@@ -68,21 +56,6 @@ class PathwaysToolbar extends React.Component {
           onClick: () => { layout( cy ); }
         }, [
           h('i.material-icons', 'replay')
-        ])
-      ]),
-      h('div.pathways-search-nodes', {
-        onChange: e => this.handleNodeSearchChange(e.target.value)
-      }, [
-        h('div.pathways-search-bar', [
-          h('input.pathways-search-input', {
-            value: searchValue,
-            type: 'search',
-            placeholder: 'Search entities',
-          }),
-          searchValue !== '' ? h('div.pathways-search-clear', {
-            onClick: () => this.handleNodeSearchChange('')}, [
-            h('i.material-icons', 'close')
-          ]) : null
         ])
       ])
     ]);    

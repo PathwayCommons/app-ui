@@ -64,3 +64,16 @@
   color: var(--accent-1-colour);
   border-bottom: 3px solid var(--accent-1-colour);
 }
+
+
+.expression-table-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+}
+.expression-entry {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}

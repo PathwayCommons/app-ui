@@ -3,10 +3,11 @@
 const hideTooltips = (cy) => {
   cy.elements().forEach(ele => {
     const tooltip = ele.scratch('_tooltip');
-    if (tooltip) { 
-      tooltip.hide(); 
+    if (tooltip) {
+      tooltip.hide();
       ele.scratch('_tooltip-opened', false);
     }
+    ele.unselect();
   });
 };
 
@@ -17,12 +18,12 @@ const bindClick = (cy) => {
     const ele = evt.target;
 
     if (!ele.scratch('_tooltip-opened')) {
-      hideTooltips(cy);	
+      hideTooltips(cy);
       ele.emit('showTooltip');
       ele.scratch('_tooltip-opened', true);
-    } 
+    }
     else if(ele===cy){
-      hideTooltips(cy);	 
+      hideTooltips(cy);
     }
     else {
       hideTooltips(cy);

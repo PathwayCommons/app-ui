@@ -52,6 +52,10 @@ const stylesheet = sbgnStyleSheet(cytoscape)
 .selector('.unhighlighted')
 .css({
   'opacity':0.4,
+})
+.selector('.hidden')
+.css({
+  'display':'none',
 });
 
 module.exports = stylesheet;

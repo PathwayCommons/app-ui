@@ -1,0 +1,93 @@
+@import "./sidebar-menus/download-menu.css";
+@import "./sidebar-menus/interaction-filter-menu.css";
+
+.sidebar-menu {
+  height: 100%;
+  width: var(--view-sidebar-width);
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 25;
+  box-shadow: 0;
+  opacity: 0;
+  transform: translate3d(100%, 0, 0);
+  transition-duration: 250ms;
+  transition-property: transform, opacity;
+  box-sizing: border-box;
+  border-left: 1px solid rgb(211, 216, 218);
+
+  &.sidebar-menu-open {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  & a {
+    color: var(--link);
+    text-decoration: underline;
+
+    &:visited {
+      color: var(--link-visited);
+    }
+  }
+}
+
+.sidebar-close {
+  @extend %flex-center;
+
+  height: calc(var(--icon-size) * 3 / 2);
+  width: calc(var(--icon-size) * 3 / 2);
+  left: calc(-1 * var(--icon-size) * 3 / 2);
+  position: absolute;
+  z-index: 10;
+  background-color: rgba(255, 255, 255, 0.5);
+  background-color: var(--light-base-colour);
+  border-radius: 0 0 0 3px;
+  border: 1px solid rgb(211, 216, 218);
+  border-right: 0;
+}
+
+.sidebar-content {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  z-index: 50;
+}
+
+.sidebar-text {
+  @extend %flex-center;
+
+  height: 100%;
+  width: 100%;
+  padding: 1em;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 300;
+  background-color: var(--light-base-colour);
+  overflow-y: scroll;
+
+  & h2 {
+    margin-top: 0;
+  }
+
+  & p {
+    font-size: 0.9em;
+  }
+}
+
+/* Mobile scaling */
+@media (--small-width-viewport) {
+  .sidebar-text h2 {
+    font-size: 1em;
+  }
+
+  .interaction-filter-button h3 {
+    font-size: 0.8em;
+  }
+
+  .interaction-filter-button {
+    height: 40px;
+  }
+}

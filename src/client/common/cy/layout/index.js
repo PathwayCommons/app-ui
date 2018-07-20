@@ -61,16 +61,26 @@ const defaultLayout = {
 };
 
 const interactionsLayout = {
-  displayName: 'Concentric',
-  description: 'Align the nodes in concentric circles',
+  displayName: 'cose-bilkent',
+  description: 'The CoSE layout for Cytoscape.js by the i-Vis Lab in Bilkent University',
   options: {
-    name: 'concentric',
-    nodeDimensionsIncludeLabels: false,
-    animate: true,
-    animationDuration: 500,
-    fit: true,
-    padding: 0,
-    levelWidth:(nodes)=>nodes.maxDegree()/1000,
+    name: 'cose-bilkent',
+    nodeRepulsion: 20000,
+    edgeElasticity: 0.05,
+    idealEdgeLength: 200,
+    animate:false,
+  }
+};
+
+const enrichmentLayout = {
+  displayName: 'cose-bilkent',
+  description: 'The CoSE layout for Cytoscape.js by the i-Vis Lab in Bilkent University',
+  options: {
+    name: 'cose-bilkent',
+    nodeRepulsion: 300000,
+    edgeElasticity: 0.05,
+    idealEdgeLength: 200,
+    animate:false,
   }
 };
 
@@ -102,6 +112,12 @@ const getLayoutConfig = (presetLayoutJSON) => {
       layouts: [interactionsLayout]
     };
   }
+  else if(presetLayoutJSON === 'enrichment'){
+    layoutConfig = {
+      defaultLayout: enrichmentLayout,
+      layouts: [enrichmentLayout]
+    };
+  }
   else {
     layoutConfig = {
       defaultLayout: humanCreatedLayout,
@@ -127,4 +143,4 @@ const applyHumanLayout = (cy, layoutJSON, animateOpts = {}) => {
   cy.animate(animateOpts);
 };
 
-module.exports = { getLayoutConfig, applyHumanLayout };
+module.exports = { defaultLayout, getLayoutConfig, applyHumanLayout };

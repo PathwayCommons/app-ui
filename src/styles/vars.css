@@ -12,7 +12,7 @@
   --light-base-colour-dark: var(--cloud-dark);
   --light-base-colour-darker: var(--cloud-darker);
   --dark-base-colour: var(--midnight-blue);
-  --box-shadow: 0 0 15px 2px rgba(0, 0, 0, 0.4);
+  --box-shadow: 0 0 15px 2px rgba(0, 0, 0, 0.2);
   --icon-size: 24px;
   --icon-size-mobile: 7vmin;
   --number-of-sidebar-icons: 3;
@@ -46,19 +46,5 @@
 }
 
 %no-select {
-  user-select: none;
   cursor: default;
-}
-
-%button-styling {
-  border-radius: 2px;
-  border: 1px solid black;
-  box-shadow: rgba(0, 0, 0, 0.4) 0 2px 5px 0;
-  background-color: var(--light-base-colour);
-  cursor: pointer;
-  transition: box-shadow 0.1s linear;
-
-  &:hover {
-    box-shadow: rgba(0, 0, 0, 0.4) 0 5px 11px 0;
-  }
 }

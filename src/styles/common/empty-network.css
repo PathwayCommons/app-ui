@@ -1,0 +1,10 @@
+.empty-network {
+  text-align: center;
+
+  & i {
+    src: url("../image/pc_logo_dark.svg");
+    height: auto;
+    width: 5%;
+    padding: 20px 0px 0px 0px;
+  }
+}

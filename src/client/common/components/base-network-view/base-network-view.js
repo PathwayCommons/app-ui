@@ -4,7 +4,7 @@ const classNames = require('classnames');
 const Loader = require('react-loader');
 const _ = require('lodash');
 
-const IconButton = require('../icon-button');
+const Tooltip = require('../tooltip');
 
 const debouncedSearchNodes = _.debounce(require('../../cy/match-style'), 300);
 
@@ -44,8 +44,38 @@ class BaseNetworkView extends React.Component {
   componentWillReceiveProps(nextProps){//needed to updata metadata for interactions
     this.setState({
       networkMetadata: nextProps.networkMetadata,
-      filters:nextProps.filters
+      filters:nextProps.filters,
+      networkJSON: nextProps.networkJSON
     });
+  }
+
+  //note: cannot use setState in componentWillUpdate
+  componentWillUpdate(nextProps){
+
+    //re-render graph for enrichment app when networkJSON updated
+    if(this.state.networkMetadata.name === "enrichment" && nextProps.networkJSON !== this.state.networkJSON)
+    {
+      const state = this.state;
+      const initialLayoutOpts = _.assign({}, state.layoutConfig.defaultLayout.options, {
+        animate: false // no animations on init load
+      });
+
+      const cySrv = state.cySrv;
+
+      const cy = cySrv.get();
+
+      cy.elements().remove();
+
+      cy.add(nextProps.networkJSON);
+
+      const layout = cy.layout(initialLayoutOpts);
+
+      layout.on('layoutstop', () => {
+        cySrv.load(); // indicate loaded
+      });
+
+      layout.run();
+    }
   }
 
   componentWillUnmount() {
@@ -123,32 +153,31 @@ class BaseNetworkView extends React.Component {
 
     const menuButtons = toolbarButtons.filter(btn => btn.type === 'activateMenu').map(btn => {
       return (
-        h('div.sidebar-tool-button-container', [
-          h(IconButton, {
+        h(Tooltip, { description: btn.description }, [
+          h('div.icon-button', {
             key: btn.id,
-            icon: btn.icon,
-            active: state.activeMenu === btn.menuId,
-            onClick: () => {
-              this.changeMenu(btn.menuId);
-            },
-            desc: btn.description,
-            cy: state.cySrv.get()
-          })
+            onClick: () => this.changeMenu(btn.menuId),
+            className: classNames({'icon-button-active': state.activeMenu === btn.menuId })
+          }, [
+            h('i.material-icons', btn.icon)
+          ])
         ])
       );
     });
 
     const networkButtons = toolbarButtons.filter(btn => btn.type === 'networkAction').map(btn => {
       return (
-        h(IconButton, {
-          key: btn.id,
-          icon: btn.icon,
-          onClick: () => {
-            btn.func(state);
-          },
-          desc: btn.description,
-          cy: state.cySrv.get()
-        })
+        h(Tooltip, { description: btn.description }, [
+          h('div.icon-button', {
+            key: btn.id,
+            onClick: () => {
+              btn.func(state);
+            },
+            cy: state.cySrv.get()
+          }, [
+            h('i.material-icons', btn.icon)
+          ])
+        ])
       );
     });
 
@@ -180,7 +209,6 @@ class BaseNetworkView extends React.Component {
     const toolBar = [
       ...menuButtons,
       ...networkButtons,
-      // ...(componentConfig.useLayoutDropdown ? layoutDropdown : []), // TODO re-add dropdown for edit
       ...(componentConfig.useSearchBar ? nodeSearchBar : [])
     ];
 
@@ -197,57 +225,63 @@ class BaseNetworkView extends React.Component {
       (this.props.titleContainer ?  this.props.titleContainer() : metadataTitles)
     ];
 
+    const menuBar = h('div', { className: classNames('menu-bar', { 'menu-bar-margin': state.activeMenu }) }, [
+      h('div.menu-bar-inner-container', [
+        h('div.pc-logo-container', [
+          h('a', { href: 'http://www.pathwaycommons.org/' } , [
+            h('img', {
+              src: '/img/icon.png'
+            })
+          ])
+        ]),
+        h('div.title-container', displayInfo)
+      ]),
+      h('div.view-toolbar', {style: {display: this.props.closeToolBar == true ? 'none': 'inherit'}}, toolBar)
+    ]);
 
-    return h('div.view', [
-      h('div', { className: classNames('menu-bar', { 'menu-bar-margin': state.activeMenu }) }, [
-        h('div.menu-bar-inner-container', [
-          h('div.pc-logo-container', [
-            h('a', { href: 'http://www.pathwaycommons.org/' } , [
-              h('img', {
-                src: '/img/icon.png'
-              })
+    const network = h('div.network', {
+        className: classNames({
+          'network-loading': this.state.networkLoading,
+          'newtwork-sidebar-open': this.state.open
+        }),
+        style: { width: menuWidth ? `${100-menuWidth}%` : '' }
+      }, [
+      h('div.network-cy', {
+        ref: dom => this.graphDOM = dom
+      })
+    ]);
+
+    const sidebar = (
+      h('div.sidebar-menu', {
+          className: classNames({'sidebar-menu-open': this.state.open }),
+          style: { width: menuWidth ? `${menuWidth}%` : '' }
+        },
+        [
+          h('div.sidebar-close', [
+            h(Tooltip, { description: 'Close the sidebar' }, [
+              h('div.icon-button', {
+                key: 'close',
+                onClick: () => this.changeMenu('closeMenu'),
+              }, [
+                h('i.material-icons', 'close')
+              ])
             ])
           ]),
-          h('div.title-container', displayInfo)
-        ]),
-        h('div.view-toolbar', {style: {display: this.props.closeToolBar == true ? 'none': 'inherit'}}, toolBar)
-      ]),
+          h('div.sidebar-content', [
+            h('div.sidebar-text', [activeMenu])
+          ])
+      ])
+    );
+
+
+    return h('div.view', [
+      menuBar,
       h(Loader, {
         loaded: !this.state.networkLoading,
         options: { left: '50%', color: '#16A085' },
       }),
-      h('div.graph', {
-          className: classNames({
-            'graph-network-loading': this.state.networkLoading,
-            'graph-sidebar-open': this.state.open
-          }),
-          style: { width: menuWidth?`${100-menuWidth}%`:'' }
-        },
-        [
-          h('div.graph-cy', {
-            ref: dom => this.graphDOM = dom,
-          })
-        ]
-      ),
-      h('div', {
-        className: classNames('sidebar-menu',{'sidebar-menu-open': this.state.open }),
-        style: { width: menuWidth?`${menuWidth}%`:'' }
-      }, [
-          h('div', {
-            className: classNames('sidebar-close-button-container', { 'sidebar-close-button-container-open': this.state.open })
-          }, [
-              h(IconButton, {
-                key: 'close',
-                icon: 'close',
-                onClick: () => this.changeMenu('closeMenu'),
-                desc: 'Close the sidebar'
-              })
-            ]),
-          h('div.sidebar-content', [
-            h('div.sidebar-resize'),
-            h('div.sidebar-text', [activeMenu])
-          ])
-        ])
+      network,
+      sidebar
     ]);
   }
 }

@@ -1,0 +1,31 @@
+.network {
+  @extend %flex-center;
+
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+@media (--small-width-viewport) {
+  .network{
+    width: 100% !important;
+  }
+}
+
+.network-loading {
+  visibility: hidden;
+}
+
+.network-sidebar-open {
+  width: calc(100vw - var(--view-sidebar-width));
+}
+
+.network-cy {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}

@@ -32,6 +32,12 @@ let dbInfos = {
     displayName: 'UniProt',
     url: 'http://identifiers.org/uniprot/',
     gProfiler: 'Uniprot'
+  },
+  'Gene Cards': {
+    name: 'Gene Cards',
+    displayName: 'Gene Cards',
+    url: 'https://www.genecards.org/cgi-bin/carddisp.pl?gene=',
+    gProfiler: 'HGNCSYMBOL'
   }
 };
 

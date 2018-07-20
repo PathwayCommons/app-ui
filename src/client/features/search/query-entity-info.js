@@ -135,33 +135,33 @@ const getUniprotInfo = ids => {
 };
 
 const getHgncInfo = hgncSymbols => {
-  const hgncSymbol = Object.keys(hgncSymbols)[0];
+  return Promise.all(Object.keys(hgncSymbols).map( hgncSymbol => {
+    return ServerAPI.getHgncInformation( hgncSymbol ).then( result => {
+      const geneResults = result.response.docs;
+      return geneResults.map(gene => {
 
-  return ServerAPI.getHgncInformation( hgncSymbol ).then( result => {
-    const geneResults = result.response.docs;
-    return geneResults.map(gene => {
+        let databaseId = {};
+        Object.entries(dbInfos).forEach( ( [k,v] ) => {
+          if ( gene[ v.hgncName ] ) databaseId[ v.name ] = gene[ v.hgncName ];
+        });
+        const links = idToLinkConverter( databaseId );
 
-      let databaseId = {};
-      Object.entries(dbInfos).forEach( ( [k,v] ) => {
-        if ( gene[ v.hgncName ] ) databaseId[ v.name ] = gene[ v.hgncName ];
+        return {
+          databaseID: gene,
+          name: gene.name,
+          function: '',
+          officialSymbol: gene.symbol,
+          otherNames: gene.alias_symbol.join(', '),
+          showMore: {
+            full: !( geneResults.length> 1 ),
+            function: false,
+            synonyms: false
+          },
+          links: links
+        };
       });
-      const links = idToLinkConverter( databaseId );
-
-      return {
-        databaseID: gene,
-        name: gene.name,
-        function: '',
-        officialSymbol: gene.symbol,
-        otherNames: gene.alias_symbol.join(', '),
-        showMore: {
-          full: !( geneResults.length> 1 ),
-          function: false,
-          synonyms: false
-        },
-        links: links
-      };
     });
-  });
+  }));
 };
 
 const getProviderSpecificEntityInfo = ( ncbiIds, uniprotIds, hgncIds, entityInfos ) => {
@@ -173,12 +173,12 @@ const getProviderSpecificEntityInfo = ( ncbiIds, uniprotIds, hgncIds, entityInfo
   if( Object.keys(uniprotIds).length > 0 ){
     providerSpecificEntityInfo.push( getUniprotInfo( uniprotIds ) );
   }
-  if ( Object.keys(hgncIds).length > 0 ) {
+  if ( Object.keys(hgncIds).length > 0 ){
    providerSpecificEntityInfo.push( getHgncInfo( hgncIds ) );
   }
   return Promise.all( providerSpecificEntityInfo ).then( providerInfo => {
    // legacy computation that is hard to understand
-   return _.uniqWith(  _.flatten( providerInfo ), ( arrVal, othVal ) => {
+   return _.uniqWith(  _.flattenDeep( providerInfo ), ( arrVal, othVal ) => {
      return _.intersectionWith( _.values( arrVal.links ), _.values( othVal.links ), _.isEqual ).length;
    });
  });
@@ -209,12 +209,13 @@ const queryEntityInfo = query => {
   let uniprotIds = {};
   let hgncId = {};
   let genes = [];
-  let prefix = true;
+  let hasPrefix = true;
   let entityQueries;
 
   // look for special tokens
-  tokens.forEach( token => {
-    let [ dbId, entityId ] = token.split(':');
+  if (tokens.length === 1) {
+    const token = tokens[0];
+    const [ dbId, entityId ] = token.split(':');
 
     if( isUniprotId( token ) ){
       uniprotIds[ entityId ] = entityId;
@@ -223,12 +224,17 @@ const queryEntityInfo = query => {
     } else if (isHgncId( token ) ){
       hgncId[ entityId ] = entityId;
     } else {
-      prefix = false;
+      hasPrefix = false;
       genes.push( dbId );
     }
+  } else {
+  tokens.forEach( token => {
+    hasPrefix = false;
+      genes.push( token );
   });
+}
 
-  if ( prefix ) {
+  if ( hasPrefix ) {
     return getProviderSpecificEntityInfo( ncbiIds, uniprotIds, hgncId );
   }
   else {

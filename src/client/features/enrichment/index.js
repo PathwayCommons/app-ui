@@ -163,7 +163,11 @@ class Enrichment extends React.Component {
 
     //display baseView or loading spinner
     const content = loaded ? baseView : loadingView;
-    return h('div.main', [content]);
+    return h('div.main', {
+      onClick: (e) => { if( e.target.id !== 'gene-input-box' ) document.getElementById('gene-input-box').blur(); }, //click to hide input box
+      onLoad: () => document.getElementById('gene-input-box').focus() //focus and expand input box when new network loaded
+    },
+    [content]);
   }
 }
 

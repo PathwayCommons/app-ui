@@ -4,6 +4,11 @@ const logger = require('./../../logger');
 const LRUCache = require('lru-cache');
 const cache = require('../../cache');
 const { PC_CACHE_MAX_SIZE } = require('../../../config');
+const qs = require('query-string');
+const fetch = require('node-fetch');
+
+const neighborhoodUrl = 'http://www.pathwaycommons.org/sifgraph/v1/neighborhood?direction=BOTHSTREAM&limit=1&pattern=CONTROLS_PHOSPHORYLATION_OF&';
+const pathsbetweenUrl = 'http://www.pathwaycommons.org/sifgraph/v1/pathsbetween?directed=false&limit=1&';
 
 function edgeType(type) {
   switch(type){
@@ -22,6 +27,21 @@ function edgeType(type) {
 function rawGetInteractionGraphFromPC(interactionIDs){
   const geneIds = _.uniq(_.concat([], interactionIDs)); //convert sources to array
 
+  const url = neighborhoodUrl + qs.stringify( {source:geneIds} );
+  console.log(url);
+
+  return fetch(url, {header:{"Accept": "text/plain"}}).then( res => res.text()).then( res => {
+    //console.log(res);
+    return {
+      network : parse(res, geneIds)
+    };
+  }).catch( e => {
+    logger.error(e);
+    return 'ERROR : could not retrieve graph from PC';
+  });
+
+
+/*
   const params = {
     cmd : 'graph',
     source : geneIds,
@@ -39,6 +59,7 @@ function rawGetInteractionGraphFromPC(interactionIDs){
     logger.error(e);
     return 'ERROR : could not retrieve graph from PC';
   });
+*/
 }
 
 const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
@@ -58,14 +79,32 @@ function parse(data, queryIds){
   };
   let nodeMap=new Map(); //keeps track of nodes that have already been added
   if(data){
+
+    const nodeMetadata = {};
+
+    console.log(data.split('\n')[0]);
+    data.split('\n').forEach(line => {
+      const splitLine=line.split('\t');
+      const edgeMetadata = interactionMetadata(splitLine[6],splitLine[4]);
+      addInteraction([splitLine[0], splitLine[2]], splitLine[1], edgeMetadata, network, nodeMap, nodeMetadata, queryIds);
+    });
+    return network;
+
+
+    /*
     const dataSplit=data.split('\n\n');
-    const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
+    const nodeMetadata= new Map(
+      dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ])
+    );
+
     dataSplit[0].split('\n').slice(1).forEach(line => {
       const splitLine=line.split('\t');
       const edgeMetadata = interactionMetadata(splitLine[6],splitLine[4]);
       addInteraction([splitLine[0], splitLine[2]], splitLine[1], edgeMetadata, network, nodeMap, nodeMetadata, queryIds);
     });
     return network;
+      */
+
   }
   return {};
 }
@@ -86,20 +125,22 @@ function addInteraction(nodes, edge, sources, network, nodeMap, nodeMetadata, in
   const interaction= edgeType(edge);
   nodes.forEach((node)=>{
     if(!nodeMap.has(node)){
-      const metadata=nodeMetadata.get(node);
+      //const metadata=nodeMetadata.get(node);
       nodeMap.set(node,true);
-      const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');
+      //const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');
 
       network.nodes.push({data:{
         class: "ball",
         id: node,
         label: node,
-        queried: interactionIDs.indexOf(node) != -1,
+        queried: interactionIDs.indexOf(node) != -1
+        /*
         parsedMetadata:[
           ['Type',
-          'bp:'+metadata[0].split(' ')[0].replace(/Reference/g,'').replace(/;/g,',')],
+          'bp:' + metadata[0].split(' ')[0].replace(/Reference/g,'').replace(/;/g,',')],
           ['Database IDs', links]
         ]
+        */
       }});
     }
   });

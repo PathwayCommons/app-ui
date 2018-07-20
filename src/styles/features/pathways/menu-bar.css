@@ -63,7 +63,6 @@
   }
 }
 
-
 .sidebar-tool-button-container {
   @extend %flex-center;
 }
@@ -72,7 +71,6 @@
   @extend %flex-center;
 
   height: calc(var(--icon-size) * 3 / 2);
-  //width: calc((var(--icon-size) * 3 / 2) * var(--number-of-sidebar-icons));
 
   position: absolute;
   top: 100%;

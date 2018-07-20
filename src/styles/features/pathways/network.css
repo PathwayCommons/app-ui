@@ -1,4 +1,4 @@
-.graph {
+.network {
   @extend %flex-center;
 
   position: absolute;
@@ -9,20 +9,20 @@
 }
 
 @media (--small-width-viewport) {
-  .graph{
+  .network{
     width: 100% !important;
   }
 }
 
-.graph-network-loading {
+.network-loading {
   visibility: hidden;
 }
 
-.graph-sidebar-open {
+.network-sidebar-open {
   width: calc(100vw - var(--view-sidebar-width));
 }
 
-.graph-cy {
+.network-cy {
   width: 100%;
   height: 100%;
   position: absolute;

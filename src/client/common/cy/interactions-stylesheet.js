@@ -44,12 +44,20 @@ const iStylesheet=cytoscape.stylesheet()
     'text-valign': 'center',
   })
 .selector('node[?queried]')
+  .css({
+    'background-color': 'blue',
+    'opacity': 1,
+    'z-compound-depth': 'top',
+    'color': 'white',
+    'text-outline-color': 'black'
+  })
+.selector('.highlighted')
 .css({
-  'background-color': 'blue',
-  'opacity': 1,
-  'z-compound-depth': 'top',
-  'color': 'white',
-  'text-outline-color': 'black'
+  'opacity':1,
+})
+.selector('.unhighlighted')
+.css({
+  'opacity':0.2,
 })
 .selector('.hidden')
 .css({

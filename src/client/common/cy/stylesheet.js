@@ -45,6 +45,14 @@ const stylesheet = sbgnStyleSheet(cytoscape)
 .css({
   'label':node=>node.data('class')
 })
+.selector('.highlighted')
+.css({
+  'opacity':1,
+})
+.selector('.unhighlighted')
+.css({
+  'opacity':0.4,
+})
 .selector('.hidden')
 .css({
   'display':'none',

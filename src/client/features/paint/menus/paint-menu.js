@@ -1,6 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
+const { applyExpressionData } = require('../expression-table');
 // const classNames = require('classnames');
 // const Table = require('react-table').default;
 // const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
@@ -22,9 +23,38 @@ class ExpressionColourLegend extends React.Component {
 }
 
 class ExpressionTableView extends React.Component {
+  analysisFns(){
+    return {
+      'mean': _.mean,
+      'max': _.max,
+      'min': _.min
+    };
+  }
+
   render(){
-    let {expressionTable, cySrv, paintMenuCtrls} = this.props;
-    let { exprClass, exprFn } = paintMenuCtrls;
+    let { controller, expressionTable, cySrv, paintMenuCtrls} = this.props;
+    let { exprClass, exprFn, exprFnName } = paintMenuCtrls;
+
+    let functionSelector = h('select.paint-select', {
+        value: exprFnName,
+        onChange: e => controller.handlePaintCtrlChange({ 
+          exprFnName: e.target.value, 
+          exprFn: this.analysisFns()[e.target.value]
+        })
+      },
+      Object.entries(this.analysisFns()).map(entry => h('option', {value: entry[0]}, entry[0]))
+    );
+
+    let classSelector = h('div', [
+      'Compare: ',
+      h('select.paint-select', {
+        value: exprClass,
+        onChange: e => controller.handlePaintCtrlChange({exprClass: e.target.value})
+      },
+      expressionTable.classes.map(cls => h('option', { value: cls}, cls))
+      ),
+      ` vs ${_.difference(expressionTable.classes, [exprClass])}`
+    ]);
 
     let foldChangeExpressions = expressionTable.expressions().map(e => {
       return {
@@ -34,6 +64,8 @@ class ExpressionTableView extends React.Component {
     });
 
     return h('div.expression-table-view', [
+      functionSelector,
+      classSelector,
       h('div.expression-table-header', [
         h('div.expression-table-header-column', 'Gene'),
         h('div.expression-table-header-column', 'Expression Ratio'),  
@@ -63,52 +95,6 @@ class PaintMenu extends React.Component {
     // };
   }
 
-  analysisFns() {
-    return {
-      mean: {
-        name: 'mean',
-        func: _.mean
-      },
-      max: {
-        name: 'max',
-        func: _.max
-      },
-      min: {
-        name: 'min',
-        func: _.min
-      }
-    };
-  }
-
-  // loadNetwork(networkJSON) {
-  //   const updateBaseViewState = this.props.updateBaseViewState;
-  //   const cy = this.props.cy;
-  //   const nextExpressionTable = new ExpressionTable(this.props.rawExpressions, networkJSON);
-  //   updateBaseViewState({
-  //     networkMetadata: {
-  //       uri: networkJSON.pathwayMetadata.uri,
-  //       name: _.get(networkJSON, 'pathwayMetadata.title.0', 'Unknown Network'),
-  //       datasource: _.get(networkJSON, 'pathwayMetadata.dataSource.0', 'Unknown Data Source'),
-  //       comments: networkJSON.pathwayMetadata.comments,
-  //       organism: networkJSON.pathwayMetadata.organism
-  //     }
-  //   });
-
-  //   updateBaseViewState({
-  //     expressionTable: nextExpressionTable,
-  //     networkLoading: true
-  //     }, () => {
-  //     cy.remove('*');
-  //     cy.add({nodes: networkJSON.nodes, edges: networkJSON.edges});
-  //     const layout = cy.layout({name: 'cose-bilkent'});
-  //     layout.on('layoutstop', () => {
-  //       applyExpressionData(this.props.cy, this.props.expressionTable, this.state.selectedClass, this.state.selectedFunction.func);
-  //       updateBaseViewState({networkLoading: false});
-  //     });
-  //     layout.run();
-  //   });
-  // }
-
 
   render() {
     let { cySrv, controller, expressionTable, paintMenuCtrls, curPathway, pathways } = this.props;
@@ -123,7 +109,7 @@ class PaintMenu extends React.Component {
 
     return h('div.paint-menu', [
       h(ExpressionColourLegend, { min, max }),
-      h(ExpressionTableView, { cySrv, expressionTable, paintMenuCtrls} ),
+      h(ExpressionTableView, { cySrv, expressionTable, controller, paintMenuCtrls} ),
       pathwayResults
     ]);
   }

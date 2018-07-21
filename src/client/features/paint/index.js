@@ -146,6 +146,16 @@ class Paint extends React.Component {
       this.setState({ activeMenu: menu }, resizeCyDebounced);
     }
   }
+
+  handlePaintCtrlChange(newVal) {
+    this.setState({ 
+      paintMenuCtrls: _.assign({}, this.state.paintMenuCtrls, newVal)
+    }, () => {
+      let { cySrv, expressionTable, paintMenuCtrls } = this.state;
+      let { exprClass, exprFn } = paintMenuCtrls;
+      applyExpressionData(cySrv.get(), expressionTable, exprClass, exprFn);
+    });
+  }
   
   componentWillUnmount(){
     this.state.cySrv.destroy();

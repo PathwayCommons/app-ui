@@ -2,6 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
 const { applyExpressionData } = require('../expression-table');
+const { searchNodes } = require('../cy');
 // const classNames = require('classnames');
 // const Table = require('react-table').default;
 // const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
@@ -62,6 +63,11 @@ class ExpressionTableView extends React.Component {
     }
   }
 
+  handleSearchChange(newVal){
+    let cy = this.state.cySrv.get();
+    this.setState({nodeSearchValue: newVal}, () => searchNodes(cy, newVal));
+  }
+
   render(){
     let { controller, expressionTable, cySrv, paintMenuCtrls} = this.props;
     let { exprClass, exprFn, exprFnName } = paintMenuCtrls;
@@ -106,7 +112,7 @@ class ExpressionTableView extends React.Component {
         h('div.expression-table-header-column', {onClick: () => this.handleSortChange(this.sortTypes().SORT_FOLD_CHANGE) }, 'Expression Ratio'),  
       ]),
       h('div.expression-search-filter', [
-        h('input', { placeholder: 'Filter by gene' })
+        h('input', { placeholder: 'Filter by gene', onChange: e => this.handleSearchChange(e.target.value) })
       ]),
       h('div.expression-list', foldChangeExpressions.map( e => {
         return h('div.expression-entry', [

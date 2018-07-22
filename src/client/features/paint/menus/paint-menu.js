@@ -23,6 +23,27 @@ class ExpressionColourLegend extends React.Component {
 }
 
 class ExpressionTableView extends React.Component {
+  constructor(props){
+    super(props);
+
+    let { SORT_GENE, SORT_ASC } = this.sortTypes();
+
+    this.state = {
+      sortBy: SORT_GENE,
+      sortType: SORT_ASC,
+      nodeSearchValue: ''
+    };
+  }
+
+  sortTypes(){
+    return {
+      SORT_GENE: 0,
+      SORT_FOLD_CHANGE: 1,
+      SORT_ASC: 0,
+      SORT_DESC: 1
+    };
+  }
+
   analysisFns(){
     return {
       'mean': _.mean,
@@ -31,9 +52,20 @@ class ExpressionTableView extends React.Component {
     };
   }
 
+  handleSortChange(newSort){
+    let { sortBy, sortType } = this.state;
+
+    if( newSort == sortBy ){
+      this.setState({ sortType: !sortType });
+    } else {
+      this.setState({ sortBy: newSort });
+    }
+  }
+
   render(){
     let { controller, expressionTable, cySrv, paintMenuCtrls} = this.props;
     let { exprClass, exprFn, exprFnName } = paintMenuCtrls;
+    let { sortBy, sortType } = this.state;
 
     let functionSelector = h('select.paint-select', {
         value: exprFnName,
@@ -61,14 +93,17 @@ class ExpressionTableView extends React.Component {
         geneName: e.geneName,
         foldChange: e.foldChange( exprClass, exprFn, 'N/A')
       };
+    }).sort( (e0, e1) => {
+      let sortField = sortBy ? 'geneName' : 'foldChange';
+      return sortType ? e0[sortField] > e1[sortField] : e1[sortField] > e0[sortField];
     });
 
     return h('div.expression-table-view', [
       functionSelector,
       classSelector,
       h('div.expression-table-header', [
-        h('div.expression-table-header-column', 'Gene'),
-        h('div.expression-table-header-column', 'Expression Ratio'),  
+        h('div.expression-table-header-column', {onClick: () => this.handleSortChange(this.sortTypes().SORT_GENE) }, 'Gene'),
+        h('div.expression-table-header-column', {onClick: () => this.handleSortChange(this.sortTypes().SORT_FOLD_CHANGE) }, 'Expression Ratio'),  
       ]),
       h('div.expression-search-filter', [
         h('input', { placeholder: 'Filter by gene' })

@@ -29,8 +29,8 @@ module.exports = () => {
         render: props => h(Features.Search, props)
       },
       {
-        path: '/view',
-        render: props => h(Features.View, props)
+        path: '/pathways',
+        render: props => h(Features.Pathways, props)
       },
       {
         path: '/paint',
@@ -46,15 +46,6 @@ module.exports = () => {
         path: '/enrichment',
         render: props => {
           return h(Features.Enrichment, props);
-        }
-      },
-      {
-        path: '/edit',
-        render: props => {
-          const editProps = _.assign({}, props, {
-            admin: true
-          });
-          return h(Features.Edit, editProps);
         }
       }
     ].map( spec => h(Route, _.assign({ exact: true }, spec)) ))

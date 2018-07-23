@@ -218,7 +218,6 @@ class BaseNetworkView extends React.Component {
     const toolBar = [
       ...menuButtons,
       ...networkButtons,
-      // ...(componentConfig.useLayoutDropdown ? layoutDropdown : []), // TODO re-add dropdown for edit
       ...(componentConfig.useSearchBar ? nodeSearchBar : [])
     ];
 
@@ -235,31 +234,36 @@ class BaseNetworkView extends React.Component {
       (this.props.titleContainer ?  this.props.titleContainer() : metadataTitles)
     ];
 
-
-    return h('div.view', [
-      h('div', { className: classNames('menu-bar', { 'menu-bar-margin': state.activeMenu }) }, [
-        h('div.menu-bar-inner-container', [
-          h('div.pc-logo-container', [
-            h('a', { href: 'http://www.pathwaycommons.org/' } , [
-              h('img', {
-                src: '/img/icon.png'
-              })
-            ])
-          ]),
-          h('div.title-container', displayInfo)
+    const menuBar = h('div', { className: classNames('menu-bar', { 'menu-bar-margin': state.activeMenu }) }, [
+      h('div.menu-bar-inner-container', [
+        h('div.pc-logo-container', [
+          h('a', { href: 'http://www.pathwaycommons.org/' } , [
+            h('img', {
+              src: '/img/icon.png'
+            })
+          ])
         ]),
-        h('div.view-toolbar', {style: {display: this.props.closeToolBar == true ? 'none': 'inherit'}}, toolBar)
+        h('div.title-container', displayInfo)
       ]),
-      h(Loader, {
-        loaded: !this.state.networkLoading,
-        options: { left: '50%', color: '#16A085' },
-      }),
-      h('div.graph', {
-          className: classNames({
-            'graph-network-loading': this.state.networkLoading,
-            'graph-sidebar-open': this.state.open
-          }),
-          style: { width: menuWidth?`${100-menuWidth}%`:'' }
+      h('div.view-toolbar', {style: {display: this.props.closeToolBar == true ? 'none': 'inherit'}}, toolBar)
+    ]);
+
+    const network = h('div.network', {
+        className: classNames({
+          'network-loading': this.state.networkLoading,
+          'newtwork-sidebar-open': this.state.open
+        }),
+        style: { width: menuWidth ? `${100-menuWidth}%` : '' }
+      }, [
+      h('div.network-cy', {
+        ref: dom => this.graphDOM = dom
+      })
+    ]);
+
+    const sidebar = (
+      h('div.sidebar-menu', {
+          className: classNames({'sidebar-menu-open': this.state.open }),
+          style: { width: menuWidth ? `${menuWidth}%` : '' }
         },
         [
           h('div.graph-cy', {
@@ -284,10 +288,20 @@ class BaseNetworkView extends React.Component {
             ])
           ]),
           h('div.sidebar-content', [
-            h('div.sidebar-resize'),
             h('div.sidebar-text', [activeMenu])
           ])
-        ])
+      ])
+    );
+
+
+    return h('div.view', [
+      menuBar,
+      h(Loader, {
+        loaded: !this.state.networkLoading,
+        options: { left: '50%', color: '#16A085' },
+      }),
+      network,
+      sidebar
     ]);
   }
 }

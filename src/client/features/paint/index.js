@@ -44,7 +44,7 @@ const getAugmentedSearchResults = (searchParam, expressions) => {
   return Promise.all([...geneQueries, searchQuery]).then(searchResults => {
     const uniqueResults = _.uniqBy(_.flatten(searchResults), result => result.uri);
 
-    const pathwaysJSON = uniqueResults.map(result => ServerAPI.getGraphAndLayout(result.uri, 'latest'));
+    const pathwaysJSON = uniqueResults.map(result => ServerAPI.getPathway(result.uri, 'latest'));
 
     return Promise.all(pathwaysJSON).then(pathways => {
       const processed = pathways.map(pathway => {

@@ -64,7 +64,7 @@ class ExpressionTableView extends React.Component {
   }
 
   handleSearchChange(newVal){
-    let cy = this.state.cySrv.get();
+    let cy = this.props.cySrv.get();
     this.setState({nodeSearchValue: newVal}, () => searchNodes(cy, newVal));
   }
 

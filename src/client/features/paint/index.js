@@ -103,12 +103,17 @@ class Paint extends React.Component {
           let bestResult = results.find( r => r.pathway.name() === searchParam );
   
           if( bestResult == null ){
-            bestResult = results.sort((p0, p1) => p1.geneIntersection.length > p0.geneIntersection.length);
+            bestResult = results.sort((p0, p1) => p1.geneIntersection.length > p0.geneIntersection.length)[0];
+          }
+
+          if( bestResult == null ){
+            return null;
           }
   
           return bestResult;
         };
-        return { pathways: results, bestPathway: findBestPathway( results ).pathway };
+        let bestPathway = findBestPathway( results ).pathway;
+        return { pathways: results, bestPathway };
       });
     };
   
@@ -116,7 +121,7 @@ class Paint extends React.Component {
       this.setState({
         paintMenuCtrls: _.assign({}, this.state.paintMenuCtrls, { exprClass: expressionTable.classes[0] }),
         pathways: pathways,
-        curPathway: bestPathway
+        curPathway: bestPathway != null ? bestPathway : this.state.pathway
       }, () => this.loadPathway(bestPathway));
     });
   }

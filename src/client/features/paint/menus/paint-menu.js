@@ -1,16 +1,9 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
+const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
 const { applyExpressionData } = require('../expression-table');
 const { searchNodes } = require('../cy');
-// const classNames = require('classnames');
-// const Table = require('react-table').default;
-// const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
-// const matchSorter = require('match-sorter').default;
-
-// const cysearch = _.debounce(require('../../common/cy/match-style'), 500);
-
-// const { ExpressionTable, applyExpressionData } = require('./expression-table');
 
 class ExpressionColourLegend extends React.Component {
   render(){
@@ -126,34 +119,42 @@ class ExpressionTableView extends React.Component {
   }
 }
 
-class PaintMenu extends React.Component {
-  constructor(props) {
-    super(props);
 
-    // this.state = {
-    //   selectedFunction: this.analysisFns().mean,
-    //   selectedClass: props.selectedClass,
-    //   selectedSearchResult: props.selectedSearchResult,
-    //   loading: false
-    // };
-  }
-
-
-  render() {
-    let { cySrv, controller, expressionTable, paintMenuCtrls, curPathway, pathways } = this.props;
-    let { exprClass, exprFn } = paintMenuCtrls;
-    let { min, max } = expressionTable.computeFoldChangeRange(exprClass, exprFn);
-
+class PathwayResultsListView extends React.Component {
+  render(){
+    let { pathways, curPathway, controller } = this.props;
     let pathwayResults = pathways.map(result => {
       return h('div', { onClick: () => controller.loadPathway(result.pathway) }, [
         h('div', result.pathway.name())
       ]);
     });
 
-    return h('div.paint-menu', [
-      h(ExpressionColourLegend, { min, max }),
-      h(ExpressionTableView, { cySrv, expressionTable, controller, paintMenuCtrls} ),
-      pathwayResults
+    return h('div.pathways-list', [
+      ...pathwayResults
+    ]);
+  }
+}
+
+class PaintMenu extends React.Component {
+
+  render() {
+    let { cySrv, controller, expressionTable, paintMenuCtrls, curPathway, pathways } = this.props;
+    let { exprClass, exprFn } = paintMenuCtrls;
+    let { min, max } = expressionTable.computeFoldChangeRange(exprClass, exprFn);
+
+
+    return h(Tabs, [
+      h(TabList, [
+        h(Tab, 'Expression Data'),
+        h(Tab, 'Select Pathway')
+      ]),
+      h(TabPanel, [
+        h(ExpressionColourLegend, { min, max }),
+        h(ExpressionTableView, { cySrv, expressionTable, controller, paintMenuCtrls} ),
+      ]),
+      h(TabPanel, [
+        h(PathwayResultsListView, { controller, curPathway, pathways })
+      ])
     ]);
   }
 }

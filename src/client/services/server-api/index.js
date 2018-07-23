@@ -22,12 +22,17 @@ const ServerAPI = {
   },
 
   getPubmedPublications( pubmedIds ){
-    return fetch('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id=' + pubmedIds.toString(), defaultFetchOpts).then(res => res.json());  
+    return fetch('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id=' + pubmedIds.toString(), defaultFetchOpts).then(res => res.json());
   },
 
   getInteractionGraph(sources) {
     return fetch(absoluteURL(`/api/get-interaction-graph?${qs.stringify(sources)}`), defaultFetchOpts).then(res => res.json());
   },
+
+  getGoInformation(goID) {
+    return fetch(`https://www.ebi.ac.uk/QuickGO/services/ontology/go/search?query=GO%3A${goID.replace("GO:", "")}&limit=1&page=1`, {method: 'GET'})
+    .then( res => res.json() );
+},
 
   pcQuery(method, params){
     return fetch(absoluteURL(`/pc-client/${method}?${qs.stringify(params)}`), defaultFetchOpts);

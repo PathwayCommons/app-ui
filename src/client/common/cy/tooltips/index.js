@@ -23,7 +23,7 @@ class EntityMetadata {
     this.rawData = nodeMetadata;
 
     let determineSearchLinkQuery = (node, displayName) => {
-      let nodeLabel = node.data('label');
+      let nodeLabel = node.data('label') ? node.data('label'): node.data('description');
       let nodeClass = node.data('class');
       return nodeClass === 'process' ? displayName : nodeLabel;
     };
@@ -43,11 +43,16 @@ class EntityMetadata {
 
     this.data.set('Label', node.data('label'));
 
+    this.data.set('Description', node.data('description'));
+
     this.data.set('Publications', []);
 
     this.data.set('Search Link', determineSearchLinkQuery( node, this.data.get('Display Name')));
 
     this.data.set('Database IDs', new Map(Object.entries(processDbIds(this.databaseIds()))));
+
+    this.data.set('Info', node.data('Pathway Overview'));
+
   }
   isEmpty(){
     return this.data.entries().length === 0;
@@ -62,6 +67,9 @@ class EntityMetadata {
   label(){
     return this.data.get('Label') || '';
   }
+  description(){
+    return this.data.get('Description')|| '';
+   }
   standardName(){
     return this.data.get('Standard Name') || '';
   }

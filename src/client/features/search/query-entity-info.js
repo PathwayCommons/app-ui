@@ -20,26 +20,31 @@ let dbInfos = {
     displayName: 'HGNC',
     url: 'http://identifiers.org/hgnc.symbol/',
     gProfiler: 'HGNCSYMBOL',
-    hgncName:'symbol'
+    hgncName: 'symbol',
+    ncbiName: 'name'
   },
   'NCBI Gene': {
     name: 'NCBI Gene',
     displayName: 'NCBI Gene',
     url: 'http://identifiers.org/ncbigene/',
     gProfiler: 'NCBIGene',
-    hgncName:'entrez_id'
+    hgncName: 'entrez_id',
+    ncbiName: 'uid'
   },
   'Uniprot': {
     name: 'Uniprot',
     displayName: 'UniProt',
     url: 'http://identifiers.org/uniprot/',
-    gProfiler: 'Uniprot'
+    gProfiler: 'Uniprot',
+    hgncName: 'uniprot_ids'
   },
   'Gene Cards': {
     name: 'Gene Cards',
     displayName: 'Gene Cards',
     url: 'https://www.genecards.org/cgi-bin/carddisp.pl?gene=',
-    gProfiler: 'HGNCSYMBOL'
+    gProfiler: 'HGNCSYMBOL',
+    hgncName: 'symbol',
+    ncbiName: 'name'
   }
 };
 
@@ -74,18 +79,29 @@ const getNcbiInfo = ( ids, genes ) => {
 
   return ServerAPI.getGeneInformation( ncbiIds ).then( result => {
     let geneResults = result.result;
+    return geneResults.uids.map( uid => {
+      const gene = geneResults[ uid ];
 
-    return geneResults.uids.map( gene => {
-      const originalSearch = ids[ gene ];
-      const geneId = genes ? genes[ originalSearch ] : { 'NCBI Gene': originalSearch };
-      let links = idToLinkConverter( geneId );
+      let databaseId = {};
+      if( genes ) {
+        //Called from validator
+        const originalSearch = ids[ uid ];
+        databaseId = genes[ originalSearch ];
+      }
+      else{
+        //Data from provider
+        Object.entries(dbInfos).forEach( ( [k,v] ) => {
+          if ( gene[ v.ncbiName ] ) databaseId[ v.name ] = gene[ v.ncbiName ];
+        });
+      }
+      let links = idToLinkConverter( databaseId );
 
       return {
-        databaseID: gene,
-        name: geneResults[ gene ].nomenclaturename,
-        function: geneResults[ gene ].summary,
-        officialSymbol: geneResults[ gene ].nomenclaturesymbol,
-        otherNames: geneResults[ gene ].otheraliases ? geneResults[ gene ].otheraliases : '',
+        databaseID: uid,
+        name: gene.nomenclaturename,
+        function: gene.summary,
+        officialSymbol: gene.nomenclaturesymbol,
+        otherNames: gene.otheraliases ? gene.otheraliases : '',
         links: links
       };
     });
@@ -123,6 +139,7 @@ const getUniprotInfo = ids => {
 
       if( hgncSymbol != null ){
         dbIds['HGNC Symbol'] = hgncSymbol;
+        dbIds['Gene Cards'] = hgncSymbol;
       }
 
       let links = idToLinkConverter( dbIds );

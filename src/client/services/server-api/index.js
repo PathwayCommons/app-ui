@@ -11,9 +11,10 @@ let absoluteURL = (href) => {
 };
 
 const defaultFetchOpts = {
-  method: 'GET',
-  'Content-Type': 'application/json',
-  'Accept': 'application/json'
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
 };
 
 const ServerAPI = {
@@ -22,7 +23,7 @@ const ServerAPI = {
   },
 
   getPubmedPublications( pubmedIds ){
-    return fetch('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id=' + pubmedIds.toString(), defaultFetchOpts).then(res => res.json());  
+    return fetch('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id=' + pubmedIds.toString(), defaultFetchOpts).then(res => res.json());
   },
 
   getInteractionGraph(sources) {

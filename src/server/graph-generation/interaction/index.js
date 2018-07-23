@@ -5,6 +5,8 @@ const LRUCache = require('lru-cache');
 const cache = require('../../cache');
 const { PC_CACHE_MAX_SIZE } = require('../../../config');
 
+const cytoscape = require('cytoscape');
+
 function edgeType(type) {
   switch(type){
     case 'in-complex-with':
@@ -65,9 +67,48 @@ function parse(data, queryIds){
       const edgeMetadata = interactionMetadata(splitLine[6],splitLine[4]);
       addInteraction([splitLine[0], splitLine[2]], splitLine[1], edgeMetadata, network, nodeMap, nodeMetadata, queryIds);
     });
+
+    const cy = cytoscape({headless:true,container:undefined,elements:network});
+    const bc = cy.$().bc();
+    const nodes = cy.nodes();
+
+    if(nodes.length === 0)
+      return network;
+
+    //loop through the nodes, collected betweenness centrality values
+    let centralityVals = [];
+    let centralityMap = [];
+    nodes.forEach( ele => {
+      let bcVal = bc.betweenness(ele);
+      centralityVals.push(bcVal);
+      centralityMap.push([ele,bcVal]);
+    });
+
+    const max = Math.max(...centralityVals);
+    const min = Math.min(...centralityVals);
+
+    if(max !== min)
+      centralityMap.forEach( ele => {
+        ele[0].data('bcVal',normalizeValue(ele[1],max,min));
+      });
+    else
+      centralityMap.forEach( ele => {
+        ele[0].data('bcVal',ele[1]);
+      });
+
     return network;
   }
   return {};
+}
+
+  /**
+   * @description Converts a number to a normalized value in the range [0,1]
+   * @param {} value The value to be normalized
+   * @param {*} max The maximum number this value can be
+   * @param {*} min The minimum number this value can be
+   */
+function normalizeValue(value,max,min){
+  return (value-min)/(max-min);
 }
 
 function interactionMetadata(mediatorIds, pubmedIds){

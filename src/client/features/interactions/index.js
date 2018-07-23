@@ -75,7 +75,6 @@ class Interactions extends React.Component {
     this.state.cySrv.loadPromise().then(cy => {
       const { categories, filters, layoutConfig } = this.state;
 
-      this.generateCentralityValues();
       this.displayDefaultNodes(cy,20);
 
       //for each filter (binding, phosphorylation, expression)
@@ -164,43 +163,12 @@ class Interactions extends React.Component {
       i++;
     });
 
+    cy.batch( () => {
       //hide all nodes other than the ones with top `nodesToShow`th bcVal
-    cy.nodes().forEach(node => {
-      if(node.data('bcVal') < returnValue)
-        node.addClass('hidden');
-     });
-  };
-
-  /**
-   * @description This function generates normalized betweenness centrality values for each node in the network,
-   * and adds the calculated information to each node as a new data field
-   */
-  generateCentralityValues(){
-    //setting up base variables
-    const state = this.state;
-    const cy = state.cySrv.get();
-
-    const bc = cy.$().bc();
-    const nodes = cy.nodes();
-    if(nodes.length === 0) return;
-
-
-    //loop through the nodes, collected betweenness centrality values
-    let centralityVals = [];
-    let centralityMap = [];
-    nodes.forEach( (ele) => {
-      if(ele.data){
-        let bcVal = bc.betweenness(ele);
-        centralityVals.push(bcVal);
-        centralityMap.push([ele,bcVal]);
-      }
-    });
-
-    //normalize the values and add as field in node data
-    const max = Math.max(...centralityVals);
-    const min = Math.min(...centralityVals);
-    centralityMap.forEach( (ele) => {
-      ele[0].data('bcVal',this.normalizeValue(ele[1],max,min));
+      cy.nodes().forEach(node => {
+        if(node.data('bcVal') < returnValue)
+          node.addClass('hidden');
+      });
     });
 
   }

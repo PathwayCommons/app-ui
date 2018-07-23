@@ -6,23 +6,23 @@ const _ = require('lodash');
 class InteractionsFilterMenu extends React.Component {
   constructor(props) {
     super(props);
-    this.state = _.merge({defaultSliderVal:0,maxSliderVal:0},props);
+    this.state = props;
     this.sliderUpdate = _.debounce(this.sliderUpdate,150);
 
     this.state.cySrv.loadPromise().then( cy => {
-        let i=0;
-  
+        let defaultVal = 0;
+
         let sortedNodes = cy.nodes().sort(function( a, b ){
           return b.data('bcVal') - a.data('bcVal');
         });
   
         sortedNodes.forEach(node => {
-          if(i<20)
-            this.state.defaultSliderVal =  node.data('bcVal');
-          i++;
-          if(i === 1)
-            this.state.maxSliderVal = node.data('bcVal');  
+          if(!node.hasClass('hidden'))
+            defaultVal = node.data('bcVal');
         });
+
+        document.getElementById('selection-slider').value = defaultVal;
+
       });
   
   }
@@ -47,52 +47,6 @@ class InteractionsFilterMenu extends React.Component {
     });
   }
 
-  
-  /**
-   * 
-   * @param {*} nodesToShow Number of nodes that should be visible to user on first load of network
-   * @description Hides all nodes based on betweenness centrality, keeping only `nodesToShow` visible.
-   * Also sets the default value for the slider, based on this number.
-  
-  findDefaultAndUpdate(nodesToShow){
-
-    let returnValue = 0;
-    let maxVal = 0;
-
-    this.state.cySrv.loadPromise().then( cy => {
-
-      let i = 0;
-
-      //sort nodes based on betweenness centrality
-      let sortedNodes = cy.nodes().sort(function( a, b ){
-        return b.data('bcVal') - a.data('bcVal');
-      });
-
-      //get the first nodesToShow nodes
-      //also get the node with second-highest bcVal
-      sortedNodes.forEach(node => {
-        if(i<nodesToShow){
-          returnValue =  node.data('bcVal');
-          if(i === 1)
-            maxVal = node.data('bcVal');
-        }
-        i++;
-      });
-
-      //hide all nodes other than the ones with top `nodesToShow`th bcVal
-      cy.nodes().forEach(node => {
-        if(node.data('bcVal') < returnValue)
-          node.addClass('hidden');
-      });
-
-    });
-
-    //return the bcVal of the `nodesToShow`th highest bcVal
-    //return the bcVal of the second highest bcVal
-    return [returnValue,maxVal];
-  }
-  */
-
 
   render(){
     const props= this.props;
@@ -114,7 +68,7 @@ class InteractionsFilterMenu extends React.Component {
 
     //Slider listed under 'Visible Nodes' in the interaction viewer
     const slider = [
-      h('input', {type: 'range', id: 'selection-slider', min: 0, max: 0.3, step: 0.0001,
+      h('input', {type: 'range', id: 'selection-slider', min: 0, max: 0.05, step: 0.0001,
       onInput:() => this.sliderUpdate() }),
     ];
     

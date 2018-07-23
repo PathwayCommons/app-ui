@@ -3,6 +3,7 @@ const hh = require('hyperscript');
 const ReactDom = require('react-dom');
 const React = require('react');
 const tippy = require('tippy.js');
+const _ = require('lodash');
 
 const {databases} = require('../../config');
 const getPublications = require('./publications');
@@ -20,6 +21,7 @@ class EntityMetadata {
   constructor(node){
     let nodeMetadata = node.data('parsedMetadata');
     this.data = new Map(nodeMetadata);
+    console.log(this.data);
     this.rawData = nodeMetadata;
 
     let determineSearchLinkQuery = (node, displayName) => {
@@ -40,18 +42,20 @@ class EntityMetadata {
       });
       return aggregatedDbIds;
     };
-
+    console.log(node);
     this.data.set('Label', node.data('label'));
 
     this.data.set('Description', node.data('description'));
+
+    this.data.set('Intersection', _.join(node.data('intersection'), ", "));
+
+    this.data.set('Genes in Pathway', _.join(node.data('intersection'), ", ")); //get geneSet
 
     this.data.set('Publications', []);
 
     this.data.set('Search Link', determineSearchLinkQuery( node, this.data.get('Display Name')));
 
     this.data.set('Database IDs', new Map(Object.entries(processDbIds(this.databaseIds()))));
-
-    this.data.set('Info', node.data('Pathway Overview'));
 
   }
   isEmpty(){
@@ -86,6 +90,15 @@ class EntityMetadata {
     }
 
     return [];
+  }
+  pathwayOverview(){
+    return this.data.get('Pathway Overview') || '';
+  }
+  intersection(){
+    return this.data.get('Intersection') || '';
+  }
+  genesInPathway(){
+    return this.data.get('Genes in Pathway') || '';
   }
   databaseIds(){
     return this.data.get('Database IDs') || [];
@@ -185,19 +198,22 @@ class EntityMetaDataView extends React.Component {
     });
 
     let showType = metadata.type() !== '';
-
+    console.log(metadata);
     let showStdName = metadata.standardName() !== '';
     let showDispName = metadata.displayName() !== '' && metadata.displayName() !== metadata.label();
     let showSynonyms = synonyms.length > 0;
     let showPubs = publications.length > 0;
+    let showPathwayOverview = metadata.pathwayOverview() !== '';
+    let showIntersection = metadata.intersection() !== '';
+    let showGenesInPathway = metadata.genesInPathway() !== '';
 
-    let showBody = showStdName || showDispName || showSynonyms || showPubs;
+    let showBody = showStdName || showDispName || showSynonyms || showPubs || showPathwayOverview || showIntersection || showGenesInPathway; //update
     let showLinks = metadata.databaseLinks().length > 0;
 
     return h('div.metadata-tooltip', [
       h('div.metadata-tooltip-content', [
         h('div.metadata-tooltip-header', [
-          h('h2',  `${metadata.label() || metadata.displayName() || 'Unknown Entity'}`),
+          h('h2',  `${metadata.label() || metadata.displayName() || metadata.description() || 'Unknown Entity'}`),
           showType ? h('div.metadata-tooltip-type-chip', metadata.type()) : null,
         ]),
         showBody ? h('div.metadata-tooltip-body', [
@@ -222,6 +238,24 @@ class EntityMetaDataView extends React.Component {
               // h('i.material-icons', 'keyboard_arrow_right')
             ]),
             h('div', publications)
+          ]) : null,
+          showPathwayOverview ? h('div.metadata-tooltip-section', [
+            h('div.metadata-field-name', [
+              'Pathway Overview'
+            ]),
+            h('div.metadata-field-value', metadata.pathwayOverview())
+          ]) : null,
+          showIntersection ? h('div.metadata-tooltip-section', [
+            h('div.metadata-field-name', [
+              'Shared Genes In Pathway and Entered List'
+            ]),
+            h('div.metadata-field-value', metadata.intersection())
+          ]) : null,
+          showGenesInPathway? h('div.metadata-tooltip-section', [
+            h('div.metadata-field-name', [
+              'Genes In Pathway'
+            ]),
+            h('div.metadata-field-value', metadata.genesInPathway())
           ]) : null
         ]): null,
         h('div.metadata-tooltip-footer', [

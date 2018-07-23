@@ -27,21 +27,10 @@ class ExpressionTableView extends React.Component {
   constructor(props){
     super(props);
 
-    let { SORT_GENE, SORT_ASC } = this.sortTypes();
-
     this.state = {
-      sortBy: SORT_GENE,
-      sortType: SORT_ASC,
+      sortBy: 'geneName',
+      sortType: 'asc',
       nodeSearchValue: ''
-    };
-  }
-
-  sortTypes(){
-    return {
-      SORT_GENE: 0,
-      SORT_FOLD_CHANGE: 1,
-      SORT_ASC: 0,
-      SORT_DESC: 1
     };
   }
 
@@ -57,7 +46,7 @@ class ExpressionTableView extends React.Component {
     let { sortBy, sortType } = this.state;
 
     if( newSort == sortBy ){
-      this.setState({ sortType: !sortType });
+      this.setState({ sortType: sortType === 'asc' ? 'desc' : 'asc'});
     } else {
       this.setState({ sortBy: newSort });
     }
@@ -99,22 +88,21 @@ class ExpressionTableView extends React.Component {
         geneName: e.geneName,
         foldChange: e.foldChange( exprClass, exprFn, 'N/A')
       };
-    }).sort( (e0, e1) => {
-      let sortField = sortBy ? 'geneName' : 'foldChange';
-      return sortType ? e0[sortField] > e1[sortField] : e1[sortField] > e0[sortField];
     });
+
+    let sortedFoldChanges = _.orderBy(foldChangeExpressions, [sortBy], [sortType]);
 
     return h('div.expression-table-view', [
       functionSelector,
       classSelector,
       h('div.expression-table-header', [
-        h('div.expression-table-header-column', {onClick: () => this.handleSortChange(this.sortTypes().SORT_GENE) }, 'Gene'),
-        h('div.expression-table-header-column', {onClick: () => this.handleSortChange(this.sortTypes().SORT_FOLD_CHANGE) }, 'Expression Ratio'),  
+        h('div.expression-table-header-column', {onClick: () => this.handleSortChange('geneName') }, 'Gene'),
+        h('div.expression-table-header-column', {onClick: () => this.handleSortChange('foldChange') }, 'Expression Ratio'),  
       ]),
       h('div.expression-search-filter', [
         h('input', { placeholder: 'Filter by gene', onChange: e => this.handleSearchChange(e.target.value) })
       ]),
-      h('div.expression-list', foldChangeExpressions.map( e => {
+      h('div.expression-list', sortedFoldChanges.map( e => {
         return h('div.expression-entry', [
           h('div.gene', e.geneName),
           h('div.fold-change', e.foldChange)

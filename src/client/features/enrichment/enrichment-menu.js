@@ -30,6 +30,11 @@ class EnrichmentMenu extends React.Component {
       onInput:() => this.sliderUpdate() }),
     ];
 
+    //when rendered all nodes show
+    this.props.cySrv.loadPromise().then((cy) => {
+      cy.batch(()=>{cy.elements().removeClass('hidden');});
+      });
+
     return h(Tabs, [
       h('div.enrichment-drawer-header', [
         h('h2', 'Enriched Network'),

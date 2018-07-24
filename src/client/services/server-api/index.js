@@ -11,9 +11,10 @@ let absoluteURL = (href) => {
 };
 
 const defaultFetchOpts = {
-  method: 'GET',
-  'Content-Type': 'application/json',
-  'Accept': 'application/json'
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
 };
 
 const ServerAPI = {
@@ -22,7 +23,7 @@ const ServerAPI = {
   },
 
   getPubmedPublications( pubmedIds ){
-    return fetch('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id=' + pubmedIds.toString(), defaultFetchOpts).then(res => res.json());  
+    return fetch('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id=' + pubmedIds.toString(), defaultFetchOpts).then(res => res.json());
   },
 
   getInteractionGraph(sources) {
@@ -67,11 +68,21 @@ const ServerAPI = {
   },
 
   getGeneInformation(ids){
-    return fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?retmode=json&db=gene&id=${ids.join(',')}`, {method: 'GET'}).then(res => res.json());
+    return fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?retmode=json&db=gene&id=${ids.join(',')}`,{method: 'GET'})
+    .then(res => res.json())
+    .catch(() => undefined);
   },
 
   getUniprotInformation(ids){
-    return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&accession=${ids.join(',')}`, defaultFetchOpts).then(res => res.json());
+    return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&accession=${ids.join(',')}`,defaultFetchOpts)
+    .then(res => res.json())
+    .catch(() => []);
+  },
+
+  getHgncInformation(id) {
+    return fetch( `https://rest.genenames.org/fetch/symbol/${id}`, {headers: {'Accept': 'application/json'}} )
+    .then(res => res.json())
+    .catch(() => undefined);
   },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into

@@ -78,7 +78,10 @@ const getNcbiInfo = ( ids, genes ) => {
   const ncbiIds = Object.keys( ids );
 
   return ServerAPI.getGeneInformation( ncbiIds ).then( result => {
+
+    if( _.isEmpty(result) ) return [];
     let geneResults = result.result;
+
     return geneResults.uids.map( uid => {
       const gene = geneResults[ uid ];
 
@@ -90,8 +93,8 @@ const getNcbiInfo = ( ids, genes ) => {
       }
       else{
         //Data from provider
-        Object.entries(dbInfos).forEach( ( [k,v] ) => {
-          if ( gene[ v.ncbiName ] ) databaseId[ v.name ] = gene[ v.ncbiName ];
+        Object.entries(dbInfos).forEach( dbInfo => {
+          if ( gene[ dbInfo[1].ncbiName ] ) databaseId[ dbInfo[1].name ] = gene[ dbInfo[1].ncbiName ];
         });
       }
       let links = idToLinkConverter( databaseId );
@@ -122,25 +125,17 @@ const getUniprotInfo = ids => {
     return uniprotInfos.map( uniprotInfo => {
 
       let dbIds = { Uniprot: uniprotInfo.accession };
-      let hgncSymbol;
 
       uniprotInfo.dbReferences.forEach( db => {
-        let matchedDb = dbInfos[ db.type ];
-        if( matchedDb != null ){
-          dbIds[ db.type ] = db.id;
-        }
         if( db.type === 'GeneID' ){
           dbIds['NCBI Gene'] = db.id;
         }
         if( db.type === 'HGNC' ){
-          hgncSymbol = db.properties['gene designation'];
+          const hgncSymbol = db.properties['gene designation'];
+          dbIds['HGNC Symbol'] = hgncSymbol;
+          dbIds['Gene Cards'] = hgncSymbol;
         }
       });
-
-      if( hgncSymbol != null ){
-        dbIds['HGNC Symbol'] = hgncSymbol;
-        dbIds['Gene Cards'] = hgncSymbol;
-      }
 
       let links = idToLinkConverter( dbIds );
 
@@ -158,13 +153,16 @@ const getUniprotInfo = ids => {
 
 const getHgncInfo = hgncSymbols => {
   return Promise.all(Object.keys(hgncSymbols).map( hgncSymbol => {
+
     return ServerAPI.getHgncInformation( hgncSymbol ).then( result => {
+
+      if( _.isEmpty(result) ) return [];
       const geneResults = result.response.docs;
       return geneResults.map(gene => {
 
         let databaseId = {};
-        Object.entries(dbInfos).forEach( ( [k,v] ) => {
-          if ( gene[ v.hgncName ] ) databaseId[ v.name ] = gene[ v.hgncName ];
+        Object.entries(dbInfos).forEach( dbInfo => {
+          if ( gene[ dbInfo[1].hgncName ] ) databaseId[ dbInfo[1].name ] = gene[ dbInfo[1].hgncName ];
         });
         const links = idToLinkConverter( databaseId );
 
@@ -260,7 +258,7 @@ const queryEntityInfo = query => {
     return getProviderSpecificEntityInfo( ncbiIds, uniprotIds, hgncId );
   }
   else {
-   let dbsToQuery = Object.entries(dbInfos).map( ( [k, v]) => v );
+   let dbsToQuery = Object.entries(dbInfos).map( dbInfo => dbInfo[1] );
 
    // create entity recognizer queries
    entityQueries = dbsToQuery.map( db => {

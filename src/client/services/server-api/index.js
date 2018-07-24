@@ -35,6 +35,12 @@ const ServerAPI = {
     .catch( err => err);
 },
 
+  getReactomeInformation(reactomeID) {
+    return fetch(`https://reactome.org/ContentService/data/query/${reactomeID}`, {method: 'GET'})
+    .then( res => res.json() )
+    .catch( err => err);
+  },
+
   pcQuery(method, params){
     return fetch(absoluteURL(`/pc-client/${method}?${qs.stringify(params)}`), defaultFetchOpts);
   },

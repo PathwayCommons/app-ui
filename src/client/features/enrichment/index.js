@@ -135,6 +135,24 @@ class Enrichment extends React.Component {
           };
           element = addGoInfo(element);
         }
+        else if(element.data.id.includes('REAC')){
+          const addReactomeInfo = async (element) => {
+
+            let id = "R-HSA-"+element.data.id.replace("REAC:", "");
+
+            const reactomeResult = await ServerAPI.getReactomeInformation(id);
+
+            element.data.class = "enrichment";
+            element.data.parsedMetadata = [];
+
+            if(reactomeResult.summation[0]){ //check for api result
+            element.data.parsedMetadata.push(["Pathway Overview", reactomeResult.summation[0].text]);
+            element.data.parsedMetadata.push([ "Database IDs", [["Reactome", id]] ]);
+            }
+            return element;
+          };
+          element = addReactomeInfo(element);
+        }
       });
 
       let edges = visualizationResult.graph.elements.edges;

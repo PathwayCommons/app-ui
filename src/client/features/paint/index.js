@@ -16,7 +16,7 @@ const PaintMenu = require('./menus/paint-menu');
 const PathwaysSidebar = require('./pathways-sidebar');
 const PathwaysToolbar = require('./pathways-toolbar');
 
-const { ExpressionTable, applyExpressionData } = require('./expression-table');
+const { ExpressionTable, applyExpressionData, geneIntersection } = require('./expression-table');
 
 const { stylesheet, bindCyEvents, PATHWAYS_LAYOUT_OPTS } =  require('./cy');
 
@@ -26,7 +26,7 @@ const { stylesheet, bindCyEvents, PATHWAYS_LAYOUT_OPTS } =  require('./cy');
 // find out all the genes are in that pathway
 // find all the genes in the expression data
 // return the intersection between genes in (expData, p) for p in Pathway List
-const getPathwaysRelevantTo = (searchParam, expressions) => {
+let getPathwaysRelevantTo = (searchParam, expressions) => {
   let geneQueries = _.chunk(expressions.map(expression => expression.geneName), 15)
   .map(chunk => ServerAPI.querySearch({q: chunk.join(' ')}));
 
@@ -39,18 +39,10 @@ const getPathwaysRelevantTo = (searchParam, expressions) => {
     let pathwaysJSON = uniqueResults.map(result => ServerAPI.getPathway(result.uri, 'latest'));
 
     return Promise.all(pathwaysJSON).then(pathways => {
-      return pathways.map( pathway => {
+      return pathways.map( pathwayJSON => {
         let p = new Pathway();
-        p.load( pathway );
-
-        let ms = p.macromolecules();
-        let genesInPathway = _.flattenDeep(_.uniq([...ms.map(node => node.data.label), ...ms.map(node => node.data.geneSynonyms)]));
-        let genesInExpressiondata = expressions.map( e => e.geneName);
-
-        return {
-          pathway: p,
-          geneIntersection: _.intersection(genesInPathway, genesInExpressiondata)
-        };
+        p.load( pathwayJSON );
+        return p;
       });
     });
   });
@@ -94,16 +86,15 @@ class Paint extends React.Component {
     };
 
     let getPathways = () => {
-      return getPathwaysRelevantTo( searchParam, expressionTable.rawExpressions ).then( results => {
-        let findBestPathway = results => {
-          // pathway results are sorted by how many genes they have in common
-          // with the expression table
+      return getPathwaysRelevantTo( searchParam, expressionTable.rawExpressions ).then( pathways => {
+        let findBestPathway = pathways => {
+
   
           // see if there is a pathway that has the same title as the search param
-          let bestResult = results.find( r => r.pathway.name() === searchParam );
+          let bestResult = pathways.find( pathway => pathway.name() === searchParam );
   
           if( bestResult == null ){
-            bestResult = results.sort((p0, p1) => p1.geneIntersection.length > p0.geneIntersection.length)[0];
+            bestResult = pathways.sort((p0, p1) => geneIntersection(p1, expressionTable.rawExpressions).length > geneIntersection(p0, expressionTable.rawExpressions)[0]);
           }
 
           if( bestResult == null ){
@@ -112,8 +103,8 @@ class Paint extends React.Component {
   
           return bestResult;
         };
-        let bestPathway = findBestPathway( results ).pathway;
-        return { pathways: results, bestPathway };
+        let bestPathway = findBestPathway( pathways );
+        return { pathways, bestPathway };
       });
     };
   

@@ -1,8 +1,9 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
+const classNames = require('classnames');
 const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
-const { applyExpressionData } = require('../expression-table');
+const { geneIntersection } = require('../expression-table');
 const { searchNodes } = require('../cy');
 
 class ExpressionColourLegend extends React.Component {
@@ -122,10 +123,11 @@ class ExpressionTableView extends React.Component {
 
 class PathwayResultsListView extends React.Component {
   render(){
-    let { pathways, curPathway, controller } = this.props;
-    let pathwayResults = pathways.map(result => {
-      return h('div', { onClick: () => controller.loadPathway(result.pathway) }, [
-        h('div', result.pathway.name())
+    let { pathways, curPathway, expressionTable, controller } = this.props;
+    let pathwayResults = pathways.map(pathway => {
+      return h('div', { className: classNames({'selected': curPathway.uri() === pathway.uri()}), onClick: () => controller.loadPathway(pathway.pathway) }, [
+        h('div', pathway.name()),
+        h('div', `Genes matched: ${geneIntersection(pathway, expressionTable).length}`)
       ]);
     });
 
@@ -153,7 +155,7 @@ class PaintMenu extends React.Component {
         h(ExpressionTableView, { cySrv, expressionTable, controller, paintMenuCtrls} ),
       ]),
       h(TabPanel, [
-        h(PathwayResultsListView, { controller, curPathway, pathways })
+        h(PathwayResultsListView, { controller, curPathway, expressionTable, pathways })
       ])
     ]);
   }

@@ -1,5 +1,13 @@
 const _ = require('lodash');
 
+let geneIntersection = (pathway, expressionTable) => {
+  let ms = pathway.macromolecules();
+  let genesInPathway = _.flattenDeep(_.uniq([...ms.map(node => node.data.label), ...ms.map(node => node.data.geneSynonyms)]));
+  let genesInExpressionData = expressionTable.rawExpressions.map( e => e.geneName);
+
+  return _.intersection(genesInPathway, genesInExpressionData);
+};
+
 
 const expressionDataToNodeStyle = (value, range) => {
   const [, max] = range;
@@ -213,4 +221,4 @@ class ExpressionTable {
   }
 }
 
-module.exports = { ExpressionTable, applyExpressionData };
+module.exports = { ExpressionTable, applyExpressionData, geneIntersection };

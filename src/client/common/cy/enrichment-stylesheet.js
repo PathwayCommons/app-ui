@@ -32,7 +32,6 @@ function getNodeSize( geneCount ){
 }
 
 function mapGeneCountToSize( geneCount ){
-  // return ( (5 * Math.sqrt( geneCount -1 )) + 30 );
   return ( 1*(geneCount - 5) + 30 );
 }
 

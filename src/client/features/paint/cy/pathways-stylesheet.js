@@ -53,7 +53,6 @@ module.exports = sbgnStyleSheet(cytoscape)
 })
 .selector(`.${MATCHED_SEARCH_CLASS}`)
 .css({
-  'overlay-color': 'yellow',
-  'overlay-padding': 0,
-  'overlay-opacity': 0.5
+  'border-width': 8,
+  'border-color': 'red'
 });

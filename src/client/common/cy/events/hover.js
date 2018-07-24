@@ -1,6 +1,5 @@
 const _ = require('lodash');
 
-/**
 const bindHover = (cy) => {
 
   /**

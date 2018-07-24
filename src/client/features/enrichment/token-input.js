@@ -20,7 +20,7 @@ class TokenInput extends React.Component {
     this.setState({inputBoxContents: e.target.value});
   }
 
-  //only open unrecognized feedback if unrecognized tokens exist
+  //only open unrecognized feedback if input box has focus
   handleFocus(){
     this.setState({openUnrecognized: true});
   }
@@ -83,7 +83,7 @@ class TokenInput extends React.Component {
             className:'unrecognized-tokens-feedback',
             value: "Unrecognized Tokens: \n" + unrecognized.join("\n"),
             readOnly: true,
-            //only display when input box is open and unrecognized tokens exist
+            //only display when container is open and unrecognized tokens exist
             style: { display: _.isEmpty(this.props.unrecognized) ? 'none' : 'block' }
           })
         ])

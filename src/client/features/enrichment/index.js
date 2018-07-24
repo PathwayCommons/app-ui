@@ -117,18 +117,24 @@ class Enrichment extends React.Component {
 
       let nodes = visualizationResult.graph.elements.nodes;
       nodes.forEach(element => {
-        const addGoInfo = async (element) => {
-          const GoResult = await ServerAPI.getGoInformation(element.data.id);
+        if(element.data.id.includes('GO')){
+          const addGoInfo = async (element) => {
 
-          element.data.class = "enrichment";
-          element.data.parsedMetadata = [];
+            let id = element.data.id;
 
-          if(GoResult.results[0]){
-          element.data.parsedMetadata.push(["Pathway Overview", GoResult.results[0].definition.text]);
-          return element;
-          }
-        };
-        element = addGoInfo(element);
+            const GoResult = await ServerAPI.getGoInformation(id);
+
+            element.data.class = "enrichment";
+            element.data.parsedMetadata = [];
+
+            if(GoResult.results[0]){ //check for api result
+            element.data.parsedMetadata.push(["Pathway Overview", GoResult.results[0].definition.text]);
+            element.data.parsedMetadata.push([ "Database IDs", [["Gene Ontology", id]] ]);
+            }
+            return element;
+          };
+          element = addGoInfo(element);
+        }
       });
 
       let edges = visualizationResult.graph.elements.edges;

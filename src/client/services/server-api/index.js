@@ -31,7 +31,8 @@ const ServerAPI = {
 
   getGoInformation(goID) {
     return fetch(`https://www.ebi.ac.uk/QuickGO/services/ontology/go/search?query=GO%3A${goID.replace("GO:", "")}&limit=1&page=1`, {method: 'GET'})
-    .then( res => res.json() );
+    .then( res => res.json() )
+    .catch( err => err);
 },
 
   pcQuery(method, params){

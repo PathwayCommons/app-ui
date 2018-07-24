@@ -25,7 +25,8 @@ const databases = [
   {database:'RefSeq',url:'http://identifiers.org/refseq/',search:''},
   {database:'Pathway Commons',url:null,search:''}, //TODO: was this PC_URL or xml:base (both should be configurable)?
   {database:'NCBI Gene',url:'http://identifiers.org/ncbigene/',search:''},
-  {database:'Gene Cards',url:'http://identifiers.org/genecards/',search:''}
+  {database:'Gene Cards',url:'http://identifiers.org/genecards/',search:''},
+  {database:'Gene Ontology', url:'http://identifiers.org/go/', search:''}
 ];
 
 const publicationsURL = 'http://identifiers.org/pubmed/';

@@ -1,147 +1,101 @@
 const _ = require('lodash');
 
-const {applyStyle, removeStyle} = require('../manage-style');
-
-const dynamicScalingfactors = (zoom) => {
-  const scalingFactor = (1 / zoom);
-  const defaults = {
-    fontSize: 40,
-    outlineWidth: 4,
-    arrowScale: 3,
-    edgeWidth: 2,
-  };
-
-  const dynamicFontSize = Math.min(defaults.fontSize, Math.max(scalingFactor * 18, 18));
-  const dynamicFontOutlineWidth = Math.min(defaults.outlineWidth, Math.max(scalingFactor * 3, 3));
-  const dynamicArrowScale = Math.min(defaults.arrowScale, Math.max(scalingFactor * 2.5, 2.5));
-  const dynamicEdgewidth = Math.min(defaults.edgeWidth, Math.max(scalingFactor * 2.5, 2.5));
-
-  return {
-    fontSize: dynamicFontSize,
-    outlineWidth: dynamicFontOutlineWidth,
-    arrowScale: dynamicArrowScale,
-    edgeWidth: dynamicEdgewidth
-  };
+/**
+ * @description Adds a node and all its children to a `Set`
+ * @param {*} node Starting node for list
+ * @param {*} elesList `Set` children should be added to
+ */
+const addChildrenToList = (node,elesList) => {
+  elesList.add(node);
+  let children = node.children();
+  if(!children)
+    return;
+  children.forEach(child => {
+    elesList.add(child);
+    addChildrenToList(child,elesList);
+  });
 };
 
-const scaledDimensions = (node, zoom) => {
-  const nw = node.width();
-  const nh = node.height();
-
-  if (nw === 0 || nh === 0) { return { w: 0, h: 0 }; }
-
-  const scaledVal = (1 / zoom) * 8;
-  const aspectRatio = nw / nh;
-  let xIncr = 0;
-  let yIncr = 0;
-
-  if (aspectRatio > 1) {
-    xIncr = nw + scaledVal;
-    yIncr = nh + (scaledVal / aspectRatio);
-  } else {
-    xIncr = nw + (scaledVal / aspectRatio);
-    yIncr = nh + scaledVal;
-  }
-
-  return {
-    w: xIncr,
-    h: yIncr
-  };
+/**
+ * @description Adds all the parents of a node to a `Set`
+ * @param {*} node Node which style is to be applied
+ * @param {*} elesList `Set` parents should be added to
+ */
+const addParentsToList = (node,elesList) => {
+  let parent = node.parent();
+  if(parent.length === 0)
+    return;
+    elesList.add(parent);
+  addParentsToList(parent,elesList);
 };
 
+const bindHover = (cy) => {
 
-const baseNodeHoverStyle = {
-  'background-color': 'blue',
-  'opacity': 1,
-  'z-compound-depth': 'top',
-  'color': 'white',
-  'text-outline-color': 'black'
-};
-
-const baseEdgeHoverStyle = {
-  'line-color': 'orange',
-  'opacity': 1
-};
-
-
-const bindHover = (cy, nodeStyle = baseNodeHoverStyle, edgeStyle = baseEdgeHoverStyle) => {
-  const hoverNode =  _.debounce(function (evt) {
+  /**
+   * @description Apply style modifications after 200ms delay on `mouseover` for non-compartment nodes.
+   * Currently puts opacity of hovered node & neighbourhood to 1, everything else to 0.3
+   */
+  const nodeHoverMouseOver = _.debounce(evt => {
     const node = evt.target;
-    const currZoom = cy.zoom();
     const ecAPI = cy.expandCollapse('get');
+    let elesToHighlight = new Set();
 
+    //If node has children and is expanded, do not highlight
     if (node.isParent() && ecAPI.isCollapsible(node)) { return; }
 
-    const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
+    //Create a list of the hovered node & its neighbourhood
+    node.neighborhood().nodes().union(node).forEach(node => {
+      addChildrenToList(node,elesToHighlight);
+      addParentsToList(node,elesToHighlight);
+    });
+    node.neighborhood().edges().forEach(edge => elesToHighlight.add(edge));
 
-    node.neighborhood().nodes().union(node).forEach((node) => {
-      const { w, h } = scaledDimensions(node, currZoom);
-
-      const nodeHoverStyle = _.assign({}, nodeStyle, {
-        'font-size': fontSize,
-        'text-outline-width': outlineWidth,
-        'width': w,
-        'height': h
-      });
-
-      applyStyle(cy, node, nodeHoverStyle, '_hover-style-before');
+    //Add highlighted class to node & its neighbourhood, unhighlighted to everything else
+    cy.elements().addClass('unhighlighted');
+    elesToHighlight.forEach(ele => {
+      ele.removeClass('unhighlighted');
+      ele.addClass('highlighted');
     });
 
-    const edgeHoverStyle = _.assign({}, edgeStyle, {
-      'arrow-scale': arrowScale,
-      'width': edgeWidth
-    });
-    applyStyle(cy, node.neighborhood().edges(), edgeHoverStyle, '_hover-style-before');
-  },200, {leading:false, trailing:true});
+  },200,{leading:false,trailing:true});
 
-  cy.on('mouseover', 'node[class!="compartment"]',hoverNode);
-
-  cy.on('mouseout', 'node[class!="compartment"]', function (evt) {
-    const node = evt.target;
-    const neighborhood = node.neighborhood();
-    hoverNode.cancel();
-    removeStyle(cy, neighborhood.nodes(), '_hover-style-before');
-    removeStyle(cy, node, '_hover-style-before');
-    removeStyle(cy, neighborhood.edges(), '_hover-style-before');
-  });
-
-  const hoverEdge = _.debounce( function (evt) {
+    /**
+   * @description Apply style modifications after 200ms delay on `mouseover` for edges.
+   * Currently puts opacity of hovered edge & neighbourhood to 1, everything else to 0.3
+   */
+  const edgeHoverMouseOver = _.debounce(evt => {
     const edge = evt.target;
-    const currZoom = cy.zoom();
-
-    const { fontSize, outlineWidth, arrowScale, edgeWidth } = dynamicScalingfactors(currZoom);
-
-    const edgeHoverStyle = _.assign({}, edgeStyle, {
-      'arrow-scale': arrowScale,
-      'width': edgeWidth
-    });
-    applyStyle(cy, edge, edgeHoverStyle, '_hover-style-before');
-
+    let elesToHighlight = new Set();
+    
+    //Create a list of the hovered edge & its neighbourhood
+    elesToHighlight.add(edge);
     edge.source().union(edge.target()).forEach((node) => {
-      const { w, h } = scaledDimensions(node, currZoom);
-      const nodeHoverStyle = _.assign({}, nodeStyle, {
-        'width': w,
-        'height': h,
-        'font-size': fontSize,
-        'color': 'white',
-        'text-outline-color': 'black',
-        'text-outline-width': outlineWidth,
-        'opacity': 1,
-        'background-color': 'blue',
-        'z-compound-depth': 'top'
-      });
-      applyStyle(cy, node, nodeHoverStyle, '_hover-style-before');
+      addChildrenToList(node,elesToHighlight);
+      addParentsToList(node,elesToHighlight);
     });
-  },200, {leading:false, trailing:true});
-  cy.on('mouseover', 'edge',hoverEdge);
 
-  cy.on('mouseout', 'edge', function (evt) {
-    const edge = evt.target;
-    hoverEdge.cancel();
-    removeStyle(cy, edge, '_hover-style-before');
-    removeStyle(cy, edge.source(), '_hover-style-before');
-    removeStyle(cy, edge.target(), '_hover-style-before');
+    //Add highlighted class to edge & its neighbourhood, unhighlighted to everything else
+    cy.elements().addClass('unhighlighted');
+    elesToHighlight.forEach(ele => {
+      ele.removeClass('unhighlighted');
+      ele.addClass('highlighted');
+    });
+
+  },200,{leading:false,trailing:true});
+
+  //call style-applying and style-removing functions on 'mouseover' and 'mouseout' for non-compartment nodes
+  cy.on('mouseover', 'node[class!="compartment"]',nodeHoverMouseOver);
+  cy.on('mouseout', 'node[class!="compartment"]', () => {
+    nodeHoverMouseOver.cancel();
+    cy.elements().removeClass('highlighted unhighlighted');
   });
-};
 
+  //call style-applying and style-removing functions on 'mouseover' and 'mouseout' for edges
+  cy.on('mouseover', 'edge',edgeHoverMouseOver);
+  cy.on('mouseout', 'edge', () => {
+    edgeHoverMouseOver.cancel();
+    cy.elements().removeClass('highlighted unhighlighted');
+  });
+
+};
 module.exports = bindHover;

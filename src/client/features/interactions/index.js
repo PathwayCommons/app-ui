@@ -75,8 +75,6 @@ class Interactions extends React.Component {
     this.state.cySrv.loadPromise().then(cy => {
       const { categories, filters, layoutConfig } = this.state;
 
-      this.displayDefaultNodes(cy,20);
-
       //for each filter (binding, phosphorylation, expression)
       //value: true/false
       //type: binding/expression etc..
@@ -144,27 +142,6 @@ class Interactions extends React.Component {
       filters:filters
     });
   }
-
-  displayDefaultNodes(cy,nodesToShow){
-    let i = 0;
-
-    //sort nodes based on betweenness centrality
-    let sortedNodes = cy.nodes().sort(function( a, b ){
-      return a.data('metric') - b.data('metric');
-    });
-
-    cy.batch( () => {
-      //hide all nodes other than the ones with top `nodesToShow`th bcVal
-      sortedNodes.forEach(node => {
-        if(i>nodesToShow)
-          node.addClass('hidden');
-        i++;
-      });
-
-    });
-
-  }
-
 
   render(){
     const state = this.state;

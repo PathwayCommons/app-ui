@@ -114,8 +114,11 @@ function filterNetwork(network){
   //get the 50 nodes with largest `metric`
   let filteredNodes = sortedNodes.slice(0,50);
   cy.remove(cy.nodes().difference(filteredNodes));
+  const returnNetwork = cy.json().elements;
 
-  return cy.json().elements;
+  cy.destroy();
+
+  return returnNetwork;
 }
 
 

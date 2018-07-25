@@ -30,7 +30,7 @@ const { stylesheet, bindCyEvents, PATHWAYS_LAYOUT_OPTS } =  require('./cy');
 let getPathwaysRelevantTo = (searchParam, expressionTable) => {
   let expressions = expressionTable.rawExpressions;
   let geneQueries = _.chunk(expressions.map(expression => expression.geneName), 15)
-  .map(chunk => ServerAPI.querySearch({q: chunk.join(' ')}));
+  .map(chunk => ServerAPI.querySearch({q: chunk.join(' '), type: 'Pathway'}));
 
 
   let searchQuery = ServerAPI.querySearch({q: searchParam, type: 'Pathway'});
@@ -41,11 +41,11 @@ let getPathwaysRelevantTo = (searchParam, expressionTable) => {
     let pathwaysJSON = uniqueResults.map(result => ServerAPI.getPathway(result.uri, 'latest'));
 
     return Promise.all(pathwaysJSON).then(pathways => {
-      return pathways.map( pathwayJSON => {
+      return _.uniqWith(pathways.map( pathwayJSON => {
         let p = new Pathway();
         p.load( pathwayJSON );
         return p;
-      });
+      }), (p0, p1) => _.isEqual(p0.cyJson(), p1.cyJson()));
     });
   });
 };
@@ -77,7 +77,7 @@ class Paint extends React.Component {
     let query = queryString.parse(this.props.location.search);
     let searchParam = query.q;
     let enrichmentsUri = query.uri;
-    let { cySrv, expressionTable  } = this.state;
+    let { cySrv, expressionTable, curPathway  } = this.state;
     cySrv.mount(this.network);
     cySrv.load();
 
@@ -109,8 +109,7 @@ class Paint extends React.Component {
       this.setState({
         paintMenuCtrls: _.assign({}, this.state.paintMenuCtrls, { exprClass: expressionTable.classes[0] }),
         pathways: pathways,
-        curPathway: findBestPathway(pathways) != null ? findBestPathway(pathways) : this.state.curPathway
-      }, () => this.loadPathway(this.state.curPathway));
+      }, () => this.loadPathway(findBestPathway(pathways)));
     });
   }
 

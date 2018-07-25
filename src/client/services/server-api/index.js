@@ -32,13 +32,13 @@ const ServerAPI = {
   getGoInformation(goID) {
     return fetch(`https://www.ebi.ac.uk/QuickGO/services/ontology/go/search?query=GO%3A${goID.replace("GO:", "")}&limit=1&page=1`, {method: 'GET'})
     .then( res => res.json() )
-    .catch( err => err);
+    .catch( () => { return null; });
 },
 
   getReactomeInformation(reactomeID) {
     return fetch(`https://reactome.org/ContentService/data/query/${reactomeID}`, {method: 'GET'})
     .then( res => res.json() )
-    .catch( err => err);
+    .catch( () => { return null; });
   },
 
   pcQuery(method, params){

@@ -127,7 +127,7 @@ class Enrichment extends React.Component {
             element.data.class = "enrichment";
             element.data.parsedMetadata = [];
 
-            if(GoResult.results[0]){ //check for api result
+            if(GoResult){ //check for api result
             element.data.parsedMetadata.push(["Pathway Overview", GoResult.results[0].definition.text]);
             element.data.parsedMetadata.push([ "Database IDs", [["Gene Ontology", id]] ]);
             }
@@ -145,7 +145,7 @@ class Enrichment extends React.Component {
             element.data.class = "enrichment";
             element.data.parsedMetadata = [];
 
-            if(reactomeResult.summation[0]){ //check for api result
+            if(reactomeResult){ //check for api result
             element.data.parsedMetadata.push(["Pathway Overview", reactomeResult.summation[0].text]);
             element.data.parsedMetadata.push([ "Database IDs", [["Reactome", id]] ]);
             }

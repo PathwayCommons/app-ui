@@ -26,7 +26,7 @@ class InteractionsFilterMenu extends React.Component {
 
     cy.batch( () => {
       sortedNodes.forEach( node => {
-        if(i<=sliderVal)
+        if(i < sliderVal)
           node.addClass('hidden');
         else
           node.removeClass('hidden');
@@ -55,8 +55,9 @@ class InteractionsFilterMenu extends React.Component {
     ));
 
     //Slider listed under 'Visible Nodes' in the interaction viewer
+    //0 to 49 for OBO errors
     const slider = [
-      h('input', {type: 'range', id: 'selection-slider', min: 0, max: 50, step: 1, defaultValue:0, 
+      h('input', {type: 'range', id: 'selection-slider', min: 0, max: 49, step: 1, defaultValue:35, 
       onInput:() => this.sliderUpdate() }),
     ];
     

@@ -78,7 +78,7 @@ function parse(data, queryIds){
 /**
  * 
  * @param {*} network A Javascript Object representing the nodes & edges in a network
- * @description Filters all the nodes, returning only the 50 largest based on `node.metric`
+ * @returns A graph where nodes can now be sorted by `metric`, most important nodes have largest value
  */
 function addMetric(network) {
 
@@ -97,8 +97,8 @@ function addMetric(network) {
 }
 
 /**
- * 
- * @param {*} network 
+ * @param {*} network A network containing a metric to sort nodes
+ * @returns A network only containing the 50 nodes with the largest `metric` value
  */
 function filterNetwork(network){
   //get list of nodes & edges

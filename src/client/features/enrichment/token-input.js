@@ -11,12 +11,23 @@ class TokenInput extends React.Component {
     // Note on input contents: Set the initial value here from parent
     // in order to maintain contents on re-render.
     this.state = {
-      inputBoxContents: this.props.inputs
+      inputBoxContents: this.props.inputs,
+      openUnrecognized: false
     };
   }
   //store 'gene-input-box' contents on state
   handleChange(e) {
     this.setState({inputBoxContents: e.target.value});
+  }
+
+  //only open unrecognized feedback if input box has focus
+  handleFocus(){
+    this.setState({openUnrecognized: true});
+  }
+
+  //close unrecognized feedback when input box is closed
+  handleBlur(){
+    this.setState({openUnrecognized: false});
   }
 
   //call validation service API to retrieve validation result in the form of []
@@ -42,6 +53,7 @@ class TokenInput extends React.Component {
   render() {
 
     const unrecognized = this.props.unrecognized;
+    const state = this.state;
 
     return h('div.enrichmentInput', [
         h('h4', [
@@ -52,23 +64,27 @@ class TokenInput extends React.Component {
         }),
         h('div.gene-input-container', [
           h(Textarea, {
-            className: 'gene-input-box',
+            id: 'gene-input-box', // for focus() and blur()
+            className: 'gene-input-box', // used for css styling
             placeholder: 'Enter one gene per line',
-            value: this.state.inputBoxContents,
-            onChange: (e) => this.handleChange(e)
+            value: state.inputBoxContents,
+            onChange: (e) => this.handleChange(e),
+            onFocus: () => this.handleFocus(),
+            onBlur: () => this.handleBlur()
           })
         ]),
         h('submit-container', {
           onClick: () => { this.retrieveValidationAPIResult();} },
           [h('button.submit', 'Submit')]
         ),
-        h('div.unrecognized-token-container',[
+        h('div.unrecognized-token-container',{ style: { display: state.openUnrecognized ? 'block' : 'none' }},[
           h(Textarea, {
+            id: 'unrecognized-tokens-feedback',
             className:'unrecognized-tokens-feedback',
             value: "Unrecognized Tokens: \n" + unrecognized.join("\n"),
             readOnly: true,
-            //if unrecognizedTokens is its default value (ie no tokens have been added), feedback box not displayed
-            style: {display: _.isEmpty( unrecognized ) ? 'none' : 'block' }
+            //only display when container is open and unrecognized tokens exist
+            style: { display: _.isEmpty(this.props.unrecognized) ? 'none' : 'block' }
           })
         ])
     ]);

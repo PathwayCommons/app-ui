@@ -93,6 +93,8 @@ function addMetric(network) {
     node.data('metric', bcVal);
   });
 
+  cy.destroy();
+
   return network;    
 }
 
@@ -101,9 +103,9 @@ function addMetric(network) {
  * @returns A network only containing the 50 nodes with the largest `metric` value
  */
 function filterNetwork(network){
-  //get list of nodes & edges
-  const nodes = network.nodes;
-  const edges = network.edges;
+
+  const cy = cytoscape({headless:true,container:undefined,elements:network});
+  const nodes = cy.nodes();
 
   //sort by `metric`
   let sortedNodes = nodes.sort( (a,b) => {
@@ -111,31 +113,9 @@ function filterNetwork(network){
   });
   //get the 50 nodes with largest `metric`
   let filteredNodes = sortedNodes.slice(0,50);
+  cy.remove(cy.nodes().difference(filteredNodes));
 
-
-  let filteredEdges = [];
-  //for each edge, get the source and target
-  edges.forEach( edge => {
-    const source = edge.source;
-    const target = edge.target;
-    let sourceFound = false;
-    let targetFound = false;
-
-    //if there is a filtered node that matches the source and target of the edge,
-    filteredNodes.forEach( node => {
-      if(source === node.id)
-        sourceFound = true;
-      if(target === node.id)
-        targetFound = true;
-    });
-
-    //add it to the list of filtered edges
-    if(sourceFound && targetFound)
-      filteredEdges.push(edge);
-
-  });
-
-  return { edges:filteredEdges, nodes:filteredNodes};
+  return cy.json().elements;
 }
 
 

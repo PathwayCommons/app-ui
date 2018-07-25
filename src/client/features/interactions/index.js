@@ -75,8 +75,7 @@ class Interactions extends React.Component {
     this.state.cySrv.loadPromise().then(cy => {
       const { categories, filters, layoutConfig } = this.state;
 
-
-      //HIDE 25 NODES TO BEGIN-
+      //hide the 35 nodes with smallest value for initial display
       const sortedNodes = cy.nodes().sort( (a,b) => {
         return a.data('metric') - b.data('metric');
       });
@@ -86,7 +85,6 @@ class Interactions extends React.Component {
           node.addClass('hidden');
         i++;
       });
-
 
       //for each filter (binding, phosphorylation, expression)
       //value: true/false

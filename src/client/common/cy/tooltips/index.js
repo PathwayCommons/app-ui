@@ -213,7 +213,7 @@ class EntityMetaDataView extends React.Component {
     let showIntersection = metadata.intersection() !== '';
     let showGenesInPathway = metadata.genesInPathway() !== '';
 
-    let showBody = showStdName || showDispName || showSynonyms || showPubs || showPathwayOverview || showIntersection || showGenesInPathway; //update
+    let showBody = showStdName || showDispName || showSynonyms || showPubs || showPathwayOverview || showIntersection || showGenesInPathway;
     let showLinks = metadata.databaseLinks().length > 0;
 
     return h('div.metadata-tooltip', [

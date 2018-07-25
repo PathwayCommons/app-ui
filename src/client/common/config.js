@@ -9,7 +9,7 @@ const databases = [
   {database:'Reactome', url:'http://identifiers.org/reactome/', search:''},
   {database:'SMPD', url:null},
   {database:'Wikipathways', url:'http://identifiers.org/wikipathways/' , search:''},
-  {database:'Uniprot', url:'http://identifiers.org/uniprot/', search:''},
+  {database:'UniProt', url:'http://identifiers.org/uniprot/', search:''},
   {database:'HGNC Symbol', url:'http://identifiers.org/hgnc.symbol/', search:''},
   {database:'HGNC', url:'http://identifiers.org/hgnc/', search:''},
   {database:'ChEBI', url:'http://identifiers.org/chebi/', search:''},

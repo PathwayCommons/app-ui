@@ -138,7 +138,7 @@ class Enrichment extends React.Component {
   }
 
   render() {
-    let { cySrv, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading, closeToolBar, loaded } = this.state;
+    let { cySrv, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading, closeToolBar, loaded, unrecognized } = this.state;
 
     let retrieveTokenInput = () => h(TokenInput,{
       inputs: this.state.inputs,
@@ -173,7 +173,13 @@ class Enrichment extends React.Component {
 
     //display baseView or loading spinner
     const content = loaded ? baseView : loadingView;
-    return h('div.main', [content]);
+    return h('div.main', {
+      //click off input box to hide
+      onClick: (e) => { if( e.target.id !== 'gene-input-box' ) document.getElementById('gene-input-box').blur(); },
+      //open input and unrecognized boxes onLoad only if unrecognized tokens exist
+      onLoad: () => { if( _.isEmpty(unrecognized) == false ) document.getElementById('gene-input-box').focus(); }
+    },
+    [content]);
   }
 }
 

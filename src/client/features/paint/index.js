@@ -4,6 +4,7 @@ const queryString = require('query-string');
 const _ = require('lodash');
 const classNames = require('classnames');
 const Loader = require('react-loader');
+const Promise = require('bluebird').Promise;
 
 const CytoscapeService = require('../../common/cy');
 const { ServerAPI } = require('../../services');
@@ -26,12 +27,13 @@ const { stylesheet, bindCyEvents, PATHWAYS_LAYOUT_OPTS } =  require('./cy');
 // find out all the genes are in that pathway
 // find all the genes in the expression data
 // return the intersection between genes in (expData, p) for p in Pathway List
-let getPathwaysRelevantTo = (searchParam, expressions) => {
+let getPathwaysRelevantTo = (searchParam, expressionTable) => {
+  let expressions = expressionTable.rawExpressions;
   let geneQueries = _.chunk(expressions.map(expression => expression.geneName), 15)
   .map(chunk => ServerAPI.querySearch({q: chunk.join(' ')}));
 
 
-  let searchQuery = ServerAPI.querySearch({q: searchParam});
+  let searchQuery = ServerAPI.querySearch({q: searchParam, type: 'Pathway'});
 
   return Promise.all([...geneQueries, searchQuery]).then(searchResults => {
     let uniqueResults = _.uniqBy(_.flatten(searchResults), result => result.uri);
@@ -85,45 +87,43 @@ class Paint extends React.Component {
       });
     };
 
-    let getPathways = () => {
-      return getPathwaysRelevantTo( searchParam, expressionTable.rawExpressions ).then( pathways => {
-        let findBestPathway = pathways => {
+    let findBestPathway = pathways => {
+      // 1. check if there is a pathway with a name that matches the search param
+      // 2. sort the pathawys by their gene intersection between the expression table
 
-  
-          // see if there is a pathway that has the same title as the search param
-          let bestResult = pathways.find( pathway => pathway.name() === searchParam );
-  
-          if( bestResult == null ){
-            bestResult = pathways.sort((p0, p1) => geneIntersection(p1, expressionTable.rawExpressions).length > geneIntersection(p0, expressionTable.rawExpressions)[0]);
-          }
+      // see if there is a pathway that has the same title as the search param
+      let bestResult = pathways.find( pathway => pathway.name() === searchParam );
 
-          if( bestResult == null ){
-            return null;
-          }
-  
-          return bestResult;
-        };
-        let bestPathway = findBestPathway( pathways );
-        return { pathways, bestPathway };
-      });
+      if( bestResult == null ){
+        bestResult = pathways.sort((p0, p1) => geneIntersection(p1, expressionTable).length > geneIntersection(p0, expressionTable))[0];
+      }
+
+      if( bestResult == null ){
+        return null;
+      }
+
+      return bestResult;
     };
-  
-    getEnrichments().then( () => getPathways() ).then( ({pathways, bestPathway}) => {
+
+    getEnrichments().then( () => getPathwaysRelevantTo( searchParam, expressionTable ) ).then( pathways => {
       this.setState({
         paintMenuCtrls: _.assign({}, this.state.paintMenuCtrls, { exprClass: expressionTable.classes[0] }),
         pathways: pathways,
-        curPathway: bestPathway != null ? bestPathway : this.state.pathway
-      }, () => this.loadPathway(bestPathway));
+        curPathway: findBestPathway(pathways) != null ? findBestPathway(pathways) : this.state.curPathway
+      }, () => this.loadPathway(this.state.curPathway));
     });
   }
 
   loadPathway(pathway){
-    let { cySrv, paintMenuCtrls, expressionTable } = this.state;
+    let { cySrv, paintMenuCtrls, expressionTable, curPathway } = this.state;
     let { exprClass, exprFn } = paintMenuCtrls;
     let cy = cySrv.get();
-    expressionTable.loadPathway( pathway.cyJson() );
+    let pathwayJson = pathway.raw;
+
+    curPathway.load( pathwayJson );
+    expressionTable.loadPathway( curPathway.cyJson() );
     cy.remove('*');
-    cy.add( pathway.cyJson() );
+    cy.add( curPathway.cyJson() );
 
     cy.layout(_.assign({}, PATHWAYS_LAYOUT_OPTS, {
       stop: () => {
@@ -144,7 +144,7 @@ class Paint extends React.Component {
   }
 
   handlePaintCtrlChange(newVal) {
-    this.setState({ 
+    this.setState({
       paintMenuCtrls: _.assign({}, this.state.paintMenuCtrls, newVal)
     }, () => {
       let { cySrv, expressionTable, paintMenuCtrls } = this.state;
@@ -152,15 +152,13 @@ class Paint extends React.Component {
       applyExpressionData(cySrv.get(), expressionTable, exprClass, exprFn);
     });
   }
-  
+
   componentWillUnmount(){
     this.state.cySrv.destroy();
   }
 
   render() {
     let { loading, expressionTable, curPathway, pathways, cySrv, activeMenu, paintMenuCtrls } = this.state;
-
-
     let network = h('div.network', { className: classNames({
       'network-loading': loading,
       'network-sidebar-open': activeMenu !== 'closeMenu'

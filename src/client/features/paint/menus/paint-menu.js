@@ -79,8 +79,8 @@ class ExpressionTableView extends React.Component {
 
     let functionSelector = h('select.paint-select', {
         value: exprFnName,
-        onChange: e => controller.handlePaintCtrlChange({ 
-          exprFnName: e.target.value, 
+        onChange: e => controller.handlePaintCtrlChange({
+          exprFnName: e.target.value,
           exprFn: this.analysisFns()[e.target.value]
         })
       },
@@ -105,11 +105,11 @@ class ExpressionTableView extends React.Component {
       classSelector,
       h('div.expression-table-header', [
         h('div.expression-table-header-column', {onClick: () => this.handleSortChange('geneName') }, 'Gene'),
-        h('div.expression-table-header-column', {onClick: () => this.handleSortChange('foldChange') }, 'Expression Ratio'),  
+        h('div.expression-table-header-column', {onClick: () => this.handleSortChange('foldChange') }, 'Expression Ratio'),
       ]),
       h('div.expression-search-filter', [
         h('input', { placeholder: 'Filter by gene', onChange: e => this.handleSearchChange(e.target.value) })
-      ]), 
+      ]),
       h('div.expression-list', foldChangeExpressions.map( e => {
         return h('div.expression-entry', [
           h('div.gene', e.geneName),
@@ -125,7 +125,7 @@ class PathwayResultsListView extends React.Component {
   render(){
     let { pathways, curPathway, expressionTable, controller } = this.props;
     let pathwayResults = pathways.map(pathway => {
-      return h('div', { className: classNames({'selected': curPathway.uri() === pathway.uri()}), onClick: () => controller.loadPathway(pathway.pathway) }, [
+      return h('div.paint-search-result', { className: classNames({'paint-search-result-selected': curPathway.uri() === pathway.uri()}), onClick: () => controller.loadPathway(pathway) }, [
         h('div', pathway.name()),
         h('div', `Genes matched: ${geneIntersection(pathway, expressionTable).length}`)
       ]);

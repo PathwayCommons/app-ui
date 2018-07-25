@@ -34,10 +34,10 @@ const ServerAPI = {
     .then( res => res.json() )
     .then( res => { if(res.numberOfHits !== 0 ) return res; else return null; })
     .catch( () => { return null; });
-},
+  },
 
   getReactomeInformation(reactomeID) {
-    return fetch(`https://reactome.org/ContentService/data/query/${reactomeID}`, {method: 'GET'})
+    return fetch(`https://reactome.org/ContentService/data/query/R-HSA-${reactomeID.replace("REAC:", "")}`, {method: 'GET'})
     .then( res => res.json() )
     .then( res => { if(res.summation) return res; else return null; })
     .catch( () => { return null; });

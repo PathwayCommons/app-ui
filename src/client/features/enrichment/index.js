@@ -37,29 +37,10 @@ const enrichmentConfig={
   useSearchBar: true
 };
 
-//temporary empty network for development purposes
 const emptyNetworkJSON = {
     edges: [],
     nodes: []
 };
-
-// for testing purposes
-// const testNetwork = {
-//   edges: [
-//     {data:{id: 'edge1', source:"node3", target: "node4", similarity: 3 }},
-//     {data:{id: 'edge2', source:"node1", target: "node2", similarity: .4 }},
-//     {data:{id: 'edge3', source:"node1", target: "node4" }},
-//     {data:{id: 'edge4', source:"node2", target: "node4" }}
-//   ],
-//   nodes: [
-//     {data: {id: "node1", description: "node1", p_value: ".01", geneCount: "100000"}},
-//     {data: {id: "node2", description: "node2", p_value: ".05", geneCount: "1"}},
-//     {data: {id: "node3", description: "node3", p_value: ".04", geneCount: "100"}},
-//     {data: {id: "node4", description: "node4", p_value: ".025", geneCount: "500"}},
-//     {data: {id: "node5", description: "node5", p_value: ".00005", geneCount: "300"}},
-//     {data: {id: "node6", description: "node6", p_value: ".9999"}}
-//   ]
-// };
 
 
 class Enrichment extends React.Component {
@@ -70,7 +51,6 @@ class Enrichment extends React.Component {
       componentConfig: enrichmentConfig,
       layoutConfig: getLayoutConfig('enrichment'),
       networkJSON: emptyNetworkJSON,
-      // networkJSON: testNetwork,
 
       networkMetadata: {
         name: "enrichment",
@@ -116,53 +96,7 @@ class Enrichment extends React.Component {
       }
 
       let nodes = visualizationResult.graph.elements.nodes;
-      nodes.forEach(element => {
-        if(element.data.id.includes('GO')){
-          const addGoInfo = async (element) => {
-
-            let id = element.data.id;
-
-            const GoResult = await ServerAPI.getGoInformation(id);
-
-            element.data.class = "enrichment";
-            element.data.parsedMetadata = [];
-
-            if(GoResult){
-            element.data.parsedMetadata.push(["Pathway Overview", GoResult.results[0].definition.text]);
-            element.data.parsedMetadata.push([ "Database IDs", [["Gene Ontology", id]] ]);
-            }
-            return element;
-          };
-          element = addGoInfo(element);
-        }
-        else if(element.data.id.includes('REAC')){
-          const addReactomeInfo = async (element) => {
-
-            let id = "R-HSA-"+element.data.id.replace("REAC:", "");
-            // let id = "R-HSA-"+12347362634567;
-
-            const reactomeResult = await ServerAPI.getReactomeInformation(id);
-
-            element.data.class = "enrichment";
-            element.data.parsedMetadata = [];
-
-            if(reactomeResult){ //check for api result
-            element.data.parsedMetadata.push(["Pathway Overview", reactomeResult.summation[0].text]);
-            element.data.parsedMetadata.push([ "Database IDs", [["Reactome", id]] ]);
-            }
-            return element;
-          };
-          element = addReactomeInfo(element);
-        }
-      });
-
-      let edges = visualizationResult.graph.elements.edges;
-      edges.forEach(element =>{
-        element.data.class = "enrichment";
-        element.data.parsedMetadata = [
-          ["Intersection", element.data.intersection.join(", ")]
-        ];
-      });
+      nodes.forEach(element => { this.getPathwayOverviewData(element); });
 
       this.setState({
         closeToolBar: false,
@@ -174,6 +108,33 @@ class Enrichment extends React.Component {
       });
     };
     updateNetworkJSON();
+  }
+
+  getPathwayOverviewData(node){
+    node.data.parsedMetadata = [];
+    let id = node.data.id;
+
+    if(id.includes('GO')){
+      ServerAPI.getGoInformation(id)
+      .then(res => {
+        if(res) this.pushDataToNode(node, res.results[0].definition.text, "Gene Ontology");
+        else return;
+      })
+      .catch( err => err);
+    }
+    else if(id.includes('REAC')){
+      ServerAPI.getReactomeInformation(id)
+      .then(res => {
+        if(res) this.pushDataToNode(node, res.summation[0].text, "Reactome");
+        else return;
+      })
+      .catch( err => err);
+    }
+  }
+
+  pushDataToNode(node, pathwayOverview, dbName){
+      node.data.parsedMetadata.push(["Pathway Overview", pathwayOverview]);
+      node.data.parsedMetadata.push([ "Database IDs", [[dbName, node.data.id.replace("REAC:", "R-HSA-")]] ]);
   }
 
   render() {

@@ -34,9 +34,12 @@ function rawGetInteractionGraphFromPC(interactionIDs){
 
   //Fetch graph from PC
   return pc.query(params).then(res => {
-    return {
-      network : parse(res, geneIds)
-    };
+
+    let network = parse(res,geneIds);
+    let networkWithMetric = addMetric(network);
+    let filteredNetwork = filterNetwork(networkWithMetric);
+
+    return {network: filteredNetwork};
   }).catch((e)=>{
     logger.error(e);
     return 'ERROR : could not retrieve graph from PC';
@@ -67,49 +70,74 @@ function parse(data, queryIds){
       const edgeMetadata = interactionMetadata(splitLine[6],splitLine[4]);
       addInteraction([splitLine[0], splitLine[2]], splitLine[1], edgeMetadata, network, nodeMap, nodeMetadata, queryIds);
     });
-
-    const cy = cytoscape({headless:true,container:undefined,elements:network});
-    const bc = cy.$().bc();
-    const nodes = cy.nodes();
-
-    if(nodes.length === 0)
-      return network;
-
-    //loop through the nodes, collected betweenness centrality values
-    let centralityVals = [];
-    let centralityMap = [];
-    nodes.forEach( ele => {
-      let bcVal = bc.betweenness(ele);
-      centralityVals.push(bcVal);
-      centralityMap.push([ele,bcVal]);
-    });
-
-    const max = Math.max(...centralityVals);
-    const min = Math.min(...centralityVals);
-
-    if(max !== min)
-      centralityMap.forEach( ele => {
-        ele[0].data('bcVal',normalizeValue(ele[1],max,min));
-      });
-    else
-      centralityMap.forEach( ele => {
-        ele[0].data('bcVal',ele[1]);
-      });
-
     return network;
   }
   return {};
 }
 
-  /**
-   * @description Converts a number to a normalized value in the range [0,1]
-   * @param {} value The value to be normalized
-   * @param {*} max The maximum number this value can be
-   * @param {*} min The minimum number this value can be
-   */
-function normalizeValue(value,max,min){
-  return (value-min)/(max-min);
+/**
+ * 
+ * @param {*} network A Javascript Object representing the nodes & edges in a network
+ * @description Filters all the nodes, returning only the 50 largest based on `node.metric`
+ */
+function addMetric(network) {
+
+  //create dummy cytoscape object
+  const cy = cytoscape({headless:true,container:undefined,elements:network});
+  const nodes = cy.nodes();
+  const bc = cy.$().bc();
+
+  //calculate betweenness centrality value for each node, store it as `metric`
+  nodes.forEach( node => {
+    let bcVal = bc.betweenness(node);
+    node.data('metric', bcVal);
+  });
+
+  return network;    
 }
+
+/**
+ * 
+ * @param {*} network 
+ */
+function filterNetwork(network){
+  //get list of nodes & edges
+  const nodes = network.nodes;
+  const edges = network.edges;
+
+  //sort by `metric`
+  let sortedNodes = nodes.sort( (a,b) => {
+    return b.metric - a.metric; 
+  });
+  //get the 50 nodes with largest `metric`
+  let filteredNodes = sortedNodes.slice(0,50);
+
+
+  let filteredEdges = [];
+  //for each edge, get the source and target
+  edges.forEach( edge => {
+    const source = edge.source;
+    const target = edge.target;
+    let sourceFound = false;
+    let targetFound = false;
+
+    //if there is a filtered node that matches the source and target of the edge,
+    filteredNodes.forEach( node => {
+      if(source === node.id)
+        sourceFound = true;
+      if(target === node.id)
+        targetFound = true;
+    });
+
+    //add it to the list of filtered edges
+    if(sourceFound && targetFound)
+      filteredEdges.push(edge);
+
+  });
+
+  return { edges:filteredEdges, nodes:filteredNodes};
+}
+
 
 function interactionMetadata(mediatorIds, pubmedIds){
   let metadata = [['List',[]],['Detailed Views',[]]];//Format expected by format-content

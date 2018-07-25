@@ -8,23 +8,6 @@ class InteractionsFilterMenu extends React.Component {
     super(props);
     this.state = props;
     this.sliderUpdate = _.debounce(this.sliderUpdate,150);
-
-    this.state.cySrv.loadPromise().then( cy => {
-        let defaultVal = 0;
-
-        let sortedNodes = cy.nodes().sort(function( a, b ){
-          return b.data('bcVal') - a.data('bcVal');
-        });
-  
-        sortedNodes.forEach(node => {
-          if(!node.hasClass('hidden'))
-            defaultVal = node.data('bcVal');
-        });
-
-        document.getElementById('selection-slider').value = defaultVal;
-
-      });
-  
   }
 
   /**
@@ -33,17 +16,22 @@ class InteractionsFilterMenu extends React.Component {
    * @description Hides nodes based on their betweenness centrality, determined by on-screen slider
    */
   sliderUpdate(){
+    //set up variables
     const cy = this.props.cySrv.get();
-
-    //get the value from the slider
     let sliderVal = document.getElementById('selection-slider').value;
+    let sortedNodes = cy.nodes().sort( (a,b) => {
+      return a.data('metric') - b.data('metric');
+    });
+    let i=0;
 
-    //compare to pre-calculated centrality & hide if necessary
-    cy.nodes().forEach(node => {
-      if(node.data('bcVal') < sliderVal)
-        node.addClass('hidden');
-      else 
-        node.removeClass('hidden');
+    cy.batch( () => {
+      sortedNodes.forEach( node => {
+        if(i<=sliderVal)
+          node.addClass('hidden');
+        else
+          node.removeClass('hidden');
+        i++;
+      });
     });
   }
 
@@ -68,7 +56,7 @@ class InteractionsFilterMenu extends React.Component {
 
     //Slider listed under 'Visible Nodes' in the interaction viewer
     const slider = [
-      h('input', {type: 'range', id: 'selection-slider', min: 0, max: 0.05, step: 0.0001,
+      h('input', {type: 'range', id: 'selection-slider', min: 0, max: 50, step: 1, defaultValue:20, 
       onInput:() => this.sliderUpdate() }),
     ];
     

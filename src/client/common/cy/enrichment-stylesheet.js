@@ -28,11 +28,11 @@ function getNodeColor( p_value ){
 }
 
 function getNodeSize( geneCount ){
-  return mapGeneCountToSize(Math.min( geneCount, 1000 ));
+  return mapGeneCountToSize(Math.min( geneCount, 200 ));
 }
 
 function mapGeneCountToSize( geneCount ){
-  return ( (5 * Math.sqrt( geneCount -1 )) + 30 );
+  return ((.5 * (geneCount - 5)) + 30 );
 }
 
 const enrichmentStylesheet=cytoscape.stylesheet()

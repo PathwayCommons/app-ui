@@ -94,6 +94,7 @@
 
 .expression-table-header-column {
   width: 50%;
+  cursor: pointer;
 }
 
 .expression-filter {
@@ -106,13 +107,12 @@
 .expression-list {
   max-height: 74vh;
   overflow: scroll;
-  border-top: 1px solid var(--light-base-colour-dark);
 }
 
 .expression-entry {
   display: flex;
   flex-direction: row;
-  border: 1px solid var(--light-base-colour-dark);
+  border-top: 1px solid var(--light-base-colour-dark);
 
   padding: 10px;
 }

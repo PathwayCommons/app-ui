@@ -61,7 +61,7 @@ class Interactions extends React.Component {
     };
 
     ServerAPI.getInteractionGraph({sources:sources})
-      .then(result=>{
+      .then(result => {
         const layoutConfig = getLayoutConfig('interactions');
         const network= result.network;
         this.setState({
@@ -169,7 +169,7 @@ class Interactions extends React.Component {
       if(node.data('bcVal') < returnValue)
         node.addClass('hidden');
      });
-  };
+  }
 
   /**
    * @description This function generates normalized betweenness centrality values for each node in the network,

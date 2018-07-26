@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const pc = require('../../pathway-commons');
 const logger = require('./../../logger');
 const LRUCache = require('lru-cache');
 const cache = require('../../cache');
@@ -7,7 +6,7 @@ const { PC_CACHE_MAX_SIZE } = require('../../../config');
 const qs = require('query-string');
 const fetch = require('node-fetch');
 
-const neighborhoodUrl = 'http://www.pathwaycommons.org/sifgraph/v1/neighborhood?direction=BOTHSTREAM&limit=1&pattern=CONTROLS_PHOSPHORYLATION_OF&';
+const neighborhoodUrl = 'http://www.pathwaycommons.org/sifgraph/v1/neighborhood?direction=BOTHSTREAM&limit=1&';
 const pathsbetweenUrl = 'http://www.pathwaycommons.org/sifgraph/v1/pathsbetween?directed=false&limit=1&';
 
 function edgeType(type) {
@@ -24,24 +23,29 @@ function edgeType(type) {
   }
 }
 
-function rawGetInteractionGraphFromPC(interactionIDs){
+function rawGetInteractionGraphFromPC( interactionIDs ){
   const geneIds = _.uniq(_.concat([], interactionIDs)); //convert sources to array
 
-  const url = neighborhoodUrl + qs.stringify( {source:geneIds} );
+  const params = {
+    source : geneIds,
+    pattern : ['CONTROLS_PHOSPHORYLATION_OF','IN_COMPLEX_WITH','CONTROLS_EXPRESSION_OF', 'INTERACTS_WITH']
+  };
+
+  const url = ( geneIds.length > 1 ? pathsbetweenUrl : neighborhoodUrl ) + qs.stringify( params );
   console.log(url);
 
-  return fetch(url, {header:{"Accept": "text/plain"}}).then( res => res.text()).then( res => {
-    //console.log(res);
+  return fetch(url)
+  .then( res => res.text() )
+  .then( res => {
     return {
-      network : parse(res, geneIds)
+      network: parse(res, geneIds)
     };
   }).catch( e => {
     logger.error(e);
     return 'ERROR : could not retrieve graph from PC';
   });
 
-
-/*
+  /*
   const params = {
     cmd : 'graph',
     source : geneIds,
@@ -59,7 +63,7 @@ function rawGetInteractionGraphFromPC(interactionIDs){
     logger.error(e);
     return 'ERROR : could not retrieve graph from PC';
   });
-*/
+  */
 }
 
 const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
@@ -72,24 +76,26 @@ const getInteractionGraphFromPC = cache(rawGetInteractionGraphFromPC, pcCache);
  * @param {String[]} Array of query Ids
  * @return {json} JSON of graph
  */
-function parse(data, queryIds){
+function parse( data, queryIds ){
   let network = {
     edges:[],
     nodes:[],
   };
-  let nodeMap=new Map(); //keeps track of nodes that have already been added
-  if(data){
+  let nodeMap = new Map(); //keeps track of nodes that have already been added
+  if( data ){
 
     const nodeMetadata = {};
-
-    console.log(data.split('\n')[0]);
-    data.split('\n').forEach(line => {
+    data.trim().split('\n').forEach( line => {
       const splitLine=line.split('\t');
-      const edgeMetadata = interactionMetadata(splitLine[6],splitLine[4]);
-      addInteraction([splitLine[0], splitLine[2]], splitLine[1], edgeMetadata, network, nodeMap, nodeMetadata, queryIds);
+      const nodeA = splitLine[0];
+      const nodeB = splitLine[2];
+      const edge = splitLine[1];
+      const mediatorIds = splitLine[4];
+
+      const edgeMetadata = interactionMetadata( mediatorIds );
+      addInteraction( [nodeA, nodeB], edge, edgeMetadata, network, nodeMap, nodeMetadata, queryIds );
     });
     return network;
-
 
     /*
     const dataSplit=data.split('\n\n');
@@ -99,37 +105,36 @@ function parse(data, queryIds){
 
     dataSplit[0].split('\n').slice(1).forEach(line => {
       const splitLine=line.split('\t');
-      const edgeMetadata = interactionMetadata(splitLine[6],splitLine[4]);
+      const edgeMetadata = interactionMetadata(splitLine[6], splitLine[4]);
       addInteraction([splitLine[0], splitLine[2]], splitLine[1], edgeMetadata, network, nodeMap, nodeMetadata, queryIds);
     });
     return network;
-      */
-
+    */
   }
   return {};
 }
 
-function interactionMetadata(mediatorIds, pubmedIds){
+function interactionMetadata( mediatorIds, pubmedIds ){
   let metadata = [['List',[]],['Detailed Views',[]]];//Format expected by format-content
   mediatorIds.split(';').forEach( link => {
-    const id=link.split('/')[4];
-    metadata[1][1].push(link.includes('reactome') ? ['Reactome',id]:['Pathway Commons',id]);
+    const id = link.split('/')[4];
+    metadata[1][1].push( link.includes('reactome') ? ['Reactome', id] : ['Pathway Commons', id] );
   });
-  if(pubmedIds){
-   pubmedIds.split(';').forEach(id=>metadata[0][1].push(['PubMed',id]));
+  if( pubmedIds ){
+   pubmedIds.split(';').forEach( id => metadata[0][1].push( ['PubMed',id] ) );
   }
  return metadata;
 }
 
-function addInteraction(nodes, edge, sources, network, nodeMap, nodeMetadata, interactionIDs){
-  const interaction= edgeType(edge);
-  nodes.forEach((node)=>{
-    if(!nodeMap.has(node)){
+function addInteraction( nodes, edge, sources, network, nodeMap, nodeMetadata, interactionIDs ){
+  const interaction = edgeType(edge);
+  nodes.forEach( node => {
+    if( !nodeMap.has(node) ){
       //const metadata=nodeMetadata.get(node);
-      nodeMap.set(node,true);
+      nodeMap.set( node, true );
       //const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');
 
-      network.nodes.push({data:{
+      network.nodes.push( { data: {
         class: "ball",
         id: node,
         label: node,
@@ -145,14 +150,14 @@ function addInteraction(nodes, edge, sources, network, nodeMap, nodeMetadata, in
     }
   });
 
-  network.edges.push({data: {
-    id: nodes[0]+'\t'+edge+'\t'+nodes[1] ,
-    label: nodes[0]+' '+edge.replace(/-/g,' ')+' '+nodes[1] ,
+  network.edges.push( { data: {
+    id: nodes[0] + '\t' + edge + '\t' + nodes[1] ,
+    label: nodes[0] + ' '+edge.replace(/-/g,' ') + ' ' + nodes[1] ,
     source: nodes[0],
     target: nodes[1],
     class: interaction,
-    parsedMetadata:sources
-  },classes:interaction});
+    parsedMetadata: sources
+  }, classes: interaction } );
 }
 
-module.exports = {getInteractionGraphFromPC};
+module.exports = { getInteractionGraphFromPC };

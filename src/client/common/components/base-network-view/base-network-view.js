@@ -72,12 +72,6 @@ class BaseNetworkView extends React.Component {
 
       const layout = cy.layout(initialLayoutOpts);
 
-      this.state.cySrv.loadPromise().then(() => {
-      //by default, display all nodes (p-value <= .05)
-      //match position on slider to that of default value
-      document.getElementById('enrichment-selection-slider').value = 0.05;
-      });
-
       layout.on('layoutstop', () => {
         cySrv.load(); // indicate loaded
       });

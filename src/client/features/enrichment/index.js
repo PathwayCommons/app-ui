@@ -94,7 +94,7 @@ class Enrichment extends React.Component {
   }
 
   handleInputs( inputs ) {
-    this.setState({ inputs, loaded: true, open: false });
+    this.setState({ inputs, loaded: true, open: false, activeMenu: 'closeMenu' });
   }
 
   handleUnrecognized( unrecognized ) {

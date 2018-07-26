@@ -53,7 +53,7 @@ const generateGraphInfo = (pathways, similarityCutoff = 0.375, jaccardOverlapWei
         { id: pathwayId },
         pathways[pathwayId],
         {'geneCount': geneCount },
-        {'geneSet': _.find(pathywayInfo, {pathwayId: pathwayId}).genes },
+        {'geneSet': _.find(pathywayInfo, {pathwayId: pathwayId}).genes }
       )
     });
   }

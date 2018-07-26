@@ -46,7 +46,7 @@ class EntityMetadata {
 
     this.data.set('Description', node.data('description'));
 
-    this.data.set('Intersection', node.data('intersection'));
+    this.data.set('Shared Genes', node.data('intersection'));
 
     this.data.set('Genes in Pathway', node.data('geneSet'));
 
@@ -95,11 +95,11 @@ class EntityMetadata {
   pathwayOverview(){
     return this.data.get('Pathway Overview') || '';
   }
-  intersection(){
-    return this.data.get('Intersection') || '';
+  sharedGenes(){
+    return this.data.get('Shared Genes') || '';
   }
-  intersectionCount(){
-    return this.data.get('Intersection').length || '';
+  sharedGenesCount(){
+    return this.data.get('Shared Genes').length || '';
   }
   genesInPathway(){
     return this.data.get('Genes in Pathway') || '';
@@ -210,10 +210,10 @@ class EntityMetaDataView extends React.Component {
     let showSynonyms = synonyms.length > 0;
     let showPubs = publications.length > 0;
     let showPathwayOverview = metadata.pathwayOverview() !== '';
-    let showIntersection = metadata.intersection() !== '';
+    let showSharedGenes = metadata.sharedGenes() !== '';
     let showGenesInPathway = metadata.genesInPathway() !== '';
 
-    let showBody = showStdName || showDispName || showSynonyms || showPubs || showPathwayOverview || showIntersection || showGenesInPathway;
+    let showBody = showStdName || showDispName || showSynonyms || showPubs || showPathwayOverview || showSharedGenes || showGenesInPathway;
     let showLinks = metadata.databaseLinks().length > 0;
 
     return h('div.metadata-tooltip', [
@@ -251,11 +251,11 @@ class EntityMetaDataView extends React.Component {
             ]),
             h('div.metadata-field-value', metadata.pathwayOverview())
           ]) : null,
-          showIntersection ? h('div.metadata-tooltip-section', [
+          showSharedGenes ? h('div.metadata-tooltip-section', [
             h('div.metadata-field-name', [
-              'Genes Shared With Entered List (' + metadata.intersectionCount() + ')'
+              'Genes Shared With Entered List (' + metadata.sharedGenesCount() + ')'
             ]),
-            h('div.metadata-field-value', _.join(metadata.intersection().sort(), ", "))
+            h('div.metadata-field-value', _.join(metadata.sharedGenes().sort(), ", "))
           ]) : null,
           showGenesInPathway? h('div.metadata-tooltip-section', [
             h('div.metadata-field-name', [

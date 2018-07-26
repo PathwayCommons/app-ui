@@ -30,7 +30,7 @@ function rawGetInteractionGraphFromPC( interactionIDs ){
     directed: false,
     limit: 1,
     source : geneIds,
-    pattern : ['CONTROLS_PHOSPHORYLATION_OF','IN_COMPLEX_WITH','CONTROLS_EXPRESSION_OF', 'INTERACTS_WITH']
+    pattern : [ 'CONTROLS_PHOSPHORYLATION_OF','IN_COMPLEX_WITH','CONTROLS_EXPRESSION_OF', 'INTERACTS_WITH' ]
   };
 
   const url = ( geneIds.length > 1 ? pathsbetweenUrl : neighborhoodUrl ) + qs.stringify( params );
@@ -68,8 +68,6 @@ function parse( data, queryIds ){
     data.trim().split('\n').forEach( line => {
       const splitLine=line.split('\t');
       const nodes = [splitLine[0], splitLine[2]];
-      //const nodeA = splitLine[0];
-      //const nodeB = splitLine[2];
       const edge = splitLine[1];
       const mediatorIds = splitLine[4];
 

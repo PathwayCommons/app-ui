@@ -78,7 +78,7 @@ class Paint extends React.Component {
     let query = queryString.parse(this.props.location.search);
     let searchParam = query.q;
     let enrichmentsUri = query.uri;
-    let { cySrv, expressionTable, curPathway  } = this.state;
+    let { cySrv, expressionTable  } = this.state;
     cySrv.mount(this.network);
     cySrv.load();
 

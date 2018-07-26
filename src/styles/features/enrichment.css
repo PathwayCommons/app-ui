@@ -36,12 +36,11 @@
 }
 
 .unrecognized-token-container{
-  @extend %flex-center;
-
   min-width: 200px;
   position: absolute;
   top: 100%;
   left: -1px;
+  z-index: 1;
 }
 
 .unrecognized-tokens-feedback{

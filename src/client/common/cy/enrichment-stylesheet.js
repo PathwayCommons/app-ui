@@ -32,7 +32,7 @@ function getNodeSize( geneCount ){
 }
 
 function mapGeneCountToSize( geneCount ){
-  return ( 1*(geneCount - 5) + 30 );
+  return ((.5 * (geneCount - 5)) + 30 );
 }
 
 const enrichmentStylesheet=cytoscape.stylesheet()

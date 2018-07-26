@@ -1,7 +1,7 @@
 
 const React = require('react');
 const h = require('react-hyperscript');
-const classNames = require('classNames');
+const classNames = require('classnames');
 
 const Tooltip = require('../../common/components/tooltip');
 
@@ -10,10 +10,10 @@ const Tooltip = require('../../common/components/tooltip');
 // props:
 //  - controller: parent component that implements changeMenu
 //  - activeMenu: a string representing which menu to open
-//  - children: each menu should be a child for this sidebar 
-//              and contain a key that can be used to compare 
+//  - children: each menu should be a child for this sidebar
+//              and contain a key that can be used to compare
 //              against the current menu
-//  
+//
 class PathwaysSidebar extends React.Component {
   render(){
     let { controller, activeMenu } = this.props;

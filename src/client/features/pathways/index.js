@@ -3,7 +3,7 @@ const h = require('react-hyperscript');
 const _ = require('lodash');
 const queryString = require('query-string');
 const Loader = require('react-loader');
-const classNames = require('classNames');
+const classNames = require('classnames');
 
 const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services/');

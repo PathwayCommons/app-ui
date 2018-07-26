@@ -1,7 +1,7 @@
 
 const React = require('react');
 const h = require('react-hyperscript');
-const classNames = require('classNames');
+const classNames = require('classnames');
 
 const Tooltip = require('../../common/components/tooltip');
 
@@ -77,7 +77,7 @@ class PathwaysToolbar extends React.Component {
           ]) : null
         ])
       ])
-    ]);    
+    ]);
   }
 }
 

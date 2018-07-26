@@ -28,14 +28,6 @@ class ExpressionTableView extends React.Component {
     };
   }
 
-  analysisFns(){
-    return {
-      'mean': _.mean,
-      'max': _.max,
-      'min': _.min
-    };
-  }
-
   handleSortChange(newSort){
     let { sortBy, sortType } = this.state;
 
@@ -74,48 +66,36 @@ class ExpressionTableView extends React.Component {
   }
 
   render(){
-    let { controller, expressionTable, cySrv, paintMenuCtrls} = this.props;
-    let { exprClass, exprFnName } = paintMenuCtrls;
-
-    let functionSelector = h('select.paint-select', {
-        value: exprFnName,
-        onChange: e => controller.handlePaintCtrlChange({
-          exprFnName: e.target.value,
-          exprFn: this.analysisFns()[e.target.value]
-        })
-      },
-      Object.entries(this.analysisFns()).map(entry => h('option', {value: entry[0]}, entry[0]))
-    );
-
-    let classSelector = h('div', [
-      'Compare: ',
-      h('select.paint-select', {
-        value: exprClass,
-        onChange: e => controller.handlePaintCtrlChange({exprClass: e.target.value})
-      },
-      expressionTable.classes.map(cls => h('option', { value: cls}, cls))
-      ),
-      ` vs ${_.difference(expressionTable.classes, [exprClass])}`
-    ]);
+    let { sortBy, sortType } = this.state;
 
     let foldChangeExpressions = this.generateFoldChangeList();
 
-    return h('div.expression-table-view', [
-      functionSelector,
-      classSelector,
-      h('div.expression-table-header', [
-        h('div.expression-table-header-column', {onClick: () => this.handleSortChange('geneName') }, 'Gene'),
-        h('div.expression-table-header-column', {onClick: () => this.handleSortChange('foldChange') }, 'Expression Ratio'),
+    return h('table.expression-table-view', [
+      h('thead', [
+        h('tr.expression-table-header', [
+          h('th.expression-table-header-column', {onClick: () => this.handleSortChange('geneName') }, [
+            'Gene',
+            sortBy === 'geneName' ? h('i.material-icons', sortType === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null
+          ]),
+          h('th.expression-table-header-column', {onClick: () => this.handleSortChange('foldChange') }, [
+            'Expression Ratio',
+            sortBy === 'foldChange' ? h('i.material-icons', sortType === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null
+          ])
+        ])
       ]),
-      h('div.expression-search-filter', [
-        h('input', { placeholder: 'Filter by gene', onChange: e => this.handleSearchChange(e.target.value) })
-      ]),
-      h('div.expression-list', foldChangeExpressions.map( e => {
-        return h('div.expression-entry', [
-          h('div.gene', e.geneName),
-          h('div.fold-change', e.foldChange)
-        ]);
-      }))
+      h('tbody.expression-list', [
+        h('tr.expression-entry', [
+          h('td.expression-filter', [
+            h('input', { placeholder: 'Filter by gene', onChange: e => this.handleSearchChange(e.target.value) }),
+          ])
+        ]),
+        foldChangeExpressions.map( e => {
+          return h('tr.expression-entry', [
+            h('td.expression-gene', e.geneName),
+            h('td.expression-fold-change', e.foldChange)
+          ]);
+        })
+      ])
     ]);
   }
 }
@@ -139,19 +119,58 @@ class PathwayResultsListView extends React.Component {
 
 class PaintMenu extends React.Component {
 
+  analysisFns(){
+    return {
+      'mean': _.mean,
+      'max': _.max,
+      'min': _.min
+    };
+  }
+
   render() {
-    let { cySrv, controller, expressionTable, paintMenuCtrls, curPathway, pathways } = this.props;
-    let { exprClass, exprFn } = paintMenuCtrls;
+    let { cySrv, controller, expressionTable, paintMenuCtrls, curPathway, pathways, selectedIndex } = this.props;
+    let { exprClass, exprFn, exprFnName } = paintMenuCtrls;
     let { min, max } = expressionTable.computeFoldChangeRange(exprClass, exprFn);
 
 
-    return h(Tabs, [
+      let functionSelector = h('div', [
+        'Class: ',
+        h('select.paint-select', { value: exprFnName,
+          onChange: e => controller.handlePaintCtrlChange({
+            exprFnName: e.target.value,
+            exprFn: this.analysisFns()[e.target.value]
+          })
+        },
+        Object.entries(this.analysisFns()).map(entry => h('option', {value: entry[0]}, entry[0]))
+      )
+      ]);
+
+    let classSelector = h('div', [
+      'Compare: ',
+      h('select.paint-select', {
+        value: exprClass,
+        onChange: e => controller.handlePaintCtrlChange({exprClass: e.target.value})
+      },
+      expressionTable.classes.map(cls => h('option', { value: cls}, cls))
+      ),
+      ` vs ${_.difference(expressionTable.classes, [exprClass])}`
+    ]);
+
+
+    return h(Tabs, { selectedIndex, onSelect: index => controller.handlePaintMenuTabChange(index) }, [
       h(TabList, [
-        h(Tab, 'Expression Data'),
-        h(Tab, 'Select Pathway')
+        h(Tab, {
+          className: 'paint-drawer-tab',
+          selectedClassName: 'paint-drawer-tab-selected',
+         }, 'Expression Data'),
+        h(Tab, { className: 'paint-drawer-tab', selectedClassName: 'paint-drawer-tab-selected' }, 'Select Pathway')
       ]),
       h(TabPanel, [
         h(ExpressionColourLegend, { min, max }),
+        h('div.paint-menu-controls', [
+          functionSelector,
+          classSelector
+        ]),
         h(ExpressionTableView, { cySrv, expressionTable, controller, paintMenuCtrls} ),
       ]),
       h(TabPanel, [

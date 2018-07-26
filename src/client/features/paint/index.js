@@ -65,6 +65,7 @@ class Paint extends React.Component {
         exprFnName: 'mean',
         exprFn: _.mean
       },
+      activeTab: 0,
       loading: true
     };
 
@@ -93,9 +94,8 @@ class Paint extends React.Component {
 
       // see if there is a pathway that has the same title as the search param
       let bestResult = pathways.find( pathway => pathway.name() === searchParam );
-
       if( bestResult == null ){
-        bestResult = pathways.sort((p0, p1) => geneIntersection(p1, expressionTable).length > geneIntersection(p0, expressionTable))[0];
+        bestResult = pathways[0];
       }
 
       if( bestResult == null ){
@@ -106,6 +106,8 @@ class Paint extends React.Component {
     };
 
     getEnrichments().then( () => getPathwaysRelevantTo( searchParam, expressionTable ) ).then( pathways => {
+
+      pathways.sort((p0, p1) => geneIntersection(p1, expressionTable).length - geneIntersection(p0, expressionTable).length);
       this.setState({
         paintMenuCtrls: _.assign({}, this.state.paintMenuCtrls, { exprClass: expressionTable.classes[0] }),
         pathways: pathways,
@@ -114,22 +116,25 @@ class Paint extends React.Component {
   }
 
   loadPathway(pathway){
-    let { cySrv, paintMenuCtrls, expressionTable, curPathway } = this.state;
+    let { cySrv, paintMenuCtrls, expressionTable } = this.state;
     let { exprClass, exprFn } = paintMenuCtrls;
     let cy = cySrv.get();
-    let pathwayJson = pathway.raw;
 
-    curPathway.load( pathwayJson );
-    expressionTable.loadPathway( curPathway.cyJson() );
-    cy.remove('*');
-    cy.add( curPathway.cyJson() );
+    this.setState({
+      curPathway: pathway,
+      loading: true
+    }, () => {
+      expressionTable.loadPathway( pathway.cyJson() );
+      cy.remove('*');
+      cy.add( pathway.cyJson() );
 
-    cy.layout(_.assign({}, PATHWAYS_LAYOUT_OPTS, {
-      stop: () => {
-        applyExpressionData(cy, expressionTable, exprClass, exprFn);
-        this.setState({loading: false });
-      }
-    })).run();
+      cy.layout(_.assign({}, PATHWAYS_LAYOUT_OPTS, {
+        stop: () => {
+          applyExpressionData(cy, expressionTable, exprClass, exprFn);
+          this.setState({loading: false });
+        }
+      })).run();
+    });
   }
 
   changeMenu(menu){
@@ -152,12 +157,18 @@ class Paint extends React.Component {
     });
   }
 
+  handlePaintMenuTabChange(newTab){
+    this.setState({
+      activeTab: newTab
+    });
+  }
+
   componentWillUnmount(){
     this.state.cySrv.destroy();
   }
 
   render() {
-    let { loading, expressionTable, curPathway, pathways, cySrv, activeMenu, paintMenuCtrls } = this.state;
+    let { loading, expressionTable, curPathway, pathways, cySrv, activeMenu, paintMenuCtrls, activeTab } = this.state;
     let network = h('div.network', { className: classNames({
       'network-loading': loading,
       'network-sidebar-open': activeMenu !== 'closeMenu'
@@ -189,6 +200,7 @@ class Paint extends React.Component {
         }),
         h(PaintMenu, {
           key: 'paintMenu',
+          selectedIndex: activeTab,
           controller: this,
           cySrv,
           curPathway,

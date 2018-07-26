@@ -124,7 +124,7 @@ enrichmentRouter.post('/validation', (req, res) => {
 */
 // expose a rest endpoint for enrichment service
 enrichmentRouter.post('/analysis', (req, res) => {
-  const genes = req.body.genes;
+  const genes = req.body.genes.sort();
   const tmpOptions = {
     minSetSize: req.body.minSetSize,
     maxSetSize: req.body.maxSetSize,

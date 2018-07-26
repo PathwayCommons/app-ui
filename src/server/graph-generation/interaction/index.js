@@ -65,13 +65,14 @@ function parse( data, queryIds ){
     const nodeMetadata = null; //TODO: new service does not have node metadata
     data.trim().split('\n').forEach( line => {
       const splitLine=line.split('\t');
-      const nodeA = splitLine[0];
-      const nodeB = splitLine[2];
+      const nodes = [splitLine[0], splitLine[2]];
+      //const nodeA = splitLine[0];
+      //const nodeB = splitLine[2];
       const edge = splitLine[1];
       const mediatorIds = splitLine[4];
 
       const edgeMetadata = interactionMetadata( mediatorIds );
-      addInteraction( [nodeA, nodeB], edge, edgeMetadata, network, nodeMap, nodeMetadata, queryIds );
+      addInteraction( nodes, edge, edgeMetadata, network, nodeMap, nodeMetadata, queryIds );
     });
     return network;
   }

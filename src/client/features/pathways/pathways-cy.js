@@ -102,48 +102,20 @@ let bindCyEvents = cy => {
   const nodeHoverMouseOver = _.debounce(evt => {
     const node = evt.target;
     const ecAPI = cy.expandCollapse('get');
-    let elesToHighlight = new Set();
+    let elesToHighlight = cy.collection();
 
     //If node has children and is expanded, do not highlight
     if (node.isParent() && ecAPI.isCollapsible(node)) { return; }
 
     //Create a list of the hovered node & its neighbourhood
     node.neighborhood().nodes().union(node).forEach(node => {
-      node.ancestors().forEach(ancestor => elesToHighlight.add(ancestor));
-      node.descendants().forEach(descendant => elesToHighlight.add(descendant));
-      elesToHighlight.add(node);
+      elesToHighlight.merge(node.ancestors());
+      elesToHighlight.merge(node.descendants());
+      elesToHighlight.merge(node);
     });
-    node.neighborhood().edges().forEach(edge => elesToHighlight.add(edge));
+    elesToHighlight.merge(node.neighborhood().edges());
 
     //Add highlighted class to node & its neighbourhood, unhighlighted to everything else
-    //batch for improved perf
-    cy.batch( () => {
-      cy.elements().addClass('unhighlighted');
-      elesToHighlight.forEach(ele => {
-        ele.removeClass('unhighlighted');
-        ele.addClass('highlighted');
-      });
-    });
-
-  },200,{leading:false,trailing:true});
-
-    /**
-   * @description Apply style modifications after 200ms delay on `mouseover` for edges.
-   * Currently puts opacity of hovered edge & neighbourhood to 1, everything else to 0.3
-   */
-  const edgeHoverMouseOver = _.debounce(evt => {
-    const edge = evt.target;
-    let elesToHighlight = new Set();
-    
-    //Create a list of the hovered edge & its neighbourhood
-    elesToHighlight.add(edge);
-    edge.source().union(edge.target()).forEach((node) => {
-      node.ancestors().forEach(ancestor => elesToHighlight.add(ancestor));
-      node.descendants().forEach(descendant => elesToHighlight.add(descendant));
-      elesToHighlight.add(node);
-    });
-
-    //Add highlighted class to edge & its neighbourhood, unhighlighted to everything else
     //batch for improved perf
     cy.batch( () => {
       cy.elements().addClass('unhighlighted');
@@ -209,15 +181,6 @@ let bindCyEvents = cy => {
   cy.on('mouseover', 'node[class!="compartment"]',nodeHoverMouseOver);
   cy.on('mouseout', 'node[class!="compartment"]', () => {
     nodeHoverMouseOver.cancel();
-    cy.batch( () => {
-      cy.elements().removeClass('highlighted unhighlighted');
-    });
-  });
-
-  //call style-applying and style-removing functions on 'mouseover' and 'mouseout' for edges
-  cy.on('mouseover', 'edge',edgeHoverMouseOver);
-  cy.on('mouseout', 'edge', () => {
-    edgeHoverMouseOver.cancel();
     cy.batch( () => {
       cy.elements().removeClass('highlighted unhighlighted');
     });

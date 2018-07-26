@@ -106,8 +106,9 @@ class PathwayResultsListView extends React.Component {
     let { pathways, curPathway, expressionTable, controller } = this.props;
     let pathwayResults = pathways.map(pathway => {
       return h('div.paint-search-result', { className: classNames({'paint-search-result-selected': curPathway.uri() === pathway.uri()}), onClick: () => controller.loadPathway(pathway) }, [
-        h('div', pathway.name()),
-        h('div', `Genes matched: ${geneIntersection(pathway, expressionTable).length}`)
+        h('h3', pathway.name()),
+        h('p', pathway.datasource()),
+        h('p', `Genes matched: ${geneIntersection(pathway, expressionTable).length}`)
       ]);
     });
 

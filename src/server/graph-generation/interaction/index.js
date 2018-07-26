@@ -6,8 +6,8 @@ const { PC_CACHE_MAX_SIZE } = require('../../../config');
 const qs = require('query-string');
 const fetch = require('node-fetch');
 
-const neighborhoodUrl = 'http://www.pathwaycommons.org/sifgraph/v1/neighborhood?direction=BOTHSTREAM&limit=1&';
-const pathsbetweenUrl = 'http://www.pathwaycommons.org/sifgraph/v1/pathsbetween?directed=false&limit=1&';
+const neighborhoodUrl = 'http://www.pathwaycommons.org/sifgraph/v1/neighborhood?';
+const pathsbetweenUrl = 'http://www.pathwaycommons.org/sifgraph/v1/pathsbetween?';
 
 function edgeType(type) {
   switch(type){
@@ -27,6 +27,8 @@ function rawGetInteractionGraphFromPC( interactionIDs ){
   const geneIds = _.uniq(_.concat([], interactionIDs)); //convert sources to array
 
   const params = {
+    directed: false,
+    limit: 1,
     source : geneIds,
     pattern : ['CONTROLS_PHOSPHORYLATION_OF','IN_COMPLEX_WITH','CONTROLS_EXPRESSION_OF', 'INTERACTS_WITH']
   };

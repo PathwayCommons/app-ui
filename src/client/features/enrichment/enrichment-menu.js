@@ -5,13 +5,13 @@ const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
 class EnrichmentMenu extends React.Component {
 
   /**
-   *  @description Hides nodes based on their p_value, determined by on-screen slider
+   *  @description Hides nodes based on adjusted p_value, determined by on-screen slider
    */
   sliderUpdate(){
     const cy = this.props.cySrv.get();
 
-    //get the value from the slider
-    let sliderVal = document.getElementById('enrichment-selection-slider').value;
+    //get value from slider
+    let sliderVal = document.getElementById('enrichment-p_value-slider').value;
 
     //compare p_values and hide if outside of chosen threshold
     cy.nodes().forEach(node => {
@@ -26,8 +26,8 @@ class EnrichmentMenu extends React.Component {
 
     const slider = [
       //set min = 0.0001 to prevent all nodes from being hidden which will occur if min = 0
-      h("input",{type:"range",id:'enrichment-selection-slider',min:0.0001,max:0.05,step:0.0001,defaultValue:0.05,
-      onInput:() => this.sliderUpdate() }),
+      h("input",{type:"range",id:'enrichment-p_value-slider',min:0.0001,max:0.05,step:0.0001,defaultValue:0.05,
+      onInput:() => this.sliderUpdate() })
     ];
 
     //when rendered all nodes show

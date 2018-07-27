@@ -94,7 +94,7 @@ class Enrichment extends React.Component {
   }
 
   handleInputs( inputs ) {
-    this.setState({ inputs, loaded: true, open: false, activeMenu: 'closeMenu' });
+    this.setState({ inputs, loaded: true, activeMenu: 'closeMenu', open: false });
   }
 
   handleUnrecognized( unrecognized ) {
@@ -132,7 +132,7 @@ class Enrichment extends React.Component {
   }
 
   render() {
-    let { cySrv, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading, closeToolBar, loaded, unrecognized, activeMenu, open } = this.state;
+    let { cySrv, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading, closeToolBar, loaded, activeMenu, open, unrecognized } = this.state;
 
     let retrieveTokenInput = () => h(TokenInput,{
       inputs: this.state.inputs,

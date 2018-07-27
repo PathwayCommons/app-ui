@@ -36,8 +36,15 @@ function rawGetInteractionGraphFromPC(interactionIDs){
   return pc.query(params).then(res => {
 
     let network = parse(res,geneIds);
-    let networkWithMetric = addMetric(network);
-    let filteredNetwork = filterNetwork(networkWithMetric);
+
+    var start = new Date().getTime();
+    console.log("Start Filtering");
+
+    let filteredNetwork = addMetricandFilter(network);
+
+    var end = new Date().getTime();
+    var time = end - start;
+    console.log('Execution time: ' + time);
 
     return {network: filteredNetwork};
   }).catch((e)=>{
@@ -75,52 +82,45 @@ function parse(data, queryIds){
   return {};
 }
 
-/**
- * 
- * @param {*} network A Javascript Object representing the nodes & edges in a network
- * @returns A graph where nodes can now be sorted by `metric`, most important nodes have largest value
- */
-function addMetric(network) {
-
-  //create dummy cytoscape object
+function addMetricandFilter(network){
+  //establish variables
   const cy = cytoscape({headless:true,container:undefined,elements:network});
   const nodes = cy.nodes();
   const bc = cy.$().bc();
 
-  //calculate betweenness centrality value for each node, store it as `metric`
+  //add degree metric to each node
   nodes.forEach( node => {
-    let bcVal = bc.betweenness(node);
-    node.data('metric', bcVal);
+    node.data('metric',node.degree());
   });
 
-  cy.destroy();
-
-  return network;    
-}
-
-/**
- * @param {*} network A network containing a metric to sort nodes
- * @returns A network only containing the 50 nodes with the largest `metric` value
- */
-function filterNetwork(network){
-
-  const cy = cytoscape({headless:true,container:undefined,elements:network});
-  const nodes = cy.nodes();
-
-  //sort by `metric`
+  //sort nodes by degree
   let sortedNodes = nodes.sort( (a,b) => {
     return b.metric - a.metric; 
   });
-  //get the 50 nodes with largest `metric`
-  let filteredNodes = sortedNodes.slice(0,50);
+
+  //keep the 100 nodes with the largest degree
+  let filteredNodes = sortedNodes.slice(0,100);
   cy.remove(cy.nodes().difference(filteredNodes));
-  const returnNetwork = cy.json().elements;
 
+  //replace degree with betweenness centrality
+  nodes.forEach( node => {
+    node.data('metric',bc.betweenness(node));
+  });
+
+  //sort nodes by betweenness centrality
+  sortedNodes = nodes.sort( (a,b) => {
+    return b.metric - a.metric; 
+  });
+
+  //keep 50 nodes with largest betweenness centrality
+  filteredNodes = sortedNodes.slice(0,50);
+  cy.remove(cy.nodes().difference(filteredNodes));
+
+  //return filtered network & destroy cy
+  const filteredNetwork = cy.json().elements;
   cy.destroy();
-
-  return returnNetwork;
+  return filteredNetwork;
 }
-
 
 function interactionMetadata(mediatorIds, pubmedIds){
   let metadata = [['List',[]],['Detailed Views',[]]];//Format expected by format-content

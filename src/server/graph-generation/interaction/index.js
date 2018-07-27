@@ -82,10 +82,10 @@ function parse(data, queryIds){
  * The remaining 100 nodes are assigned a `betweenness centrality (BC)` metric, and the network is filtered down to the 50 nodes with largest BC.
  */
 function addMetricandFilter(network){
+  
   //establish variables
   const cy = cytoscape({headless:true,container:undefined,elements:network});
   const nodes = cy.nodes();
-  const bc = cy.$().bc();
 
   //add degree metric to each node
   nodes.forEach( node => {
@@ -96,23 +96,8 @@ function addMetricandFilter(network){
   let sortedNodes = nodes.sort( (a,b) => {
     return b.metric - a.metric; 
   });
-
   //keep the 100 nodes with the largest degree
-  let filteredNodes = sortedNodes.slice(0,100);
-  cy.remove(cy.nodes().difference(filteredNodes));
-
-  //replace degree with betweenness centrality
-  nodes.forEach( node => {
-    node.data('metric',bc.betweenness(node));
-  });
-
-  //sort nodes by betweenness centrality
-  sortedNodes = nodes.sort( (a,b) => {
-    return b.metric - a.metric; 
-  });
-
-  //keep 50 nodes with largest betweenness centrality
-  filteredNodes = sortedNodes.slice(0,50);
+  let filteredNodes = sortedNodes.slice(0,50);
   cy.remove(cy.nodes().difference(filteredNodes));
 
   //return filtered network & destroy cy

@@ -18,7 +18,6 @@ class EnrichmentMenu extends React.Component {
               selectedClassName: 'enrichment-drawer-tab-selected'
               }, 'FAQ')
         ])
-
       ]),
       h(TabPanel, [
         h('h4', 'Significance'),
@@ -42,9 +41,9 @@ class EnrichmentMenu extends React.Component {
         h('h4', `What kinds of inputs are accepted?`),
         h('p', `This app will recognize:`),
         h('p', [
-          h('li', `HUGO Gene Nomenclature (HGNC) symbols (e.g. 'TP53') and IDs (e.g. 'HGNC:11998')  `),
-          h('li', `UniProt protein accessions (e.g. 'P04637')  `),
-          h('li', `NCBI Gene gene IDs (e.g. '7157') `),
+          h('li.gene-identifier-list', `HUGO Gene Nomenclature (HGNC) symbols (e.g. 'TP53') and IDs (e.g. 'HGNC:11998')`),
+          h('li.gene-identifier-list', `UniProt protein accessions (e.g. 'P04637')`),
+          h('li.gene-identifier-list', `NCBI Gene gene IDs (e.g. '7157)`),
         ]),
 
         h('h4', `What do the elements of the network represent?`),

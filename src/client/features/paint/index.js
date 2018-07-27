@@ -17,6 +17,9 @@ const PaintMenu = require('./menus/paint-menu');
 const PathwaysSidebar = require('./pathways-sidebar');
 const PathwaysToolbar = require('./pathways-toolbar');
 
+const demoExpressions = require('./demo-expressions.json');
+const demoPathways = require('./demo-pathway-results.json');
+
 const { ExpressionTable, applyExpressionData, geneIntersection } = require('./expression-table');
 
 const { stylesheet, bindCyEvents, PATHWAYS_LAYOUT_OPTS } =  require('./cy');
@@ -66,6 +69,7 @@ class Paint extends React.Component {
         exprFn: _.mean
       },
       activeTab: 0,
+      invalidEnrichments: false,
       loading: true
     };
 
@@ -74,13 +78,35 @@ class Paint extends React.Component {
     }
   }
 
+  loadPaintDemoData(){
+    let { expressionTable, paintMenuCtrls } = this.state;
+    let pathways = demoPathways.map( json => {
+      let p = new Pathway();
+      p.load( json );
+      return p;
+    });
+    
+    expressionTable.load( demoExpressions );
+
+    this.setState({
+      paintMenuCtrls: _.assign({}, paintMenuCtrls, { exprClass: expressionTable.classes[0] }),
+      pathways
+    }, () => this.loadPathway(pathways[0]));
+  }
+
   componentDidMount(){
     let query = queryString.parse(this.props.location.search);
     let searchParam = query.q;
     let enrichmentsUri = query.uri;
-    let { cySrv, expressionTable  } = this.state;
+    let { cySrv, expressionTable, paintMenuCtrls  } = this.state;
     cySrv.mount(this.network);
     cySrv.load();
+
+    // if the user just comes into the app without enrichments, load the demo data
+    if( enrichmentsUri == null ){
+      this.loadPaintDemoData();
+      return;
+    }
 
     let getEnrichments = () => {
       return fetch(enrichmentsUri).then( res => res.json() ).then( json =>  {
@@ -107,9 +133,16 @@ class Paint extends React.Component {
 
     getEnrichments().then( () => getPathwaysRelevantTo( searchParam, expressionTable ) ).then( pathways => {
 
+      if( expressionTable.classes == null ){
+        this.setState({
+          invalidEnrichments: true
+        });
+        return;
+      }
+
       pathways.sort((p0, p1) => geneIntersection(p1, expressionTable).length - geneIntersection(p0, expressionTable).length);
       this.setState({
-        paintMenuCtrls: _.assign({}, this.state.paintMenuCtrls, { exprClass: expressionTable.classes[0] }),
+        paintMenuCtrls: _.assign({}, paintMenuCtrls, { exprClass: expressionTable.classes[0] }),
         pathways: pathways,
       }, () => this.loadPathway(findBestPathway(pathways)));
     });
@@ -168,7 +201,12 @@ class Paint extends React.Component {
   }
 
   render() {
-    let { loading, expressionTable, curPathway, pathways, cySrv, activeMenu, paintMenuCtrls, activeTab } = this.state;
+    let { invalidEnrichments, loading, expressionTable, curPathway, pathways, cySrv, activeMenu, paintMenuCtrls, activeTab } = this.state;
+    
+    if( invalidEnrichments ){
+      return h('div', 'The painter app requires enrichments that have an associated class file');
+    }
+
     let network = h('div.network', { className: classNames({
       'network-loading': loading,
       'network-sidebar-open': activeMenu !== 'closeMenu'

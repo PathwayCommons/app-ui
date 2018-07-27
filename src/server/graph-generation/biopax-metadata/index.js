@@ -221,7 +221,8 @@ const getGeneSymbolsForGenericNodes = nodes => {
 
   nodes.forEach(node => {
     const genericPE = getByNodeId(node.data.id, genericPhysicalEntityMap);
-    const syns = _.get(genericPE, 'synonyms', []);
+    let syns = _.get(genericPE, 'synonyms', []);
+    if( syns == null) { syns = []; }
     nodeGeneSynonyms[node.data.id] = syns;
   });
 

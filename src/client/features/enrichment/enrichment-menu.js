@@ -54,7 +54,7 @@ class EnrichmentMenu extends React.Component {
 
         h('h4', `How does the app identify pathways?`),
         h('p',[
-          h('span',`Briefly, the input gene list is compared to genes in each candidate pathway and a statistical score is calculated (adjusted p-value).
+          h('span',`The input gene list is compared to genes in each candidate pathway and a statistical score is calculated (adjusted p-value).
             Pathways with an adjusted p-value less than a threshold (0.05) are deemed 'enriched' for genes in the input list and are displayed in the network.
             This analysis is performed by gProfiler's g:GOst service (rev 1741 2017-10-19). Please refer to their `),
           h('a', {href: 'http://whatever.com'}, 'documentation'),

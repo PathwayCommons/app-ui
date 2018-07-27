@@ -36,15 +36,7 @@ function rawGetInteractionGraphFromPC(interactionIDs){
   return pc.query(params).then(res => {
 
     let network = parse(res,geneIds);
-
-    var start = new Date().getTime();
-    console.log("Start Filtering");
-
     let filteredNetwork = addMetricandFilter(network);
-
-    var end = new Date().getTime();
-    var time = end - start;
-    console.log('Execution time: ' + time);
 
     return {network: filteredNetwork};
   }).catch((e)=>{
@@ -82,6 +74,13 @@ function parse(data, queryIds){
   return {};
 }
 
+/**
+ * 
+ * @param {*} network JSON containing nodes and edges that represent a network
+ * @returns A network JSON with 50 nodes, sorted based on centrality & degree
+ * @description Each node in the network is assigned a `degree` metric, and the network is filtered down to the 100 nodes with largest degree.
+ * The remaining 100 nodes are assigned a `betweenness centrality (BC)` metric, and the network is filtered down to the 50 nodes with largest BC.
+ */
 function addMetricandFilter(network){
   //establish variables
   const cy = cytoscape({headless:true,container:undefined,elements:network});

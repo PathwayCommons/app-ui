@@ -73,11 +73,11 @@ class ExpressionTableView extends React.Component {
     return h('table.expression-table-view', [
       h('thead', [
         h('tr.expression-table-header', [
-          h('th.expression-table-header-column', {onClick: () => this.handleSortChange('geneName') }, [
+          h('th.expression-table-header-column', { onClick: () => this.handleSortChange('geneName') }, [
             'Gene',
             sortBy === 'geneName' ? h('i.material-icons', sortType === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null
           ]),
-          h('th.expression-table-header-column', {onClick: () => this.handleSortChange('foldChange') }, [
+          h('th.expression-table-header-column', { onClick: () => this.handleSortChange('foldChange') }, [
             'Expression Ratio',
             sortBy === 'foldChange' ? h('i.material-icons', sortType === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null
           ])
@@ -90,7 +90,7 @@ class ExpressionTableView extends React.Component {
           ])
         ]),
         foldChangeExpressions.map( e => {
-          return h('tr.expression-entry', [
+          return h('tr.expression-entry', { key: e.geneName }, [
             h('td.expression-gene', e.geneName),
             h('td.expression-fold-change', e.foldChange)
           ]);

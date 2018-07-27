@@ -17,7 +17,7 @@ class EnrichmentMenu extends React.Component {
 
     const unrecognizedTokens = _.isEmpty(unrecognized) ? "" :
     [
-      h('h3', 'Unrecognized Inputs (' + unrecognized.length + ')'),
+      h('h3', 'Unrecognized Genes (' + unrecognized.length + ')'),
       h('div', unrecognized.join(", "))
     ];
 

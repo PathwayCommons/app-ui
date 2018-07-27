@@ -36,6 +36,7 @@ class BaseNetworkView extends React.Component {
         nodeSearchValue: '',
         open: false,
         networkLoading: true,
+        unrecognized: props.unrecognized,
         updateBaseViewState: (nextState, next) => this.setState(nextState, next ? next() : null)
       }, props);
     this.state.open = this.state.activeMenu !== 'closeMenu';
@@ -44,8 +45,11 @@ class BaseNetworkView extends React.Component {
   componentWillReceiveProps(nextProps){//needed to updata metadata for interactions
     this.setState({
       networkMetadata: nextProps.networkMetadata,
-      filters:nextProps.filters,
-      networkJSON: nextProps.networkJSON
+      filters: nextProps.filters,
+      networkJSON: nextProps.networkJSON,
+      activeMenu: nextProps.activeMenu,
+      open: nextProps.open,
+      unrecognized: nextProps.unrecognized
     });
   }
 
@@ -257,7 +261,18 @@ class BaseNetworkView extends React.Component {
           style: { width: menuWidth ? `${menuWidth}%` : '' }
         },
         [
-          h('div.sidebar-close', [
+          h('div.graph-cy', {
+            ref: dom => this.graphDOM = dom
+          })
+        ]
+      ),
+      h('div', {
+        className: classNames('sidebar-menu',{'sidebar-menu-open': this.state.open }),
+        style: { width: menuWidth?`${menuWidth}%`:'' }
+      }, [
+          h('div', {
+            className: classNames('sidebar-close-button-container', { 'sidebar-close-button-container-open': this.state.open })
+          }, [
             h(Tooltip, { description: 'Close the sidebar' }, [
               h('div.icon-button', {
                 key: 'close',

@@ -73,6 +73,7 @@ let bindCyEvents = cy => {
   cy.on('pan', () => hideTooltips());
   cy.on('zoom', () => hideTooltips());
   cy.on('layoutstart', () => hideTooltips());
+  cy.on('expandcollapse.aftercollapse', () => hideTooltips());
 
   let nodeHoverExpandCollapse = _.debounce(evt => {
     let node = evt.target;

@@ -60,11 +60,11 @@ class ExpandCollapseCueTip {
     }
 
 
-    let rbb = this.node.renderedBoundingBox();
-    let ecAPI = this.node._private.cy.expandCollapse('get');
-    let cueXOffset = ecAPI.isCollapsible(this.node) ? 0 : .4 * rbb.w;
+    let rbb = this.node.renderedBoundingBox({
+      includeLabels: false
+    });
     let refObject = this.node.popperRef({
-      renderedPosition: () => ({ x: rbb.x1 + cueXOffset, y: rbb.y1}),
+      renderedPosition: () => ({ x: rbb.x1, y: rbb.y1}),
       renderedDimensions: () => ({w: 3, h: 3})
     });
     let tooltip = tippy(refObject, {
@@ -75,7 +75,7 @@ class ExpandCollapseCueTip {
       hideOnClick: false,
       arrow: false,
       placement: 'bottom-end',
-      // size: 'regular',
+      size: 'small',
       offset: '50, 0',
       flip: false,
       distance: 0}

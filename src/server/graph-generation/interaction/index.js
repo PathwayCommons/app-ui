@@ -4,7 +4,6 @@ const logger = require('./../../logger');
 const LRUCache = require('lru-cache');
 const cache = require('../../cache');
 const { PC_CACHE_MAX_SIZE } = require('../../../config');
-
 const cytoscape = require('cytoscape');
 
 function edgeType(type) {
@@ -34,9 +33,14 @@ function rawGetInteractionGraphFromPC(interactionIDs){
 
   //Fetch graph from PC
   return pc.query(params).then(res => {
+    
+    console.time('new parse');
+    let parsedNetwork = parse(res,geneIds);
+    console.timeEnd('new parse');
 
-    let network = parse(res,geneIds);
-    let filteredNetwork = addMetricandFilter(network);
+    console.time('total');
+    let filteredNetwork = addMetricandFilter(parsedNetwork.network, parsedNetwork.nodeDegrees);
+    console.timeEnd('total');
 
     return {network: filteredNetwork};
   }).catch((e)=>{
@@ -60,16 +64,16 @@ function parse(data, queryIds){
     edges:[],
     nodes:[],
   };
-  let nodeMap=new Map(); //keeps track of nodes that have already been added
+  let nodeDegreeMap =new Map(); //keeps track of nodes that have already been added, also calculates node degree
   if(data){
     const dataSplit=data.split('\n\n');
     const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
     dataSplit[0].split('\n').slice(1).forEach(line => {
       const splitLine=line.split('\t');
       const edgeMetadata = interactionMetadata(splitLine[6],splitLine[4]);
-      addInteraction([splitLine[0], splitLine[2]], splitLine[1], edgeMetadata, network, nodeMap, nodeMetadata, queryIds);
+      addInteraction([splitLine[0], splitLine[2]], splitLine[1], edgeMetadata, network, nodeDegreeMap, nodeMetadata, queryIds);
     });
-    return network;
+    return {network: network, nodeDegrees:nodeDegreeMap};
   }
   return {};
 }
@@ -81,29 +85,34 @@ function parse(data, queryIds){
  * @description Each node in the network is assigned a `degree` metric, and the network is filtered down to the 100 nodes with largest degree.
  * The remaining 100 nodes are assigned a `betweenness centrality (BC)` metric, and the network is filtered down to the 50 nodes with largest BC.
  */
-function addMetricandFilter(network){
-  
-  //establish variables
-  const cy = cytoscape({headless:true,container:undefined,elements:network});
-  const nodes = cy.nodes();
-
-  //add degree metric to each node
-  nodes.forEach( node => {
-    node.data('metric',node.degree());
-  });
+function addMetricandFilter(network,nodeDegrees){
+  const nodes = network.nodes;
+  const edges = network.edges;
 
   //sort nodes by degree
   let sortedNodes = nodes.sort( (a,b) => {
-    return b.metric - a.metric; 
+    return nodeDegrees.get(b.data.id) - nodeDegrees.get(a.data.id); 
   });
+
   //keep the 100 nodes with the largest degree
   let filteredNodes = sortedNodes.slice(0,50);
-  cy.remove(cy.nodes().difference(filteredNodes));
+  filteredNodes.forEach( node => {
+    node.data['metric'] = nodeDegrees.get(node.data.id);
+  });
+  
+  const cy = cytoscape( { headless:true, container:undefined, elements:{nodes:filteredNodes} } );
 
-  //return filtered network & destroy cy
-  const filteredNetwork = cy.json().elements;
-  cy.destroy();
-  return filteredNetwork;
+  edges.forEach( edge => {
+    try{
+      cy.add({
+        group: 'edges',
+        data: edge.data,
+        classes: edge.classes,
+      });
+    }catch(err){ return; }
+  });
+
+  return cy.json().elements;
 }
 
 function interactionMetadata(mediatorIds, pubmedIds){
@@ -118,14 +127,22 @@ function interactionMetadata(mediatorIds, pubmedIds){
  return metadata;
 }
 
-function addInteraction(nodes, edge, sources, network, nodeMap, nodeMetadata, interactionIDs){
+function addInteraction(nodes, edge, sources, network, nodeDegreeMap, nodeMetadata, interactionIDs){
   const interaction= edgeType(edge);
-  nodes.forEach((node)=>{
-    if(!nodeMap.has(node)){
-      const metadata=nodeMetadata.get(node);
-      nodeMap.set(node,true);
-      const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');
+  const networkEdgeData = {data: {
+    id: nodes[0]+'\t'+edge+'\t'+nodes[1] ,
+    label: nodes[0]+' '+edge.replace(/-/g,' ')+' '+nodes[1] ,
+    source: nodes[0],
+    target: nodes[1],
+    class: interaction,
+    parsedMetadata:sources
+  },classes:interaction};
 
+  nodes.forEach((node)=>{
+    if(!nodeDegreeMap.has(node)){
+      const metadata=nodeMetadata.get(node);
+      const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');
+      nodeDegreeMap.set(node,1);
       network.nodes.push({data:{
         class: "ball",
         id: node,
@@ -138,16 +155,14 @@ function addInteraction(nodes, edge, sources, network, nodeMap, nodeMetadata, in
         ]
       }});
     }
+    else {
+      let degree = nodeDegreeMap.get(node);
+      nodeDegreeMap.set(node, degree+1);
+    }
   });
 
-  network.edges.push({data: {
-    id: nodes[0]+'\t'+edge+'\t'+nodes[1] ,
-    label: nodes[0]+' '+edge.replace(/-/g,' ')+' '+nodes[1] ,
-    source: nodes[0],
-    target: nodes[1],
-    class: interaction,
-    parsedMetadata:sources
-  },classes:interaction});
+  network.edges.push(networkEdgeData);
+
 }
 
 module.exports = {getInteractionGraphFromPC};

@@ -30,6 +30,7 @@ const ServerAPI = {
     return fetch(absoluteURL(`/api/get-interaction-graph?${qs.stringify(sources)}`), defaultFetchOpts).then(res => res.json());
   },
 
+  //method is a request path, e.g., 'pc2/get' or 'sifgraph/v1/pathsbetween'
   pcQuery(method, params){
     return fetch(absoluteURL(`/pc-client/${method}?${qs.stringify(params)}`), defaultFetchOpts);
   },
@@ -38,7 +39,7 @@ const ServerAPI = {
     return fetch(absoluteURL('/pc-client/datasources'), defaultFetchOpts).then(res => res.json());
   },
 
-  querySearch(query){
+  search(query){
     const queryClone=_.assign({},query);
     if (/^((uniprot|hgnc):\w+|ncbi:[0-9]+)$/i.test(queryClone.q)) {
       queryClone.q=queryClone.q.replace(/^(uniprot|ncbi|hgnc):/i,"");

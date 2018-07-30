@@ -1,10 +1,11 @@
 const _ = require('lodash');
 
 const PathwayNodeMetadataTip = require('./pathway-node-metadata-tooltip');
+const ExpandCollapseCue = require('./expand-collapse-cue');
 const { PATHWAYS_LAYOUT_OPTS } = require('./layout');
 
 const EXPAND_COLLAPSE_OPTS = {
-  layoutBy: PATHWAYS_LAYOUT_OPTS,
+  layoutBy: _.assign({}, PATHWAYS_LAYOUT_OPTS, { fit: false }),
   fisheye: true,
   animate: true,
   undoable: false,
@@ -17,10 +18,18 @@ let bindCyEvents = cy => {
 
   let hideTooltips = () => {
     cy.elements().forEach(ele => {
-      const tooltip = ele.scratch('_tooltip');
+      let tooltip = ele.scratch('_tooltip');
       if (tooltip) {
         tooltip.hide();
-        ele.scratch('_tooltip-opened', false);
+      }
+    });
+  };
+
+  let hideCues = () => {
+    cy.elements().forEach( ele => {
+      let cue = ele.scratch('_expandcollapsecue');
+      if( cue ){
+        cue.hide();
       }
     });
   };
@@ -37,7 +46,6 @@ let bindCyEvents = cy => {
         node.scratch('_tooltip', tooltip);
       }
       tooltip.show();
-      node.scratch('_tooltip-opened', true);
     }
   });
 
@@ -64,6 +72,41 @@ let bindCyEvents = cy => {
   cy.on('drag', () => hideTooltips());
   cy.on('pan', () => hideTooltips());
   cy.on('zoom', () => hideTooltips());
+  cy.on('layoutstart', () => hideTooltips());
+
+  let nodeHoverExpandCollapse = _.debounce(evt => {
+    let node = evt.target;
+    let parent = node.parent();
+    let ecAPI = cy.expandCollapse('get');
+
+    if( ecAPI.isCollapsible(node) || ecAPI.isExpandable(node) ){
+      hideCues();
+      let ecCue = node.scratch('_expandcollapsecue');
+      if( !ecCue ){
+        ecCue = new ExpandCollapseCue(node);
+        node.scratch('_expandcollapsecue', ecCue);
+      }
+      ecCue.show();
+    } else {
+      let ecCue = parent.scratch('_expandcollapsecue');
+      if( !ecCue ){
+        ecCue = new ExpandCollapseCue(node);
+        node.scratch('_expandcollapsecue', ecCue);
+      }
+      ecCue.show();
+    }
+
+  }, 200);
+
+  cy.on('mouseover', '$node > node', nodeHoverExpandCollapse);
+
+  cy.on('mouseover', '.cy-expand-collapse-collapsed-node', nodeHoverExpandCollapse);
+
+  cy.on('drag', () => hideCues());
+  cy.on('pan', () => hideCues());
+  cy.on('zoom', () => hideCues());
+  cy.on('layoutstart', () => hideCues());
+
 
 
   let nodeHoverMouseOver = _.debounce(evt => {
@@ -85,7 +128,7 @@ let bindCyEvents = cy => {
       ele.addClass('highlighted');
     });
 
-  }, 200, { leading: false, trailing: true });
+  }, 200);
 
   //call style-applying and style-removing functions on 'mouseover' and 'mouseout' for non-compartment nodes
   cy.on('mouseover', 'node[class!="compartment"]', nodeHoverMouseOver);

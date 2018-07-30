@@ -4,7 +4,36 @@ const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
 
 class EnrichmentMenu extends React.Component {
 
+  /**
+   *  @description Hides nodes based on adjusted p_value, determined by on-screen slider
+   */
+  sliderUpdate(){
+    const cy = this.props.cySrv.get();
+
+    //get value from slider
+    let sliderVal = document.getElementById('enrichment-p_value-slider').value;
+
+    //compare p_values and hide if outside of chosen threshold
+    cy.nodes().forEach(node => {
+      if(node.data('p_value') > sliderVal)
+        node.addClass('hidden');
+      else
+        node.removeClass('hidden');
+    });
+  }
+
   render(){
+
+    const slider = [
+      h("input",{type:"range",id:'enrichment-p_value-slider',min:0,max:0.05,step:0.0001,defaultValue:0.05,
+      onInput:() => this.sliderUpdate() })
+    ];
+
+    //when rendered all nodes show
+    this.props.cySrv.loadPromise().then((cy) => {
+      cy.batch(()=>{cy.elements().removeClass('hidden');});
+      });
+
     return h(Tabs, [
       h('div.enrichment-drawer-header', [
         h('h2', 'Enrichment App'), //******************* CHANGE TO NEW NAME ONCE CHOSEN
@@ -20,16 +49,15 @@ class EnrichmentMenu extends React.Component {
         ])
       ]),
       h(TabPanel, [
-        h('h4', 'Significance'),
+        h('h3', 'P-Value Cutoff'),
         h('div.enrichment-legend-container', [
-          h('div.enrichment-legend-stat-significant', [
-            h('p', `high 0`),
+          h('div.enrichment-legend', [
+            h('p', '0'),
             h('p', '.025'),
-            h('p', `low .05`)
-          ]),
-          h('div.enrichment-legend-not-significant', [
-            h('p', ` none >.05`)
+            h('p', '.05')
           ])
+        ]),
+        h('div.enrichment-slider-wrapper', slider)
         ])
       ]),
       h(TabPanel, [

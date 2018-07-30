@@ -44,8 +44,10 @@ class BaseNetworkView extends React.Component {
   componentWillReceiveProps(nextProps){//needed to updata metadata for interactions
     this.setState({
       networkMetadata: nextProps.networkMetadata,
-      filters:nextProps.filters,
-      networkJSON: nextProps.networkJSON
+      filters: nextProps.filters,
+      networkJSON: nextProps.networkJSON,
+      activeMenu: nextProps.activeMenu,
+      open: nextProps.open
     });
   }
 
@@ -77,6 +79,7 @@ class BaseNetworkView extends React.Component {
       layout.run();
     }
   }
+
 
   componentWillUnmount() {
     this.state.cySrv.destroy();
@@ -257,7 +260,18 @@ class BaseNetworkView extends React.Component {
           style: { width: menuWidth ? `${menuWidth}%` : '' }
         },
         [
-          h('div.sidebar-close', [
+          h('div.graph-cy', {
+            ref: dom => this.graphDOM = dom
+          })
+        ]
+      ),
+      h('div', {
+        className: classNames('sidebar-menu',{'sidebar-menu-open': this.state.open }),
+        style: { width: menuWidth?`${menuWidth}%`:'' }
+      }, [
+          h('div', {
+            className: classNames('sidebar-close-button-container', { 'sidebar-close-button-container-open': this.state.open })
+          }, [
             h(Tooltip, { description: 'Close the sidebar' }, [
               h('div.icon-button', {
                 key: 'close',

@@ -78,54 +78,6 @@
 
 /*   ********ENRICHMENT SIDE MENU********  */
 
-.enrichment-legend-container {
-  display: flex;
-  flex-direction: row;
-
-  & p {
-    margin: 0;
-    text-shadow:
-      -1px -1px 0 #000,
-       1px -1px 0 #000,
-      -1px 1px 0 #000,
-       1px 1px 0 #000;
-  }
-}
-
-/* for p_value <= 0.05 */
-/* match background with 'p_valueColorScale' */
-.enrichment-legend-stat-significant {
-  padding: 0px 5px 0px 5px;
-  height: 40px;
-  color: white;
-  background: linear-gradient(to right,
-    rgb(0, 128, 0), /* html green */
-    rgb(230, 255, 230)
-  );
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 75%;
-
-  & p {
-    padding-top: 10px;
-  }
-}
-
-
-/* for p_value > 0.05 */
-.enrichment-legend-not-significant {
-  padding: 0px 5px 0px 5px;
-  margin-left: 10px;
-  height: 40px;
-  color: white;
-  background: #555;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  width: 10%;
-}
-
 .enrichment-drawer-tab {
   display: inline-block;
   border: 1px solid transparent;
@@ -147,6 +99,47 @@
 
 .react-tabs{
   width: 100%;
+}
+
+.enrichment-legend-container {
+  display: flex;
+  flex-direction: row;
+}
+
+/* for p_value <= 0.05 */
+/* match background with 'p_valueColorScale' */
+.enrichment-legend {
+  padding: 0px 5px 0px 5px;
+  height: 40px;
+  color: white;
+  background: linear-gradient(to right,
+    rgb(0, 128, 0), /* html green */
+    rgb(230, 255, 230)
+  );
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+
+  & p {
+    padding-top: 10px;
+    font-size: 1em;
+    margin: 0;
+    text-shadow:
+      -1px -1px 0 #000,
+       1px -1px 0 #000,
+      -1px 1px 0 #000,
+       1px 1px 0 #000;
+  }
+}
+
+.enrichment-slider-wrapper{
+  width: 100%;
+  margin-top: 5px;
+}
+
+#enrichment-p_value-slider{
+  width: 100% !important;
 }
 
 .gene-identifier-list {

@@ -41,11 +41,11 @@ class EnrichmentMenu extends React.Component {
           h(Tab, {
             className: 'enrichment-drawer-tab',
             selectedClassName: 'enrichment-drawer-tab-selected'
-            }, 'Legend'),
-            h(Tab, {
-              className: 'enrichment-drawer-tab',
-              selectedClassName: 'enrichment-drawer-tab-selected'
-              }, 'FAQ')
+          }, 'Legend'),
+          h(Tab, {
+            className: 'enrichment-drawer-tab',
+            selectedClassName: 'enrichment-drawer-tab-selected'
+          }, 'FAQ')
         ])
       ]),
       h(TabPanel, [
@@ -58,7 +58,6 @@ class EnrichmentMenu extends React.Component {
           ])
         ]),
         h('div.enrichment-slider-wrapper', slider)
-        ])
       ]),
       h(TabPanel, [
         h('h4', `What does it do?`),

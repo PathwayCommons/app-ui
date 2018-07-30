@@ -24,7 +24,7 @@ const enrichmentConfig={
   //add icon for p_value legend
   toolbarButtons: toolbarButtons.concat({
     id: 'showEnrichmentMenu',
-    icon: 'palette',
+    icon: 'info',
     type: 'activateMenu',
     menuId: 'enrichmentMenu',
     description: 'View legend'

@@ -3,7 +3,7 @@ const h = require('react-hyperscript');
 const _ = require('lodash');
 const queryString = require('query-string');
 const Loader = require('react-loader');
-const classNames = require('classNames');
+const classNames = require('classnames');
 
 const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services/');
@@ -15,7 +15,7 @@ const FileDownloadMenu = require('./menus/file-download-menu');
 
 const Pathway = require('../../models/pathway/pathway-model');
 
-const { stylesheet, bindCyEvents, DEFAULT_LAYOUT_OPTS } = require('./pathways-cy');
+const { stylesheet, bindCyEvents, PATHWAYS_LAYOUT_OPTS } = require('./cy');
 
 class Pathways extends React.Component {
   constructor(props) {
@@ -44,7 +44,7 @@ class Pathways extends React.Component {
       cy.remove('*');
       cy.add( pathway.cyJson() );
 
-      let layout = cy.layout(DEFAULT_LAYOUT_OPTS);
+      let layout = cy.layout(PATHWAYS_LAYOUT_OPTS);
       layout.on('layoutstop', () => {
         cySrv.load();
         this.setState({
@@ -56,7 +56,7 @@ class Pathways extends React.Component {
     };
 
     ServerAPI.getPathway(uri, 'latest').then( pathwayJSON => {
-      pathway.load( pathwayJSON, uri );
+      pathway.load( pathwayJSON );
       initializeCytoscape( pathway );
     });
   }
@@ -77,16 +77,6 @@ class Pathways extends React.Component {
 
   render() {
     let { loading, pathway, cySrv, activeMenu } = this.state;
-
-    let menus = {
-      'infoMenu': h(InfoMenu, { infoList: pathway.comments() } ),
-      'closeMenu': null,
-      'downloadMenu': h(FileDownloadMenu, {
-        cySrv,
-        fileName: pathway.name(),
-        uri: pathway.uri()
-      })
-    };
 
     let network = h('div.network', { className: classNames({
       'network-loading': loading,
@@ -110,7 +100,8 @@ class Pathways extends React.Component {
 
     let sidebar = h('div.app-sidebar', [
       h(PathwaysSidebar, {  controller: this, activeMenu }, [
-        menus[activeMenu]
+        h(InfoMenu, { key: 'infoMenu', infoList: pathway.comments() }),
+        h(FileDownloadMenu, { key: 'downloadMenu', cySrv, fileName: pathway.name(), uri: pathway.uri() }),
       ])
     ]);
 

@@ -141,3 +141,7 @@
 #enrichment-p_value-slider{
   width: 100% !important;
 }
+
+.gene-identifier-list {
+  margin: 0 0 3px 0;
+}

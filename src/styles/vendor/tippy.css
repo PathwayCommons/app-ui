@@ -300,7 +300,6 @@
   border-top: 7px solid transparent;
   border-bottom: 7px solid transparent;
   right: -7px;
-  margin: 6px 0
 }
 
 .tippy-popper[x-placement^=left] [x-arrow].arrow-small {
@@ -590,21 +589,19 @@
   color: #fff;
   border-radius: 4px;
   font-size: .95rem;
-  padding: .4rem .8rem;
   text-align: center;
   will-change: transform;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #333
+  background-color: #333;
+  padding: 0;
 }
 
 .tippy-tooltip--small {
-  padding: .25rem .5rem;
   font-size: .8rem
 }
 
 .tippy-tooltip--big {
-  padding: .6rem 1.2rem;
   font-size: 1.2rem
 }
 

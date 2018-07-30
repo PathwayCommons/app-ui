@@ -65,7 +65,7 @@ class ExpandCollapseCueTip {
     });
     let refObject = this.node.popperRef({
       renderedPosition: () => ({ x: rbb.x1, y: rbb.y1}),
-      renderedDimensions: () => ({w: 3, h: 3})
+      renderedDimensions: () => ({w: -5, h: -5})
     });
     let tooltip = tippy(refObject, {
       html: getContentDiv( h(ExpandCollapseCue, { node: this.node, } )),

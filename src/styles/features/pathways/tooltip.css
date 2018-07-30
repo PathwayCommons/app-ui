@@ -131,5 +131,6 @@
 
 .expand-collapse-cue {
   cursor: pointer;
-  font-size: 1.25em;
+  padding: 3px;
+  font-size: 1.5em;
 }

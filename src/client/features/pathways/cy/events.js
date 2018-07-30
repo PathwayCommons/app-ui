@@ -73,7 +73,7 @@ let bindCyEvents = cy => {
   cy.on('pan', () => hideTooltips());
   cy.on('zoom', () => hideTooltips());
   cy.on('layoutstart', () => hideTooltips());
-  cy.on('expandcollapse.aftercollapse', () => hideTooltips());
+  cy.on('expandcollapse.beforecollapse', () => hideTooltips());
 
   let nodeHoverExpandCollapse = _.debounce(evt => {
     let node = evt.target;
@@ -97,7 +97,7 @@ let bindCyEvents = cy => {
       ecCue.show();
     }
 
-  }, 200);
+  }, 1);
 
   cy.on('mouseover', '$node > node', nodeHoverExpandCollapse);
 

@@ -75,7 +75,6 @@ class ExpandCollapseCueTip {
       hideOnClick: false,
       arrow: false,
       placement: 'bottom-end',
-      size: 'small',
       offset: '50, 0',
       flip: false,
       distance: 0}

@@ -76,20 +76,11 @@
 .enrichment-legend-container {
   display: flex;
   flex-direction: row;
-
-  & p {
-    margin: 0;
-    text-shadow:
-      -1px -1px 0 #000,
-       1px -1px 0 #000,
-      -1px 1px 0 #000,
-       1px 1px 0 #000;
-  }
 }
 
 /* for p_value <= 0.05 */
 /* match background with 'p_valueColorScale' */
-.enrichment-legend-stat-significant {
+.enrichment-legend {
   padding: 0px 5px 0px 5px;
   height: 40px;
   color: white;
@@ -100,43 +91,29 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 75%;
+  width: 100%;
 
   & p {
     padding-top: 10px;
+    font-size: 1em;
+    margin: 0;
+    text-shadow:
+      -1px -1px 0 #000,
+       1px -1px 0 #000,
+      -1px 1px 0 #000,
+       1px 1px 0 #000;
   }
 }
 
-
-/* for p_value > 0.05 */
-.enrichment-legend-not-significant {
-  padding: 0px 5px 0px 5px;
-  margin-left: 10px;
-  height: 40px;
-  color: white;
-  background: #555;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  width: 10%;
+.enrichment-slider-wrapper{
+  width: 100%;
+  margin-top: 5px;
 }
 
-.enrichment-drawer-tab {
-  display: inline-block;
-  border: 1px solid transparent;
-  border-bottom: none;
-  bottom: -1px;
-  position: relative;
-  list-style: none;
-  padding: 6px 0;
-  cursor: pointer;
-  margin-bottom: 0;
-  margin-right: 10px;
+#enrichment-p_value-slider{
+  width: 100% !important;
 }
 
-.enrichment-drawer-tab-selected {
-  font-weight: bold;
-  color: var(--accent-1-colour);
-  border-bottom: 3px solid var(--accent-1-colour);
+.gene-identifier-list {
+  margin: 0 0 3px 0;
 }
-

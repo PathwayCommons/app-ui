@@ -34,7 +34,7 @@ module.exports = sbgnStyleSheet(cytoscape)
   'height': 45,
   'label': node => node.isParent() ? '' : node.data('label')
 })
-.selector('.compoundcollapse-collapsed-node')
+.selector('.cy-expand-collapse-collapsed-node')
 .css({
   'font-size': 20,
   'text-max-width': 175
@@ -46,6 +46,14 @@ module.exports = sbgnStyleSheet(cytoscape)
 .selector('node[class="and"],node[class="or"],node[class="not"]')
 .css({
   'label':node=>node.data('class')
+})
+.selector('.highlighted')
+.css({
+  'opacity':1,
+})
+.selector('.unhighlighted')
+.css({
+  'opacity':0.4,
 })
 .selector('.hidden')
 .css({

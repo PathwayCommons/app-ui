@@ -82,6 +82,7 @@ class BaseNetworkView extends React.Component {
     }
   }
 
+
   componentWillUnmount() {
     this.state.cySrv.destroy();
   }

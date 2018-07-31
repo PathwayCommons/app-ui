@@ -4,7 +4,36 @@ const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
 
 class EnrichmentMenu extends React.Component {
 
+  /**
+   *  @description Hides nodes based on adjusted p_value, determined by on-screen slider
+   */
+  sliderUpdate(){
+    const cy = this.props.cySrv.get();
+
+    //get value from slider
+    let sliderVal = document.getElementById('enrichment-p_value-slider').value;
+
+    //compare p_values and hide if outside of chosen threshold
+    cy.nodes().forEach(node => {
+      if(node.data('p_value') > sliderVal)
+        node.addClass('hidden');
+      else
+        node.removeClass('hidden');
+    });
+  }
+
   render(){
+
+    const slider = [
+      h("input",{type:"range",id:'enrichment-p_value-slider',min:0,max:0.05,step:0.0001,defaultValue:0.05,
+      onInput:() => this.sliderUpdate() })
+    ];
+
+    //when rendered all nodes show
+    this.props.cySrv.loadPromise().then((cy) => {
+      cy.batch(()=>{cy.elements().removeClass('hidden');});
+      });
+
     return h(Tabs, [
       h('div.enrichment-drawer-header', [
         h('h2', 'Enrichment App'), //******************* CHANGE TO NEW NAME ONCE CHOSEN
@@ -12,25 +41,23 @@ class EnrichmentMenu extends React.Component {
           h(Tab, {
             className: 'enrichment-drawer-tab',
             selectedClassName: 'enrichment-drawer-tab-selected'
-            }, 'Legend'),
-            h(Tab, {
-              className: 'enrichment-drawer-tab',
-              selectedClassName: 'enrichment-drawer-tab-selected'
-              }, 'FAQ')
+          }, 'Legend'),
+          h(Tab, {
+            className: 'enrichment-drawer-tab',
+            selectedClassName: 'enrichment-drawer-tab-selected'
+          }, 'FAQ')
         ])
       ]),
       h(TabPanel, [
-        h('h4', 'Significance'),
+        h('h3', 'P-Value Cutoff'),
         h('div.enrichment-legend-container', [
-          h('div.enrichment-legend-stat-significant', [
-            h('p', `high 0`),
+          h('div.enrichment-legend', [
+            h('p', '0'),
             h('p', '.025'),
-            h('p', `low .05`)
-          ]),
-          h('div.enrichment-legend-not-significant', [
-            h('p', ` none >.05`)
+            h('p', '.05')
           ])
-        ])
+        ]),
+        h('div.enrichment-slider-wrapper', slider)
       ]),
       h(TabPanel, [
         h('h4', `What does it do?`),
@@ -56,7 +83,7 @@ class EnrichmentMenu extends React.Component {
           h('span',`The input gene list is compared to genes in each candidate pathway and a statistical score is calculated (adjusted p-value).
             Pathways with an adjusted p-value less than a threshold (0.05) are deemed 'enriched' for genes in the input list and are displayed in the network.
             This analysis is performed by gProfiler's g:GOst service (rev 1741 2017-10-19). Please refer to their `),
-          h('a', {href: 'http://whatever.com'}, 'documentation'),
+          h('a', {href: 'https://biit.cs.ut.ee/gprofiler/help.cgi?help_id=55', target:"_blank"}, 'documentation'),
           h('span', ` for further details.`)
         ])
       ])

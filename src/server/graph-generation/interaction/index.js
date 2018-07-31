@@ -23,7 +23,7 @@ function rawGetInteractionGraphFromPC(interactionIDs){
   const geneIds = _.uniq(_.concat([], interactionIDs)); //convert sources to array
 
   const params = {
-    cmd : 'graph',
+    cmd : 'pc2/graph',
     source : geneIds,
     pattern : ['controls-phosphorylation-of','in-complex-with','controls-expression-of', 'interacts-with'],
     kind : geneIds.length > 1 ? 'pathsbetween' : 'neighborhood',

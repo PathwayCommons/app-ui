@@ -34,13 +34,17 @@ function rawGetInteractionGraphFromPC(interactionIDs){
   //Fetch graph from PC
   return pc.query(params).then(res => {
     
-    console.time('parse');
-    let parsedNetwork = parse(res,geneIds);
-    console.timeEnd('parse');
+    console.time('Total');
 
-    console.time('total');
-    let filteredNetwork = addMetricandFilter(parsedNetwork.network, parsedNetwork.nodeDegrees);
-    console.timeEnd('total');
+    console.time('Parse');
+    let parsedNetwork = parse(res,geneIds);
+    console.timeEnd('Parse');
+
+    console.time('Filter');
+    let filteredNetwork = addMetricandFilter(parsedNetwork.nodes, parsedNetwork.edges);
+    console.timeEnd('Filter');
+
+    console.timeEnd('Total');
 
     return {network: filteredNetwork};
   }).catch((e)=>{
@@ -54,26 +58,27 @@ const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
 const getInteractionGraphFromPC = cache(rawGetInteractionGraphFromPC, pcCache);
 
 /**
- * Parse txt format to Json
+ * Parse txt format to Json 
  * @param {string} data graph in txt format
  * @param {String[]} Array of query Ids
  * @return {json} JSON of graph
  */
-function parse(data, queryIds){
-  let network = {
-    edges:[],
-    nodes:[],
-  };
-  let nodeDegreeMap =new Map(); //keeps track of nodes that have already been added, also calculates node degree
+function parse(data, queryIDs){
+  let edgeList = [];
+  let nodeList =new Map(); //maps node id to node (to avoid duplicate entries)
+
   if(data){
+
     const dataSplit=data.split('\n\n');
     const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
     dataSplit[0].split('\n').slice(1).forEach(line => {
       const splitLine=line.split('\t');
       const edgeMetadata = interactionMetadata(splitLine[6],splitLine[4]);
-      addInteraction([splitLine[0], splitLine[2]], splitLine[1], edgeMetadata, network, nodeDegreeMap, nodeMetadata, queryIds);
+      addInteraction([splitLine[0], splitLine[2]], splitLine[1], nodeList, edgeList, nodeMetadata, edgeMetadata, queryIDs);
     });
-    return {network: network, nodeDegrees:nodeDegreeMap};
+
+    //return network
+    return {nodes: nodeList, edges: edgeList};
   }
   return {};
 }
@@ -85,62 +90,27 @@ function parse(data, queryIds){
  * @description Each node in the network is assigned a `degree` metric, and the network is filtered down to the 100 nodes with largest degree.
  * The remaining 100 nodes are assigned a `betweenness centrality (BC)` metric, and the network is filtered down to the 50 nodes with largest BC.
  */
-function addMetricandFilter(network,nodeDegrees){
-  const nodes = network.nodes;
-  const edges = network.edges;
-
-  console.time("Sort/Filter Nodes");
-  //sort nodes by degree
-  let sortedNodes = nodes.sort( (a,b) => {
-    return nodeDegrees.get(b.data.id).length - nodeDegrees.get(a.data.id).length; 
-  });
-
-  //keep the 100 nodes with the largest degree
-  let filteredNodes = sortedNodes.slice(0,50);
-  filteredNodes.forEach( node => {
-    node.data['metric'] = nodeDegrees.get(node.data.id);
-  });
-  console.timeEnd("Sort/Filter Nodes");
+function addMetricandFilter(nodes,edges){
   
-  console.time('cy');
-  const cy = cytoscape( { headless:true, container:undefined, elements:{nodes:filteredNodes} } );
-  console.timeEnd('cy');
-
+  console.time('Filter Nodes');
+  const filteredNodes = new Map(
+    [...nodes.entries()].sort( (a, b) => {
+      return b[1].data.metric - a[1].data.metric;
+    }).slice(0,50)
+  );
+  console.timeEnd('Filter Nodes');
+  
   console.time('Filter Edges');
   const filteredEdges = [];
   edges.forEach( edge => {
     const source = edge.data.source;
     const target = edge.data.target;
-    let sourceFound = false;
-    let targetFound = false;
-    filteredNodes.forEach( node => {
-      if(node.data.id === source)
-        sourceFound = true;
-      if(node.data.id === target)
-        targetFound = true;
-    });
-    if(sourceFound && targetFound)
+    if(filteredNodes.has(source) && filteredNodes.has(target))
       filteredEdges.push(edge);
   });
   console.timeEnd('Filter Edges');
 
-  console.log(filteredEdges.length);
-
-  console.time('Add Edges');
-  filteredEdges.forEach( edge => {
-    try{
-      cy.add({
-        group: 'edges',
-        data: edge.data,
-        classes: edge.classes,
-      });  
-    }catch(err){ return; }
-  });
-  console.timeEnd('Add Edges');
-
-  
-
-  return cy.json().elements;
+  return { nodes:[...filteredNodes.values()], edges:filteredEdges };
 }
 
 function interactionMetadata(mediatorIds, pubmedIds){
@@ -155,7 +125,7 @@ function interactionMetadata(mediatorIds, pubmedIds){
  return metadata;
 }
 
-function addInteraction(nodes, edge, sources, network, nodeDegreeMap, nodeMetadata, interactionIDs){
+function addInteraction(nodes, edge, nodeList, edgeList, nodeMetadata, edgeMetadata, queryIDs){
   const interaction= edgeType(edge);
   const networkEdgeData = {data: {
     id: nodes[0]+'\t'+edge+'\t'+nodes[1] ,
@@ -163,34 +133,36 @@ function addInteraction(nodes, edge, sources, network, nodeDegreeMap, nodeMetada
     source: nodes[0],
     target: nodes[1],
     class: interaction,
-    parsedMetadata:sources
+    parsedMetadata:edgeMetadata
   },classes:interaction};
+  edgeList.push(networkEdgeData);
+
 
   nodes.forEach((node)=>{
-    if(!nodeDegreeMap.has(node)){
+    if(!nodeList.has(node)){
       const metadata=nodeMetadata.get(node);
       const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');
-      nodeDegreeMap.set(node,1);
-      network.nodes.push({data:{
+      const networkNodeData = {data:{
         class: "ball",
         id: node,
         label: node,
-        queried: interactionIDs.indexOf(node) != -1,
+        queried: queryIDs.indexOf(node) != -1,
+        metric: 1,
         parsedMetadata:[
           ['Type',
           'bp:'+metadata[0].split(' ')[0].replace(/Reference/g,'').replace(/;/g,',')],
           ['Database IDs', links]
         ]
-      }});
+      }};
+      nodeList.set(node,networkNodeData);
     }
     else {
-      let degree = nodeDegreeMap.get(node);
-      nodeDegreeMap.set(node, degree+1);
+      //metric is degree
+      let nodeUpdate = nodeList.get(node);
+      nodeUpdate.data['metric'] = nodeUpdate.data.metric + 1;
+      nodeList.set(node, nodeUpdate);
     }
   });
-
-  network.edges.push(networkEdgeData);
-
 }
 
 module.exports = {getInteractionGraphFromPC};

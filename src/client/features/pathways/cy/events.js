@@ -97,7 +97,7 @@ let bindCyEvents = cy => {
       ecCue.show();
     }
 
-  }, 1);
+  }, 200);
 
   cy.on('mouseover', '$node > node', nodeHoverExpandCollapse);
 
@@ -107,6 +107,7 @@ let bindCyEvents = cy => {
   cy.on('pan', () => hideCues());
   cy.on('zoom', () => hideCues());
   cy.on('layoutstart', () => hideCues());
+  cy.on('tap', () => hideCues());
 
 
 

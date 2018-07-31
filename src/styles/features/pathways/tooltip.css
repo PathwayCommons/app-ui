@@ -134,3 +134,7 @@
   padding: 3px;
   font-size: 1.5em;
 }
+
+.expand-collapse-cue:hover {
+  color: var(--accent-1-colour);
+}

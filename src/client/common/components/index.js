@@ -2,10 +2,12 @@ const Dropdown = require('./dropdown');
 const Popover = require('./popover');
 const Tooltip = require('./tooltip');
 const BaseNetworkView = require('./base-network-view');
+const IconButton = require('./icon-button');
 
 module.exports = {
   BaseNetworkView,
   Dropdown,
   Popover,
-  Tooltip
+  Tooltip,
+  IconButton
 };

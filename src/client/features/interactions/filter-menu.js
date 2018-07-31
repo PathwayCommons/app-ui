@@ -8,6 +8,12 @@ class InteractionsFilterMenu extends React.Component {
     super(props);
     this.state = props;
     this.sliderUpdate = _.debounce(this.sliderUpdate,150);
+
+    this.state.cySrv.loadPromise().then(cy => {
+      if(cy.nodes().length < 15)
+        document.getElementById('selection-slider').value = 0;
+    });
+
   }
 
   /**

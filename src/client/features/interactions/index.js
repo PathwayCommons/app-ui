@@ -75,6 +75,7 @@ class Interactions extends React.Component {
     this.state.cySrv.loadPromise().then(cy => {
       const { categories, filters, layoutConfig } = this.state;
 
+      //only filter if the network has more than 15 nodes.
       if(cy.nodes().length > 15) {
       //hide the 35 nodes with smallest value for initial display
         const sortedNodes = cy.nodes().sort( (a,b) => {

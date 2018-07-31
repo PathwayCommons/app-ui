@@ -9,6 +9,7 @@ class InteractionsFilterMenu extends React.Component {
     this.state = props;
     this.sliderUpdate = _.debounce(this.sliderUpdate,150);
 
+    //if the network has less than 15 nodes, display all of them
     this.state.cySrv.loadPromise().then(cy => {
       if(cy.nodes().length < 15)
         document.getElementById('selection-slider').value = 0;

@@ -34,9 +34,9 @@ function rawGetInteractionGraphFromPC(interactionIDs){
   //Fetch graph from PC
   return pc.query(params).then(res => {
     
-    console.time('new parse');
+    console.time('parse');
     let parsedNetwork = parse(res,geneIds);
-    console.timeEnd('new parse');
+    console.timeEnd('parse');
 
     console.time('total');
     let filteredNetwork = addMetricandFilter(parsedNetwork.network, parsedNetwork.nodeDegrees);
@@ -89,9 +89,10 @@ function addMetricandFilter(network,nodeDegrees){
   const nodes = network.nodes;
   const edges = network.edges;
 
+  console.time("Sort/Filter Nodes");
   //sort nodes by degree
   let sortedNodes = nodes.sort( (a,b) => {
-    return nodeDegrees.get(b.data.id) - nodeDegrees.get(a.data.id); 
+    return nodeDegrees.get(b.data.id).length - nodeDegrees.get(a.data.id).length; 
   });
 
   //keep the 100 nodes with the largest degree
@@ -99,18 +100,45 @@ function addMetricandFilter(network,nodeDegrees){
   filteredNodes.forEach( node => {
     node.data['metric'] = nodeDegrees.get(node.data.id);
   });
+  console.timeEnd("Sort/Filter Nodes");
   
+  console.time('cy');
   const cy = cytoscape( { headless:true, container:undefined, elements:{nodes:filteredNodes} } );
+  console.timeEnd('cy');
 
+  console.time('Filter Edges');
+  const filteredEdges = [];
   edges.forEach( edge => {
+    const source = edge.data.source;
+    const target = edge.data.target;
+    let sourceFound = false;
+    let targetFound = false;
+    filteredNodes.forEach( node => {
+      if(node.data.id === source)
+        sourceFound = true;
+      if(node.data.id === target)
+        targetFound = true;
+    });
+    if(sourceFound && targetFound)
+      filteredEdges.push(edge);
+  });
+  console.timeEnd('Filter Edges');
+
+  console.log(filteredEdges.length);
+
+  console.time('Add Edges');
+  filteredEdges.forEach( edge => {
     try{
       cy.add({
         group: 'edges',
         data: edge.data,
         classes: edge.classes,
-      });
+      });  
     }catch(err){ return; }
   });
+  console.timeEnd('Add Edges');
+
+  
 
   return cy.json().elements;
 }

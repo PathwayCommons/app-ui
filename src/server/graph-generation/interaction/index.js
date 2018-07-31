@@ -34,17 +34,8 @@ function rawGetInteractionGraphFromPC(interactionIDs){
   //Fetch graph from PC
   return pc.query(params).then(res => {
     
-    console.time('Total');
-
-    console.time('Parse');
     let parsedNetwork = parse(res,geneIds);
-    console.timeEnd('Parse');
-
-    console.time('Filter');
     let filteredNetwork = addMetricandFilter(parsedNetwork.nodes, parsedNetwork.edges);
-    console.timeEnd('Filter');
-
-    console.timeEnd('Total');
 
     return {network: filteredNetwork};
   }).catch((e)=>{
@@ -86,21 +77,20 @@ function parse(data, queryIDs){
 /**
  * 
  * @param {*} network JSON containing nodes and edges that represent a network
- * @returns A network JSON with 50 nodes, sorted based on centrality & degree
- * @description Each node in the network is assigned a `degree` metric, and the network is filtered down to the 100 nodes with largest degree.
- * The remaining 100 nodes are assigned a `betweenness centrality (BC)` metric, and the network is filtered down to the 50 nodes with largest BC.
+ * @returns A network JSON with 50 nodes, sorted based on degree
+ * @description The network is filtered down to the 50 nodes with largest degree.
  */
 function addMetricandFilter(nodes,edges){
   
-  console.time('Filter Nodes');
+  //converts the node map into an array, sorts by degree, converts back to map
   const filteredNodes = new Map(
     [...nodes.entries()].sort( (a, b) => {
       return b[1].data.metric - a[1].data.metric;
     }).slice(0,50)
   );
-  console.timeEnd('Filter Nodes');
-  
-  console.time('Filter Edges');
+
+  //if the filtered node map has the source and target of the edge, add it to the return network
+  //if edges aren't filtered get some serious cytoscape errors later on
   const filteredEdges = [];
   edges.forEach( edge => {
     const source = edge.data.source;
@@ -108,7 +98,7 @@ function addMetricandFilter(nodes,edges){
     if(filteredNodes.has(source) && filteredNodes.has(target))
       filteredEdges.push(edge);
   });
-  console.timeEnd('Filter Edges');
+
 
   return { nodes:[...filteredNodes.values()], edges:filteredEdges };
 }

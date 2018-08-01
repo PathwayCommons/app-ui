@@ -1,9 +1,13 @@
 const _ = require('lodash');
-const pc = require('../../pathway-commons');
 const logger = require('./../../logger');
 const LRUCache = require('lru-cache');
 const cache = require('../../cache');
 const { PC_CACHE_MAX_SIZE } = require('../../../config');
+const qs = require('query-string');
+const fetch = require('node-fetch');
+
+const neighborhoodUrl = 'http://www.pathwaycommons.org/sifgraph/v1/neighborhood?';
+const pathsbetweenUrl = 'http://www.pathwaycommons.org/sifgraph/v1/pathsbetween?';
 
 function edgeType(type) {
   switch(type){
@@ -19,23 +23,24 @@ function edgeType(type) {
   }
 }
 
-function rawGetInteractionGraphFromPC(interactionIDs){
+function rawGetInteractionGraphFromPC( interactionIDs ){
   const geneIds = _.uniq(_.concat([], interactionIDs)); //convert sources to array
 
   const params = {
-    cmd : 'graph',
+    directed: false,
+    limit: 1,
     source : geneIds,
-    pattern : ['controls-phosphorylation-of','in-complex-with','controls-expression-of', 'interacts-with'],
-    kind : geneIds.length > 1 ? 'pathsbetween' : 'neighborhood',
-    format : 'txt'
+    pattern : [ 'CONTROLS_PHOSPHORYLATION_OF','IN_COMPLEX_WITH','CONTROLS_EXPRESSION_OF', 'INTERACTS_WITH' ]
   };
 
-  //Fetch graph from PC
-  return pc.query(params).then(res => {
+  const url = ( geneIds.length > 1 ? pathsbetweenUrl : neighborhoodUrl ) + qs.stringify( params );
+  return fetch(url)
+  .then( res => res.text() )
+  .then( res => {
     return {
-      network : parse(res, geneIds)
+      network: parse(res, geneIds)
     };
-  }).catch((e)=>{
+  }).catch( e => {
     logger.error(e);
     return 'ERROR : could not retrieve graph from PC';
   });
@@ -51,67 +56,76 @@ const getInteractionGraphFromPC = cache(rawGetInteractionGraphFromPC, pcCache);
  * @param {String[]} Array of query Ids
  * @return {json} JSON of graph
  */
-function parse(data, queryIds){
+function parse( data, queryIds ){
   let network = {
     edges:[],
     nodes:[],
   };
-  let nodeMap=new Map(); //keeps track of nodes that have already been added
-  if(data){
-    const dataSplit=data.split('\n\n');
-    const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
-    dataSplit[0].split('\n').slice(1).forEach(line => {
+  let nodeMap = new Map(); //keeps track of nodes that have already been added
+  if( data ){
+
+    const nodeMetadata = null; //TODO: new service does not have node metadata
+    data.trim().split('\n').forEach( line => {
       const splitLine=line.split('\t');
-      const edgeMetadata = interactionMetadata(splitLine[6],splitLine[4]);
-      addInteraction([splitLine[0], splitLine[2]], splitLine[1], edgeMetadata, network, nodeMap, nodeMetadata, queryIds);
+      const nodes = [splitLine[0], splitLine[2]];
+      const edge = splitLine[1];
+      const mediatorIds = splitLine[4];
+
+      const edgeMetadata = interactionMetadata( mediatorIds );
+      addInteraction( nodes, edge, edgeMetadata, network, nodeMap, nodeMetadata, queryIds );
     });
     return network;
   }
   return {};
 }
 
-function interactionMetadata(mediatorIds, pubmedIds){
+function interactionMetadata( mediatorIds, pubmedIds ){
   let metadata = [['List',[]],['Detailed Views',[]]];//Format expected by format-content
   mediatorIds.split(';').forEach( link => {
-    const id=link.split('/')[4];
-    metadata[1][1].push(link.includes('reactome') ? ['Reactome',id]:['Pathway Commons',id]);
+    const id = link.split('/')[4];
+    metadata[1][1].push( link.includes('reactome') ? ['Reactome', id] : ['Pathway Commons', id] );
   });
-  if(pubmedIds){
-   pubmedIds.split(';').forEach(id=>metadata[0][1].push(['PubMed',id]));
+  if( pubmedIds ){
+   pubmedIds.split(';').forEach( id => metadata[0][1].push( ['PubMed',id] ) );
   }
  return metadata;
 }
 
-function addInteraction(nodes, edge, sources, network, nodeMap, nodeMetadata, interactionIDs){
-  const interaction= edgeType(edge);
-  nodes.forEach((node)=>{
-    if(!nodeMap.has(node)){
-      const metadata=nodeMetadata.get(node);
-      nodeMap.set(node,true);
-      const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');
+function addInteraction( nodes, edge, sources, network, nodeMap, nodeMetadata, interactionIDs ){
+  const interaction = edgeType(edge);
+  nodes.forEach( node => {
+    if( !nodeMap.has(node) ){
+      nodeMap.set( node, true );
 
-      network.nodes.push({data:{
+      let parsedMetadata = [];
+      if ( nodeMetadata ) {
+        const metadata = nodeMetadata.get(node);
+        const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');
+        parsedMetadata = [
+          ['Type',
+          'bp:' + metadata[0].split(' ')[0].replace(/Reference/g,'').replace(/;/g,',')],
+          ['Database IDs', links]
+        ];
+      }
+
+      network.nodes.push( { data: {
         class: "ball",
         id: node,
         label: node,
         queried: interactionIDs.indexOf(node) != -1,
-        parsedMetadata:[
-          ['Type',
-          'bp:'+metadata[0].split(' ')[0].replace(/Reference/g,'').replace(/;/g,',')],
-          ['Database IDs', links]
-        ]
+        parsedMetadata: parsedMetadata
       }});
     }
   });
 
-  network.edges.push({data: {
-    id: nodes[0]+'\t'+edge+'\t'+nodes[1] ,
-    label: nodes[0]+' '+edge.replace(/-/g,' ')+' '+nodes[1] ,
+  network.edges.push( { data: {
+    id: nodes[0] + '\t' + edge + '\t' + nodes[1],
+    label: nodes[0] + ' ' + edge.replace(/-/g,' ') + ' ' + nodes[1] ,
     source: nodes[0],
     target: nodes[1],
     class: interaction,
-    parsedMetadata:sources
-  },classes:interaction});
+    parsedMetadata: sources
+  }, classes: interaction } );
 }
 
-module.exports = {getInteractionGraphFromPC};
+module.exports = { getInteractionGraphFromPC };

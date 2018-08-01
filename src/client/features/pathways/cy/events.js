@@ -1,8 +1,12 @@
 const _ = require('lodash');
+const h = require('react-hyperscript');
 
-const PathwayNodeMetadataTip = require('./pathway-node-metadata-tooltip');
+const PathwayNodeMetadataView = require('./pathway-node-metadata-tooltip');
 const ExpandCollapseCue = require('./expand-collapse-cue');
 const { PATHWAYS_LAYOUT_OPTS } = require('./layout');
+
+const PathwayNodeMetadata = require('../../../models/pathway/pathway-node-metadata');
+const CytoscapeTooltip = require('../../../common/cy/tooltips/cytoscape-tooltip');
 
 const EXPAND_COLLAPSE_OPTS = {
   layoutBy: _.assign({}, PATHWAYS_LAYOUT_OPTS, { fit: false }),
@@ -35,18 +39,24 @@ let bindCyEvents = cy => {
   };
 
   cy.expandCollapse(EXPAND_COLLAPSE_OPTS);
-  cy.on(SHOW_TOOLTIPS_EVENT, 'node', function (evt) {
-    const node = evt.target;
+  cy.on(SHOW_TOOLTIPS_EVENT, 'node[class != "compartment"]', function (evt) {
+    let node = evt.target;
+    let metadata = new PathwayNodeMetadata(node);
 
-    if(node.data('class') !== "compartment"){
-      //Create or get tooltip HTML object
-      let tooltip = node.scratch('_tooltip');
-      if (!(tooltip)) {
-        tooltip = new PathwayNodeMetadataTip(node);
-        node.scratch('_tooltip', tooltip);
-      }
+    metadata.getPublicationData().then( () => {
+      let tooltip = new CytoscapeTooltip( node.popperRef(), {
+        theme: 'light',
+        interactive: true,
+        trigger: 'manual',
+        hideOnClick: false,
+        arrow: true,
+        placement: 'bottom',
+        distance: 10,
+        html: h(PathwayNodeMetadataView, { metadata })
+      } );
+      node.scratch('_tooltip', tooltip);
       tooltip.show();
-    }
+    });
   });
 
   cy.on('tap', evt => {
@@ -80,21 +90,36 @@ let bindCyEvents = cy => {
     let parent = node.parent();
     let ecAPI = cy.expandCollapse('get');
 
-    if( ecAPI.isCollapsible(node) || ecAPI.isExpandable(node) ){
+    let showCue = node => {
       hideCues();
-      let ecCue = node.scratch('_expandcollapsecue');
-      if( !ecCue ){
-        ecCue = new ExpandCollapseCue(node);
-        node.scratch('_expandcollapsecue', ecCue);
-      }
+      let rbb = node.renderedBoundingBox({
+        includeLabels: false
+      });
+      let ref = node.popperRef({
+        renderedPosition: () => ({ x: rbb.x1, y: rbb.y1}),
+        renderedDimensions: () => ({w: -5, h: -5})
+      });
+
+      let ecCue = new CytoscapeTooltip(ref, {
+        html: h(ExpandCollapseCue, { node } ),
+        theme: 'dark',
+        interactive: true,
+        trigger: 'manual',
+        hideOnClick: false,
+        arrow: false,
+        placement: 'bottom-end',
+        offset: '50, 0',
+        flip: false,
+        distance: 0
+      });
+      node.scratch('_expandcollapsecue', ecCue);
       ecCue.show();
+    };
+
+    if( ecAPI.isCollapsible(node) || ecAPI.isExpandable(node) ){
+      showCue(node);
     } else {
-      let ecCue = parent.scratch('_expandcollapsecue');
-      if( !ecCue ){
-        ecCue = new ExpandCollapseCue(node);
-        node.scratch('_expandcollapsecue', ecCue);
-      }
-      ecCue.show();
+      showCue(parent);
     }
 
   }, 200);

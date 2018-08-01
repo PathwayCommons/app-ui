@@ -3,7 +3,7 @@ module.exports = {
     name: 'cose-bilkent',
     nodeRepulsion: 5000,
     nodeDimensionsIncludeLabels: true,
-    tilingPaddingVertical: 20,
+    tilingPaddingVertical: 50,
     tilingPaddingHorizontal: 20,
     animate: true,
     animationDuration: 500,

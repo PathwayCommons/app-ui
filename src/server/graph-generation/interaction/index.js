@@ -46,7 +46,7 @@ const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
 const getInteractionGraphFromPC = cache(rawGetInteractionGraphFromPC, pcCache);
 
 /**
- * Parse txt format to Json
+ * Parse the PC TXT (aka extended SIF) format to JSON
  * @param {string} data graph in txt format
  * @param {String[]} Array of query Ids
  * @return {json} JSON of graph
@@ -58,13 +58,18 @@ function parse(data, queryIds){
   };
   let nodeMap=new Map(); //keeps track of nodes that have already been added
   if(data){
-    const dataSplit=data.split('\n\n');
-    const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
-    dataSplit[0].split('\n').slice(1).forEach(line => {
-      const splitLine=line.split('\t');
-      const edgeMetadata = interactionMetadata(splitLine[6],splitLine[4]);
-      addInteraction([splitLine[0], splitLine[2]], splitLine[1], edgeMetadata, network, nodeMap, nodeMetadata, queryIds);
+    const section = data.split('\n\n');
+    //populate node details map from the second section of the txt data
+    const nodeMetadata= new Map(section[1].split('\n').slice(1)
+      .map(line=>line.split('\t')).map(line=>[line[0], line.slice(1)]));
+    //process interactions from the first section of the txt datafile (edges)
+    section[0].split('\n').slice(1).forEach(line => {
+      const col=line.split('\t');
+      const edgeMetadata = interactionMetadata(col[6],col[4]);
+      addInteraction([col[0], col[2]], col[1], edgeMetadata, network, nodeMap, nodeMetadata, queryIds);
     });
+    // console.log(JSON.stringify(network.nodes[0]));//TODO: remove
+    // console.log(JSON.stringify(network.edges[0]));//TODO: remove
     return network;
   }
   return {};
@@ -82,13 +87,16 @@ function interactionMetadata(mediatorIds, pubmedIds){
  return metadata;
 }
 
+//continue parsing an interaction entry from the PC TXT datafile -
 function addInteraction(nodes, edge, sources, network, nodeMap, nodeMetadata, interactionIDs){
-  const interaction= edgeType(edge);
+  const interaction = edgeType(edge);
   nodes.forEach((node)=>{
     if(!nodeMap.has(node)){
       const metadata=nodeMetadata.get(node);
       nodeMap.set(node,true);
-      const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');
+      const links = _.uniqWith(
+        _.flatten(metadata.slice(-2).map(entry=>entry.split(';').map(entry=>entry.split(':')))), _.isEqual
+      ).filter(entry=>entry[0]!='intact');
 
       network.nodes.push({data:{
         class: "ball",

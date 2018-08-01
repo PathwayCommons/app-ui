@@ -1,8 +1,8 @@
 const _ = require('lodash');
 const h = require('react-hyperscript');
 
-const PathwayNodeMetadataView = require('./pathway-node-metadata-tooltip');
-const ExpandCollapseCue = require('./expand-collapse-cue');
+const PathwayNodeMetadataView = require('../pathway-node-metadata-tooltip');
+const ExpandCollapseCue = require('../expand-collapse-cue');
 const { PATHWAYS_LAYOUT_OPTS } = require('./layout');
 
 const PathwayNodeMetadata = require('../../../models/pathway/pathway-node-metadata');

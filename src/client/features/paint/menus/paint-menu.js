@@ -78,7 +78,7 @@ class ExpressionTableView extends React.Component {
             sortBy === 'geneName' ? h('i.material-icons', sortType === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null
           ]),
           h('th.expression-table-header-column', { onClick: () => this.handleSortChange('foldChange') }, [
-            'Expression Ratio',
+            'Expression Ratio (Log2)',
             sortBy === 'foldChange' ? h('i.material-icons', sortType === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null
           ])
         ])

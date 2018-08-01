@@ -94,7 +94,7 @@ class Enrichment extends React.Component {
   }
 
   handleInputs( inputs ) {
-    this.setState({ inputs, loaded: true, open: false, activeMenu: 'closeMenu' });
+    this.setState({ inputs, loaded: true, activeMenu: 'closeMenu', open: false });
   }
 
   handleUnrecognized( unrecognized ) {
@@ -132,13 +132,12 @@ class Enrichment extends React.Component {
   }
 
   render() {
-    let { cySrv, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading, closeToolBar, loaded, unrecognized, activeMenu, open } = this.state;
+    let { cySrv, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading, closeToolBar, loaded, activeMenu, open, unrecognized } = this.state;
 
     let retrieveTokenInput = () => h(TokenInput,{
       inputs: this.state.inputs,
       handleInputs: this.handleInputs,
       handleUnrecognized: this.handleUnrecognized,
-      unrecognized: this.state.unrecognized,
       handleGenes: this.handleGenes
     });
 
@@ -153,6 +152,7 @@ class Enrichment extends React.Component {
       closeToolBar,
       activeMenu,
       open,
+      unrecognized,
       titleContainer: () => h(retrieveTokenInput),
       download: {
         types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'),
@@ -172,7 +172,7 @@ class Enrichment extends React.Component {
     return h('div.main', {
       //click off input box to hide
       onClick: (e) => { if( e.target.id !== 'gene-input-box' ) document.getElementById('gene-input-box').blur(); },
-      //open input and unrecognized boxes onLoad only if unrecognized tokens exist
+      //open input onLoad if unrecognized tokens exist
       onLoad: () => { if( _.isEmpty(unrecognized) == false ) document.getElementById('gene-input-box').focus(); }
     },
     [content]);

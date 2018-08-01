@@ -11,23 +11,12 @@ class TokenInput extends React.Component {
     // Note on input contents: Set the initial value here from parent
     // in order to maintain contents on re-render.
     this.state = {
-      inputBoxContents: this.props.inputs,
-      openUnrecognized: false
+      inputBoxContents: this.props.inputs
     };
   }
   //store 'gene-input-box' contents on state
   handleChange(e) {
     this.setState({inputBoxContents: e.target.value});
-  }
-
-  //only open unrecognized feedback if input box has focus
-  handleFocus(){
-    this.setState({openUnrecognized: true});
-  }
-
-  //close unrecognized feedback when input box is closed
-  handleBlur(){
-    this.setState({openUnrecognized: false});
   }
 
   //call validation service API to retrieve validation result in the form of []
@@ -52,7 +41,6 @@ class TokenInput extends React.Component {
 
   render() {
 
-    const unrecognized = this.props.unrecognized;
     const state = this.state;
 
     return h('div.enrichmentInput', [
@@ -68,29 +56,16 @@ class TokenInput extends React.Component {
             className: 'gene-input-box', // used for css styling
             placeholder: 'Enter one gene per line',
             value: state.inputBoxContents,
-            onChange: (e) => this.handleChange(e),
-            onFocus: () => this.handleFocus(),
-            onBlur: () => this.handleBlur()
+            spellCheck: false,
+            onChange: (e) => this.handleChange(e)
           })
         ]),
         h('submit-container', {
           onClick: () => { this.retrieveValidationAPIResult();} },
           [h('button.submit', 'Submit')]
-        ),
-        h('div.unrecognized-token-container',{ style: { display: state.openUnrecognized ? 'block' : 'none' }},[
-          h(Textarea, {
-            id: 'unrecognized-tokens-feedback',
-            className:'unrecognized-tokens-feedback',
-            value: "Unrecognized Tokens: \n" + unrecognized.join("\n"),
-            readOnly: true,
-            //only display when container is open and unrecognized tokens exist
-            style: { display: _.isEmpty(this.props.unrecognized) ? 'none' : 'block' }
-          })
-        ])
+        )
     ]);
   }
 }
 
 module.exports = TokenInput;
-
-

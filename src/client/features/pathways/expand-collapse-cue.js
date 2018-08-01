@@ -1,6 +1,10 @@
 const React = require('react');
 const h = require('react-hyperscript');
 
+// A expand/collapse cue indicator for cytoscape nodes
+
+// props:
+// - node (Cytoscape node)
 class ExpandCollapseCue extends React.Component {
   constructor(props){
     super(props);

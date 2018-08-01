@@ -39,6 +39,10 @@ module.exports = sbgnStyleSheet(cytoscape)
   'font-size': 20,
   'text-max-width': 175
 })
+.selector('.cy-expand-collapse-meta-edge')
+.css({
+  'line-style': 'dashed'
+})
 .selector('edge')
 .css({
   'opacity': 0.3

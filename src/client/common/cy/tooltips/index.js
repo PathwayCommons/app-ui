@@ -3,6 +3,7 @@ const hh = require('hyperscript');
 const ReactDom = require('react-dom');
 const React = require('react');
 const tippy = require('tippy.js');
+const _ = require('lodash');
 
 const {databases} = require('../../config');
 const getPublications = require('./publications');
@@ -23,7 +24,7 @@ class EntityMetadata {
     this.rawData = nodeMetadata;
 
     let determineSearchLinkQuery = (node, displayName) => {
-      let nodeLabel = node.data('label');
+      let nodeLabel = node.data('label') ? node.data('label'): node.data('description');
       let nodeClass = node.data('class');
       return nodeClass === 'process' ? displayName : nodeLabel;
     };
@@ -43,11 +44,20 @@ class EntityMetadata {
 
     this.data.set('Label', node.data('label'));
 
+    this.data.set('Description', node.data('description'));
+
+    this.data.set('Shared Genes', node.data('intersection'));
+
+    this.data.set('Genes in Pathway', node.data('geneSet'));
+
+    this.data.set('Gene Count', node.data('geneCount'));
+
     this.data.set('Publications', []);
 
     this.data.set('Search Link', determineSearchLinkQuery( node, this.data.get('Display Name')));
 
     this.data.set('Database IDs', new Map(Object.entries(processDbIds(this.databaseIds()))));
+
   }
   isEmpty(){
     return this.data.entries().length === 0;
@@ -62,6 +72,9 @@ class EntityMetadata {
   label(){
     return this.data.get('Label') || '';
   }
+  description(){
+    return this.data.get('Description')|| '';
+   }
   standardName(){
     return this.data.get('Standard Name') || '';
   }
@@ -78,6 +91,21 @@ class EntityMetadata {
     }
 
     return [];
+  }
+  pathwayOverview(){
+    return this.data.get('Pathway Overview') || '';
+  }
+  sharedGenes(){
+    return this.data.get('Shared Genes') || '';
+  }
+  sharedGenesCount(){
+    return this.data.get('Shared Genes').length || '';
+  }
+  genesInPathway(){
+    return this.data.get('Genes in Pathway') || '';
+  }
+  geneCount(){
+    return this.data.get('Gene Count') || '';
   }
   databaseIds(){
     return this.data.get('Database IDs') || [];
@@ -177,19 +205,21 @@ class EntityMetaDataView extends React.Component {
     });
 
     let showType = metadata.type() !== '';
-
     let showStdName = metadata.standardName() !== '';
     let showDispName = metadata.displayName() !== '' && metadata.displayName() !== metadata.label();
     let showSynonyms = synonyms.length > 0;
     let showPubs = publications.length > 0;
+    let showPathwayOverview = metadata.pathwayOverview() !== '';
+    let showSharedGenes = metadata.sharedGenes() !== '';
+    let showGenesInPathway = metadata.genesInPathway() !== '';
 
-    let showBody = showStdName || showDispName || showSynonyms || showPubs;
+    let showBody = showStdName || showDispName || showSynonyms || showPubs || showPathwayOverview || showSharedGenes || showGenesInPathway;
     let showLinks = metadata.databaseLinks().length > 0;
 
     return h('div.metadata-tooltip', [
       h('div.metadata-tooltip-content', [
         h('div.metadata-tooltip-header', [
-          h('h2',  `${metadata.label() || metadata.displayName() || 'Unknown Entity'}`),
+          h('h2',  `${metadata.label() || metadata.displayName() || metadata.description() || 'Unknown Entity'}`),
           showType ? h('div.metadata-tooltip-type-chip', metadata.type()) : null,
         ]),
         showBody ? h('div.metadata-tooltip-body', [
@@ -214,16 +244,38 @@ class EntityMetaDataView extends React.Component {
               // h('i.material-icons', 'keyboard_arrow_right')
             ]),
             h('div', publications)
+          ]) : null,
+          showPathwayOverview ? h('div.metadata-tooltip-section', [
+            h('div.metadata-field-name', [
+              'Pathway Overview'
+            ]),
+            h('div.metadata-field-value', metadata.pathwayOverview())
+          ]) : null,
+          showSharedGenes ? h('div.metadata-tooltip-section', [
+            h('div.metadata-field-name', [
+              'Genes Shared With Entered List (' + metadata.sharedGenesCount() + ')'
+            ]),
+            h('div.metadata-field-value', _.join(metadata.sharedGenes().sort(), ", "))
+          ]) : null,
+          showGenesInPathway? h('div.metadata-tooltip-section', [
+            h('div.metadata-field-name', [
+              'Genes In Pathway (' + metadata.geneCount() + ')'
+            ]),
+            h('div.metadata-field-value', _.join(metadata.genesInPathway().sort(), ", "))
           ]) : null
         ]): null,
         h('div.metadata-tooltip-footer', [
           showLinks ? h('div.metadata-tooltip-section', [
             h('div.metadata-field-name', [
-              'Links',
+              metadata.databaseLinks().length > 1 ? 'Links' : 'Link',
               // h('i.material-icons', 'keyboard_arrow_right')
             ]),
             h('div.metadata-links', metadata.databaseLinks().slice(0, DEFAULT_NUM_LINKS).map(link => {
-              return h('a.plain-link', { href: link.url}, link.name);
+              return h('a.plain-link', {
+                target: '_blank',
+                href: link.url
+              },
+              link.name);
             }))
           ]) : null
         ]),

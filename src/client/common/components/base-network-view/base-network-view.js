@@ -68,6 +68,16 @@ class BaseNetworkView extends React.Component {
 
       const cy = cySrv.get();
 
+      //close any open tooltips
+      cy.elements().forEach(ele => {
+        const tooltip = ele.scratch('_tooltip');
+        if (tooltip) {
+          tooltip.hide();
+          ele.scratch('_tooltip-opened', false);
+        }
+        ele.unselect();
+      });
+
       cy.elements().remove();
 
       cy.add(nextProps.networkJSON);

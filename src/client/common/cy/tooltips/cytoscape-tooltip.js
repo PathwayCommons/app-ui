@@ -26,9 +26,17 @@ class CytoscapeTooltip {
       tooltip = null;
     }
 
-    tooltip = tippy(tippyRef, _.assign({}, opts, {
-      html: this.reactRender(html)
-    })).tooltips[0];
+    tooltip = tippy(tippyRef, _.assign({}, {
+      theme: 'light',
+      interactive: true,
+      trigger: 'manual',
+      hideOnClick: false,
+      arrow: true,
+      placement: 'bottom',
+      distance: 10
+      },
+      opts, { html: this.reactRender(html) }
+    )).tooltips[0];
 
     this.tooltip = tooltip;
     tooltip.show();

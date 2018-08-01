@@ -45,13 +45,6 @@ let bindCyEvents = cy => {
 
     metadata.getPublicationData().then( () => {
       let tooltip = new CytoscapeTooltip( node.popperRef(), {
-        theme: 'light',
-        interactive: true,
-        trigger: 'manual',
-        hideOnClick: false,
-        arrow: true,
-        placement: 'bottom',
-        distance: 10,
         html: h(PathwayNodeMetadataView, { metadata })
       } );
       node.scratch('_tooltip', tooltip);
@@ -165,13 +158,5 @@ let bindCyEvents = cy => {
     cy.elements().removeClass('highlighted unhighlighted');
   });
 
-
-//call style-applying and style-removing functions on 'mouseover' and 'mouseout' for non-compartment nodes
-cy.on('mouseover', 'node[class!="compartment"]', nodeHoverMouseOver);
-cy.on('mouseout', 'node[class!="compartment"]', () => {
-  nodeHoverMouseOver.cancel();
-  cy.elements().removeClass('highlighted unhighlighted');
-});
 };
-
 module.exports = bindCyEvents;

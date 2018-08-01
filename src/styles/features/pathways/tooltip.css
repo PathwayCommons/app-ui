@@ -1,3 +1,7 @@
+.tooltip-description {
+  padding: 0 1em;
+}
+
 .metadata-tooltip {
   max-width: 300px;
   min-width: 10em;

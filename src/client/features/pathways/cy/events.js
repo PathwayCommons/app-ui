@@ -103,6 +103,7 @@ let bindCyEvents = cy => {
 
   cy.on('mouseover', '.cy-expand-collapse-collapsed-node', nodeHoverExpandCollapse);
 
+  cy.on('mouseout', '$node > node', () => hideCues());
   cy.on('drag', () => hideCues());
   cy.on('pan', () => hideCues());
   cy.on('zoom', () => hideCues());

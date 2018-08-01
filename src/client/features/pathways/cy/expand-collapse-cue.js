@@ -34,7 +34,7 @@ class ExpandCollapseCue extends React.Component {
   render(){
     let { collapsed } = this.state;
     return h('div.expand-collapse-cue', { onClick: () => this.handleClick() }, [
-      h('i.material-icons', collapsed ? 'add_circle' : 'remove_circle')
+      h('i.material-icons', collapsed ? 'unfold_more' : 'unfold_less')
     ]);
   }
 }

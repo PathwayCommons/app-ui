@@ -211,6 +211,7 @@ class PathwayNodeMetadata {
     return this.data.get('Publications') || [];
   }
   getPublicationData(){
+    if( this.publicationsLoaded ){ return this.data.get('Publications') || []; }
     // append publications to the metadata model
     let getRawPublications = async rawMetadata => {
       let pubs = await getPublications(rawMetadata);
@@ -222,6 +223,7 @@ class PathwayNodeMetadata {
     };
 
     return getRawPublications(this.rawData).then( rawPubs => {
+      this.publicationsLoaded = true;
       this.data.set('Publications', rawPubs);
     });
   }

@@ -9,7 +9,7 @@ const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services/');
 
 const PathwaysToolbar = require('./pathways-toolbar');
-const PathwaysSidebar = require('./pathways-sidebar');
+const Sidebar = require('../../common/components/sidebar');
 const InfoMenu = require('./menus/network-info-menu');
 const FileDownloadMenu = require('./menus/file-download-menu');
 
@@ -99,7 +99,7 @@ class Pathways extends React.Component {
     ]);
 
     let sidebar = h('div.app-sidebar', [
-      h(PathwaysSidebar, {  controller: this, activeMenu }, [
+      h(Sidebar, {  controller: this, activeMenu }, [
         h(InfoMenu, { key: 'infoMenu', infoList: pathway.comments() }),
         h(FileDownloadMenu, { key: 'downloadMenu', cySrv, fileName: pathway.name(), uri: pathway.uri() }),
       ])

@@ -10,9 +10,9 @@ const EnrichmentDownloadMenu = require('./enrichment-download-menu');
 const EnrichmentToolbar = require('./enrichment-toolbar');
 const EnrichmentMenu = require('./enrichment-menu');
 const TokenInput = require('./token-input');
+
 const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services');
-
 const Sidebar = require('../../common/components/sidebar');
 
 const ENRICHMENT_MAP_LAYOUT = {
@@ -90,15 +90,15 @@ class EnrichmentMap extends React.Component {
         nodes: visualizationResult.graph.elements.nodes
       });
 
-      cy.layout(ENRICHMENT_MAP_LAYOUT).run();
-
-      this.setState({
-        invalidTokens: unrecognized
-      });
-
+      cy.layout(_.assign({}, ENRICHMENT_MAP_LAYOUT, { stop: () => {
+        this.setState({
+          loading: false,
+          invalidTokens: unrecognized,
+        });
+      }})).run();
     };
-    updateNetworkJSON();
 
+    this.setState({ loading: true}, () => updateNetworkJSON());
   }
 
 
@@ -134,10 +134,11 @@ class EnrichmentMap extends React.Component {
     ]);
 
     return h('div.main', [
-      appBar,
-      toolbar,
-      sidebar,
-      network
+        appBar,
+        toolbar,
+        sidebar,
+        h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, []),
+        network
     ]);
   }
 }

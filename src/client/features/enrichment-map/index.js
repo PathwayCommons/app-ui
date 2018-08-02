@@ -5,6 +5,8 @@ const Loader = require('react-loader');
 const classNames = require('classnames');
 
 const enrichmentStylesheet = require('./enrichment-stylesheet');
+
+const EnrichmentDownloadMenu = require('./enrichment-download-menu');
 const EnrichmentToolbar = require('./enrichment-toolbar');
 const EnrichmentMenu = require('./enrichment-menu');
 const TokenInput = require('./token-input');
@@ -20,16 +22,6 @@ const ENRICHMENT_MAP_LAYOUT = {
   idealEdgeLength: 200,
   animate:false
 };
-
-
-class EnrichmentNetwork {
-  constructor(){
-
-  }
-}
-
-
-let EnrichmentDownloadMenu = props => h('div', 'enrichment-download-menu');
 
 class EnrichmentMap extends React.Component {
   constructor(props){
@@ -137,7 +129,7 @@ class EnrichmentMap extends React.Component {
     let sidebar = h('div.enrichment-sidebar', [
       h(Sidebar, { controller: this, activeMenu }, [
         h(EnrichmentMenu, { key: 'enrichmentMenu', cySrv, invalidTokens }),
-        h(EnrichmentDownloadMenu, { key: 'enrichmentDownloadMenu' })
+        h(EnrichmentDownloadMenu, { key: 'enrichmentDownloadMenu', cySrv })
       ])
     ]);
 

@@ -1,5 +1,9 @@
 /*  ********ENRICHMENT INPUT BAR********   */
 
+.enrichment-icon {
+  background-image: url('../image/humanIcon.png');
+}
+
 .enrichmentInput {
   display: flex;
 }

@@ -13,13 +13,13 @@ const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services');
 const Sidebar = require('../../common/components/sidebar');
 
-const { ENRICHMENT_MAP_LAYOUT, enrichmentStylesheet } = require('./cy');
+const { ENRICHMENT_MAP_LAYOUT, enrichmentStylesheet, bindEvents } = require('./cy');
 class EnrichmentMap extends React.Component {
   constructor(props){
     super(props);
 
     this.state = {
-      cySrv: new CytoscapeService({ style: enrichmentStylesheet }),
+      cySrv: new CytoscapeService({ style: enrichmentStylesheet, onMount: bindEvents }),
       enrichmentMap: {
         nodes: [],
         edges: []

@@ -85,7 +85,7 @@ class Paint extends React.Component {
       p.load( json );
       return p;
     });
-    
+
     expressionTable.load( demoExpressions );
 
     this.setState({
@@ -202,7 +202,7 @@ class Paint extends React.Component {
 
   render() {
     let { invalidEnrichments, loading, expressionTable, curPathway, pathways, cySrv, activeMenu, paintMenuCtrls, activeTab } = this.state;
-    
+
     if( invalidEnrichments ){
       return h('div', 'The painter app requires enrichments that have an associated class file');
     }
@@ -250,11 +250,10 @@ class Paint extends React.Component {
     ]);
 
     let content = [
-      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [
-        appBar,
-        toolbar,
-        sidebar
-      ]),
+      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}),
+      appBar,
+      toolbar,
+      sidebar,
       network,
     ];
 

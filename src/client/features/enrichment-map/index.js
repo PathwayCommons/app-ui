@@ -4,8 +4,6 @@ const _ = require('lodash');
 const Loader = require('react-loader');
 const classNames = require('classnames');
 
-const enrichmentStylesheet = require('./enrichment-stylesheet');
-
 const EnrichmentDownloadMenu = require('./enrichment-download-menu');
 const EnrichmentToolbar = require('./enrichment-toolbar');
 const EnrichmentMenu = require('./enrichment-menu');
@@ -15,14 +13,7 @@ const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services');
 const Sidebar = require('../../common/components/sidebar');
 
-const ENRICHMENT_MAP_LAYOUT = {
-  name: 'cose-bilkent',
-  nodeRepulsion: 300000,
-  edgeElasticity: 0.05,
-  idealEdgeLength: 200,
-  animate:false
-};
-
+const { ENRICHMENT_MAP_LAYOUT, enrichmentStylesheet } = require('./cy');
 class EnrichmentMap extends React.Component {
   constructor(props){
     super(props);

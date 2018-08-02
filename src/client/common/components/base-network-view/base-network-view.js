@@ -36,6 +36,7 @@ class BaseNetworkView extends React.Component {
         nodeSearchValue: '',
         open: false,
         networkLoading: true,
+        unrecognized: props.unrecognized,
         updateBaseViewState: (nextState, next) => this.setState(nextState, next ? next() : null)
       }, props);
     this.state.open = this.state.activeMenu !== 'closeMenu';
@@ -47,7 +48,8 @@ class BaseNetworkView extends React.Component {
       filters: nextProps.filters,
       networkJSON: nextProps.networkJSON,
       activeMenu: nextProps.activeMenu,
-      open: nextProps.open
+      open: nextProps.open,
+      unrecognized: nextProps.unrecognized
     });
   }
 

@@ -14,7 +14,7 @@ const Pathway = require('../../models/pathway/pathway-model');
 const FileDownloadMenu = require('./menus/file-download-menu');
 const InfoMenu = require('./menus/network-info-menu');
 const PaintMenu = require('./menus/paint-menu');
-const PathwaysSidebar = require('./pathways-sidebar');
+const Sidebar = require('../../common/components/sidebar');
 const PathwaysToolbar = require('./pathways-toolbar');
 
 const demoExpressions = require('./demo-expressions.json');
@@ -228,7 +228,7 @@ class Paint extends React.Component {
     ]);
 
     let sidebar = h('div.app-sidebar', [
-      h(PathwaysSidebar, {  controller: this, activeMenu }, [
+      h(Sidebar, {  controller: this, activeMenu }, [
         h(InfoMenu, { key: 'infoMenu', infoList: curPathway.comments() } ),
         h(FileDownloadMenu, {
           key: 'downloadMenu',

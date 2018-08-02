@@ -10,12 +10,17 @@ router.get('/datasources', function (req, res) {
 });
 
 router.get('/querySearch', function (req, res) {
-  pc.querySearch(req.query).then(r => res.json(r));
+  pc.search(req.query).then(r => res.json(r));
 });
 
 //this is mainly to download and save raw data (with correct content-time) from PC ws directly to client
-router.get('/:path', function (req, res) {
-  res.redirect(config.PC_URL + req.params.path + '?' + qs.stringify(req.query));
+router.get('/pc2/:path', function (req, res) {
+  res.redirect(config.PC_URL + 'pc2/' + req.params.path + '?' + qs.stringify(req.query));
+});
+
+//may be useful in future
+router.get('/sifgraph/v1/:path', function (req, res) {
+  res.redirect(config.PC_URL + 'sifgraph/v1/' + req.params.path + '?' + qs.stringify(req.query));
 });
 
 

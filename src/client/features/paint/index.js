@@ -33,10 +33,10 @@ const { stylesheet, bindCyEvents, PATHWAYS_LAYOUT_OPTS } =  require('./cy');
 let getPathwaysRelevantTo = (searchParam, expressionTable) => {
   let expressions = expressionTable.rawExpressions;
   let geneQueries = _.chunk(expressions.map(expression => expression.geneName), 15)
-  .map(chunk => ServerAPI.querySearch({q: chunk.join(' '), type: 'Pathway'}));
+  .map(chunk => ServerAPI.search({q: chunk.join(' '), type: 'Pathway'}));
 
 
-  let searchQuery = ServerAPI.querySearch({q: searchParam, type: 'Pathway'});
+  let searchQuery = ServerAPI.search({q: searchParam, type: 'Pathway'});
 
   return Promise.all([...geneQueries, searchQuery]).then(searchResults => {
     let uniqueResults = _.uniqBy(_.flatten(searchResults), result => result.uri);

@@ -4,7 +4,6 @@ const logger = require('./../../logger');
 const LRUCache = require('lru-cache');
 const cache = require('../../cache');
 const { PC_CACHE_MAX_SIZE } = require('../../../config');
-const cytoscape = require('cytoscape');
 
 function edgeType(type) {
   switch(type){
@@ -35,8 +34,11 @@ function rawGetInteractionGraphFromPC(interactionIDs){
   return pc.query(params).then(res => {
     
     let parsedNetwork = parse(res,geneIds);
-    let filteredNetwork = addMetricandFilter(parsedNetwork.nodes, parsedNetwork.edges);
+    //avoids errors in addMetricandFilter, return empty network
+    if(_.isEmpty(parsedNetwork))
+      return {};
 
+    let filteredNetwork = addMetricAndFilter(parsedNetwork.nodes, parsedNetwork.edges);
     return {network: filteredNetwork};
   }).catch((e)=>{
     logger.error(e);
@@ -59,7 +61,6 @@ function parse(data, queryIDs){
   let nodeList =new Map(); //maps node id to node (to avoid duplicate entries)
 
   if(data){
-
     const dataSplit=data.split('\n\n');
     const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
     dataSplit[0].split('\n').slice(1).forEach(line => {
@@ -80,7 +81,7 @@ function parse(data, queryIDs){
  * @returns A network JSON with 50 nodes, sorted based on degree
  * @description The network is filtered down to the 50 nodes with largest degree.
  */
-function addMetricandFilter(nodes,edges){
+function addMetricAndFilter(nodes,edges){
   
   //converts the node map into an array, sorts by degree, converts back to map
   const filteredNodes = new Map(

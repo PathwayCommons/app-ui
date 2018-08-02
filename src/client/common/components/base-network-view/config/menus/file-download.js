@@ -46,18 +46,24 @@ class FileDownloadMenu extends React.Component {
 
   initiatePCDownload(format, fileExt, fileType) {
     this.setState({ loadingOptions: this.state.loadingOptions.concat(fileType) });
-   
-    const downloadFetch=this.props.download? this.props.download.promise():
-      ServerAPI.pcQuery('get', { uri: this.props.networkMetadata.uri, format: format }).then(res => res.text());
+    if(this.props.download){
+      const content = this.props.download.promise();
+      this.completePCDownload(content, fileExt, fileType);
+    }
+    else{
+      ServerAPI.pcQuery('get', { uri: this.props.networkMetadata.uri, format: format })
+      .then(res => res.text())
+      .then(content => this.completePCDownload(content, fileExt, fileType) );
+    }
+  }
 
-    downloadFetch.then(content => {
-      let fileContent = content;
-      if (typeof content === 'object') {
-        fileContent = JSON.stringify(content);
-      }
-      this.saveDownload(fileExt, fileContent);
-      this.setState({ loading: false, loadingOptions: _.filter(this.state.loadingOptions, item => item !== fileType) });
-    });
+  completePCDownload(content, fileExt, fileType){
+    let fileContent = content;
+        if (typeof content === 'object') {
+          fileContent = JSON.stringify(content);
+        }
+    this.saveDownload(fileExt, fileContent);
+    this.setState({ loading: false, loadingOptions: _.filter(this.state.loadingOptions, item => item !== fileType)});
   }
 
   saveDownload(file_ext, content) {
@@ -72,9 +78,9 @@ class FileDownloadMenu extends React.Component {
 
   render() {
     let menuContents = this.state.downloadTypes.map( dt => {
-      let dlOption = h('div.download-option', 
-        { 
-          onClick: () => { this.setState({loading: true}, () => this.downloadFromDisplayName( dt.displayName )); } 
+      let dlOption = h('div.download-option',
+        {
+          onClick: () => { this.setState({loading: true}, () => this.downloadFromDisplayName( dt.displayName )); }
         }, [
           h('div.download-option-header', [
             h('h3', dt.displayName),

@@ -230,8 +230,8 @@ class Interactions extends React.Component {
       filterUpdate:(evt,type)=> this.filterUpdate(evt,type),
       filters: state.filters,
       download: {
-        types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'),
-        promise: () => Promise.resolve(_.map(state.cySrv.get().edges(),edge=> edge.data().id).sort().join('\n'))
+        types: downloadTypes.filter(ele=>ele.type==='png' || ele.type==='sif'),
+        promise: () => state.cySrv.get().edges().map( edge => edge.id() ).sort().join('\n')
       },
     }):
     h('div.no-network',[h('strong.title','No interactions to display'),h('span','Try a diffrent set of entities')]);

@@ -121,3 +121,69 @@
 .gene-identifier-list {
   margin: 0 0 3px 0;
 }
+
+/*   ********ENRICHMENT TOOLTIPS********  */
+.enrichment-tooltip{
+  max-width: 300px;
+  min-width: 10em;
+  width: 20em;
+  position: relative;
+  top: 0;
+  right: 0;
+  border-radius: 0;
+  color: black;
+  text-align: left;
+  padding: 10px;
+
+  /* position: relative; */
+  left: 0;
+  word-wrap: break-word;
+  /* text-align: left; */
+}
+
+.enrichment-tooltip-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  word-wrap: break-word;
+  color: var(--dark-base-colour);
+  margin: 3px;
+  margin-bottom: 10px;
+  padding: 2px;
+  overflow: hidden;
+  & h2 {
+    margin: 0;
+    line-height: 2em;
+    font-weight: bold;
+    margin-right: 5px;
+  }
+}
+
+.enrichment-tooltip-body {
+  border-top: 1px solid var(--light-base-colour-dark);
+  margin-bottom: 10px;
+  padding-top: 10px;
+  max-height: 20em;
+  overflow-y: scroll;
+}
+
+.enrichment-tooltip-field-name {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-weight: bold;
+  margin-right: 3px;
+
+  & i {
+    height: 10px;
+    width: 10px;
+  }
+}
+
+.enrichment-tooltip-field-value{
+  display: flex;
+  flex-direction: row;
+  margin: 2px;
+  word-wrap: break-word;
+}

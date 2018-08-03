@@ -5,7 +5,7 @@ const _ = require('lodash');
 
 class EnrichmentTooltip extends React.Component {
   render(){
-    let {node, overviewDesc}= this.props;
+    let {node, overviewDesc} = this.props;
     let title = node.data('description');
     let id = node.data('id');
     let sharedGeneList = node.data('intersection');
@@ -22,8 +22,10 @@ class EnrichmentTooltip extends React.Component {
         h('h2.enrichment-tooltip-title', _.startCase(title))
       ]),
       h('div.enrichment-tooltip-body', [
-        h('div.enrichment-tooltip-field-name', 'Pathway Overview'),
-        h('div.enrichment-tooltip-field-value', overviewDesc),
+        overviewDesc ? h('div.enrichment-pathway-overview', [
+          h('div.enrichment-tooltip-field-name', 'Pathway Overview'),
+          h('div.enrichment-tooltip-field-value', overviewDesc)
+        ]) : null ,
         h('div.enrichment-tooltip-field-name', 'Genes Shared with Entered List (' + sharedGeneCount + ')'),
         h('div.enrichment-tooltip-field-value', sharedGeneList.join(', ')),
         h('div.enrichment-tooltip-field-name', 'Genes in Pathway (' + geneCount + ')'),

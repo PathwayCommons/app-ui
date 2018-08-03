@@ -60,6 +60,16 @@ class EnrichmentMap extends React.Component {
     let { cySrv } = this.state;
     let cy = cySrv.get();
 
+    //close open tooltips
+    cy.elements().forEach(ele => {
+      const tooltip = ele.scratch('_tooltip');
+      if (tooltip) {
+        tooltip.hide();
+        ele.scratch('_tooltip-opened', false);
+      }
+      ele.unselect();
+    });
+
     const updateNetworkJSON = async () => {
       const analysisResult = await ServerAPI.enrichmentAPI({ genes: genes }, "analysis");
 

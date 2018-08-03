@@ -30,8 +30,8 @@ let bindEvents = cy => {
     let node = evt.target;
     let getEnrichmentTooltipData = () => {
       let id = node.data('id');
-      if(id.includes('GO')) return ServerAPI.getGoInformation(id).then(res => {return res.results[0].definition.text;});
-      else if(id.includes('REAC')) return ServerAPI.getReactomeInformation(id).then(res => {return res.summation[0].text;});
+      if(id.includes('GO')) return ServerAPI.getGoInformation(id);
+      else if(id.includes('REAC')) return ServerAPI.getReactomeInformation(id);
     };
 
     getEnrichmentTooltipData().then( data => {

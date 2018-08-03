@@ -3,7 +3,7 @@ const CytoscapeTooltip = require('../../../common/cy/tooltips/cytoscape-tooltip'
 
 const EnrichmentTooltip = require('../enrichment-tooltip');
 
-const { ServerAPI } = require('/Users/caitlinocallaghan/Documents/GitHub/app-ui/src/client/services');
+const { ServerAPI } = require('../../../services');
 
 const ENRICHMENT_MAP_LAYOUT = {
   name: 'cose-bilkent',
@@ -34,11 +34,11 @@ let bindEvents = cy => {
       else if(id.includes('REAC')) return ServerAPI.getReactomeInformation(id);
     };
 
-    getEnrichmentTooltipData().then( data => {
+    getEnrichmentTooltipData().then( pathwayOverview => {
       let tooltip = new CytoscapeTooltip( node.popperRef(), {
         html: h(EnrichmentTooltip, {
           node: node,
-          overviewDesc: data
+          overviewDesc: pathwayOverview
           })
       } );
       node.scratch('_tooltip', tooltip);

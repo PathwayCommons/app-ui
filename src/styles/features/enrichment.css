@@ -131,15 +131,12 @@
   position: relative;
   top: 0;
   right: 0;
+  left: 0;
+  word-wrap: break-word;
   border-radius: 0;
   color: black;
   text-align: left;
   padding: 10px;
-
-  /* position: relative; */
-  left: 0;
-  word-wrap: break-word;
-  /* text-align: left; */
 }
 
 .enrichment-tooltip-header {
@@ -187,19 +184,6 @@
   flex-direction: row;
   margin: 2px;
   word-wrap: break-word;
-}
-
-.enrichment-tooltip-footer{
-  border-top: 1px solid var(--light-base-colour-dark);
-  padding-top: 10px;
-}
-
-.enrichment-tooltip-link{
-  padding-top: 5px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  flex-wrap: wrap;
 }
 
 .enrichment-tooltip-footer{

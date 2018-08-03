@@ -10,16 +10,16 @@ class EnrichmentTooltip extends React.Component {
     let id = node.data('id');
     let sharedGeneList = node.data('intersection');
     let sharedGeneCount = sharedGeneList.length;
-    let geneCount = node.data('geneCount');
     let geneSet = node.data('geneSet');
+    let geneCount = node.data('geneCount');
     let dbInfo = {};
 
     if( id.includes('GO') ) dbInfo = {name: 'Gene Ontology', url:'http://identifiers.org/go/' + id};
-    else dbInfo = {name: 'Reactome', url:'http://identifiers.org/reactome/' + id.replace("REAC:", "R-HSA-") };
+    else if( id.includes('REAC') ) dbInfo = {name: 'Reactome', url:'http://identifiers.org/reactome/' + id.replace("REAC:", "R-HSA-") };
 
     return h('div.enrichment-tooltip', [
       h('div.enrichment-tooltip-header',[
-        h('h2.enrichment-tooltip-title', _.startCase(title))
+        h('h2.enrichment-tooltip-title', title)
       ]),
       h('div.enrichment-tooltip-body', [
         overviewDesc ? h('div.enrichment-pathway-overview', [

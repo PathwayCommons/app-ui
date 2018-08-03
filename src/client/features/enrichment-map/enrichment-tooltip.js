@@ -19,7 +19,7 @@ class EnrichmentTooltip extends React.Component {
 
     return h('div.enrichment-tooltip', [
       h('div.enrichment-tooltip-header',[
-        h('h2.enrichment-tooltip-title', title)
+        h('h2.enrichment-tooltip-title', _.startCase(title))
       ]),
       h('div.enrichment-tooltip-body', [
         h('div.enrichment-tooltip-field-name', 'Pathway Overview'),
@@ -31,6 +31,14 @@ class EnrichmentTooltip extends React.Component {
       ]),
       h('div.enrichment-tooltip-footer', [
         h('a.plain-link', { href: dbInfo.url, target: '_blank', }, dbInfo.name)
+      ]),
+      h('div.enrichment-search-PC-call-to-action', [
+        h('a.enrichment-search-PC', {
+          target: '_blank',
+          href: '/search?q=' + title
+          },
+          `SEARCH PATHWAY`
+        )
       ])
     ]);
   }

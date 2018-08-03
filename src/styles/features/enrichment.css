@@ -6,6 +6,7 @@
 
 .enrichmentInput {
   display: flex;
+  padding-left: 8px;
 }
 
 .gene-input-container{
@@ -186,4 +187,17 @@
   flex-direction: row;
   margin: 2px;
   word-wrap: break-word;
+}
+
+.enrichment-tooltip-footer{
+  border-top: 1px solid var(--light-base-colour-dark);
+  padding-top: 10px;
+}
+
+.enrichment-tooltip-link{
+  padding-top: 5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }

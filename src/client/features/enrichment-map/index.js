@@ -24,9 +24,10 @@ class EnrichmentMap extends React.Component {
         nodes: [],
         edges: []
       },
-      activeMenu: 'enrichmentMenu',
+      activeMenu: 'closeMenu',
       loading: false,
-      invalidTokens: []
+      invalidTokens: [],
+      openToolBar: false
     };
 
     if( process.env.NODE_ENV !== 'production' ){
@@ -84,7 +85,9 @@ class EnrichmentMap extends React.Component {
       cy.layout(_.assign({}, ENRICHMENT_MAP_LAYOUT, { stop: () => {
         this.setState({
           loading: false,
+          activeMenu: 'enrichmentMenu',
           invalidTokens: unrecognized,
+          openToolBar: true
         });
       }})).run();
     };
@@ -94,7 +97,7 @@ class EnrichmentMap extends React.Component {
 
 
   render(){
-    let { loading, cySrv, enrichmentMap, activeMenu, invalidTokens } = this.state;
+    let { loading, cySrv, enrichmentMap, activeMenu, invalidTokens, openToolBar } = this.state;
 
     let network = h('div.network', { className: classNames({
       'network-loading': loading,
@@ -105,7 +108,7 @@ class EnrichmentMap extends React.Component {
       })
     ]);
 
-    let appBar = h('div.app-bar', [
+    let appBar = h('div.enrichment-app-bar', [
       h('div.app-bar-branding', [
         h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
         h('div.app-bar-title', 'Pathway Enrichment'),
@@ -113,7 +116,7 @@ class EnrichmentMap extends React.Component {
       ])
     ]);
 
-    let toolbar = h('div.app-toolbar', [
+    let toolbar = h('div.app-toolbar', {style: {display: openToolBar ? 'initial' : 'none'}}, [
       h(EnrichmentToolbar, { cySrv, activeMenu, controller: this })
     ]);
 
@@ -125,8 +128,8 @@ class EnrichmentMap extends React.Component {
     ]);
 
     return h('div.main', [
-        appBar,
         toolbar,
+        appBar,
         sidebar,
         h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, []),
         network

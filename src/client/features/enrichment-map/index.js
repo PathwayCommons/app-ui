@@ -109,14 +109,19 @@ class EnrichmentMap extends React.Component {
   render(){
     let { loading, cySrv, enrichmentMap, activeMenu, invalidTokens, openToolBar } = this.state;
 
-    let network = h('div.network', { className: classNames({
-      'network-loading': loading,
-      'network-sidebar-open': activeMenu !== 'closeMenu'
-    })}, [
-      h('div.network-cy', {
-        ref: dom => this.networkDiv = dom
-      })
-    ]);
+    let network = h('div.network', {
+        className: classNames({
+          'network-loading': loading,
+          'network-sidebar-open': activeMenu !== 'closeMenu'
+        }),
+        onClick: ()=> { document.getElementById('gene-input-box').blur(); }
+      },
+      [
+        h('div.network-cy', {
+          ref: dom => this.networkDiv = dom
+        })
+      ]
+    );
 
     let appBar = h('div.enrichment-app-bar', [
       h('div.app-bar-branding', [

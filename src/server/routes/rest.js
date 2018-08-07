@@ -55,12 +55,16 @@ router.post('/submit-diff', function (req, res) {
 router.get('/get-graph-and-layout', function (req, res) {
   controller.getGraphAndLayout(req.query.uri, req.query.version).then((package) => {
     res.json(package);
+    // console.log(JSON.stringify(package.graph.nodes[0]));//TODO: remove
   });
 });
 
 // Expose a rest endpoint for controller.getGraphAndLayout
 router.get('/get-interaction-graph', function (req, res) {
-  controller.getInteractionGraph(req.query.sources).then((package) => res.json(package));
+  controller.getInteractionGraph(req.query.sources).then((package) => {
+    res.json(package);
+    // console.log(JSON.stringify(package.network.nodes[0]));//TODO: remove
+  });
 });
 
 // Expose a rest endpoint for controller.endSession

@@ -8,6 +8,9 @@ const logger = require('./../../logger');
 const config = require('../../../config');
 const GCONVERT_URL = config.GPROFILER_URL + 'gconvert.cgi';
 const FETCH_TIMEOUT = 5000; //ms
+const LRUCache = require('lru-cache');
+const cache = require('../../cache');
+const { PC_CACHE_MAX_SIZE } = require('../../../config');
 
 const resultTemplate = ( unrecognized, duplicate, geneInfo ) => {
   return {
@@ -108,12 +111,12 @@ const errorHandler = ( error, query ) => {
 };
 
 
-/* validatorGconvert
+/* rawValidatorGconvert
  * @param { array } query - identifier list query
  * @param { object } userOptions - options
  * @return { object } list of unrecognized, object with duplicated and list of mapped IDs
  */
-const validatorGconvert = ( query, userOptions ) => {
+const rawValidatorGconvert = ( query, userOptions ) => {
 
   const defaultOptions = {
     'output': 'mini',
@@ -137,5 +140,9 @@ const validatorGconvert = ( query, userOptions ) => {
   })
   .catch( error => errorHandler( error, query ) );
 };
+
+const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
+
+const validatorGconvert = cache(rawValidatorGconvert, pcCache);
 
 module.exports = { validatorGconvert };

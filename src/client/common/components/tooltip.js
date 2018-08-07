@@ -20,7 +20,7 @@ class Tooltip extends React.Component {
       html: (() => {
         return h('div.tooltip-content', [h('span.tooltip-description', props.description)]);
       })(),
-      position: 'bottom',
+      placement: 'bottom',
       animate: 'fade',
       animateFill: false,
       duration: [0, 0],

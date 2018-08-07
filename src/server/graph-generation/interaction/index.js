@@ -23,7 +23,7 @@ function rawGetInteractionGraphFromPC(interactionIDs){
   const geneIds = _.uniq(_.concat([], interactionIDs)); //convert sources to array
 
   const params = {
-    cmd : 'graph',
+    cmd : 'pc2/graph',
     source : geneIds,
     pattern : ['controls-phosphorylation-of','in-complex-with','controls-expression-of', 'interacts-with'],
     kind : geneIds.length > 1 ? 'pathsbetween' : 'neighborhood',
@@ -51,7 +51,7 @@ const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
 const getInteractionGraphFromPC = cache(rawGetInteractionGraphFromPC, pcCache);
 
 /**
- * Parse txt format to Json 
+ * Parse the PC TXT (aka extended SIF) format to JSON
  * @param {string} data graph in txt format
  * @param {String[]} Array of query Ids
  * @return {json} JSON of graph
@@ -127,8 +127,7 @@ function addInteraction(nodes, edge, nodeList, edgeList, nodeMetadata, edgeMetad
     parsedMetadata:edgeMetadata
   },classes:interaction};
   edgeList.push(networkEdgeData);
-
-
+  
   nodes.forEach((node)=>{
     if(!nodeList.has(node)){
       const metadata=nodeMetadata.get(node);

@@ -1,9 +1,12 @@
-const h = require('react-hyperscript');
 const React = require('react');
-
+const h = require('react-hyperscript');
 
 let DEFAULT_NUM_LINKS = 3;
 let DEFAULT_NUM_NAMES = 3;
+
+// A component that displays a pathway node's metadata
+// props:
+// - Pathway Node Metadata class instance (Cytoscape node)
 class PathwayNodeMetadataView extends React.Component {
   constructor(props){
     super(props);

@@ -11,9 +11,10 @@ let absoluteURL = (href) => {
 };
 
 const defaultFetchOpts = {
-  method: 'GET',
-  'Content-Type': 'application/json',
-  'Accept': 'application/json'
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
 };
 
 const ServerAPI = {
@@ -22,13 +23,34 @@ const ServerAPI = {
   },
 
   getPubmedPublications( pubmedIds ){
-    return fetch('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id=' + pubmedIds.toString(), defaultFetchOpts).then(res => res.json());  
+    return fetch('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id=' + pubmedIds.toString()).then(res => res.json());
+  },
+
+  getGoInformation(goID) {
+    return fetch(`https://www.ebi.ac.uk/QuickGO/services/ontology/go/search?query=GO%3A${goID.replace("GO:", "")}&limit=1&page=1`, {method: 'GET', timeout: 100})
+    .then( res => res.json() )
+    .then( res => {
+      if(res.numberOfHits) return res.results[0].definition.text;
+      else return null;
+    })
+    .catch( () => { return null; });
+  },
+
+   getReactomeInformation(reactomeID) {
+    return fetch(`https://reactome.org/ContentService/data/query/${reactomeID.replace("REAC:", "R-HSA-")}`, {method: 'GET', timeout: 100})
+    .then( res => res.json() )
+    .then( res => {
+      if(res.summation) return res.summation[0].text;
+      else return null;
+    })
+    .catch( () => { return null; });
   },
 
   getInteractionGraph(sources) {
     return fetch(absoluteURL(`/api/get-interaction-graph?${qs.stringify(sources)}`), defaultFetchOpts).then(res => res.json());
   },
 
+  //method is a request path, e.g., 'pc2/get' or 'sifgraph/v1/pathsbetween'
   pcQuery(method, params){
     return fetch(absoluteURL(`/pc-client/${method}?${qs.stringify(params)}`), defaultFetchOpts);
   },
@@ -37,7 +59,7 @@ const ServerAPI = {
     return fetch(absoluteURL('/pc-client/datasources'), defaultFetchOpts).then(res => res.json());
   },
 
-  querySearch(query){
+  search(query){
     const queryClone=_.assign({},query);
     if (/^((uniprot|hgnc):\w+|ncbi:[0-9]+)$/i.test(queryClone.q)) {
       queryClone.q=queryClone.q.replace(/^(uniprot|ncbi|hgnc):/i,"");
@@ -67,11 +89,21 @@ const ServerAPI = {
   },
 
   getGeneInformation(ids){
-    return fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?retmode=json&db=gene&id=${ids.join(',')}`, {method: 'GET'}).then(res => res.json());
+    return fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?retmode=json&db=gene&id=${ids.join(',')}`,{method: 'GET'})
+    .then(res => res.json())
+    .catch(() => undefined);
   },
 
   getUniprotInformation(ids){
-    return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&accession=${ids.join(',')}`, defaultFetchOpts).then(res => res.json());
+    return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&accession=${ids.join(',')}`,defaultFetchOpts)
+    .then(res => res.json())
+    .catch(() => []);
+  },
+
+  getHgncInformation(id) {
+    return fetch( `https://rest.genenames.org/fetch/symbol/${id}`, {headers: {'Accept': 'application/json'}} )
+    .then(res => res.json())
+    .catch(() => undefined);
   },
 
   // Send a diff in a node to the backend. The backend will deal with merging these diffs into

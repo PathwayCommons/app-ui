@@ -48,7 +48,14 @@ const generateGraphInfo = (pathways, similarityCutoff = 0.375, jaccardOverlapWei
   for (let pathwayId in pathways) {
     if (!pathways.hasOwnProperty(pathwayId)) continue;
     const geneCount = _.find(pathywayInfo, {pathwayId: pathwayId}).genes.length;
-    elements.nodes.push({ data: _.assign({ id: pathwayId }, pathways[pathwayId], {'geneCount': geneCount }) });
+    elements.nodes.push({
+      data: _.assign(
+        { id: pathwayId },
+        pathways[pathwayId],
+        {'geneCount': geneCount },
+        {'geneSet': _.find(pathywayInfo, {pathwayId: pathwayId}).genes }
+      )
+    });
   }
 
   const edgeInfo = generateEdgeInfo(pathywayInfo, jaccardOverlapWeight, similarityCutoff);

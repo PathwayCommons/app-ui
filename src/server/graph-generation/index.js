@@ -8,7 +8,7 @@ const {getBiopaxMetadata, getGeneSymbolsForGenericNodes} = require('./biopax-met
 function getPathwayMetadata(uri) {
 
   let title, dataSource, comments, organism;
-  let get = path => pcServices.query({cmd:'traverse', uri, path})
+  let get = path => pcServices.query({cmd:'pc2/traverse', uri, path})
     .then(data => _.get(data, 'traverseEntry.0.value', null));
 
   return Promise.all([

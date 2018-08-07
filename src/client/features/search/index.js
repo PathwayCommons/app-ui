@@ -54,7 +54,7 @@ class Search extends React.Component {
           entityInfoResults: entityInfoResults
         })
       );
-      ServerAPI.querySearch(query).then(searchResults => {
+      ServerAPI.search(query).then(searchResults => {
           this.setState({
             searchResults: searchResults,
             searchLoading: false

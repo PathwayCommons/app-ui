@@ -48,7 +48,7 @@ class FileDownloadMenu extends React.Component {
     this.setState({ loadingOptions: this.state.loadingOptions.concat(fileType) });
    
     const downloadFetch=this.props.download? this.props.download.promise():
-      ServerAPI.pcQuery('get', { uri: this.props.networkMetadata.uri, format: format }).then(res => res.text());
+      ServerAPI.pcQuery('pc2/get', { uri: this.props.networkMetadata.uri, format: format }).then(res => res.text());
 
     downloadFetch.then(content => {
       let fileContent = content;

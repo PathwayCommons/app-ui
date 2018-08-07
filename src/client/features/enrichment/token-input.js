@@ -41,7 +41,7 @@ class TokenInput extends React.Component {
 
   render() {
 
-    const unrecognized = this.props.unrecognized;
+    const state = this.state;
 
     return h('div.enrichmentInput', [
         h('h4', [
@@ -52,29 +52,20 @@ class TokenInput extends React.Component {
         }),
         h('div.gene-input-container', [
           h(Textarea, {
-            className: 'gene-input-box',
+            id: 'gene-input-box', // for focus() and blur()
+            className: 'gene-input-box', // used for css styling
             placeholder: 'Enter one gene per line',
-            value: this.state.inputBoxContents,
+            value: state.inputBoxContents,
+            spellCheck: false,
             onChange: (e) => this.handleChange(e)
           })
         ]),
         h('submit-container', {
           onClick: () => { this.retrieveValidationAPIResult();} },
           [h('button.submit', 'Submit')]
-        ),
-        h('div.unrecognized-token-container',[
-          h(Textarea, {
-            className:'unrecognized-tokens-feedback',
-            value: "Unrecognized Tokens: \n" + unrecognized.join("\n"),
-            readOnly: true,
-            //if unrecognizedTokens is its default value (ie no tokens have been added), feedback box not displayed
-            style: {display: _.isEmpty( unrecognized ) ? 'none' : 'block' }
-          })
-        ])
+        )
     ]);
   }
 }
 
 module.exports = TokenInput;
-
-

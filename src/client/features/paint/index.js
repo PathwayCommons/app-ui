@@ -2,63 +2,53 @@ const React = require('react');
 const h = require('react-hyperscript');
 const queryString = require('query-string');
 const _ = require('lodash');
+const classNames = require('classnames');
 const Loader = require('react-loader');
+const Promise = require('bluebird').Promise;
 
-const { BaseNetworkView } = require('../../common/components');
-const { getLayoutConfig } = require('../../common/cy/layout');
 const CytoscapeService = require('../../common/cy');
-
 const { ServerAPI } = require('../../services');
 
+const Pathway = require('../../models/pathway/pathway-model');
 
-const { ExpressionTable, applyExpressionData } = require('./expression-table');
-const PaintMenu = require('./paint-menu');
-
+const FileDownloadMenu = require('./menus/file-download-menu');
+const InfoMenu = require('./menus/network-info-menu');
+const PaintMenu = require('./menus/paint-menu');
+const Sidebar = require('../../common/components/sidebar');
+const PathwaysToolbar = require('./pathways-toolbar');
 
 const demoExpressions = require('./demo-expressions.json');
 const demoPathways = require('./demo-pathway-results.json');
 
+const { ExpressionTable, applyExpressionData, geneIntersection } = require('./expression-table');
 
-const paintMenuId = 'paintMenu';
-const PaintViewConfig = {
-  toolbarButtons: BaseNetworkView.config.toolbarButtons.concat({
-    icon: 'format_paint',
-    id: 'showPaintMenu',
-    type: 'activateMenu',
-    menuId: 'paintMenu',
-    description: 'View expression data'
-  }),
-  menus: BaseNetworkView.config.menus.concat({
-    id: paintMenuId,
-    func: props => h(PaintMenu, props)
-  }),
-  useSearchBar: false
-};
+const { stylesheet, bindCyEvents, PATHWAYS_LAYOUT_OPTS } =  require('./cy');
 
-const getAugmentedSearchResults = (searchParam, expressions) => {
-  const geneQueries = _.chunk(expressions.map(expression => expression.geneName), 15)
-  .map(chunk => ServerAPI.querySearch({q: chunk.join(' ')}));
+// given a string of N gene names, chunk them into N / 15 subqueries and send them to pathway commons
+// for each pathway in the search results
+// get the pathway json for that result
+// find out all the genes are in that pathway
+// find all the genes in the expression data
+// return the intersection between genes in (expData, p) for p in Pathway List
+let getPathwaysRelevantTo = (searchParam, expressionTable) => {
+  let expressions = expressionTable.rawExpressions;
+  let geneQueries = _.chunk(expressions.map(expression => expression.geneName), 15)
+  .map(chunk => ServerAPI.search({q: chunk.join(' '), type: 'Pathway'}));
 
-  const searchQuery = ServerAPI.querySearch({q: searchParam});
+
+  let searchQuery = ServerAPI.search({q: searchParam, type: 'Pathway'});
 
   return Promise.all([...geneQueries, searchQuery]).then(searchResults => {
-    const uniqueResults = _.uniqBy(_.flatten(searchResults), result => result.uri);
+    let uniqueResults = _.uniqBy(_.flatten(searchResults), result => result.uri);
 
-    const pathwaysJSON = uniqueResults.map(result => ServerAPI.getPathway(result.uri, 'latest'));
+    let pathwaysJSON = uniqueResults.map(result => ServerAPI.getPathway(result.uri, 'latest'));
 
     return Promise.all(pathwaysJSON).then(pathways => {
-      const processed = pathways.map(pathway => {
-        const macromolecules = pathway.graph.nodes.filter(node => node.data.class === 'macromolecule');
-        const genesInPathway = _.flattenDeep(_.uniq([...macromolecules.map(node => node.data.label), ...macromolecules.map(node => node.data.geneSynonyms)]));
-        const genesInExpressionData = expressions.map(expression => expression.geneName);
-
-        return {
-          json: pathway,
-          geneIntersection: _.intersection(genesInPathway, genesInExpressionData)
-        };
-      });
-
-      return processed;
+      return _.uniqWith(pathways.map( pathwayJSON => {
+        let p = new Pathway();
+        p.load( pathwayJSON );
+        return p;
+      }), (p0, p1) => _.isEqual(p0.cyJson(), p1.cyJson()));
     });
   });
 };
@@ -68,160 +58,206 @@ class Paint extends React.Component {
     super(props);
 
     this.state = {
-      componentConfig: {},
-      layoutConfig: {},
-      networkJSON: {},
-      networkMetadata: {
-        name: '',
-        datasource: '',
-        comments: []
+      cySrv: new CytoscapeService({ style: stylesheet, onMount: bindCyEvents }),
+      pathways: [],
+      curPathway: new Pathway(),
+      expressionTable: new ExpressionTable(),
+      activeMenu: 'paintMenu',
+      paintMenuCtrls: {
+        exprClass: '',
+        exprFnName: 'mean',
+        exprFn: _.mean
       },
-
-      expressionsLoading: true,
-      networkLoading: true,
-
-      // enrichment data state
-      expressionTable: {},
-      selectedClass: '',
-      selectedFunction: {
-        name: 'mean',
-        func: _.mean
-      },
-
-      // search results state
-      searchParam: '',
-      searchResults: [],
-
+      activeTab: 0,
+      invalidEnrichments: false,
+      loading: true
     };
 
-    const query = queryString.parse(props.location.search);
-    const searchParam = query.q;
-    const enrichmentsURI = query.uri;
-
-    if (enrichmentsURI == null || searchParam == null) {
-      const network = demoPathways[0].json;
-      const demoExpressionTable = new ExpressionTable(demoExpressions, network.graph);
-      const layoutConfig = getLayoutConfig(network.layout);
-      const componentConfig = PaintViewConfig;
-
-      this.state = {
-        cySrv: new CytoscapeService(),
-        componentConfig: componentConfig,
-        layoutConfig: layoutConfig,
-        networkJSON: network.graph,
-        networkMetadata: {
-          uri: network.graph.pathwayMetadata.uri,
-          name: _.get(network, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
-          datasource: _.get(network, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
-          comments: network.graph.pathwayMetadata.comments,
-          organism: network.graph.pathwayMetadata.organism
-        },
-        networkLoading: false,
-        rawExpressions: demoExpressions,
-        expressionTable: demoExpressionTable,
-        selectedClass: _.get(demoExpressionTable.classes, '0', ''),
-        expressionsLoading: false,
-        searchParam: searchParam,
-        searchResults: demoPathways,
-
-        selectedSearchResult: network.graph.pathwayMetadata.uri,
-        selectedFunction: {
-          name: 'mean',
-          func: _.mean
-        }
-
-      };
-
-      const selectedFn = this.state.selectedFunction.func;
-      const selectedClass = this.state.selectedClass;
-
-      this.state.cySrv.loadPromise().then(cy => applyExpressionData(cy, demoExpressionTable, selectedClass, selectedFn));
-    } else {
-      fetch(enrichmentsURI)
-      .then(res => res.json())
-      .then(json => {
-        const expressions = _.get(json.dataSetExpressionList, '0.expressions', []);
-
-        getAugmentedSearchResults(searchParam, expressions).then(pathwayResults => {
-
-          // pathway results are sorted by gene expression intersection (largest to smallest)
-          // take the largest gene intersection by default
-
-          // see if there is a result that matches exactly
-          let candidatePathway = _.find(pathwayResults, pathway => pathway.json.graph.pathwayMetadata.title[0] === searchParam);
-
-          if (candidatePathway == null) {
-            candidatePathway = pathwayResults.sort((p0, p1) => p1.geneIntersection.length - p0.geneIntersection.length)[0];
-          }
-
-          const network = candidatePathway.json;
-
-          const expressionTable = new ExpressionTable(json, candidatePathway.json.graph);
-          const layoutConfig = getLayoutConfig(network.layout);
-          const componentConfig = PaintViewConfig;
-
-          this.setState({
-            cySrv: new CytoscapeService(),
-            componentConfig: componentConfig,
-            layoutConfig: layoutConfig,
-            networkJSON: network.graph,
-            networkMetadata: {
-              uri: network.graph.pathwayMetadata.uri,
-              name: _.get(network, 'graph.pathwayMetadata.title.0', 'Unknown Network'),
-              datasource: _.get(network, 'graph.pathwayMetadata.dataSource.0', 'Unknown Data Source'),
-              comments: network.graph.pathwayMetadata.comments,
-              organism: network.graph.pathwayMetadata.organism
-            },
-            networkLoading: false,
-            rawExpressions: json,
-            expressionTable: expressionTable,
-            selectedClass: _.get(expressionTable.classes, '0', ''),
-            expressionsLoading: false,
-            searchParam: searchParam,
-            searchResults: pathwayResults,
-
-            selectedSearchResult: candidatePathway.json.graph.pathwayMetadata.uri
-
-            }, () => {
-              const selectedFn = this.state.selectedFunction.func;
-              const selectedClass = this.state.selectedClass;
-              applyExpressionData(this.state.cy, expressionTable, selectedClass, selectedFn);
-          });
-        });
-      });
+    if( process.env.NODE_ENV !== 'production' ){
+      this.state.cySrv.getPromise().then(cy => window.cy = cy);
     }
   }
 
-  render() {
-    const state = this.state;
-
-    const baseView = h(BaseNetworkView.component, {
-      // generic base view props
-      layoutConfig: state.layoutConfig,
-      componentConfig: state.componentConfig,
-      cySrv: state.cySrv,
-      networkJSON: state.networkJSON,
-      networkMetadata: state.networkMetadata,
-
-      // paint specific props needed by the paint menu
-      rawExpressions: state.rawExpressions,
-      expressionTable: state.expressionTable,
-      selectedFunction: state.selectedFunction,
-      selectedClass: state.selectedClass,
-      activeMenu: paintMenuId,
-
-      searchParam: state.searchParam,
-      searchResults: state.searchResults,
-      selectedSearchResult: state.selectedSearchResult
-
+  loadPaintDemoData(){
+    let { expressionTable, paintMenuCtrls } = this.state;
+    let pathways = demoPathways.map( json => {
+      let p = new Pathway();
+      p.load( json );
+      return p;
     });
 
-    const loadingView = h(Loader, { loaded: !(state.expressionsLoading || state.networkLoading), options: { left: '50%', color: '#16A085' }});
+    expressionTable.load( demoExpressions );
 
-    // create a view shell loading view e.g looks like the view but its not
-    const content = state.expressionsLoading || state.networkLoading ? loadingView : baseView;
+    this.setState({
+      paintMenuCtrls: _.assign({}, paintMenuCtrls, { exprClass: expressionTable.classes[0] }),
+      pathways
+    }, () => this.loadPathway(pathways[0]));
+  }
 
-    return h('div', [content]);
+  componentDidMount(){
+    let query = queryString.parse(this.props.location.search);
+    let searchParam = query.q;
+    let enrichmentsUri = query.uri;
+    let { cySrv, expressionTable, paintMenuCtrls  } = this.state;
+    cySrv.mount(this.network);
+    cySrv.load();
+
+    // if the user just comes into the app without enrichments, load the demo data
+    if( enrichmentsUri == null ){
+      this.loadPaintDemoData();
+      return;
+    }
+
+    let getEnrichments = () => {
+      return fetch(enrichmentsUri).then( res => res.json() ).then( json =>  {
+        expressionTable.load( json );
+      });
+    };
+
+    let findBestPathway = pathways => {
+      // 1. check if there is a pathway with a name that matches the search param
+      // 2. sort the pathawys by their gene intersection between the expression table
+
+      // see if there is a pathway that has the same title as the search param
+      let bestResult = pathways.find( pathway => pathway.name() === searchParam );
+      if( bestResult == null ){
+        bestResult = pathways[0];
+      }
+
+      if( bestResult == null ){
+        return null;
+      }
+
+      return bestResult;
+    };
+
+    getEnrichments().then( () => getPathwaysRelevantTo( searchParam, expressionTable ) ).then( pathways => {
+
+      if( expressionTable.classes == null ){
+        this.setState({
+          invalidEnrichments: true
+        });
+        return;
+      }
+
+      pathways.sort((p0, p1) => geneIntersection(p1, expressionTable).length - geneIntersection(p0, expressionTable).length);
+      this.setState({
+        paintMenuCtrls: _.assign({}, paintMenuCtrls, { exprClass: expressionTable.classes[0] }),
+        pathways: pathways,
+      }, () => this.loadPathway(findBestPathway(pathways)));
+    });
+  }
+
+  loadPathway(pathway){
+    let { cySrv, paintMenuCtrls, expressionTable } = this.state;
+    let { exprClass, exprFn } = paintMenuCtrls;
+    let cy = cySrv.get();
+
+    this.setState({
+      curPathway: pathway,
+      loading: true
+    }, () => {
+      expressionTable.loadPathway( pathway.cyJson() );
+      cy.remove('*');
+      cy.add( pathway.cyJson() );
+
+      cy.layout(_.assign({}, PATHWAYS_LAYOUT_OPTS, {
+        stop: () => {
+          applyExpressionData(cy, expressionTable, exprClass, exprFn);
+          this.setState({loading: false });
+        }
+      })).run();
+    });
+  }
+
+  changeMenu(menu){
+    let resizeCyImmediate = () => this.state.cySrv.get().resize();
+    let resizeCyDebounced = _.debounce( resizeCyImmediate, 500 );
+    if( menu === this.state.activeMenu ){
+      this.setState({ activeMenu: 'closeMenu' }, resizeCyDebounced);
+    } else {
+      this.setState({ activeMenu: menu }, resizeCyDebounced);
+    }
+  }
+
+  handlePaintCtrlChange(newVal) {
+    this.setState({
+      paintMenuCtrls: _.assign({}, this.state.paintMenuCtrls, newVal)
+    }, () => {
+      let { cySrv, expressionTable, paintMenuCtrls } = this.state;
+      let { exprClass, exprFn } = paintMenuCtrls;
+      applyExpressionData(cySrv.get(), expressionTable, exprClass, exprFn);
+    });
+  }
+
+  handlePaintMenuTabChange(newTab){
+    this.setState({
+      activeTab: newTab
+    });
+  }
+
+  componentWillUnmount(){
+    this.state.cySrv.destroy();
+  }
+
+  render() {
+    let { invalidEnrichments, loading, expressionTable, curPathway, pathways, cySrv, activeMenu, paintMenuCtrls, activeTab } = this.state;
+
+    if( invalidEnrichments ){
+      return h('div', 'The painter app requires enrichments that have an associated class file');
+    }
+
+    let network = h('div.network', { className: classNames({
+      'network-loading': loading,
+      'network-sidebar-open': activeMenu !== 'closeMenu'
+    })}, [
+      h('div.network-cy', {
+        ref: dom => this.network = dom
+      })
+    ]);
+
+    let appBar = h('div.app-bar', [
+      h('div.app-bar-branding', [
+        h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
+        h('div.app-bar-title', curPathway.name() + ' | ' + curPathway.datasource())
+      ])
+    ]);
+
+    let toolbar = h('div.app-toolbar', [
+      h(PathwaysToolbar, { cySrv, activeMenu, controller: this })
+    ]);
+
+    let sidebar = h('div.app-sidebar', [
+      h(Sidebar, {  controller: this, activeMenu }, [
+        h(InfoMenu, { key: 'infoMenu', infoList: curPathway.comments() } ),
+        h(FileDownloadMenu, {
+          key: 'downloadMenu',
+          cySrv,
+          fileName: curPathway.name(),
+          uri: curPathway.uri()
+        }),
+        h(PaintMenu, {
+          key: 'paintMenu',
+          selectedIndex: activeTab,
+          controller: this,
+          cySrv,
+          curPathway,
+          paintMenuCtrls,
+          pathways,
+          expressionTable
+        })
+      ])
+    ]);
+
+    let content = [
+      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}),
+      appBar,
+      toolbar,
+      sidebar,
+      network,
+    ];
+
+    return h('div.pathways', content);
   }
 }
 

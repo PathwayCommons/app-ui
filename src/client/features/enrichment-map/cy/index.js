@@ -30,11 +30,19 @@ let bindEvents = cy => {
     let node = evt.target;
     let getEnrichmentTooltipData = () => {
       let id = node.data('id');
-      if(id.includes('GO')) return ServerAPI.getGoInformation(id);
-      else if(id.includes('REAC')) return ServerAPI.getReactomeInformation(id);
+      if(id.includes('GO')) return ServerAPI.getGoInformation( id.replace("GO:", "") );
+      else if(id.includes('REAC')) return ServerAPI.getReactomeInformation( id.replace("REAC:", "R-HSA-") );
+      else return Promise.resolve(null);
     };
 
-    getEnrichmentTooltipData().then( pathwayOverview => {
+    getEnrichmentTooltipData().then( result => {
+      //default
+      let pathwayOverview = null;
+      //successful GO API call
+      if(result && result.numberOfHits) pathwayOverview = result.results[0].definition.text;
+      //successful Reactome API call
+      else if(result && result.summation) pathwayOverview = result.summation[0].text;
+
       let tooltip = new CytoscapeTooltip( node.popperRef(), {
         html: h(EnrichmentTooltip, {
           node: node,

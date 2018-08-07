@@ -1,25 +1,5 @@
 /*  ********ENRICHMENT INPUT BAR********   */
 
-.enrichment-icon {
-  background-image: url('../image/humanIcon.png');
-}
-
-.enrichment-app-bar {
-  max-width: 80vw;
-  position: absolute;
-  top: 0;
-  left: 30px;
-  background-color: var(--light-base-colour);
-  border: 1px solid var(--light-base-colour-dark);
-  padding: 4px 8px;
-  z-index: 10;
-}
-
-.enrichment-toolbar {
-  @extend %flex-center;
-  padding-top: 4px;
-}
-
 .enrichmentInput {
   display: flex;
   padding-left: 8px;
@@ -67,6 +47,24 @@
   border-radius: 0 !important;
   height: 1.85em;
   vertical-align: middle;
+}
+
+/*   ********ENRICHMENT TOOLBAR********  */
+
+.enrichment-app-bar {
+  padding: 4px 8px;
+  z-index: 10;
+}
+
+.enrichment-app-toolbar {
+  z-index: 10;
+  position: absolute;
+  top: 100%;
+  left: -1px;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  border-radius: 0 0 0.25em 0.25em;
+  border-color: var(--light-base-colour-dark);
 }
 
 /*   ********ENRICHMENT SIDE MENU********  */

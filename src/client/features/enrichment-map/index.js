@@ -126,7 +126,7 @@ class EnrichmentMap extends React.Component {
       ])
     ]);
 
-    let toolbar = h('div.app-toolbar', {style: {display: openToolBar ? 'initial' : 'none'}}, [
+    let toolbar = h('div.enrichment-app-toolbar', {style: {display: openToolBar ? 'initial' : 'none'}}, [
       h(EnrichmentToolbar, { cySrv, activeMenu, controller: this })
     ]);
 
@@ -138,8 +138,10 @@ class EnrichmentMap extends React.Component {
     ]);
 
     return h('div.main', [
+      h('div', { className: classNames('menu-bar', { 'menu-bar-margin': activeMenu }) }, [
         toolbar,
-        appBar,
+        appBar
+      ]),
         sidebar,
         h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, []),
         network

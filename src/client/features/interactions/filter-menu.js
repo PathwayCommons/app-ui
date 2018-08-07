@@ -6,25 +6,15 @@ const _ = require('lodash');
 class InteractionsFilterMenu extends React.Component {
   constructor(props) {
     super(props);
-    this.state = _.merge({defaultSliderVal:0,maxSliderVal:0},props);
+    this.state = props;
     this.sliderUpdate = _.debounce(this.sliderUpdate,150);
 
-    this.state.cySrv.loadPromise().then( cy => {
-        let i=0;
-  
-        let sortedNodes = cy.nodes().sort(function( a, b ){
-          return b.data('bcVal') - a.data('bcVal');
-        });
-  
-        sortedNodes.forEach(node => {
-          if(i<20)
-            this.state.defaultSliderVal =  node.data('bcVal');
-          i++;
-          if(i === 1)
-            this.state.maxSliderVal = node.data('bcVal');  
-        });
-      });
-  
+    //if the network has less than 15 nodes, display all of them
+    this.state.cySrv.loadPromise().then(cy => {
+      if(cy.nodes().length < 15)
+        document.getElementById('selection-slider').value = 0;
+    });
+
   }
 
   /**
@@ -33,65 +23,24 @@ class InteractionsFilterMenu extends React.Component {
    * @description Hides nodes based on their betweenness centrality, determined by on-screen slider
    */
   sliderUpdate(){
+    //set up variables
     const cy = this.props.cySrv.get();
-
-    //get the value from the slider
     let sliderVal = document.getElementById('selection-slider').value;
-
-    //compare to pre-calculated centrality & hide if necessary
-    cy.nodes().forEach(node => {
-      if(node.data('bcVal') < sliderVal)
-        node.addClass('hidden');
-      else 
-        node.removeClass('hidden');
+    let sortedNodes = cy.nodes().sort( (a,b) => {
+      return a.data('metric') - b.data('metric');
     });
-  }
+    let i=0;
 
-  
-  /**
-   * 
-   * @param {*} nodesToShow Number of nodes that should be visible to user on first load of network
-   * @description Hides all nodes based on betweenness centrality, keeping only `nodesToShow` visible.
-   * Also sets the default value for the slider, based on this number.
-  
-  findDefaultAndUpdate(nodesToShow){
-
-    let returnValue = 0;
-    let maxVal = 0;
-
-    this.state.cySrv.loadPromise().then( cy => {
-
-      let i = 0;
-
-      //sort nodes based on betweenness centrality
-      let sortedNodes = cy.nodes().sort(function( a, b ){
-        return b.data('bcVal') - a.data('bcVal');
-      });
-
-      //get the first nodesToShow nodes
-      //also get the node with second-highest bcVal
-      sortedNodes.forEach(node => {
-        if(i<nodesToShow){
-          returnValue =  node.data('bcVal');
-          if(i === 1)
-            maxVal = node.data('bcVal');
-        }
+    cy.batch( () => {
+      sortedNodes.forEach( node => {
+        if(i < sliderVal)
+          node.addClass('hidden');
+        else
+          node.removeClass('hidden');
         i++;
       });
-
-      //hide all nodes other than the ones with top `nodesToShow`th bcVal
-      cy.nodes().forEach(node => {
-        if(node.data('bcVal') < returnValue)
-          node.addClass('hidden');
-      });
-
     });
-
-    //return the bcVal of the `nodesToShow`th highest bcVal
-    //return the bcVal of the second highest bcVal
-    return [returnValue,maxVal];
   }
-  */
 
 
   render(){
@@ -113,8 +62,9 @@ class InteractionsFilterMenu extends React.Component {
     ));
 
     //Slider listed under 'Visible Nodes' in the interaction viewer
+    //0 to 49 for OBO errors
     const slider = [
-      h('input', {type: 'range', id: 'selection-slider', min: 0, max: 0.3, step: 0.0001,
+      h('input', {type: 'range', id: 'selection-slider', min: 0, max: 49, step: 1, defaultValue:35, 
       onInput:() => this.sliderUpdate() }),
     ];
     
@@ -125,8 +75,8 @@ class InteractionsFilterMenu extends React.Component {
       h('h2.slider-heading','Visible Nodes'),
       h('div.slider-wrapper',slider),
       h('div.slider-bottom',[
-        h('span.most','Most'),
-        h('span.least','Least')
+        h('span.most','More'),
+        h('span.least','Less')
       ])
     ]);
   }

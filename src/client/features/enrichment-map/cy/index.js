@@ -3,6 +3,8 @@ const CytoscapeTooltip = require('../../../common/cy/tooltips/cytoscape-tooltip'
 
 const EnrichmentTooltip = require('../enrichment-tooltip');
 
+const { ServerAPI } = require('../../../services');
+
 const ENRICHMENT_MAP_LAYOUT = {
   name: 'cose-bilkent',
   nodeRepulsion: 300000,
@@ -26,14 +28,18 @@ let bindEvents = cy => {
 
   cy.on(SHOW_ENRICHMENT_TOOLTIPS_EVENT, 'node[class != "compartment"]', function (evt) {
     let node = evt.target;
-    // todo get enrichment node tooltip data
     let getEnrichmentTooltipData = () => {
-
+      let id = node.data('id');
+      if(id.includes('GO')) return ServerAPI.getGoInformation(id);
+      else if(id.includes('REAC')) return ServerAPI.getReactomeInformation(id);
     };
 
-    getEnrichmentTooltipData().then( data => {
+    getEnrichmentTooltipData().then( pathwayOverview => {
       let tooltip = new CytoscapeTooltip( node.popperRef(), {
-        html: h(EnrichmentTooltip, data)
+        html: h(EnrichmentTooltip, {
+          node: node,
+          overviewDesc: pathwayOverview
+          })
       } );
       node.scratch('_tooltip', tooltip);
       tooltip.show();

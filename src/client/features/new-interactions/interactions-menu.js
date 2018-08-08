@@ -40,8 +40,20 @@ class InteractionsMenu extends React.Component {
     this.setState({[type]: !this.state[type] });
   }
 
+  handleSliderChange(){
+    let cy = this.props.cySrv.get();
+    let metricCutoff = this.slider.value;
+
+    let nodesToHide = cy.nodes().sort( (n0, n1) => n0.data('metric') - n1.data('metric') ).slice(0, metricCutoff);
+    let elesToHide = nodesToHide.union(nodesToHide.connectedEdges());
+    
+
+    elesToHide.addClass('metric-hidden');
+    cy.elements().difference(elesToHide).removeClass('metric-hidden');
+  }
+
   render(){
-    let { cySrv, controller } = this.props;
+    let { cySrv } = this.props;
     let cy = cySrv.get();
 
     let hasType = (cy, type) => cy.edges(`.${type}`).length > 0;
@@ -55,7 +67,16 @@ class InteractionsMenu extends React.Component {
     return h('div', [
       hasPhosphorylations ? h('button', { onClick: () =>  this.toggleIntnType(PHOSPHORYLATION) }, 'p' ) : null,
       hasExpressions ? h('button', { onClick: () =>  this.toggleIntnType(EXPRESSION) }, 'e' ) : null,
-      hasBindings ? h('button', { onClick: () =>  this.toggleIntnType(BINDING) }, 'b' ) : null
+      hasBindings ? h('button', { onClick: () =>  this.toggleIntnType(BINDING) }, 'b' ) : null,
+      h('input', { 
+        type: 'range', 
+        ref: ele => this.slider = ele,
+        min: 0,
+        max: 49,
+        step: 1,
+        defaultValue: 35,
+        onInput: () => this.handleSliderChange()
+       })
     ]);
   }
 }

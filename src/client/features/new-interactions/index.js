@@ -49,11 +49,12 @@ class I extends React.Component {
       cy.remove('*');
       cy.add( network );
 
-      if( cy.nodes().length > NODE_FILTER_THRESHOLD ){
-        let nodesToHide = cy.nodes().sort( (n0, n1) => n0.data('metric') - n1.data('metric') ).slice(0, NUM_NODES_TO_FILTER);
+    // hide the smallest nodes and their edges according to 'metric'
+    if( cy.nodes().length > NODE_FILTER_THRESHOLD ){
+      let nodesToHide = cy.nodes().sort( (n0, n1) => n0.data('metric') - n1.data('metric') ).slice(0, NUM_NODES_TO_FILTER);
 
-        nodesToHide.union(nodesToHide.connectedEdges()).addClass('metric-hidden');
-      }
+      nodesToHide.union(nodesToHide.connectedEdges()).addClass('metric-hidden');
+    }
 
     cy.layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
         stop: () => {

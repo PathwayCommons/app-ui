@@ -11,6 +11,7 @@ const FETCH_TIMEOUT = 5000; //ms
 const LRUCache = require('lru-cache');
 const cache = require('../../cache');
 const { PC_CACHE_MAX_SIZE } = require('../../../config');
+const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
 
 const resultTemplate = ( unrecognized, duplicate, geneInfo ) => {
   return {
@@ -102,6 +103,8 @@ const bodyHandler = body =>  {
  */
 const errorHandler = ( error, query ) => {
   logger.error( error );
+  // something fishy - blow out the cache
+  pcCache.reset();
   switch ( error.name ) {
     case 'FetchError':
       return new Promise( resolve => resolve( resultTemplate( query ) ) );
@@ -140,8 +143,6 @@ const rawValidatorGconvert = ( query, userOptions ) => {
   })
   .catch( error => errorHandler( error, query ) );
 };
-
-const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
 
 const validatorGconvert = cache(rawValidatorGconvert, pcCache);
 

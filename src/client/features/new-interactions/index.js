@@ -10,8 +10,6 @@ const { ServerAPI } = require('../../services/');
 
 const InteractionsToolbar = require('./interactions-toolbar');
 const Sidebar = require('../../common/components/sidebar');
-// const InfoMenu = require('./menus/network-info-menu');
-// const FileDownloadMenu = require('./menus/file-download-menu');
 
 
 const { interactionsStylesheet, bindCyEvents, INTERACTIONS_LAYOUT_OPTS } = require('./cy');
@@ -19,6 +17,15 @@ const { interactionsStylesheet, bindCyEvents, INTERACTIONS_LAYOUT_OPTS } = requi
 let InteractionsMenu = props => h('div', 'intnMenu');
 const InteractionsDownloadMenu = require('./interactions-download-menu');
 
+
+const INTERACTION_TYPES = {
+  BINDING: 'Binding',
+  PHOSPHORYLATION: 'Phosphorylation',
+  EXPRESSION: 'Expression'
+};
+
+const NODE_FILTER_THRESHOLD = 15; // filer nodes if num nodes larger than this number
+const NUM_NODES_TO_FILTER = 35;    // filter the 35 'smallest' nodes 
 
 class I extends React.Component {
   constructor(props) {
@@ -28,7 +35,10 @@ class I extends React.Component {
       cySrv: new CytoscapeService({ style: interactionsStylesheet }),
       activeMenu: 'interactionsMenu',
       loading: true,
-      source: queryString.parse(props.location.search).source
+      source: queryString.parse(props.location.search).source,
+      showBindings: true,
+      showPhosphorylations: true,
+      showExpressions: true
     };
 
     if( process.env.NODE_ENV !== 'production' ){
@@ -40,21 +50,40 @@ class I extends React.Component {
     let { cySrv, source } = this.state;
 
     let initializeCytoscape = network => {
-      cySrv.mount(this.network);
-
+      cySrv.mount(this.networkDiv);
       let cy = cySrv.get();
       cy.remove('*');
       cy.add( network );
 
-      let layout = cy.layout(INTERACTIONS_LAYOUT_OPTS);
-      layout.on('layoutstop', () => {
-        cySrv.load();
-        this.setState({
-          source,
-          loading: false,
-        });
-      });
-      layout.run();
+      if( cy.nodes().length > NODE_FILTER_THRESHOLD ){
+        (
+          cy.nodes()
+            .sort( (n0, n1) => n0.data('metric') - n1.data('metric') )
+            .slice(0, NUM_NODES_TO_FILTER)
+            .addClass('hidden')
+        );
+      }
+
+    // cy.layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
+    //     stop: () => {
+    //       cySrv.load();
+    //       this.setState({
+    //         source,
+    //         loading: false,
+    //       });  
+    //     }
+    //   })).run();
+    // };
+
+      cy.nodes().filter( n => !n.hasClass('hidden') ).layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
+        stop: () => {
+          cySrv.load();
+          this.setState({
+            source,
+            loading: false,
+          });  
+        }
+      })).run();
     };
 
     ServerAPI.getInteractionGraph({ sources: source }).then( result => {
@@ -84,7 +113,7 @@ class I extends React.Component {
       'network-sidebar-open': activeMenu !== 'closeMenu'
     })}, [
       h('div.network-cy', {
-        ref: dom => this.network = dom
+        ref: dom => this.networkDiv = dom
       })
     ]);
 

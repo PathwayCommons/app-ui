@@ -11,14 +11,33 @@ const INTERACTION_TYPES = {
 
 
 class InteractionsMenu extends React.Component {
+  constructor(props){
+    super(props);
+
+    this.state = {
+      Binding: true,
+      Phosphorylation: true,
+      Expression: true
+    };
+  }
+
   toggleIntnType(type){
     let { cySrv } = this.props;
     let cy = cySrv.get();
     let edges = cy.edges(`.${type}`);
     let nodes = edges.connectedNodes();
 
-    edges.toggleClass('hidden');
-    nodes.toggleClass('hidden');
+    let nodeHasNoVisibleEdges = node => node.connectedEdges().every( edge => edge.hasClass('type-hidden') || edge.hasClass('metric-hidden'));
+
+    if( this.state[type] ){
+      edges.addClass('type-hidden');
+      nodes.filter( nodeHasNoVisibleEdges ).addClass('type-hidden');
+    } else {
+      nodes.removeClass('type-hidden');
+      edges.removeClass('type-hidden');
+    }
+
+    this.setState({[type]: !this.state[type] });
   }
 
   render(){
@@ -26,15 +45,17 @@ class InteractionsMenu extends React.Component {
     let cy = cySrv.get();
 
     let hasType = (cy, type) => cy.edges(`.${type}`).length > 0;
+    let { BINDING, PHOSPHORYLATION, EXPRESSION } = INTERACTION_TYPES;
 
-    let hasPhosphorylations = hasType(cy, INTERACTION_TYPES.PHOSPHORYLATION);
-    let hasExpressions = hasType(cy, INTERACTION_TYPES.EXPRESSION);
-    let hasBindings = hasType(cy, INTERACTION_TYPES.BINDING);
+
+    let hasPhosphorylations = hasType(cy, PHOSPHORYLATION);
+    let hasExpressions = hasType(cy, EXPRESSION);
+    let hasBindings = hasType(cy, BINDING);
 
     return h('div', [
-      hasPhosphorylations ? h('button', { onClick: () =>  this.toggleIntnType(INTERACTION_TYPES.PHOSPHORYLATION) }, 'p' ) : null,
-      hasExpressions ? h('button', { onClick: () =>  this.toggleIntnType(INTERACTION_TYPES.EXPRESSION) }, 'e' ) : null,
-      hasBindings ? h('button', { onClick: () =>  this.toggleIntnType(INTERACTION_TYPES.BINDING) }, 'b' ) : null
+      hasPhosphorylations ? h('button', { onClick: () =>  this.toggleIntnType(PHOSPHORYLATION) }, 'p' ) : null,
+      hasExpressions ? h('button', { onClick: () =>  this.toggleIntnType(EXPRESSION) }, 'e' ) : null,
+      hasBindings ? h('button', { onClick: () =>  this.toggleIntnType(BINDING) }, 'b' ) : null
     ]);
   }
 }

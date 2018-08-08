@@ -50,12 +50,9 @@ class I extends React.Component {
       cy.add( network );
 
       if( cy.nodes().length > NODE_FILTER_THRESHOLD ){
-        (
-          cy.nodes()
-            .sort( (n0, n1) => n0.data('metric') - n1.data('metric') )
-            .slice(0, NUM_NODES_TO_FILTER)
-            .remove()
-        );
+        let nodesToHide = cy.nodes().sort( (n0, n1) => n0.data('metric') - n1.data('metric') ).slice(0, NUM_NODES_TO_FILTER);
+
+        nodesToHide.union(nodesToHide.connectedEdges()).addClass('metric-hidden');
       }
 
     cy.layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
@@ -70,7 +67,7 @@ class I extends React.Component {
     };
 
     //   cy.nodes().filter( n => !n.hasClass('hidden') ).layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
-    //     // name: 'grid',
+    //     name: 'grid',
     //     stop: () => {
     //       cySrv.load();
     //       this.setState({

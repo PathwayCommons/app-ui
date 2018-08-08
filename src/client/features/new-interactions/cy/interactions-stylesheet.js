@@ -59,8 +59,12 @@ const iStylesheet=cytoscape.stylesheet()
 .css({
   'opacity':0.2,
 })
-.selector('.hidden')
+.selector('.metric-hidden')
 .css({
   'display':'none',
+})
+.selector('.type-hidden')
+.css({
+  'display': 'none'
 });
 module.exports = iStylesheet;

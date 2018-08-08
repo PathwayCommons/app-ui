@@ -32,9 +32,14 @@ function rawGetInteractionGraphFromPC(interactionIDs){
 
   //Fetch graph from PC
   return pc.query(params).then(res => {
-    return {
-      network : parse(res, geneIds)
-    };
+    
+    let parsedNetwork = parse(res,geneIds);
+    //avoids errors in addMetricandFilter, return empty network
+    if(_.isEmpty(parsedNetwork))
+      return {};
+
+    let filteredNetwork = addMetricAndFilter(parsedNetwork.nodes, parsedNetwork.edges);
+    return {network: filteredNetwork};
   }).catch((e)=>{
     logger.error(e);
     return 'ERROR : could not retrieve graph from PC';
@@ -51,28 +56,52 @@ const getInteractionGraphFromPC = cache(rawGetInteractionGraphFromPC, pcCache);
  * @param {String[]} Array of query Ids
  * @return {json} JSON of graph
  */
-function parse(data, queryIds){
-  let network = {
-    edges:[],
-    nodes:[],
-  };
-  let nodeMap=new Map(); //keeps track of nodes that have already been added
+function parse(data, queryIDs){
+  let edgeList = [];
+  let nodeList =new Map(); //maps node id to node (to avoid duplicate entries)
+
   if(data){
-    const section = data.split('\n\n');
-    //populate node details map from the second section of the txt data
-    const nodeMetadata= new Map(section[1].split('\n').slice(1)
-      .map(line=>line.split('\t')).map(line=>[line[0], line.slice(1)]));
-    //process interactions from the first section of the txt datafile (edges)
-    section[0].split('\n').slice(1).forEach(line => {
-      const col=line.split('\t');
-      const edgeMetadata = interactionMetadata(col[6],col[4]);
-      addInteraction([col[0], col[2]], col[1], edgeMetadata, network, nodeMap, nodeMetadata, queryIds);
+    const dataSplit=data.split('\n\n');
+    const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
+    dataSplit[0].split('\n').slice(1).forEach(line => {
+      const splitLine=line.split('\t');
+      const edgeMetadata = interactionMetadata(splitLine[6],splitLine[4]);
+      addInteraction([splitLine[0], splitLine[2]], splitLine[1], nodeList, edgeList, nodeMetadata, edgeMetadata, queryIDs);
     });
-    // console.log(JSON.stringify(network.nodes[0]));//TODO: remove
-    // console.log(JSON.stringify(network.edges[0]));//TODO: remove
-    return network;
+
+    //return network
+    return {nodes: nodeList, edges: edgeList};
   }
   return {};
+}
+
+/**
+ * 
+ * @param {*} network JSON containing nodes and edges that represent a network
+ * @returns A network JSON with 50 nodes, sorted based on degree
+ * @description The network is filtered down to the 50 nodes with largest degree.
+ */
+function addMetricAndFilter(nodes,edges){
+  
+  //converts the node map into an array, sorts by degree, converts back to map
+  const filteredNodes = new Map(
+    [...nodes.entries()].sort( (a, b) => {
+      return b[1].data.metric - a[1].data.metric;
+    }).slice(0,50)
+  );
+
+  //if the filtered node map has the source and target of the edge, add it to the return network
+  //if edges aren't filtered get some serious cytoscape errors later on
+  const filteredEdges = [];
+  edges.forEach( edge => {
+    const source = edge.data.source;
+    const target = edge.data.target;
+    if(filteredNodes.has(source) && filteredNodes.has(target))
+      filteredEdges.push(edge);
+  });
+
+
+  return { nodes:[...filteredNodes.values()], edges:filteredEdges };
 }
 
 function interactionMetadata(mediatorIds, pubmedIds){
@@ -87,39 +116,43 @@ function interactionMetadata(mediatorIds, pubmedIds){
  return metadata;
 }
 
-//continue parsing an interaction entry from the PC TXT datafile -
-function addInteraction(nodes, edge, sources, network, nodeMap, nodeMetadata, interactionIDs){
-  const interaction = edgeType(edge);
-  nodes.forEach((node)=>{
-    if(!nodeMap.has(node)){
-      const metadata=nodeMetadata.get(node);
-      nodeMap.set(node,true);
-      const links = _.uniqWith(
-        _.flatten(metadata.slice(-2).map(entry=>entry.split(';').map(entry=>entry.split(':')))), _.isEqual
-      ).filter(entry=>entry[0]!='intact');
-
-      network.nodes.push({data:{
-        class: "ball",
-        id: node,
-        label: node,
-        queried: interactionIDs.indexOf(node) != -1,
-        parsedMetadata:[
-          ['Type',
-          'bp:'+metadata[0].split(' ')[0].replace(/Reference/g,'').replace(/;/g,',')],
-          ['Database IDs', links]
-        ]
-      }});
-    }
-  });
-
-  network.edges.push({data: {
+function addInteraction(nodes, edge, nodeList, edgeList, nodeMetadata, edgeMetadata, queryIDs){
+  const interaction= edgeType(edge);
+  const networkEdgeData = {data: {
     id: nodes[0]+'\t'+edge+'\t'+nodes[1] ,
     label: nodes[0]+' '+edge.replace(/-/g,' ')+' '+nodes[1] ,
     source: nodes[0],
     target: nodes[1],
     class: interaction,
-    parsedMetadata:sources
-  },classes:interaction});
+    parsedMetadata:edgeMetadata
+  },classes:interaction};
+  edgeList.push(networkEdgeData);
+  
+  nodes.forEach((node)=>{
+    if(!nodeList.has(node)){
+      const metadata=nodeMetadata.get(node);
+      const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');
+      const networkNodeData = {data:{
+        class: "ball",
+        id: node,
+        label: node,
+        queried: queryIDs.indexOf(node) != -1,
+        metric: 1,
+        parsedMetadata:[
+          ['Type',
+          'bp:'+metadata[0].split(' ')[0].replace(/Reference/g,'').replace(/;/g,',')],
+          ['Database IDs', links]
+        ]
+      }};
+      nodeList.set(node,networkNodeData);
+    }
+    else {
+      //metric is degree
+      let nodeUpdate = nodeList.get(node);
+      nodeUpdate.data['metric'] = nodeUpdate.data.metric + 1;
+      nodeList.set(node, nodeUpdate);
+    }
+  });
 }
 
 module.exports = {getInteractionGraphFromPC};

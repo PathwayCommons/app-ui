@@ -2,6 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
 const queryString = require('query-string');
+const NODE_ENV = process.env.NODE_ENV;
 
 const GENE_OTHER_NAMES_LIMIT = 4;
 const GENE_DESCRIPTION_WORD_LIMIT = 40;
@@ -70,13 +71,14 @@ class EntityInfoBoxList extends React.Component {
   render(){
     let { entityInfoList } = this.props;
 
-    let interactionsLinkQuery = ents => queryString.stringify({source: ents.map( ent => ent.officalSymbol )});
-    let viewMultipleInteractionsLink = (
+    let interactionsLinkQuery = ents => queryString.stringify({ source: ents.map( ent => ent.officialSymbol ).join(',') });
+
+    let viewMultipleInteractionsLink = () => (
       h(Link, {
           to: { pathname: '/interactions', search: interactionsLinkQuery(entityInfoList) },
           target: '_blank',
         }, [
-        h('button.search-landing-button', 'View Interactions Between Entities')
+        h('button.search-landing-button', 'Interactions Viewer (beta)')
       ])
     );
 
@@ -90,7 +92,8 @@ class EntityInfoBoxList extends React.Component {
 
 
     return h('div.entity-info-list', [
-      h('div.entity-info-list-entries', entityInfoBoxes)
+      h('div.entity-info-list-entries', entityInfoBoxes),
+      NODE_ENV !== 'production' && entityInfoList.length > 0 ? h(viewMultipleInteractionsLink) : null
     ]);
   }
 }

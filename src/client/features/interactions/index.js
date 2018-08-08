@@ -37,7 +37,7 @@ class Interactions extends React.Component {
     super(props);
 
     const query = queryString.parse(props.location.search);
-    const sources = _.uniq(_.concat([],query.source)); //IDs or URIs
+    const sources = _.uniq(query.source.split(',')); //IDs or URIs
 
     this.state = {
       cySrv: new CytoscapeService({ style: interactionsStylesheet, showTooltipsOnEdges:true, minZoom:0.01 }),
@@ -45,7 +45,7 @@ class Interactions extends React.Component {
       layoutConfig: {},
       networkJSON: {},
       networkMetadata: {
-        name : sources+' Interactions',
+        name : sources.join(', ') + ' Interactions',
         datasource : 'Pathway Commons',
         comments: []
       },
@@ -87,7 +87,7 @@ class Interactions extends React.Component {
             node.addClass('hidden');
           i++;
         });
-    } 
+    }
 
       //for each filter (binding, phosphorylation, expression)
       //value: true/false

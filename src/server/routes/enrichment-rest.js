@@ -671,9 +671,17 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *             p_value:
  *               type: number
  *               example: 0.2
- *             gene-count:
+ *             geneCount:
  *               type: number
  *               example: 51
+ *             geneSet:
+ *               type: array
+ *               items:
+ *                 type: string
+ *                 example:
+ *                 - TP53
+ *                 - CASP9
+ *                 - CDK5
 */
 
 

@@ -29,7 +29,7 @@ class I extends React.Component {
       cySrv: new CytoscapeService({ style: interactionsStylesheet }),
       activeMenu: 'interactionsMenu',
       loading: true,
-      source: queryString.parse(props.location.search).source,
+      sources: _.uniq(queryString.parse(props.location.search).source.split(',')),
       showBindings: true,
       showPhosphorylations: true,
       showExpressions: true
@@ -41,7 +41,7 @@ class I extends React.Component {
   }
 
   componentDidMount(){
-    let { cySrv, source } = this.state;
+    let { cySrv, sources } = this.state;
 
     let initializeCytoscape = network => {
       cySrv.mount(this.networkDiv);
@@ -60,7 +60,6 @@ class I extends React.Component {
         stop: () => {
           cySrv.load();
           this.setState({
-            source,
             loading: false,
           });  
         }
@@ -80,7 +79,7 @@ class I extends React.Component {
     //   })).run();
     // };
 
-    ServerAPI.getInteractionGraph({ sources: source }).then( result => {
+    ServerAPI.getInteractionGraph({ sources: sources }).then( result => {
       initializeCytoscape( result.network );
     });
   }
@@ -100,7 +99,7 @@ class I extends React.Component {
   }
 
   render() {
-    let { loading, cySrv, activeMenu, source } = this.state;
+    let { loading, cySrv, activeMenu, sources } = this.state;
 
     let network = h('div.network', { className: classNames({
       'network-loading': loading,
@@ -114,7 +113,7 @@ class I extends React.Component {
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
         h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
-        h('div.app-bar-title', source + ' Interactions')
+        h('div.app-bar-title', sources.join(', ') + ' Interactions')
       ])
     ]);
 
@@ -125,7 +124,7 @@ class I extends React.Component {
     let sidebar = h('div.app-sidebar', [
       h(Sidebar, {  controller: this, activeMenu }, [
         h(InteractionsMenu, { key: 'interactionsMenu', controller: this, cySrv }),
-        h(InteractionsDownloadMenu, { key: 'interactionsDownloadMenu', cySrv, source } ),
+        h(InteractionsDownloadMenu, { key: 'interactionsDownloadMenu', cySrv, sources } ),
       ])
     ]);
 

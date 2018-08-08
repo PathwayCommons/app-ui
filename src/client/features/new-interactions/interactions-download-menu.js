@@ -14,7 +14,7 @@ class InteractionsDownloadMenu extends React.Component {
   }
 
   downloadPng(){
-    let { cySrv, source } = this.props;
+    let { cySrv, sources } = this.props;
     let cy = cySrv.get();
 
     let saveCyPng = () =>{
@@ -24,7 +24,7 @@ class InteractionsDownloadMenu extends React.Component {
           scale: 2,
           bg: 'white',
           full: true
-        }), `${source}_interactions.png`);
+        }), `${sources.join(',')}_interactions.png`);
         this.setState({ loading: false });
       }, 1);
     };

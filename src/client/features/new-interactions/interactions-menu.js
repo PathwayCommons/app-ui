@@ -44,8 +44,11 @@ class InteractionsMenu extends React.Component {
     let cy = this.props.cySrv.get();
     let metricCutoff = this.slider.value;
 
+    let nodeHasNoVisibleEdges = node => node.connectedEdges().every( edge => edge.hasClass('type-hidden') || edge.hasClass('metric-hidden'));
+
+
     let nodesToHide = cy.nodes().sort( (n0, n1) => n0.data('metric') - n1.data('metric') ).slice(0, metricCutoff);
-    let elesToHide = nodesToHide.union(nodesToHide.connectedEdges());
+    let elesToHide = nodesToHide.union(nodesToHide.connectedEdges()).union(cy.nodes().filter( nodeHasNoVisibleEdges ));
     
 
     elesToHide.addClass('metric-hidden');

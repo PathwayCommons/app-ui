@@ -223,7 +223,7 @@ class EntityMetaDataView extends React.Component {
               // h('i.material-icons', 'keyboard_arrow_right')
             ]),
             h('div.metadata-links', metadata.databaseLinks().slice(0, DEFAULT_NUM_LINKS).map(link => {
-              return h('a.plain-link', { href: link.url}, link.name);
+              return h('a.plain-link', { href: link.url, target: '_blank'}, link.name);
             }))
           ]) : null
         ]),

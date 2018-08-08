@@ -38,10 +38,7 @@ class TokenInput extends React.Component {
         genes: aliases,
         unrecognized: result.unrecognized,
       });
-    })
-    .catch(
-      error => error
-    );
+    });
   }
 
   render() {

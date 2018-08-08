@@ -14,15 +14,9 @@ const Sidebar = require('../../common/components/sidebar');
 
 const { interactionsStylesheet, bindCyEvents, INTERACTIONS_LAYOUT_OPTS } = require('./cy');
 
-let InteractionsMenu = props => h('div', 'intnMenu');
 const InteractionsDownloadMenu = require('./interactions-download-menu');
+const InteractionsMenu = require('./interactions-menu');
 
-
-const INTERACTION_TYPES = {
-  BINDING: 'Binding',
-  PHOSPHORYLATION: 'Phosphorylation',
-  EXPRESSION: 'Expression'
-};
 
 const NODE_FILTER_THRESHOLD = 15; // filer nodes if num nodes larger than this number
 const NUM_NODES_TO_FILTER = 35;    // filter the 35 'smallest' nodes 
@@ -60,22 +54,11 @@ class I extends React.Component {
           cy.nodes()
             .sort( (n0, n1) => n0.data('metric') - n1.data('metric') )
             .slice(0, NUM_NODES_TO_FILTER)
-            .addClass('hidden')
+            .remove()
         );
       }
 
-    // cy.layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
-    //     stop: () => {
-    //       cySrv.load();
-    //       this.setState({
-    //         source,
-    //         loading: false,
-    //       });  
-    //     }
-    //   })).run();
-    // };
-
-      cy.nodes().filter( n => !n.hasClass('hidden') ).layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
+    cy.layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
         stop: () => {
           cySrv.load();
           this.setState({
@@ -85,6 +68,18 @@ class I extends React.Component {
         }
       })).run();
     };
+
+    //   cy.nodes().filter( n => !n.hasClass('hidden') ).layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
+    //     // name: 'grid',
+    //     stop: () => {
+    //       cySrv.load();
+    //       this.setState({
+    //         source,
+    //         loading: false,
+    //       });  
+    //     }
+    //   })).run();
+    // };
 
     ServerAPI.getInteractionGraph({ sources: source }).then( result => {
       initializeCytoscape( result.network );
@@ -130,16 +125,17 @@ class I extends React.Component {
 
     let sidebar = h('div.app-sidebar', [
       h(Sidebar, {  controller: this, activeMenu }, [
-        h(InteractionsMenu, { key: 'interactionsMenu' }),
+        h(InteractionsMenu, { key: 'interactionsMenu', controller: this, cySrv }),
         h(InteractionsDownloadMenu, { key: 'interactionsDownloadMenu', cySrv, source } ),
       ])
     ]);
 
     let content = [
-      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}),
+      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [
+        sidebar
+      ]),
       appBar,
       toolbar,
-      sidebar,
       network,
     ];
 

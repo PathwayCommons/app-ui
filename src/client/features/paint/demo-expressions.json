@@ -1,1 +1,27 @@
-{"dataSetExpressionList":[{"dataSets":["TEP"],"numConditions":10,"columnNames":["MGH-BrCa-H-74_htsqct","MGH-BrCa-H-68_htsqct","MGH-BrCa-H-66_htsqct","MGH-BrCa-H-59_htsqct","MGH-BrCa-H-11_htsqct","HD-5_htsqct","HD-4_htsqct","HD-3-1_htsqct","HD-2-1_htsqct","HD-1_htsqct"],"expressionUniverse":6211,"expressions":[{"geneName":"TP53","values":[116.7492,74.6966,85.4111,283.3992,55.8744,632.8274,509.1714,545.0434,577.2644,291.2219]},{"geneName":"ZNF385A","values":[116.7492,74.6966,85.4111,283.3992,55.8744,506.2619,407.3371,436.0348,461.8115,232.9776]},{"geneName":"PCBP4","values":[350.2476,224.0899,256.2334,850.1974,167.6233,126.5655,101.8343,109.0087,115.4529,58.2444]},{"geneName":"CDKN1A","values":[116.7492,74.6966,85.4111,283.3992,55.8744,379.6964,305.5029,327.0261,346.3587,174.7332]}]}],"dataSetClassList":[{"dataSet":"TEP","classes":["BrCa","BrCa","BrCa","BrCa","BrCa","HD","HD","HD","HD","HD"],"phenotype1":"BrCa","phenotype2":"HD"}]}
+{
+  "dataSetExpressionList": [{
+    "dataSets": ["TEP"],
+    "numConditions": 10,
+    "columnNames": ["MGH-BrCa-H-74_htsqct", "MGH-BrCa-H-68_htsqct", "MGH-BrCa-H-66_htsqct", "MGH-BrCa-H-59_htsqct", "MGH-BrCa-H-11_htsqct", "HD-5_htsqct", "HD-4_htsqct", "HD-3-1_htsqct", "HD-2-1_htsqct", "HD-1_htsqct"],
+    "expressionUniverse": 6211,
+    "expressions": [{
+      "geneName": "TP53",
+      "values": [116.7492, 74.6966, 85.4111, 283.3992, 55.8744, 632.8274, 509.1714, 545.0434, 577.2644, 291.2219]
+    }, {
+      "geneName": "ZNF385A",
+      "values": [116.7492, 74.6966, 85.4111, 283.3992, 55.8744, 506.2619, 407.3371, 436.0348, 461.8115, 232.9776]
+    }, {
+      "geneName": "PCBP4",
+      "values": [350.2476, 224.0899, 256.2334, 850.1974, 167.6233, 126.5655, 101.8343, 109.0087, 115.4529, 58.2444]
+    }, {
+      "geneName": "CDKN1A",
+      "values": [116.7492, 74.6966, 85.4111, 283.3992, 55.8744, 379.6964, 305.5029, 327.0261, 346.3587, 174.7332]
+    }]
+  }],
+  "dataSetClassList": [{
+    "dataSet": "TEP",
+    "classes": ["BrCa", "BrCa", "BrCa", "BrCa", "BrCa", "HD", "HD", "HD", "HD", "HD"],
+    "phenotype1": "BrCa",
+    "phenotype2": "HD"
+  }]
+}

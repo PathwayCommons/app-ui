@@ -33,10 +33,7 @@ class TokenInput extends React.Component {
       this.props.handleGenes( aliases );
       this.props.handleUnrecognized( result.unrecognized );
       this.props.handleInputs( this.state.inputBoxContents );
-    })
-    .catch(
-      error => error
-    );
+    });
   }
 
   render() {

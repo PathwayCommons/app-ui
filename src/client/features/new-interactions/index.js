@@ -67,6 +67,7 @@ class I extends React.Component {
       })).run();
     };
 
+    // TODO use this version of the code with a layout that supports being able to run it on a subset of the graph
     //   cy.nodes().filter( n => !n.hasClass('hidden') ).layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
     //     name: 'grid',
     //     stop: () => {

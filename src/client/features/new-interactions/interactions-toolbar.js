@@ -4,7 +4,7 @@ const h = require('react-hyperscript');
 
 const IconButton = require('../../common/components/icon-button');
 
-const { fit, expandCollapse, layout, searchNodes } = require('./cy');
+const { INTERACTIONS_LAYOUT_OPTS, searchNodes } = require('./cy');
 
 class InteractionsToolbar extends React.Component {
   constructor(props){
@@ -38,13 +38,13 @@ class InteractionsToolbar extends React.Component {
       }),
       h(IconButton, {
         description: 'Fit pathway to screen',
-        onClick: () => fit( cy ),
+        onClick: () => cy.fit(cy.nodes().filter( n => !n.hasClass('type-hidden') && !n.hasClass('metric-hidden'))),
         isActive: false,
         icon: 'fullscreen'
       }),
       h(IconButton, {
         description: 'Reset pathway arrangement',
-        onClick: () => layout( cy ),
+        onClick: () => cy.layout(INTERACTIONS_LAYOUT_OPTS).run(),
         isActive: false,
         icon: 'replay'
       }),

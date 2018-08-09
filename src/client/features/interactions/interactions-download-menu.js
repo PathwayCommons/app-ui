@@ -1,7 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const saveAs = require('file-saver').saveAs;
-const _ = require('lodash');
 const Loader = require('react-loader');
 
 
@@ -33,10 +32,10 @@ class InteractionsDownloadMenu extends React.Component {
   }
 
   downloadSif(){
-    let { cySrv, source } = this.props;
+    let { cySrv, sources } = this.props;
     let edgeIds = cySrv.get().edges().map( edge => edge.data('id') ).sort().join('\n');
 
-    saveAs(new File([JSON.stringify(edgeIds)], `${source}_interactions.sif` , { type: 'text/plain;charset=utf-8' }));
+    saveAs(new File([JSON.stringify(edgeIds)], `${sources.join(',')}_interactions.sif` , { type: 'text/plain;charset=utf-8' }));
   }
 
   render() {

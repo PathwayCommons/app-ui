@@ -4,7 +4,6 @@ const Search = require('./search');
 const Interactions = require('./interactions');
 const Enrichment = require('./enrichment');
 const EnrichmentMap = require('./enrichment-map');
-const I = require('./new-interactions');
 
 module.exports = {
   Paint,
@@ -12,6 +11,5 @@ module.exports = {
   Pathways,
   Interactions,
   Enrichment,
-  EnrichmentMap,
-  I
+  EnrichmentMap
 };

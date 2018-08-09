@@ -80,7 +80,7 @@ class Interactions extends React.Component {
     // };
 
     ServerAPI.getInteractionGraph({ sources: sources }).then( result => {
-      initializeCytoscape( result.network );
+      initializeCytoscape( _.get(result, 'network', { nodes: [], edges: [] } ));
     });
   }
 

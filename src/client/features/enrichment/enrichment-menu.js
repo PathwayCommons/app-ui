@@ -4,14 +4,6 @@ const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
 const _ = require('lodash');
 
 class EnrichmentMenu extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      unrecognized: this.props.unrecognized
-    };
-  }
-
   /**
    *  @description Hides nodes based on adjusted p_value, determined by on-screen slider
    */
@@ -32,6 +24,8 @@ class EnrichmentMenu extends React.Component {
 
   render(){
 
+    let { invalidTokens } = this.props;
+
     const slider = [
       h("input",{type:"range",id:'enrichment-p_value-slider',min:0,max:0.05,step:0.0001,defaultValue:0.05,
       onInput:() => this.sliderUpdate() })
@@ -42,12 +36,9 @@ class EnrichmentMenu extends React.Component {
       cy.batch(()=>{cy.elements().removeClass('hidden');});
       });
 
-    const unrecognized = this.state.unrecognized;
-
-    const unrecognizedTokens = _.isEmpty(unrecognized) ? "" :
-      [
-        h('h3', 'Unrecognized Genes (' + unrecognized.length + ')'),
-        h('div', unrecognized.join(", "))
+    const unrecognizedTokens = invalidTokens.length === 0 ? '' : [
+        h('h3', 'Unrecognized Genes (' + invalidTokens.length + ')'),
+        h('div', invalidTokens.join(", "))
       ];
 
     return h(Tabs, [

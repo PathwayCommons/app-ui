@@ -21,7 +21,10 @@ class TokenInput extends React.Component {
 
   //call validation service API to retrieve validation result in the form of []
   retrieveValidationAPIResult(){
-    let tokenList = _.pull(this.state.inputBoxContents.split(/\s/g), "");
+    let { inputBoxContents } = this.state;
+    let { controller } = this.props;
+
+    let tokenList = _.pull(inputBoxContents.split(/\s/g), "");
      ServerAPI.enrichmentAPI({
        genes: tokenList,
        targetDb: "HGNCSYMBOL"
@@ -30,29 +33,24 @@ class TokenInput extends React.Component {
       const aliases = result.geneInfo.map( value => {
         return value.convertedAlias;
       });
-      this.props.handleGenes( aliases );
-      this.props.handleUnrecognized( result.unrecognized );
-      this.props.handleInputs( this.state.inputBoxContents );
+
+      controller.handleGeneQueryResult( {
+        genes: aliases,
+        unrecognized: result.unrecognized,
+      });
     });
   }
 
   render() {
-
-    const state = this.state;
+    let { inputBoxContents } = this.state;
 
     return h('div.enrichmentInput', [
-        h('h4', [
-          h('span', 'Pathway Enrichment   ')
-        ]),
-        h('img', {
-          src: '/img/humanIcon.png'
-        }),
         h('div.gene-input-container', [
           h(Textarea, {
             id: 'gene-input-box', // for focus() and blur()
             className: 'gene-input-box', // used for css styling
             placeholder: 'Enter one gene per line',
-            value: state.inputBoxContents,
+            value: inputBoxContents,
             spellCheck: false,
             onChange: (e) => this.handleChange(e)
           })

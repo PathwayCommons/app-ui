@@ -4,7 +4,7 @@ const h = require('react-hyperscript');
 
 const IconButton = require('../../common/components/icon-button');
 
-const { fit, expandCollapse, layout, searchNodes } = require('./cy');
+const { fit, layout, searchNodes } = require('./cy');
 
 class EnrichmentToolbar extends React.Component {
   constructor(props){

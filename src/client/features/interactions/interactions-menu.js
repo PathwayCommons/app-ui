@@ -93,7 +93,7 @@ class InteractionsMenu extends React.Component {
       h('input', {
         type: 'range',
         ref: ele => this.slider = ele,
-        min: 1,
+        min: 0,
         max: 49,
         step: 1,
         defaultValue: 35,

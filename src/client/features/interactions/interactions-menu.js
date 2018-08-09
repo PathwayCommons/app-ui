@@ -12,11 +12,12 @@ const INTERACTION_TYPES = {
 class InteractionsMenu extends React.Component {
   constructor(props){
     super(props);
+    let { BINDING, PHOSPHORYLATION, EXPRESSION } = INTERACTION_TYPES;
 
     this.state = {
-      Binding: true,
-      Phosphorylation: true,
-      Expression: true
+      [BINDING]: true,
+      [PHOSPHORYLATION]: true,
+      [EXPRESSION]: true
     };
   }
 

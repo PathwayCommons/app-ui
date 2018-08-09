@@ -46,12 +46,16 @@ class InteractionsMenu extends React.Component {
 
     let nodeHasNoVisibleEdges = node => node.connectedEdges().every( edge => edge.hasClass('type-hidden') || edge.hasClass('metric-hidden'));
 
-
     let nodesToHide = cy.nodes().sort( (n0, n1) => n0.data('metric') - n1.data('metric') ).slice(0, metricCutoff);
-    let elesToHide = nodesToHide.union(nodesToHide.connectedEdges()).union(cy.nodes().filter( nodeHasNoVisibleEdges ));
-
+    let elesToHide = nodesToHide.union(nodesToHide.connectedEdges());
 
     elesToHide.addClass('metric-hidden');
+
+    // dangling nodes may appear after adding the metric hidden class, hide these dangling nodes too
+    let danglingNodes = cy.nodes().filter( nodeHasNoVisibleEdges );
+    danglingNodes.addClass('metric-hidden');
+    elesToHide.union(danglingNodes);
+
     cy.elements().difference(elesToHide).removeClass('metric-hidden');
   }
 
@@ -89,7 +93,7 @@ class InteractionsMenu extends React.Component {
       h('input', {
         type: 'range',
         ref: ele => this.slider = ele,
-        min: 0,
+        min: 1,
         max: 49,
         step: 1,
         defaultValue: 35,

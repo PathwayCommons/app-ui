@@ -67,11 +67,7 @@ const ServerAPI = {
       body: JSON.stringify(query),
       timeout: FETCH_TIMEOUT
     })
-    .then(res => res.json())
-    .catch(err => {
-      if (err.type == 'body-timeout') return undefined ;
-      else err;
-    });
+    .then(res => res.json());
   },
 
   geneQuery(query){

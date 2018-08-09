@@ -2,180 +2,155 @@ const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
 const Loader = require('react-loader');
-//const queryString = require('query-string');
+const classNames = require('classnames');
 
-// const hideTooltips = require('../../common/cy/events/click').hideTooltips;
-// const removeStyle= require('../../common/cy/manage-style').removeStyle;
-const CytoscapeService = require('../../common/cy/');
-const enrichmentStylesheet = require('../../common/cy/enrichment-stylesheet');
-const TokenInput = require('./token-input');
+const EnrichmentDownloadMenu = require('./enrichment-download-menu');
+const EnrichmentToolbar = require('./enrichment-toolbar');
 const EnrichmentMenu = require('./enrichment-menu');
-const { BaseNetworkView } = require('../../common/components');
-const { getLayoutConfig } = require('../../common/cy/layout');
-const { ServerAPI } = require('../../services/');
+const TokenInput = require('./token-input');
 
-const downloadTypes = require('../../common/config').downloadTypes;
+const CytoscapeService = require('../../common/cy/');
+const { ServerAPI } = require('../../services');
+const Sidebar = require('../../common/components/sidebar');
 
-//extablish toolbar and declare features to not include
-const toolbarButtons = _.differenceBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'}, {'id': 'showInfo'}],'id');
-
-const enrichmentMenuId = 'enrichmentMenu';
-const enrichmentConfig={
-  //add icon for p_value legend
-  toolbarButtons: toolbarButtons.concat({
-    id: 'showEnrichmentMenu',
-    icon: 'info',
-    type: 'activateMenu',
-    menuId: 'enrichmentMenu',
-    description: 'View legend'
-  }),
-  menus: BaseNetworkView.config.menus.concat({
-    id: enrichmentMenuId,
-    func: props => h(EnrichmentMenu, props)
-  }),
-  //allow for searching of nodes
-  useSearchBar: true
-};
-
-//temporary empty network for development purposes
-const emptyNetworkJSON = {
-    edges: [],
-    nodes: []
-};
-
-// for testing purposes
-// const testNetwork = {
-//   edges: [
-//     {data:{id: 'edge1', source:"node3", target: "node4", similarity: 3 }},
-//     {data:{id: 'edge2', source:"node1", target: "node2", similarity: .4 }},
-//     {data:{id: 'edge3', source:"node1", target: "node4" }},
-//     {data:{id: 'edge4', source:"node2", target: "node4" }}
-//   ],
-//   nodes: [
-//     {data: {id: "node1", description: "node1", p_value: ".01", geneCount: "100000"}},
-//     {data: {id: "node2", description: "node2", p_value: ".05", geneCount: "1"}},
-//     {data: {id: "node3", description: "node3", p_value: ".04", geneCount: "100"}},
-//     {data: {id: "node4", description: "node4", p_value: ".025", geneCount: "500"}},
-//     {data: {id: "node5", description: "node5", p_value: ".00005", geneCount: "300"}},
-//     {data: {id: "node6", description: "node6", p_value: ".9999"}}
-//   ]
-// };
-
-
+const { ENRICHMENT_MAP_LAYOUT, enrichmentStylesheet, bindEvents } = require('./cy');
 class Enrichment extends React.Component {
-  constructor(props) {
+  constructor(props){
     super(props);
+
     this.state = {
-      cySrv: new CytoscapeService( {style: enrichmentStylesheet, showTooltipsOnEdges:true, minZoom:0.01}),
-      componentConfig: enrichmentConfig,
-      layoutConfig: getLayoutConfig('enrichment'),
-      networkJSON: emptyNetworkJSON,
-      // networkJSON: testNetwork,
-
-      networkMetadata: {
-        name: "enrichment",
-        datasource: [],
-        comments: []
+      cySrv: new CytoscapeService({ style: enrichmentStylesheet, onMount: bindEvents }),
+      enrichmentMap: {
+        nodes: [],
+        edges: []
       },
-
-      loaded: true,
       activeMenu: 'closeMenu',
-      open: false,
-
-      closeToolBar: true,
-      unrecognized: [],
-      inputs: "",
-      timedOut: false
+      loading: false,
+      invalidTokens: [],
+      openToolBar: false
     };
 
-    this.handleInputs = this.handleInputs.bind(this);
-    this.handleUnrecognized = this.handleUnrecognized.bind(this);
-    this.handleGenes = this.handleGenes.bind(this);
+    if( process.env.NODE_ENV !== 'production' ){
+      this.state.cySrv.getPromise().then(cy => window.cy = cy);
+    }
   }
 
-  handleInputs( inputs ) {
-    this.setState({ inputs, loaded: true, activeMenu: 'closeMenu', open: false });
+  componentDidMount(){
+    let { cySrv } = this.state;
+
+    cySrv.mount(this.networkDiv);
+    cySrv.load();
   }
 
-  handleUnrecognized( unrecognized ) {
-    this.setState({ unrecognized });
+  componentWillUnmount(){
+    this.state.cySrv.destroy();
   }
 
-  handleGenes( genes ) {
+  changeMenu(menu){
+    let resizeCyImmediate = () => this.state.cySrv.get().resize();
+    let resizeCyDebounced = _.debounce( resizeCyImmediate, 500 );
+    if( menu === this.state.activeMenu ){
+      this.setState({ activeMenu: 'closeMenu' }, resizeCyDebounced);
+    } else {
+      this.setState({ activeMenu: menu }, resizeCyDebounced);
+    }
+  }
+
+  handleGeneQueryResult( result ){
+    let { genes, unrecognized } = result;
+    let { cySrv } = this.state;
+    let cy = cySrv.get();
+
+    //close open tooltips
+    cy.elements().forEach(ele => {
+      const tooltip = ele.scratch('_tooltip');
+      if (tooltip) {
+        tooltip.hide();
+        ele.scratch('_tooltip-opened', false);
+      }
+      ele.unselect();
+    });
+
     const updateNetworkJSON = async () => {
       const analysisResult = await ServerAPI.enrichmentAPI({ genes: genes }, "analysis");
 
       if( !analysisResult || !analysisResult.pathwayInfo ) {
-        this.setState({ timedOut: true, loaded: true });
+        this.setState({ timedOut: true, loading: false });
         return;
       }
 
       const visualizationResult = await ServerAPI.enrichmentAPI({ pathways: analysisResult.pathwayInfo }, "visualization");
 
       if( !visualizationResult ) {
-        this.setState({ timedOut: true, loaded: true });
+        this.setState({ timedOut: true, loading: false });
         return;
       }
 
-      this.setState({
-        closeToolBar: false,
-        activeMenu: enrichmentMenuId,
-        open: true,
-        loaded: true,
-        networkJSON: {
-          edges: visualizationResult.graph.elements.edges,
-          nodes: visualizationResult.graph.elements.nodes
-        }
+      cy.remove('*');
+      cy.add({
+        edges: visualizationResult.graph.elements.edges,
+        nodes: visualizationResult.graph.elements.nodes
       });
+
+      cy.layout(_.assign({}, ENRICHMENT_MAP_LAYOUT, { stop: () => {
+        this.setState({
+          loading: false,
+          activeMenu: 'enrichmentMenu',
+          invalidTokens: unrecognized,
+          openToolBar: true
+        });
+      }})).run();
     };
-    updateNetworkJSON();
+
+    this.setState({ loading: true}, () => updateNetworkJSON());
   }
 
-  render() {
-    let { cySrv, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading, closeToolBar, loaded, activeMenu, open, unrecognized } = this.state;
 
-    let retrieveTokenInput = () => h(TokenInput,{
-      inputs: this.state.inputs,
-      handleInputs: this.handleInputs,
-      handleUnrecognized: this.handleUnrecognized,
-      handleGenes: this.handleGenes
-    });
+  render(){
+    let { loading, cySrv, activeMenu, invalidTokens, openToolBar } = this.state;
 
-    const baseView = !this.state.timedOut ?
-    h(BaseNetworkView.component, {
-      cySrv,
-      componentConfig,
-      layoutConfig,
-      networkJSON,
-      networkMetadata,
-      networkLoading,
-      closeToolBar,
-      activeMenu,
-      open,
-      unrecognized,
-      titleContainer: () => h(retrieveTokenInput),
-      download: {
-        types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'),
-        promise: () => Promise.resolve(_.map(this.state.cy.edges(),edge=> edge.data().id).sort().join('\n'))
+    let network = h('div.network', {
+        className: classNames({
+          'network-loading': loading,
+          'network-sidebar-open': activeMenu !== 'closeMenu'
+        }),
+        onClick: ()=> { document.getElementById('gene-input-box').blur(); }
       },
-    })
-    :
-    h('div.no-network',[
-      h('strong.title','Network currently unavailable'),
-      h('a', { href: location.href },'Try a diffrent set of genes')
+      [
+        h('div.network-cy', {
+          ref: dom => this.networkDiv = dom
+        })
+      ]
+    );
+
+    let appBar = h('div.enrichment-app-bar', [
+      h('div.app-bar-branding', [
+        h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
+        h('div.app-bar-title', 'Pathway Enrichment'),
+        h(TokenInput, { controller: this })
+      ])
     ]);
 
-    const loadingView = h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' }});
+    let toolbar = h('div.enrichment-app-toolbar', {style: {display: openToolBar ? 'initial' : 'none'}}, [
+      h(EnrichmentToolbar, { cySrv, activeMenu, controller: this })
+    ]);
 
-    //display baseView or loading spinner
-    const content = loaded ? baseView : loadingView;
-    return h('div.main', {
-      //click off input box to hide
-      onClick: (e) => { if( e.target.id !== 'gene-input-box' ) document.getElementById('gene-input-box').blur(); },
-      //open input onLoad if unrecognized tokens exist
-      onLoad: () => { if( _.isEmpty(unrecognized) == false ) document.getElementById('gene-input-box').focus(); }
-    },
-    [content]);
+    let sidebar = h('div.enrichment-sidebar', [
+      h(Sidebar, { controller: this, activeMenu }, [
+        h(EnrichmentMenu, { key: 'enrichmentMenu', cySrv, invalidTokens }),
+        h(EnrichmentDownloadMenu, { key: 'enrichmentDownloadMenu', cySrv })
+      ])
+    ]);
+
+    return h('div.main', [
+      h('div', { className: classNames('menu-bar', { 'menu-bar-margin': activeMenu }) }, [
+        toolbar,
+        appBar
+      ]),
+        sidebar,
+        h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, []),
+        network
+    ]);
   }
 }
 

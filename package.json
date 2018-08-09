@@ -32,7 +32,8 @@
     "lint": "run-s lint:*",
     "watch": "run-p watch:*",
     "test": "mocha --recursive",
-    "test:travis": "run-s test lint"
+    "test:travis": "run-s test lint",
+    "ci": "run-s test lint"
   },
   "dependencies": {
     "body-parser": "^1.18.2",

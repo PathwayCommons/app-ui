@@ -3,245 +3,144 @@ const h = require('react-hyperscript');
 const _ = require('lodash');
 const queryString = require('query-string');
 const Loader = require('react-loader');
+const classNames = require('classnames');
 
-const hideTooltips = require('../../common/cy/events/click').hideTooltips;
-const removeStyle= require('../../common/cy/manage-style').removeStyle;
 const CytoscapeService = require('../../common/cy/');
-const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
 const { ServerAPI } = require('../../services/');
-const FilterMenu= require('./filter-menu');
-const { BaseNetworkView } = require('../../common/components');
-const { getLayoutConfig } = require('../../common/cy/layout');
-const downloadTypes = require('../../common/config').downloadTypes;
 
-const filterMenuId='filter-menu';
-const toolbarButtons = _.differenceBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'},{'id':'showInfo'}],'id');
-const interactionsConfig={
-  toolbarButtons: toolbarButtons.concat({
-    id: 'filter',
-    icon: 'filter_list',
-    type: 'activateMenu',
-    menuId: filterMenuId,
-    description: 'Filter interaction types'
-  }),
-  menus: BaseNetworkView.config.menus.concat({
-    id: filterMenuId,
-    width: 25, //%
-    func: props => h(FilterMenu, props)
-  }),
-  useSearchBar: true
-};
+const InteractionsToolbar = require('./interactions-toolbar');
+const Sidebar = require('../../common/components/sidebar');
+
+
+const { interactionsStylesheet, INTERACTIONS_LAYOUT_OPTS } = require('./cy');
+
+const InteractionsDownloadMenu = require('./interactions-download-menu');
+const InteractionsMenu = require('./interactions-menu');
+
+
+const NODE_FILTER_THRESHOLD = 15; // filer nodes if num nodes larger than this number
+const NUM_NODES_TO_FILTER = 35;    // filter the 35 'smallest' nodes
 
 class Interactions extends React.Component {
   constructor(props) {
     super(props);
 
-    const query = queryString.parse(props.location.search);
-    const sources = _.uniq(_.concat([],query.source)); //IDs or URIs
-
     this.state = {
-      cySrv: new CytoscapeService({ style: interactionsStylesheet, showTooltipsOnEdges:true, minZoom:0.01 }),
-      componentConfig: {},
-      layoutConfig: {},
-      networkJSON: {},
-      networkMetadata: {
-        name : sources+' Interactions',
-        datasource : 'Pathway Commons',
-        comments: []
-      },
-      ids: sources,
-      loaded: false,
-      categories: new Map (),
-      //enable all filters by default
-      filters:{
-        Binding:true,
-        Phosphorylation:true,
-        Expression:true
-      }
+      cySrv: new CytoscapeService({ style: interactionsStylesheet }),
+      activeMenu: 'interactionsMenu',
+      loading: true,
+      sources: _.uniq(queryString.parse(props.location.search).source.split(',')),
+      showBindings: true,
+      showPhosphorylations: true,
+      showExpressions: true
     };
 
-    ServerAPI.getInteractionGraph({sources:sources})
-      .then(result=>{
-        const layoutConfig = getLayoutConfig('interactions');
-        const network= result.network;
-        this.setState({
-          componentConfig : interactionsConfig,
-          layoutConfig : layoutConfig,
-          networkJSON : network,
-          loaded: true
-        });
-    });
+    if( process.env.NODE_ENV !== 'production' ){
+      this.state.cySrv.getPromise().then(cy => window.cy = cy);
+    }
+  }
 
-    this.state.cySrv.loadPromise().then(cy => {
-      const { categories, filters, layoutConfig } = this.state;
+  componentDidMount(){
+    let { cySrv, sources } = this.state;
 
-      this.generateCentralityValues();
-      this.displayDefaultNodes(cy,20);
+    let initializeCytoscape = network => {
+      cySrv.mount(this.networkDiv);
+      let cy = cySrv.get();
+      cy.remove('*');
+      cy.add( network );
 
-      //for each filter (binding, phosphorylation, expression)
-      //value: true/false
-      //type: binding/expression etc..
-      _.forEach(filters,(value,type)=>{
-        //Filter each edge based on which category they belong to
-        //get all nodes connected to those edges
-        const edges = cy.edges().filter(`.${type}`);
-        const nodes = edges.connectedNodes();
+    // hide the smallest nodes and their edges according to 'metric'
+    if( cy.nodes().length > NODE_FILTER_THRESHOLD ){
+      let nodesToHide = cy.nodes().sort( (n0, n1) => n0.data('metric') - n1.data('metric') ).slice(0, NUM_NODES_TO_FILTER);
 
-        //if the list of edges has a length >0
-        //collect data for which edges and nodes are associated with each filter type
-        if (edges.length) {
-          categories.set(type,{edges:edges,nodes:nodes});
-        } else {
-        //if there are no edges for this filter, delete the filter
-          categories.delete(type);
-          delete filters[type];
+      nodesToHide.union(nodesToHide.connectedEdges()).addClass('metric-hidden');
+    }
+
+    cy.layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
+        stop: () => {
+          cySrv.load();
+          this.setState({
+            loading: false,
+          });
         }
-      });
+      })).run();
+    };
 
-      //update state with new values
-      this.setState({
-        categories:categories,
-        filters:filters
-      });
+    // TODO use this version of the code with a layout that supports being able to run it on a subset of the graph
+    //   cy.nodes().filter( n => !n.hasClass('hidden') ).layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
+    //     name: 'grid',
+    //     stop: () => {
+    //       cySrv.load();
+    //       this.setState({
+    //         source,
+    //         loading: false,
+    //       });
+    //     }
+    //   })).run();
+    // };
 
-      //set the layout?
-      const initialLayoutOpts = layoutConfig.defaultLayout.options;
-      const layout = cy.layout(initialLayoutOpts);
-      layout.run();
-    });
-
-  }
-
-  filterUpdate(type) {
-    //get variables
-    const state = this.state;
-    const categories = state.categories;
-    const filters = state.filters;
-    const cy = state.cySrv.get();
-    const edges = categories.get(type).edges;
-    const nodes = categories.get(type).nodes;
-    //hide all tooltips
-
-    hideTooltips(cy);
-    //???
-    const hovered = cy.filter(ele=>ele.scratch('_hover-style-before'));
-
-    cy.batch(()=>{
-      //"you probably do not want to use eles.style() et cetera" - cytoscape documentation
-      removeStyle(cy, hovered, '_hover-style-before');
-      //remove all nodes & edges matching the passed filter, if set to true
-      //if set to false, restore all nodes associated with the filter
-      if(filters[type]){
-          cy.remove(edges);
-          cy.remove(nodes.filter(nodes=>nodes.connectedEdges().empty()));
-      }
-      else{
-        edges.union(nodes).restore();
-      }
-    });
-
-    //toggle the filter
-    filters[type]=!filters[type];
-    this.setState({
-      filters:filters
+    ServerAPI.getInteractionGraph({ sources: sources }).then( result => {
+      initializeCytoscape( result.network );
     });
   }
 
-  displayDefaultNodes(cy,nodesToShow){
-    let i = 0;
-    let returnValue = 0;
-
-    //sort nodes based on betweenness centrality
-    let sortedNodes = cy.nodes().sort(function( a, b ){
-      return b.data('bcVal') - a.data('bcVal');
-    });
-
-    //get the first nodesToShow nodes
-    //also get the node with second-highest bcVal
-    sortedNodes.forEach(node => {
-      if(i<nodesToShow)
-        returnValue =  node.data('bcVal');
-      i++;
-    });
-
-      //hide all nodes other than the ones with top `nodesToShow`th bcVal
-    cy.nodes().forEach(node => {
-      if(node.data('bcVal') < returnValue)
-        node.addClass('hidden');
-     });
-  };
-
-  /**
-   * @description This function generates normalized betweenness centrality values for each node in the network,
-   * and adds the calculated information to each node as a new data field
-   */
-  generateCentralityValues(){
-    //setting up base variables
-    const state = this.state;
-    const cy = state.cySrv.get();
-
-    const bc = cy.$().bc();
-    const nodes = cy.nodes();
-    if(nodes.length === 0) return;
-
-
-    //loop through the nodes, collected betweenness centrality values
-    let centralityVals = [];
-    let centralityMap = [];
-    nodes.forEach( (ele) => {
-      if(ele.data){
-        let bcVal = bc.betweenness(ele);
-        centralityVals.push(bcVal);
-        centralityMap.push([ele,bcVal]);
-      }
-    });
-
-    //normalize the values and add as field in node data
-    const max = Math.max(...centralityVals);
-    const min = Math.min(...centralityVals);
-    centralityMap.forEach( (ele) => {
-      ele[0].data('bcVal',this.normalizeValue(ele[1],max,min));
-    });
-
+  componentWillUnmount(){
+    this.state.cySrv.destroy();
   }
 
-  /**
-   * @description Converts a number to a normalized value in the range [0,1]
-   * @param {} value The value to be normalized
-   * @param {*} max The maximum number this value can be
-   * @param {*} min The minimum number this value can be
-   */
-  normalizeValue(value,max,min){
-    return (value-min)/(max-min);
+  changeMenu(menu){
+    let resizeCyImmediate = () => this.state.cySrv.get().resize();
+    let resizeCyDebounced = _.debounce( resizeCyImmediate, 500 );
+    if( menu === this.state.activeMenu ){
+      this.setState({ activeMenu: 'closeMenu' }, resizeCyDebounced);
+    } else {
+      this.setState({ activeMenu: menu }, resizeCyDebounced);
+    }
   }
 
-  render(){
-    const state = this.state;
-    const loaded = state.loaded;
+  render() {
+    let { loading, cySrv, activeMenu, sources } = this.state;
 
-    const baseView = !_.isEmpty(state.networkJSON) ? h(BaseNetworkView.component, {
-      layoutConfig: state.layoutConfig,
-      componentConfig: state.componentConfig,
-      cySrv: state.cySrv,
-      networkJSON: state.networkJSON,
-      networkMetadata: state.networkMetadata,
-      //interaction specific
-      activeMenu:filterMenuId,
-      filterUpdate:(evt,type)=> this.filterUpdate(evt,type),
-      filters: state.filters,
-      download: {
-        types: downloadTypes.filter(ele=>ele.type==='png'||ele.type==='sif'),
-        promise: () => Promise.resolve(_.map(state.cySrv.get().edges(),edge=> edge.data().id).sort().join('\n'))
-      },
-    }):
-    h('div.no-network',[h('strong.title','No interactions to display'),h('span','Try a diffrent set of entities')]);
+    let network = h('div.network', { className: classNames({
+      'network-loading': loading,
+      'network-sidebar-open': activeMenu !== 'closeMenu'
+    })}, [
+      h('div.network-cy', {
+        ref: dom => this.networkDiv = dom
+      })
+    ]);
 
-    const loadingView = h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' }});
+    let appBar = h('div.app-bar', [
+      h('div.app-bar-branding', [
+        h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
+        h('div.app-bar-title', sources.join(', ') + ' Interactions')
+      ])
+    ]);
 
-    // create a view shell loading view e.g looks like the view but its not
-    const content = loaded ? baseView : loadingView;
+    let toolbar = h('div.app-toolbar', [
+      h(InteractionsToolbar, { cySrv, activeMenu, controller: this })
+    ]);
 
-    return h('div.main', [content]);
+    let sidebar = h('div.app-sidebar', [
+      h(Sidebar, {  controller: this, activeMenu }, [
+        h(InteractionsMenu, { key: 'interactionsMenu', controller: this, cySrv }),
+        h(InteractionsDownloadMenu, { key: 'interactionsDownloadMenu', cySrv, sources } ),
+      ])
+    ]);
+
+    let content = [
+      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [
+        sidebar
+      ]),
+      appBar,
+      toolbar,
+      network,
+    ];
+
+    return h('div.interactions', content);
   }
+
 }
+
+
 module.exports = Interactions;

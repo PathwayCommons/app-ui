@@ -10,8 +10,9 @@
   position: relative;
 }
 
-.pathways-toolbar { 
+.pathways-toolbar {
   @extend %flex-center;
+  height: 38px;
 }
 
 .pathways-search-nodes {

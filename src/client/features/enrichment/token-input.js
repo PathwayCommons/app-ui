@@ -56,7 +56,14 @@ class TokenInput extends React.Component {
           })
         ]),
         h('submit-container', {
-          onClick: () => { this.retrieveValidationAPIResult();} },
+          onClick: () => {
+            if(!inputBoxContents) return;
+            else if(!inputBoxContents.replace(/\s/g, "")) {
+              this.setState({ inputBoxContents: "" });
+              return;
+            }
+            else this.retrieveValidationAPIResult();
+          }},
           [h('button.submit', 'Submit')]
         )
     ]);

@@ -31,8 +31,8 @@ let bindEvents = cy => {
     let getEnrichmentTooltipData = () => {
       let id = node.data('id');
 
-      if(/^GO:\d+$/.test(id)) return ServerAPI.getGoInformation( id.replace("GO:", "") );
-      else if(/^REAC:\d+$/.test(id)) return ServerAPI.getReactomeInformation( id.replace("REAC:", "R-HSA-") );
+      if( /^GO:\d+$/.test(id) ) return ServerAPI.getGoInformation( id.replace("GO:", "") );
+      else if( /^REAC:\d+$/.test(id) ) return ServerAPI.getReactomeInformation( id.replace("REAC:", "R-HSA-") );
       else return Promise.resolve(null);
     };
 

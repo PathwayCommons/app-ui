@@ -57,6 +57,7 @@ class InteractionsMenu extends React.Component {
 
   render(){
     let { cySrv } = this.props;
+    let { Binding, Expression, Phosphorylation } = this.state;
     let cy = cySrv.get();
 
     let hasType = (cy, type) => cy.edges(`.${type}`).length > 0;
@@ -68,9 +69,18 @@ class InteractionsMenu extends React.Component {
     let hasBindings = hasType(cy, BINDING);
 
     return h('div', [
-      hasPhosphorylations ? h('button', { onClick: () =>  this.toggleIntnType(PHOSPHORYLATION) }, 'p' ) : null,
-      hasExpressions ? h('button', { onClick: () =>  this.toggleIntnType(EXPRESSION) }, 'e' ) : null,
-      hasBindings ? h('button', { onClick: () =>  this.toggleIntnType(BINDING) }, 'b' ) : null,
+      hasPhosphorylations ? h('div', { 
+        onClick: () =>  this.toggleIntnType(PHOSPHORYLATION),
+        className: classNames('interaction-filter-button', Phosphorylation ? 'interaction-filter-active' : 'interaction-filter-not-active')
+      }, 'Phosphorylation' ) : null,
+      hasExpressions ? h('div', { 
+        onClick: () =>  this.toggleIntnType(EXPRESSION),
+        className: classNames('interaction-filter-button', Expression ? 'interaction-filter-active' : 'interaction-filter-not-active')
+      }, 'Expression' ) : null,
+      hasBindings ? h('div', { 
+        onClick: () =>  this.toggleIntnType(BINDING),
+        className: classNames('interaction-filter-button', Binding ? 'interaction-filter-active' : 'interaction-filter-not-active')
+      }, 'Binding' ) : null,
       h('input', { 
         type: 'range', 
         ref: ele => this.slider = ele,

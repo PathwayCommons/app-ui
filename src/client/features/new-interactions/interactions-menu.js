@@ -49,7 +49,7 @@ class InteractionsMenu extends React.Component {
 
     let nodesToHide = cy.nodes().sort( (n0, n1) => n0.data('metric') - n1.data('metric') ).slice(0, metricCutoff);
     let elesToHide = nodesToHide.union(nodesToHide.connectedEdges()).union(cy.nodes().filter( nodeHasNoVisibleEdges ));
-    
+
 
     elesToHide.addClass('metric-hidden');
     cy.elements().difference(elesToHide).removeClass('metric-hidden');
@@ -68,28 +68,37 @@ class InteractionsMenu extends React.Component {
     let hasExpressions = hasType(cy, EXPRESSION);
     let hasBindings = hasType(cy, BINDING);
 
+    let InteractionToggleButton = props => {
+      let { type, active } = props;
+      return h('div', {
+        onClick: () =>  this.toggleIntnType(type),
+        className: classNames('interaction-filter-button', active ? 'interaction-filter-active' : 'interaction-filter-not-active'),
+
+      }, [
+        h('div', { className: classNames('interaction-filter-legend', { [type]: active } ) } ),
+        h('h4.button-label', type)
+      ]);
+    };
+
     return h('div', [
-      hasPhosphorylations ? h('div', { 
-        onClick: () =>  this.toggleIntnType(PHOSPHORYLATION),
-        className: classNames('interaction-filter-button', Phosphorylation ? 'interaction-filter-active' : 'interaction-filter-not-active')
-      }, 'Phosphorylation' ) : null,
-      hasExpressions ? h('div', { 
-        onClick: () =>  this.toggleIntnType(EXPRESSION),
-        className: classNames('interaction-filter-button', Expression ? 'interaction-filter-active' : 'interaction-filter-not-active')
-      }, 'Expression' ) : null,
-      hasBindings ? h('div', { 
-        onClick: () =>  this.toggleIntnType(BINDING),
-        className: classNames('interaction-filter-button', Binding ? 'interaction-filter-active' : 'interaction-filter-not-active')
-      }, 'Binding' ) : null,
-      h('input', { 
-        type: 'range', 
+      h('h3', 'Interaction Filters'),
+      hasPhosphorylations ? h(InteractionToggleButton, { type: PHOSPHORYLATION, active: Phosphorylation }) : null,
+      hasBindings ? h(InteractionToggleButton, { type: BINDING, active: Binding }) : null,
+      hasExpressions ? h(InteractionToggleButton, { type: EXPRESSION, active: Expression }) : null,
+      h('h3', 'Visible Entities'),
+      h('input', {
+        type: 'range',
         ref: ele => this.slider = ele,
         min: 0,
         max: 49,
         step: 1,
         defaultValue: 35,
         onInput: () => this.handleSliderChange()
-       })
+       }),
+       h('div.slider-bottom', [
+         h('span.most', 'More'),
+         h('span.least', 'Less')
+       ])
     ]);
   }
 }

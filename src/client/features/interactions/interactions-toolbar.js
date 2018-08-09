@@ -20,7 +20,7 @@ class InteractionsToolbar extends React.Component {
 
   render(){
     let { cySrv, controller, activeMenu } = this.props;
-    let { searchValue } = this.state;
+    // let { searchValue } = this.state;
     let cy = cySrv.get();
 
     return h('div.pathways-toolbar', [
@@ -48,21 +48,21 @@ class InteractionsToolbar extends React.Component {
         isActive: false,
         icon: 'replay'
       }),
-      h('div.pathways-search-nodes', {
-        onChange: e => this.handleNodeSearchChange(e.target.value)
-      }, [
-        h('div.pathways-search-bar', [
-          h('input.pathways-search-input', {
-            value: searchValue,
-            type: 'search',
-            placeholder: 'Search entities',
-          }),
-          searchValue !== '' ? h('div.pathways-search-clear', {
-            onClick: () => this.handleNodeSearchChange('')}, [
-            h('i.material-icons', 'close')
-          ]) : null
-        ])
-      ])
+      // h('div.pathways-search-nodes', {
+      //   onChange: e => this.handleNodeSearchChange(e.target.value)
+      // }, [
+      //   h('div.pathways-search-bar', [
+      //     h('input.pathways-search-input', {
+      //       value: searchValue,
+      //       type: 'search',
+      //       placeholder: 'Search entities',
+      //     }),
+      //     searchValue !== '' ? h('div.pathways-search-clear', {
+      //       onClick: () => this.handleNodeSearchChange('')}, [
+      //       h('i.material-icons', 'close')
+      //     ]) : null
+      //   ])
+      // ])
     ]);
   }
 }

@@ -30,8 +30,6 @@ let bindEvents = cy => {
     let node = evt.target;
     let getEnrichmentTooltipData = () => {
       let id = node.data('id');
-      const regexGO = RegExp(`^GO:\d+$`);
-      const regexREAC = RegExp(/^REAC:\d+$/);
 
       if(/^GO:\d+$/.test(id)) return ServerAPI.getGoInformation( id.replace("GO:", "") );
       else if(/^REAC:\d+$/.test(id)) return ServerAPI.getReactomeInformation( id.replace("REAC:", "R-HSA-") );
@@ -54,7 +52,8 @@ let bindEvents = cy => {
       } );
       node.scratch('_tooltip', tooltip);
       tooltip.show();
-    });
+    })
+    .catch(err => console.log(err));
   });
 
   cy.on('tap', evt => {

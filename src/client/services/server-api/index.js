@@ -29,14 +29,13 @@ const ServerAPI = {
   getGoInformation(goID) {
     return fetch(`https://www.ebi.ac.uk/QuickGO/services/ontology/go/search?query=GO%3A${goID}&limit=1&page=1`, {method: 'GET', timeout: 100})
     .then( res => res.json() )
-    .catch( (err) => console.log(err.message));
+    .catch( err => console.log(err.message));
   },
 
   getReactomeInformation(reactomeID) {
     return fetch(`https://reactome.org/ContentService/data/query/${reactomeID}`, {method: 'GET', timeout: 100})
     .then( res => res.json() )
-    .catch( (err) => console.log(err.message));
-
+    .catch( err => console.log(err.message));
   },
 
   getInteractionGraph(sources) {

@@ -38,7 +38,7 @@ let bindEvents = cy => {
 
     getEnrichmentTooltipData().then( result => {
       //default
-      let pathwayOverview = null;
+      let pathwayOverview = 'Information not available';
       //successful GO API call
       if(result && result.numberOfHits) pathwayOverview = result.results[0].definition.text;
       //successful Reactome API call
@@ -53,7 +53,16 @@ let bindEvents = cy => {
       node.scratch('_tooltip', tooltip);
       tooltip.show();
     })
-    .catch(err => console.log(err));
+    .catch( () => {
+      let tooltip = new CytoscapeTooltip( node.popperRef(), {
+        html: h(EnrichmentTooltip, {
+          node: node,
+          overviewDesc: 'Information not available'
+          })
+      } );
+      node.scratch('_tooltip', tooltip);
+      tooltip.show();
+    });
   });
 
   cy.on('tap', evt => {

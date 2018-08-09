@@ -53,12 +53,6 @@ module.exports = () => {
         render: props => {
           return h(Features.EnrichmentMap, props);
         }
-      },
-      {
-        path: '/tn',
-        render: props => {
-          return h(Features.I, props);
-        }
       }
     ].map( spec => h(Route, _.assign({ exact: true }, spec)) ))
   ]);

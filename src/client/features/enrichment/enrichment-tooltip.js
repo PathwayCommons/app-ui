@@ -20,10 +20,10 @@ class EnrichmentTooltip extends React.Component {
         h('h2.enrichment-tooltip-title', title)
       ]),
       h('div.enrichment-tooltip-body', [
-        overviewDesc ? h('div.enrichment-pathway-overview', [
+        h('div.enrichment-pathway-overview', [
           h('div.enrichment-tooltip-field-name', 'Pathway Overview'),
           h('div.enrichment-tooltip-field-value', overviewDesc)
-        ]) : null ,
+        ]),
         h('div.enrichment-tooltip-field-name', 'Genes Shared with Entered List (' + sharedGeneCount + ')'),
         h('div.enrichment-tooltip-field-value', sharedGeneList.join(', ')),
         h('div.enrichment-tooltip-field-name', 'Genes in Pathway (' + geneCount + ')'),

@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-const { databases } = require('../../common/config');
+const externalServiceData = require('../../common/external-service-data');
 const { ServerAPI } = require('../../services');
 
 
@@ -179,7 +179,7 @@ class PathwayNodeMetadata {
     let dbEntries = this.databaseIds().entries();
     let findMatchingDb = dbId => {
       // Very bad hack, needs to be fixed from metadata generated from the server side
-      let db =  databases.filter(db => db.database !== 'PubMed').find( entry => {
+      let db =  externalServiceData.filter(db => db.database !== 'PubMed').find( entry => {
         return(
           entry.database.toUpperCase().includes(dbId.toUpperCase()) ||
           dbId.toUpperCase().includes(entry.database.toUpperCase())

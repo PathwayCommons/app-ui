@@ -1,9 +1,6 @@
 const cytoscape = require('cytoscape');
 const Promise = require('bluebird');
 
-const style = require('./stylesheet');
-const bindEvents = require('./events');
-
 /**
  * A service to create Cytoscape instances.  This can be used to create
  * Cytoscape instances that are passed to multiple components, with delayed
@@ -18,11 +15,10 @@ class CytoscapeService {
    */
   constructor(options){
     this.options = Object.assign({
-      style,
+      onMount: () => {},
       minZoom: 0.08,
       maxZoom: 4,
       zoomingEnabled: true,
-      onMount: bindEvents,
       layout: {
         name: 'null'
       }

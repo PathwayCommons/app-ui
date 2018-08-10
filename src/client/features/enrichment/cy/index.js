@@ -1,5 +1,5 @@
 const h = require('react-hyperscript');
-const CytoscapeTooltip = require('../../../common/cy/tooltips/cytoscape-tooltip');
+const CytoscapeTooltip = require('../../../common/cy/cytoscape-tooltip');
 
 const EnrichmentTooltip = require('../enrichment-tooltip');
 

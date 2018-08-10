@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const { PATHWAYS_LAYOUT_OPTS } = require('./layout');
 const { expandCollapse, searchNodes, layout, fit } = require('./actions');
 

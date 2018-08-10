@@ -1,7 +1,5 @@
 const React = require('react');
 const h = require('react-hyperscript');
-const _ = require('lodash');
-
 
 class EnrichmentTooltip extends React.Component {
   render(){

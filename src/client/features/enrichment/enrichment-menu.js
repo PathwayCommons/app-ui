@@ -1,7 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
-const _ = require('lodash');
 
 class EnrichmentMenu extends React.Component {
   /**

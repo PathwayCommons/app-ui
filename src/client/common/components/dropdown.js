@@ -1,7 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const classNames = require('classnames');
-const _ = require('lodash');
 
 class Dropdown extends React.Component {
   constructor(props) {
@@ -40,7 +39,7 @@ class Dropdown extends React.Component {
   render() {
     const { listOptions } = this.props;
     const { open, title } = this.state;
-  
+
     return (
       h(`div.dropdown`, { ref: el => this.el = el, className: classNames(this.props.className, {'dropdown-active': open}) }, [
         h('div.dropdown-header', { onClick: e => this.open(e) }, [
@@ -50,7 +49,7 @@ class Dropdown extends React.Component {
 
         open ? h('div.dropdown-options', listOptions.map( dOpt => {
           return h('div.dropdown-option', [
-            h('div', { key: dOpt.value, onClick: e => this.handleChange(dOpt) }, dOpt.label )
+            h('div', { key: dOpt.value, onClick: () => this.handleChange(dOpt) }, dOpt.label )
           ]);
         })) : null
       ])

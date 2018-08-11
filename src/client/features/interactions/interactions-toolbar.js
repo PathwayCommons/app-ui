@@ -37,13 +37,13 @@ class InteractionsToolbar extends React.Component {
         icon: 'file_download'
       }),
       h(IconButton, {
-        description: 'Fit pathway to screen',
+        description: 'Fit to screen',
         onClick: () => cy.fit(cy.nodes().filter( n => !n.hasClass('type-hidden') && !n.hasClass('metric-hidden'))),
         isActive: false,
         icon: 'fullscreen'
       }),
       h(IconButton, {
-        description: 'Reset pathway arrangement',
+        description: 'Reset arrangement',
         onClick: () => cy.layout(INTERACTIONS_LAYOUT_OPTS).run(),
         isActive: false,
         icon: 'replay'

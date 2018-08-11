@@ -10,6 +10,7 @@ const { ServerAPI } = require('../../services/');
 
 const PathwaysToolbar = require('./pathways-toolbar');
 const Sidebar = require('../../common/components/sidebar');
+const EmptyNetwork = require('../../common/components/empty-network');
 const InfoMenu = require('./menus/network-info-menu');
 const FileDownloadMenu = require('./menus/file-download-menu');
 
@@ -25,7 +26,8 @@ class Pathways extends React.Component {
       cySrv: new CytoscapeService({ style: stylesheet, onMount: bindCyEvents }),
       pathway: new Pathway(),
       activeMenu: 'closeMenu',
-      loading: true
+      loading: true,
+      networkEmpty: false
     };
 
     if( process.env.NODE_ENV !== 'production' ){
@@ -56,6 +58,13 @@ class Pathways extends React.Component {
     };
 
     ServerAPI.getPathway(uri, 'latest').then( pathwayJSON => {
+      if( pathwayJSON.graph.nodes.length === 0 ){
+        this.setState({
+          loading: false,
+          networkEmpty: true
+        });
+        return;
+      }
       pathway.load( pathwayJSON );
       initializeCytoscape( pathway );
     });
@@ -76,7 +85,7 @@ class Pathways extends React.Component {
   }
 
   render() {
-    let { loading, pathway, cySrv, activeMenu } = this.state;
+    let { loading, pathway, cySrv, activeMenu, networkEmpty } = this.state;
 
     let network = h('div.network', { className: classNames({
       'network-loading': loading,
@@ -105,13 +114,13 @@ class Pathways extends React.Component {
       ])
     ]);
 
-    let content = [
+    let content = !networkEmpty ? [
       h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}),
       appBar,
       toolbar,
       sidebar,
       network,
-    ];
+    ] : [ h(EmptyNetwork, { msg: 'No pathway data available. Please view another result' } ) ];
 
     return h('div.pathways', content);
   }

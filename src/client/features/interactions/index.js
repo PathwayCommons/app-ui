@@ -10,6 +10,7 @@ const { ServerAPI } = require('../../services/');
 
 const InteractionsToolbar = require('./interactions-toolbar');
 const Sidebar = require('../../common/components/sidebar');
+const EmptyNetwork = require('../../common/components/empty-network');
 
 
 const { interactionsStylesheet, INTERACTIONS_LAYOUT_OPTS } = require('./cy');
@@ -30,9 +31,7 @@ class Interactions extends React.Component {
       activeMenu: 'interactionsMenu',
       loading: true,
       sources: _.uniq(queryString.parse(props.location.search).source.split(',')),
-      showBindings: true,
-      showPhosphorylations: true,
-      showExpressions: true
+      networkEmpty: false
     };
 
     if( process.env.NODE_ENV !== 'production' ){
@@ -45,18 +44,28 @@ class Interactions extends React.Component {
 
     let initializeCytoscape = network => {
       cySrv.mount(this.networkDiv);
+
       let cy = cySrv.get();
       cy.remove('*');
       cy.add( network );
 
-    // hide the smallest nodes and their edges according to 'metric'
-    if( cy.nodes().length > NODE_FILTER_THRESHOLD ){
-      let nodesToHide = cy.nodes().sort( (n0, n1) => n0.data('metric') - n1.data('metric') ).slice(0, NUM_NODES_TO_FILTER);
+      if( network.nodes.length === 0 ){
+        this.setState({
+          networkEmpty: true,
+          loading: false,
+          activeMenu: 'closeMenu'
+        });
+        return;
+      }
 
-      nodesToHide.union(nodesToHide.connectedEdges()).addClass('metric-hidden');
-    }
+      // hide the smallest nodes and their edges according to 'metric'
+      if( cy.nodes().length > NODE_FILTER_THRESHOLD ){
+        let nodesToHide = cy.nodes().sort( (n0, n1) => n0.data('metric') - n1.data('metric') ).slice(0, NUM_NODES_TO_FILTER);
 
-    cy.layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
+        nodesToHide.union(nodesToHide.connectedEdges()).addClass('metric-hidden');
+      }
+
+      cy.layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
         stop: () => {
           cySrv.load();
           this.setState({
@@ -99,7 +108,7 @@ class Interactions extends React.Component {
   }
 
   render() {
-    let { loading, cySrv, activeMenu, sources } = this.state;
+    let { loading, cySrv, activeMenu, sources, networkEmpty } = this.state;
 
     let network = h('div.network', { className: classNames({
       'network-loading': loading,
@@ -128,14 +137,15 @@ class Interactions extends React.Component {
       ])
     ]);
 
-    let content = [
+    let content = !networkEmpty ? [
       h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [
         sidebar
       ]),
       appBar,
       toolbar,
       network,
-    ];
+    ] : [ h(EmptyNetwork, { msg: 'No interactions to display'} ) ];
+
 
     return h('div.interactions', content);
   }

@@ -48,6 +48,7 @@ class PathwayNodeMetadataView extends React.Component {
 
     let showBody = showStdName || showDispName || showSynonyms || showPubs;
     let showLinks = metadata.databaseLinks().length > 0;
+    let showPcSearchLink = metadata.label() || metadata.displayName();
 
     return h('div.metadata-tooltip', [
       h('div.metadata-tooltip-content', [
@@ -90,14 +91,14 @@ class PathwayNodeMetadataView extends React.Component {
             }))
           ]) : null
         ]),
-        h('div.metadata-search-call-to-action', [
+        showPcSearchLink ? h('div.metadata-search-call-to-action', [
           h('a.metadata-find-pathways', {
             target: '_blank',
             href: '/search?q=' + metadata.searchLink()
             },
             `FIND RELATED PATHWAYS`
           )
-        ])
+        ]) : null
       ])
     ]);
   }

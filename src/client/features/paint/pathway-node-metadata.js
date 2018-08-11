@@ -52,7 +52,7 @@ class PathwayNodeMetadataView extends React.Component {
     return h('div.metadata-tooltip', [
       h('div.metadata-tooltip-content', [
         h('div.metadata-tooltip-header', [
-          h('h2',  `${metadata.label() || metadata.displayName() || 'Unknown Entity'}`),
+          h('h2',  `${metadata.label() || metadata.displayName() || ''}`),
           showType ? h('div.metadata-tooltip-type-chip', metadata.type()) : null,
         ]),
         showBody ? h('div.metadata-tooltip-body', [

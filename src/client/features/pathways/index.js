@@ -106,9 +106,7 @@ class Pathways extends React.Component {
     ]);
 
     let content = [
-      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}),
-      appBar,
-      toolbar,
+      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [ appBar, toolbar ]),
       sidebar,
       network,
     ];

@@ -66,5 +66,11 @@ const iStylesheet=cytoscape.stylesheet()
 .selector('.type-hidden')
 .css({
   'display': 'none'
+})
+.selector(`.matched`)
+.css({
+  'overlay-color': 'yellow',
+  'overlay-padding': 0,
+  'overlay-opacity': 0.5
 });
 module.exports = iStylesheet;

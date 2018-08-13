@@ -88,7 +88,7 @@ class InteractionsMenu extends React.Component {
       ]);
     };
 
-    return h('div.interactions-sidebar', [
+    return h('div', [
       h('h3', 'Interaction Filters'),
       hasPhosphorylations ? h(InteractionToggleButton, { type: PHOSPHORYLATION, active: Phosphorylation }) : null,
       hasBindings ? h(InteractionToggleButton, { type: BINDING, active: Binding }) : null,
@@ -96,7 +96,6 @@ class InteractionsMenu extends React.Component {
       h('h3', 'Visible Entities'),
       h('input', {
         type: 'range',
-        id:'interactions-slider',
         ref: ele => this.slider = ele,
         min: 0,
         max: 49,

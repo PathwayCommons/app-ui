@@ -6,9 +6,9 @@ class EnrichmentTooltip extends React.Component {
     let {node, overviewDesc} = this.props;
     let title = node.data('description');
     let id = node.data('id');
-    let sharedGeneList = node.data('intersection');
+    let sharedGeneList = node.data('intersection').sort();
     let sharedGeneCount = sharedGeneList.length;
-    let geneSet = node.data('geneSet');
+    let geneSet = node.data('geneSet').sort();
     let geneCount = node.data('geneCount');
     let dbInfo = {};
 

@@ -1,6 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const classNames = require('classnames');
+const _ = require('lodash');
 
 const INTERACTION_TYPES = {
   BINDING: 'Binding',
@@ -19,6 +20,9 @@ class InteractionsMenu extends React.Component {
       [PHOSPHORYLATION]: true,
       [EXPRESSION]: true
     };
+
+    // 15 updates per second max
+    this.debouncedHandleSliderChange = _.throttle(() => this.handleSliderChange(), 1000/15);
   }
 
   toggleIntnType(type){
@@ -97,7 +101,7 @@ class InteractionsMenu extends React.Component {
         max: 49,
         step: 1,
         defaultValue: 35,
-        onInput: () => this.handleSliderChange()
+        onInput: () => this.debouncedHandleSliderChange()
        }),
        h('div.slider-bottom', [
          h('span.most', 'More'),

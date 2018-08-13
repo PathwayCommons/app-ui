@@ -25,10 +25,10 @@ class InteractionsToolbar extends React.Component {
 
     return h('div.pathways-toolbar', [
       h(IconButton, {
-        description: 'View Legend',
+        description: 'Legend & filtering',
         onClick: () => controller.changeMenu('interactionsMenu'),
         isActive: activeMenu === 'interactionsMenu',
-        icon: 'filter_list'
+        icon: 'settings'
       }),
       h(IconButton, {
         description: 'Downloads',

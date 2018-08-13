@@ -47,12 +47,12 @@ class EnrichmentDownloadMenu extends React.Component {
           ]),
           h('div.download-option-description', 'Download an image of the entire view')
         ]),
-        h('div.download-option', { onClick: () => this.downloadSif() }, [
-          h('div.download-option-header', [
-            h('h3', 'SIF'),
-          ]),
-          h('div.download-option-description', 'List of interaction pairs to be used with Cytoscape desktop, analysis, and graph algorithms.')
-        ]),
+        // h('div.download-option', { onClick: () => this.downloadSif() }, [
+        //   h('div.download-option-header', [
+        //     h('h3', 'SIF'),
+        //   ]),
+        //   h('div.download-option-description', 'List of interaction pairs to be used with Cytoscape desktop, analysis, and graph algorithms.')
+        // ]),
 
         h(Loader, { loaded: !this.state.loading })
       ])

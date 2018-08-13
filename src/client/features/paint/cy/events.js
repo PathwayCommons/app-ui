@@ -6,7 +6,7 @@ const ExpandCollapseCue = require('../expand-collapse-cue');
 const { PATHWAYS_LAYOUT_OPTS } = require('./layout');
 
 const PathwayNodeMetadata = require('../../../models/pathway/pathway-node-metadata');
-const CytoscapeTooltip = require('../../../common/cy/tooltips/cytoscape-tooltip');
+const CytoscapeTooltip = require('../../../common/cy/cytoscape-tooltip');
 
 const EXPAND_COLLAPSE_OPTS = {
   layoutBy: _.assign({}, PATHWAYS_LAYOUT_OPTS, { fit: false }),

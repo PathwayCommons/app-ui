@@ -1,7 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const saveAs = require('file-saver').saveAs;
-const _ = require('lodash');
 const Loader = require('react-loader');
 
 
@@ -33,7 +32,7 @@ class EnrichmentDownloadMenu extends React.Component {
   }
 
   downloadSif(){
-    let { cySrv } = this.props;
+    // let { cySrv } = this.props;
 
     // TODO
   }

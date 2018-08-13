@@ -3,7 +3,7 @@ const _ = require('lodash');
 const h = require('react-hyperscript');
 
 const Popover = require('./popover');
-const { tippyDefaults } = require('../config');
+const tippyDefaults = require('../tippy-defaults');
 
 /* Props
 Required

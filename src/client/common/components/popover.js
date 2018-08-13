@@ -5,7 +5,7 @@ const hh = require('hyperscript');
 const Tippy = require('tippy.js');
 const _ = require('lodash');
 
-const { tippyDefaults } = require('../config');
+const tippyDefaults = require('../tippy-defaults');
 
 /* Props
 - tippy (tippy options object)

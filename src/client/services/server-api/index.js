@@ -27,23 +27,13 @@ const ServerAPI = {
   },
 
   getGoInformation(goID) {
-    return fetch(`https://www.ebi.ac.uk/QuickGO/services/ontology/go/search?query=GO%3A${goID.replace("GO:", "")}&limit=1&page=1`, {method: 'GET', timeout: 100})
-    .then( res => res.json() )
-    .then( res => {
-      if(res.numberOfHits) return res.results[0].definition.text;
-      else return null;
-    })
-    .catch( () => { return null; });
+    return fetch(`https://www.ebi.ac.uk/QuickGO/services/ontology/go/search?query=GO%3A${goID}&limit=1&page=1`, {method: 'GET', timeout: 100})
+    .then( res => res.json() );
   },
 
-   getReactomeInformation(reactomeID) {
-    return fetch(`https://reactome.org/ContentService/data/query/${reactomeID.replace("REAC:", "R-HSA-")}`, {method: 'GET', timeout: 100})
-    .then( res => res.json() )
-    .then( res => {
-      if(res.summation) return res.summation[0].text;
-      else return null;
-    })
-    .catch( () => { return null; });
+  getReactomeInformation(reactomeID) {
+    return fetch(`https://reactome.org/ContentService/data/query/${reactomeID}`, {method: 'GET', timeout: 100})
+    .then( res => res.json() );
   },
 
   getInteractionGraph(sources) {

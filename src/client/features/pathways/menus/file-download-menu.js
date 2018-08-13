@@ -6,14 +6,14 @@ const Loader = require('react-loader');
 
 const { ServerAPI } = require('../../../services');
 
-const downloadTypesFull = require('../../../common/config').downloadTypes;
+const pcDownloadTypes = require('../../../common/pc-download-types');
 
 
 class FileDownloadMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      downloadTypes: downloadTypesFull,
+      downloadTypes: pcDownloadTypes,
       loading: false
     };
   }
@@ -52,10 +52,10 @@ class FileDownloadMenu extends React.Component {
       downloadFetch.then(content => {
         content = typeof content === 'object' ? JSON.stringify(content) : content;
         let fileContent = new File([content], `${fileName}.${fileExt}`, { type:'text/plain;charset=utf-8' });
-  
+
         saveAs(fileContent);
         this.setState({ loading: false});
-      });  
+      });
     });
   }
 

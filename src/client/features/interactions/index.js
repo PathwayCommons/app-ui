@@ -132,8 +132,10 @@ class Interactions extends React.Component {
       h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [
         sidebar
       ]),
-      appBar,
-      toolbar,
+      h('div', { className: classNames('menu-bar', { 'menu-bar-margin': activeMenu }) }, [
+        appBar,
+        toolbar
+      ]),
       network,
     ];
 

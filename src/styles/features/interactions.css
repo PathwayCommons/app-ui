@@ -1,5 +1,5 @@
 .no-network{
-align-self: center; 
+align-self: center;
 display: flex;
 flex-direction: column;
 align-items: center;
@@ -20,4 +20,12 @@ background-color: var(--light-base-colour-dark);
   display: flex;
   width: 100vw;
   height:100vh;
+}
+
+.interactions-sidebar{
+  width: 100%;
+}
+
+#interactions-slider{
+  width: 100% !important;
 }

@@ -8,16 +8,19 @@ const INTERACTIONS_LAYOUT_OPTS = {
   animate: false
 };
 
-let searchInteractionNodes = (cy, query) => {
+let searchInteractionNodes = _.debounce((cy, query) => {
   let queryEmpty = _.trim(query) === '';
   let allNodes = cy.nodes();
-  let matched = cy.nodes().filter( node => node.data('label').toUpperCase().includes( query.toUpperCase() ) );
+  let matched = allNodes.filter( node => node.data('label').toUpperCase().includes( query.toUpperCase() ) );
 
-  allNodes.removeClass('matched')
-  if( matched.length > 0 && !queryEmpty ){
-    matched.addClass('matched');
-  }
-};
+  cy.batch(() => {
+    allNodes.removeClass('matched');
+
+    if( matched.length > 0 && !queryEmpty ){
+      matched.addClass('matched');
+    }
+  });
+}, 250);
 
 
 module.exports = {

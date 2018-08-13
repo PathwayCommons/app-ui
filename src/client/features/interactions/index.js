@@ -17,10 +17,6 @@ const { interactionsStylesheet, INTERACTIONS_LAYOUT_OPTS } = require('./cy');
 const InteractionsDownloadMenu = require('./interactions-download-menu');
 const InteractionsMenu = require('./interactions-menu');
 
-
-const NODE_FILTER_THRESHOLD = 15; // filer nodes if num nodes larger than this number
-const NUM_NODES_TO_FILTER = 35;    // filter the 35 'smallest' nodes
-
 class Interactions extends React.Component {
   constructor(props) {
     super(props);
@@ -48,13 +44,6 @@ class Interactions extends React.Component {
       let cy = cySrv.get();
       cy.remove('*');
       cy.add( network );
-
-    // hide the smallest nodes and their edges according to 'metric'
-    if( cy.nodes().length > NODE_FILTER_THRESHOLD ){
-      let nodesToHide = cy.nodes().sort( (n0, n1) => n0.data('metric') - n1.data('metric') ).slice(0, NUM_NODES_TO_FILTER);
-
-      nodesToHide.union(nodesToHide.connectedEdges()).addClass('metric-hidden');
-    }
 
     cy.layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
         stop: () => {

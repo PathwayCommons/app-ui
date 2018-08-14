@@ -27,7 +27,8 @@ class Enrichment extends React.Component {
       activeMenu: 'closeMenu',
       loading: false,
       invalidTokens: [],
-      openToolBar: false
+      openToolBar: false,
+      networkEmpty: false
     };
 
     if( process.env.NODE_ENV !== 'production' ){
@@ -91,6 +92,16 @@ class Enrichment extends React.Component {
         edges: visualizationResult.graph.elements.edges,
         nodes: visualizationResult.graph.elements.nodes
       });
+      if( cy.nodes().length === 0 ){
+        this.setState({
+          networkEmpty: true,
+          loading: false,
+          activeMenu: 'enrichmentMenu',
+          invalidTokens: unrecognized,
+          openToolBar: true
+        });
+        return;
+      }
 
       cy.layout(_.assign({}, ENRICHMENT_MAP_LAYOUT, { stop: () => {
         this.setState({
@@ -107,7 +118,7 @@ class Enrichment extends React.Component {
 
 
   render(){
-    let { loading, cySrv, activeMenu, invalidTokens, openToolBar } = this.state;
+    let { loading, cySrv, activeMenu, invalidTokens, openToolBar, networkEmpty } = this.state;
 
     let network = h('div.network', {
         className: classNames({
@@ -142,13 +153,21 @@ class Enrichment extends React.Component {
       ])
     ]);
 
+    let emptyNetwork = h('div.empty-enrichment-network', [
+      h('div.empty-network-header', [
+        h('div.pc-logo'),
+        h('h1.empty-network-message', 'No enriched network to display'),
+      ]),
+      h('p','Please edit your gene list')
+    ]);
+
     return h('div.main', [
       h('div', { className: classNames('menu-bar', { 'menu-bar-margin': activeMenu }) }, [
         toolbar,
         appBar
       ]),
         sidebar,
-        h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, []),
+        networkEmpty ? emptyNetwork: h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, []),
         network
     ]);
   }

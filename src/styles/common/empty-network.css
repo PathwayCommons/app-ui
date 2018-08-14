@@ -8,6 +8,10 @@
     width: 5em;
     padding: 20px 0px 0px 0px;
   }
+
+  & .empty-network-message {
+    margin-left: 10px;
+  }
 }
 
 .empty-network-header {

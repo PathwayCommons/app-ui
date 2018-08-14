@@ -87,10 +87,12 @@ class InteractionsMenu extends React.Component {
     let hasExpressions = hasType(cy, EXPRESSION);
     let hasBindings = hasType(cy, BINDING);
 
+    let defaultSliderValue = 0;
     const numberOfNodes = this.getMetricSortedNodes().length;
-    let defaultSliderValue = Math.floor( numberOfNodes / 2);
-    if(this.getMetricSortedNodes().length < 25)
+    if(numberOfNodes < 25)
       defaultSliderValue = numberOfNodes;
+    else 
+      defaultSliderValue = Math.floor( numberOfNodes / 2);
 
     let InteractionToggleButton = props => {
       let { type, active } = props;

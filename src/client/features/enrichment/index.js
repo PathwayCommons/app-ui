@@ -113,7 +113,7 @@ class Enrichment extends React.Component {
       }})).run();
     };
 
-    this.setState({ loading: true, activeMenu: 'closeMenu', openToolBar: false }, () => updateNetworkJSON());
+    this.setState({ loading: true, activeMenu: 'closeMenu', openToolBar: false, networkEmpty: false }, () => updateNetworkJSON());
   }
 
 

@@ -85,5 +85,11 @@ const enrichmentStylesheet=cytoscape.stylesheet()
 .selector('.unhighlighted')
 .css({
   'opacity':0.4,
+})
+.selector(`.matched`)
+  .css({
+    'border-color': 'purple',
+    'border-width': 10,
+    'background-color': '#cc99ff'
 });
 module.exports = enrichmentStylesheet;

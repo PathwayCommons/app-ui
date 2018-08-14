@@ -83,10 +83,14 @@ class InteractionsMenu extends React.Component {
     let hasType = (cy, type) => cy.edges(`.${type}`).length > 0;
     let { BINDING, PHOSPHORYLATION, EXPRESSION } = INTERACTION_TYPES;
 
-
     let hasPhosphorylations = hasType(cy, PHOSPHORYLATION);
     let hasExpressions = hasType(cy, EXPRESSION);
     let hasBindings = hasType(cy, BINDING);
+
+    const numberOfNodes = this.getMetricSortedNodes().length;
+    let defaultSliderValue = Math.floor( numberOfNodes / 2);
+    if(this.getMetricSortedNodes().length < 25)
+      defaultSliderValue = numberOfNodes;
 
     let InteractionToggleButton = props => {
       let { type, active } = props;
@@ -113,6 +117,8 @@ class InteractionsMenu extends React.Component {
       ]);
     };
 
+
+
     return h('div.interactions-sidebar', [
       h('h3', 'Filter interactions'),
       hasBindings ? h(InteractionToggleButton, { type: BINDING, active: Binding }) : null,
@@ -125,7 +131,7 @@ class InteractionsMenu extends React.Component {
         min: 1,
         max: this.getMetricSortedNodes().length,
         step: 1,
-        defaultValue: Math.floor(this.getMetricSortedNodes().length / 2),
+        defaultValue: defaultSliderValue,
         onInput: () => this.throttledHandleSliderChange()
        }),
        h('div.interactions-slider-labels', [

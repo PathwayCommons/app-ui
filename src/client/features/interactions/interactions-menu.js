@@ -1,13 +1,13 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const classNames = require('classnames');
+const _ = require('lodash');
 
 const INTERACTION_TYPES = {
   BINDING: 'Binding',
   PHOSPHORYLATION: 'Phosphorylation',
   EXPRESSION: 'Expression'
 };
-
 
 class InteractionsMenu extends React.Component {
   constructor(props){
@@ -19,6 +19,9 @@ class InteractionsMenu extends React.Component {
       [PHOSPHORYLATION]: true,
       [EXPRESSION]: true
     };
+
+    // 15 updates per second max
+    this.throttledHandleSliderChange = _.throttle(() => this.handleSliderChange(), 1000/15);
   }
 
   toggleIntnType(type){
@@ -40,19 +43,36 @@ class InteractionsMenu extends React.Component {
     this.setState({[type]: !this.state[type] });
   }
 
+  getMetricSortedNodes(){
+    if(this._sortedNodes){ // cached
+      return this._sortedNodes;
+    }
+
+    let cy = this.props.cySrv.get();
+    let nodes = cy.nodes();
+    let sortedNodes = nodes.sort( (n0, n1) => n1.data('metric') - n0.data('metric') );
+
+    this._sortedNodes = sortedNodes; // put in cache
+
+    return sortedNodes;
+  }
+
   handleSliderChange(){
     let cy = this.props.cySrv.get();
+    let sortedNodes = this.getMetricSortedNodes();
     let metricCutoff = this.slider.value;
 
-    let nodeHasNoVisibleEdges = node => node.connectedEdges().every( edge => edge.hasClass('type-hidden') || edge.hasClass('metric-hidden'));
+    let elesToHide = sortedNodes.slice(metricCutoff);
 
+    cy.batch(() => {
+      sortedNodes.not(elesToHide).removeClass('metric-hidden');
+      elesToHide.addClass('metric-hidden');
+    });
+  }
 
-    let nodesToHide = cy.nodes().sort( (n0, n1) => n0.data('metric') - n1.data('metric') ).slice(0, metricCutoff);
-    let elesToHide = nodesToHide.union(nodesToHide.connectedEdges()).union(cy.nodes().filter( nodeHasNoVisibleEdges ));
-
-
-    elesToHide.addClass('metric-hidden');
-    cy.elements().difference(elesToHide).removeClass('metric-hidden');
+  componentDidMount(){
+    this.getMetricSortedNodes(); // make sure cache is filled
+    this.throttledHandleSliderChange();
   }
 
   render(){
@@ -70,34 +90,47 @@ class InteractionsMenu extends React.Component {
 
     let InteractionToggleButton = props => {
       let { type, active } = props;
+      let legendClass = `interactions-filter-color-${type.toLowerCase()}`;
+
       return h('div', {
         onClick: () =>  this.toggleIntnType(type),
-        className: classNames('interaction-filter-button', active ? 'interaction-filter-active' : 'interaction-filter-not-active'),
+        className: classNames({
+          'interactions-filter-button': true,
+          'interactions-filter-button-active': active
+        }),
 
       }, [
-        h('div', { className: classNames('interaction-filter-legend', { [type]: active } ) } ),
-        h('h4.button-label', type)
+        h('div', {
+          className: classNames({
+            [legendClass]: true,
+            'interactions-filter-color': true
+          })
+        } ),
+        h('div.interactions-filter-label', type),
+        h('div.interactions-filter-check', [
+          h('i.material-icons', (active ? 'check_box' : 'check_box_outline_blank'))
+        ])
       ]);
     };
 
-    return h('div', [
-      h('h3', 'Interaction Filters'),
-      hasPhosphorylations ? h(InteractionToggleButton, { type: PHOSPHORYLATION, active: Phosphorylation }) : null,
+    return h('div.interactions-sidebar', [
+      h('h3', 'Filter interactions'),
       hasBindings ? h(InteractionToggleButton, { type: BINDING, active: Binding }) : null,
       hasExpressions ? h(InteractionToggleButton, { type: EXPRESSION, active: Expression }) : null,
-      h('h3', 'Visible Entities'),
-      h('input', {
+      hasPhosphorylations ? h(InteractionToggleButton, { type: PHOSPHORYLATION, active: Phosphorylation }) : null,
+      h('h3', 'Filter genes'),
+      h('input.interactions-sidebar-vis-filter', {
         type: 'range',
         ref: ele => this.slider = ele,
-        min: 0,
-        max: 49,
+        min: 1,
+        max: this.getMetricSortedNodes().length,
         step: 1,
-        defaultValue: 35,
-        onInput: () => this.handleSliderChange()
+        defaultValue: Math.floor(this.getMetricSortedNodes().length / 2),
+        onInput: () => this.throttledHandleSliderChange()
        }),
-       h('div.slider-bottom', [
-         h('span.most', 'More'),
-         h('span.least', 'Less')
+       h('div.interactions-slider-labels', [
+         h('span', 1),
+         h('span', this.getMetricSortedNodes().length)
        ])
     ]);
   }

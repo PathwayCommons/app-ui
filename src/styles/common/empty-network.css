@@ -1,10 +1,18 @@
 .empty-network {
   text-align: center;
-
-  & i {
-    src: url("../image/pc_logo_dark.svg");
-    height: auto;
-    width: 5%;
+  padding: 10em;
+  & .pc-logo {
+    background-image: url("../image/pc_logo_dark.svg");
+    background-repeat: no-repeat;
+    height: 5em;
+    width: 5em;
     padding: 20px 0px 0px 0px;
   }
+}
+
+.empty-network-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: space-between;
 }

@@ -44,7 +44,8 @@ input[type='submit'],
 button,
 textarea,
 select,
-.radioset input[type="radio"] + label {
+.radioset input[type="radio"] + label,
+.button-like {
   appearance: none;
   vertical-align: middle;
   font: inherit;

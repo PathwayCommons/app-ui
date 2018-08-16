@@ -9,9 +9,12 @@ class EmptyNetwork extends React.Component {
   render(){
     let { msg } = this.props;
     return h('div.empty-network',[
-      h('i.pc-logo'),
-      h('h1.empty-network-message', msg),
-      h(Link, { to: { pathname: '/' } }, 'Return to PC Home')
+      h('div.empty-network-header', [
+        h('div.pc-logo'),
+        h('h1.empty-network-message', msg)
+      ]),
+      'Return to',
+      h(Link, { className: 'plain-link', to: { pathname: '/' } },  ' Pathway Commons Search')
     ]);
   }
 }

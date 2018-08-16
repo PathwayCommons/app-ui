@@ -40,7 +40,7 @@ let dbInfos = {
   },
   'Gene Cards': {
     name: 'Gene Cards',
-    displayName: 'Gene Cards',
+    displayName: 'GeneCards',
     url: 'https://www.genecards.org/cgi-bin/carddisp.pl?gene=',
     gProfiler: 'HGNCSYMBOL',
     hgncName: 'symbol',

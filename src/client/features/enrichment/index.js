@@ -8,6 +8,7 @@ const EnrichmentDownloadMenu = require('./enrichment-download-menu');
 const EnrichmentToolbar = require('./enrichment-toolbar');
 const EnrichmentMenu = require('./enrichment-menu');
 const TokenInput = require('./token-input');
+const EmptyNetwork = require('../../common/components/empty-network');
 
 const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services');
@@ -153,21 +154,13 @@ class Enrichment extends React.Component {
       ])
     ]);
 
-    let emptyNetwork = h('div.empty-enrichment-network', [
-      h('div.empty-network-header', [
-        h('div.pc-logo'),
-        h('h1.empty-network-message', 'No enriched network to display'),
-      ]),
-      h('p','Please edit your gene list')
-    ]);
-
     return h('div.main', [
       h('div', { className: classNames('menu-bar', { 'menu-bar-margin': activeMenu }) }, [
         toolbar,
         appBar
       ]),
         sidebar,
-        networkEmpty ? emptyNetwork: h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, []),
+        networkEmpty ? h(EmptyNetwork, { msg: 'No enriched network to display', app: 'enrichment'} ) : null,
         network
     ]);
   }

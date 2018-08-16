@@ -133,7 +133,7 @@ class Interactions extends React.Component {
       appBar,
       toolbar,
       network,
-    ] : [ h(EmptyNetwork, { msg: 'No interactions to display'} ) ];
+    ] : [ h(EmptyNetwork, { msg: 'No interactions to display', app: 'interactions'} ) ];
 
 
     return h('div.interactions', content);

@@ -89,10 +89,11 @@ class InteractionsMenu extends React.Component {
 
     let defaultSliderValue = 0;
     const numberOfNodes = this.getMetricSortedNodes().length;
-    if(numberOfNodes < 25)
+    if(numberOfNodes < 25){
       defaultSliderValue = numberOfNodes;
-    else 
+    }else{
       defaultSliderValue = Math.floor( numberOfNodes / 2);
+    }
 
     let InteractionToggleButton = props => {
       let { type, active } = props;

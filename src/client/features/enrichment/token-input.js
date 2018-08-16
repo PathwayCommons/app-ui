@@ -20,7 +20,7 @@ class TokenInput extends React.Component {
   }
 
   setExample() {
-    const example = `tyr\noca2\ntyrp2\nslc45a2`;
+    const example = `tyr\noca2\ntyrp1\nslc45a2`;
     this.setState({ inputBoxContents: example });
     document.getElementById('gene-input-box').focus();
   }

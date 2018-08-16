@@ -7,13 +7,13 @@
 
 .gene-input-container{
   height: 1.85em;
-  width: 200px;
+  width: 220px;
 }
 
 .gene-input-box{
   min-height: 1.85em;
   max-height: 80%;
-  width: 200px;
+  width: 220px;
   background-color: white;
   padding: 0em 0.5em;
   box-sizing: border-box;
@@ -36,10 +36,30 @@
   max-height: 1.85em;
 }
 
+.enrichment-example-container{
+  position: absolute;
+  box-sizing: border-box;
+  right: 75px;
+  border: 1px hidden;
+  height: 1.85em;
+  width:auto;
+  z-index: 20;
+  height: 1.85em;
+  top:inherit;
+
+  & button{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    line-height: 1.8;
+    color: var(--dark-base-colour);
+    border: none;
+  }
+}
+
 /* submit button for gene input */
 .submit{
   background-color: var(--dark-base-colour);
-  /* background-color: #16A086; */
   color: white;
   font-weight: normal;
   border: 1px solid var(--light-base-colour-dark);

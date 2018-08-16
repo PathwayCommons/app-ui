@@ -19,6 +19,12 @@ class TokenInput extends React.Component {
     this.setState({inputBoxContents: e.target.value});
   }
 
+  setExample() {
+    const example = `tyr\noca2\ntyrp2\nslc45a2`;
+    this.setState({ inputBoxContents: example });
+    document.getElementById('gene-input-box').focus();
+  }
+
   //call validation service API to retrieve validation result in the form of []
   retrieveValidationAPIResult(){
     let { inputBoxContents } = this.state;
@@ -44,6 +50,9 @@ class TokenInput extends React.Component {
   render() {
     let { inputBoxContents } = this.state;
 
+    let exampleLink =  !inputBoxContents ? h('div.enrichment-example-container', {onClick: () => this.setExample()}, [
+    h('button.example', 'e.g. ')]) : null;
+
     return h('div.enrichmentInput', [
         h('div.gene-input-container', [
           h(Textarea, {
@@ -53,7 +62,9 @@ class TokenInput extends React.Component {
             value: inputBoxContents,
             spellCheck: false,
             onChange: (e) => this.handleChange(e)
-          })
+          }
+        ),
+          exampleLink
         ]),
         h('submit-container', {
           onClick: () => { this.retrieveValidationAPIResult();} },

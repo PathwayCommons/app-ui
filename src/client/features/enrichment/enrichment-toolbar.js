@@ -37,13 +37,13 @@ class EnrichmentToolbar extends React.Component {
         icon: 'file_download'
       }),
       h(IconButton, {
-        description: 'Fit pathway to screen',
+        description: 'Fit to screen',
         onClick: () => cy.fit(),
         isActive: false,
         icon: 'fullscreen'
       }),
       h(IconButton, {
-        description: 'Reset pathway arrangement',
+        description: 'Reset arrangement',
         onClick: () => cy.layout(ENRICHMENT_MAP_LAYOUT).run(),
         isActive: false,
         icon: 'replay'

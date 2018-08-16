@@ -131,9 +131,9 @@ class Enrichment extends React.Component {
       ])
     ]);
 
-    let toolbar = h('div.enrichment-app-toolbar', {style: {display: openToolBar ? 'initial' : 'none'}}, [
+    let toolbar = openToolBar ? h('div.enrichment-app-toolbar', [
       h(EnrichmentToolbar, { cySrv, activeMenu, controller: this })
-    ]);
+    ]) : null;
 
     let sidebar = h('div.enrichment-sidebar', [
       h(Sidebar, { controller: this, activeMenu }, [

@@ -11,7 +11,7 @@ class TokenInput extends React.Component {
     // Note on input contents: Set the initial value here from parent
     // in order to maintain contents on re-render.
     this.state = {
-      inputBoxContents: this.props.inputs
+      inputBoxContents: ""
     };
   }
   //store 'gene-input-box' contents on state

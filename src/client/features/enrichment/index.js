@@ -8,6 +8,7 @@ const EnrichmentDownloadMenu = require('./enrichment-download-menu');
 const EnrichmentToolbar = require('./enrichment-toolbar');
 const EnrichmentMenu = require('./enrichment-menu');
 const TokenInput = require('./token-input');
+const EmptyNetwork = require('../../common/components/empty-network');
 
 const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services');
@@ -27,7 +28,8 @@ class Enrichment extends React.Component {
       activeMenu: 'closeMenu',
       loading: false,
       invalidTokens: [],
-      openToolBar: false
+      openToolBar: false,
+      networkEmpty: false
     };
 
     if( process.env.NODE_ENV !== 'production' ){
@@ -91,6 +93,16 @@ class Enrichment extends React.Component {
         edges: visualizationResult.graph.elements.edges,
         nodes: visualizationResult.graph.elements.nodes
       });
+      if( cy.nodes().length === 0 ){
+        this.setState({
+          networkEmpty: true,
+          loading: false,
+          activeMenu: 'enrichmentMenu',
+          invalidTokens: unrecognized,
+          openToolBar: true
+        });
+        return;
+      }
 
       cy.layout(_.assign({}, ENRICHMENT_MAP_LAYOUT, { stop: () => {
         this.setState({
@@ -102,12 +114,12 @@ class Enrichment extends React.Component {
       }})).run();
     };
 
-    this.setState({ loading: true, activeMenu: 'closeMenu', openToolBar: false }, () => updateNetworkJSON());
+    this.setState({ loading: true, activeMenu: 'closeMenu', openToolBar: false, networkEmpty: false }, () => updateNetworkJSON());
   }
 
 
   render(){
-    let { loading, cySrv, activeMenu, invalidTokens, openToolBar } = this.state;
+    let { loading, cySrv, activeMenu, invalidTokens, openToolBar, networkEmpty } = this.state;
 
     let network = h('div.network', {
         className: classNames({
@@ -148,7 +160,7 @@ class Enrichment extends React.Component {
         appBar
       ]),
         sidebar,
-        h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, []),
+        networkEmpty ? h(EmptyNetwork, { msg: 'No results to display', showPcLink: false} ) : null,
         network
     ]);
   }

@@ -88,8 +88,7 @@ const enrichmentStylesheet=cytoscape.stylesheet()
 })
 .selector(`.matched`)
   .css({
-    'border-color': 'yellow',
-    'border-width': 10,
-    'background-color': 'blue'
+    'background-color': 'yellow',
+    'text-outline-color': 'yellow'
 });
 module.exports = enrichmentStylesheet;

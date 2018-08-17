@@ -9,16 +9,14 @@ class EmptyNetwork extends React.Component {
   render(){
     let { msg, app} = this.props;
 
-    let directions = null;
-    if(app === 'enrichment') directions = h('p','Please edit your gene list');
-    else if(app === 'interactions') directions = ['Return to', h(Link, { className: 'plain-link', to: { pathname: '/' } },  ' Pathway Commons Search')];
+    let linkToPCSearch = (app === 'interactions') ? ['Return to', h(Link, { className: 'plain-link', to: { pathname: '/' } },  ' Pathway Commons Search')] : null;
 
     return h('div.empty-network',[
       h('div.empty-network-header', [
         h('div.pc-logo'),
         h('h1.empty-network-message', msg)
       ]),
-      directions
+      linkToPCSearch
     ]);
   }
 }

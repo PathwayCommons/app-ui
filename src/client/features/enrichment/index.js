@@ -160,7 +160,7 @@ class Enrichment extends React.Component {
         appBar
       ]),
         sidebar,
-        networkEmpty ? h(EmptyNetwork, { msg: 'No enriched network to display', app: 'enrichment'} ) : null,
+        networkEmpty ? h(EmptyNetwork, { msg: 'No results to display', app: 'enrichment'} ) : null,
         network
     ]);
   }

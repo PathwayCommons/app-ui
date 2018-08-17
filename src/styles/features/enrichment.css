@@ -7,14 +7,14 @@
 
 .gene-input-container{
   height: 1.85em;
-  width: 220px;
+  width: 225px;
   position: relative;
 }
 
 .gene-input-box{
   min-height: 1.85em;
   max-height: 80%;
-  width: 220px;
+  width: 225px;
   background-color: white;
   padding: 0em 0.5em;
   box-sizing: border-box;

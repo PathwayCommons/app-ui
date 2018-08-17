@@ -4,6 +4,7 @@ const _ = require('lodash');
 const queryString = require('query-string');
 const Loader = require('react-loader');
 const classNames = require('classnames');
+const diceCoefficient = require('dice-coefficient');
 
 const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services/');
@@ -13,6 +14,7 @@ const Sidebar = require('../../common/components/sidebar');
 const EmptyNetwork = require('../../common/components/empty-network');
 const InfoMenu = require('./menus/network-info-menu');
 const FileDownloadMenu = require('./menus/file-download-menu');
+const databaseURLMap = require('../../common/datasource-url-map');
 
 const Pathway = require('../../models/pathway/pathway-model');
 
@@ -84,8 +86,26 @@ class Pathways extends React.Component {
     }
   }
 
+  baseNameToUrl(baseName){
+    const lowercaseName = baseName.toLowerCase();
+    let databaseURL = databaseURLMap.get(lowercaseName);
+    if(!databaseURL){
+      const datasourceURLScores = [];
+      databaseURLMap.forEach( (datasourceURL, datasource, map) => {
+        datasourceURLScores.push([datasourceURL,diceCoefficient(datasource,lowercaseName)]);
+      });
+      datasourceURLScores.sort( (a,b) => { return b[1] - a[1]; } );
+      databaseURL = datasourceURLScores[0][0];
+    }
+
+    return databaseURL;
+  }
+
   render() {
     let { loading, pathway, cySrv, activeMenu, networkEmpty } = this.state;
+
+    const baseName = pathway.datasource();
+    const databaseURL = this.baseNameToUrl(baseName);
 
     let network = h('div.network', { className: classNames({
       'network-loading': loading,
@@ -99,7 +119,10 @@ class Pathways extends React.Component {
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
         h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
-        h('div.app-bar-title', pathway.name() + ' | ' + pathway.datasource())
+        h('div.app-bar-title', [
+          h('a.database-link', { href:databaseURL }, ' ' + baseName),
+          h('span', ' | ' + pathway.name())
+        ])
       ])
     ]);
 

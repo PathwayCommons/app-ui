@@ -42,4 +42,7 @@
   border-width: 1px 1px 1px 1px;
   background-color: rgba(255, 255, 255, 0.5);
 }
-
+.database-link {
+  color:blue;
+  text-decoration:underline;
+}

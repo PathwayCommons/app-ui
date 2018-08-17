@@ -9,8 +9,8 @@
   right: 0;
   z-index: 25;
   box-shadow: 0;
-  opacity: 1;
-  transform: translate3d(100%, 0, 0);
+  opacity: 0;
+  transform: translate3d(110%, 0, 0);
   transition-duration: 250ms;
   transition-property: transform, opacity;
   box-sizing: border-box;

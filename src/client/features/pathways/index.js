@@ -88,6 +88,11 @@ class Pathways extends React.Component {
 
   baseNameToUrl(baseName){
     const lowercaseName = baseName.toLowerCase();
+
+    if(lowercaseName === 'unknown title'){
+      return '';
+    }
+
     let databaseURL = databaseURLMap.get(lowercaseName);
     if(!databaseURL){
       const datasourceURLScores = [];
@@ -120,7 +125,7 @@ class Pathways extends React.Component {
       h('div.app-bar-branding', [
         h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
         h('div.app-bar-title', [
-          h('a.database-link', { href:databaseURL }, ' ' + baseName),
+          h('a.database-link', { href:databaseURL,target:'_blank' }, ' ' + baseName),
           h('span', ' | ' + pathway.name())
         ])
       ])

@@ -89,10 +89,6 @@ class Pathways extends React.Component {
   baseNameToUrl(baseName){
     const lowercaseName = baseName.toLowerCase();
 
-    if(lowercaseName === 'unknown title'){
-      return '';
-    }
-
     let databaseURL = databaseURLMap.get(lowercaseName);
     if(!databaseURL){
       const datasourceURLScores = [];
@@ -109,8 +105,12 @@ class Pathways extends React.Component {
   render() {
     let { loading, pathway, cySrv, activeMenu, networkEmpty } = this.state;
 
-    const baseName = pathway.datasource();
-    const databaseURL = this.baseNameToUrl(baseName);
+    const baseDatasource = pathway.datasource();
+    const databaseURL = this.baseNameToUrl(baseDatasource);
+    let baseName = pathway.name();
+    if(baseName.toLowerCase() === 'unknown title'){
+      baseName = '';
+    }
 
     let network = h('div.network', { className: classNames({
       'network-loading': loading,
@@ -126,7 +126,7 @@ class Pathways extends React.Component {
         h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
         h('div.app-bar-title', [
           h('a.database-link', { href:databaseURL,target:'_blank' }, ' ' + baseName),
-          h('span', ' | ' + pathway.name())
+          h('span', ' | ' + baseName)
         ])
       ])
     ]);

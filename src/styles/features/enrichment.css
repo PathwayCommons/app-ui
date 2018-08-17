@@ -42,16 +42,12 @@
   box-sizing: border-box;
   margin-top: 1px;
   right: 0px;
-  height: 1.85em;
   width: 30px;
   z-index: 20;
-  top: inherit;
 
   & button{
-    margin: 0;
     padding: 0;
     border: none;
-    line-height: 1.8;
     color: var(--dark-base-colour);
   }
 

@@ -4,7 +4,7 @@ const h = require('react-hyperscript');
 
 const IconButton = require('../../common/components/icon-button');
 
-const { fit, layout, searchNodes } = require('./cy');
+const { ENRICHMENT_MAP_LAYOUT, searchNodes } = require('./cy');
 
 class EnrichmentToolbar extends React.Component {
   constructor(props){
@@ -37,14 +37,14 @@ class EnrichmentToolbar extends React.Component {
         icon: 'file_download'
       }),
       h(IconButton, {
-        description: 'Fit pathway to screen',
-        onClick: () => fit( cy ),
+        description: 'Fit to screen',
+        onClick: () => cy.fit(),
         isActive: false,
         icon: 'fullscreen'
       }),
       h(IconButton, {
-        description: 'Reset pathway arrangement',
-        onClick: () => layout( cy ),
+        description: 'Reset arrangement',
+        onClick: () => cy.layout(ENRICHMENT_MAP_LAYOUT).run(),
         isActive: false,
         icon: 'replay'
       }),

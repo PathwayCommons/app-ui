@@ -67,6 +67,15 @@ class InteractionsMenu extends React.Component {
     cy.batch(() => {
       sortedNodes.not(elesToHide).removeClass('metric-hidden');
       elesToHide.addClass('metric-hidden');
+
+      //hide open tooltip if node is hidden
+      elesToHide.forEach(element => {
+        let tooltip = element.scratch('_tooltip');
+        if (tooltip) {
+          tooltip.hide();
+        }
+      });
+
     });
   }
 

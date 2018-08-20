@@ -129,7 +129,7 @@ class Pathways extends React.Component {
       h('div.app-bar-branding', [
         h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
         h('div.app-bar-title', [
-          h('a.database-link', { href:databaseURL,target:'_blank' }, ' ' + baseDatasource),
+          h('a.plain-link', { href:databaseURL,target:'_blank' }, ' ' + baseDatasource),
           h('span', ': ' + baseName)
         ])
       ]),

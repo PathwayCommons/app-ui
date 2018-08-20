@@ -41,5 +41,9 @@
   background-color:white;
 }
 .database-link {
-  color: #539DD6;
+  color: blue;
+}
+
+.database-link:hover {
+  text-decoration: underline;
 }

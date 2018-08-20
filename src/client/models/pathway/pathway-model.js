@@ -28,7 +28,7 @@ class Pathway {
   }
 
   name(){
-    return _.get(this.raw, 'graph.pathwayMetadata.title.0', 'Unknown title');
+    return _.get(this.raw, 'graph.pathwayMetadata.title.0', '');
   }
 
   datasource(){

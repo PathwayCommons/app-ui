@@ -1,3 +1,5 @@
+const diceCoefficient = require('dice-coefficient');
+
 let datasourceURLMap = new Map();
 
 datasourceURLMap.set('humancyc','https://humancyc.org'); // HumanCyc
@@ -10,4 +12,21 @@ datasourceURLMap.set('reactome','https://reactome.org'); // Reactome
 datasourceURLMap.set('smpdb','http://smpdb.ca'); // Small Molecule pathway Database
 datasourceURLMap.set('wikipathways','https://www.wikipathways.org'); // WikiPathways
 
-module.exports = datasourceURLMap;
+const datasourceToUrl = (baseName) => {
+    const lowercaseName = baseName.toLowerCase();
+
+    let databaseURL = datasourceURLMap.get(lowercaseName);
+    if(!databaseURL){
+      const datasourceURLScores = [];
+      datasourceURLMap.forEach( (datasourceURL, datasource, map) => {
+        datasourceURLScores.push([datasourceURL,diceCoefficient(datasource,lowercaseName)]);
+      });
+      datasourceURLScores.sort( (a,b) => { return b[1] - a[1]; } );
+      databaseURL = datasourceURLScores[0][0];
+    }
+
+    return databaseURL;
+};
+
+
+module.exports = datasourceToUrl;

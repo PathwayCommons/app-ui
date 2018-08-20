@@ -4,7 +4,7 @@ const h = require('react-hyperscript');
 
 const IconButton = require('../../common/components/icon-button');
 
-const { ENRICHMENT_MAP_LAYOUT, searchNodes } = require('./cy');
+const { ENRICHMENT_MAP_LAYOUT, searchEnrichmentNodes } = require('./cy');
 
 class EnrichmentToolbar extends React.Component {
   constructor(props){
@@ -15,7 +15,7 @@ class EnrichmentToolbar extends React.Component {
   }
 
   handleNodeSearchChange(searchVal){
-    this.setState({ searchValue: searchVal }, () => searchNodes( this.props.cySrv.get(), searchVal));
+    this.setState({ searchValue: searchVal }, () => searchEnrichmentNodes( this.props.cySrv.get(), searchVal));
   }
 
   render(){

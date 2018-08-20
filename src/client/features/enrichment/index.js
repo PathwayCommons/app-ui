@@ -124,7 +124,7 @@ class Enrichment extends React.Component {
     let network = h('div.network', {
         className: classNames({
           'network-loading': loading,
-          'network-sidebar-open': activeMenu !== 'closeMenu'
+          'network-sidebar-open': true
         }),
         onClick: ()=> { document.getElementById('gene-input-box').blur(); }
       },
@@ -159,9 +159,10 @@ class Enrichment extends React.Component {
         toolbar,
         appBar
       ]),
-        sidebar,
-        networkEmpty ? h(EmptyNetwork, { msg: 'No results to display', showPcLink: false} ) : null,
-        network
+      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}),
+      sidebar,
+      networkEmpty ? h(EmptyNetwork, { msg: 'No results to display', showPcLink: false} ) : null,
+      network
     ]);
   }
 }

@@ -21,7 +21,6 @@
   border: 1px solid var(--light-base-colour-dark);
   border-radius: 0 !important;
   font-weight: normal;
-  position: fixed;
   vertical-align: middle;
   z-index: 1;
   overflow-y:scroll;
@@ -71,6 +70,9 @@
 /*   ********ENRICHMENT TOOLBAR********  */
 
 .enrichment-app-bar {
+  width: intrinsic;
+  width: -moz-max-content;
+  width: -webkit-max-content;
   padding: 4px 8px;
   z-index: 10;
 }

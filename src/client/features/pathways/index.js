@@ -121,19 +121,22 @@ class Pathways extends React.Component {
       })
     ]);
 
+    let toolbar = h('div.app-toolbar', [
+      h(PathwaysToolbar, { cySrv, activeMenu, controller: this })
+    ]);
+
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
         h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
         h('div.app-bar-title', [
           h('a.database-link', { href:databaseURL,target:'_blank' }, ' ' + baseDatasource),
-          h('span', ' | ' + baseName)
+          h('span', ': ' + baseName)
         ])
-      ])
+      ]),
+      toolbar
     ]);
 
-    let toolbar = h('div.app-toolbar', [
-      h(PathwaysToolbar, { cySrv, activeMenu, controller: this })
-    ]);
+
 
     let sidebar = h('div.app-sidebar', [
       h(Sidebar, {  controller: this, activeMenu }, [
@@ -143,7 +146,7 @@ class Pathways extends React.Component {
     ]);
 
     let content = !networkEmpty ? [
-      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [ appBar, toolbar ]),
+      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, appBar),
       sidebar,
       network,
     ] : [ h(EmptyNetwork, { msg: 'No pathway data available. Please view another result' } ) ];

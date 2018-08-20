@@ -24,6 +24,11 @@ class TokenInput extends React.Component {
     let { inputBoxContents } = this.state;
     let { controller } = this.props;
 
+    if(!inputBoxContents.replace(/\s/g, "")) {
+      this.setState({ inputBoxContents: "" });
+      return;
+   }
+
     let tokenList = _.pull(inputBoxContents.split(/\s/g), "");
      ServerAPI.enrichmentAPI({
        genes: tokenList,

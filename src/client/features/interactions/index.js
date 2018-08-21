@@ -108,15 +108,16 @@ class Interactions extends React.Component {
       })
     ]);
 
+    let toolbar = h('div.app-toolbar', [
+      h(InteractionsToolbar, { cySrv, activeMenu, controller: this })
+    ]);
+
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
         h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
         h('div.app-bar-title', sources.join(', ') + ' Interactions')
-      ])
-    ]);
-
-    let toolbar = h('div.app-toolbar', [
-      h(InteractionsToolbar, { cySrv, activeMenu, controller: this })
+      ]),
+      toolbar
     ]);
 
     let sidebar = h('div.app-sidebar', [
@@ -131,7 +132,6 @@ class Interactions extends React.Component {
         sidebar
       ]),
       appBar,
-      toolbar,
       network,
     ] : [ h(EmptyNetwork, { msg: 'No interactions to display', showPcLink: true} ) ];
 

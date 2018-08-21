@@ -67,6 +67,7 @@ let bindEvents = cy => {
   cy.on('zoom', () => hideTooltips());
   cy.on('layoutstart', () => hideTooltips());
   cy.on('hide-type', () => hideTooltips());
+  cy.on('slider-change', () => hideTooltips());
 };
 
 //Search by keyword within network

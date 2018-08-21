@@ -71,7 +71,7 @@ class InteractionsMenu extends React.Component {
       elesToHide.addClass('metric-hidden');
     });
 
-    cy.emit('hide-type');
+    cy.emit('slider-change');
   }
 
   componentDidMount(){

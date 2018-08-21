@@ -50,11 +50,6 @@ let bindEvents = cy => {
   cy.on('tap', evt => {
     const tgt = evt.target;
 
-    // if we didn't click a node, close all tooltips
-    // if( evt.target === cy ){
-    //   hideTooltips();
-    // }
-
     // we clicked a node or edge that has a tooltip open -> close it
     if( tgt.scratch('_tooltip')){
       hideTooltips();

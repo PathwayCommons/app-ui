@@ -10,9 +10,9 @@ class InteractionsNodeTooltip extends React.Component {
       h('div.metadata-tooltip-header',[
         h('h2.metadata-tooltip-title', title)
       ]),
-      h('div.metadata-tooltip-body', [
+      // h('div.metadata-tooltip-body', [
          // TODO: fill with metadata
-      ]),
+      // ]),
       // h('div.metadata-tooltip-footer', [
          // TODO: fill with metadata
       // ]),

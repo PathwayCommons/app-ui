@@ -50,12 +50,12 @@ let bindEvents = cy => {
   cy.on('tap', evt => {
     const tgt = evt.target;
 
-    // we clicked a node or edge that has a tooltip open -> close it
+    // we clicked an element that has a tooltip open -> close it
     if( tgt.scratch('_tooltip')){
       hideTooltips();
       tgt.removeScratch('_tooltip');
     } else {
-      // open the tooltip for the clicked node or edge
+      // open the tooltip for the clicked element
       hideTooltips();
       tgt.emit(SHOW_INTERACTIONS_TOOLTIPS_EVENT);
     }

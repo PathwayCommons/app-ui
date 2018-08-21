@@ -224,8 +224,8 @@ class Paint extends React.Component {
       h('div.app-bar-branding', [
         h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
         h('div.app-bar-title', [
+          h('span', curPathway.name() + ' | '),
           h('a.plain-link', { href: curPathway.datasourceUrl(), target:'_blank' }, ' ' + curPathway.datasource()),
-          h('span', ': ' + curPathway.name())
         ]),
       ]),
       toolbar

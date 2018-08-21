@@ -40,6 +40,8 @@ class InteractionsMenu extends React.Component {
       edges.removeClass('type-hidden');
     }
 
+    cy.emit('hide-type');
+
     this.setState({[type]: !this.state[type] });
   }
 
@@ -68,6 +70,8 @@ class InteractionsMenu extends React.Component {
       sortedNodes.not(elesToHide).removeClass('metric-hidden');
       elesToHide.addClass('metric-hidden');
     });
+
+    cy.emit('slider-change');
   }
 
   componentDidMount(){

@@ -13,7 +13,7 @@ const Sidebar = require('../../common/components/sidebar');
 const EmptyNetwork = require('../../common/components/empty-network');
 
 
-const { interactionsStylesheet, INTERACTIONS_LAYOUT_OPTS } = require('./cy');
+const { interactionsStylesheet, INTERACTIONS_LAYOUT_OPTS, bindEvents } = require('./cy');
 
 const InteractionsDownloadMenu = require('./interactions-download-menu');
 const InteractionsMenu = require('./interactions-menu');
@@ -23,7 +23,7 @@ class Interactions extends React.Component {
     super(props);
 
     this.state = {
-      cySrv: new CytoscapeService({ style: interactionsStylesheet }),
+      cySrv: new CytoscapeService({ style: interactionsStylesheet, onMount: bindEvents }),
       activeMenu: 'interactionsMenu',
       loading: true,
       sources: _.uniq(queryString.parse(props.location.search).source.split(',')),

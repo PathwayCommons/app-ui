@@ -13,6 +13,7 @@ const Sidebar = require('../../common/components/sidebar');
 const EmptyNetwork = require('../../common/components/empty-network');
 const InfoMenu = require('./menus/network-info-menu');
 const FileDownloadMenu = require('./menus/file-download-menu');
+const datasourceToUrl = require('../../common/datasource-url-map');
 
 const Pathway = require('../../models/pathway/pathway-model');
 
@@ -87,6 +88,8 @@ class Pathways extends React.Component {
   render() {
     let { loading, pathway, cySrv, activeMenu, networkEmpty } = this.state;
 
+    const databaseURL = datasourceToUrl(pathway.datasource());
+
     let network = h('div.network', { className: classNames({
       'network-loading': loading,
       'network-sidebar-open': activeMenu !== 'closeMenu'
@@ -96,16 +99,22 @@ class Pathways extends React.Component {
       })
     ]);
 
-    let appBar = h('div.app-bar', [
-      h('div.app-bar-branding', [
-        h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
-        h('div.app-bar-title', pathway.name() + ' | ' + pathway.datasource())
-      ])
-    ]);
-
     let toolbar = h('div.app-toolbar', [
       h(PathwaysToolbar, { cySrv, activeMenu, controller: this })
     ]);
+
+    let appBar = h('div.app-bar', [
+      h('div.app-bar-branding', [
+        h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
+        h('div.app-bar-title', [
+          h('a.plain-link', { href:databaseURL,target:'_blank' }, ' ' + pathway.datasource()),
+          h('span', ': ' + pathway.name())
+        ])
+      ]),
+      toolbar
+    ]);
+
+
 
     let sidebar = h('div.app-sidebar', [
       h(Sidebar, {  controller: this, activeMenu }, [
@@ -115,7 +124,7 @@ class Pathways extends React.Component {
     ]);
 
     let content = !networkEmpty ? [
-      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [ appBar, toolbar ]),
+      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, appBar),
       sidebar,
       network,
     ] : [ h(EmptyNetwork, { msg: 'No pathway data available. Please view another result' } ) ];

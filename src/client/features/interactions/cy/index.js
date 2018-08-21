@@ -2,7 +2,8 @@ const h = require('react-hyperscript');
 const CytoscapeTooltip = require('../../../common/cy/cytoscape-tooltip');
 const _ = require('lodash');
 
-const InteractionsTooltip = require('../interactions-tooltip');
+const InteractionsNodeTooltip = require('../interactions-node-tooltip');
+const InteractionsEdgeTooltip = require('../interactions-edge-tooltip');
 
 const INTERACTIONS_LAYOUT_OPTS = {
   name: 'cose-bilkent',
@@ -27,7 +28,7 @@ let bindEvents = cy => {
   cy.on(SHOW_INTERACTIONS_TOOLTIPS_EVENT, 'node', function (evt) {
     let node = evt.target;
     let tooltip = new CytoscapeTooltip( node.popperRef(), {
-      html: h(InteractionsTooltip, {
+      html: h(InteractionsNodeTooltip, {
         node: node
         })
     } );
@@ -35,21 +36,31 @@ let bindEvents = cy => {
     tooltip.show();
   });
 
+  cy.on(SHOW_INTERACTIONS_TOOLTIPS_EVENT, 'edge', function (evt) {
+    let edge = evt.target;
+    let tooltip = new CytoscapeTooltip( edge.popperRef(), {
+      html: h(InteractionsEdgeTooltip, {
+        edge: edge
+        })
+    } );
+    edge.scratch('_tooltip', tooltip);
+    tooltip.show();
+  });
+
   cy.on('tap', evt => {
     const tgt = evt.target;
 
     // if we didn't click a node, close all tooltips
-    if( evt.target === cy || evt.target.isEdge() ){
-      hideTooltips();
-      return;
-    }
+    // if( evt.target === cy ){
+    //   hideTooltips();
+    // }
 
-    // we clicked a node that has a tooltip open -> close it
+    // we clicked a node or edge that has a tooltip open -> close it
     if( tgt.scratch('_tooltip')){
       hideTooltips();
       tgt.removeScratch('_tooltip');
     } else {
-      // open the tooltip for the clicked node
+      // open the tooltip for the clicked node or edge
       hideTooltips();
       tgt.emit(SHOW_INTERACTIONS_TOOLTIPS_EVENT);
     }
@@ -62,6 +73,7 @@ let bindEvents = cy => {
   cy.on('layoutstart', () => hideTooltips());
 };
 
+//Search by keyword within network
 let searchInteractionNodes = _.debounce((cy, query) => {
   let queryEmpty = _.trim(query) === '';
   let allNodes = cy.nodes();

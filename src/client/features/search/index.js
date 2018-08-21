@@ -130,9 +130,7 @@ class Search extends React.Component {
           h('img', {src: dsInfo.iconUrl})
         ]),
         h('div.search-item-content', [
-          h(Link, { to: { pathname: '/pathways', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' }, [
-            h('a.plain-link', result.name || 'N/A')
-          ]),
+          h(Link, { className: 'plain-link', to: { pathname: '/pathways', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' }, [result.name || 'N/A']),
           h('p.search-item-content-datasource', ` ${dsInfo.name}`),
           h('p.search-item-content-participants', `${result.numParticipants} Participants`)
         ])

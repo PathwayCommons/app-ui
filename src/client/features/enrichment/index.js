@@ -135,17 +135,16 @@ class Enrichment extends React.Component {
       ]
     );
 
-    let appBar = h('div.enrichment-app-bar', [
-      h('div.app-bar-branding', [
-        h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
-        h('div.app-bar-title', 'Pathway Enrichment'),
-        h(TokenInput, { controller: this })
-      ])
-    ]);
-
     let toolbar = openToolBar ? h('div.enrichment-app-toolbar', [
       h(EnrichmentToolbar, { cySrv, activeMenu, controller: this })
     ]) : null;
+
+    let appBar = h('div.app-bar-branding', [
+      h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
+      h('div.app-bar-title', 'Pathway Enrichment'),
+      h(TokenInput, { controller: this }),
+      toolbar
+    ]);
 
     let sidebar = h('div.enrichment-sidebar', [
       h(Sidebar, { controller: this, activeMenu }, [

@@ -2,7 +2,6 @@ const _ = require('lodash');
 const h = require('react-hyperscript');
 
 const PathwayNodeMetadataView = require('../pathway-node-metadata');
-const ExpandCollapseCue = require('../expand-collapse-cue');
 const { PATHWAYS_LAYOUT_OPTS } = require('./layout');
 
 const PathwayNodeMetadata = require('../../../models/pathway/pathway-node-metadata');
@@ -25,15 +24,6 @@ let bindCyEvents = cy => {
       let tooltip = ele.scratch('_tooltip');
       if (tooltip) {
         tooltip.hide();
-      }
-    });
-  };
-
-  let hideCues = () => {
-    cy.elements().forEach( ele => {
-      let cue = ele.scratch('_expandcollapsecue');
-      if( cue ){
-        cue.hide();
       }
     });
   };
@@ -76,59 +66,6 @@ let bindCyEvents = cy => {
   cy.on('pan', () => hideTooltips());
   cy.on('zoom', () => hideTooltips());
   cy.on('layoutstart', () => hideTooltips());
-  cy.on('expandcollapse.beforecollapse', () => hideTooltips());
-
-  let nodeHoverExpandCollapse = _.debounce(evt => {
-    let node = evt.target;
-    let parent = node.parent();
-    let ecAPI = cy.expandCollapse('get');
-
-    let showCue = node => {
-      hideCues();
-      let rbb = node.renderedBoundingBox({
-        includeLabels: false
-      });
-      let ref = node.popperRef({
-        renderedPosition: () => ({ x: rbb.x1, y: rbb.y1}),
-        renderedDimensions: () => ({w: -5, h: -5})
-      });
-
-      let ecCue = new CytoscapeTooltip(ref, {
-        html: h(ExpandCollapseCue, { node } ),
-        theme: 'dark',
-        interactive: true,
-        trigger: 'manual',
-        hideOnClick: false,
-        arrow: false,
-        placement: 'bottom-end',
-        offset: '50, 0',
-        flip: false,
-        distance: 0
-      });
-      node.scratch('_expandcollapsecue', ecCue);
-      ecCue.show();
-    };
-
-    if( ecAPI.isCollapsible(node) || ecAPI.isExpandable(node) ){
-      showCue(node);
-    } else {
-      showCue(parent);
-    }
-
-  }, 200);
-
-  cy.on('mouseover', '$node > node', nodeHoverExpandCollapse);
-
-  cy.on('mouseover', '.cy-expand-collapse-collapsed-node', nodeHoverExpandCollapse);
-
-  cy.on('mouseout', '$node > node', () => hideCues());
-  cy.on('drag', () => hideCues());
-  cy.on('pan', () => hideCues());
-  cy.on('zoom', () => hideCues());
-  cy.on('layoutstart', () => hideCues());
-  cy.on('tap', () => hideCues());
-
-
 
   let nodeHoverMouseOver = _.debounce(evt => {
     let node = evt.target;

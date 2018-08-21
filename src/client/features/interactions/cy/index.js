@@ -44,10 +44,10 @@ let bindEvents = cy => {
       return;
     }
 
-    //TODO: close tooltip by clicking node twice
     // we clicked a node that has a tooltip open -> close it
-    if( tgt.scratch('_tooltip-opened')){
+    if( tgt.scratch('_tooltip')){
       hideTooltips();
+      tgt.removeScratch('_tooltip');
     } else {
       // open the tooltip for the clicked node
       hideTooltips();

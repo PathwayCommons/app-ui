@@ -19,6 +19,8 @@ class EnrichmentMenu extends React.Component {
       else
         node.removeClass('hidden');
     });
+
+    cy.emit('slider-change');
   }
 
   render(){

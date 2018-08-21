@@ -102,6 +102,7 @@ let bindEvents = cy => {
   cy.on('pan', () => hideTooltips());
   cy.on('zoom', () => hideTooltips());
   cy.on('layoutstart', () => hideTooltips());
+  cy.on('slider-change', () => hideTooltips());
 };
 
 let searchEnrichmentNodes = _.debounce((cy, query) => {

@@ -8,6 +8,7 @@ const EnrichmentDownloadMenu = require('./enrichment-download-menu');
 const EnrichmentToolbar = require('./enrichment-toolbar');
 const EnrichmentMenu = require('./enrichment-menu');
 const TokenInput = require('./token-input');
+const EmptyNetwork = require('../../common/components/empty-network');
 
 const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services');
@@ -27,7 +28,8 @@ class Enrichment extends React.Component {
       activeMenu: 'closeMenu',
       loading: false,
       invalidTokens: [],
-      openToolBar: false
+      openToolBar: false,
+      networkEmpty: false
     };
 
     if( process.env.NODE_ENV !== 'production' ){
@@ -91,6 +93,16 @@ class Enrichment extends React.Component {
         edges: visualizationResult.graph.elements.edges,
         nodes: visualizationResult.graph.elements.nodes
       });
+      if( cy.nodes().length === 0 ){
+        this.setState({
+          networkEmpty: true,
+          loading: false,
+          activeMenu: 'enrichmentMenu',
+          invalidTokens: unrecognized,
+          openToolBar: true
+        });
+        return;
+      }
 
       cy.layout(_.assign({}, ENRICHMENT_MAP_LAYOUT, { stop: () => {
         this.setState({
@@ -102,17 +114,17 @@ class Enrichment extends React.Component {
       }})).run();
     };
 
-    this.setState({ loading: true, activeMenu: 'closeMenu', openToolBar: false }, () => updateNetworkJSON());
+    this.setState({ loading: true, activeMenu: 'closeMenu', openToolBar: false, networkEmpty: false }, () => updateNetworkJSON());
   }
 
 
   render(){
-    let { loading, cySrv, activeMenu, invalidTokens, openToolBar } = this.state;
+    let { loading, cySrv, activeMenu, invalidTokens, openToolBar, networkEmpty } = this.state;
 
     let network = h('div.network', {
         className: classNames({
           'network-loading': loading,
-          'network-sidebar-open': activeMenu !== 'closeMenu'
+          'network-sidebar-open': true
         }),
         onClick: ()=> { document.getElementById('gene-input-box').blur(); }
       },
@@ -123,16 +135,15 @@ class Enrichment extends React.Component {
       ]
     );
 
-    let appBar = h('div.enrichment-app-bar', [
-      h('div.app-bar-branding', [
-        h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
-        h('div.app-bar-title', 'Pathway Enrichment'),
-        h(TokenInput, { controller: this })
-      ])
-    ]);
-
-    let toolbar = h('div.enrichment-app-toolbar', {style: {display: openToolBar ? 'initial' : 'none'}}, [
+    let toolbar = openToolBar ? h('div.enrichment-app-toolbar', [
       h(EnrichmentToolbar, { cySrv, activeMenu, controller: this })
+    ]) : null;
+
+    let appBar = h('div.app-bar-branding', [
+      h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
+      h('div.app-bar-title', 'Pathway Enrichment'),
+      h(TokenInput, { controller: this }),
+      toolbar
     ]);
 
     let sidebar = h('div.enrichment-sidebar', [
@@ -147,9 +158,10 @@ class Enrichment extends React.Component {
         toolbar,
         appBar
       ]),
-        sidebar,
-        h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, []),
-        network
+      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}),
+      sidebar,
+      networkEmpty ? h(EmptyNetwork, { msg: 'No results to display', showPcLink: false} ) : null,
+      network
     ]);
   }
 }

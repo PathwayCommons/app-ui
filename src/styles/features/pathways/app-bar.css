@@ -1,45 +1,44 @@
 .app-bar {
-  max-width: 80vw;
-  position: absolute;
-  top: 0;
-  left: 30px;
-  background-color: var(--light-base-colour);
-  border: 1px solid var(--light-base-colour-dark);
-  border-bottom: none;
-  padding: 4px 8px;
+  max-width: 80vw; /* 80% browser window size*/
+  position: fixed; /* relative to viewport */
   z-index: 10;
+  left:30px;
 }
 
 .app-bar-branding {
   display: flex;
   flex-direction: row;
   align-items: center;
+  max-width: 80vw;
+  padding:4px 8px;
+  background-color: var(--light-base-colour);
+  border: 1px solid var(--light-base-colour-dark);
 }
 
 .app-bar-logo {
-  flex-shrink: 0;
   height: 1.8em;
   width:  1.8em;
   background-image: url("../../image/pc_logo_dark.svg");
   background-repeat: no-repeat;
+  padding-left:10px;
 }
 
 .app-bar-title {
-  flex-shrink: 0;
   color: var(--dark-base-colour);
   font-weight: bold;
   font-size: 0.9em;
+  max-width: 70vw;
 }
 
 .app-toolbar {
   z-index: 10;
-  position: absolute;
-  top: calc(1.8em + 8px);
-  left: 30px;
+  position: relative;
+  top: 0px;
+  width: 350px;
   border-radius: 0 0 0.25em 0.25em;
   border-color: var(--light-base-colour-dark);
   border-style: solid;
-  border-width: 1px 1px 1px 1px;
-  background-color: rgba(255, 255, 255, 0.5);
+  border-width: 1px;
+  background-color:white;
+  opacity: 0.9;
 }
-

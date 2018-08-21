@@ -216,15 +216,19 @@ class Paint extends React.Component {
       })
     ]);
 
+    let toolbar = h('div.app-toolbar', [
+      h(PathwaysToolbar, { cySrv, activeMenu, controller: this })
+    ]);
+
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
         h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
-        h('div.app-bar-title', curPathway.name() + ' | ' + curPathway.datasource())
-      ])
-    ]);
-
-    let toolbar = h('div.app-toolbar', [
-      h(PathwaysToolbar, { cySrv, activeMenu, controller: this })
+        h('div.app-bar-title', [
+          h('a.plain-link', { href: curPathway.datasourceUrl(), target:'_blank' }, ' ' + curPathway.datasource()),
+          h('span', ': ' + curPathway.name())
+        ]),
+      ]),
+      toolbar
     ]);
 
     let sidebar = h('div.app-sidebar', [
@@ -250,10 +254,7 @@ class Paint extends React.Component {
     ]);
 
     let content = [
-      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}),
-      appBar,
-      toolbar,
-      sidebar,
+      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [ appBar, sidebar ] ),
       network,
     ];
 

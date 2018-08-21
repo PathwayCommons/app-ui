@@ -13,7 +13,7 @@ const Sidebar = require('../../common/components/sidebar');
 const EmptyNetwork = require('../../common/components/empty-network');
 
 
-const { interactionsStylesheet, INTERACTIONS_LAYOUT_OPTS } = require('./cy');
+const { interactionsStylesheet, INTERACTIONS_LAYOUT_OPTS, bindEvents } = require('./cy');
 
 const InteractionsDownloadMenu = require('./interactions-download-menu');
 const InteractionsMenu = require('./interactions-menu');
@@ -23,7 +23,7 @@ class Interactions extends React.Component {
     super(props);
 
     this.state = {
-      cySrv: new CytoscapeService({ style: interactionsStylesheet }),
+      cySrv: new CytoscapeService({ style: interactionsStylesheet, onMount: bindEvents }),
       activeMenu: 'interactionsMenu',
       loading: true,
       sources: _.uniq(queryString.parse(props.location.search).source.split(',')),
@@ -108,15 +108,16 @@ class Interactions extends React.Component {
       })
     ]);
 
+    let toolbar = h('div.app-toolbar', [
+      h(InteractionsToolbar, { cySrv, activeMenu, controller: this })
+    ]);
+
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
         h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
         h('div.app-bar-title', sources.join(', ') + ' Interactions')
-      ])
-    ]);
-
-    let toolbar = h('div.app-toolbar', [
-      h(InteractionsToolbar, { cySrv, activeMenu, controller: this })
+      ]),
+      toolbar
     ]);
 
     let sidebar = h('div.app-sidebar', [
@@ -131,9 +132,8 @@ class Interactions extends React.Component {
         sidebar
       ]),
       appBar,
-      toolbar,
       network,
-    ] : [ h(EmptyNetwork, { msg: 'No interactions to display'} ) ];
+    ] : [ h(EmptyNetwork, { msg: 'No interactions to display', showPcLink: true} ) ];
 
 
     return h('div.interactions', content);

@@ -1,5 +1,6 @@
 const h = require('react-hyperscript');
 const CytoscapeTooltip = require('../../../common/cy/cytoscape-tooltip');
+const _ = require('lodash');
 
 const EnrichmentNodeTooltip = require('../enrichment-node-tooltip');
 const EnrichmentEdgeTooltip = require('../enrichment-edge-tooltip');
@@ -103,9 +104,24 @@ let bindEvents = cy => {
   cy.on('layoutstart', () => hideTooltips());
 };
 
+let searchEnrichmentNodes = _.debounce((cy, query) => {
+  let queryEmpty = _.trim(query) === '';
+  let allNodes = cy.nodes();
+  let matched = allNodes.filter( node =>
+    node.data('geneSet').join(' ').includes( query.toUpperCase() ) || node.data('description').toUpperCase().includes( query.toUpperCase() )
+  );
+
+  cy.batch(() => {
+    allNodes.removeClass('matched');
+    if( matched.length > 0 && !queryEmpty ){
+      matched.addClass('matched');
+    }
+  });
+}, 250);
 
 module.exports = {
   ENRICHMENT_MAP_LAYOUT,
+  searchEnrichmentNodes,
   enrichmentStylesheet: require('./enrichment-stylesheet'),
   bindEvents
 };

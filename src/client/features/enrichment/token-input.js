@@ -11,7 +11,7 @@ class TokenInput extends React.Component {
     // Note on input contents: Set the initial value here from parent
     // in order to maintain contents on re-render.
     this.state = {
-      inputBoxContents: this.props.inputs
+      inputBoxContents: ""
     };
   }
   //store 'gene-input-box' contents on state
@@ -19,10 +19,22 @@ class TokenInput extends React.Component {
     this.setState({inputBoxContents: e.target.value});
   }
 
+  setExample() {
+    let example = ['tyr', 'oca2', 'tyrp1', 'slc45a2'];
+    this.setState({ inputBoxContents: example.join(`\n`) });
+    //open input box when example is inserted
+    document.getElementById('gene-input-box').focus();
+  }
+
   //call validation service API to retrieve validation result in the form of []
   retrieveValidationAPIResult(){
     let { inputBoxContents } = this.state;
     let { controller } = this.props;
+
+    if(!inputBoxContents.replace(/\s/g, "")) {
+      this.setState({ inputBoxContents: "" });
+      return;
+   }
 
     let tokenList = _.pull(inputBoxContents.split(/\s/g), "");
      ServerAPI.enrichmentAPI({
@@ -44,6 +56,9 @@ class TokenInput extends React.Component {
   render() {
     let { inputBoxContents } = this.state;
 
+    let exampleLink =  !inputBoxContents ? h('div.enrichment-example-container', {onClick: () => this.setExample()}, [
+    h('button.example', 'e.g. ')]) : null;
+
     return h('div.enrichmentInput', [
         h('div.gene-input-container', [
           h(Textarea, {
@@ -53,10 +68,12 @@ class TokenInput extends React.Component {
             value: inputBoxContents,
             spellCheck: false,
             onChange: (e) => this.handleChange(e)
-          })
+          }
+        ),
+          exampleLink
         ]),
         h('submit-container', {
-          onClick: () => { this.retrieveValidationAPIResult();} },
+          onClick: () => { this.retrieveValidationAPIResult(); }},
           [h('button.submit', 'Submit')]
         )
     ]);

@@ -81,17 +81,18 @@ let bindEvents = cy => {
   cy.on('tap', evt => {
     const tgt = evt.target;
 
-    // if we didn't click a node, close all tooltips
+    // if we didn't click an element, close all tooltips
     if( evt.target === cy ){
       hideTooltips();
       return;
     }
 
-    // we clicked a node that has a tooltip open -> close it
-    if( tgt.scratch('_tooltip-opened') ){
+    // we clicked an element that has a tooltip open -> close it
+    if( tgt.scratch('_tooltip') ){
       hideTooltips();
+      tgt.removeScratch('_tooltip');
     } else {
-      // open the tooltip for the clicked node
+      // open the tooltip for the clicked element
       hideTooltips();
       tgt.emit(SHOW_ENRICHMENT_TOOLTIPS_EVENT);
     }

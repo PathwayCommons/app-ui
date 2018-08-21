@@ -25,10 +25,9 @@ class Enrichment extends React.Component {
         nodes: [],
         edges: []
       },
-      activeMenu: 'closeMenu',
+      activeMenu: 'enrichmentMenu',
       loading: false,
       invalidTokens: [],
-      openToolBar: false,
       networkEmpty: false
     };
 
@@ -98,8 +97,7 @@ class Enrichment extends React.Component {
           networkEmpty: true,
           loading: false,
           activeMenu: 'enrichmentMenu',
-          invalidTokens: unrecognized,
-          openToolBar: true
+          invalidTokens: unrecognized
         });
         return;
       }
@@ -108,8 +106,7 @@ class Enrichment extends React.Component {
         this.setState({
           loading: false,
           activeMenu: 'enrichmentMenu',
-          invalidTokens: unrecognized,
-          openToolBar: true
+          invalidTokens: unrecognized
         });
       }})).run();
     };
@@ -124,7 +121,7 @@ class Enrichment extends React.Component {
     let network = h('div.network', {
         className: classNames({
           'network-loading': loading,
-          'network-sidebar-open': true
+          'network-sidebar-open': activeMenu !== 'closeMenu'
         }),
         onClick: ()=> { document.getElementById('gene-input-box').blur(); }
       },
@@ -143,9 +140,9 @@ class Enrichment extends React.Component {
       ])
     ]);
 
-    let toolbar = openToolBar ? h('div.enrichment-app-toolbar', [
+    let toolbar = h('div.enrichment-app-toolbar', [
       h(EnrichmentToolbar, { cySrv, activeMenu, controller: this })
-    ]) : null;
+    ]);
 
     let sidebar = h('div.enrichment-sidebar', [
       h(Sidebar, { controller: this, activeMenu }, [

@@ -24,6 +24,19 @@ class InteractionsMenu extends React.Component {
     this.throttledHandleSliderChange = _.throttle(() => this.handleSliderChange(), 1000/15);
   }
 
+  hideTooltips(){
+    let { cySrv } = this.props;
+    let cy = cySrv.get();
+    let cyElements = cy.elements();
+
+    cyElements.forEach(element => {
+      let tooltip = element.scratch('_tooltip');
+      if (tooltip) {
+        tooltip.hide();
+      }
+    });
+  }
+
   toggleIntnType(type){
     let { cySrv } = this.props;
     let cy = cySrv.get();
@@ -39,6 +52,8 @@ class InteractionsMenu extends React.Component {
       nodes.removeClass('type-hidden');
       edges.removeClass('type-hidden');
     }
+
+    this.hideTooltips();
 
     this.setState({[type]: !this.state[type] });
   }
@@ -67,16 +82,9 @@ class InteractionsMenu extends React.Component {
     cy.batch(() => {
       sortedNodes.not(elesToHide).removeClass('metric-hidden');
       elesToHide.addClass('metric-hidden');
-
-      //hide open tooltip if node is hidden
-      elesToHide.forEach(element => {
-        let tooltip = element.scratch('_tooltip');
-        if (tooltip) {
-          tooltip.hide();
-        }
-      });
-
     });
+
+    this.hideTooltips();
   }
 
   componentDidMount(){

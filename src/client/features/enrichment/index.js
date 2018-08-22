@@ -49,13 +49,17 @@ class Enrichment extends React.Component {
     this.state.cySrv.destroy();
   }
 
-  changeMenu(menu){
-    let resizeCyImmediate = () => this.state.cySrv.get().resize();
-    let resizeCyDebounced = _.debounce( resizeCyImmediate, 500 );
+  changeMenu( menu, cb){
+    let resizeCy = _.debounce(() => this.state.cySrv.get().resize(), 500);
+    let postMenuChange = () => {
+      resizeCy();
+      cb ? cb() : null;
+    };
+
     if( menu === this.state.activeMenu ){
-      this.setState({ activeMenu: 'closeMenu' }, resizeCyDebounced);
+      this.setState({ activeMenu: 'closeMenu' }, postMenuChange );
     } else {
-      this.setState({ activeMenu: menu }, resizeCyDebounced);
+      this.setState({ activeMenu: menu }, postMenuChange );
     }
   }
 
@@ -74,15 +78,17 @@ class Enrichment extends React.Component {
       ele.unselect();
     });
 
-    const updateNetworkJSON = async () => {
-      const analysisResult = await ServerAPI.enrichmentAPI({ genes: genes }, "analysis");
+    let updateNetworkJSON = async () => {
+      this.setState({ loading: true, openToolbar: false, networkEmpty: false });
+
+      let analysisResult = await ServerAPI.enrichmentAPI({ genes: genes }, "analysis");
 
       if( !analysisResult || !analysisResult.pathwayInfo ) {
         this.setState({ timedOut: true, loading: false });
         return;
       }
 
-      const visualizationResult = await ServerAPI.enrichmentAPI({ pathways: analysisResult.pathwayInfo }, "visualization");
+      let visualizationResult = await ServerAPI.enrichmentAPI({ pathways: analysisResult.pathwayInfo }, "visualization");
 
       if( !visualizationResult ) {
         this.setState({ timedOut: true, loading: false });
@@ -94,28 +100,30 @@ class Enrichment extends React.Component {
         edges: visualizationResult.graph.elements.edges,
         nodes: visualizationResult.graph.elements.nodes
       });
-      if( cy.nodes().length === 0 ){
-        this.setState({
-          networkEmpty: true,
-          loading: false,
-          activeMenu: 'enrichmentMenu',
-          invalidTokens: unrecognized,
-          openToolBar: true
-        });
-        return;
-      }
 
-      cy.layout(_.assign({}, ENRICHMENT_MAP_LAYOUT, { stop: () => {
-        this.setState({
-          loading: false,
-          activeMenu: 'enrichmentMenu',
-          invalidTokens: unrecognized,
-          openToolBar: true
-        });
-      }})).run();
+      this.changeMenu('enrichmentMenu', () => {
+        if( cy.nodes().length === 0 ){
+          this.setState({
+            networkEmpty: true,
+            loading: false,
+            invalidTokens: unrecognized,
+            openToolBar: true
+          });
+        } else {
+          cy.layout(_.assign({}, ENRICHMENT_MAP_LAYOUT, {
+            stop: () => {
+              this.setState({
+                loading: false,
+                invalidTokens: unrecognized,
+                openToolBar: true
+              });
+            }
+          })).run();
+        }
+      });
     };
 
-    this.setState({ loading: true, activeMenu: 'closeMenu', openToolBar: false, networkEmpty: false }, () => updateNetworkJSON());
+    this.changeMenu('closeMenu', () => updateNetworkJSON());
   }
 
   updateSlider( sliderVal ){
@@ -129,7 +137,7 @@ class Enrichment extends React.Component {
     let network = h('div.network', {
         className: classNames({
           'network-loading': loading,
-          'network-sidebar-open': true
+          'network-sidebar-open': activeMenu !== 'closeMenu'
         }),
         onClick: ()=> { document.getElementById('gene-input-box').blur(); }
       },

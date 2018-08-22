@@ -163,8 +163,7 @@ class Enrichment extends React.Component {
         toolbar,
         appBar
       ]),
-      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}),
-      sidebar,
+      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [ sidebar ]),
       networkEmpty ? h(EmptyNetwork, { msg: 'No results to display', showPcLink: false} ) : null,
       network
     ]);

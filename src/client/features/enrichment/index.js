@@ -25,10 +25,10 @@ class Enrichment extends React.Component {
         nodes: [],
         edges: []
       },
-      activeMenu: 'enrichmentMenu',
+      activeMenu: 'closeMenu',
       loading: false,
       invalidTokens: [],
-      openToolBar: true,
+      openToolBar: false,
       networkEmpty: false
     };
 
@@ -93,6 +93,11 @@ class Enrichment extends React.Component {
         edges: visualizationResult.graph.elements.edges,
         nodes: visualizationResult.graph.elements.nodes
       });
+
+      //prevent network from being hidden by sidebar
+      this.setState({activeMenu: 'enrichmentMenu'});
+      this.state.cySrv.get().resize();
+
       if( cy.nodes().length === 0 ){
         this.setState({
           networkEmpty: true,
@@ -107,7 +112,6 @@ class Enrichment extends React.Component {
       cy.layout(_.assign({}, ENRICHMENT_MAP_LAYOUT, { stop: () => {
         this.setState({
           loading: false,
-          activeMenu: 'enrichmentMenu',
           invalidTokens: unrecognized,
           openToolBar: true
         });

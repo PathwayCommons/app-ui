@@ -129,9 +129,9 @@ class Interactions extends React.Component {
 
     let content = !networkEmpty ? [
       h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [
+        appBar,
         sidebar
       ]),
-      appBar,
       network,
     ] : [ h(EmptyNetwork, { msg: 'No interactions to display', showPcLink: true} ) ];
 

@@ -94,6 +94,11 @@ class Enrichment extends React.Component {
         edges: visualizationResult.graph.elements.edges,
         nodes: visualizationResult.graph.elements.nodes
       });
+
+      //prevent network from being hidden by sidebar
+      this.setState({activeMenu: 'enrichmentMenu'});
+      this.state.cySrv.get().resize();
+
       if( cy.nodes().length === 0 ){
         this.setState({
           networkEmpty: true,
@@ -108,7 +113,6 @@ class Enrichment extends React.Component {
       cy.layout(_.assign({}, ENRICHMENT_MAP_LAYOUT, { stop: () => {
         this.setState({
           loading: false,
-          activeMenu: 'enrichmentMenu',
           invalidTokens: unrecognized,
           openToolBar: true
         });
@@ -129,7 +133,7 @@ class Enrichment extends React.Component {
     let network = h('div.network', {
         className: classNames({
           'network-loading': loading,
-          'network-sidebar-open': true
+          'network-sidebar-open': activeMenu !== 'closeMenu'
         }),
         onClick: ()=> { document.getElementById('gene-input-box').blur(); }
       },

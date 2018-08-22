@@ -19,7 +19,7 @@
 }
 
 .network-sidebar-open {
-  width: calc(100vw - var(--view-sidebar-width));
+  width: calc(100vw - var(--view-sidebar-width)) !important;
 }
 
 .network-cy {

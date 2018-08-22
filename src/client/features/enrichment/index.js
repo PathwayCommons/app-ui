@@ -29,10 +29,9 @@ class Enrichment extends React.Component {
       loading: false,
       invalidTokens: [],
       openToolBar: false,
-      networkEmpty: false
+      networkEmpty: false,
+      sliderVal: 0.05
     };
-
-    this.sliderVal = 0.05;
 
     if( process.env.NODE_ENV !== 'production' ){
       this.state.cySrv.getPromise().then(cy => window.cy = cy);
@@ -120,12 +119,12 @@ class Enrichment extends React.Component {
   }
 
   updateSlider( sliderVal ){
-    this.sliderVal = sliderVal;
+    this.setState({ sliderVal: sliderVal });
   }
 
 
   render(){
-    let { loading, cySrv, activeMenu, invalidTokens, openToolBar, networkEmpty } = this.state;
+    let { loading, cySrv, activeMenu, invalidTokens, openToolBar, networkEmpty, sliderVal } = this.state;
 
     let network = h('div.network', {
         className: classNames({
@@ -154,7 +153,7 @@ class Enrichment extends React.Component {
 
     let sidebar = h('div.enrichment-sidebar', [
       h(Sidebar, { controller: this, activeMenu }, [
-        h(EnrichmentMenu, { key: 'enrichmentMenu', cySrv, invalidTokens, controller: this }),
+        h(EnrichmentMenu, { key: 'enrichmentMenu', cySrv, invalidTokens, controller: this, sliderVal: sliderVal }),
         h(EnrichmentDownloadMenu, { key: 'enrichmentDownloadMenu', cySrv })
       ])
     ]);

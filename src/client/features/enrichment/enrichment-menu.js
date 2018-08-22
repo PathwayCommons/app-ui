@@ -26,14 +26,14 @@ class EnrichmentMenu extends React.Component {
 
   render(){
 
-    let { invalidTokens, controller } = this.props;
+    let { invalidTokens, sliderVal } = this.props;
 
     const slider = [
-      h("input",{type:"range",id:'enrichment-p_value-slider',min:0,max:0.05,step:0.0001,defaultValue:controller.sliderVal,
+      h("input",{type:"range",id:'enrichment-p_value-slider',min:0,max:0.05,step:0.0001,defaultValue:sliderVal,
       onInput:() => this.sliderUpdate() })
     ];
 
-    this.filterNodes(controller.sliderVal);
+    this.filterNodes(sliderVal);
 
     const unrecognizedTokens = invalidTokens.length === 0 ? '' : [
         h('h3', 'Unrecognized Genes (' + invalidTokens.length + ')'),

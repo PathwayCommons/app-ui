@@ -29,7 +29,8 @@ class Enrichment extends React.Component {
       loading: false,
       invalidTokens: [],
       openToolBar: false,
-      networkEmpty: false
+      networkEmpty: false,
+      sliderVal: 0.05
     };
 
     if( process.env.NODE_ENV !== 'production' ){
@@ -117,9 +118,13 @@ class Enrichment extends React.Component {
     this.setState({ loading: true, activeMenu: 'closeMenu', openToolBar: false, networkEmpty: false }, () => updateNetworkJSON());
   }
 
+  updateSlider( sliderVal ){
+    this.setState({ sliderVal: sliderVal });
+  }
+
 
   render(){
-    let { loading, cySrv, activeMenu, invalidTokens, openToolBar, networkEmpty } = this.state;
+    let { loading, cySrv, activeMenu, invalidTokens, openToolBar, networkEmpty, sliderVal } = this.state;
 
     let network = h('div.network', {
         className: classNames({
@@ -148,7 +153,7 @@ class Enrichment extends React.Component {
 
     let sidebar = h('div.enrichment-sidebar', [
       h(Sidebar, { controller: this, activeMenu }, [
-        h(EnrichmentMenu, { key: 'enrichmentMenu', cySrv, invalidTokens }),
+        h(EnrichmentMenu, { key: 'enrichmentMenu', cySrv, invalidTokens, controller: this, sliderVal: sliderVal }),
         h(EnrichmentDownloadMenu, { key: 'enrichmentDownloadMenu', cySrv })
       ])
     ]);
@@ -158,8 +163,7 @@ class Enrichment extends React.Component {
         toolbar,
         appBar
       ]),
-      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}),
-      sidebar,
+      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [ sidebar ]),
       networkEmpty ? h(EmptyNetwork, { msg: 'No results to display', showPcLink: false} ) : null,
       network
     ]);

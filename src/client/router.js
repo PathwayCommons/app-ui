@@ -4,7 +4,6 @@ const ReactGA = require('react-ga');
 const _ = require('lodash');
 
 const Features = require('./features');
-const Error = require('./error');
 
 ReactGA.initialize('UA-43341809-7');
 let logPageView = page => {
@@ -74,9 +73,11 @@ module.exports = () => {
         path: '*',
         render: props => {
           let { location } = props;
-          let { pathname, search } = location;
-          logPageView(pathname + search);
-          return h(Error, props);
+          let { pathname } = location;
+          logPageView(pathname);
+          props.notFoundError = true;
+          props = _.assign({ notFoundError: true }, props);
+          return h(Features.Search, props);
         }
       }
     ].map( spec => h(Route, _.assign({ exact: true }, spec)) ))

@@ -150,6 +150,14 @@ class Search extends React.Component {
 
     const searchResultHitCount = h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
 
+    const notFoundErrorMessage = h('div.search-error', [
+      h('h1', 'We can\'t find the the resource you are looking for'),
+      h('p', [
+        h('span', 'If difficulties persist, please report this to our '),
+        h('a.plain-link', { href: 'pathway-commons-help@googlegroups.com' }, 'help forum.')
+      ])
+    ]);
+
     return h('div.search', [
       h('div.search-header-container', [
         h('div.search-header', [
@@ -188,6 +196,7 @@ class Search extends React.Component {
             ])
         ])
       ]),
+      this.props.notFoundError ? notFoundErrorMessage :
       h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' } }, [
         h('div.search-list-container', [
           h('div.search-tools', [

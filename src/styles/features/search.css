@@ -255,6 +255,16 @@
   color: var(--accent-1-colour);
 }
 
+.search-error {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  padding: 10px;
+  padding-left: 215px;
+  width: 60%;
+}
+
 @media (--small-width-viewport) {
   .search-header {
     display: block;

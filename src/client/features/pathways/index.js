@@ -104,8 +104,8 @@ class Pathways extends React.Component {
       h('div.app-bar-branding', [
         h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
         h('div.app-bar-title', [
-          h('a.plain-link', { href: pathway.datasourceUrl(), target: '_blank' }, ' ' + pathway.datasource()),
-          h('span', ': ' + pathway.name())
+          h('span', pathway.name() + ' | '),
+          h('a.plain-link', { href: pathway.datasourceUrl(), target: '_blank' }, ' ' + pathway.datasource())
         ])
       ]),
       toolbar
@@ -119,8 +119,7 @@ class Pathways extends React.Component {
     ]);
 
     let content = !networkEmpty ? [
-      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, appBar),
-      sidebar,
+      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [ appBar, sidebar ]),
       network,
     ] : [ h(EmptyNetwork, { msg: 'No pathway data available. Please view another result' } ) ];
 

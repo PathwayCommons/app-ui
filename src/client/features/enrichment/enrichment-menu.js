@@ -7,12 +7,15 @@ class EnrichmentMenu extends React.Component {
    *  @description Hides nodes based on adjusted p_value, determined by on-screen slider
    */
   sliderUpdate(){
-    const cy = this.props.cySrv.get();
-
     //get value from slider
     let sliderVal = document.getElementById('enrichment-p_value-slider').value;
+    this.props.controller.updateSlider(sliderVal);
+    this.filterNodes(sliderVal);
+  }
 
+  filterNodes(sliderVal){
     //compare p_values and hide if outside of chosen threshold
+    const cy = this.props.cySrv.get();
     cy.nodes().forEach(node => {
       if(node.data('p_value') > sliderVal)
         node.addClass('hidden');
@@ -25,17 +28,14 @@ class EnrichmentMenu extends React.Component {
 
   render(){
 
-    let { invalidTokens } = this.props;
+    let { invalidTokens, sliderVal } = this.props;
 
     const slider = [
-      h("input",{type:"range",id:'enrichment-p_value-slider',min:0,max:0.05,step:0.0001,defaultValue:0.05,
+      h("input",{type:"range",id:'enrichment-p_value-slider',min:0,max:0.05,step:0.0001,defaultValue:sliderVal,
       onInput:() => this.sliderUpdate() })
     ];
 
-    //when rendered all nodes show
-    this.props.cySrv.loadPromise().then((cy) => {
-      cy.batch(()=>{cy.elements().removeClass('hidden');});
-      });
+    this.filterNodes(sliderVal);
 
     const unrecognizedTokens = invalidTokens.length === 0 ? '' : [
         h('h3', 'Unrecognized Genes (' + invalidTokens.length + ')'),

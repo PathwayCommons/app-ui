@@ -13,7 +13,7 @@ class EnrichmentEdgeTooltip extends React.Component {
     return h('div.enrichment-tooltip', [
       h('div.enrichment-tooltip-header',[
         h('h2.enrichment-tooltip-title', sourceDescription ),
-        h('h2.enrichment-tooltip-title', "and" ),
+        h('span', ` and ` ),
         h('h2.enrichment-tooltip-title', targetDescription ),
       ]),
       h('div.enrichment-tooltip-body', [

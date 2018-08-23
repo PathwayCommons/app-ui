@@ -15,7 +15,7 @@ let edgeTypeToLabel = type => {
     case 'controls-expression-of':
       return 'Expression';
     default:
-      return '';
+      return 'Other';
   }
 };
 
@@ -72,19 +72,17 @@ let sifText2CyJson = (sifText, sourceIds) => {
 
   participantsData.forEach( participantTxtLine => {
     let participantJson = participantTxt2CyJson( participantTxtLine, sourceIds );
-    nodeId2Json[participantJson.data.id] = participantJson;
+    nodeId2Json[participantJson.id] = participantJson;
   } );
 
+  console.log(sifText);
   interactionsData.forEach( interactionTxtLine => {
     let interactionJson = interactionTxt2CyJson( interactionTxtLine );
     let source = interactionJson.data.source;
     let target = interactionJson.data.target;
 
-    let srcJson = nodeId2Json[source];
-    let tgtJson = nodeId2Json[target];
-
-    if( srcJson ){ srcJson.data.metric += 1 }
-    if( tgtJson ){ tgtJson.data.metric += 1 }
+    nodeId2Json[source].data.metric += 1;
+    nodeId2Json[target].data.metric += 1;
 
     edges.push(interactionJson);
   } );
@@ -142,4 +140,6 @@ let getSIFInteractionData = sources => {
 
 let pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
 
-module.exports = {getInteractionGraphFromPC: cache(getSIFInteractionData, pcCache)};
+module.exports = {
+  getInteractionNetwork: cache(getSIFInteractionData, pcCache);
+}

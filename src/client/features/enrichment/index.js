@@ -50,9 +50,8 @@ class Enrichment extends React.Component {
   }
 
   changeMenu( menu, cb){
-    let resizeCy = _.debounce(() => this.state.cySrv.get().resize(), 500);
     let postMenuChange = () => {
-      resizeCy();
+      _.throttle(() => this.state.cySrv.get().resize())();
       cb ? cb() : null;
     };
 
@@ -79,7 +78,6 @@ class Enrichment extends React.Component {
     });
 
     let updateNetworkJSON = async () => {
-      this.setState({ loading: true, openToolbar: false, networkEmpty: false });
 
       let analysisResult = await ServerAPI.enrichmentAPI({ genes: genes }, "analysis");
 
@@ -101,29 +99,33 @@ class Enrichment extends React.Component {
         nodes: visualizationResult.graph.elements.nodes
       });
 
-      this.changeMenu('enrichmentMenu', () => {
-        if( cy.nodes().length === 0 ){
+      if( cy.nodes().length === 0 ){
+
+        this.changeMenu('enrichmentMenu', () => {
           this.setState({
             networkEmpty: true,
             loading: false,
             invalidTokens: unrecognized,
             openToolBar: true
           });
-        } else {
-          cy.layout(_.assign({}, ENRICHMENT_MAP_LAYOUT, {
-            stop: () => {
-              this.setState({
-                loading: false,
-                invalidTokens: unrecognized,
-                openToolBar: true
-              });
-            }
-          })).run();
-        }
+        });
+        return;
+      }
+
+      this.changeMenu('enrichmentMenu', () => {
+        cy.layout(_.assign({}, ENRICHMENT_MAP_LAYOUT, {
+          stop: () => {
+            this.setState({
+              loading: false,
+              invalidTokens: unrecognized,
+              openToolBar: true
+            });
+          }
+        })).run();
       });
     };
 
-    this.changeMenu('closeMenu', () => updateNetworkJSON());
+    this.changeMenu('closeMenu', () => this.setState({ loading: true, openToolbar: false, networkEmpty: false }, updateNetworkJSON));
   }
 
   updateSlider( sliderVal ){

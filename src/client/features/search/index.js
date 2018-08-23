@@ -154,9 +154,22 @@ class Search extends React.Component {
       h('h1', 'We can\'t find the the resource you are looking for'),
       h('p', [
         h('span', 'If difficulties persist, please report this to our '),
-        h('a.plain-link', { href: 'pathway-commons-help@googlegroups.com' }, 'help forum.')
+        h('a.plain-link', { href: 'mailto: pathway-commons-help@googlegroups.com' }, 'help forum.')
       ])
     ]);
+
+    const searchListing = h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' } }, [
+      h('div.search-list-container', [
+        h('div.search-tools', [
+          h('div.search-result-filter', [searchResultFilter]),
+          h('div.search-result-hit-count', [searchResultHitCount])
+        ]),
+        h(EntityInfoBoxList, { entityInfoList: entityInfoResults}),
+        h('div.search-list', searchResults)
+      ])
+    ]);
+
+    const searchBody =  this.props.notFoundError ? notFoundErrorMessage : searchListing;
 
     return h('div.search', [
       h('div.search-header-container', [
@@ -196,17 +209,7 @@ class Search extends React.Component {
             ])
         ])
       ]),
-      this.props.notFoundError ? notFoundErrorMessage :
-      h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' } }, [
-        h('div.search-list-container', [
-          h('div.search-tools', [
-            h('div.search-result-filter', [searchResultFilter]),
-            h('div.search-result-hit-count', [searchResultHitCount])
-          ]),
-          h(EntityInfoBoxList, { entityInfoList: entityInfoResults}),
-          h('div.search-list', searchResults)
-        ])
-      ])
+      h('div.search-body', [searchBody])
     ]);
   }
 }

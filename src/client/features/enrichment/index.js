@@ -78,7 +78,6 @@ class Enrichment extends React.Component {
     });
 
     let updateNetworkJSON = async () => {
-
       let analysisResult = await ServerAPI.enrichmentAPI({ genes: genes }, "analysis");
 
       if( !analysisResult || !analysisResult.pathwayInfo ) {
@@ -99,29 +98,25 @@ class Enrichment extends React.Component {
         nodes: visualizationResult.graph.elements.nodes
       });
 
-      if( cy.nodes().length === 0 ){
-
-        this.changeMenu('enrichmentMenu', () => {
+      this.changeMenu('enrichmentMenu', () => {
+        if( cy.nodes().length === 0 ){
           this.setState({
             networkEmpty: true,
             loading: false,
             invalidTokens: unrecognized,
             openToolBar: true
           });
-        });
-        return;
-      }
-
-      this.changeMenu('enrichmentMenu', () => {
-        cy.layout(_.assign({}, ENRICHMENT_MAP_LAYOUT, {
-          stop: () => {
-            this.setState({
-              loading: false,
-              invalidTokens: unrecognized,
-              openToolBar: true
-            });
-          }
-        })).run();
+        } else {
+          cy.layout(_.assign({}, ENRICHMENT_MAP_LAYOUT, {
+            stop: () => {
+              this.setState({
+                loading: false,
+                invalidTokens: unrecognized,
+                openToolBar: true
+              });
+            }
+          })).run();
+        }
       });
     };
 

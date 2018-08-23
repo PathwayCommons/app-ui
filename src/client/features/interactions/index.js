@@ -114,7 +114,9 @@ class Interactions extends React.Component {
 
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
-        h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
+        h('a.logo-link', {href:'http://www.pathwaycommons.org'} ,[
+          h('div.app-bar-logo')
+        ]),
         h('div.app-bar-title', sources.join(', ') + ' Interactions')
       ]),
       toolbar

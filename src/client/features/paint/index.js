@@ -222,7 +222,9 @@ class Paint extends React.Component {
 
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
-        h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
+        h('a.logo-link', {href:'http://www.pathwaycommons.org'} ,[
+          h('div.app-bar-logo')
+        ]),
         h('div.app-bar-title', [
           h('span', curPathway.name() + ' | '),
           h('a.plain-link', { href: curPathway.datasourceUrl(), target:'_blank' }, ' ' + curPathway.datasource()),

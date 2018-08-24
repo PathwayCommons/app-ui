@@ -75,7 +75,6 @@ module.exports = () => {
           let { location } = props;
           let { pathname } = location;
           logPageView(pathname);
-          props.notFoundError = true;
           props = _.assign({ notFoundError: true }, props);
           return h(Features.Search, props);
         }

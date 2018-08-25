@@ -42,8 +42,11 @@ npm run build
 screen -X -S $JOB_NAME quit || echo "No screen session to stop"
 
 # swap out old workspace with new one
+rm -rf /tmp/rm/$WORKSPACE
 mkdir -p /tmp/rm
 mv $WORKSPACE /tmp/rm || echo "No old workspace to move"
+
+mkdir -p $WORKSPACE
 mv $WORKSPACE_TMP/* $WORKSPACE/
 cd $WORKSPACE
 

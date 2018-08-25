@@ -43,8 +43,8 @@ screen -X -S $JOB_NAME quit || echo "No screen session to stop"
 
 # swap out old workspace with new one
 mkdir -p /tmp/rm
-mv $WORKSPACE /tmp/rm/$JOB_NAME || echo "No old workspace to move"
-mv $WORKSPACE_TMP $WORKSPACE
+mv $WORKSPACE /tmp/rm || echo "No old workspace to move"
+mv $WORKSPACE_TMP/* $WORKSPACE/
 cd $WORKSPACE
 
 # start the server in a screen session

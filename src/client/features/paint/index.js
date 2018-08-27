@@ -15,6 +15,7 @@ const FileDownloadMenu = require('./menus/file-download-menu');
 const InfoMenu = require('./menus/network-info-menu');
 const PaintMenu = require('./menus/paint-menu');
 const Sidebar = require('../../common/components/sidebar');
+const PcLogoLink = require('../../common/components/pc-logo-link');
 const PathwaysToolbar = require('./pathways-toolbar');
 
 const demoExpressions = require('./demo-expressions.json');
@@ -222,7 +223,7 @@ class Paint extends React.Component {
 
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
-        h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
+        h(PcLogoLink),
         h('div.app-bar-title', [
           h('span', curPathway.name() + ' | '),
           h('a.plain-link', { href: curPathway.datasourceUrl(), target:'_blank' }, ' ' + curPathway.datasource()),

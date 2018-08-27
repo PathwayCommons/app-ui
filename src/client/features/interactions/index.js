@@ -11,7 +11,7 @@ const { ServerAPI } = require('../../services/');
 const InteractionsToolbar = require('./interactions-toolbar');
 const Sidebar = require('../../common/components/sidebar');
 const EmptyNetwork = require('../../common/components/empty-network');
-
+const PcLogoLink = require('../../common/components/pc-logo-link');
 
 const { interactionsStylesheet, INTERACTIONS_LAYOUT_OPTS, bindEvents } = require('./cy');
 
@@ -114,7 +114,7 @@ class Interactions extends React.Component {
 
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
-        h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
+        h(PcLogoLink),
         h('div.app-bar-title', sources.join(', ') + ' Interactions')
       ]),
       toolbar

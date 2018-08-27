@@ -9,6 +9,7 @@ const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services/');
 
 const PathwaysToolbar = require('./pathways-toolbar');
+const PcLogoLink = require('../../common/components/pc-logo-link');
 const Sidebar = require('../../common/components/sidebar');
 const EmptyNetwork = require('../../common/components/empty-network');
 const InfoMenu = require('./menus/network-info-menu');
@@ -102,7 +103,7 @@ class Pathways extends React.Component {
 
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
-        h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
+        h(PcLogoLink),
         h('div.app-bar-title', [
           h('span', pathway.name() + ' | '),
           h('a.plain-link', { href: pathway.datasourceUrl(), target: '_blank' }, ' ' + pathway.datasource())

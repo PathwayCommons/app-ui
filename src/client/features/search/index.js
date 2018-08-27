@@ -7,6 +7,7 @@ const queryString = require('query-string');
 const _ = require('lodash');
 
 const { ServerAPI } = require('../../services');
+const PcLogoLink = require('../../common/components/pc-logo-link');
 const queryEntityInfo = require('./query-entity-info');
 const EntityInfoBoxList = require('./entity-info-box');
 
@@ -176,9 +177,7 @@ class Search extends React.Component {
         h('div.search-header', [
           h('div.search-branding', [
             h('div.search-title', [
-              h('a', { className: 'search-pc-link', href: 'http://www.pathwaycommons.org/' } , [
-                h('i.search-logo')
-              ]),
+              h(PcLogoLink, { className: 'search-logo'})
             ]),
             h('div.search-branding-descriptor', [
               h('h2.search-pc-title', 'Pathway Commons'),

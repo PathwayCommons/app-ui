@@ -23,7 +23,7 @@
   font-weight: normal;
   position: fixed;
   vertical-align: middle;
-  z-index: 1;
+  z-index: 20;
   overflow-y:scroll;
   line-height: 1.8;
   resize: none;

@@ -71,7 +71,13 @@ module.exports = () => {
       },
       {
         path: '*',
-        render: () => h('div', 'Page Not Found')
+        render: props => {
+          let { location } = props;
+          let { pathname } = location;
+          logPageView(pathname);
+          props = _.assign({ notFoundError: true }, props);
+          return h(Features.Search, props);
+        }
       }
     ].map( spec => h(Route, _.assign({ exact: true }, spec)) ))
   ]);

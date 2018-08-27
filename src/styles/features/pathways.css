@@ -1,18 +1,7 @@
-@import "./pathways/menu-bar.css";
-@import "./pathways/network.css";
-@import "./pathways/sidebar-menu.css";
-@import "./pathways/tooltip.css";
-@import "./pathways/app-bar.css";
-
 .pathways {
   width: 100vw;
   height: 100vh;
   position: relative;
-}
-
-.pathways-toolbar {
-  @extend %flex-center;
-  height: 38px;
 }
 
 .pathways-search-nodes {

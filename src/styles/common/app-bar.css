@@ -2,7 +2,7 @@
   max-width: 80vw; /* 80% browser window size*/
   position: fixed; /* relative to viewport */
   z-index: 10;
-  left:30px;
+  left: 30px;
 }
 
 .app-bar-branding {
@@ -23,6 +23,8 @@
 }
 
 .app-toolbar {
+  @extend %flex-center;
+  height: 38px;
   z-index: 10;
   position: relative;
   top: 0px;

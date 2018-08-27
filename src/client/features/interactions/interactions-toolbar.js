@@ -23,7 +23,7 @@ class InteractionsToolbar extends React.Component {
     let { searchValue } = this.state;
     let cy = cySrv.get();
 
-    return h('div.pathways-toolbar', [
+    return h('div.app-toolbar', [
       h(IconButton, {
         description: 'Legend & filtering',
         onClick: () => controller.changeMenu('interactionsMenu'),

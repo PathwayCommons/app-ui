@@ -129,48 +129,36 @@ class Enrichment extends React.Component {
     this.setState({ sliderVal: sliderVal });
   }
 
-
   render(){
     let { loading, cySrv, activeMenu, invalidTokens, openToolBar, networkEmpty, sliderVal } = this.state;
 
-    let network = h('div.network', {
+    return h('div.main', [
+      h('div.app-bar', [
+        h('div.app-bar-branding', [
+          h(PcLogoLink),
+          h('div.app-bar-title', 'Pathway Enrichment'),
+          h(TokenInput, { controller: this })
+        ]),
+        openToolBar ? h(EnrichmentToolbar, { cySrv, activeMenu, controller: this }) : null
+      ]),
+      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [
+        h(Sidebar, { controller: this, activeMenu }, [
+          h(EnrichmentMenu, { key: 'enrichmentMenu', cySrv, invalidTokens, controller: this, sliderVal: sliderVal }),
+          h(EnrichmentDownloadMenu, { key: 'enrichmentDownloadMenu', cySrv })
+        ])
+       ]),
+      networkEmpty ? h(EmptyNetwork, { msg: 'No results to display', showPcLink: false} ) : null,
+      h('div.network', {
         className: classNames({
           'network-loading': loading,
           'network-sidebar-open': activeMenu !== 'closeMenu'
         }),
         onClick: ()=> { document.getElementById('gene-input-box').blur(); }
-      },
-      [
+      }, [
         h('div.network-cy', {
           ref: dom => this.networkDiv = dom
         })
-      ]
-    );
-
-    let toolbar = openToolBar ? h('div.enrichment-app-toolbar', [
-      h(EnrichmentToolbar, { cySrv, activeMenu, controller: this })
-    ]) : null;
-
-    let appBar = h('div.app-bar-branding', [
-      h(PcLogoLink),
-      h('div.app-bar-title', 'Pathway Enrichment'),
-      h(TokenInput, { controller: this }),
-      toolbar
-    ]);
-
-    let sidebar = h('div.enrichment-sidebar', [
-      h(Sidebar, { controller: this, activeMenu }, [
-        h(EnrichmentMenu, { key: 'enrichmentMenu', cySrv, invalidTokens, controller: this, sliderVal: sliderVal }),
-        h(EnrichmentDownloadMenu, { key: 'enrichmentDownloadMenu', cySrv })
       ])
-    ]);
-
-    return h('div.main', [
-      toolbar,
-      appBar,
-      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [ sidebar ]),
-      networkEmpty ? h(EmptyNetwork, { msg: 'No results to display', showPcLink: false} ) : null,
-      network
     ]);
   }
 }

@@ -97,10 +97,6 @@ class Pathways extends React.Component {
       })
     ]);
 
-    let toolbar = h('div.app-toolbar', [
-      h(PathwaysToolbar, { cySrv, activeMenu, controller: this })
-    ]);
-
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
         h(PcLogoLink),
@@ -109,14 +105,12 @@ class Pathways extends React.Component {
           h('a.plain-link', { href: pathway.datasourceUrl(), target: '_blank' }, ' ' + pathway.datasource())
         ])
       ]),
-      toolbar
+      h(PathwaysToolbar, { cySrv, activeMenu, controller: this })
     ]);
 
-    let sidebar = h('div.app-sidebar', [
-      h(Sidebar, {  controller: this, activeMenu }, [
-        h(InfoMenu, { key: 'infoMenu', infoList: pathway.comments() }),
-        h(FileDownloadMenu, { key: 'downloadMenu', cySrv, fileName: pathway.name(), uri: pathway.uri() }),
-      ])
+    let sidebar = h(Sidebar, {  controller: this, activeMenu }, [
+      h(InfoMenu, { key: 'infoMenu', infoList: pathway.comments() }),
+      h(FileDownloadMenu, { key: 'downloadMenu', cySrv, fileName: pathway.name(), uri: pathway.uri() }),
     ]);
 
     let content = !networkEmpty ? [

@@ -217,10 +217,6 @@ class Paint extends React.Component {
       })
     ]);
 
-    let toolbar = h('div.app-toolbar', [
-      h(PathwaysToolbar, { cySrv, activeMenu, controller: this })
-    ]);
-
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
         h(PcLogoLink),
@@ -229,29 +225,27 @@ class Paint extends React.Component {
           h('a.plain-link', { href: curPathway.datasourceUrl(), target:'_blank' }, ' ' + curPathway.datasource()),
         ]),
       ]),
-      toolbar
+      h(PathwaysToolbar, { cySrv, activeMenu, controller: this })
     ]);
 
-    let sidebar = h('div.app-sidebar', [
-      h(Sidebar, {  controller: this, activeMenu }, [
-        h(InfoMenu, { key: 'infoMenu', infoList: curPathway.comments() } ),
-        h(FileDownloadMenu, {
-          key: 'downloadMenu',
-          cySrv,
-          fileName: curPathway.name(),
-          uri: curPathway.uri()
-        }),
-        h(PaintMenu, {
-          key: 'paintMenu',
-          selectedIndex: activeTab,
-          controller: this,
-          cySrv,
-          curPathway,
-          paintMenuCtrls,
-          pathways,
-          expressionTable
-        })
-      ])
+    let sidebar = h(Sidebar, {  controller: this, activeMenu }, [
+      h(InfoMenu, { key: 'infoMenu', infoList: curPathway.comments() } ),
+      h(FileDownloadMenu, {
+        key: 'downloadMenu',
+        cySrv,
+        fileName: curPathway.name(),
+        uri: curPathway.uri()
+      }),
+      h(PaintMenu, {
+        key: 'paintMenu',
+        selectedIndex: activeTab,
+        controller: this,
+        cySrv,
+        curPathway,
+        paintMenuCtrls,
+        pathways,
+        expressionTable
+      })
     ]);
 
     let content = [

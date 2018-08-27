@@ -108,23 +108,17 @@ class Interactions extends React.Component {
       })
     ]);
 
-    let toolbar = h('div.app-toolbar', [
-      h(InteractionsToolbar, { cySrv, activeMenu, controller: this })
-    ]);
-
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
         h(PcLogoLink),
         h('div.app-bar-title', sources.join(', ') + ' Interactions')
       ]),
-      toolbar
+      h(InteractionsToolbar, { cySrv, activeMenu, controller: this })
     ]);
 
-    let sidebar = h('div.app-sidebar', [
-      h(Sidebar, {  controller: this, activeMenu }, [
-        h(InteractionsMenu, { key: 'interactionsMenu', controller: this, cySrv }),
-        h(InteractionsDownloadMenu, { key: 'interactionsDownloadMenu', cySrv, sources } ),
-      ])
+    let sidebar = h(Sidebar, {  controller: this, activeMenu }, [
+      h(InteractionsMenu, { key: 'interactionsMenu', controller: this, cySrv }),
+      h(InteractionsDownloadMenu, { key: 'interactionsDownloadMenu', cySrv, sources } ),
     ]);
 
     let content = !networkEmpty ? [

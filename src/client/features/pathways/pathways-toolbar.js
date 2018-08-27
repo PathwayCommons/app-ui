@@ -23,32 +23,32 @@ class PathwaysToolbar extends React.Component {
     let { searchValue } = this.state;
     let cy = cySrv.get();
 
-    return h('div.pathways-toolbar', [
-      h(IconButton, { 
+    return h('div.app-toolbar', [
+      h(IconButton, {
         description: 'Extra Information',
         onClick: () => controller.changeMenu('infoMenu'),
         isActive: activeMenu === 'infoMenu',
         icon: 'info'
       }),
-      h(IconButton, { 
+      h(IconButton, {
         description: 'Downloads',
         onClick: () => controller.changeMenu('downloadMenu'),
         isActive: activeMenu === 'downloadMenu',
         icon: 'file_download'
       }),
-      h(IconButton, { 
+      h(IconButton, {
         description: 'Expand/Collapse all complex nodes',
         onClick: () => expandCollapse( cy ),
         isActive: false,
         icon: 'select_all'
       }),
-      h(IconButton, { 
+      h(IconButton, {
         description: 'Fit pathway to screen',
         onClick: () => fit( cy ),
         isActive: false,
         icon: 'fullscreen'
       }),
-      h(IconButton, { 
+      h(IconButton, {
         description: 'Reset pathway arrangement',
         onClick: () => layout( cy ),
         isActive: false,

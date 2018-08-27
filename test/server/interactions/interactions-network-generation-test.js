@@ -1,7 +1,7 @@
 const { expect, assert } = require('chai');
 const fs = require('fs');
 const path = require('path');
-const { interactionsSifTxt2CyJson, getInteractionGraphFromPC, getFilteredNetwork } = require('../../../src/server/graph-generation/interaction');
+const { sifText2CyJson, getInteractionsCyJson  } = require('../../../src/server/graph-generation/interaction');
 const tp53InteractionsJson = require('./tp53-interactions.json');
 
 describe('Interactions network to cy.js conversion', function(){
@@ -10,7 +10,7 @@ describe('Interactions network to cy.js conversion', function(){
     let tp53InteractionsTxt = fs.readFileSync(path.resolve(__dirname, 'small-interactions-sif.txt'), 'utf-8');
     let geneIds = ['TP53'];
 
-    let required = interactionsSifTxt2CyJson( tp53InteractionsTxt, geneIds );
+    let required = sifText2CyJson( tp53InteractionsTxt, geneIds );
     let actual = {
       "nodes": [
         {
@@ -41,7 +41,7 @@ describe('Interactions network to cy.js conversion', function(){
           },
           "classes": "Binding"
         }
-      ] 
+      ]
     };
 
     return expect( JSON.stringify(required, null, 2) ).to.equal( JSON.stringify(actual, null, 2) );
@@ -52,10 +52,10 @@ describe('Interactions network to cy.js conversion', function(){
     let tp53InteractionsTxt = fs.readFileSync(path.resolve(__dirname, 'tp53-interactions.txt'), 'utf-8');
     let geneIds = ['TP53'];
 
-    let required = getFilteredNetwork( tp53InteractionsTxt, geneIds );
+    let required = getInteractionsCyJson( tp53InteractionsTxt, geneIds );
 
-    // return expect( JSON.stringify(required, null, 2) ).to.equal( JSON.stringify(actual, null, 2) );
-    return expect( JSON.stringify(required, null, 2) ).to.equal( JSON.stringify(tp53InteractionsJson, null, 2) );
+    // return expect( JSON.stringify(required, null, 2) ).to.equal( JSON.stringify(tp53InteractionsJson, null, 2) );
+    return expect( required ).to.deep.equal(tp53InteractionsJson );
 
   });
 });

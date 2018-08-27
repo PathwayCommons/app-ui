@@ -31,7 +31,7 @@ let participantTxt2CyJson = (participantTxtLine, sourceIds) => {
       id: name,
       label: name,
       queried: sourceIds.includes(name),
-      metric: 1,
+      metric: 0,
       metadata: { type, uniprotId }
     }
   };
@@ -115,7 +115,7 @@ let filterByDegree = ( nodes, edges ) => {
   return { nodes: filteredNodes, edges: filteredEdges };
 };
 
-let getSIFInteractionData = sources => {
+let getInteractionsNetwork = sources => {
   let geneIds = _.uniq(_.concat([], sources)); //convert sources to array
 
   let params = {
@@ -142,4 +142,4 @@ let getSIFInteractionData = sources => {
 
 let pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
 
-module.exports = {getInteractionGraphFromPC: cache(getSIFInteractionData, pcCache)};
+module.exports = { getInteractionsNetwork: cache(getInteractionsNetwork, pcCache) };

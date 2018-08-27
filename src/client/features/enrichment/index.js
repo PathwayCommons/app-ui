@@ -150,7 +150,9 @@ class Enrichment extends React.Component {
     ]) : null;
 
     let appBar = h('div.app-bar-branding', [
-      h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
+      h('a.logo-link', {href:'http://www.pathwaycommons.org'} ,[
+        h('div.app-bar-logo')
+      ]),
       h('div.app-bar-title', 'Pathway Enrichment'),
       h(TokenInput, { controller: this }),
       toolbar

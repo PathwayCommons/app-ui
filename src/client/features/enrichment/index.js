@@ -9,6 +9,8 @@ const EnrichmentToolbar = require('./enrichment-toolbar');
 const EnrichmentMenu = require('./enrichment-menu');
 const TokenInput = require('./token-input');
 const EmptyNetwork = require('../../common/components/empty-network');
+const PcLogoLink = require('../../common/components/pc-logo-link');
+
 
 const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services');
@@ -150,7 +152,7 @@ class Enrichment extends React.Component {
     ]) : null;
 
     let appBar = h('div.app-bar-branding', [
-      h('i.app-bar-logo', { href: 'http://www.pathwaycommons.org/' }),
+      h(PcLogoLink),
       h('div.app-bar-title', 'Pathway Enrichment'),
       h(TokenInput, { controller: this }),
       toolbar

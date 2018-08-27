@@ -15,14 +15,6 @@
   border: 1px solid var(--light-base-colour-dark);
 }
 
-.app-bar-logo {
-  height: 1.8em;
-  width:  1.8em;
-  background-image: url("../../image/pc_logo_dark.svg");
-  background-repeat: no-repeat;
-  padding-left:10px;
-}
-
 .app-bar-title {
   color: var(--dark-base-colour);
   font-weight: bold;

@@ -166,10 +166,8 @@ class Enrichment extends React.Component {
     ]);
 
     return h('div.main', [
-      h('div', { className: classNames('menu-bar', { 'menu-bar-margin': activeMenu }) }, [
-        toolbar,
-        appBar
-      ]),
+      toolbar,
+      appBar,
       h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [ sidebar ]),
       networkEmpty ? h(EmptyNetwork, { msg: 'No results to display', showPcLink: false} ) : null,
       network

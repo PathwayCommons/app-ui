@@ -1,26 +1,3 @@
-.no-network {
-  align-self: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto;
-  max-width: var(--search-width);
-  width: 100%;
-  height: 80px;
-  background-color: var(--light-base-colour-dark);
-}
-
-.title {
-  font-size: 2em;
-}
-
-.main {
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-}
-
 .interactions-sidebar {
   width: 100%;
   position: relative;
@@ -28,4 +5,60 @@
 
 input[type="range"].interactions-sidebar-vis-filter {
   width: 100%;
+}
+
+.interactions-slider-heading {
+  padding-top: 15px;
+}
+
+.interactions-slider-labels {
+  display: flex;
+  justify-content: space-between;
+}
+
+.interactions-filter-check {
+  display: inline-block;
+}
+
+.interactions-filter-button {
+  border: 1px solid #aaa;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0.25em;
+  margin: 0.5em 0;
+  border-radius: 0.25em;
+  cursor: pointer;
+  transition-property: border-color;
+  transition-duration: 500ms;
+  transition-timing-function: ease-out;
+
+  &:active {
+    border-color: #000;
+  }
+}
+
+.interactions-filter-color {
+  display: flex;
+  width: 2em;
+  background-color: #888;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+}
+
+.interactions-filter-color-phosphorylation {
+  background-color: #ffc28b;
+}
+
+.interactions-filter-color-binding {
+  background-color: #8bd8dd;
+}
+
+.interactions-filter-color-expression {
+  background-color: #f4a2a3;
+}
+
+.interactions-filter-label {
+  flex-grow: 1;
+  margin: 0 0.5em;
 }

@@ -1,6 +1,3 @@
-@import "./sidebar-menus/download-menu.css";
-@import "./sidebar-menus/interaction-filter-menu.css";
-
 .sidebar-menu {
   height: 100%;
   width: var(--view-sidebar-width);
@@ -84,13 +81,5 @@
 @media (--small-width-viewport) {
   .sidebar-text h2 {
     font-size: 1em;
-  }
-
-  .interaction-filter-button h3 {
-    font-size: 0.8em;
-  }
-
-  .interaction-filter-button {
-    height: 40px;
   }
 }

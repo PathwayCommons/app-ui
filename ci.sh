@@ -5,24 +5,23 @@
 #
 # `crontab -e`
 #
-# @reboot /home/username/rethinkdb.sh > /home/username/rethinkdb.log
-# */15 * * * * PATH=$PATH:/home/username/.nvm/versions/node/vX.XX.X/bin /home/username/development.sh > /home/username/development.log 2>&1
+# */15 * * * * /home/baderlab/development.sh > /home/baderlab/development_cron.log 2>&1
 #
 # To use this script, create a script per server instance, e.g. `development.sh`:
 #
-# #!/bin/bash
+#!/bin/bash
 #
-# # Mandatory repo/branch conf
-# export REPO=https://github.com/PathwayCommons/factoid.git
+# PATH=$PATH:/home/baderlab/.nvm/versions/node/v8.11.2/bin
 # export BRANCH=development
-#
-# # Project-specific env vars
 # export PORT=3000
 #
-# bash /home/username/ci.sh
+# /home/baderlab/ci.sh
+
+#!/bin/bash
 
 JOB_NAME=$BRANCH
-WORKSPACE=/home/`whoami`/$JOB_NAME
+REPO=https://github.com/PathwayCommons/app-ui.git
+WORKSPACE=/home/baderlab/workspace/$JOB_NAME
 WORKSPACE_TMP=/tmp/$JOB_NAME
 
 rm -rf $WORKSPACE_TMP
@@ -36,19 +35,18 @@ git checkout $BRANCH
 # build
 npm install
 npm run clean
+
+#export NODE_ENV=production
+
 npm run build
 
 # stop the old screen session
 screen -X -S $JOB_NAME quit || echo "No screen session to stop"
 
 # swap out old workspace with new one
-rm -rf /tmp/rm/$WORKSPACE
 mkdir -p /tmp/rm
-mv $WORKSPACE /tmp/rm || echo "No old workspace to move"
-
-mkdir -p $WORKSPACE
-mv $WORKSPACE_TMP/* $WORKSPACE/
-cd $WORKSPACE
+mv $WORKSPACE /tmp/rm/$JOB_NAME || echo "No old workspace to move"
+mv $WORKSPACE_TMP $WORKSPACE
 
 # start the server in a screen session
 screen -d -m -S $JOB_NAME npm start

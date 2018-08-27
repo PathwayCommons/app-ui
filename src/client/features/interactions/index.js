@@ -12,6 +12,7 @@ const InteractionsToolbar = require('./interactions-toolbar');
 const Sidebar = require('../../common/components/sidebar');
 const EmptyNetwork = require('../../common/components/empty-network');
 const PcLogoLink = require('../../common/components/pc-logo-link');
+const CytoscapeNetwork = require('../../common/components/cytoscape-network');
 
 const { interactionsStylesheet, INTERACTIONS_LAYOUT_OPTS, bindEvents } = require('./cy');
 
@@ -35,11 +36,9 @@ class Interactions extends React.Component {
     }
   }
 
-  componentDidMount(){
+  loadInteractionsNetwork(){
     let { cySrv, sources } = this.state;
-
     let initializeCytoscape = network => {
-      cySrv.mount(this.networkDiv);
 
       let cy = cySrv.get();
       cy.remove('*');
@@ -56,7 +55,6 @@ class Interactions extends React.Component {
 
       cy.layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
         stop: () => {
-          cySrv.load();
           this.setState({
             loading: false,
           });
@@ -68,7 +66,6 @@ class Interactions extends React.Component {
     //   cy.nodes().filter( n => !n.hasClass('hidden') ).layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
     //     name: 'grid',
     //     stop: () => {
-    //       cySrv.load();
     //       this.setState({
     //         source,
     //         loading: false,
@@ -98,16 +95,6 @@ class Interactions extends React.Component {
 
   render() {
     let { loading, cySrv, activeMenu, sources, networkEmpty } = this.state;
-
-    let network = h('div.network', { className: classNames({
-      'network-loading': loading,
-      'network-sidebar-open': activeMenu !== 'closeMenu'
-    })}, [
-      h('div.network-cy', {
-        ref: dom => this.networkDiv = dom
-      })
-    ]);
-
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
         h(PcLogoLink),
@@ -126,7 +113,14 @@ class Interactions extends React.Component {
         appBar,
         sidebar
       ]),
-      network,
+      h(CytoscapeNetwork, {
+        cySrv,
+        onMount: () => this.loadInteractionsNetwork(),
+        className: classNames({
+        'network-loading': loading,
+        'network-sidebar-open': activeMenu !== 'closeMenu'
+        })
+      })
     ] : [ h(EmptyNetwork, { msg: 'No interactions to display', showPcLink: true} ) ];
 
 

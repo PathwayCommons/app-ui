@@ -16,6 +16,7 @@ const InfoMenu = require('./menus/network-info-menu');
 const PaintMenu = require('./menus/paint-menu');
 const Sidebar = require('../../common/components/sidebar');
 const PcLogoLink = require('../../common/components/pc-logo-link');
+const CytoscapeNetwork = require('../../common/components/cytoscape-network');
 const PathwaysToolbar = require('./pathways-toolbar');
 
 const demoExpressions = require('./demo-expressions.json');
@@ -95,13 +96,13 @@ class Paint extends React.Component {
     }, () => this.loadPathway(pathways[0]));
   }
 
-  componentDidMount(){
+  // onMount prop passed to CytoscapeNetwork
+  // called after CytoscapeNetwork has mounted
+  getEnrichmentsAndPathways(){
     let query = queryString.parse(this.props.location.search);
     let searchParam = query.q;
     let enrichmentsUri = query.uri;
-    let { cySrv, expressionTable, paintMenuCtrls  } = this.state;
-    cySrv.mount(this.network);
-    cySrv.load();
+    let { expressionTable, paintMenuCtrls  } = this.state;
 
     // if the user just comes into the app without enrichments, load the demo data
     if( enrichmentsUri == null ){
@@ -197,25 +198,12 @@ class Paint extends React.Component {
     });
   }
 
-  componentWillUnmount(){
-    this.state.cySrv.destroy();
-  }
-
   render() {
     let { invalidEnrichments, loading, expressionTable, curPathway, pathways, cySrv, activeMenu, paintMenuCtrls, activeTab } = this.state;
 
     if( invalidEnrichments ){
       return h('div', 'The painter app requires enrichments that have an associated class file');
     }
-
-    let network = h('div.network', { className: classNames({
-      'network-loading': loading,
-      'network-sidebar-open': activeMenu !== 'closeMenu'
-    })}, [
-      h('div.network-cy', {
-        ref: dom => this.network = dom
-      })
-    ]);
 
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
@@ -250,7 +238,14 @@ class Paint extends React.Component {
 
     let content = [
       h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [ appBar, sidebar ] ),
-      network,
+      h(CytoscapeNetwork, {
+        cySrv,
+        onMount: () => this.getEnrichmentsAndPathways(),
+        className: classNames({
+        'network-loading': loading,
+        'network-sidebar-open': activeMenu !== 'closeMenu'
+        })
+      })
     ];
 
     return h('div.pathways', content);

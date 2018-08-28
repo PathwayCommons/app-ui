@@ -278,6 +278,10 @@
     padding-left: 10px;
   }
 
+  .search-error {
+    padding-left: 50px;
+  }
+
   .search-tabs {
     overflow-x: scroll;
   }

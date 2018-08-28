@@ -70,6 +70,8 @@ const generateGraphInfo = (pathways, similarityCutoff = 0.375, jaccardOverlapWei
         id: edge.edgeId,
         source: source,
         target: target,
+        sourceDescription: edge.sourceDescription,
+        targetDescription: edge.targetDescription,
         similarity: edge.similarity,
         intersection: edge.intersection
       }

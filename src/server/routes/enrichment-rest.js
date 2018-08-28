@@ -632,6 +632,8 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           - id
  *           - source
  *           - target
+ *           - sourceDescription
+ *           - targetDescription
  *           - similarity
  *           - intersection
  *           properties:
@@ -644,6 +646,12 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *             target:
  *               type: string
  *               example: GO:0043523
+ *             sourceDescription:
+ *               type: string
+ *               example: positive regulation of neuron apoptotic process
+ *             targetDescription:
+ *               type: string
+ *               example: regulation of neuron apoptotic process
  *             similarity:
  *               type: number
  *               example: 0.5923

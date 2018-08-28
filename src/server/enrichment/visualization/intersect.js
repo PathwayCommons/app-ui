@@ -19,7 +19,12 @@ const pathwayPairGraph = (pathway1, pathway2, jaccardOverlapWeight) => {
   const pathway1Length = pathway1.genes.length;
   const pathway2Length = pathway2.genes.length;
   const similarity = jaccardOverlapWeight * (intersectionCount / (pathway1Length + pathway2Length - intersectionCount)) + (1 - jaccardOverlapWeight) * (intersectionCount / Math.min(pathway1Length, pathway2Length));
-  return {edgeId: pathway1.pathwayId + '_' + pathway2.pathwayId, intersection: intersection, similarity: similarity};
+  return {
+    edgeId: pathway1.pathwayId + '_' + pathway2.pathwayId,
+    sourceDescription: pathway1.description,
+    targetDescription: pathway2.description,
+    intersection: intersection,
+    similarity: similarity};
 };
 
 

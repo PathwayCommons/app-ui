@@ -1,7 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 
-class EnrichmentTooltip extends React.Component {
+class EnrichmentNodeTooltip extends React.Component {
   render(){
     let {node, overviewDesc} = this.props;
     let title = node.data('description');
@@ -44,4 +44,4 @@ class EnrichmentTooltip extends React.Component {
   }
 }
 
-module.exports = EnrichmentTooltip;
+module.exports = EnrichmentNodeTooltip;

@@ -2,7 +2,8 @@ const h = require('react-hyperscript');
 const CytoscapeTooltip = require('../../../common/cy/cytoscape-tooltip');
 const _ = require('lodash');
 
-const EnrichmentTooltip = require('../enrichment-tooltip');
+const EnrichmentNodeTooltip = require('../enrichment-node-tooltip');
+const EnrichmentEdgeTooltip = require('../enrichment-edge-tooltip');
 
 const { ServerAPI } = require('../../../services');
 
@@ -46,7 +47,7 @@ let bindEvents = cy => {
       else if(result && result.summation) pathwayOverview = result.summation[0].text;
 
       let tooltip = new CytoscapeTooltip( node.popperRef(), {
-        html: h(EnrichmentTooltip, {
+        html: h(EnrichmentNodeTooltip, {
           node: node,
           overviewDesc: pathwayOverview
           })
@@ -56,7 +57,7 @@ let bindEvents = cy => {
     })
     .catch( () => {
       let tooltip = new CytoscapeTooltip( node.popperRef(), {
-        html: h(EnrichmentTooltip, {
+        html: h(EnrichmentNodeTooltip, {
           node: node,
           overviewDesc: 'Information not available'
           })
@@ -66,20 +67,32 @@ let bindEvents = cy => {
     });
   });
 
+  cy.on(SHOW_ENRICHMENT_TOOLTIPS_EVENT, 'edge', function (evt) {
+    let edge = evt.target;
+    let tooltip = new CytoscapeTooltip( edge.popperRef(), {
+      html: h(EnrichmentEdgeTooltip, {
+        edge: edge
+        })
+    } );
+    edge.scratch('_tooltip', tooltip);
+    tooltip.show();
+  });
+
   cy.on('tap', evt => {
     const tgt = evt.target;
 
-    // if we didn't click a node, close all tooltips
-    if( evt.target === cy || evt.target.isEdge() ){
+    // if we didn't click an element, close all tooltips
+    if( evt.target === cy ){
       hideTooltips();
       return;
     }
 
-    // we clicked a node that has a tooltip open -> close it
-    if( tgt.scratch('_tooltip-opened') ){
+    // we clicked an element that has a tooltip open -> close it
+    if( tgt.scratch('_tooltip') ){
       hideTooltips();
+      tgt.removeScratch('_tooltip');
     } else {
-      // open the tooltip for the clicked node
+      // open the tooltip for the clicked element
       hideTooltips();
       tgt.emit(SHOW_ENRICHMENT_TOOLTIPS_EVENT);
     }
@@ -90,6 +103,7 @@ let bindEvents = cy => {
   cy.on('pan', () => hideTooltips());
   cy.on('zoom', () => hideTooltips());
   cy.on('layoutstart', () => hideTooltips());
+  cy.on('slider-change', () => hideTooltips());
 };
 
 let searchEnrichmentNodes = _.debounce((cy, query) => {

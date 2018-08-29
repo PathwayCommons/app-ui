@@ -4,25 +4,24 @@
 # be used with `cron` in order to set up regular builds, e.g. for every 15 minutes:
 #
 # `crontab -e`
-# 
-# @reboot /home/username/rethinkdb.sh > /home/username/rethinkdb.log
-# */15 * * * * /home/username/master.sh > /home/username/master.log
 #
-# To use this script, create a script per server instance, e.g. `master.sh`:
+# */15 * * * * /home/baderlab/development.sh > /home/baderlab/development_cron.log 2>&1
 #
-# #!/bin/bash
+# To use this script, create a script per server instance, e.g. `development.sh`:
 #
-# # Mandatory repo/branch conf
-# export REPO=https://github.com/PathwayCommons/factoid.git
-# export BRANCH=master
+#!/bin/bash
 #
-# # Project-specific env vars
+# PATH=$PATH:/home/baderlab/.nvm/versions/node/v8.11.2/bin
+# export BRANCH=development
 # export PORT=3000
-# 
-# ./ci.sh
+#
+# /home/baderlab/ci.sh
+
+#!/bin/bash
 
 JOB_NAME=$BRANCH
-WORKSPACE=/home/`whoami`/$JOB_NAME
+REPO=https://github.com/PathwayCommons/app-ui.git
+WORKSPACE=/home/baderlab/workspace/$JOB_NAME
 WORKSPACE_TMP=/tmp/$JOB_NAME
 
 rm -rf $WORKSPACE_TMP
@@ -37,7 +36,7 @@ git checkout $BRANCH
 npm install
 npm run clean
 
-export NODE_ENV=production
+#export NODE_ENV=production
 
 npm run build
 

@@ -6,18 +6,18 @@ class InteractionsNodeTooltip extends React.Component {
     let { node } = this.props;
     let title = node.data('id');
 
-    return h('div.metadata-tooltip', [
-      h('div.metadata-tooltip-header',[
-        h('h2.metadata-tooltip-title', title)
+    return h('div.cy-tooltip', [
+      h('div.cy-tooltip-header',[
+        h('h2.cy-tooltip-title', title)
       ]),
-      // h('div.metadata-tooltip-body', [
+      // h('div.cy-tooltip-body', [
          // TODO: fill with metadata
       // ]),
-      // h('div.metadata-tooltip-footer', [
+      // h('div.cy-tooltip-footer', [
          // TODO: fill with metadata
       // ]),
-      h('div.metadata-search-call-to-action', [
-        h('a.metadata-find-pathways', {
+      h('div.cy-tooltip-call-to-action', [
+        h('a.cy-tooltip-call-to-action-btn', {
           target: '_blank',
           href: '/search?q=' + title
           },

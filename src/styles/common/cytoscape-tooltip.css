@@ -1,8 +1,4 @@
-.tooltip-description {
-  padding: 0 1em;
-}
-
-.metadata-tooltip {
+.cy-tooltip {
   max-width: 300px;
   min-width: 10em;
   width: 20em;
@@ -15,14 +11,14 @@
   padding: 10px;
 }
 
-.metadata-tooltip-content {
+.cy-tooltip-content {
   position: relative;
   left: 0;
   word-wrap: break-word;
   text-align: left;
 }
 
-.metadata-tooltip-header {
+.cy-tooltip-header {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -42,7 +38,7 @@
 
 }
 
-.metadata-tooltip-type-chip {
+.cy-tooltip-type-chip {
   display: inline-block;
   word-wrap: break-word;
   padding: 2px 6px;
@@ -52,7 +48,7 @@
   border-radius: 10px;
 }
 
-.metadata-tooltip-body {
+.cy-tooltip-body {
   border-top: 1px solid var(--light-base-colour-dark);
   margin-bottom: 10px;
   padding-top: 10px;
@@ -60,19 +56,19 @@
   overflow-y: scroll;
 }
 
-.metadata-tooltip-warning {
+.cy-tooltip-warning {
   padding: 10px;
   font-weight: bold;
 }
 
-.metadata-tooltip-section {
+.cy-tooltip-section {
   word-wrap: break-word;
   font-size: 0.9em;
   margin: 3px;
   padding: 2px;
 }
 
-.metadata-field-name {
+.cy-tooltip-field-name {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -85,19 +81,19 @@
   }
 }
 
-.metadata-field-value {
+.cy-tooltip-field-value {
   display: flex;
   flex-direction: row;
   margin: 2px;
   word-wrap: break-word;
 }
 
-.metadata-tooltip-footer {
+.cy-tooltip-footer {
   border-top: 1px solid var(--light-base-colour-dark);
   padding-top: 10px;
 }
 
-.metadata-links {
+.cy-tooltip-links {
   padding-top: 5px;
   display: flex;
   flex-direction: row;
@@ -105,14 +101,14 @@
   flex-wrap: wrap;
 }
 
-.metadata-search-call-to-action {
+.cy-tooltip-call-to-action {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
 }
 
-.metadata-find-pathways {
+.cy-tooltip-call-to-action-btn {
   margin: 3px;
   margin-top: 10px;
   border-radius: 0;
@@ -125,7 +121,7 @@
   border-radius: 5px;
 }
 
-.metadata-publication {
+.cy-overflow-content {
   overflow-wrap: break-word;
   overflow: hidden;
   padding: 10px 0;

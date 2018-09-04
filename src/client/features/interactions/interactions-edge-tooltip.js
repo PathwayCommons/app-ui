@@ -6,15 +6,13 @@ class InteractionsEdgeTooltip extends React.Component {
     let { edge } = this.props;
     let title = edge.data('id');
 
-    return h('div.metadata-tooltip', [
-      h('div.metadata-tooltip-header',[
-        h('h2.metadata-tooltip-title', title)
+    return h('div.cy-tooltip', [
+      h('div.cy-tooltip-header',[
+        h('h2.cy-tooltip-title', title)
       ])
-      // h('div.metadata-tooltip-body', [
-         // TODO: fill with metadata
+      // h('div.cy-tooltip-body', [
       // ])
-      // h('div.metadata-tooltip-footer', [
-         // TODO: fill with metadata
+      // h('div.cy-tooltip-footer', [
       // ]),
 
     ]);

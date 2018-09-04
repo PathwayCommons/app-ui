@@ -6,7 +6,7 @@ let DEFAULT_NUM_NAMES = 3;
 
 // A component that displays a pathway node's metadata
 // props:
-// - Pathway Node Metadata class instance (Cytoscape node)
+// - metadata (Cytoscape node)
 class PathwayNodeMetadataView extends React.Component {
   constructor(props){
     super(props);
@@ -16,14 +16,14 @@ class PathwayNodeMetadataView extends React.Component {
     let { metadata } = this.props;
 
     if ( metadata.isEmpty() ) {
-      return h('div.metadata-tooltip', [
+      return h('div.cy-tooltip', [
         h('div.tooltip-heading', [
           h('a.tooltip-heading-link', {
             target: '_blank',
             href: '/search?q=' + metadata.searchLink(),
           }, metadata.label() || metadata.displayName()),
         ]),
-        h('div.tooltip-internal', h('div.metadata-tooltip-warning', 'No Additional Information'))
+        h('div.tooltip-internal', h('div.cy-tooltip-warning', 'No Additional Information'))
       ]);
     }
 
@@ -33,7 +33,7 @@ class PathwayNodeMetadataView extends React.Component {
 
     let publications = metadata.publications().map(publication => {
       let { id, title, firstAuthor, date, source } = publication;
-      return h('div.metadata-publication', [
+      return h('div.cy-overflow-content', [
         h('a', { href: 'http://identifiers.org/pubmed/' + id }, title),
         h('div', firstAuthor +  ' et al. | ' + source + ' - ' + new Date(date).getFullYear().toString())
       ]);
@@ -50,49 +50,49 @@ class PathwayNodeMetadataView extends React.Component {
     let showLinks = metadata.databaseLinks().length > 0;
     let showPcSearchLink = metadata.label() || metadata.displayName();
 
-    return h('div.metadata-tooltip', [
-      h('div.metadata-tooltip-content', [
-        h('div.metadata-tooltip-header', [
+    return h('div.cy-tooltip', [
+      h('div.cy-tooltip-content', [
+        h('div.cy-tooltip-header', [
           h('h2',  `${metadata.label() || metadata.displayName() || ''}`),
-          showType ? h('div.metadata-tooltip-type-chip', metadata.type()) : null,
+          showType ? h('div.cy-tooltip-type-chip', metadata.type()) : null,
         ]),
-        showBody ? h('div.metadata-tooltip-body', [
-          showStdName ? h('div.metadata-tooltip-section', [
-            h('div.metadata-field-name', 'Name'),
-            h('div.metadata-field-value', metadata.standardName())
+        showBody ? h('div.cy-tooltip-body', [
+          showStdName ? h('div.cy-tooltip-section', [
+            h('div.cy-tooltip-field-name', 'Name'),
+            h('div.cy-tooltip-field-value', metadata.standardName())
           ]) : null,
-          showDispName ? h('div.metadata-tooltip-section', [
-            h('div.metadata-field-name', 'Display Name'),
-            h('div.metadata-field-value', metadata.displayName())
+          showDispName ? h('div.cy-tooltip-section', [
+            h('div.cy-tooltip-field-name', 'Display Name'),
+            h('div.cy-tooltip-field-value', metadata.displayName())
           ]) : null,
-          showSynonyms ? h('div.metadata-tooltip-section', [
-            h('div.metadata-field-name', [
+          showSynonyms ? h('div.cy-tooltip-section', [
+            h('div.cy-tooltip-field-name', [
               'Synonyms',
               // h('i.material-icons', 'expand_more')
             ]),
-            h('div.metadata-field-value', synonyms)
+            h('div.cy-tooltip-field-value', synonyms)
           ]) : null,
-          showPubs ? h('div.metadata-tooltip-section', [
-            h('div.metadata-field-name', [
+          showPubs ? h('div.cy-tooltip-section', [
+            h('div.cy-tooltip-field-name', [
               'Publications',
               // h('i.material-icons', 'keyboard_arrow_right')
             ]),
             h('div', publications)
           ]) : null
         ]): null,
-        h('div.metadata-tooltip-footer', [
-          showLinks ? h('div.metadata-tooltip-section', [
-            h('div.metadata-field-name', [
+        h('div.cy-tooltip-footer', [
+          showLinks ? h('div.cy-tooltip-section', [
+            h('div.cy-tooltip-field-name', [
               'Links',
               // h('i.material-icons', 'keyboard_arrow_right')
             ]),
-            h('div.metadata-links', metadata.databaseLinks().slice(0, DEFAULT_NUM_LINKS).map(link => {
+            h('div.cy-tooltip-links', metadata.databaseLinks().slice(0, DEFAULT_NUM_LINKS).map(link => {
               return h('a.plain-link', { href: link.url, target: '_blank'}, link.name);
             }))
           ]) : null
         ]),
-        showPcSearchLink ? h('div.metadata-search-call-to-action', [
-          h('a.metadata-find-pathways', {
+        showPcSearchLink ? h('div.cy-tooltip-call-to-action', [
+          h('a.cy-tooltip-call-to-action-btn', {
             target: '_blank',
             href: '/search?q=' + metadata.searchLink()
             },

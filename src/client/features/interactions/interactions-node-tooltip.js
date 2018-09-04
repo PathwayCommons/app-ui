@@ -4,7 +4,7 @@ const h = require('react-hyperscript');
 class InteractionsNodeTooltip extends React.Component {
   render(){
     let { node } = this.props;
-    let title = node.data('label');
+    let title = node.data('id');
 
     return h('div.metadata-tooltip', [
       h('div.metadata-tooltip-header',[

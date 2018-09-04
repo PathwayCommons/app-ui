@@ -11,7 +11,7 @@ let interactionType2Label = type => {
       return 'Binding';
     case 'controls-state-change-of':
     case 'controls-phosphorylation-of':
-      return 'Phosphorylation etc.';
+      return 'Phosphorylation';
     case 'controls-expression-of':
       return 'Expression';
     case 'controls-transport-of':
@@ -59,7 +59,7 @@ let interactionTxt2CyJson = interactionTxtLine => {
   let participant1 = parsedInteractionParts[2];
   let type = parsedInteractionParts[1];
   let summary = `${participant0} ${type.split('-').join(' ')} ${participant1}`;
-  let readableType = interactionType2Label(parsedInteractionParts[1]);
+  let readableType = interactionType2Label(type);
   let pubmedIds = ( parsedInteractionParts[4] || '').split(';');
   let mediatorIds = ( parsedInteractionParts[6] || '').split(';');
   let pcIds = mediatorIds.filter( id => !id.toUpperCase().includes('REACTOME'));
@@ -68,6 +68,7 @@ let interactionTxt2CyJson = interactionTxtLine => {
   return {
     data: {
       id: summary,
+      type,
       source: participant0,
       target: participant1,
       pubmedIds,
@@ -93,16 +94,20 @@ let sifText2CyJson = (sifText, sourceIds) => {
 
   interactionsData.forEach( interactionTxtLine => {
     let interactionJson = interactionTxt2CyJson( interactionTxtLine );
-    let source = interactionJson.data.source;
-    let target = interactionJson.data.target;
 
-    let srcJson = nodeId2Json[source];
-    let tgtJson = nodeId2Json[target];
+    // filter interactions that have type in-complex-with
+    if( interactionJson.data.type !== 'in-complex-with' ){
+      let source = interactionJson.data.source;
+      let target = interactionJson.data.target;
 
-    if( srcJson ){ srcJson.data.metric += 1; }
-    if( tgtJson ){ tgtJson.data.metric += 1; }
+      let srcJson = nodeId2Json[source];
+      let tgtJson = nodeId2Json[target];
 
-    edges.push(interactionJson);
+      if( srcJson ){ srcJson.data.metric += 1; }
+      if( tgtJson ){ tgtJson.data.metric += 1; }
+
+      edges.push(interactionJson);
+    }
   } );
 
   return {
@@ -112,13 +117,16 @@ let sifText2CyJson = (sifText, sourceIds) => {
 };
 
 let filterByDegree = (nodes, edges) => {
+  // take 50 nodes with the highest degree
+  // filter all nodes with degree 0
   let filteredNodes = nodes.sort( (n0, n1) => {
     return n1.data.metric - n0.data.metric;
-  } ).slice(0, 50);
+  } ).slice(0, 50).filter( n => n.data.metric !== 0 );
 
   let filteredNodeIdMap = {};
   filteredNodes.forEach( node => filteredNodeIdMap[node.data.id] = true );
 
+  // filter edges that still have their source/target in the filtered node set
   let filteredEdges = edges.filter( edge => {
     let source = edge.data.source;
     let target = edge.data.target;

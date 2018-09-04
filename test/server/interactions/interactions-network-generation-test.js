@@ -61,6 +61,7 @@ describe('Interactions network to cy.js conversion', function(){
         {
           "data": {
             "id": "AARS2 interacts with FOXB1",
+            "type": "interacts-with",
             "source": "AARS2",
             "target": "FOXB1",
             "pubmedIds": ["25609649"],
@@ -72,6 +73,7 @@ describe('Interactions network to cy.js conversion', function(){
         {
           "data": {
             "id": "TP53 controls expression of MDM2",
+            "type": "controls-expression-of",
             "source": "TP53",
             "target": "MDM2",
             "pubmedIds": [

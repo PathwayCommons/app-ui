@@ -8,17 +8,21 @@ const iStylesheet=cytoscape.stylesheet()
     'curve-style': 'haystack',
     'haystack-radius': 0.25
   })
-.selector('edge[class@="Phosphorylation"]')
+.selector('.Phosphorylation')
   .css({
     'line-color': '#ffc28b'
   })
-.selector('edge[class@="Binding"]')
+.selector('.Binding')
   .css({
     'line-color': '#8bd8dd'
   })
-.selector('edge[class@="Expression"]')
+.selector('.Expression')
   .css({
     'line-color': '#f4a2a3'
+  })
+.selector('.Other')
+  .css({
+    'line-color': '#ECF0F1'
   })
 .selector('node[class@="ball"]')
   .css({
@@ -29,7 +33,7 @@ const iStylesheet=cytoscape.stylesheet()
     'text-outline-width': 4,
     'width': 50,
     'height': 50,
-    'label': 'data(label)',
+    'label': 'data(id)',
     'text-halign': 'center',
     'text-valign': 'center',
   })

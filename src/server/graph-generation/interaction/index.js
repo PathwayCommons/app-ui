@@ -5,15 +5,18 @@ const LRUCache = require('lru-cache');
 const cache = require('../../cache');
 const { PC_CACHE_MAX_SIZE } = require('../../../config');
 
-let edgeTypeToLabel = type => {
+let participantType2Label = type => {
   switch( type ){
-    case 'in-complex-with':
     case 'interacts-with':
       return 'Binding';
+    case 'controls-state-change-of':
     case 'controls-phosphorylation-of':
-      return 'Phosphorylation';
+      return 'Phosphorylation etc.';
     case 'controls-expression-of':
       return 'Expression';
+    case 'controls-transport-of':
+    case 'catalysis-precedes':
+      return 'Other';
     default:
       return '';
   }
@@ -21,18 +24,31 @@ let edgeTypeToLabel = type => {
 
 let participantTxt2CyJson = (participantTxtLine, sourceIds) => {
   let parsedParticipantParts = participantTxtLine.split('\t');
-  let name = parsedParticipantParts[0];
-  let type = parsedParticipantParts[1];
-  let uniprotId = parsedParticipantParts[3];
+  let name = parsedParticipantParts[0] || '';
+  let types = parsedParticipantParts[1] || '';
+  let unificationXrefs = parsedParticipantParts[3] || '';
+  let relationshipXrefs = parsedParticipantParts[4] || '';
+  let parsedTypes = types.replace(/Reference/g, '').split(';');
+
+  let externalIds = {};
+  unificationXrefs.split(';').forEach( uniXref => {
+    let [externalDb, externalDbId] = uniXref.split(':');
+    externalIds[externalDb] = externalDbId;
+  });
+
+  relationshipXrefs.split(';').forEach( relXref => {
+    let [externalDb, externalDbId] = relXref.split(':');
+    externalIds[externalDb] = externalDbId;
+  });
 
   return {
     data: {
       class: 'ball',
       id: name,
-      label: name,
       queried: sourceIds.includes(name),
       metric: 0,
-      metadata: { type, uniprotId }
+      types: parsedTypes,
+      externalIds
     }
   };
 };
@@ -41,24 +57,24 @@ let interactionTxt2CyJson = interactionTxtLine => {
   let parsedInteractionParts = interactionTxtLine.split('\t');
   let participant0 = parsedInteractionParts[0];
   let participant1 = parsedInteractionParts[2];
-  let type = edgeTypeToLabel(parsedInteractionParts[1]);
-  let pubmedIds = parsedInteractionParts[4];
-  let pcEntityIds = parsedInteractionParts[6];
-  let summary = `${participant0} ${type} ${participant1}`;
+  let type = parsedInteractionParts[1];
+  let summary = `${participant0} ${type.split('-').join(' ')} ${participant1}`;
+  let readableType = participantType2Label(parsedInteractionParts[1]);
+  let pubmedIds = ( parsedInteractionParts[4] || '').split(';');
+  let mediatorIds = ( parsedInteractionParts[6] || '').split(';');
+  let pcIds = mediatorIds.filter( id => !id.toUpperCase().includes('REACTOME'));
+  let reactomeIds = mediatorIds.filter( id => id.toUpperCase().includes('REACTOME'));
 
   return {
     data: {
       id: summary,
-      label: summary,
       source: participant0,
       target: participant1,
-      class: type,
-      metadata: {
-        publications: pubmedIds,
-        pcLinks: pcEntityIds
-      }
+      pubmedIds,
+      pcIds,
+      reactomeIds
     },
-    classes: type
+    classes: readableType
   };
 };
 
@@ -83,8 +99,8 @@ let sifText2CyJson = (sifText, sourceIds) => {
     let srcJson = nodeId2Json[source];
     let tgtJson = nodeId2Json[target];
 
-    if( srcJson ){ srcJson.data.metric += 1 }
-    if( tgtJson ){ tgtJson.data.metric += 1 }
+    if( srcJson ){ srcJson.data.metric += 1; }
+    if( tgtJson ){ tgtJson.data.metric += 1; }
 
     edges.push(interactionJson);
   } );
@@ -95,7 +111,7 @@ let sifText2CyJson = (sifText, sourceIds) => {
   };
 };
 
-let filterByDegree = ( nodes, edges ) => {
+let filterByDegree = (nodes, edges) => {
   let filteredNodes = nodes.sort( (n0, n1) => {
     return n1.data.metric - n0.data.metric;
   } ).slice(0, 50);

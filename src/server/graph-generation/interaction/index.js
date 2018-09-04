@@ -5,7 +5,7 @@ const LRUCache = require('lru-cache');
 const cache = require('../../cache');
 const { PC_CACHE_MAX_SIZE } = require('../../../config');
 
-let participantType2Label = type => {
+let interactionType2Label = type => {
   switch( type ){
     case 'interacts-with':
       return 'Binding';
@@ -59,7 +59,7 @@ let interactionTxt2CyJson = interactionTxtLine => {
   let participant1 = parsedInteractionParts[2];
   let type = parsedInteractionParts[1];
   let summary = `${participant0} ${type.split('-').join(' ')} ${participant1}`;
-  let readableType = participantType2Label(parsedInteractionParts[1]);
+  let readableType = interactionType2Label(parsedInteractionParts[1]);
   let pubmedIds = ( parsedInteractionParts[4] || '').split(';');
   let mediatorIds = ( parsedInteractionParts[6] || '').split(';');
   let pcIds = mediatorIds.filter( id => !id.toUpperCase().includes('REACTOME'));

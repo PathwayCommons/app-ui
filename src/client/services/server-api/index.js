@@ -23,7 +23,28 @@ const ServerAPI = {
   },
 
   getPubmedPublications( pubmedIds ){
-    return fetch('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id=' + pubmedIds.toString()).then(res => res.json());
+    return (
+      fetch('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id=' + pubmedIds.toString())
+        .then(res => res.json())
+        .then(res => {
+          let { result } = res;
+          let { uids } = result;
+          if( result == null ){ return []; }
+
+          return uids.map( uid => {
+            let { title, authors, sortfirstauthor, sortpubdate, source } = result[uid];
+
+            return {
+              id: uid,
+              title,
+              authors,
+              firstAuthor: sortfirstauthor,
+              date: sortpubdate,
+              source
+            };
+          } );
+        })
+    );
   },
 
   getGoInformation(goID) {

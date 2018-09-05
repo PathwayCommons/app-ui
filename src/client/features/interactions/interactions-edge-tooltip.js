@@ -1,13 +1,48 @@
 const React = require('react');
 const h = require('react-hyperscript');
+const queryString = require('query-string');
+
+
+const { ServerAPI } = require('../../services');
 
 class InteractionsEdgeTooltip extends React.Component {
+  constructor(props){
+    super(props);
+
+    this.state = {
+      publications: []
+    };
+  }
+
+  componentDidMount(){
+    let { edge } = this.props;
+    let pubmedIds = edge.data('pubmedIds');
+
+    ServerAPI.getPubmedPublications(pubmedIds).then( publications => {
+      this.setState({publications});
+    });
+  }
+
   render(){
     let { edge } = this.props;
+    let { publications } = this.state;
     let title = edge.data('id');
-    let pubmedIds = edge.data('pubmedIds');
     let pcIds = edge.data('pcIds');
-    let reactomeIds = edge.data('reactomeIds');
+
+    let publicationList = publications.map( publication => {
+      let { id, title, firstAuthor, date, source } = publication;
+      return h('div.cy-overflow-content', [
+        h('a', { href: 'http://identifiers.org/pubmed/' + id, target: '_blank' }, title),
+        h('div', firstAuthor +  ' et al. | ' + source + ' - ' + new Date(date).getFullYear().toString())
+      ]);
+    });
+
+    let detailedViewsList = pcIds.map( pcId => {
+      return h('div.cy-overflow-content', [
+        h('a', { href: '/pathways?' + queryString.stringify({ uri: pcId }), target: '_blank' }, 'Pathway Commons')
+      ]);
+    } );
+
     return h('div.cy-tooltip', [
       h('div.cy-tooltip-header',[
         h('h2.cy-tooltip-title', title)
@@ -15,20 +50,17 @@ class InteractionsEdgeTooltip extends React.Component {
       h('div.cy-tooltip-body', [
         h('div.cy-tooltip-section', [
           h('div.cy-tooltip-field-name', 'Publications'),
-          h('div.cy-tooltip-field-value', pubmedIds)
+          h('div', publicationList)
         ]),
         h('div.cy-tooltip-section', [
-          h('div.cy-tooltip-field-name', 'Pathway Commons Links'),
-          h('div.cy-tooltip-field-value', pcIds)
+          h('div.cy-tooltip-field-name', 'Detailed Views'),
+          h('div', detailedViewsList)
         ]),
-        h('div.cy-tooltip-section', [
-          h('div.cy-tooltip-field-name', 'Reactome Links'),
-          h('div.cy-tooltip-field-value', reactomeIds)
-        ])
+        // h('div.cy-tooltip-section', [
+        //   h('div.cy-tooltip-field-name', 'Reactome Links'),
+        //   h('div.cy-tooltip-field-value', reactomeIds)
+        // ])
       ])
-      // h('div.cy-tooltip-footer', [
-      // ]),
-
     ]);
   }
 }

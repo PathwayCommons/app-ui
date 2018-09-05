@@ -126,9 +126,6 @@
   overflow: hidden;
   padding: 10px 0;
   width: 100%;
-  & a {
-    color: var(--activeColor);
-  }
 }
 
 .expand-collapse-cue {

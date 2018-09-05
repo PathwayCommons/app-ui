@@ -34,7 +34,7 @@ class PathwayNodeMetadataView extends React.Component {
     let publications = metadata.publications().map(publication => {
       let { id, title, firstAuthor, date, source } = publication;
       return h('div.cy-overflow-content', [
-        h('a', { href: 'http://identifiers.org/pubmed/' + id, target: '_blank' }, title),
+        h('a.plain-link', { href: 'http://identifiers.org/pubmed/' + id, target: '_blank' }, title),
         h('div', firstAuthor +  ' et al. | ' + source + ' - ' + new Date(date).getFullYear().toString())
       ]);
     });

@@ -37,11 +37,6 @@ const iStylesheet=cytoscape.stylesheet()
     'text-halign': 'center',
     'text-valign': 'center',
   })
-.selector('node[?queried]')
-  .css({
-    'width': 75,
-    'height': 75
-  })
 .selector('.highlighted')
   .css({
     'opacity':1,
@@ -64,5 +59,11 @@ const iStylesheet=cytoscape.stylesheet()
     'border-width': 10,
     'background-color': '#606000',
     'text-outline-color': '#606000'
+  })
+.selector('node[?queried]')
+  .css({
+    'display': 'element',
+    'width': 75,
+    'height': 75
   });
 module.exports = iStylesheet;

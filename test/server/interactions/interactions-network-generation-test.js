@@ -136,7 +136,7 @@ describe('Interactions network to cy.js conversion', function(){
     return expect( JSON.stringify(required, null, 2) ).to.equal( JSON.stringify(actual, null, 2) );
   });
 
-  it('filteres nodes by degree', function(){
+  it('filters nodes by degree', function(){
 
     let tp53InteractionsTxt = fs.readFileSync(path.resolve(__dirname, 'tp53-interactions.txt'), 'utf-8');
     let geneIds = ['TP53'];
@@ -146,6 +146,35 @@ describe('Interactions network to cy.js conversion', function(){
     let actualNodeLabels = getInteractionsCyJson( tp53InteractionsTxt, geneIds ).nodes.map( n => n.data.id );
 
     return expect( expectedNodeLabels ).to.deep.equal( actualNodeLabels );
+
+  });
+
+  it('filters nodes with 0 degree', function(){
+
+    let input = `PARTICIPANT_A	INTERACTION_TYPE	PARTICIPANT_B	INTERACTION_DATA_SOURCE	INTERACTION_PUBMED_ID	PATHWAY_NAMES	MEDIATOR_IDS
+
+PARTICIPANT	PARTICIPANT_TYPE	PARTICIPANT_NAME	UNIFICATION_XREF	RELATIONSHIP_XREF
+AARS2	ProteinReference	SYAM_HUMAN	uniprot knowledgebase:Q5JTZ9	hgnc symbol:AARS2`;
+
+    let geneIds = ['AARS2'];
+    let result = getInteractionsCyJson( input, geneIds );
+
+    return expect( result.nodes ).to.deep.equal( [] );
+  });
+
+  it('filters interactions of type: "in-compex-with"', function(){
+
+    let input = `PARTICIPANT_A	INTERACTION_TYPE	PARTICIPANT_B	INTERACTION_DATA_SOURCE	INTERACTION_PUBMED_ID	PATHWAY_NAMES	MEDIATOR_IDS
+    AARS2	in-complex-with	FOXB1	IntAct	25609649		http://pathwaycommons.org/pc2/MolecularInteraction_888e58e7-2c6a-4325-b88b-06860e7c35b6__IM-24178-104_1803613_
+
+    PARTICIPANT	PARTICIPANT_TYPE	PARTICIPANT_NAME	UNIFICATION_XREF	RELATIONSHIP_XREF
+    AARS2	ProteinReference	SYAM_HUMAN	uniprot knowledgebase:Q5JTZ9	hgnc symbol:AARS2
+    FOXB1	ProteinReference	FOXB1_HUMAN	uniprot knowledgebase:Q99853	hgnc symbol:FOXB1
+    `;
+    let geneIds = ['TP53'];
+    let res = getInteractionsCyJson( input, geneIds );
+
+    return expect( res.edges ).to.deep.equal( [] );
 
   });
 });

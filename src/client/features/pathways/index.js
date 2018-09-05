@@ -14,6 +14,7 @@ const Sidebar = require('../../common/components/sidebar');
 const EmptyNetwork = require('../../common/components/empty-network');
 const InfoMenu = require('./menus/network-info-menu');
 const FileDownloadMenu = require('./menus/file-download-menu');
+const CytoscapeNetwork = require('../../common/components/cytoscape-network');
 
 const Pathway = require('../../models/pathway/pathway-model');
 
@@ -36,12 +37,13 @@ class Pathways extends React.Component {
     }
   }
 
-  componentDidMount(){
+  // onMount prop passed to CytoscapeNetwork
+  // called after CytoscapeNetwork has mounted
+  loadPathway(){
     let { pathway, cySrv} = this.state;
     let { uri } = queryString.parse(this.props.location.search);
 
     let initializeCytoscape = pathway => {
-      cySrv.mount(this.network);
 
       let cy = cySrv.get();
       cy.remove('*');
@@ -49,7 +51,6 @@ class Pathways extends React.Component {
 
       let layout = cy.layout(PATHWAYS_LAYOUT_OPTS);
       layout.on('layoutstop', () => {
-        cySrv.load();
         this.setState({
           loading: false,
           pathway: pathway
@@ -71,10 +72,6 @@ class Pathways extends React.Component {
     });
   }
 
-  componentWillUnmount(){
-    this.state.cySrv.destroy();
-  }
-
   changeMenu(menu){
     let resizeCyImmediate = () => this.state.cySrv.get().resize();
     let resizeCyDebounced = _.debounce( resizeCyImmediate, 500 );
@@ -87,15 +84,6 @@ class Pathways extends React.Component {
 
   render() {
     let { loading, pathway, cySrv, activeMenu, networkEmpty } = this.state;
-
-    let network = h('div.network', { className: classNames({
-      'network-loading': loading,
-      'network-sidebar-open': activeMenu !== 'closeMenu'
-    })}, [
-      h('div.network-cy', {
-        ref: dom => this.network = dom
-      })
-    ]);
 
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
@@ -115,7 +103,14 @@ class Pathways extends React.Component {
 
     let content = !networkEmpty ? [
       h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [ appBar, sidebar ]),
-      network,
+      h(CytoscapeNetwork, {
+        cySrv,
+        onMount: () => this.loadPathway(),
+        className: classNames({
+        'network-loading': loading,
+        'network-sidebar-open': activeMenu !== 'closeMenu'
+        })
+      })
     ] : [ h(EmptyNetwork, { msg: 'No pathway data available. Please view another result' } ) ];
 
     return h('div.pathways', content);

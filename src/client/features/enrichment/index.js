@@ -10,7 +10,7 @@ const EnrichmentMenu = require('./enrichment-menu');
 const TokenInput = require('./token-input');
 const EmptyNetwork = require('../../common/components/empty-network');
 const PcLogoLink = require('../../common/components/pc-logo-link');
-
+const CytoscapeNetwork = require('../../common/components/cytoscape-network');
 
 const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services');
@@ -38,17 +38,6 @@ class Enrichment extends React.Component {
     if( process.env.NODE_ENV !== 'production' ){
       this.state.cySrv.getPromise().then(cy => window.cy = cy);
     }
-  }
-
-  componentDidMount(){
-    let { cySrv } = this.state;
-
-    cySrv.mount(this.networkDiv);
-    cySrv.load();
-  }
-
-  componentWillUnmount(){
-    this.state.cySrv.destroy();
   }
 
   changeMenu( menu, cb){
@@ -148,17 +137,13 @@ class Enrichment extends React.Component {
         ])
        ]),
       networkEmpty ? h(EmptyNetwork, { msg: 'No results to display', showPcLink: false} ) : null,
-      h('div.network', {
+      h(CytoscapeNetwork, {
+        cySrv,
         className: classNames({
-          'network-loading': loading,
-          'network-sidebar-open': activeMenu !== 'closeMenu'
-        }),
-        onClick: ()=> { document.getElementById('gene-input-box').blur(); }
-      }, [
-        h('div.network-cy', {
-          ref: dom => this.networkDiv = dom
+        'network-loading': loading,
+        'network-sidebar-open': activeMenu !== 'closeMenu'
         })
-      ])
+      })
     ]);
   }
 }

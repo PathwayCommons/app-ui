@@ -28,8 +28,8 @@ const ServerAPI = {
         .then(res => res.json())
         .then(res => {
           let { result } = res;
-          let { uids } = result;
           if( result == null ){ return []; }
+          let { uids } = result;
 
           return uids.map( uid => {
             let { title, authors, sortfirstauthor, sortpubdate, source } = result[uid];

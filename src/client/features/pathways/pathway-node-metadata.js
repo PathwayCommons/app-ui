@@ -53,7 +53,7 @@ class PathwayNodeMetadataView extends React.Component {
     return h('div.cy-tooltip', [
       h('div.cy-tooltip-content', [
         h('div.cy-tooltip-header', [
-          h('h2',  `${metadata.label() || metadata.displayName() || ''}`),
+          h('h2.cy-tooltip-title',  `${metadata.label() || metadata.displayName() || ''}`),
           showType ? h('div.cy-tooltip-type-chip', metadata.type()) : null,
         ]),
         showBody ? h('div.cy-tooltip-body', [

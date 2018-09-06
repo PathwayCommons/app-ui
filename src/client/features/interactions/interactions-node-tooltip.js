@@ -30,7 +30,7 @@ class InteractionsNodeTooltip extends React.Component {
         h('h2.cy-tooltip-title', title),
         h('div.cy-tooltip-type-chip', types[0])
       ]),
-      h('div.cy-tooltip-footer', [
+      links.length > 0 ? h('div.cy-tooltip-footer', [
         h('div.cy-tooltip-section', [
           h('div.cy-tooltip-field-name', [
             'Links'
@@ -41,7 +41,7 @@ class InteractionsNodeTooltip extends React.Component {
             return h('a.plain-link', { href: url, target: '_blank'  }, name);
           }))
         ])
-      ]),
+      ]) : null,
       h('div.cy-tooltip-call-to-action', [
         h('a.cy-tooltip-call-to-action-btn', {
           target: '_blank',

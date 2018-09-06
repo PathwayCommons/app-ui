@@ -48,14 +48,14 @@ class InteractionsEdgeTooltip extends React.Component {
         h('h2.cy-tooltip-title', title)
       ]),
       h('div.cy-tooltip-body', [
-        h('div.cy-tooltip-section', [
+        publicationList.length > 0 ? h('div.cy-tooltip-section', [
           h('div.cy-tooltip-field-name', 'Publications'),
           h('div', publicationList)
-        ]),
-        h('div.cy-tooltip-section', [
+        ]) : null,
+        detailedViewsList.length > 0 ? h('div.cy-tooltip-section', [
           h('div.cy-tooltip-field-name', 'Detailed Views'),
           h('div', detailedViewsList)
-        ]),
+        ]) : null,
         // h('div.cy-tooltip-section', [
         //   h('div.cy-tooltip-field-name', 'Reactome Links'),
         //   h('div.cy-tooltip-field-value', reactomeIds)

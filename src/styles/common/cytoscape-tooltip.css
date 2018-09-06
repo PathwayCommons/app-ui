@@ -96,8 +96,13 @@
   padding-top: 5px;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
   flex-wrap: wrap;
+
+  & a {
+    display: block;
+    margin-right: 10px;
+  }
 }
 
 .cy-tooltip-call-to-action {

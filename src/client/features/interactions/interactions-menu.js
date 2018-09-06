@@ -6,18 +6,20 @@ const _ = require('lodash');
 const INTERACTION_TYPES = {
   BINDING: 'Binding',
   PHOSPHORYLATION: 'Phosphorylation',
-  EXPRESSION: 'Expression'
+  EXPRESSION: 'Expression',
+  OTHER: 'Other'
 };
 
 class InteractionsMenu extends React.Component {
   constructor(props){
     super(props);
-    let { BINDING, PHOSPHORYLATION, EXPRESSION } = INTERACTION_TYPES;
+    let { BINDING, PHOSPHORYLATION, EXPRESSION, OTHER } = INTERACTION_TYPES;
 
     this.state = {
       [BINDING]: true,
       [PHOSPHORYLATION]: true,
-      [EXPRESSION]: true
+      [EXPRESSION]: true,
+      [OTHER]: true
     };
 
     // 15 updates per second max
@@ -81,15 +83,16 @@ class InteractionsMenu extends React.Component {
 
   render(){
     let { cySrv } = this.props;
-    let { Binding, Expression, Phosphorylation } = this.state;
+    let { Binding, Expression, Phosphorylation, Other } = this.state;
     let cy = cySrv.get();
 
     let hasType = (cy, type) => cy.edges(`.${type}`).length > 0;
-    let { BINDING, PHOSPHORYLATION, EXPRESSION } = INTERACTION_TYPES;
+    let { BINDING, PHOSPHORYLATION, EXPRESSION, OTHER } = INTERACTION_TYPES;
 
     let hasPhosphorylations = hasType(cy, PHOSPHORYLATION);
     let hasExpressions = hasType(cy, EXPRESSION);
     let hasBindings = hasType(cy, BINDING);
+    let hasOther = hasType(cy, OTHER);
 
     let defaultSliderValue = 0;
     const numberOfNodes = this.getMetricSortedNodes().length;
@@ -124,13 +127,13 @@ class InteractionsMenu extends React.Component {
       ]);
     };
 
-
-
     return h('div.interactions-sidebar', [
       h('h3', 'Filter interactions'),
       hasBindings ? h(InteractionToggleButton, { type: BINDING, active: Binding }) : null,
       hasExpressions ? h(InteractionToggleButton, { type: EXPRESSION, active: Expression }) : null,
       hasPhosphorylations ? h(InteractionToggleButton, { type: PHOSPHORYLATION, active: Phosphorylation }) : null,
+      hasOther ? h(InteractionToggleButton, { type: OTHER, active: Other }) : null,
+
       h('h3', 'Filter genes'),
       h('input.interactions-sidebar-vis-filter', {
         type: 'range',

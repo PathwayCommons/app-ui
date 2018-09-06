@@ -5,154 +5,173 @@ const LRUCache = require('lru-cache');
 const cache = require('../../cache');
 const { PC_CACHE_MAX_SIZE } = require('../../../config');
 
-function edgeType(type) {
-  switch(type){
-    case 'in-complex-with':
+let interactionType2Label = type => {
+  switch( type ){
     case 'interacts-with':
       return 'Binding';
+    case 'controls-state-change-of':
     case 'controls-phosphorylation-of':
       return 'Phosphorylation';
     case 'controls-expression-of':
       return 'Expression';
+    case 'controls-transport-of':
+    case 'catalysis-precedes':
+      return 'Other';
     default:
       return '';
   }
-}
+};
 
-function rawGetInteractionGraphFromPC(interactionIDs){
-  const geneIds = _.uniq(_.concat([], interactionIDs)); //convert sources to array
+let participantTxt2CyJson = (participantTxtLine, sourceIds) => {
+  let parsedParticipantParts = participantTxtLine.split('\t');
+  let name = parsedParticipantParts[0] || '';
+  let types = parsedParticipantParts[1] || '';
+  let unificationXrefs = parsedParticipantParts[3] || '';
+  let relationshipXrefs = parsedParticipantParts[4] || '';
+  let parsedTypes = types.replace(/Reference/g, '').split(';');
 
-  const params = {
-    cmd : 'pc2/graph',
-    source : geneIds,
-    pattern : ['controls-phosphorylation-of','in-complex-with','controls-expression-of', 'interacts-with'],
-    kind : geneIds.length > 1 ? 'pathsbetween' : 'neighborhood',
-    format : 'txt'
+  let externalIds = {};
+  unificationXrefs.split(';').forEach( uniXref => {
+    let [externalDb, externalDbId] = uniXref.split(':');
+    externalIds[externalDb] = externalDbId;
+  });
+
+  relationshipXrefs.split(';').forEach( relXref => {
+    let [externalDb, externalDbId] = relXref.split(':');
+    externalIds[externalDb] = externalDbId;
+  });
+
+  return {
+    data: {
+      class: 'ball',
+      id: name,
+      queried: sourceIds.includes(name),
+      metric: 0,
+      types: parsedTypes,
+      externalIds
+    }
+  };
+};
+
+let interactionTxt2CyJson = interactionTxtLine => {
+  let parsedInteractionParts = interactionTxtLine.split('\t');
+  let participant0 = parsedInteractionParts[0];
+  let participant1 = parsedInteractionParts[2];
+  let type = parsedInteractionParts[1];
+  let summary = `${participant0} ${type.split('-').join(' ')} ${participant1}`;
+  let readableType = interactionType2Label(type);
+  let pubmedIds = ( parsedInteractionParts[4] || '').split(';');
+  let mediatorIds = ( parsedInteractionParts[6] || '').split(';');
+  let pcIds = mediatorIds.filter( id => !id.toUpperCase().includes('REACTOME'));
+  let reactomeIds = mediatorIds.filter( id => id.toUpperCase().includes('REACTOME'));
+
+  return {
+    data: {
+      id: summary,
+      type,
+      source: participant0,
+      target: participant1,
+      pubmedIds,
+      pcIds,
+      reactomeIds
+    },
+    classes: readableType
+  };
+};
+
+let sifText2CyJson = (sifText, sourceIds) => {
+  let parsedParts = sifText.split('\n\n');
+  let interactionsData = parsedParts[0].split('\n').slice(1);
+  let participantsData = parsedParts[1].split('\n').slice(1);
+
+  let nodeId2Json = {};
+  let edges = [];
+
+  participantsData.forEach( participantTxtLine => {
+    let participantJson = participantTxt2CyJson( participantTxtLine, sourceIds );
+    nodeId2Json[participantJson.data.id] = participantJson;
+  } );
+
+  interactionsData.forEach( interactionTxtLine => {
+    let interactionJson = interactionTxt2CyJson( interactionTxtLine );
+
+    // filter interactions that have type in-complex-with
+    if( interactionJson.data.type !== 'in-complex-with' ){
+      let source = interactionJson.data.source;
+      let target = interactionJson.data.target;
+
+      let srcJson = nodeId2Json[source];
+      let tgtJson = nodeId2Json[target];
+
+      if( srcJson ){ srcJson.data.metric += 1; }
+      if( tgtJson ){ tgtJson.data.metric += 1; }
+
+      edges.push(interactionJson);
+    }
+  } );
+
+  return {
+    nodes: Object.values(nodeId2Json),
+    edges
+  };
+};
+
+let filterByDegree = (nodes, edges) => {
+  // take 50 nodes with the highest degree
+  // filter all nodes with degree 0
+  let filteredNodes = nodes.sort( (n0, n1) => {
+    return n1.data.metric - n0.data.metric;
+  } ).slice(0, 50).filter( n => n.data.metric !== 0 );
+
+  let filteredNodeIdMap = {};
+  filteredNodes.forEach( node => filteredNodeIdMap[node.data.id] = true );
+
+  // filter edges that still have their source/target in the filtered node set
+  let filteredEdges = edges.filter( edge => {
+    let source = edge.data.source;
+    let target = edge.data.target;
+
+    // some edges may have a sorce or target filtered, we require both for
+    // it to be a valid edge in the network json
+    return filteredNodeIdMap[source] && filteredNodeIdMap[target];
+  });
+
+  return { nodes: filteredNodes, edges: filteredEdges };
+};
+
+let getInteractionsCyJson = (sifText, geneIds) => {
+  let { nodes, edges } = sifText2CyJson( sifText, geneIds );
+  let filteredCyJson = filterByDegree( nodes, edges );
+
+  return filteredCyJson;
+};
+
+let getInteractionsNetwork = sources => {
+  let geneIds = _.uniq(_.concat([], sources)); //convert sources to array
+
+  let params = {
+    cmd: 'pc2/graph',
+    source: geneIds,
+    pattern: ['controls-phosphorylation-of','in-complex-with','controls-expression-of', 'interacts-with'],
+    kind: geneIds.length > 1 ? 'pathsbetween' : 'neighborhood',
+    format: 'txt'
   };
 
   //Fetch graph from PC
   return pc.query(params).then(res => {
-    
-    let parsedNetwork = parse(res,geneIds);
-    //avoids errors in addMetricandFilter, return empty network
-    if(_.isEmpty(parsedNetwork))
-      return {};
-
-    let filteredNetwork = addMetricAndFilter(parsedNetwork.nodes, parsedNetwork.edges);
-    return {network: filteredNetwork};
-  }).catch((e)=>{
-    logger.error(e);
-    return 'ERROR : could not retrieve graph from PC';
+    return {
+      network: getInteractionsCyJson(res, geneIds)
+    };
+  }).catch( e => {
+    logger.error( e );
+    return 'ERROR: could not retrieve graph from PC';
   });
-}
+};
 
-const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
+let pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
 
-const getInteractionGraphFromPC = cache(rawGetInteractionGraphFromPC, pcCache);
-
-/**
- * Parse the PC TXT (aka extended SIF) format to JSON
- * @param {string} data graph in txt format
- * @param {String[]} Array of query Ids
- * @return {json} JSON of graph
- */
-function parse(data, queryIDs){
-  let edgeList = [];
-  let nodeList =new Map(); //maps node id to node (to avoid duplicate entries)
-
-  if(data){
-    const dataSplit=data.split('\n\n');
-    const nodeMetadata= new Map(dataSplit[1].split('\n').slice(1).map(line =>line.split('\t')).map(line => [line[0], line.slice(1) ]));
-    dataSplit[0].split('\n').slice(1).forEach(line => {
-      const splitLine=line.split('\t');
-      const edgeMetadata = interactionMetadata(splitLine[6],splitLine[4]);
-      addInteraction([splitLine[0], splitLine[2]], splitLine[1], nodeList, edgeList, nodeMetadata, edgeMetadata, queryIDs);
-    });
-
-    //return network
-    return {nodes: nodeList, edges: edgeList};
-  }
-  return {};
-}
-
-/**
- * 
- * @param {*} network JSON containing nodes and edges that represent a network
- * @returns A network JSON with 50 nodes, sorted based on degree
- * @description The network is filtered down to the 50 nodes with largest degree.
- */
-function addMetricAndFilter(nodes,edges){
-  
-  //converts the node map into an array, sorts by degree, converts back to map
-  const filteredNodes = new Map(
-    [...nodes.entries()].sort( (a, b) => {
-      return b[1].data.metric - a[1].data.metric;
-    }).slice(0,50)
-  );
-
-  //if the filtered node map has the source and target of the edge, add it to the return network
-  //if edges aren't filtered get some serious cytoscape errors later on
-  const filteredEdges = [];
-  edges.forEach( edge => {
-    const source = edge.data.source;
-    const target = edge.data.target;
-    if(filteredNodes.has(source) && filteredNodes.has(target))
-      filteredEdges.push(edge);
-  });
-
-
-  return { nodes:[...filteredNodes.values()], edges:filteredEdges };
-}
-
-function interactionMetadata(mediatorIds, pubmedIds){
-  let metadata = [['List',[]],['Detailed Views',[]]];//Format expected by format-content
-  mediatorIds.split(';').forEach( link => {
-    const id=link.split('/')[4];
-    metadata[1][1].push(link.includes('reactome') ? ['Reactome',id]:['Pathway Commons',id]);
-  });
-  if(pubmedIds){
-   pubmedIds.split(';').forEach(id=>metadata[0][1].push(['PubMed',id]));
-  }
- return metadata;
-}
-
-function addInteraction(nodes, edge, nodeList, edgeList, nodeMetadata, edgeMetadata, queryIDs){
-  const interaction= edgeType(edge);
-  const networkEdgeData = {data: {
-    id: nodes[0]+'\t'+edge+'\t'+nodes[1] ,
-    label: nodes[0]+' '+edge.replace(/-/g,' ')+' '+nodes[1] ,
-    source: nodes[0],
-    target: nodes[1],
-    class: interaction,
-    parsedMetadata:edgeMetadata
-  },classes:interaction};
-  edgeList.push(networkEdgeData);
-  
-  nodes.forEach((node)=>{
-    if(!nodeList.has(node)){
-      const metadata=nodeMetadata.get(node);
-      const links=_.uniqWith(_.flatten(metadata.slice(-2).map(entry => entry.split(';').map(entry=>entry.split(':')))),_.isEqual).filter(entry=>entry[0]!='intact');
-      const networkNodeData = {data:{
-        class: "ball",
-        id: node,
-        label: node,
-        queried: queryIDs.indexOf(node) != -1,
-        metric: 1,
-        parsedMetadata:[
-          ['Type',
-          'bp:'+metadata[0].split(' ')[0].replace(/Reference/g,'').replace(/;/g,',')],
-          ['Database IDs', links]
-        ]
-      }};
-      nodeList.set(node,networkNodeData);
-    }
-    else {
-      //metric is degree
-      let nodeUpdate = nodeList.get(node);
-      nodeUpdate.data['metric'] = nodeUpdate.data.metric + 1;
-      nodeList.set(node, nodeUpdate);
-    }
-  });
-}
-
-module.exports = {getInteractionGraphFromPC};
+module.exports = {
+  sifText2CyJson,
+  getInteractionsCyJson,
+  getInteractionGraphFromPC: cache(getInteractionsNetwork, pcCache)
+};

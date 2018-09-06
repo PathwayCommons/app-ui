@@ -3,31 +3,6 @@ const _ = require('lodash');
 const externalServiceData = require('../../common/external-service-data');
 const { ServerAPI } = require('../../services');
 
-
-
-// LEGACY CODE BEGIN
-function processPublicationData(data) {
-  const result = data.result;
-  if (!(result)) { return null; }
-  const uids = result.uids;
-
-  //Loop through a database ids
-  let extractedData = uids.map(uid => {
-    const publicationData = result[uid];
-    return {
-      id: uid,
-      title: publicationData.title,
-      authors: publicationData.authors,
-      firstAuthor : publicationData.sortfirstauthor,
-      date: publicationData.sortpubdate,
-      source : publicationData.source
-    };
-  });
-
-  return extractedData;
-}
-
-
 function sortByDatabaseId(dbArray) {
   //Sort by database name
   let sorted = [];
@@ -90,7 +65,7 @@ function getPublications(data) {
 
     //Get publication data in bulk and process publication data
     return ServerAPI.getPubmedPublications(pubMedIds).then(publications => {
-      resolve(['Publications', processPublicationData(publications)]);
+      resolve(['Publications', publications]);
     }).catch(() => resolve(null));
   });
 

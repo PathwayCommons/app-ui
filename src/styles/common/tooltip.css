@@ -1,0 +1,5 @@
+/* css for non-cytoscape tooltips */
+
+.tooltip-description {
+  padding: 0 1em;
+}

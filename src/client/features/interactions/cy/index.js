@@ -68,13 +68,41 @@ let bindEvents = cy => {
   cy.on('layoutstart', () => hideTooltips());
   cy.on('hide-type', () => hideTooltips());
   cy.on('slider-change', () => hideTooltips());
+
+  let nodeHoverMouseOver = _.debounce(evt => {
+    let node = evt.target;
+    let elesToHighlight = cy.collection();
+
+    //Create a list of the hovered node & its neighbourhood
+    node.neighborhood().nodes().union(node).forEach(node => {
+      elesToHighlight.merge(node.ancestors());
+      elesToHighlight.merge(node.descendants());
+      elesToHighlight.merge(node);
+    });
+    elesToHighlight.merge(node.neighborhood().edges());
+
+    //Add highlighted class to node & its neighbourhood, unhighlighted to everything else
+    cy.elements().addClass('unhighlighted');
+    elesToHighlight.forEach(ele => {
+      ele.removeClass('unhighlighted');
+      ele.addClass('highlighted');
+    });
+
+  }, 200);
+
+  //call style-applying and style-removing functions on 'mouseover' and 'mouseout' for non-compartment nodes
+  cy.on('mouseover', 'node[class!="compartment"]', nodeHoverMouseOver);
+  cy.on('mouseout', 'node[class!="compartment"]', () => {
+    nodeHoverMouseOver.cancel();
+    cy.elements().removeClass('highlighted unhighlighted');
+  });
 };
 
 //Search by keyword within network
 let searchInteractionNodes = _.debounce((cy, query) => {
   let queryEmpty = _.trim(query) === '';
   let allNodes = cy.nodes();
-  let matched = allNodes.filter( node => node.data('label').toUpperCase().includes( query.toUpperCase() ) );
+  let matched = allNodes.filter( node => node.data('id').toUpperCase().includes( query.toUpperCase() ) );
 
   cy.batch(() => {
     allNodes.removeClass('matched');

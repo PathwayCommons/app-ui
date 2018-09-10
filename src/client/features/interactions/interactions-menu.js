@@ -103,7 +103,7 @@ class InteractionsMenu extends React.Component {
     }
 
     let InteractionToggleButton = props => {
-      let { type, active } = props;
+      let { type, active, label } = props;
       let legendClass = `interactions-filter-color-${type.toLowerCase()}`;
 
       return h('div', {
@@ -120,7 +120,7 @@ class InteractionsMenu extends React.Component {
             'interactions-filter-color': true
           })
         } ),
-        h('div.interactions-filter-label', type),
+        h('div.interactions-filter-label', label),
         h('div.interactions-filter-check', [
           h('i.material-icons', (active ? 'check_box' : 'check_box_outline_blank'))
         ])
@@ -129,10 +129,10 @@ class InteractionsMenu extends React.Component {
 
     return h('div.interactions-sidebar', [
       h('h3', 'Filter interactions'),
-      hasBindings ? h(InteractionToggleButton, { type: BINDING, active: Binding }) : null,
-      hasExpressions ? h(InteractionToggleButton, { type: EXPRESSION, active: Expression }) : null,
-      hasPhosphorylations ? h(InteractionToggleButton, { type: PHOSPHORYLATION, active: Phosphorylation }) : null,
-      hasOther ? h(InteractionToggleButton, { type: OTHER, active: Other }) : null,
+      hasBindings ? h(InteractionToggleButton, { type: BINDING, active: Binding, label: BINDING }) : null,
+      hasExpressions ? h(InteractionToggleButton, { type: EXPRESSION, active: Expression, label: EXPRESSION }) : null,
+      hasPhosphorylations ? h(InteractionToggleButton, { type: PHOSPHORYLATION, active: Phosphorylation, label: 'Phosphorylation etc.' }) : null,
+      hasOther ? h(InteractionToggleButton, { type: OTHER, active: Other, label: OTHER }) : null,
 
       h('h3', 'Filter genes'),
       h('input.interactions-sidebar-vis-filter', {

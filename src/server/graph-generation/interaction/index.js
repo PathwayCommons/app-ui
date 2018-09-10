@@ -11,7 +11,7 @@ let interactionType2Label = type => {
       return 'Binding';
     case 'controls-state-change-of':
     case 'controls-phosphorylation-of':
-      return 'Phosphorylation';
+      return 'Modification';
     case 'controls-expression-of':
       return 'Expression';
     case 'controls-transport-of':

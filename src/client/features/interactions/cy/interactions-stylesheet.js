@@ -8,7 +8,7 @@ const iStylesheet=cytoscape.stylesheet()
     'curve-style': 'haystack',
     'haystack-radius': 0.25
   })
-.selector('.Phosphorylation')
+.selector('.Modification')
   .css({
     'line-color': '#ffc28b'
   })

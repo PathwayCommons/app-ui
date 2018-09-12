@@ -60,6 +60,10 @@ const iStylesheet=cytoscape.stylesheet()
     'background-color': '#606000',
     'text-outline-color': '#606000'
   })
+.selector('node[[degree = 0]]')
+  .css({
+    'display': 'none'
+  })
 .selector('node[?queried]')
   .css({
     'display': 'element',

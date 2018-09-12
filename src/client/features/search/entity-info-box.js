@@ -2,7 +2,6 @@ const React = require('react');
 const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
 const queryString = require('query-string');
-const NODE_ENV = process.env.NODE_ENV;
 
 const GENE_OTHER_NAMES_LIMIT = 4;
 const GENE_DESCRIPTION_WORD_LIMIT = 40;
@@ -24,28 +23,39 @@ class EntityInfoBox extends React.Component {
 
     let sortedLinks = links.sort((l1, l2) => l1.displayName > l2.displayName).map( link => h('a.plain-link.entity-info-link', { href: link.link, target:'_blank' }, link.displayName));
 
+    let collapsedDescription = descrTxt => {
+      let tokens = descrTxt.split(' ');
+      if( tokens.length <= GENE_DESCRIPTION_WORD_LIMIT ){
+        return descrTxt;
+      }
+
+      return tokens.slice(0, GENE_DESCRIPTION_WORD_LIMIT).join(' ') + '...';
+    };
+
     let moreInfo = h('div.entity-more-info',[
       h('div.entity-names', [
         h('div.entity-official-symbol', [
-          h('h4', 'Official Symbol'),
+          h('h5', 'Official Symbol'),
           officialSymbol
         ]),
         h('div.entity-other-names', [
-          h('h4', 'Other Names'),
+          h('h5', 'Other Names'),
           otherNames.split(',').slice(0, GENE_OTHER_NAMES_LIMIT).join(',')
         ])
       ]),
-      h('div.entity-description', [
-        h('h4', 'Description'),
-        this.state.descriptionExpanded ? description : description.split(' ', GENE_DESCRIPTION_WORD_LIMIT).join(' ') + '...'
-      ]),
-      h('div.entity-description-more', {
-        onClick: () => {
-          this.setState({descriptionExpanded: !this.state.descriptionExpanded});
-        } }, [
-        h('i.material-icons', this.state.descriptionExpanded ? 'expand_less' : 'expand_more'),
-        !this.state.descriptionExpanded ? h('div', 'View full description') : h('div', 'Hide full description')
-      ]),
+      description != '' ? h('div.entity-description', [
+        h('h5', 'Description'),
+        h('div', [
+          this.state.descriptionExpanded ? description : collapsedDescription(description)
+        ]),
+        h('div.entity-description-more', {
+          onClick: () => {
+            this.setState({descriptionExpanded: !this.state.descriptionExpanded});
+          } }, [
+          h('i.material-icons', this.state.descriptionExpanded ? 'expand_less' : 'expand_more'),
+          !this.state.descriptionExpanded ? h('div', 'View full description') : h('div', 'Hide full description')
+        ])
+      ]) : null,
       h('div.entity-links', [
         h('div.entity-links-container', sortedLinks)
       ])
@@ -73,13 +83,20 @@ class EntityInfoBoxList extends React.Component {
 
     let interactionsLinkQuery = ents => queryString.stringify({ source: ents.map( ent => ent.officialSymbol ).join(',') });
 
+    let interactionsLinkLabel = sources => {
+      if( sources.length === 1 ){
+        return `View ${sources[0]} interactions`;
+      }
+
+      return `View interactions between ${ sources.slice(0, sources.length - 1).join(', ') } and ${sources.slice(-1)}`;
+    };
+
     let viewMultipleInteractionsLink = () => (
-      h(Link, {
+        h(Link, {
+          className: 'call-to-action',
           to: { pathname: '/interactions', search: interactionsLinkQuery(entityInfoList) },
           target: '_blank',
-        }, [
-        h('button.search-landing-button', 'Interactions Viewer (beta)')
-      ])
+        }, interactionsLinkLabel(entityInfoList.map( ent => ent.officialSymbol )))
     );
 
     let entityInfoBoxes = entityInfoList.slice(0, GENE_INFO_DISPLAY_LIMIT).map( (entity, index) => {
@@ -93,7 +110,9 @@ class EntityInfoBoxList extends React.Component {
 
     return h('div.entity-info-list', [
       h('div.entity-info-list-entries', entityInfoBoxes),
-      NODE_ENV !== 'production' && entityInfoList.length > 0 ? h(viewMultipleInteractionsLink) : null
+      entityInfoList.length != 0 ? h('div.entity-info-view-interactions', [
+        h(viewMultipleInteractionsLink)
+       ]) : null
     ]);
   }
 }

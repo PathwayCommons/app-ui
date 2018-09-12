@@ -2,6 +2,7 @@
   max-width: var(--search-width);
   width: 100%;
   margin-top: 20px;
+  padding-bottom: 40px;
 }
 
 .entity-info-box {
@@ -33,10 +34,11 @@
   flex-direction: row;
   justify-content: space-between;
   padding: 10px 5px;
+  padding-top: 0;
 }
 
 .entity-official-symbol {
-  & h4 {
+  & h5 {
     margin: 0;
     margin-bottom: 5px;
     color: var(--dark-base-colour);
@@ -44,7 +46,7 @@
 }
 
 .entity-other-names {
-  & h4 {
+  & h5 {
     margin: 0;
     margin-bottom: 5px;
     color: var(--dark-base-colour);
@@ -53,7 +55,7 @@
 
 .entity-description {
   padding: 10px 5px;
-  & h4 {
+  & h5 {
     margin: 0;
     margin-bottom: 5px;
     color: var(--dark-base-colour);
@@ -67,14 +69,13 @@
   align-items: center;
   cursor: pointer;
   color: var(--dark-base-colour);
-  margin-top: 15px;
-  padding: 0 5px;
+  padding: 5px;
+  font-size: 0.85em;
 }
 
 .entity-links {
   border-top: 1px solid var(--light-base-colour-dark);
   margin-top: 10px;
-  margin-bottom: 5px;
 }
 
 .entity-links-container {
@@ -83,4 +84,10 @@
   flex-direction: row;
   justify-content: space-around;
   margin-top: 10px;
+}
+
+.entity-info-view-interactions {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }

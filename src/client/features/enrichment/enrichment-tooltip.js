@@ -37,7 +37,7 @@ class EnrichmentTooltip extends React.Component {
         h('a.plain-link', { href: dbInfo.url, target: '_blank', }, dbInfo.name)
       ]),
       h('div.cy-tooltip-call-to-action', [
-        h('a.cy-tooltip-call-to-action-btn', {
+        h('a.call-to-action', {
           target: '_blank',
           href: '/search?q=' + title
           },

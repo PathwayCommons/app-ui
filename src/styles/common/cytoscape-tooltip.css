@@ -110,19 +110,12 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
-}
-
-.cy-tooltip-call-to-action-btn {
   margin: 3px;
   margin-top: 10px;
-  border-radius: 0;
-  width: 100%;
-  text-align: center;
-  padding: 5px;
-  border: 1px solid var(--light-base-colour-darker);
-  color: var(--activeColor);
-  box-shadow: 0 1px 1px rgba(0,0,0,0.2);
-  border-radius: 5px;
+
+  & a {
+    width: 100%;
+  }
 }
 
 .cy-overflow-content {

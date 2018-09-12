@@ -43,7 +43,7 @@ class InteractionsNodeTooltip extends React.Component {
         ])
       ]) : null,
       h('div.cy-tooltip-call-to-action', [
-        h('a.cy-tooltip-call-to-action-btn', {
+        h('a.call-to-action', {
           target: '_blank',
           href: '/search?q=' + title
           },

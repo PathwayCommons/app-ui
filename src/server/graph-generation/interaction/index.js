@@ -95,19 +95,17 @@ let sifText2CyJson = (sifText, sourceIds) => {
   interactionsData.forEach( interactionTxtLine => {
     let interactionJson = interactionTxt2CyJson( interactionTxtLine );
 
-    // filter interactions that have type in-complex-with
-    if( interactionJson.data.type !== 'in-complex-with' ){
-      let source = interactionJson.data.source;
-      let target = interactionJson.data.target;
+    let source = interactionJson.data.source;
+    let target = interactionJson.data.target;
 
-      let srcJson = nodeId2Json[source];
-      let tgtJson = nodeId2Json[target];
+    let srcJson = nodeId2Json[source];
+    let tgtJson = nodeId2Json[target];
 
-      if( srcJson ){ srcJson.data.metric += 1; }
-      if( tgtJson ){ tgtJson.data.metric += 1; }
+    if( srcJson ){ srcJson.data.metric += 1; }
+    if( tgtJson ){ tgtJson.data.metric += 1; }
 
-      edges.push(interactionJson);
-    }
+    edges.push(interactionJson);
+
   } );
 
   return {

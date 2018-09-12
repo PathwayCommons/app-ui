@@ -152,7 +152,7 @@ let getInteractionsNetwork = sources => {
   let params = {
     cmd: 'pc2/graph',
     source: geneIds,
-    pattern: ['controls-phosphorylation-of','in-complex-with','controls-expression-of', 'interacts-with'],
+    pattern: ['controls-phosphorylation-of', 'controls-state-change-of', 'controls-expression-of', 'interacts-with', 'controls-transport-of', 'catalysis-precedes'],
     kind: geneIds.length > 1 ? 'pathsbetween' : 'neighborhood',
     format: 'txt'
   };

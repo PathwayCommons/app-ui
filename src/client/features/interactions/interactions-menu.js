@@ -128,26 +128,28 @@ class InteractionsMenu extends React.Component {
     };
 
     return h('div.interactions-sidebar', [
-      h('h3', 'Filter interactions'),
+      h('h3', 'Interaction Types'),
       hasBindings ? h(InteractionToggleButton, { type: BINDING, active: Binding }) : null,
       hasExpressions ? h(InteractionToggleButton, { type: EXPRESSION, active: Expression }) : null,
       hasModifications ? h(InteractionToggleButton, { type: MODIFICATION, active: Modification }) : null,
       hasOther ? h(InteractionToggleButton, { type: OTHER, active: Other }) : null,
 
-      h('h3', 'Filter genes'),
-      h('input.interactions-sidebar-vis-filter', {
-        type: 'range',
-        ref: ele => this.slider = ele,
-        min: 1,
-        max: this.getMetricSortedNodes().length,
-        step: 1,
-        defaultValue: defaultSliderValue,
-        onInput: () => this.throttledHandleSliderChange()
-       }),
-       h('div.interactions-slider-labels', [
-         h('span', 1),
-         h('span', this.getMetricSortedNodes().length)
-       ])
+      h('div.interactions-slider', [
+        h('h3', 'Filter genes'),
+        h('input.interactions-sidebar-vis-filter', {
+          type: 'range',
+          ref: ele => this.slider = ele,
+          min: 1,
+          max: this.getMetricSortedNodes().length,
+          step: 1,
+          defaultValue: defaultSliderValue,
+          onInput: () => this.throttledHandleSliderChange()
+         }),
+         h('div.interactions-slider-labels', [
+           h('span', 1),
+           h('span', this.getMetricSortedNodes().length)
+         ])
+      ])
     ]);
   }
 }

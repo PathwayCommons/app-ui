@@ -37,10 +37,8 @@ class InteractionsEdgeTooltip extends React.Component {
       ]);
     });
 
-    let detailedViewsList = pcIds.map( pcId => {
-      return h('div.cy-overflow-content', [
-        h('a.plain-link', { href: '/pathways?' + queryString.stringify({ uri: pcId }), target: '_blank' }, 'Pathway Commons')
-      ]);
+    let detailedViewsList = pcIds.map( (pcId, index)  => {
+      return h('a.plain-link', { href: '/pathways?' + queryString.stringify({ uri: pcId }), target: '_blank' }, `[ ${index + 1} ]`);
     } );
 
     return h('div.cy-tooltip', [
@@ -53,8 +51,8 @@ class InteractionsEdgeTooltip extends React.Component {
           h('div', publicationList)
         ]) : null,
         detailedViewsList.length > 0 ? h('div.cy-tooltip-section', [
-          h('div.cy-tooltip-field-name', 'Detailed Views'),
-          h('div', detailedViewsList)
+          h('div.cy-tooltip-field-name', 'Pathway Links'),
+          h('div.cy-tooltip-links', detailedViewsList)
         ]) : null,
         // h('div.cy-tooltip-section', [
         //   h('div.cy-tooltip-field-name', 'Reactome Links'),

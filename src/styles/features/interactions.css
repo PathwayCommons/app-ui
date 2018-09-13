@@ -1,6 +1,31 @@
-.interactions-sidebar {
-  width: 100%;
-  position: relative;
+.interactions-bar {
+  position: absolute;
+  top: 0.5em;
+  left: 0.5em;
+  border-radius: 0.25em;
+  box-shadow: var(--box-shadow);
+}
+
+.interactions-legend {
+  font-size: 0.9em;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  margin: 0.5em;
+  border-radius: 0.25em;
+  padding: 10px;
+  z-index: 10;
+  opacity: 0.9;
+  background-color: white;
+  border: 1px solid var(--light-base-colour-dark);
+  box-shadow: var(--box-shadow);
+  & h3 {
+    margin-top: 0;
+  }
+}
+
+.interactions-slider {
+  display: none;
 }
 
 input[type="range"].interactions-sidebar-vis-filter {
@@ -21,17 +46,17 @@ input[type="range"].interactions-sidebar-vis-filter {
 }
 
 .interactions-filter-button {
-  border: 1px solid #aaa;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 0.25em;
+  padding: 0.5em 0.25em;
   margin: 0.5em 0;
   border-radius: 0.25em;
   cursor: pointer;
   transition-property: border-color;
   transition-duration: 500ms;
   transition-timing-function: ease-out;
+  border: 1px solid var(--light-base-colour-dark);
 
   &:active {
     border-color: #000;
@@ -40,7 +65,7 @@ input[type="range"].interactions-sidebar-vis-filter {
 
 .interactions-filter-color {
   display: flex;
-  width: 2em;
+  width: 1.25em;
   background-color: #888;
   box-sizing: border-box;
   border: 1px solid #ccc;

@@ -22,7 +22,7 @@ const iStylesheet=cytoscape.stylesheet()
   })
 .selector('.Other')
   .css({
-    'line-color': '#ECF0F1'
+    'line-color': '#949494'
   })
 .selector('node[class@="ball"]')
   .css({

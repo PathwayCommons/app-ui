@@ -100,7 +100,7 @@
   flex-wrap: wrap;
 
   & a {
-    display: block;
+    display: inline-block;
     margin-right: 10px;
   }
 }

@@ -19,26 +19,26 @@ class InteractionsToolbar extends React.Component {
   }
 
   render(){
-    let { cySrv, controller, activeMenu } = this.props;
+    let { cySrv, activeMenu } = this.props;
     let { searchValue } = this.state;
     let cy = cySrv.get();
 
     return h('div.app-toolbar', [
       h(IconButton, {
-        description: 'Legend & filtering',
-        onClick: () => controller.changeMenu('interactionsMenu'),
-        isActive: activeMenu === 'interactionsMenu',
-        icon: 'settings'
-      }),
-      h(IconButton, {
         description: 'Downloads',
-        onClick: () => controller.changeMenu('interactionsDownloadMenu'),
+        onClick: () => {},
         isActive: activeMenu === 'interactionsDownloadMenu',
         icon: 'file_download'
       }),
       h(IconButton, {
         description: 'Fit to screen',
-        onClick: () => cy.fit(cy.nodes().filter( n => !n.hasClass('type-hidden') && !n.hasClass('metric-hidden'))),
+        onClick: () => cy.animate({
+          fit: {
+            eles: cy.nodes().filter( n => !n.hasClass('type-hidden') && !n.hasClass('metric-hidden')),
+            padding: 25
+          },
+          easing: 'ease-in-out'
+        }),
         isActive: false,
         icon: 'fullscreen'
       }),

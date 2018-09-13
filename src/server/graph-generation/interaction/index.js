@@ -58,7 +58,7 @@ let interactionTxt2CyJson = interactionTxtLine => {
   let participant0 = parsedInteractionParts[0];
   let participant1 = parsedInteractionParts[2];
   let type = parsedInteractionParts[1];
-  let summary = `${participant0} ${type.split('-').join(' ')} ${participant1}`;
+  let summary = type === 'catalysis-precedes' ? `${participant0} and ${participant1} in catalysis` : `${participant0} ${type.split('-').join(' ')} ${participant1}`;
   let readableType = interactionType2Label(type);
   let pubmedIds = ( parsedInteractionParts[4] || '').split(';');
   let mediatorIds = ( parsedInteractionParts[6] || '').split(';');

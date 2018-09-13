@@ -9,7 +9,6 @@ const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services/');
 
 const InteractionsToolbar = require('./interactions-toolbar');
-const Sidebar = require('../../common/components/sidebar');
 const EmptyNetwork = require('../../common/components/empty-network');
 const PcLogoLink = require('../../common/components/pc-logo-link');
 const CytoscapeNetwork = require('../../common/components/cytoscape-network');
@@ -25,7 +24,6 @@ class Interactions extends React.Component {
 
     this.state = {
       cySrv: new CytoscapeService({ style: interactionsStylesheet, onMount: bindEvents }),
-      activeMenu: 'interactionsMenu',
       loading: true,
       sources: _.uniq(queryString.parse(props.location.search).source.split(',')),
       networkEmpty: false
@@ -47,8 +45,7 @@ class Interactions extends React.Component {
       if( network.nodes.length === 0 ){
         this.setState({
           networkEmpty: true,
-          loading: false,
-          activeMenu: 'closeMenu'
+          loading: false
         });
         return;
       }
@@ -62,18 +59,6 @@ class Interactions extends React.Component {
       })).run();
     };
 
-    // TODO use this version of the code with a layout that supports being able to run it on a subset of the graph
-    //   cy.nodes().filter( n => !n.hasClass('hidden') ).layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
-    //     name: 'grid',
-    //     stop: () => {
-    //       this.setState({
-    //         source,
-    //         loading: false,
-    //       });
-    //     }
-    //   })).run();
-    // };
-
     ServerAPI.getInteractionGraph({ sources: sources }).then( result => {
       initializeCytoscape( _.get(result, 'network', { nodes: [], edges: [] } ));
     });
@@ -83,19 +68,9 @@ class Interactions extends React.Component {
     this.state.cySrv.destroy();
   }
 
-  changeMenu(menu){
-    let resizeCyImmediate = () => this.state.cySrv.get().resize();
-    let resizeCyDebounced = _.debounce( resizeCyImmediate, 500 );
-    if( menu === this.state.activeMenu ){
-      this.setState({ activeMenu: 'closeMenu' }, resizeCyDebounced);
-    } else {
-      this.setState({ activeMenu: menu }, resizeCyDebounced);
-    }
-  }
-
   render() {
     let { loading, cySrv, activeMenu, sources, networkEmpty } = this.state;
-    let appBar = h('div.app-bar', [
+    let appBar = h('div.app-bar.interactions-bar', [
       h('div.app-bar-branding', [
         h(PcLogoLink),
         h('div.app-bar-title', sources.join(', ') + ' Interactions')
@@ -103,22 +78,20 @@ class Interactions extends React.Component {
       h(InteractionsToolbar, { cySrv, activeMenu, controller: this })
     ]);
 
-    let sidebar = h(Sidebar, {  controller: this, activeMenu }, [
-      h(InteractionsMenu, { key: 'interactionsMenu', controller: this, cySrv }),
-      h(InteractionsDownloadMenu, { key: 'interactionsDownloadMenu', cySrv, sources } ),
+    let interactionsLegend = h('div.interactions-legend', [
+      h(InteractionsMenu, { cySrv } )
     ]);
 
     let content = !networkEmpty ? [
       h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [
         appBar,
-        sidebar
+        interactionsLegend
       ]),
       h(CytoscapeNetwork, {
         cySrv,
         onMount: () => this.loadInteractionsNetwork(),
         className: classNames({
-        'network-loading': loading,
-        'network-sidebar-open': activeMenu !== 'closeMenu'
+        'network-loading': loading
         })
       })
     ] : [ h(EmptyNetwork, { msg: 'No interactions to display', showPcLink: true} ) ];

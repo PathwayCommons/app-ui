@@ -10,7 +10,9 @@ const INTERACTIONS_LAYOUT_OPTS = {
   nodeRepulsion: 20000,
   edgeElasticity: 0.05,
   idealEdgeLength: 200,
-  animate: false
+  animate: true,
+  animationDuration: 800,
+  animationEasing: 'ease-in-out'
 };
 
 const SHOW_INTERACTIONS_TOOLTIPS_EVENT = 'showinteractionstooltip';

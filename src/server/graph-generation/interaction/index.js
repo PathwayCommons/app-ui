@@ -41,12 +41,14 @@ let participantTxt2CyJson = (participantTxtLine, sourceIds) => {
     externalIds[externalDb] = externalDbId;
   });
 
+  let isQueried = sourceIds.includes(name);
+
   return {
     data: {
       class: 'ball',
       id: name,
-      queried: sourceIds.includes(name),
-      metric: 0,
+      queried: isQueried,
+      metric: isQueried ? Infinity : 0,
       types: parsedTypes,
       externalIds
     }

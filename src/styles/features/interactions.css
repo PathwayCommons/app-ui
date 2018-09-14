@@ -24,21 +24,8 @@
   }
 }
 
-.interactions-slider {
-  display: none;
-}
-
 input[type="range"].interactions-sidebar-vis-filter {
   width: 100%;
-}
-
-.interactions-slider-heading {
-  padding-top: 15px;
-}
-
-.interactions-slider-labels {
-  display: flex;
-  justify-content: space-between;
 }
 
 .interactions-filter-check {

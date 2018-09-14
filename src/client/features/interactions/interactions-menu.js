@@ -22,8 +22,6 @@ class InteractionsMenu extends React.Component {
       [OTHER]: true
     };
 
-    // 15 updates per second max
-    this.throttledHandleSliderChange = _.throttle(() => this.handleSliderChange(), 1000/15);
   }
 
   toggleIntnType(type){
@@ -47,40 +45,6 @@ class InteractionsMenu extends React.Component {
     this.setState({[type]: !this.state[type] });
   }
 
-  getMetricSortedNodes(){
-    if(this._sortedNodes){ // cached
-      return this._sortedNodes;
-    }
-
-    let cy = this.props.cySrv.get();
-    let nodes = cy.nodes();
-    let sortedNodes = nodes.sort( (n0, n1) => n1.data('metric') - n0.data('metric') );
-
-    this._sortedNodes = sortedNodes; // put in cache
-
-    return sortedNodes;
-  }
-
-  handleSliderChange(){
-    let cy = this.props.cySrv.get();
-    let sortedNodes = this.getMetricSortedNodes();
-    let metricCutoff = this.slider.value;
-
-    let elesToHide = sortedNodes.slice(metricCutoff);
-
-    cy.batch(() => {
-      sortedNodes.not(elesToHide).removeClass('metric-hidden');
-      elesToHide.addClass('metric-hidden');
-    });
-
-    cy.emit('slider-change');
-  }
-
-  componentDidMount(){
-    this.getMetricSortedNodes(); // make sure cache is filled
-    this.throttledHandleSliderChange();
-  }
-
   render(){
     let { cySrv } = this.props;
     let { Binding, Expression, Modification, Other } = this.state;
@@ -93,14 +57,6 @@ class InteractionsMenu extends React.Component {
     let hasExpressions = hasType(cy, EXPRESSION);
     let hasBindings = hasType(cy, BINDING);
     let hasOther = hasType(cy, OTHER);
-
-    let defaultSliderValue = 0;
-    const numberOfNodes = this.getMetricSortedNodes().length;
-    if(numberOfNodes < 25){
-      defaultSliderValue = numberOfNodes;
-    }else{
-      defaultSliderValue = Math.floor( numberOfNodes / 2);
-    }
 
     let InteractionToggleButton = props => {
       let { type, active } = props;
@@ -133,23 +89,6 @@ class InteractionsMenu extends React.Component {
       hasExpressions ? h(InteractionToggleButton, { type: EXPRESSION, active: Expression }) : null,
       hasModifications ? h(InteractionToggleButton, { type: MODIFICATION, active: Modification }) : null,
       hasOther ? h(InteractionToggleButton, { type: OTHER, active: Other }) : null,
-
-      h('div.interactions-slider', [
-        h('h3', 'Filter genes'),
-        h('input.interactions-sidebar-vis-filter', {
-          type: 'range',
-          ref: ele => this.slider = ele,
-          min: 1,
-          max: this.getMetricSortedNodes().length,
-          step: 1,
-          defaultValue: defaultSliderValue,
-          onInput: () => this.throttledHandleSliderChange()
-         }),
-         h('div.interactions-slider-labels', [
-           h('span', 1),
-           h('span', this.getMetricSortedNodes().length)
-         ])
-      ])
     ]);
   }
 }

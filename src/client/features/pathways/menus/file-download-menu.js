@@ -72,7 +72,7 @@ class FileDownloadMenu extends React.Component {
     } );
 
     return h('div.file-download-menu', [
-      h('h2', 'Network Downloads'),
+      h('h2', 'Download As...'),
       h('div.file-download-content', [
         ...menuContents,
         h(Loader, { loaded: !this.state.loading })

@@ -1,15 +1,14 @@
 module.exports = {
-  theme: 'dark',
-  position: 'right',
-  animation: 'scale',
+  theme: 'light',
+  placement: 'bottom',
+  createPopperInstanceOnInit: true,
+  animation: 'fade',
   animateFill: false,
-  duration: [ 500, 0 ],
+  duration: [ 250, 0 ],
   delay: [ 0, 0 ],
-  hideDuration: 0,
   arrow: true,
-  trigger: 'mouseenter',
+  trigger: 'click manual',
   interactive: true,
   multiple: true,
-  hideOnClick: true,
-  sticky: true
+  hideOnClick: true
 };

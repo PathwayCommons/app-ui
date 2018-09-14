@@ -42,13 +42,11 @@ class InteractionsNodeTooltip extends React.Component {
           }))
         ])
       ]) : null,
-      h('div.cy-tooltip-call-to-action', [
-        h('a.call-to-action', {
-          target: '_blank',
-          href: '/search?q=' + title
-          },
-          `FIND RELATED PATHWAYS`
-        )
+      h('div.cy-tooltip-call-to-action', {
+        target: '_blank',
+        href: '/search?q=' + title
+      }, [
+        h('button.call-to-action', `Find Related Pathways`)
       ])
     ]);
   }

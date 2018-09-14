@@ -1,57 +1,18 @@
-.icon-button {
-  @extend %flex-center;
-  @extend %no-select;
-
-  height: calc(var(--icon-size) * 3 / 2.2);
-  width: calc(var(--icon-size) * 3 / 2.2);
-  margin-left: 0.12em;
-  margin-right: 0.12em;
-  border-radius: 50% !important;
-  transition: all 0.1s linear;
-  color: var(--dark-base-colour);
-  cursor: pointer;
-
-  & :hover {
-    background-color: var(--light-base-colour-dark);
-  }
-
-  & i {
-    font-size: var(--icon-size);
-    border-radius: 50%;
-    padding: 0.12em;
-  }
-}
-
-.icon-button-active {
-  color: var(--accent-1-colour);
-}
-
-
-.text-button {
-  @extend %flex-center;
-
-  border: 0;
-  border-radius: 0;
-  cursor: pointer;
-
-  transition: background-color 0.1s linear;
-
-  &:hover {
-    background-color: var(--light-base-colour-dark);
-  }
-
-  & i {
-    font-size: 1em;
-  }
-}
-
-.call-to-action {
-  margin: 3px;
-  border-radius: 0;
+button.call-to-action {
   text-align: center;
-  padding: 5px;
-  border: 1px solid var(--light-base-colour-darker);
-  color: var(--activeColor);
-  box-shadow: 0 1px 1px rgba(0,0,0,0.2);
-  border-radius: 5px;
+  text-transform: uppercase;
+
+  &:not(:active) {
+    border-color: var(--activeColor);
+    color: var(--activeColor);
+  }
+}
+
+.icon-button {
+  width: 1.75em;
+  text-align: center;
+
+  & i {
+    font-size: 1.2em;
+  }
 }

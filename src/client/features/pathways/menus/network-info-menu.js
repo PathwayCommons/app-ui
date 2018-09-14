@@ -6,24 +6,16 @@ class NetworkInfoMenu extends React.Component {
   render() {
     const { infoList } = this.props;
 
-    const noInfoMessage = h('span', [
+    const noInfoMessage = [
       h('p', 'No additional information was found for this network!'),
       h('p', 'Additional information about the network is normally found here, but we couldn\'t find any for this one.')
-    ]);
+    ];
 
-    const comments = infoList.map(comment => {
-      return h('div', [h('p', comment.replace(/<p>/g, ' '))]);
-    });
-
-    const additionalInfo = comments.length ?
-      [h('div', [
-        h('h2', 'Additional Information')
-      ].concat(comments))]
-      : [noInfoMessage];
+    const comments = infoList.map(comment => h('p', comment.replace(/<p>/g, ' ')));
 
     return (
-      h('div', [
-        h('div', additionalInfo)
+      h('div.info-menu', [
+        comments.length > 0 ? comments : noInfoMessage
       ])
     );
   }

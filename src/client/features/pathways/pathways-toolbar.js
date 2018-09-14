@@ -1,7 +1,11 @@
 
 const React = require('react');
+const ReactDom = require('react-dom');
 const h = require('react-hyperscript');
 
+const Popover = require('../../common/components/popover');
+const InfoMenu = require('./menus/network-info-menu');
+const FileDownloadMenu = require('./menus/file-download-menu');
 const IconButton = require('../../common/components/icon-button');
 
 const { fit, expandCollapse, layout, searchNodes } = require('./cy');
@@ -18,55 +22,67 @@ class PathwaysToolbar extends React.Component {
     this.setState({ searchValue: searchVal }, () => searchNodes( this.props.cySrv.get(), searchVal));
   }
 
+  focusNodeSearch(){
+    ReactDom.findDOMNode(this).querySelector('.element-search-input').focus();
+  }
+
   render(){
-    let { cySrv, controller, activeMenu } = this.props;
+    let { cySrv, pathway } = this.props;
     let { searchValue } = this.state;
     let cy = cySrv.get();
 
     return h('div.app-toolbar', [
-      h(IconButton, {
-        description: 'Extra Information',
-        onClick: () => controller.changeMenu('infoMenu'),
-        isActive: activeMenu === 'infoMenu',
-        icon: 'info'
-      }),
-      h(IconButton, {
-        description: 'Downloads',
-        onClick: () => controller.changeMenu('downloadMenu'),
-        isActive: activeMenu === 'downloadMenu',
-        icon: 'file_download'
-      }),
+      h(Popover, {
+        tippy: {
+          position: 'bottom',
+          html: h(InfoMenu, { key: 'infoMenu', infoList: pathway.comments() })
+        }
+      }, [
+        h(IconButton, {
+          description: 'Extra Information',
+          icon: 'info'
+        })
+      ]),
+      h(Popover, {
+        tippy: {
+          position: 'bottom',
+          html: h(FileDownloadMenu, { key: 'downloadMenu', cySrv, fileName: pathway.name(), uri: pathway.uri() })
+        }
+      }, [
+        h(IconButton, {
+          description: 'Downloads',
+          icon: 'file_download'
+        })
+      ]),
       h(IconButton, {
         description: 'Expand/Collapse all complex nodes',
         onClick: () => expandCollapse( cy ),
-        isActive: false,
         icon: 'select_all'
       }),
       h(IconButton, {
         description: 'Fit pathway to screen',
         onClick: () => fit( cy ),
-        isActive: false,
         icon: 'fullscreen'
       }),
       h(IconButton, {
         description: 'Reset pathway arrangement',
         onClick: () => layout( cy ),
-        isActive: false,
         icon: 'replay'
       }),
-      h('div.pathways-search-nodes', {
-        onChange: e => this.handleNodeSearchChange(e.target.value)
-      }, [
-        h('div.pathways-search-bar', [
-          h('input.pathways-search-input', {
-            value: searchValue,
-            type: 'search',
-            placeholder: 'Search entities',
-          }),
-          searchValue !== '' ? h('div.pathways-search-clear', {
-            onClick: () => this.handleNodeSearchChange('')}, [
-            h('i.material-icons', 'close')
-          ]) : null
+      h('div.element-search', [
+        h('input.element-search-input.input-round.input-joined', {
+          value: searchValue,
+          onChange: e => this.handleNodeSearchChange(e.target.value),
+          type: 'text',
+          placeholder: 'Search entities',
+        }),
+        h('button.element-search-clear', {
+          onClick: () => {
+            this.handleNodeSearchChange('');
+            this.focusNodeSearch();
+          }
+        }, [
+          h('i.material-icons', 'close')
         ])
       ])
     ]);

@@ -39,8 +39,8 @@ class InteractionsDownloadMenu extends React.Component {
   }
 
   render() {
-    return h('div.file-download-menu', [
-      h('h2', 'Network Downloads'),
+    return h('div.file-download-menu.interactions-download-menu', [
+      h('h2', 'Download As...'),
       h('div.file-download-content', [
         h('div.download-option', { onClick: () => this.downloadPng() }, [
           h('div.download-option-header', [

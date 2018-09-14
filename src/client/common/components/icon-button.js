@@ -8,15 +8,18 @@ class IconButton extends React.Component {
   render(){
     let { description, onClick, isActive, icon } = this.props;
 
+    onClick = onClick || (function(){});
 
-    return h(Tooltip, { description }, [
-      h('div.icon-button', { 
+    return h('button.icon-button.button-toggle.plain-button', {
         onClick: e => onClick(e),
-        className: classNames({ 'icon-button-active': isActive })
+        className: classNames({ 'button-toggle-on': isActive })
       }, [
-        h('i.material-icons', icon)
-      ])
-    ]);
+        h(Tooltip, { description }, [
+          h('span', [
+            h('i.material-icons', icon)
+          ])
+        ])
+      ]);
   }
 }
 

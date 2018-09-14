@@ -4,62 +4,107 @@ const h = require('react-hyperscript');
 const hh = require('hyperscript');
 const Tippy = require('tippy.js');
 const _ = require('lodash');
+const Mousetrap = require('mousetrap');
+const EventEmitter = require('eventemitter3');
 
+const tippyEmitter = new EventEmitter();
 const tippyDefaults = require('../tippy-defaults');
 
-/* Props
-- tippy (tippy options object)
-- target (ref to target, defaults to first child)
-- show() and/or hide() (functions called on show and hide, are passed in tippy.show()/tippy.hide())
-*/
-class Popover extends React.Component {
-  constructor(props) {
-    super(props);
+Mousetrap.bind('escape', () => tippyEmitter.emit('esc'));
 
-    this.state = {};
+class Popover extends React.Component {
+  constructor( props ){
+    super( props );
   }
 
-  renderTipContent() {
+  render(){
+    let p = this.props;
+
+    return h( 'span.popover-target', {
+      ref: el => this.target = el,
+      onClick: p.onClick
+    }, p.children );
+  }
+
+  renderTipContent(){
     let el = this.props.tippy.html;
 
-    if (_.isFunction(el)) {
+    if( _.isFunction(el) ){
       el = h(el);
     }
 
-    ReactDom.render(el, this.state.content);
+    ReactDom.render( el, this.content );
   }
 
-  componentDidMount() {
-    let props = this.props;
-    let target = props.target || ReactDom.findDOMNode(this).children[0];
-    let options = props.tippy;
-    let content = this.state.content = hh('div', {
-      className: (props.className || '') + ' popover-content'
+  componentDidMount(){
+    let p = this.props;
+    let target = p.target || this.target;
+    let options = p.tippy;
+    let content = this.content = hh('div', {
+      className: ( this.props.className || '' ) + ' popover-content'
     });
 
+    let rawTippyOptions = _.assign( {}, tippyDefaults, options );
+
+    let tippyOptions = _.assign( {}, rawTippyOptions, {
+      html: content,
+      hideOnClick: false
+    } );
+
     this.renderTipContent();
 
-    let tippy = new Tippy(target, _.assign({}, tippyDefaults, options, {
-      html: content
-    }));
+    let tippy = Tippy( target, tippyOptions ).tooltips[0];
 
-    let popper = target._tippy.popper;
+    let show = () => tippy.show();
+    let hide = () => tippy.hide();
 
-    let show = () => tippy.show(popper);
-    let hide = () => tippy.hide(popper);
+    if( p.show ){ p.show( show ); }
+    if( p.hide ){ p.hide( hide ); }
 
-    if (props.show) { props.show(show); }
-    if (props.hide) { props.hide(hide); }
+    this.showTippy = () => tippy.show();
+    this.hideTippy = () => tippy.hide();
+    this.destroyTippy = () => tippy.destroy();
+
+    tippyEmitter.on('esc', this.hideTippy);
+
+    // the tippy hide on click doesn't work with and nested tippies otherwise
+    if( rawTippyOptions.hideOnClick ){
+      this.onBodyClick = (e) => {
+        let parent = e.target;
+        let hide = true;
+
+        while( parent !== document.body ){
+          if( parent === content || parent === target ){
+            hide = false;
+            break;
+          }
+
+          parent = parent.parentNode;
+        }
+
+        if( hide ){
+          this.hideTippy();
+        }
+      };
+
+      document.body.addEventListener('click', this.onBodyClick);
+    }
   }
 
-  componentDidUpdate() {
+  componentWillUnmount(){
+    tippyEmitter.removeListener('esc', this.hideTippy);
+
+    ReactDom.unmountComponentAtNode( this.content );
+
+    if( this.onBodyClick ){
+      document.body.removeEventListener('click', this.onBodyClick);
+    }
+
+    this.destroyTippy();
+  }
+
+  componentDidUpdate(){
     this.renderTipContent();
-  }
-
-  render() {
-    let props = this.props;
-
-    return h('span.popover-target', [props.children]);
   }
 }
 

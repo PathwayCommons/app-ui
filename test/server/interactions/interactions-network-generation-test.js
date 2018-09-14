@@ -156,7 +156,7 @@ describe('Interactions network to cy.js conversion', function(){
 PARTICIPANT	PARTICIPANT_TYPE	PARTICIPANT_NAME	UNIFICATION_XREF	RELATIONSHIP_XREF
 AARS2	ProteinReference	SYAM_HUMAN	uniprot knowledgebase:Q5JTZ9	hgnc symbol:AARS2`;
 
-    let geneIds = ['AARS2'];
+    let geneIds = ['TP53'];
     let result = getInteractionsCyJson( input, geneIds );
 
     return expect( result.nodes ).to.deep.equal( [] );

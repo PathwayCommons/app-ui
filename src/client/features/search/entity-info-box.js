@@ -85,20 +85,27 @@ class EntityInfoBoxList extends React.Component {
 
     let interactionsLinkLabel = sources => {
       if( sources.length === 1 ){
-        return `View ${sources[0]} interactions`;
+        return `Interactions with ${sources[0]}`;
       }
 
-      return `View interactions between ${ sources.slice(0, sources.length - 1).join(', ') } and ${sources.slice(-1)}`;
+      return `Interactions between ${ sources.slice(0, sources.length - 1).join(', ') + (sources.length > 2 ? ',' : '') } and ${sources.slice(-1)}`;
     };
 
-    let viewMultipleInteractionsLink = () => (
-        h(Link, {
-          to: { pathname: '/interactions', search: interactionsLinkQuery(entityInfoList) },
-          target: '_blank',
-        }, [
-          h('button.call-to-action', interactionsLinkLabel(entityInfoList.map( ent => ent.officialSymbol )))
-        ])
-    );
+    let ViewMultipleInteractionsEntry = () => {
+      return h('div.search-item', [
+        h('div.search-item-icon',[
+           h('img', { src: '/img/icon.png' })
+         ]),
+         h('div.search-item-content', [
+           h(Link, {
+             className: 'plain-link',
+             to: { pathname: '/interactions', search: interactionsLinkQuery(entityInfoList) },
+             target: '_blank'
+            }, interactionsLinkLabel(entityInfoList.map( ent => ent.officialSymbol ))),
+           h('p.search-item-content-datasource', 'Pathway Commons')
+         ])
+       ]);
+    };
 
     let entityInfoBoxes = entityInfoList.slice(0, GENE_INFO_DISPLAY_LIMIT).map( (entity, index) => {
       let props = { entity };
@@ -112,7 +119,7 @@ class EntityInfoBoxList extends React.Component {
     return h('div.entity-info-list', [
       h('div.entity-info-list-entries', entityInfoBoxes),
       entityInfoList.length != 0 ? h('div.entity-info-view-interactions', [
-        h(viewMultipleInteractionsLink)
+        h(ViewMultipleInteractionsEntry)
        ]) : null
     ]);
   }

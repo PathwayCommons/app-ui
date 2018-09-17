@@ -15,7 +15,6 @@ const CytoscapeNetwork = require('../../common/components/cytoscape-network');
 
 const { interactionsStylesheet, INTERACTIONS_LAYOUT_OPTS, bindEvents } = require('./cy');
 
-const InteractionsDownloadMenu = require('./interactions-download-menu');
 const InteractionsMenu = require('./interactions-menu');
 
 class Interactions extends React.Component {
@@ -75,7 +74,7 @@ class Interactions extends React.Component {
         h(PcLogoLink),
         h('div.app-bar-title', sources.join(', ') + ' Interactions')
       ]),
-      h(InteractionsToolbar, { cySrv, activeMenu, controller: this })
+      h(InteractionsToolbar, { cySrv, activeMenu, sources: this.state.sources, controller: this })
     ]);
 
     let interactionsLegend = h('div.interactions-legend', [

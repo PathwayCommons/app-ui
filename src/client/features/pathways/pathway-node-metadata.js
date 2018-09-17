@@ -92,12 +92,12 @@ class PathwayNodeMetadataView extends React.Component {
           ]) : null
         ]),
         showPcSearchLink ? h('div.cy-tooltip-call-to-action', [
-          h('a.call-to-action', {
+          h('a', {
             target: '_blank',
             href: '/search?q=' + metadata.searchLink()
-            },
-            `FIND RELATED PATHWAYS`
-          )
+          }, [
+            h('button.call-to-action', 'Find Related Pathways')
+          ])
         ]) : null
       ])
     ]);

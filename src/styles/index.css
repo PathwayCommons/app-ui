@@ -8,6 +8,8 @@
 @import "./app.css";
 @import "./common/index.css";
 @import "./features/search.css";
+@import "./features/element-search.css";
+@import "./features/info-menu.css";
 @import "./features/paint.css";
 @import "./features/pathways.css";
 @import "./features/interactions.css";

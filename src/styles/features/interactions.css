@@ -1,7 +1,8 @@
 .interactions-bar {
   position: absolute;
-  top: 0.5em;
-  left: 0.5em;
+  top: 0;
+  left: 0;
+  margin: 0.5em;
   border-radius: 0.25em;
   box-shadow: var(--box-shadow);
 }
@@ -19,6 +20,7 @@
   background-color: white;
   border: 1px solid var(--light-base-colour-dark);
   box-shadow: var(--box-shadow);
+
   & h3 {
     margin-top: 0;
   }

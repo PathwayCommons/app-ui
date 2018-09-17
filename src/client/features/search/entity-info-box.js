@@ -93,10 +93,11 @@ class EntityInfoBoxList extends React.Component {
 
     let viewMultipleInteractionsLink = () => (
         h(Link, {
-          className: 'call-to-action',
           to: { pathname: '/interactions', search: interactionsLinkQuery(entityInfoList) },
           target: '_blank',
-        }, interactionsLinkLabel(entityInfoList.map( ent => ent.officialSymbol )))
+        }, [
+          h('button.call-to-action', interactionsLinkLabel(entityInfoList.map( ent => ent.officialSymbol )))
+        ])
     );
 
     let entityInfoBoxes = entityInfoList.slice(0, GENE_INFO_DISPLAY_LIMIT).map( (entity, index) => {

@@ -13,31 +13,41 @@ Optional
 - popover props (props you want the popover to have, see popover)
 */
 class Tooltip extends React.Component {
-  render() {
+  componentWillMount(){
     let props = this.props;
 
     let tippyOptions = _.assign({}, tippyDefaults, {
       html: (() => {
         return h('div.tooltip-content', [h('span.tooltip-description', props.description)]);
       })(),
-      placement: 'bottom',
-      animate: 'fade',
-      animateFill: false,
-      duration: [0, 0],
-      hideDuration: 0,
-      hideOnClick: true,
-      interactive: false,
-      touchHold: true,
+      trigger: 'mouseenter manual',
       theme: 'dark',
-      arrow: true,
-      delay: [500, 0],
-      multiple: true,
-      dynamicInputDetection: true
+      delay: [ 1000, 0 ]
     }, props.tippy);
 
-    let popoverOptions = _.assign({}, props, { tippy: tippyOptions });
+    this.popoverOptions = _.assign({}, props, {
+      tippy: tippyOptions,
+      hide: hideTippy => {
+        if(props.hide){
+          props.hide(hideTippy); // make sure we don't override the hide() from props
+        }
 
-    return h(Popover, popoverOptions, props.children);
+        this.hideTippy = hideTippy;
+      },
+      onClick: () => {
+        this.hideTippy();
+      }
+    });
+  }
+
+  componentWillUnmount(){
+
+  }
+
+  render() {
+    let props = this.props;
+
+    return h(Popover, this.popoverOptions, props.children);
   }
 }
 

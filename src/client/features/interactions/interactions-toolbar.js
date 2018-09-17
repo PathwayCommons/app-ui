@@ -1,10 +1,14 @@
 
 const React = require('react');
+const ReactDom = require('react-dom');
 const h = require('react-hyperscript');
 
+const Popover = require('../../common/components/popover');
 const IconButton = require('../../common/components/icon-button');
 
 const { INTERACTIONS_LAYOUT_OPTS, searchInteractionNodes } = require('./cy');
+
+const InteractionsDownloadMenu = require('./interactions-download-menu');
 
 class InteractionsToolbar extends React.Component {
   constructor(props){
@@ -18,18 +22,28 @@ class InteractionsToolbar extends React.Component {
     this.setState({ searchValue: searchVal }, () => searchInteractionNodes( this.props.cySrv.get(), searchVal));
   }
 
+  focusNodeSearch(){
+    ReactDom.findDOMNode(this).querySelector('.element-search-input').focus();
+  }
+
   render(){
-    let { cySrv, activeMenu } = this.props;
+    let { cySrv } = this.props;
     let { searchValue } = this.state;
     let cy = cySrv.get();
+    let sources = this.props.sources || ['download'];
 
     return h('div.app-toolbar', [
-      h(IconButton, {
-        description: 'Downloads',
-        onClick: () => {},
-        isActive: activeMenu === 'interactionsDownloadMenu',
-        icon: 'file_download'
-      }),
+      h(Popover, {
+        tippy: {
+          position: 'bottom',
+          html: h(InteractionsDownloadMenu, { cySrv, sources })
+        }
+      }, [
+        h(IconButton, {
+          description: 'Downloads',
+          icon: 'file_download'
+        })
+      ]),
       h(IconButton, {
         description: 'Fit to screen',
         onClick: () => cy.animate({
@@ -48,19 +62,20 @@ class InteractionsToolbar extends React.Component {
         isActive: false,
         icon: 'replay'
       }),
-      h('div.pathways-search-nodes', {
-        onChange: e => this.handleNodeSearchChange(e.target.value)
-      }, [
-        h('div.pathways-search-bar', [
-          h('input.pathways-search-input', {
-            value: searchValue,
-            type: 'search',
-            placeholder: 'Search entities',
-          }),
-          searchValue !== '' ? h('div.pathways-search-clear', {
-            onClick: () => this.handleNodeSearchChange('')}, [
-            h('i.material-icons', 'close')
-          ]) : null
+      h('div.element-search', [
+        h('input.element-search-input.input-round.input-joined', {
+          value: searchValue,
+          onChange: e => this.handleNodeSearchChange(e.target.value),
+          type: 'text',
+          placeholder: 'Search entities',
+        }),
+        h('button.element-search-clear', {
+          onClick: () => {
+            this.handleNodeSearchChange('');
+            this.focusNodeSearch();
+          }
+        }, [
+          h('i.material-icons', 'close')
         ])
       ])
     ]);

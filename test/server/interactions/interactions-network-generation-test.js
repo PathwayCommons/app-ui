@@ -2,6 +2,7 @@ const { expect } = require('chai');
 const fs = require('fs');
 const path = require('path');
 const { sifText2CyJson, getInteractionsCyJson  } = require('../../../src/server/graph-generation/interaction');
+const { MAX_SIF_NODES } = require('../../../src/config');
 
 describe('Interactions network to cy.js conversion', function(){
   it('converts sif text into a json format readable by cytoscape.js', function(){
@@ -142,7 +143,7 @@ describe('Interactions network to cy.js conversion', function(){
     let geneIds = ['TP53'];
 
     let { nodes } = sifText2CyJson( tp53InteractionsTxt, geneIds );
-    let expectedNodeLabels = nodes.sort( ( n0, n1 ) => n1.data.metric - n0.data.metric).slice(0, 50).map( n => n.data.id );
+    let expectedNodeLabels = nodes.sort( ( n0, n1 ) => n1.data.metric - n0.data.metric).slice(0, MAX_SIF_NODES).map( n => n.data.id );
     let actualNodeLabels = getInteractionsCyJson( tp53InteractionsTxt, geneIds ).nodes.map( n => n.data.id );
 
     return expect( expectedNodeLabels ).to.deep.equal( actualNodeLabels );

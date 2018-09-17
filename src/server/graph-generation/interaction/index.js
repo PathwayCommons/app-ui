@@ -3,7 +3,7 @@ const pc = require('../../pathway-commons');
 const logger = require('./../../logger');
 const LRUCache = require('lru-cache');
 const cache = require('../../cache');
-const { PC_CACHE_MAX_SIZE } = require('../../../config');
+const { PC_CACHE_MAX_SIZE, MAX_SIF_NODES } = require('../../../config');
 
 let interactionType2Label = type => {
   switch( type ){
@@ -48,7 +48,7 @@ let participantTxt2CyJson = (participantTxtLine, sourceIds) => {
       class: 'ball',
       id: name,
       queried: isQueried,
-      metric: isQueried ? Infinity : 0,
+      metric: isQueried ? Number.MAX_SAFE_INTEGER : 0,
       types: parsedTypes,
       externalIds
     }
@@ -121,7 +121,7 @@ let filterByDegree = (nodes, edges) => {
   // filter all nodes with degree 0
   let filteredNodes = nodes.sort( (n0, n1) => {
     return n1.data.metric - n0.data.metric;
-  } ).slice(0, 50).filter( n => n.data.metric !== 0 );
+  } ).slice(0, MAX_SIF_NODES).filter( n => n.data.metric !== 0 );
 
   let filteredNodeIdMap = {};
   filteredNodes.forEach( node => filteredNodeIdMap[node.data.id] = true );

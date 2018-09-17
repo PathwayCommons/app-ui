@@ -11,7 +11,9 @@ const ENRICHMENT_MAP_LAYOUT = {
   nodeRepulsion: 300000,
   edgeElasticity: 0.05,
   idealEdgeLength: 200,
-  animate: false,
+  animate: 'end',
+  animationEasing: 'ease-in-out',
+  animationDuration: 800,
   padding: 20
 };
 

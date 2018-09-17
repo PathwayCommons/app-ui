@@ -5,8 +5,9 @@ module.exports = {
     nodeDimensionsIncludeLabels: true,
     tilingPaddingVertical: 50,
     tilingPaddingHorizontal: 20,
-    animate: true,
-    animationDuration: 500,
+    animate: 'end',
+    animationEasing: 'ease-in-out',
+    animationDuration: 800,
     fit: true,
     padding: 75,
     randomize: false

@@ -23,17 +23,28 @@ let interactionType2Label = type => {
 };
 
 let participantTxt2CyJson = ( parsedInteractionParts, sourceIds ) => {
-  let name = parsedInteractionParts[0] || '';
-  let isQueried = sourceIds.includes(name);
-
-  return {
-    data: {
-      class: 'ball',
-      id: name,
-      queried: isQueried,
-      metric: isQueried ? Infinity : 0
+  let sourceName = parsedInteractionParts[0] || '';
+  let targetName = parsedInteractionParts[2] || '';
+  let isSourceQueried = sourceIds.includes(sourceName);
+  let isTargetQueried = sourceIds.includes(targetName);
+  return [
+    {
+      data: {
+        class: 'ball',
+        id: sourceName,
+        queried: isSourceQueried,
+        metric: isSourceQueried ? Number.MAX_SAFE_INTEGER : 0
+      }
+    },
+    {
+      data: {
+        class: 'ball',
+        id: targetName,
+        queried: isTargetQueried,
+        metric: isTargetQueried ? Number.MAX_SAFE_INTEGER : 0
+      }
     }
-  };
+  ];
 };
 
 let interactionTxt2CyJson = parsedInteractionParts => {
@@ -71,8 +82,8 @@ let sifText2CyJson = (sifText, sourceIds) => {
     if ( !interactionTxtLine.length ) return;
     let parsedInteractionParts = interactionTxtLine.split('\t');
 
-    let participantJson = participantTxt2CyJson( parsedInteractionParts, sourceIds );
-    nodeId2Json[participantJson.data.id] = participantJson;
+    let participantsJson = participantTxt2CyJson( parsedInteractionParts, sourceIds );
+    participantsJson.forEach( partcipant => nodeId2Json[partcipant.data.id] = partcipant );
 
     let interactionJson = interactionTxt2CyJson( parsedInteractionParts );
 

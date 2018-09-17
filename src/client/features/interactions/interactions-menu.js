@@ -1,7 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const classNames = require('classnames');
-const _ = require('lodash');
 
 const INTERACTION_TYPES = {
   BINDING: 'Binding',

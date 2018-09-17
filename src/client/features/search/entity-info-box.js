@@ -88,7 +88,7 @@ class EntityInfoBoxList extends React.Component {
         return `Interactions with ${sources[0]}`;
       }
 
-      return `Interactions between ${ sources.slice(0, sources.length - 1).join(', ') }, and ${sources.slice(-1)}`;
+      return `Interactions between ${ sources.slice(0, sources.length - 1).join(', ') + (sources.length > 2 ? ',' : '') } and ${sources.slice(-1)}`;
     };
 
     let ViewMultipleInteractionsEntry = () => {

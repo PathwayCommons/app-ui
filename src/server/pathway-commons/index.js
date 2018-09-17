@@ -121,10 +121,41 @@ const _metadata = async () => {
   return meta; //TODO: get more metadata in the future (configuration, name, desc., logo, etc.)
 };
 
+//SifGraph
+const sifGraph = async ( queryObj ) => {
+  let path;
+  const defaults = {
+    limit: 1,
+    pattern: ['CONTROLS_STATE_CHANGE_OF','CONTROLS_PHOSPHORYLATION_OF','CONTROLS_TRANSPORT_OF','CONTROLS_EXPRESSION_OF','CATALYSIS_PRECEDES','INTERACTS_WITH']
+  };
+  const params = _.assign(defaults, queryObj);
+
+  if ( params.source.length > 1 ){
+    path = 'pathsbetween';
+    params.directed = 'false';
+  } else {
+    path = 'neighborhood';
+    params.direction = 'UNDIRECTED';
+  }
+
+  const url = config.PC_URL + 'sifgraph/v1/' + path + '?' + qs.stringify(params);
+  return fetch(url, {
+    method: 'GET',
+    headers: {
+      'Accept': 'text/plain'
+    }
+  })
+  .then( res => res.text() )
+  .catch( e => {
+    logger.error('sifGraph ' + queryObj + ' failed - ' + e);
+    throw e;
+  });
+};
+
 //cached functions
 const datasources = _.memoize(_datasources);
 const search = _.memoize(_search, query => JSON.stringify(query));
 const metadata = _.memoize(_metadata);
 
 
-module.exports = {query, search, datasources, metadata};
+module.exports = {query, search, datasources, metadata, sifGraph};

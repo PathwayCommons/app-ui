@@ -45,13 +45,14 @@
     margin: 0 0.25em;
   }
 
-  /* make the search bar take up the remainder of the unused space */
+  /* make the search bar take up the remainder of the unused space
+  disable for now b/c chrome 68 is buggy */
 
-  & .element-search {
+  /* & .element-search {
     flex-grow: 1;
   }
 
   & .element-search-input {
     width: 100%;
-  }
+  } */
 }

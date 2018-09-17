@@ -22,25 +22,8 @@ let interactionType2Label = type => {
   }
 };
 
-let participantTxt2CyJson = (participantTxtLine, sourceIds) => {
-  let parsedParticipantParts = participantTxtLine.split('\t');
-  let name = parsedParticipantParts[0] || '';
-  let types = parsedParticipantParts[1] || '';
-  let unificationXrefs = parsedParticipantParts[3] || '';
-  let relationshipXrefs = parsedParticipantParts[4] || '';
-  let parsedTypes = types.replace(/Reference/g, '').split(';');
-
-  let externalIds = {};
-  unificationXrefs.split(';').forEach( uniXref => {
-    let [externalDb, externalDbId] = uniXref.split(':');
-    externalIds[externalDb] = externalDbId;
-  });
-
-  relationshipXrefs.split(';').forEach( relXref => {
-    let [externalDb, externalDbId] = relXref.split(':');
-    externalIds[externalDb] = externalDbId;
-  });
-
+let participantTxt2CyJson = ( parsedInteractionParts, sourceIds ) => {
+  let name = parsedInteractionParts[0] || '';
   let isQueried = sourceIds.includes(name);
 
   return {
@@ -48,15 +31,12 @@ let participantTxt2CyJson = (participantTxtLine, sourceIds) => {
       class: 'ball',
       id: name,
       queried: isQueried,
-      metric: isQueried ? Number.MAX_SAFE_INTEGER : 0,
-      types: parsedTypes,
-      externalIds
+      metric: isQueried ? Infinity : 0
     }
   };
 };
 
-let interactionTxt2CyJson = interactionTxtLine => {
-  let parsedInteractionParts = interactionTxtLine.split('\t');
+let interactionTxt2CyJson = parsedInteractionParts => {
   let participant0 = parsedInteractionParts[0];
   let participant1 = parsedInteractionParts[2];
   let type = parsedInteractionParts[1];
@@ -82,20 +62,19 @@ let interactionTxt2CyJson = interactionTxtLine => {
 };
 
 let sifText2CyJson = (sifText, sourceIds) => {
-  let parsedParts = sifText.split('\n\n');
-  let interactionsData = parsedParts[0].split('\n').slice(1);
-  let participantsData = parsedParts[1].split('\n').slice(1);
+  let interactionsData = sifText.split('\n');
 
   let nodeId2Json = {};
   let edges = [];
 
-  participantsData.forEach( participantTxtLine => {
-    let participantJson = participantTxt2CyJson( participantTxtLine, sourceIds );
-    nodeId2Json[participantJson.data.id] = participantJson;
-  } );
-
   interactionsData.forEach( interactionTxtLine => {
-    let interactionJson = interactionTxt2CyJson( interactionTxtLine );
+    if ( !interactionTxtLine.length ) return;
+    let parsedInteractionParts = interactionTxtLine.split('\t');
+
+    let participantJson = participantTxt2CyJson( parsedInteractionParts, sourceIds );
+    nodeId2Json[participantJson.data.id] = participantJson;
+
+    let interactionJson = interactionTxt2CyJson( parsedInteractionParts );
 
     let source = interactionJson.data.source;
     let target = interactionJson.data.target;
@@ -150,21 +129,17 @@ let getInteractionsNetwork = sources => {
   let geneIds = _.uniq(_.concat([], sources)); //convert sources to array
 
   let params = {
-    cmd: 'pc2/graph',
-    source: geneIds,
-    pattern: ['controls-phosphorylation-of', 'controls-state-change-of', 'controls-expression-of', 'interacts-with', 'controls-transport-of', 'catalysis-precedes'],
-    kind: geneIds.length > 1 ? 'pathsbetween' : 'neighborhood',
-    format: 'txt'
+    source: geneIds
   };
 
   //Fetch graph from PC
-  return pc.query(params).then(res => {
+  return pc.sifGraph( params ).then( res => {
     return {
       network: getInteractionsCyJson(res, geneIds)
     };
   }).catch( e => {
     logger.error( e );
-    return 'ERROR: could not retrieve graph from PC';
+    throw e;
   });
 };
 

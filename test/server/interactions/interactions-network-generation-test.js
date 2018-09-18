@@ -95,4 +95,14 @@ describe('Interactions network to cy.js conversion', function(){
 
   });
 
+  it('filters nodes with 0 degree', function(){
+
+    let input = ``;
+
+    let geneIds = ['TP53'];
+    let result = getInteractionsCyJson( input, geneIds );
+
+    return expect( result.nodes ).to.deep.equal( [] );
+  });
+
 });

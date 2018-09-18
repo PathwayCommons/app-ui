@@ -5,7 +5,7 @@
   top: 0;
   right: 0;
   z-index: 25;
-  box-shadow: 0;
+  box-shadow: var(--box-shadow);
   opacity: 0;
   transform: translate3d(110%, 0, 0);
   pointer-events: none;
@@ -33,11 +33,12 @@
 
 .sidebar-close {
   @extend %flex-center;
-
+  box-shadow: var(--box-shadow);
   height: calc(var(--icon-size) * 3 / 2);
   width: calc(var(--icon-size) * 3 / 2);
   left: calc(-1 * var(--icon-size) * 3 / 2);
   position: absolute;
+  top: -1px;
   z-index: 10;
   background-color: rgba(255, 255, 255, 0.5);
   background-color: var(--light-base-colour);

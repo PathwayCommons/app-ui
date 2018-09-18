@@ -22,51 +22,34 @@ let interactionType2Label = type => {
   }
 };
 
-let participantTxt2CyJson = ( parsedInteractionParts, sourceIds ) => {
-  let sourceName = parsedInteractionParts[0] || '';
-  let targetName = parsedInteractionParts[2] || '';
-  let isSourceQueried = sourceIds.includes(sourceName);
-  let isTargetQueried = sourceIds.includes(targetName);
-  return [
-    {
-      data: {
-        class: 'ball',
-        id: sourceName,
-        queried: isSourceQueried,
-        metric: isSourceQueried ? Number.MAX_SAFE_INTEGER : 0
-      }
-    },
-    {
-      data: {
-        class: 'ball',
-        id: targetName,
-        queried: isTargetQueried,
-        metric: isTargetQueried ? Number.MAX_SAFE_INTEGER : 0
-      }
+let participantTxt2CyJson = ( id, sourceIds ) => {
+  let isQueried = sourceIds.includes(id);
+
+  return {
+    data: {
+      class: 'ball',
+      id,
+      queried: isQueried,
+      metric: isQueried ? Number.MAX_SAFE_INTEGER : 0
     }
-  ];
+  };
 };
 
-let interactionTxt2CyJson = parsedInteractionParts => {
-  let participant0 = parsedInteractionParts[0];
-  let participant1 = parsedInteractionParts[2];
-  let type = parsedInteractionParts[1];
-  let summary = type === 'catalysis-precedes' ? `${participant0} and ${participant1} in catalysis` : `${participant0} ${type.split('-').join(' ')} ${participant1}`;
+let interactionTxt2CyJson = (srcId, tgtId, type, pubmedIdsString, mediatorIdsString ) => {
+  let summary = type === 'catalysis-precedes' ? `${srcId} and ${tgtId} in catalysis` : `${srcId} ${type.split('-').join(' ')} ${tgtId}`;
   let readableType = interactionType2Label(type);
-  let pubmedIds = ( parsedInteractionParts[4] || '').split(';');
-  let mediatorIds = ( parsedInteractionParts[6] || '').split(';');
+  let pubmedIds = ( pubmedIdsString || '').split(';');
+  let mediatorIds = ( mediatorIdsString || '').split(';');
   let pcIds = mediatorIds.filter( id => !id.toUpperCase().includes('REACTOME'));
-  let reactomeIds = mediatorIds.filter( id => id.toUpperCase().includes('REACTOME'));
 
   return {
     data: {
       id: summary,
       type,
-      source: participant0,
-      target: participant1,
+      source: srcId,
+      target: tgtId,
       pubmedIds,
-      pcIds,
-      reactomeIds
+      pcIds
     },
     classes: readableType
   };
@@ -79,27 +62,26 @@ let sifText2CyJson = (sifText, sourceIds) => {
   let edges = [];
 
   interactionsData.forEach( interactionTxtLine => {
-    if ( !interactionTxtLine.length ) return;
     let parsedInteractionParts = interactionTxtLine.split('\t');
+    let [srcId, type, tgtId, , pubMedIdsString, , mediatorIdsString] = parsedInteractionParts;
 
-    let participantsJson = participantTxt2CyJson( parsedInteractionParts, sourceIds );
-    participantsJson.forEach( participant => {
-      if ( !_.has(nodeId2Json, participant.data.id ) ) nodeId2Json[participant.data.id] = participant;
-    });
+    if( _.isEmpty(srcId) || _.isEmpty(tgtId) ){ return; }
 
-    let interactionJson = interactionTxt2CyJson( parsedInteractionParts );
+    let srcJson = nodeId2Json[ srcId ];
+    let tgtJson = nodeId2Json[ tgtId ];
+    if( nodeId2Json[ srcId ] == null ){
+      srcJson = nodeId2Json[ srcId ] = participantTxt2CyJson( srcId, sourceIds );
+    }
 
-    let source = interactionJson.data.source;
-    let target = interactionJson.data.target;
+    if( nodeId2Json[ tgtId ] == null ){
+      tgtJson = nodeId2Json[ tgtId ] = participantTxt2CyJson( tgtId, sourceIds );
+    }
 
-    let srcJson = nodeId2Json[source];
-    let tgtJson = nodeId2Json[target];
-
-    if( srcJson ){ srcJson.data.metric += 1; }
-    if( tgtJson ){ tgtJson.data.metric += 1; }
+    let interactionJson = interactionTxt2CyJson( srcId, tgtId, type, pubMedIdsString, mediatorIdsString );
+    srcJson.data.metric += 1; 
+    tgtJson.data.metric += 1;
 
     edges.push(interactionJson);
-
   } );
 
   return {

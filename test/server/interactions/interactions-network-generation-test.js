@@ -54,8 +54,7 @@ describe('Interactions network to cy.js conversion', function(){
               "http://pathwaycommons.org/pc2/MolecularInteraction_af827701-862c-4adf-9b5e-a42c0dbd46cc___null__331104_",
               "http://pathwaycommons.org/pc2/MolecularInteraction_733e1ab2-28cf-4b21-92f2-a5559223139d___null__189691_",
               "http://pathwaycommons.org/pc2/MolecularInteraction_cdc3cd60-c6a6-409c-a66c-c042680a1a75___null__189689_",
-              "http://pathwaycommons.org/pc2/MolecularInteraction_614d9f24-02ea-49d0-b605-3c145bcf6f9b___null__189690_"],
-            "reactomeIds": []
+              "http://pathwaycommons.org/pc2/MolecularInteraction_614d9f24-02ea-49d0-b605-3c145bcf6f9b___null__189690_"]
           },
           "classes": "Binding"
         },
@@ -71,8 +70,7 @@ describe('Interactions network to cy.js conversion', function(){
             "pcIds": [
               "http://pathwaycommons.org/pc2/MolecularInteraction_96afeee5-5c18-4f9f-923c-d43e6c98f236___null__35104_",
               "http://pathwaycommons.org/pc2/MolecularInteraction_be0f28ab-0347-4468-bcae-613659bed328___null__4532_"
-            ],
-            "reactomeIds": []
+            ]
           },
           "classes": "Binding"
         }

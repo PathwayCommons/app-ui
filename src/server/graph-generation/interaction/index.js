@@ -83,7 +83,9 @@ let sifText2CyJson = (sifText, sourceIds) => {
     let parsedInteractionParts = interactionTxtLine.split('\t');
 
     let participantsJson = participantTxt2CyJson( parsedInteractionParts, sourceIds );
-    participantsJson.forEach( partcipant => nodeId2Json[partcipant.data.id] = partcipant );
+    participantsJson.forEach( participant => {
+      if ( !_.has(nodeId2Json, participant.data.id ) ) nodeId2Json[participant.data.id] = participant;
+    });
 
     let interactionJson = interactionTxt2CyJson( parsedInteractionParts );
 

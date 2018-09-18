@@ -137,16 +137,15 @@ let getInteractionsCyJson = (sifText, geneIds) => {
 };
 
 let getInteractionsNetwork = sources => {
-  let geneIds = _.uniq(_.concat([], sources)); //convert sources to array
+  let uniqueGeneIds  = _.uniq([].concat(sources).map( source => source.toUpperCase() ) );
 
   let params = {
-    source: geneIds
+    source: uniqueGeneIds
   };
 
-  //Fetch graph from PC
   return pc.sifGraph( params ).then( res => {
     return {
-      network: getInteractionsCyJson(res, geneIds)
+      network: getInteractionsCyJson(res, uniqueGeneIds)
     };
   }).catch( e => {
     logger.error( e );

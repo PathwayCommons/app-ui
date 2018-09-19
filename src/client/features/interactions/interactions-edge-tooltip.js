@@ -1,7 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const queryString = require('query-string');
-
+const _ = require('lodash');
 
 const { ServerAPI } = require('../../services');
 
@@ -10,8 +10,17 @@ class InteractionsEdgeTooltip extends React.Component {
     super(props);
 
     this.state = {
+      datasources: [],
       publications: []
     };
+
+    // Update datasources content to get homepage?
+    ServerAPI.datasources()
+      .then(result => {
+        this.setState({
+          dataSources: result
+        });
+      });
   }
 
   componentDidMount(){
@@ -24,10 +33,21 @@ class InteractionsEdgeTooltip extends React.Component {
   }
 
   render(){
+    const state = this.state;
     let { edge } = this.props;
     let { publications } = this.state;
     let title = edge.data('id');
+    let providers = edge.data('providers');
     let pcIds = edge.data('pcIds');
+
+    let providersList = providers.map( provider => {
+      const dsInfo = _.isEmpty(state.dataSources) ? {}: _.find(state.dataSources, ds => {
+        return ds.id.toLowerCase() === provider.toLowerCase() ;
+      });
+      // Datasources service doesn't return homepage
+      // return h('div', [ h('a.plain-link', { href: dsInfo.uri, target: '_blank' }, dsInfo.name) ]);
+      return h('div', [ dsInfo.name] );
+    });
 
     let publicationList = publications.map( publication => {
       let { id, title, firstAuthor, date, source } = publication;
@@ -46,6 +66,10 @@ class InteractionsEdgeTooltip extends React.Component {
         h('h2.cy-tooltip-title', title)
       ]),
       h('div.cy-tooltip-body', [
+        providersList.length > 0 ? h('div.cy-tooltip-section', [
+          h('div.cy-tooltip-field-name', 'Data Sources'),
+          h('div', providersList)
+        ]) : null,
         publicationList.length > 0 ? h('div.cy-tooltip-section', [
           h('div.cy-tooltip-field-name', 'Publications'),
           h('div', publicationList)

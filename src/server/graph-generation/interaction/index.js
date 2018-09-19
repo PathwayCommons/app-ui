@@ -35,10 +35,12 @@ let participantTxt2CyJson = ( id, sourceIds ) => {
   };
 };
 
-let interactionTxt2CyJson = (srcId, tgtId, type, pubmedIdsString, mediatorIdsString ) => {
+let interactionTxt2CyJson = (srcId, tgtId, type, providersString, pubmedIdsString, pathwayNamesString, mediatorIdsString ) => {
   let summary = type === 'catalysis-precedes' ? `${srcId} and ${tgtId} in catalysis` : `${srcId} ${type.split('-').join(' ')} ${tgtId}`;
   let readableType = interactionType2Label(type);
+  let providers = ( providersString || '').split(';');
   let pubmedIds = ( pubmedIdsString || '').split(';');
+  let pathwayNames = ( pathwayNamesString || '').split(';');
   let mediatorIds = ( mediatorIdsString || '').split(';');
   let pcIds = mediatorIds.filter( id => !id.toUpperCase().includes('REACTOME'));
 
@@ -48,7 +50,9 @@ let interactionTxt2CyJson = (srcId, tgtId, type, pubmedIdsString, mediatorIdsStr
       type,
       source: srcId,
       target: tgtId,
+      providers,
       pubmedIds,
+      pathwayNames,
       pcIds
     },
     classes: readableType
@@ -63,7 +67,7 @@ let sifText2CyJson = (sifText, sourceIds) => {
 
   interactionsData.forEach( interactionTxtLine => {
     let parsedInteractionParts = interactionTxtLine.split('\t');
-    let [srcId, type, tgtId, , pubMedIdsString, , mediatorIdsString] = parsedInteractionParts;
+    let [srcId, type, tgtId, providersString, pubMedIdsString, pathwayNamesString, mediatorIdsString] = parsedInteractionParts;
 
     if( _.isEmpty(srcId) || _.isEmpty(tgtId) ){ return; }
 
@@ -77,8 +81,8 @@ let sifText2CyJson = (sifText, sourceIds) => {
       tgtJson = nodeId2Json[ tgtId ] = participantTxt2CyJson( tgtId, sourceIds );
     }
 
-    let interactionJson = interactionTxt2CyJson( srcId, tgtId, type, pubMedIdsString, mediatorIdsString );
-    srcJson.data.metric += 1; 
+    let interactionJson = interactionTxt2CyJson( srcId, tgtId, type, providersString, pubMedIdsString, pathwayNamesString, mediatorIdsString );
+    srcJson.data.metric += 1;
     tgtJson.data.metric += 1;
 
     edges.push(interactionJson);

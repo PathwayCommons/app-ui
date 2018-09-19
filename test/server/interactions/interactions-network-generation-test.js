@@ -45,9 +45,15 @@ describe('Interactions network to cy.js conversion', function(){
             "type": "interacts-with",
             "source": "PER2",
             "target": "TP53",
+            "providers": [
+              "BioGRID"
+            ],
             "pubmedIds": [
               "25103245",
               "27834218"],
+            "pathwayNames": [
+              ""
+            ],
             "pcIds": [
               "http://pathwaycommons.org/pc2/MolecularInteraction_835945a6-e226-41ec-8bf9-1a9bc8bb550b___null__189686_",
               "http://pathwaycommons.org/pc2/MolecularInteraction_4dc75645-e45a-482a-96dc-f60ad8a67a9f___null__331105_",
@@ -64,8 +70,15 @@ describe('Interactions network to cy.js conversion', function(){
             "type": "interacts-with",
             "source": "TAF1B",
             "target": "TP53",
+            "providers": [
+              "BioGRID",
+              "HPRD"
+            ],
             "pubmedIds": [
               "10913176"
+            ],
+            "pathwayNames": [
+              ""
             ],
             "pcIds": [
               "http://pathwaycommons.org/pc2/MolecularInteraction_96afeee5-5c18-4f9f-923c-d43e6c98f236___null__35104_",

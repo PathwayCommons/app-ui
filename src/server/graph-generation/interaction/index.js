@@ -147,8 +147,6 @@ let addNetworkPublications = network => {
       let { data } = edge;
 
       data.pubmedEntries = data.pubmedIds.map(id => pubMap.get(id));
-
-      //delete data.pubmedIds;
     });
   };
 

@@ -10,8 +10,7 @@ class InteractionsEdgeTooltip extends React.Component {
     super(props);
 
     this.state = {
-      datasources: [],
-      publications: []
+      datasources: []
     };
 
     // Update datasources content to get homepage?
@@ -23,19 +22,11 @@ class InteractionsEdgeTooltip extends React.Component {
       });
   }
 
-  componentDidMount(){
-    let { edge } = this.props;
-    let pubmedIds = edge.data('pubmedIds');
-
-    ServerAPI.getPubmedPublications(pubmedIds).then( publications => {
-      this.setState({publications});
-    });
-  }
-
   render(){
     const state = this.state;
     let { edge } = this.props;
-    let { publications } = this.state;
+
+    let pubmedEntires = edge.data('pubmedEntries');
     let title = edge.data('id');
     let providers = edge.data('providers');
     let pcIds = edge.data('pcIds');
@@ -49,7 +40,7 @@ class InteractionsEdgeTooltip extends React.Component {
       return h('div', [ dsInfo.name] );
     });
 
-    let publicationList = publications.map( publication => {
+    let publicationList = pubmedEntires.map( publication => {
       let { id, title, firstAuthor, date, source } = publication;
       return h('div.cy-overflow-content', [
         h('a.plain-link', { href: 'http://identifiers.org/pubmed/' + id, target: '_blank' }, title),

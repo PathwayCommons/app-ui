@@ -51,7 +51,7 @@
   border-top: 1px solid var(--light-base-colour-dark);
   margin-bottom: 10px;
   padding-top: 10px;
-  max-height: 20em;
+  max-height: 90vh;
   overflow-y: scroll;
 }
 

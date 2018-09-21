@@ -1,7 +1,6 @@
 const io = require('socket.io-client');
 const qs = require('querystring');
 const _ = require('lodash');
-const fetch = require('node-fetch');
 
 const socket = io.connect('/');
 const FETCH_TIMEOUT = 5000; //ms
@@ -64,10 +63,6 @@ const ServerAPI = {
   //method is a request path, e.g., 'pc2/get' or 'sifgraph/v1/pathsbetween'
   pcQuery(method, params){
     return fetch(absoluteURL(`/pc-client/${method}?${qs.stringify(params)}`), defaultFetchOpts);
-  },
-
-  datasources(){
-    return fetch(absoluteURL('/pc-client/datasources'), defaultFetchOpts).then(res => res.json());
   },
 
   search(query){

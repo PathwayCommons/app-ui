@@ -1,7 +1,7 @@
 const _ = require('lodash');
 
-const externalServiceData = require('../../common/external-service-data');
-const { ServerAPI } = require('../../services');
+const externalServiceData = require('../../client/common/external-service-data');
+const { ServerAPI } = require('../../client/services');
 
 function sortByDatabaseId(dbArray) {
   //Sort by database name

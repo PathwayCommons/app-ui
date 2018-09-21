@@ -1,10 +1,15 @@
 const _ = require('lodash');
-const pc = require('../../pathway-commons');
-const logger = require('./../../logger');
 const LRUCache = require('lru-cache');
+
+const pc = require('../../pathway-commons');
+const logger = require('../../logger');
 const cache = require('../../cache');
+// const ncbi = require('../../external-services/ncbi');
+
 const { PC_CACHE_MAX_SIZE, MAX_SIF_NODES } = require('../../../config');
-const ncbi = require('../../external-services/ncbi');
+const Datasources = require('../../../models/datasources');
+
+
 
 let interactionType2Label = type => {
   switch( type ){
@@ -40,7 +45,7 @@ let interactionTxt2CyJson = (srcId, tgtId, type, providersString, pubmedIdsStrin
   let summary = type === 'catalysis-precedes' ? `${srcId} and ${tgtId} in catalysis` : `${srcId} ${type.split('-').join(' ')} ${tgtId}`;
   let readableType = interactionType2Label(type);
   let splitBySemi = (input) => (input || '').split(';').filter(entry => !_.isEmpty(entry));
-  let providers = splitBySemi( providersString );
+  let datasources = splitBySemi( providersString ).map( datasource => Datasources.findByKey( datasource ).name ).filter( name => name != null );
   let pubmedIds = splitBySemi( pubmedIdsString );
   let pathwayNames = splitBySemi( pathwayNamesString );
   let mediatorIds = splitBySemi( mediatorIdsString );
@@ -52,7 +57,7 @@ let interactionTxt2CyJson = (srcId, tgtId, type, providersString, pubmedIdsStrin
       type,
       source: srcId,
       target: tgtId,
-      providers,
+      datasources,
       pubmedIds,
       pathwayNames,
       pcIds
@@ -125,39 +130,40 @@ let getInteractionsCyJson = (sifText, geneIds) => {
   return filteredCyJson;
 };
 
-let addNetworkPublications = network => {
-  let pubmedIds = _.uniq((() => {
-    let ids = [];
+// let addNetworkPublications = network => {
+//   let pubmedIds = _.uniq((() => {
+//     let ids = [];
 
-    network.edges.forEach(edge => {
-      edge.data.pubmedIds.forEach(id => ids.push(id));
-    });
+//     network.edges.forEach(edge => {
+//       edge.data.pubmedIds.forEach(id => ids.push(id));
+//     });
 
-    return ids;
-  })());
+//     return ids;
+//   })());
 
-  let getPubs = () => ncbi.getPublications(pubmedIds);
+//   let getPubs = () => ncbi.getPublications(pubmedIds);
+//   console.log('here');
 
-  let pubMap = new Map();
+//   let pubMap = new Map();
 
-  let putPubsInMap = pubs => pubs.forEach(pub => pubMap.set(pub.id, pub));
+//   let putPubsInMap = pubs => pubs.forEach(pub => pubMap.set(pub.id, pub));
 
-  let putFromMapToEdges = () => {
-    network.edges.forEach(edge => {
-      let { data } = edge;
+//   let putFromMapToEdges = () => {
+//     network.edges.forEach(edge => {
+//       let { data } = edge;
 
-      data.pubmedEntries = data.pubmedIds.map(id => pubMap.get(id));
-    });
-  };
+//       data.pubmedEntries = data.pubmedIds.map(id => pubMap.get(id)).filter();
+//     });
+//   };
 
-  return (
-    Promise.resolve()
-    .then(getPubs)
-    .then(putPubsInMap)
-    .then(putFromMapToEdges)
-    .then(() => network)
-  );
-};
+//   return (
+//     Promise.resolve()
+//     .then(getPubs)
+//     .then(putPubsInMap)
+//     .then(putFromMapToEdges)
+//     .then(() => network)
+//   );
+// };
 
 let getInteractionsNetwork = sources => {
   let uniqueGeneIds  = _.uniq([].concat(sources).map( source => source.toUpperCase() ) );
@@ -168,8 +174,8 @@ let getInteractionsNetwork = sources => {
 
   return pc.sifGraph( params ).then( res => {
     return getInteractionsCyJson(res, uniqueGeneIds);
-  }).then(network => {
-    return addNetworkPublications(network);
+  // }).then(network => {
+  //   // return addNetworkPublications(network);
   }).then(network => {
     return { network };
   }).catch( e => {

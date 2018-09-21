@@ -9,7 +9,7 @@ const Promise = require('bluebird').Promise;
 const CytoscapeService = require('../../common/cy');
 const { ServerAPI } = require('../../services');
 
-const Pathway = require('../../models/pathway/pathway-model');
+const Pathway = require('../../../models/pathway/pathway-model');
 
 const FileDownloadMenu = require('./menus/file-download-menu');
 const InfoMenu = require('./menus/network-info-menu');

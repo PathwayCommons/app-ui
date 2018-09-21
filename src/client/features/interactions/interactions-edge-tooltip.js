@@ -1,46 +1,38 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const queryString = require('query-string');
-const _ = require('lodash');
 
-const { ServerAPI } = require('../../services');
+const { ServerAPI } = require('../../services/');
 
 class InteractionsEdgeTooltip extends React.Component {
   constructor(props){
     super(props);
-
+    
     this.state = {
-      datasources: []
+      publications: []
     };
-
-    // Update datasources content to get homepage?
-    ServerAPI.datasources()
-      .then(result => {
-        this.setState({
-          dataSources: result
-        });
-      });
   }
 
-  render(){
-    const state = this.state;
-    let { edge } = this.props;
+  componentDidMount(){	
+    let { edge } = this.props;	
+    let pubmedIds = edge.data('pubmedIds');	
+     ServerAPI.getPubmedPublications(pubmedIds).then( publications => {	
+      this.setState({publications});	
+    });	
+  }
 
-    let pubmedEntires = edge.data('pubmedEntries');
+
+  render(){
+    let { edge } = this.props;
+    let { publications } = this.state;
+
     let title = edge.data('id');
-    let providers = edge.data('providers');
+    let datasources = edge.data('datasources');
     let pcIds = edge.data('pcIds');
 
-    let providersList = providers.map( provider => {
-      const dsInfo = _.isEmpty(state.dataSources) ? {}: _.find(state.dataSources, ds => {
-        return ds.id.toLowerCase() === provider.toLowerCase() ;
-      });
-      // Datasources service doesn't return homepage
-      // return h('div', [ h('a.plain-link', { href: dsInfo.uri, target: '_blank' }, dsInfo.name) ]);
-      return h('div', [ dsInfo.name] );
-    });
+    let providersList = datasources.map( ds => h('div', ds));
 
-    let publicationList = pubmedEntires.map( publication => {
+    let publicationList = publications.map( publication => {
       let { id, title, firstAuthor, date, source } = publication;
       return h('div.cy-overflow-content', [
         h('a.plain-link', { href: 'http://identifiers.org/pubmed/' + id, target: '_blank' }, title),

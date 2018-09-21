@@ -45,7 +45,7 @@ describe('Interactions network to cy.js conversion', function(){
             "type": "interacts-with",
             "source": "PER2",
             "target": "TP53",
-            "providers": [
+            "datasources": [
               "BioGRID"
             ],
             "pubmedIds": [
@@ -68,7 +68,7 @@ describe('Interactions network to cy.js conversion', function(){
             "type": "interacts-with",
             "source": "TAF1B",
             "target": "TP53",
-            "providers": [
+            "datasources": [
               "BioGRID",
               "HPRD"
             ],

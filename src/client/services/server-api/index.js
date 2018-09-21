@@ -1,7 +1,6 @@
 const io = require('socket.io-client');
 const qs = require('querystring');
 const _ = require('lodash');
-const fetch = require('node-fetch');
 
 const socket = io.connect('/');
 const FETCH_TIMEOUT = 5000; //ms

@@ -2,18 +2,37 @@ const React = require('react');
 const h = require('react-hyperscript');
 const queryString = require('query-string');
 
+const { ServerAPI } = require('../../services/');
+
 class InteractionsEdgeTooltip extends React.Component {
+  constructor(props){
+    super(props);
+    
+    this.state = {
+      publications: []
+    };
+  }
+
+  componentDidMount(){	
+    let { edge } = this.props;	
+    let pubmedIds = edge.data('pubmedIds');	
+     ServerAPI.getPubmedPublications(pubmedIds).then( publications => {	
+      this.setState({publications});	
+    });	
+  }
+
+
   render(){
     let { edge } = this.props;
+    let { publications } = this.state;
 
-    let pubmedEntires = edge.data('pubmedEntries');
     let title = edge.data('id');
     let datasources = edge.data('datasources');
     let pcIds = edge.data('pcIds');
 
     let providersList = datasources.map( ds => h('div', ds));
 
-    let publicationList = pubmedEntires.map( publication => {
+    let publicationList = publications.map( publication => {
       let { id, title, firstAuthor, date, source } = publication;
       return h('div.cy-overflow-content', [
         h('a.plain-link', { href: 'http://identifiers.org/pubmed/' + id, target: '_blank' }, title),

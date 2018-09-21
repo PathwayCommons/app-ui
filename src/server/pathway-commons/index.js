@@ -99,7 +99,7 @@ const sifGraph = async ( queryObj ) => {
   let path;
   const defaults = {
     limit: 1,
-    pattern: ['CONTROLS_STATE_CHANGE_OF','CONTROLS_PHOSPHORYLATION_OF','CONTROLS_TRANSPORT_OF','CONTROLS_EXPRESSION_OF','CATALYSIS_PRECEDES','INTERACTS_WITH']
+    pattern: ['CONTROLS_STATE_CHANGE_OF','CONTROLS_TRANSPORT_OF','CONTROLS_EXPRESSION_OF','CATALYSIS_PRECEDES','INTERACTS_WITH']
   };
   const params = _.assign(defaults, queryObj);
 

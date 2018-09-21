@@ -1,6 +1,7 @@
 .cy-tooltip {
   max-width: 300px;
   min-width: 10em;
+  max-height: 95vh;
   width: 20em;
   position: relative;
   top: 0;
@@ -51,7 +52,7 @@
   border-top: 1px solid var(--light-base-colour-dark);
   margin-bottom: 10px;
   padding-top: 10px;
-  max-height: 20em;
+  max-height: 65vh;
   overflow-y: scroll;
 }
 

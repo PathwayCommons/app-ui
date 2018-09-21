@@ -35,7 +35,7 @@ class CytoscapeTooltip {
       duration: [ 250, 0 ],
       hideOnClick: false,
       arrow: true,
-      placement: 'bottom',
+      placement: 'right',
       distance: 10
       },
       opts, { html: this.reactRender(html) }

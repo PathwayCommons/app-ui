@@ -5,10 +5,6 @@ const pc = require('../pathway-commons/');
 const router = express.Router();
 const config = require('../../config');
 
-router.get('/datasources', function (req, res) {
-  pc.datasources().then(o => res.json(o));
-});
-
 router.get('/querySearch', function (req, res) {
   pc.search(req.query).then(r => res.json(r));
 });

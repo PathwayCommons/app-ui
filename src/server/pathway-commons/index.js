@@ -89,39 +89,12 @@ const _search = async (args) => {
   return [];
 };
 
-//PC pathway data sources
-const _datasources = () => {
-  return fetch(config.PC_URL + 'pc2/metadata/datasources', fetchOptions)
-  .then(res => res.json())
-  .then(array => {
-    const output = {};
-    array.filter(source => source.notPathwayData == false).map(ds => {
-      var name = (ds.name.length > 1) ? ds.name[1] : ds.name[0];
-      output[ds.uri] = {
-        id: ds.identifier,
-        uri: ds.uri,
-        name: name,
-        description: ds.description,
-        type: ds.type,
-        iconUrl: ds.iconUrl,
-        hasPathways: (ds.numPathways>0)?true:false
-      };
-    });
-    return output; //filtered, simplified map
-  })
-  .catch(() => {
-    return null;
-  });
-};
-
-//PC pathway data sources
 const _metadata = async () => {
   const meta = {};
   meta.version = await query({cmd:'pc2/traverse', path: 'Named/name', uri: "foo" }).then((json) => json.version);
   return meta; //TODO: get more metadata in the future (configuration, name, desc., logo, etc.)
 };
 
-//SifGraph
 const sifGraph = async ( queryObj ) => {
   let path;
   const defaults = {
@@ -152,10 +125,9 @@ const sifGraph = async ( queryObj ) => {
   });
 };
 
-//cached functions
-const datasources = _.memoize(_datasources);
+
 const search = _.memoize(_search, query => JSON.stringify(query));
 const metadata = _.memoize(_metadata);
 
 
-module.exports = {query, search, datasources, metadata, sifGraph};
+module.exports = {query, search, metadata, sifGraph};

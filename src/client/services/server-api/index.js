@@ -66,10 +66,6 @@ const ServerAPI = {
     return fetch(absoluteURL(`/pc-client/${method}?${qs.stringify(params)}`), defaultFetchOpts);
   },
 
-  datasources(){
-    return fetch(absoluteURL('/pc-client/datasources'), defaultFetchOpts).then(res => res.json());
-  },
-
   search(query){
     const queryClone=_.assign({},query);
     if (/^((uniprot|hgnc):\w+|ncbi:[0-9]+)$/i.test(queryClone.q)) {

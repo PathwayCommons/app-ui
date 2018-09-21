@@ -12,7 +12,7 @@ const PcLogoLink = require('../../common/components/pc-logo-link');
 const EmptyNetwork = require('../../common/components/empty-network');
 const CytoscapeNetwork = require('../../common/components/cytoscape-network');
 
-const Pathway = require('../../models/pathway/pathway-model');
+const Pathway = require('../../../models/pathway/pathway-model');
 
 const { stylesheet, bindCyEvents, PATHWAYS_LAYOUT_OPTS } = require('./cy');
 

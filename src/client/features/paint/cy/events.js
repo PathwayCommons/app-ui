@@ -4,7 +4,7 @@ const h = require('react-hyperscript');
 const PathwayNodeMetadataView = require('../pathway-node-metadata');
 const { PATHWAYS_LAYOUT_OPTS } = require('./layout');
 
-const PathwayNodeMetadata = require('../../../models/pathway/pathway-node-metadata');
+const PathwayNodeMetadata = require('../../../../models/pathway/pathway-node-metadata');
 const CytoscapeTooltip = require('../../../common/cy/cytoscape-tooltip');
 
 const EXPAND_COLLAPSE_OPTS = {

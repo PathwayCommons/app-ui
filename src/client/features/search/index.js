@@ -7,6 +7,8 @@ const queryString = require('query-string');
 const _ = require('lodash');
 
 const { ServerAPI } = require('../../services');
+const Datasources = require('../../../models/datasources');
+
 const PcLogoLink = require('../../common/components/pc-logo-link');
 const queryEntityInfo = require('./query-entity-info');
 const EntityInfoBoxList = require('./entity-info-box');
@@ -29,16 +31,8 @@ class Search extends React.Component {
       entityInfoResults: [],
       entityInfoResultsLoading: false,
       searchResults: [],
-      searchLoading: false,
-      dataSources: []
+      searchLoading: false
     };
-
-    ServerAPI.datasources()
-    .then(result => {
-      this.setState({
-        dataSources: Object.values(result).filter(ds => ds.hasPathways==true)
-      });
-    });
   }
 
   getSearchResult() {
@@ -122,17 +116,18 @@ class Search extends React.Component {
     const loaded = !(state.searchLoading || state.entityInfoResultsLoading);
 
     const searchResults = state.searchResults.map(result => {
-      const dsInfo =_.isEmpty(state.dataSources)? {iconUrl:null , name:''}: _.find(state.dataSources, ds => {
-        return ds.uri === result.dataSource[0];
-      });
+      let datasourceUri = _.get(result, 'dataSource.0', '');
+      let dsInfo = Datasources.findByUri(datasourceUri);
+      let iconUrl = dsInfo.iconUrl || '';
+      let name = dsInfo.name || '';
 
       return h('div.search-item', [
-       h('div.search-item-icon',[
-          h('img', {src: dsInfo.iconUrl})
+        h('div.search-item-icon',[
+          h('img', {src: iconUrl})
         ]),
         h('div.search-item-content', [
           h(Link, { className: 'plain-link', to: { pathname: '/pathways', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' }, [result.name || 'N/A']),
-          h('p.search-item-content-datasource', ` ${dsInfo.name}`),
+          h('p.search-item-content-datasource', ` ${name}`),
           h('p.search-item-content-participants', `${result.numParticipants} Participants`)
         ])
       ]);
@@ -145,7 +140,7 @@ class Search extends React.Component {
         onChange: e => this.setAndSubmitSearchQuery({ datasource: e.target.value })
       }, [
         h('option', { value: [] }, 'Any datasource')].concat(
-          _.sortBy(state.dataSources, 'name').map(ds => h('option', { value: [ds.id] }, ds.name))
+          Datasources.names().map( dsName => h('option', { value: [Datasources.findByName(dsName).id ] }, dsName ))
           )),
     ]);
 

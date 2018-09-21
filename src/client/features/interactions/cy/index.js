@@ -6,10 +6,9 @@ const InteractionsNodeTooltip = require('../interactions-node-tooltip');
 const InteractionsEdgeTooltip = require('../interactions-edge-tooltip');
 
 const INTERACTIONS_LAYOUT_OPTS = {
-  name: 'cose-bilkent',
-  nodeRepulsion: 20000,
-  edgeElasticity: 0.05,
-  idealEdgeLength: 200,
+  name: 'concentric',
+  concentric: node => node.data('queried') ? 1 : 0,
+  levelWidth: () => 1,
   animate: true,
   animationDuration: 800,
   animationEasing: 'ease-in-out'

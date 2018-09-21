@@ -225,10 +225,10 @@ module.exports = {
   findByUri( uri ){
     return Object.values(dsMap).find( ds => ds.uri === uri );
   },
-  names(){
-    return Object.keys(dsMap);
+  pathwayDatasources(){
+    return Object.values(dsMap).filter( ds => ds.hasPathways );
   },
-  findByName( name ){
-    return dsMap[ name ];
+  findByKey( k ){
+    return dsMap[ k ];
   }
 };

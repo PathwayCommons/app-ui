@@ -45,7 +45,7 @@ let interactionTxt2CyJson = (srcId, tgtId, type, providersString, pubmedIdsStrin
   let summary = type === 'catalysis-precedes' ? `${srcId} and ${tgtId} in catalysis` : `${srcId} ${type.split('-').join(' ')} ${tgtId}`;
   let readableType = interactionType2Label(type);
   let splitBySemi = (input) => (input || '').split(';').filter(entry => !_.isEmpty(entry));
-  let providers = splitBySemi( providersString );
+  let datasources = splitBySemi( providersString ).map( datasource => Datasources.findByKey( datasource ).name );
   let pubmedIds = splitBySemi( pubmedIdsString );
   let pathwayNames = splitBySemi( pathwayNamesString );
   let mediatorIds = splitBySemi( mediatorIdsString );
@@ -57,7 +57,7 @@ let interactionTxt2CyJson = (srcId, tgtId, type, providersString, pubmedIdsStrin
       type,
       source: srcId,
       target: tgtId,
-      providers,
+      datasources,
       pubmedIds,
       pathwayNames,
       pcIds

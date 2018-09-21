@@ -140,7 +140,7 @@ class Search extends React.Component {
         onChange: e => this.setAndSubmitSearchQuery({ datasource: e.target.value })
       }, [
         h('option', { value: [] }, 'Any datasource')].concat(
-          Datasources.names().map( dsName => h('option', { value: [Datasources.findByName(dsName).id ] }, dsName ))
+          Datasources.pathwayDatasources().map( ds => h('option', { value: [ds.id ] }, ds.name ))
           )),
     ]);
 

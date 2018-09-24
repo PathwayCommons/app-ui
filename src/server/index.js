@@ -6,11 +6,15 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const debug = require('debug')('app-ui:server');
 const http = require('http');
-const config = require('../config');
-const dbConfig = require('./database/config');
-const logger = require('./logger');
 const stream = require('stream');
 const fs = require('fs');
+const Promise = require('bluebird');
+
+const config = require('../config');
+
+const db = require('./db');
+const dbConfig = require('./database/config');
+const logger = require('./logger');
 const checkTables = require('./database/createTables');
 
 const app = express();
@@ -131,10 +135,26 @@ function onListening() {
   debug('Listening on ' + bind);
 }
 
-// Create database instance if one does not already exist. And start
-// the server once that is complete.
-checkTables.checkDatabase(dbConfig).then(()=>{
+
+Promise.try( () => {
+  let log = (...msg) => function( val ){ logger.debug( ...msg ); return val; };
+  let access = name => db.accessTable( name );
+  let setup = name => {
+    return access( name )
+      .then( log('Accessed table "%s"', name) )
+      .then( log('Set up synching for "%s"', name) )
+    ;
+  };
+
+  return Promise.all( ['pathways'].map( setup ) );
+} ).then( () => {
   server.listen(port);
-});
+} );
+
+// // Create database instance if one does not already exist. And start
+// // the server once that is complete.
+// checkTables.checkDatabase(dbConfig).then(()=>{
+//   server.listen(port);
+// });
 
 module.exports = app;

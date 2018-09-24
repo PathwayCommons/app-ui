@@ -13,9 +13,7 @@ const Promise = require('bluebird');
 const config = require('../config');
 
 const db = require('./db');
-const dbConfig = require('./database/config');
 const logger = require('./logger');
-const checkTables = require('./database/createTables');
 
 const app = express();
 const server = http.createServer(app);
@@ -136,6 +134,7 @@ function onListening() {
 }
 
 
+// set up rethinkdb
 Promise.try( () => {
   let log = (...msg) => function( val ){ logger.debug( ...msg ); return val; };
   let access = name => db.accessTable( name );
@@ -150,11 +149,5 @@ Promise.try( () => {
 } ).then( () => {
   server.listen(port);
 } );
-
-// // Create database instance if one does not already exist. And start
-// // the server once that is complete.
-// checkTables.checkDatabase(dbConfig).then(()=>{
-//   server.listen(port);
-// });
 
 module.exports = app;

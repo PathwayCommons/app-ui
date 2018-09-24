@@ -17,7 +17,7 @@ io.on('connection', function (socket) {
   // create socket.io endpoint for controller.getGraphAndLayout
   socket.on('getGraphAndLayout', function (ioPackage) {
     // Add socketID/userID to User table.
-    // Store graphID 
+    // Store graphID
     controller.getGraphAndLayout(ioPackage.uri, ioPackage.version).then((package) => {
       socket.emit('layoutPackage', btoa(JSON.stringify(package)));
     });
@@ -47,17 +47,16 @@ io.on('connection', function (socket) {
   // and end their edit session
   socket.on('disconnect', function () {
     let userURL = socket.handshake.headers.referer;
-    
+
     let editParams = userURL.match(/edit\?(.*)/);
-  
+
     if (editParams) {
-  
+
       let params = qs.parse(editParams[1]);
       let pcID = params.uri;
       let releaseID = params.releaseID || 'latest';
-  
+
       controller.endSession(pcID, releaseID, socket.id);
     }
   });
 });
-

@@ -1,15 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const pc = require('./pc');
-const api = require('./rest');
 
 
-router.use('/api', api);
+// router.use('/api', api);
 router.use('/pc-client', pc);
-router.use('/pathways', require('./pathways'));
-// router.use('/interactions', require('./interactions'));
-// router.use('/enrichment', require('./enrichment'));
-
+router.use('/api/pathways', require('./pathways'));
+router.use('/api/interactions', require('./interactions'));
+router.use('/api/enrichment', require('./enrichment'));
 // router.get('/enrichment-docs', function (req, res) {
 //   res.render('swagger.html');
 // });

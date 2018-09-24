@@ -2,12 +2,12 @@
 const express = require('express');
 const enrichmentRouter = express.Router();
 const swaggerJSDoc = require('swagger-jsdoc');
-const { validatorGconvert } = require('../enrichment/validation');
-const { enrichment } = require('../enrichment/analysis');
-const { generateGraphInfo } = require('../enrichment/visualization');
+const { validatorGconvert } = require('../../enrichment/validation');
+const { enrichment } = require('../../enrichment/analysis');
+const { generateGraphInfo } = require('../../enrichment/visualization');
 
 // swagger definition
-var swaggerDefinition = {
+let swaggerDefinition = {
   info: {
     title: 'Enrichment Services',
     version: '1.0.0',
@@ -17,7 +17,7 @@ var swaggerDefinition = {
       url: "https://github.com/PathwayCommons/app-ui/blob/master/LICENSE"
     }
   },
-  basePath: '/api/',
+  basePath: '/api/enrichment',
   "tags": [
     {
       "name": "Validation Service",
@@ -35,13 +35,13 @@ var swaggerDefinition = {
 };
 
 // options for swagger jsdoc
-var options = {
+let options = {
   swaggerDefinition: swaggerDefinition, // swagger definition
-  apis: ['./src/server/routes/enrichment-rest.js'], // path where API specification are written
+  apis: ['./src/server/routes/enrichment/index.js'], // path where API specification are written
 };
 
 // initialize swaggerJSDoc
-var swaggerSpec = swaggerJSDoc(options);
+let swaggerSpec = swaggerJSDoc(options);
 
 // route for swagger.json
 enrichmentRouter.get('/swagger.json', function (req, res) {
@@ -49,6 +49,9 @@ enrichmentRouter.get('/swagger.json', function (req, res) {
   res.send(swaggerSpec);
 });
 
+enrichmentRouter.get('/docs', ( req, res ) => {
+  res.render('swagger.html');
+});
 
 /**
  * @swagger
@@ -685,4 +688,4 @@ enrichmentRouter.post('/visualization', (req, res) => {
 */
 
 
-module.exports = { enrichmentRouter };
+module.exports = enrichmentRouter;

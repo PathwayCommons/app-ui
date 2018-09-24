@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const controller = require('./controller');
 const config = require('../../config');
-const { enrichmentRouter } = require('./enrichment-rest');
+const enrichmentRouter = require('./enrichment');
 
 
 const isAuthenticated = token => {
@@ -49,22 +49,6 @@ router.post('/submit-diff', function (req, res) {
   } else {
     res.json(errorMsg);
   }
-});
-
-// Expose a rest endpoint for controller.getGraphAndLayout
-router.get('/get-graph-and-layout', function (req, res) {
-  controller.getGraphAndLayout(req.query.uri, req.query.version).then((package) => {
-    res.json(package);
-    // console.log(JSON.stringify(package.graph.nodes[0]));//TODO: remove
-  });
-});
-
-// Expose a rest endpoint for controller.getGraphAndLayout
-router.get('/get-interaction-graph', function (req, res) {
-  controller.getInteractionGraph(req.query.sources).then((package) => {
-    res.json(package);
-    // console.log(JSON.stringify(package.network.nodes[0]));//TODO: remove
-  });
 });
 
 // Expose a rest endpoint for controller.endSession

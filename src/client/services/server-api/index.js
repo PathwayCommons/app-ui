@@ -17,8 +17,24 @@ const defaultFetchOpts = {
 };
 
 const ServerAPI = {
-  getPathway(uri, version) {
-    return fetch(absoluteURL(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`), defaultFetchOpts).then(res => res.json());
+  getPathway(uri) {
+    let url = absoluteURL(`/api/pathways?${ qs.stringify({ uri }) }`);
+    return (
+      fetch(url, defaultFetchOpts)
+        .then(res =>  res.json())
+        .then( pathwayJson => {
+          return {
+            graph: pathwayJson
+          };
+        })
+    );
+  },
+
+  getInteractionGraph(sources) {
+    return (
+      fetch(absoluteURL(`/api/interactions?${qs.stringify(sources)}`), defaultFetchOpts)
+       .then( res => res.json())
+    );
   },
 
   getPubmedPublications( pubmedIds ){
@@ -54,10 +70,6 @@ const ServerAPI = {
   getReactomeInformation(reactomeID) {
     return fetch(`https://reactome.org/ContentService/data/query/${reactomeID}`, {method: 'GET', timeout: 100})
     .then( res => res.json() );
-  },
-
-  getInteractionGraph(sources) {
-    return fetch(absoluteURL(`/api/get-interaction-graph?${qs.stringify(sources)}`), defaultFetchOpts).then(res => res.json());
   },
 
   //method is a request path, e.g., 'pc2/get' or 'sifgraph/v1/pathsbetween'

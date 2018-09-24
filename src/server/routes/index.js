@@ -8,9 +8,6 @@ router.use('/pc-client', pc);
 router.use('/api/pathways', require('./pathways'));
 router.use('/api/interactions', require('./interactions'));
 router.use('/api/enrichment', require('./enrichment'));
-// router.get('/enrichment-docs', function (req, res) {
-//   res.render('swagger.html');
-// });
 
 /* GET home page.
 All URLS not specified earlier in server/index.js (e.g. REST URLs) get handled by the React UI */

@@ -3,12 +3,10 @@ const router = express.Router();
 const pc = require('./pathway-commons-router');
 
 
-// router.use('/api', api);
 router.use('/api/pc', pc);
 router.use('/api/pathways', require('./pathways'));
 router.use('/api/interactions', require('./interactions'));
 router.use('/api/enrichment', require('./enrichment'));
-// router.use('/api/search', require('./search'));
 
 /* GET home page.
 All URLS not specified earlier in server/index.js (e.g. REST URLs) get handled by the React UI */

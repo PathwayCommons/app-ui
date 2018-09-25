@@ -4,10 +4,11 @@ const qs = require('query-string');
 const LRUCache = require('lru-cache');
 
 const { organisms, targetDatabases } = require('./gconvert-config');
-const { cleanUpEntrez } = require('../clean-up-entrez');
+const cleanUpEntrez = require('../clean-up-entrez');
+
 
 const { GPROFILER_URL, PC_CACHE_MAX_SIZE } = require('../../../../config');
-const cache = require('../../cache');
+const cache = require('../../../cache');
 
 const GCONVERT_URL = GPROFILER_URL + 'gconvert.cgi';
 

@@ -3,7 +3,7 @@ const _ = require('lodash');
 const qs = require('query-string');
 
 const cleanUpEntrez = require('./clean-up-entrez');
-const { GPROFILER_URL } = require('../../config');
+const { GPROFILER_URL } = require('../../../config');
 
 const defaultSetting = {
   "output": "mini",

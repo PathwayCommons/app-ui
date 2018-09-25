@@ -15,37 +15,33 @@
 .cy-tooltip-content {
   position: relative;
   left: 0;
-  word-wrap: break-word;
   text-align: left;
 }
 
 .cy-tooltip-header {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  flex-wrap: wrap;
-  word-wrap: break-word;
   color: var(--dark-base-colour);
   margin: 3px;
   margin-bottom: 10px;
   padding: 2px;
-  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .cy-tooltip-title {
   margin: 0;
   line-height: 1em;
-  margin-right: 5px;
+  display: inline-block;
 }
 
 .cy-tooltip-type-chip {
   display: inline-block;
-  word-wrap: break-word;
   padding: 2px 6px;
   background-color: var(--light-base-colour-dark);
   font-size: 0.9em;
   color: black;
   border-radius: 10px;
+  margin-left: 0.5em;
 }
 
 .cy-tooltip-body {
@@ -62,7 +58,6 @@
 }
 
 .cy-tooltip-section {
-  word-wrap: break-word;
   font-size: 0.9em;
   margin: 3px;
   padding: 2px;
@@ -85,7 +80,6 @@
   display: flex;
   flex-direction: row;
   margin: 2px;
-  word-wrap: break-word;
 }
 
 .cy-tooltip-footer {
@@ -126,4 +120,29 @@
 
 .expand-collapse-cue:hover {
   color: var(--accent-1-colour);
+}
+
+a.cy-tooltip-edge-link {
+  cursor: pointer;
+}
+
+.cy-tooltip-edge-entry {
+  margin: 0.5em 0;
+  display: relative;
+}
+
+.cy-tooltip-edge-color {
+  display: inline-block;
+  margin-bottom: -0.0625em;
+  margin-right: 0.25em;
+  height: 0.85em;
+  width: 1em;
+  background-color: #888;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+}
+
+.cy-tooltip-back {
+  margin-right: 0.25em;
+  cursor: pointer;
 }

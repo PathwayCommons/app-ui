@@ -1,14 +1,16 @@
 const fetch = require('node-fetch');
 const _ = require('lodash');
-const { validOrganism } = require('./validity-info');
-const { validTargetDb } = require('./validity-info');
 const qs = require('query-string');
-const { cleanUpEntrez } = require('../helper');
-const config = require('../../../config');
-const GCONVERT_URL = config.GPROFILER_URL + 'gconvert.cgi';
 const LRUCache = require('lru-cache');
+
+const { organisms, targetDatabases } = require('./gconvert-config');
+const { cleanUpEntrez } = require('../clean-up-entrez');
+
+const { GPROFILER_URL, PC_CACHE_MAX_SIZE } = require('../../../../config');
 const cache = require('../../cache');
-const { PC_CACHE_MAX_SIZE } = require('../../../config');
+
+const GCONVERT_URL = GPROFILER_URL + 'gconvert.cgi';
+
 
 const resultTemplate = ( unrecognized, duplicate, geneInfo ) => {
   return {
@@ -44,10 +46,10 @@ const getForm = ( query, defaultOptions, userOptions ) => {
   if (!Array.isArray( form.query )) {
     throw new Error( 'Invalid genes: Must be an array' );
   }
-  if ( !validOrganism.includes( form.organism.toLowerCase() ) ) {
+  if ( !organisms.includes( form.organism.toLowerCase() ) ) {
     throw new Error( 'Invalid organism' );
   }
-  if ( !validTargetDb.includes( form.target.toUpperCase() ) ) {
+  if ( !targetDatabases.includes( form.target.toUpperCase() ) ) {
     throw new Error( 'Invalid target' );
   }
 

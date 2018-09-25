@@ -1,8 +1,7 @@
-const { pathwayListGraph } = require('./intersect');
-const { filterEdges } = require('./intersect');
 const _ = require('lodash');
-const { pathwayInfoTable } = require('./pathway-table');
 
+const { pathwayListGraph, filterEdges } = require('./intersect');
+const { pathwayInfoTable } = require('./pathway-table');
 
 // fetchPathwayInfo(pathwayList) takes a list of pathway identifiers pathwayList
 // and returns the corresponding information for each pathway ID from

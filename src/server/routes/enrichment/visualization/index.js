@@ -1,6 +1,7 @@
+const _ = require('lodash');
+
 const { pathwayInfoTable } = require('./pathway-table');
 const { generateEdgeInfo, fetchPathwayInfo } = require('./generate-info');
-const _ = require('lodash');
 
 
 // generateGraphInfo(pathways, similarityCutoff = 0.375, jaccardOverlapWeight) takes a

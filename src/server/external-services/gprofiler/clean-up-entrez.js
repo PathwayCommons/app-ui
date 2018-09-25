@@ -9,5 +9,4 @@ const cleanUpEntrez = (initialAlias) => {
   return initialAlias;
 };
 
-
-module.exports = { cleanUpEntrez };
+module.exports = cleanUpEntrez;

@@ -1,8 +1,9 @@
 const fetch = require('node-fetch');
 const _ = require('lodash');
 const qs = require('query-string');
-const { cleanUpEntrez } = require('../helper');
-const config = require('../../../config');
+
+const cleanUpEntrez = require('./clean-up-entrez');
+const { GPROFILER_URL } = require('../../config');
 
 const defaultSetting = {
   "output": "mini",
@@ -81,7 +82,7 @@ const enrichment = (query, userSetting) => {
     }
     formData.custbg = backgroundGenesVal.join(" ");
 
-    fetch(config.GPROFILER_URL, {
+    fetch(GPROFILER_URL, {
       method: 'post',
       body: qs.stringify(formData)
     }).then(gProfilerResponse => gProfilerResponse.text())

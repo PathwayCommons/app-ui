@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const sbgn2CyJson = require('sbgnml-to-cytoscape');
-const pcServices = require('../../../pathway-commons');
+
+const pcServices = require('../../../external-services/pathway-commons');
 const {getBiopaxMetadata, getGeneSymbolsForGenericNodes} = require('./biopax-metadata');
 
 //Get pathway name, description, and datasource

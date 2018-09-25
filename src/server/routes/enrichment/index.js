@@ -2,9 +2,8 @@
 const express = require('express');
 const enrichmentRouter = express.Router();
 const swaggerJSDoc = require('swagger-jsdoc');
-const { validatorGconvert } = require('../../enrichment/validation');
-const { enrichment } = require('../../enrichment/analysis');
-const { generateGraphInfo } = require('../../enrichment/visualization');
+const { validatorGconvert, enrichment } = require('../../external-services/gprofiler');
+const { generateGraphInfo } = require('./visualization');
 
 // swagger definition
 let swaggerDefinition = {

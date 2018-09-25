@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const LRUCache = require('lru-cache');
 
-const pc = require('../../pathway-commons');
+const pc = require('../../external-services/pathway-commons');
 const logger = require('../../logger');
 const cache = require('../../cache');
 // const ncbi = require('../../external-services/ncbi');

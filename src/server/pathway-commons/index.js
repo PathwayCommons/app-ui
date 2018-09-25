@@ -89,12 +89,6 @@ const _search = async (args) => {
   return [];
 };
 
-const _metadata = async () => {
-  const meta = {};
-  meta.version = await query({cmd:'pc2/traverse', path: 'Named/name', uri: "foo" }).then((json) => json.version);
-  return meta; //TODO: get more metadata in the future (configuration, name, desc., logo, etc.)
-};
-
 const sifGraph = async ( queryObj ) => {
   let path;
   const defaults = {
@@ -127,7 +121,5 @@ const sifGraph = async ( queryObj ) => {
 
 
 const search = _.memoize(_search, query => JSON.stringify(query));
-const metadata = _.memoize(_metadata);
 
-
-module.exports = {query, search, metadata, sifGraph};
+module.exports = {query, search, sifGraph};

@@ -19,7 +19,6 @@ const app = express();
 const server = http.createServer(app);
 
 require('./io').set(server);
-require('./routes/sockets');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));

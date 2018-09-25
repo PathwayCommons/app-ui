@@ -74,7 +74,7 @@ const ServerAPI = {
 
   //method is a request path, e.g., 'pc2/get' or 'sifgraph/v1/pathsbetween'
   pcQuery(method, params){
-    return fetch(absoluteURL(`/pc-client/${method}?${qs.stringify(params)}`), defaultFetchOpts);
+    return fetch(absoluteURL(`/api/pc/${method}?${qs.stringify(params)}`), defaultFetchOpts);
   },
 
   search(query){
@@ -82,11 +82,11 @@ const ServerAPI = {
     if (/^((uniprot|hgnc):\w+|ncbi:[0-9]+)$/i.test(queryClone.q)) {
       queryClone.q=queryClone.q.replace(/^(uniprot|ncbi|hgnc):/i,"");
     }
-    return fetch(absoluteURL(`/pc-client/querySearch?${qs.stringify(queryClone)}`), defaultFetchOpts).then(res => res.json());
+    return fetch(absoluteURL(`/api/pc/search?${qs.stringify(queryClone)}`), defaultFetchOpts).then(res => res.json());
   },
 
   enrichmentAPI(query, type){
-    return fetch(absoluteURL(`/api/${type}`), {
+    return fetch(absoluteURL(`/api/enrichment/${type}`), {
       method:'POST',
       headers: {
         'Accept': 'application/json',

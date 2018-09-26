@@ -36,6 +36,7 @@
     "ci": "run-s test lint"
   },
   "dependencies": {
+    "bluebird": "^3.5.2",
     "body-parser": "^1.18.2",
     "btoa": "^1.1.2",
     "chai-as-promised": "^7.1.1",

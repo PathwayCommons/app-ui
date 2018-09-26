@@ -1,5 +1,6 @@
 
 const React = require('react');
+const ReactDom = require('react-dom');
 const h = require('react-hyperscript');
 
 const IconButton = require('../../common/components/icon-button');
@@ -16,6 +17,10 @@ class EnrichmentToolbar extends React.Component {
 
   handleNodeSearchChange(searchVal){
     this.setState({ searchValue: searchVal }, () => searchEnrichmentNodes( this.props.cySrv.get(), searchVal));
+  }
+
+  focusNodeSearch(){
+    ReactDom.findDOMNode(this).querySelector('.element-search-input').focus();
   }
 
   render(){
@@ -48,19 +53,21 @@ class EnrichmentToolbar extends React.Component {
         isActive: false,
         icon: 'replay'
       }),
-      h('div.pathways-search-nodes', {
-        onChange: e => this.handleNodeSearchChange(e.target.value)
-      }, [
-        h('div.pathways-search-bar', [
-          h('input.pathways-search-input', {
-            value: searchValue,
-            type: 'search',
-            placeholder: 'Search entities',
-          }),
-          searchValue !== '' ? h('div.pathways-search-clear', {
-            onClick: () => this.handleNodeSearchChange('')}, [
-            h('i.material-icons', 'close')
-          ]) : null
+
+      h('div.element-search', [
+        h('input.element-search-input.input-round.input-joined', {
+          value: searchValue,
+          onChange: e => this.handleNodeSearchChange(e.target.value),
+          type: 'text',
+          placeholder: 'Search',
+        }),
+        h('button.element-search-clear', {
+          onClick: () => {
+            this.handleNodeSearchChange('');
+            this.focusNodeSearch();
+          }
+        }, [
+          h('i.material-icons', 'close')
         ])
       ])
     ]);

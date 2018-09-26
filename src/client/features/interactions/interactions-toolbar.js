@@ -67,7 +67,7 @@ class InteractionsToolbar extends React.Component {
           value: searchValue,
           onChange: e => this.handleNodeSearchChange(e.target.value),
           type: 'text',
-          placeholder: 'Search entities',
+          placeholder: 'Search',
         }),
         h('button.element-search-clear', {
           onClick: () => {

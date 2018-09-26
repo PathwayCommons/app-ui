@@ -50,9 +50,13 @@
 
   /* & .element-search {
     flex-grow: 1;
+  } */
+
+  & .element-search {
+    white-space: nowrap;
   }
 
   & .element-search-input {
     width: 100%;
-  } */
+  }
 }

@@ -1,101 +1,150 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
-//const Loader = require('react-loader');
-//const queryString = require('query-string');
+const Loader = require('react-loader');
+const classNames = require('classnames');
 
-// const hideTooltips = require('../../common/cy/events/click').hideTooltips;
-// const removeStyle= require('../../common/cy/manage-style').removeStyle;
-const make_cytoscape = require('../../common/cy/');
-// const interactionsStylesheet= require('../../common/cy/interactions-stylesheet');
+const EnrichmentDownloadMenu = require('./enrichment-download-menu');
+const EnrichmentToolbar = require('./enrichment-toolbar');
+const EnrichmentMenu = require('./enrichment-menu');
 const TokenInput = require('./token-input');
-const { BaseNetworkView } = require('../../common/components');
-const { getLayoutConfig } = require('../../common/cy/layout');
-//const downloadTypes = require('../../common/config').downloadTypes;
+const EmptyNetwork = require('../../common/components/empty-network');
+const PcLogoLink = require('../../common/components/pc-logo-link');
+const CytoscapeNetwork = require('../../common/components/cytoscape-network');
 
-const enrichmentConfig={
-  //extablish toolbar and declare features to not include
-  toolbarButtons: _.differenceBy(BaseNetworkView.config.toolbarButtons,[{'id': 'expandCollapse'}, {'id': 'showInfo'}],'id'),
-  menus: BaseNetworkView.config.menus,
-  //allow for searching of nodes
-  useSearchBar: true
-};
+const CytoscapeService = require('../../common/cy/');
+const { ServerAPI } = require('../../services');
+const Sidebar = require('../../common/components/sidebar');
 
-//temporary empty network for development purposes
-const emptyNetwork = {
-  graph: {
-    edges: [],
-    nodes: [],
-    pathwayMetadata: {
-      title: [],
-      datasource: [],
-      comments: []
-    },
-    layout: null
-  }
-};
-const network = emptyNetwork;
-const layoutConfig = getLayoutConfig();
-
+const { ENRICHMENT_MAP_LAYOUT, enrichmentStylesheet, bindEvents } = require('./cy');
 class Enrichment extends React.Component {
-  constructor(props) {
+  constructor(props){
     super(props);
+
     this.state = {
-      cy: make_cytoscape({headless: true}),
-      componentConfig: enrichmentConfig,
-      layoutConfig: layoutConfig,
-      networkJSON: network.graph,
-      networkMetadata: network.graph.pathwayMetadata,
-
-      //temporarily set to false so loading spinner is disabled
-      networkLoading: false,
-
-      closeToolBar: true,
-      //all submitted tokens, includes valid and invalid tokens
-      genes: [],
-      unrecognized: [],
-      inputs: ""
+      cySrv: new CytoscapeService({ style: enrichmentStylesheet, onMount: bindEvents }),
+      enrichmentMap: {
+        nodes: [],
+        edges: []
+      },
+      activeMenu: 'closeMenu',
+      loading: false,
+      invalidTokens: [],
+      openToolBar: false,
+      networkEmpty: false,
+      sliderVal: 0.05
     };
 
-    this.handleInputs = this.handleInputs.bind(this);
-    this.handleUnrecognized = this.handleUnrecognized.bind(this);
-    this.handleGenes = this.handleGenes.bind(this);
+    if( process.env.NODE_ENV !== 'production' ){
+      this.state.cySrv.getPromise().then(cy => window.cy = cy);
+    }
   }
 
-  handleInputs( inputs ) {
-    this.setState({ inputs });
+  changeMenu( menu, cb){
+    let postMenuChange = () => {
+      _.throttle(() => this.state.cySrv.get().resize())();
+      cb ? cb() : null;
+    };
+
+    if( menu === this.state.activeMenu ){
+      this.setState({ activeMenu: 'closeMenu' }, postMenuChange );
+    } else {
+      this.setState({ activeMenu: menu }, postMenuChange );
+    }
   }
 
-  handleUnrecognized( unrecognized ) {
-    this.setState({ unrecognized });
-  }
+  handleGeneQueryResult( result ){
+    let { genes, unrecognized } = result;
+    let { cySrv } = this.state;
+    let cy = cySrv.get();
 
-  handleGenes( genes ) {
-    this.setState( { genes } );
-    // console.log(genes);
-  }
-
-  render() {
-    let { cy, componentConfig, layoutConfig, networkJSON, networkMetadata, networkLoading } = this.state;
-    let retrieveTokenInput = () => h(TokenInput,{
-      inputs: this.state.inputs,
-      handleInputs: this.handleInputs,
-      handleUnrecognized: this.handleUnrecognized,
-      unrecognized: this.state.unrecognized,
-      handleGenes: this.handleGenes
+    //close open tooltips
+    cy.elements().forEach(ele => {
+      const tooltip = ele.scratch('_tooltip');
+      if (tooltip) {
+        tooltip.hide();
+        ele.scratch('_tooltip-opened', false);
+      }
+      ele.unselect();
     });
 
-    return h(BaseNetworkView.component, {
-      cy,
-      componentConfig,
-      layoutConfig,
-      networkJSON,
-      networkMetadata,
-      networkLoading,
-      titleContainer: () => h(retrieveTokenInput),
-      //will use state to set to false to render the toolbar once analysis is run and graph is displayed
-      closeToolBar: true
-    });
+    let updateNetworkJSON = async () => {
+      let analysisResult = await ServerAPI.enrichmentAPI({ genes: genes }, "analysis");
+
+      if( !analysisResult || !analysisResult.pathwayInfo ) {
+        this.setState({ timedOut: true, loading: false });
+        return;
+      }
+
+      let visualizationResult = await ServerAPI.enrichmentAPI({ pathways: analysisResult.pathwayInfo }, "visualization");
+
+      if( !visualizationResult ) {
+        this.setState({ timedOut: true, loading: false });
+        return;
+      }
+
+      cy.remove('*');
+      cy.add({
+        edges: visualizationResult.graph.elements.edges,
+        nodes: visualizationResult.graph.elements.nodes
+      });
+
+      this.changeMenu('enrichmentMenu', () => {
+        if( cy.nodes().length === 0 ){
+          this.setState({
+            networkEmpty: true,
+            loading: false,
+            invalidTokens: unrecognized,
+            openToolBar: true
+          });
+        } else {
+          cy.layout(_.assign({}, ENRICHMENT_MAP_LAYOUT, {
+            stop: () => {
+              this.setState({
+                loading: false,
+                invalidTokens: unrecognized,
+                openToolBar: true
+              });
+            }
+          })).run();
+        }
+      });
+    };
+
+    this.changeMenu('closeMenu', () => this.setState({ loading: true, openToolbar: false, networkEmpty: false }, updateNetworkJSON));
+  }
+
+  updateSlider( sliderVal ){
+    this.setState({ sliderVal: sliderVal });
+  }
+
+  render(){
+    let { loading, cySrv, activeMenu, invalidTokens, openToolBar, networkEmpty, sliderVal } = this.state;
+
+    return h('div.main', [
+      h('div.app-bar', [
+        h('div.app-bar-branding', [
+          h(PcLogoLink),
+          h('div.app-bar-title', 'Pathway Enrichment'),
+          h(TokenInput, { controller: this })
+        ]),
+        openToolBar ? h(EnrichmentToolbar, { cySrv, activeMenu, controller: this }) : null
+      ]),
+      h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [
+        h(Sidebar, { controller: this, activeMenu }, [
+          h(EnrichmentMenu, { key: 'enrichmentMenu', cySrv, invalidTokens, controller: this, sliderVal: sliderVal }),
+          h(EnrichmentDownloadMenu, { key: 'enrichmentDownloadMenu', cySrv })
+        ])
+       ]),
+      networkEmpty ? h(EmptyNetwork, { msg: 'No results to display', showPcLink: false} ) : null,
+      h(CytoscapeNetwork, {
+        cySrv,
+        className: classNames({
+        'network-loading': loading,
+        'network-sidebar-open': activeMenu !== 'closeMenu'
+        })
+      })
+    ]);
   }
 }
 

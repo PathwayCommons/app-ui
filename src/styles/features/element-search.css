@@ -1,0 +1,14 @@
+.element-search {
+  margin: 0 0.25em;
+}
+
+input.element-search-input {
+  margin-right: 0.25em;
+  width: 12em;
+  background-color: #fff;
+}
+
+.element-search-input[value=""] + .element-search-clear {
+  opacity: 0;
+  pointer-events: none;
+}

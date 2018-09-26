@@ -1,0 +1,93 @@
+.file-download-menu {
+  width: 66vw;
+  max-width: 600px;
+}
+
+.interactions-download-menu {
+  max-width: 315px;
+}
+
+.file-download-menu h2 {
+  font-size: 1em;
+  padding: 0.25em;
+  margin: 0;
+  text-align: center;
+}
+
+.file-download-content {
+  overflow: scroll;
+  max-height: 80vh;
+}
+
+.toggle-extra-downloads-container {
+  @extend %no-select;
+
+  width: 100%;
+  margin: 0.5em 0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.file-download-extras {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  transform-origin: top center;
+  transform: scaleY(100%);
+  overflow: hidden;
+  transition: max-height 0s linear 0s, transform 0.25s ease-out;
+
+  &.file-download-extras-hide {
+    max-height: 0;
+    transform: scaleY(0);
+    transition: transform 0.25s ease-out, max-height 0s linear 0.25s;
+  }
+}
+
+.download-option {
+  width: 100%;
+  padding: 0.25em;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  box-sizing: border-box;
+  border-style: solid;
+  border-color: var(--light-base-colour-dark);
+  border-width: 1px 1px 0px;
+  cursor: pointer;
+  transition: all 0.1s linear;
+
+  &:hover {
+    background-color: var(--light-base-colour-dark);
+  }
+
+  &:last-of-type {
+    border-width: 1px;
+  }
+}
+
+.download-option-header {
+  margin-bottom: 0.25em;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  & h3 {
+    margin: 0;
+    margin-right: 1em;
+    cursor: pointer;
+  }
+}
+
+.download-option-description {
+  @extend %no-select;
+
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  cursor: pointer;
+  font-size: 0.8em;
+}

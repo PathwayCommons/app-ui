@@ -1,0 +1,148 @@
+.cy-tooltip {
+  max-width: 300px;
+  min-width: 10em;
+  max-height: 95vh;
+  width: 20em;
+  position: relative;
+  top: 0;
+  right: 0;
+  border-radius: 0;
+  color: black;
+  text-align: left;
+  padding: 10px;
+}
+
+.cy-tooltip-content {
+  position: relative;
+  left: 0;
+  text-align: left;
+}
+
+.cy-tooltip-header {
+  color: var(--dark-base-colour);
+  margin: 3px;
+  margin-bottom: 10px;
+  padding: 2px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.cy-tooltip-title {
+  margin: 0;
+  line-height: 1em;
+  display: inline-block;
+}
+
+.cy-tooltip-type-chip {
+  display: inline-block;
+  padding: 2px 6px;
+  background-color: var(--light-base-colour-dark);
+  font-size: 0.9em;
+  color: black;
+  border-radius: 10px;
+  margin-left: 0.5em;
+}
+
+.cy-tooltip-body {
+  border-top: 1px solid var(--light-base-colour-dark);
+  margin-bottom: 10px;
+  padding-top: 10px;
+  max-height: 65vh;
+  overflow-y: scroll;
+}
+
+.cy-tooltip-warning {
+  padding: 10px;
+  font-weight: bold;
+}
+
+.cy-tooltip-section {
+  font-size: 0.9em;
+  margin: 3px;
+  padding: 2px;
+}
+
+.cy-tooltip-field-name {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-weight: bold;
+  margin-right: 3px;
+
+  & i {
+    height: 10px;
+    width: 10px;
+  }
+}
+
+.cy-tooltip-field-value {
+  display: flex;
+  flex-direction: row;
+  margin: 2px;
+}
+
+.cy-tooltip-footer {
+  border-top: 1px solid var(--light-base-colour-dark);
+  padding-top: 10px;
+}
+
+.cy-tooltip-links {
+  padding-top: 5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+
+  & a {
+    display: inline-block;
+    margin-right: 10px;
+  }
+}
+
+.cy-tooltip-call-to-action {
+  text-align: center;
+  margin: 1em 0 0.25em;
+}
+
+.cy-overflow-content {
+  overflow-wrap: break-word;
+  overflow: hidden;
+  padding: 10px 0;
+  width: 100%;
+}
+
+.expand-collapse-cue {
+  cursor: pointer;
+  padding: 3px;
+  font-size: 1.5em;
+}
+
+.expand-collapse-cue:hover {
+  color: var(--accent-1-colour);
+}
+
+a.cy-tooltip-edge-link {
+  cursor: pointer;
+}
+
+.cy-tooltip-edge-entry {
+  margin: 0.5em 0;
+  display: relative;
+}
+
+.cy-tooltip-edge-color {
+  display: inline-block;
+  margin-bottom: -0.0625em;
+  margin-right: 0.25em;
+  height: 0.85em;
+  width: 1em;
+  background-color: #888;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+}
+
+.cy-tooltip-back {
+  margin-right: 0.25em;
+  cursor: pointer;
+}

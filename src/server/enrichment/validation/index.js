@@ -4,10 +4,11 @@ const { validOrganism } = require('./validity-info');
 const { validTargetDb } = require('./validity-info');
 const qs = require('query-string');
 const { cleanUpEntrez } = require('../helper');
-const logger = require('./../../logger');
 const config = require('../../../config');
 const GCONVERT_URL = config.GPROFILER_URL + 'gconvert.cgi';
-const FETCH_TIMEOUT = 5000; //ms
+const LRUCache = require('lru-cache');
+const cache = require('../../cache');
+const { PC_CACHE_MAX_SIZE } = require('../../../config');
 
 const resultTemplate = ( unrecognized, duplicate, geneInfo ) => {
   return {
@@ -90,30 +91,14 @@ const bodyHandler = body =>  {
   return resultTemplate( unrecognized, duplicate, geneInfo );
 };
 
-/* errorHandler
- * This function routes errors in a rational manner: Fetch-related errors are gently handled
- * by returning the original gene list as 'unrecognized'; For input errors, the Promise is
- * rejected with the error info for the client; in all other cases an Error is thrown.
- * @param { object } data - Error object and query (optional)
- * @return { Promise }
- */
-const errorHandler = ( error, query ) => {
-  logger.error( error );
-  switch ( error.name ) {
-    case 'FetchError':
-      return new Promise( resolve => resolve( resultTemplate( query ) ) );
-    default:
-      return new Promise( ( _, reject ) => reject( { "Error": error.message } ) );
-  }
-};
 
 
-/* validatorGconvert
+/* rawValidatorGconvert
  * @param { array } query - identifier list query
  * @param { object } userOptions - options
  * @return { object } list of unrecognized, object with duplicated and list of mapped IDs
  */
-const validatorGconvert = ( query, userOptions ) => {
+const rawValidatorGconvert = ( query, userOptions ) => {
 
   const defaultOptions = {
     'output': 'mini',
@@ -123,19 +108,21 @@ const validatorGconvert = ( query, userOptions ) => {
   };
 
   return new Promise(( resolve, reject ) => {
-
     const form = getForm( query, defaultOptions, userOptions );
+
     fetch( GCONVERT_URL, {
         method: 'post',
-        body: qs.stringify( form ),
-        timeout: FETCH_TIMEOUT
+        body: qs.stringify( form )
     })
     .then( response => response.text() )
     .then( bodyHandler )
     .then( resolve )
     .catch( reject );
-  })
-  .catch( error => errorHandler( error, query ) );
+  });
 };
+
+const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
+
+const validatorGconvert = cache(rawValidatorGconvert, pcCache);
 
 module.exports = { validatorGconvert };

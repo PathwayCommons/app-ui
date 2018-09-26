@@ -5,11 +5,13 @@ const Loader = require('react-loader');
 
 const queryString = require('query-string');
 const _ = require('lodash');
-const classNames = require('classnames');
 
-const Icon = require('../../common/components').Icon;
 const { ServerAPI } = require('../../services');
-const Landing = require('./landing-box');
+const Datasources = require('../../../models/datasources');
+
+const PcLogoLink = require('../../common/components/pc-logo-link');
+const queryEntityInfo = require('./query-entity-info');
+const EntityInfoBoxList = require('./entity-info-box');
 
 class Search extends React.Component {
 
@@ -26,19 +28,11 @@ class Search extends React.Component {
         type: 'Pathway',
         datasource: []
       }, query),
-      landing: [],
-      landingLoading: false,
+      entityInfoResults: [],
+      entityInfoResultsLoading: false,
       searchResults: [],
-      searchLoading: false,
-      dataSources: []
+      searchLoading: false
     };
-
-    ServerAPI.datasources()
-    .then(result => {
-      this.setState({
-        dataSources: Object.values(result).filter(ds => ds.hasPathways==true)
-      });
-    });
   }
 
   getSearchResult() {
@@ -46,29 +40,22 @@ class Search extends React.Component {
     const query = state.query;
     if (query.q !== '') {
       this.setState({
-        searchLoading: true
+        searchLoading: true,
+        entityInfoResultsLoading: true
       });
-     this.getLandingResult(query.q);
-      ServerAPI.querySearch(query)
-        .then(searchResults => {
-           this.setState({
-             searchResults: searchResults,
-             searchLoading: false
-           });
-        });
+      queryEntityInfo(query.q).then(entityInfoResults =>
+        this.setState({
+          entityInfoResultsLoading: false,
+          entityInfoResults: entityInfoResults
+        })
+      );
+      ServerAPI.search(query).then(searchResults => {
+          this.setState({
+            searchResults: searchResults,
+            searchLoading: false
+          });
+      });
     }
-  }
-
-  getLandingResult(query){
-    this.setState({
-      landingLoading:true
-    });
-    Landing.getLandingResult(query).then(landing=>
-      this.setState({
-        landingLoading:false,
-        landing:landing
-      })
-    );
   }
 
   componentDidMount() {
@@ -97,7 +84,6 @@ class Search extends React.Component {
   submitSearchQuery() {
     const props = this.props;
     const state = this.state;
-
     const query = state.query;
 
     props.history.push({
@@ -122,86 +108,71 @@ class Search extends React.Component {
             this.getSearchResult();
           });
     }
- }
-
-buildExampleLink (search) {
-  let query = _.clone(this.state.query);
-  query.q = search;
-  return queryString.stringify(query);
-}
+  }
 
   render() {
     const state = this.state;
-    const landing=state.landing;
-    const landingBox=Landing.landingBox;
-    const controller = this;
-    const loaded= !(state.searchLoading || state.landingLoading);
-
-   let Example = props => h(Link, { to: { pathname: '/search', search: this.buildExampleLink(props.search) }}, props.search);
+    const entityInfoResults = state.entityInfoResults;
+    const loaded = !(state.searchLoading || state.entityInfoResultsLoading);
 
     const searchResults = state.searchResults.map(result => {
-      const dsInfo =_.isEmpty(state.dataSources)? {iconUrl:null , name:''}: _.find(state.dataSources, ds => {
-        return ds.uri === result.dataSource[0];
-      });
+      let datasourceUri = _.get(result, 'dataSource.0', '');
+      let dsInfo = Datasources.findByUri(datasourceUri);
+      let iconUrl = dsInfo.iconUrl || '';
+      let name = dsInfo.name || '';
 
       return h('div.search-item', [
-       h('div.search-item-icon',[
-          h('img', {src: dsInfo.iconUrl})
+        h('div.search-item-icon',[
+          h('img', {src: iconUrl})
         ]),
         h('div.search-item-content', [
-          h(Link, { to: { pathname: '/view', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' },
-            [
-              h('h3.search-item-content-title', result.name || 'N/A'),
-            ]),
-          h('p.search-item-content-datasource', ` ${dsInfo.name}`),
+          h(Link, { className: 'plain-link', to: { pathname: '/pathways', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' }, [result.name || 'N/A']),
+          h('p.search-item-content-datasource', ` ${name}`),
           h('p.search-item-content-participants', `${result.numParticipants} Participants`)
         ])
       ]);
     });
 
-    const searchTypeTabs = [
-      { name: 'Pathways', value: 'Pathway' },
-      // { name: 'Molecular Interactions', value: 'MolecularInteraction' },
-      // { name: 'Reactions', value: 'Control' },
-      // { name: 'Transcription/Translation', value: 'TemplateReactionRegulation' }
-    ].map(searchType => {
-      return h('div.search-option-item-container', [
-        h('div', {
-          onClick: () => this.setAndSubmitSearchQuery({ type: searchType.value }),
-          className: classNames('search-option-item', { 'search-option-item-disabled': state.searchLoading },
-            { 'search-option-item-active': state.query.type === searchType.value })
-        }, [
-            h('a', searchType.name)
-          ])
-      ]);
-    });
-
-    let datasourceVal = "";
-    if(!Array.isArray(state.query.datasource)){
-      datasourceVal = state.query.datasource;
-    }
-
     const searchResultFilter = h('div.search-filters', [
       h('select.search-datasource-filter', {
-        value: datasourceVal,
+        value: !Array.isArray(state.query.datasource) ? state.query.datasource : '',
         multiple: false,
         onChange: e => this.setAndSubmitSearchQuery({ datasource: e.target.value })
       }, [
         h('option', { value: [] }, 'Any datasource')].concat(
-          _.sortBy(state.dataSources, 'name').map(ds => h('option', { value: [ds.id] }, ds.name))
+          Datasources.pathwayDatasources().map( ds => h('option', { value: [ds.id ] }, ds.name ))
           )),
     ]);
 
     const searchResultHitCount = h('div.search-hit-counter', `${state.searchResults.length} result${state.searchResults.length === 1 ? '' : 's'}`);
+
+    const notFoundErrorMessage = h('div.search-error', [
+      h('h1', 'We can\'t find the the resource you are looking for'),
+      h('p', [
+        h('span', 'If difficulties persist, please report this to our '),
+        h('a.plain-link', { href: 'mailto: pathway-commons-help@googlegroups.com' }, 'help forum.')
+      ])
+    ]);
+
+    const searchListing = h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' } }, [
+      h('div.search-list-container', [
+        h('div.search-tools', [
+          h('div.search-result-filter', [searchResultFilter]),
+          h('div.search-result-hit-count', [searchResultHitCount])
+        ]),
+        h(EntityInfoBoxList, { entityInfoList: entityInfoResults}),
+        h('div.search-list', searchResults)
+      ])
+    ]);
+
+    const searchBody =  this.props.notFoundError ? notFoundErrorMessage : searchListing;
 
     return h('div.search', [
       h('div.search-header-container', [
         h('div.search-header', [
           h('div.search-branding', [
             h('div.search-title', [
-              h('a', { className: 'search-pc-link', href: 'http://www.pathwaycommons.org/' } , [
-                h('i.search-logo')
-              ]),
+              h(PcLogoLink, { className: 'search-logo'})
             ]),
             h('div.search-branding-descriptor', [
               h('h2.search-pc-title', 'Pathway Commons'),
@@ -220,28 +191,19 @@ buildExampleLink (search) {
                   onKeyPress: e => this.onSearchValueChange(e)
                 }),
                 h(Link, { to: { pathname: '/search', search: queryString.stringify(state.query)},className:"search-search-button"}, [
-                  h(Icon, { icon: 'search' })
+                  h('i.material-icons', 'search')
                 ])
               ]),
               h('div.search-suggestions', [
                 'e.g. ',
-                h(Example, {search: 'cell cycle'}), ', ',
-                h(Example, {search: 'TP53 MDM2'}), ', ',
-                h(Example, {search: 'P04637'})
-              ]),
-              h('div.search-tabs', searchTypeTabs.concat([
-              ]))
+                h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, state.query, {q: 'cell cycle'})) }}, 'cell cycle, '),
+                h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, state.query, {q: 'TP53 MDM2'})) }}, 'TP53 MDM2, '),
+                h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, state.query, {q: 'P04637'})) }}, 'P04637')
+              ])
             ])
         ])
       ]),
-      h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' } }, [
-        h('div.search-list-container', [
-          h('div.search-result-filter', [searchResultFilter]),
-          h('div.search-result-hit-count', [searchResultHitCount]),
-          h(landingBox,{controller,landing}),
-          h('div.search-list', searchResults)
-        ])
-      ])
+      h('div.search-body', [searchBody])
     ]);
   }
 }

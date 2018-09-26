@@ -44,14 +44,14 @@ const _processQueryString = async (inputString) => {
   ];
 };
 
-//Pathway Commons HTTP GET request; options.cmd = 'get', 'search', 'traverse', 'graph', etc.
+//Pathway Commons HTTP GET request; options.cmd = 'pc2/get', 'pc2/search', 'pc2/traverse', 'pc2/graph', etc.
 const query = async (queryObj) => {
   queryObj.user = 'app-ui';
-  let cmd = queryObj.cmd || 'get';
+  let cmd = queryObj.cmd || 'pc2/get';
   //TODO: (not critical) client app's sends useless parameters to the PC server: cmd, lt, gt
   const url = config.PC_URL + cmd + '?' + qs.stringify(queryObj);
   return fetch(url, fetchOptions)
-    .then(res => (cmd=='get'||cmd=='graph')?res.text():res.json())
+    .then(res => (cmd=='pc2/get'||cmd=='pc2/graph')?res.text():res.json())
     .catch((e) => {
       logger.error('query ' + queryObj + ' failed - ' + e);
       return null;
@@ -64,14 +64,14 @@ const query = async (queryObj) => {
 //  - type: BioPAX type to match/filter by
 //  - lt: max graph size result returned
 //  - gt: min graph size result returned
-const _querySearch = async (args) => {
+const _search = async (args) => {
   const minSize = args.gt || 0;
   const maxSize = args.lt || 250;
   //analyse the input string, generate specific (lucene) search sub-queries
   const queryString = args.q.trim();
   const queries = await _processQueryString(queryString);
   for (let q of queries) {
-    args.cmd = 'search'; //PC command
+    args.cmd = 'pc2/search'; //PC command
     args.q = q; //override initial query.q string with the sub-query q
     const searchResult = await query(args); //up to 100 hits at once; if we need more, then must use 'page' parameter...
     const searchSuccess = searchResult != null;
@@ -89,42 +89,45 @@ const _querySearch = async (args) => {
   return [];
 };
 
-//PC pathway data sources
-const _datasources = () => {
-  return fetch(config.PC_URL + 'metadata/datasources', fetchOptions)
-  .then(res => res.json())
-  .then(array => {
-    const output = {};
-    array.filter(source => source.notPathwayData == false).map(ds => {
-      var name = (ds.name.length > 1) ? ds.name[1] : ds.name[0];
-      output[ds.uri] = {
-        id: ds.identifier,
-        uri: ds.uri,
-        name: name,
-        description: ds.description,
-        type: ds.type,
-        iconUrl: ds.iconUrl,
-        hasPathways: (ds.numPathways>0)?true:false
-      };
-    });
-    return output; //filtered, simplified map
-  })
-  .catch(() => {
-    return null;
-  });
-};
-
-//PC pathway data sources
 const _metadata = async () => {
   const meta = {};
-  meta.version = await query({cmd:'traverse', path: 'Named/name', uri: "foo" }).then((json) => json.version);
+  meta.version = await query({cmd:'pc2/traverse', path: 'Named/name', uri: "foo" }).then((json) => json.version);
   return meta; //TODO: get more metadata in the future (configuration, name, desc., logo, etc.)
 };
 
-//cached functions
-const datasources = _.memoize(_datasources);
-const querySearch = _.memoize(_querySearch, query => JSON.stringify(query));
+const sifGraph = async ( queryObj ) => {
+  let path;
+  const defaults = {
+    limit: 1,
+    pattern: ['CONTROLS_STATE_CHANGE_OF','CONTROLS_TRANSPORT_OF','CONTROLS_EXPRESSION_OF','CATALYSIS_PRECEDES','INTERACTS_WITH']
+  };
+  const params = _.assign(defaults, queryObj);
+
+  if ( params.source.length > 1 ){
+    path = 'pathsbetween';
+    params.directed = 'false';
+  } else {
+    path = 'neighborhood';
+    params.direction = 'UNDIRECTED';
+  }
+
+  const url = config.PC_URL + 'sifgraph/v1/' + path + '?' + qs.stringify(params);
+  return fetch(url, {
+    method: 'GET',
+    headers: {
+      'Accept': 'text/plain'
+    }
+  })
+  .then( res => res.text() )
+  .catch( e => {
+    logger.error('sifGraph ' + queryObj + ' failed - ' + e);
+    throw e;
+  });
+};
+
+
+const search = _.memoize(_search, query => JSON.stringify(query));
 const metadata = _.memoize(_metadata);
 
 
-module.exports = {query, querySearch, datasources, metadata};
+module.exports = {query, search, metadata, sifGraph};

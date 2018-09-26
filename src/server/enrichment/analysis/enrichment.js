@@ -95,7 +95,7 @@ const enrichment = (query, userSetting) => {
         ret.pathwayInfo = {};
         _.forEach(responseInfo, elem => {
           ret.pathwayInfo[elem[termIdIndex]] = {
-            "p-value": Number(elem[pValueIndex]),
+            "p_value": Number(elem[pValueIndex]),
             "description": elem[tNameIndex].trim(),
             "intersection": _.map(elem[qAndTListIndex].split(','), gene => {
               return cleanUpEntrez(gene);

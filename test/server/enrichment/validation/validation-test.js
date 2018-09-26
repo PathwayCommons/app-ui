@@ -2,9 +2,9 @@ const chai = require('chai');
 const expect = chai.expect;
 const {validatorGconvert} = require('../../../../src/server/enrichment/validation');
 
-describe('test validatorGconvert', function() {
+describe('Test validatorGconvert - Enrichment Validation Service', function() {
   this.timeout(500000);
-  it('valid gene, no parameters', function() {
+  it('parameters: valid genes', function() {
     return (validatorGconvert(['TP53', 'ATP', 'ATM', 'TP53'],{})).then(
       //resolved
       res => {
@@ -37,7 +37,7 @@ describe('test validatorGconvert', function() {
     );
   });
 
-  it('valid targetDb and valid organism', function() {
+  it('parameters: valid genes, valid targetDb, valid organism', function() {
     return (validatorGconvert(['TP53', 'ATP', 'ATM', 'TP53'], {target: "ensg", organism: "hsapiens" })).then(
       //resolved
       (res) => {
@@ -70,7 +70,7 @@ describe('test validatorGconvert', function() {
     );
   });
 
-  it('valid targetDb and INVALID organism', function() {
+  it('parameters: valid genes, valid targetDb, invalid organism', function() {
     return (validatorGconvert(['TP53', 'ATP', 'ATM', 'TP53'], {target: "ENSG", organism: "dog" })).then(
         //resolved
         (res) => {
@@ -83,7 +83,7 @@ describe('test validatorGconvert', function() {
     );
   });
 
-  it('INVALID targetDb and valid organism', function() {
+  it('parameters: valid genes, invalid targetDb, valid organism', function() {
     return (validatorGconvert(['TP53', 'ATP', 'ATM', 'TP53'], {target: "layman", organism: "hsapiens" })).then(
         //resolved
         (res) =>  {
@@ -96,7 +96,7 @@ describe('test validatorGconvert', function() {
     );
   });
 
-  it('INVALID targetDb and INVALID organism', function() {
+  it('parameters: valid genes, invalid targetDb, invalid organism', function() {
     return (validatorGconvert(['TP53', 'ATP', 'ATM', 'TP53'], {target: "layman", organism: "dog" })).then(
        //resolved
        (res) =>  {
@@ -104,7 +104,7 @@ describe('test validatorGconvert', function() {
        },
        //rejected
        (rej) => {
-       expect(true);
+        expect(true);
        }
     );
   });

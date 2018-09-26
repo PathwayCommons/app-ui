@@ -44,7 +44,8 @@ input[type='submit'],
 button,
 textarea,
 select,
-.radioset input[type="radio"] + label {
+.radioset input[type="radio"] + label,
+.button-like {
   appearance: none;
   vertical-align: middle;
   font: inherit;
@@ -368,7 +369,6 @@ a {
   text-decoration: none;
 
   &.plain-link {
-    white-space: nowrap;
     box-shadow: 0 -1px color(var(--activeColor) a(50%)) inset;
     transition: box-shadow 500ms ease-out;
 

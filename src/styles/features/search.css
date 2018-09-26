@@ -173,6 +173,7 @@
 }
 
 .search-tools {
+  max-width: 100%;
   width: var(--search-width);
   display: flex;
   flex-direction: row;
@@ -236,7 +237,6 @@
   padding-left: 10px;
   /* width: 650px; */
 }
-
 
 .search-item-content-datasource {
   margin: 0;

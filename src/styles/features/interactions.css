@@ -52,7 +52,7 @@ input[type="range"].interactions-sidebar-vis-filter {
   }
 }
 
-.interactions-filter-color {
+.interactions-color {
   display: flex;
   width: 1.25em;
   background-color: #888;
@@ -60,15 +60,15 @@ input[type="range"].interactions-sidebar-vis-filter {
   border: 1px solid #ccc;
 }
 
-.interactions-filter-color-modification {
+.interactions-color-modification {
   background-color: #ffc28b;
 }
 
-.interactions-filter-color-binding {
+.interactions-color-binding {
   background-color: #8bd8dd;
 }
 
-.interactions-filter-color-expression {
+.interactions-color-expression {
   background-color: #f4a2a3;
 }
 

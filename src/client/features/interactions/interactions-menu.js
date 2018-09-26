@@ -2,12 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const classNames = require('classnames');
 
-const INTERACTION_TYPES = {
-  BINDING: 'Binding',
-  MODIFICATION: 'Modification',
-  EXPRESSION: 'Expression',
-  OTHER: 'Other'
-};
+const INTERACTION_TYPES = require('./types');
 
 class InteractionsMenu extends React.Component {
   constructor(props){
@@ -59,7 +54,7 @@ class InteractionsMenu extends React.Component {
 
     let InteractionToggleButton = props => {
       let { type, active } = props;
-      let legendClass = `interactions-filter-color-${type.toLowerCase()}`;
+      let legendClass = `interactions-color-${type.toLowerCase()}`;
 
       return h('div', {
         onClick: () =>  this.toggleIntnType(type),
@@ -72,7 +67,7 @@ class InteractionsMenu extends React.Component {
         h('div', {
           className: classNames({
             [legendClass]: true,
-            'interactions-filter-color': true
+            'interactions-color': true
           })
         } ),
         h('div.interactions-filter-label', type),

@@ -24,8 +24,6 @@ class InteractionsEdgeTooltip extends React.Component {
   }
 
   selectEdge(edge){
-    console.log('selectEdge', edge);
-
     this.setState({ selectedEdge: edge });
 
     this.getPublications(edge);

@@ -20,7 +20,7 @@ class CytoscapeNetwork extends React.Component {
 
   render(){
     return h('div.network', { className: classNames('network', this.props.className)}, [
-      h('div.network-cy', {
+      h('div.network-cy#cy', {
         ref: dom => this.network = dom
       })
     ]);

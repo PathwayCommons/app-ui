@@ -78,7 +78,6 @@ class InteractionsMenu extends React.Component {
     };
 
     return h('div.interactions-sidebar', [
-      h('h3', 'Interaction Types'),
       hasBindings ? h(InteractionToggleButton, { type: BINDING, active: Binding }) : null,
       hasExpressions ? h(InteractionToggleButton, { type: EXPRESSION, active: Expression }) : null,
       hasModifications ? h(InteractionToggleButton, { type: MODIFICATION, active: Modification }) : null,

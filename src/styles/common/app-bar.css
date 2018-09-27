@@ -8,6 +8,12 @@
   box-shadow: var(--box-shadow);
 }
 
+@media( --small-width-viewport ){
+  .app-bar {
+    font-size: 0.8em;
+  }
+}
+
 .app-bar-branding {
   display: flex;
   flex-direction: row;
@@ -50,9 +56,13 @@
 
   /* & .element-search {
     flex-grow: 1;
+  } */
+
+  & .element-search {
+    white-space: nowrap;
   }
 
   & .element-search-input {
     width: 100%;
-  } */
+  }
 }

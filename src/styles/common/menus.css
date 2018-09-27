@@ -1,6 +1,33 @@
+.info-menu {
+  width: 35em;
+  max-width: 95vw;
+  padding: 0.25em;
+  position: relative;
+
+  & p:first-child {
+    margin-top: 0;
+  }
+
+  & p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+
 .file-download-menu {
   width: 66vw;
   max-width: 600px;
+}
+@media( --small-width-viewport ){
+  .file-download-menu {
+    font-size: 0.8em;
+    width: 300px;
+  }
+
+  .info-menu {
+    font-size: 0.8em;
+    width: 300px;
+  }
 }
 
 .interactions-download-menu {

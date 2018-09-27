@@ -1,3 +1,7 @@
+.paint {
+  overflow: hidden;
+}
+
 .paint-legend {
   padding: 0px 5px 0px 5px;
   height: 40px;

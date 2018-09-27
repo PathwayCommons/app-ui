@@ -1,17 +1,9 @@
 .network {
-  @extend %flex-center;
-
   position: absolute;
   left: 0;
   top: 0;
-  width: 100vw;
-  height: 100vh;
-}
-
-@media (--small-width-viewport) {
-  .network{
-    width: 100% !important;
-  }
+  right: 0;
+  bottom: 0;
 }
 
 .network-loading {
@@ -28,4 +20,6 @@
   position: absolute;
   left: 0;
   top: 0;
+  right: 0;
+  bottom: 0;
 }

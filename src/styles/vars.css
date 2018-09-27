@@ -30,7 +30,7 @@
 }
 
 /* Viewport scaling sizes */
-@custom-media --small-width-viewport (width <= 768px);
+@custom-media --small-width-viewport (width <= 600px);
 @custom-media --small-portrait-viewport (width <= 736px) and (height <= 736px) and (height > 414px);
 
 %flex-center {

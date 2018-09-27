@@ -1,5 +1,9 @@
 /*  ********ENRICHMENT INPUT BAR********   */
 
+.enrichment {
+  overflow: hidden;
+}
+
 .enrichmentInput {
   display: flex;
   padding-left: 8px;

@@ -248,7 +248,7 @@ class Paint extends React.Component {
       })
     ];
 
-    return h('div.pathways', content);
+    return h('div.paint', content);
   }
 }
 

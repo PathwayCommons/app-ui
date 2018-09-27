@@ -121,7 +121,7 @@ class Enrichment extends React.Component {
   render(){
     let { loading, cySrv, activeMenu, invalidTokens, openToolBar, networkEmpty, sliderVal } = this.state;
 
-    return h('div.main', [
+    return h('div.enrichment', [
       h('div.app-bar', [
         h('div.app-bar-branding', [
           h(PcLogoLink),

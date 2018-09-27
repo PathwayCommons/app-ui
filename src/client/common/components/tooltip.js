@@ -22,7 +22,7 @@ class Tooltip extends React.Component {
       })(),
       trigger: 'mouseenter manual',
       theme: 'dark',
-      delay: [ 1000, 0 ]
+      delay: [ 200, 0 ]
     }, props.tippy);
 
     this.popoverOptions = _.assign({}, props, {

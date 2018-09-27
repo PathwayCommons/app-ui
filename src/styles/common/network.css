@@ -6,12 +6,6 @@
   bottom: 0;
 }
 
-@media (--small-width-viewport) {
-  .network{
-    width: 100% !important;
-  }
-}
-
 .network-loading {
   visibility: hidden;
 }

@@ -8,6 +8,12 @@
   box-shadow: var(--box-shadow);
 }
 
+@media( --small-width-viewport ){
+  .app-bar {
+    font-size: 0.8em;
+  }
+}
+
 .app-bar-branding {
   display: flex;
   flex-direction: row;

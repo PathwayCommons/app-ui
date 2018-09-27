@@ -107,6 +107,8 @@ class PathwayNodeMetadata {
       return aggregatedDbIds;
     };
 
+    this.data.set('Sbgn Class', node.data('class'));
+
     this.data.set('Label', node.data('label'));
 
     this.data.set('Publications', []);
@@ -116,7 +118,10 @@ class PathwayNodeMetadata {
     this.data.set('Database IDs', new Map(Object.entries(processDbIds(this.databaseIds()))));
   }
   isEmpty(){
-    return this.data.entries().length === 0;
+    return _.isEmpty(this.rawData);
+  }
+  sbgnClass(){
+    return this.data.get('Sbgn Class');
   }
   type(){
     let type = this.data.get('Type');

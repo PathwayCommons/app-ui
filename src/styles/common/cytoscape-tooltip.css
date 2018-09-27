@@ -27,8 +27,7 @@
 
 .cy-tooltip-header {
   color: var(--dark-base-colour);
-  margin: 3px;
-  margin: 0.25em;
+  margin: 0.25em 0.5em;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -149,4 +148,6 @@ a.cy-tooltip-edge-link {
 .cy-tooltip-back {
   margin-right: 0.25em;
   cursor: pointer;
+  font-weight: bold;
+  font-size: 1.25em;
 }

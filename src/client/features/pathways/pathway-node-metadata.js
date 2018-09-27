@@ -17,13 +17,11 @@ class PathwayNodeMetadataView extends React.Component {
 
     if ( metadata.isEmpty() ) {
       return h('div.cy-tooltip', [
-        h('div.tooltip-heading', [
-          h('a.tooltip-heading-link', {
-            target: '_blank',
-            href: '/search?q=' + metadata.searchLink(),
-          }, metadata.label() || metadata.displayName()),
-        ]),
-        h('div.tooltip-internal', h('div.cy-tooltip-warning', 'No Additional Information'))
+        h('div.cy-tooltip-content', [
+          h('div.cy-tooltip-header', [
+            h('h2.cy-tooltip-title',  `${metadata.sbgnClass()}`)
+          ])
+        ])
       ]);
     }
 

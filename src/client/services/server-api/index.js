@@ -2,6 +2,8 @@ const io = require('socket.io-client');
 const qs = require('querystring');
 const _ = require('lodash');
 
+const { PC_URL } = require('../../../config');
+
 const socket = io.connect('/');
 const FETCH_TIMEOUT = 5000; //ms
 
@@ -72,9 +74,8 @@ const ServerAPI = {
     .then( res => res.json() );
   },
 
-  //method is a request path, e.g., 'pc2/get' or 'sifgraph/v1/pathsbetween'
-  pcQuery(method, params){
-    return fetch(absoluteURL(`/api/pc/${method}?${qs.stringify(params)}`), defaultFetchOpts);
+  downloadFileFromPathwayCommons( uri, format ){
+    return fetch(PC_URL + 'pc2/get?' + qs.stringify({ uri, format}), defaultFetchOpts);
   },
 
   search(query){

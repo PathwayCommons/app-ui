@@ -59,7 +59,8 @@ class InteractionsEdgeTooltip extends React.Component {
         parallelEdges.length > 1 ? h('button.plain-button.cy-tooltip-back', {
           onClick: () => this.deselectEdge()
         }, [
-           h('i.material-icons', 'arrow_back')
+          //  h('i.material-icons', 'arrow_back') // does not work for some reason
+          h('span', '<')
         ]) : null,
         h('h2.cy-tooltip-title', title)
       ].filter(el => el != null)),

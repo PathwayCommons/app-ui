@@ -1,0 +1,4 @@
+run appui on localhost:3000
+checkout branch alpha on factoid
+run factoid on localhost:3010
+export FACTOID_URL=htpp://localhost:3010/

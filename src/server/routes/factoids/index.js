@@ -8,6 +8,17 @@ const { FACTOID_URL, BIOPAX_CONVERTERS_URL } = require('../../../config');
 const router = express.Router();
 
 
+
+let getFactoidIdsJson = () => {
+  return fetch( FACTOID_URL + 'api/document/', { method: 'get', accept: 'application/json' })
+  .then( res => res.json() );
+};
+
+let getFactoidJson = ( id ) => {
+  return fetch( FACTOID_URL + 'api/document/' + id, { method: 'get', accept: 'application/xml' })
+  .then( res => res.json() );
+};
+
 let getFactoidBiopax = ( id ) => {
   return new Promise( ( resolve, reject ) => {
     fetch( FACTOID_URL + 'api/document/biopax/' + id, { method: 'get', accept: 'application/xml'})
@@ -34,7 +45,7 @@ let biopax2Sbgn = biopax => {
 };
 
 
-let getFactoidDocJson = id => {
+let getFactoidSbgnJson = id => {
   return (
     getFactoidBiopax( id )
     .then( biopax => {
@@ -49,11 +60,30 @@ let getFactoidDocJson = id => {
 };
 
 
-router.get('/', ( req, res ) => {
-  let factoidDocId = req.query.id;
+router.get('/', ( req, res ) => getFactoidIdsJson().then( j => res.json( j ) ) );
 
+router.get('/:factoidDocId', ( req, res ) => {
+  let { factoidDocId }  = req.params;
 
-  getFactoidDocJson( factoidDocId ).then( factoidJson => res.json( factoidJson ) );
+  Promise.all([getFactoidJson( factoidDocId ), getFactoidSbgnJson( factoidDocId )])
+    .then( results => {
+      let [ factoidJson, factoidSbgnJson ] = results;
+
+      return _.assign({}, factoidSbgnJson, { pathwayMetadata: {
+        title: [
+          _.get(factoidJson, 'name', 'untitled pathway')
+        ],
+        dataSource: ['Factoid'],
+        organism: [
+          _.get(factoidJson, 'organisms.0.name', undefined)
+        ],
+        url: FACTOID_URL + 'document/' + factoidDocId,
+        comments: [
+          _.get(factoidJson, 'summary', undefined)
+        ]
+      }});
+    } )
+    .then( j => res.json( j ) );
 });
 
 module.exports = router;

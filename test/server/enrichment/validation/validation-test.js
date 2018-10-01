@@ -1,6 +1,6 @@
 const chai = require('chai');
 const expect = chai.expect;
-const {validatorGconvert} = require('../../../../src/server/enrichment/validation');
+const { validatorGconvert } = require('../../../../src/server/external-services/gprofiler');
 
 describe('Test validatorGconvert - Enrichment Validation Service', function() {
   this.timeout(500000);

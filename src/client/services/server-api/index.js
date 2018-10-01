@@ -2,6 +2,8 @@ const io = require('socket.io-client');
 const qs = require('querystring');
 const _ = require('lodash');
 
+const { PC_URL } = require('../../../config');
+
 const socket = io.connect('/');
 const FETCH_TIMEOUT = 5000; //ms
 
@@ -17,8 +19,24 @@ const defaultFetchOpts = {
 };
 
 const ServerAPI = {
-  getPathway(uri, version) {
-    return fetch(absoluteURL(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`), defaultFetchOpts).then(res => res.json());
+  getPathway(uri) {
+    let url = absoluteURL(`/api/pathways?${ qs.stringify({ uri }) }`);
+    return (
+      fetch(url, defaultFetchOpts)
+        .then(res =>  res.json())
+        .then( pathwayJson => {
+          return {
+            graph: pathwayJson
+          };
+        })
+    );
+  },
+
+  getInteractionGraph(sources) {
+    return (
+      fetch(absoluteURL(`/api/interactions?${qs.stringify(sources)}`), defaultFetchOpts)
+       .then( res => res.json())
+    );
   },
 
   getPubmedPublications( pubmedIds ){
@@ -56,13 +74,8 @@ const ServerAPI = {
     .then( res => res.json() );
   },
 
-  getInteractionGraph(sources) {
-    return fetch(absoluteURL(`/api/get-interaction-graph?${qs.stringify(sources)}`), defaultFetchOpts).then(res => res.json());
-  },
-
-  //method is a request path, e.g., 'pc2/get' or 'sifgraph/v1/pathsbetween'
-  pcQuery(method, params){
-    return fetch(absoluteURL(`/pc-client/${method}?${qs.stringify(params)}`), defaultFetchOpts);
+  downloadFileFromPathwayCommons( uri, format ){
+    return fetch(PC_URL + 'pc2/get?' + qs.stringify({ uri, format}), defaultFetchOpts);
   },
 
   search(query){
@@ -70,11 +83,11 @@ const ServerAPI = {
     if (/^((uniprot|hgnc):\w+|ncbi:[0-9]+)$/i.test(queryClone.q)) {
       queryClone.q=queryClone.q.replace(/^(uniprot|ncbi|hgnc):/i,"");
     }
-    return fetch(absoluteURL(`/pc-client/querySearch?${qs.stringify(queryClone)}`), defaultFetchOpts).then(res => res.json());
+    return fetch(absoluteURL(`/api/pc/search?${qs.stringify(queryClone)}`), defaultFetchOpts).then(res => res.json());
   },
 
   enrichmentAPI(query, type){
-    return fetch(absoluteURL(`/api/${type}`), {
+    return fetch(absoluteURL(`/api/enrichment/${type}`), {
       method:'POST',
       headers: {
         'Accept': 'application/json',

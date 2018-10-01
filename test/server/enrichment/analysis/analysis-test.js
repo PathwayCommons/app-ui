@@ -1,8 +1,7 @@
 const chai = require('chai');
 const expect = chai.expect;
 const _ = require('lodash');
-const { enrichment } = require('../../../../src/server/enrichment/analysis');
-
+const { enrichment } = require('../../../../src/server/external-services/gprofiler');
 
 describe('Test Enrichment Analysis Service', function () {
   this.timeout(500000);

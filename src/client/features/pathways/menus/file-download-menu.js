@@ -47,7 +47,7 @@ class FileDownloadMenu extends React.Component {
     let { fileName, uri }  =  this.props;
     fileName = fileName.substr(0, fileName.length < FILENAME_CUTOFF ? fileName.length : FILENAME_CUTOFF).replace(/ /g, '_');
 
-    let downloadFetch = ServerAPI.pcQuery('pc2/get', { uri: uri, format: format }).then(res => res.text());
+    let downloadFetch = ServerAPI.downloadFileFromPathwayCommons(uri, format).then(res => res.text());
     this.setState({loading: true}, () => {
       downloadFetch.then(content => {
         content = typeof content === 'object' ? JSON.stringify(content) : content;

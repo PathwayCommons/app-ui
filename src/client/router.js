@@ -50,6 +50,15 @@ module.exports = () => {
         }
       },
       {
+        path: '/factoids',
+        render: props => {
+          let { location } = props;
+          let { pathname, search } = location;
+          logPageView(pathname + search);
+          return h(Features.Factoids, props);
+        }
+      },
+      {
         path: '/factoids/:factoidId',
         render: props => {
           let { location, match } = props;

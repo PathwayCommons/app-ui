@@ -42,6 +42,13 @@ const ServerAPI = {
     );
   },
 
+  getFactoids() {
+    return (
+      fetch('/api/factoids', defaultFetchOpts)
+        .then( res => res.json() )
+    );
+  },
+
   getFactoid(id) {
     let url = absoluteURL(`/api/factoids/${ id }`);
     return (

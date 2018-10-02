@@ -18,7 +18,7 @@ let defaults = {
   DB_PASS: undefined,
   DB_CERT: undefined,
   // factoid specific urls
-  FACTOID_URL: 'http://unstable.factoid.baderlab.org/',
+  FACTOID_URL: 'alpha.factoid.baderlab.org/',
   BIOPAX_CONVERTERS_URL: 'http://biopax.baderlab.org/'
 };
 

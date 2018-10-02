@@ -19,7 +19,7 @@ class Factoids extends Component {
   render(){
     let { factoids} = this.state;
     return h('div.factoids', factoids.map( f => {
-      return h(Link, {   className: 'plain-link', to: { pathname: `/factoids/${f.id}`}}, f.id);
+      return h(Link, { className: 'plain-link', to: { pathname: `/factoids/${f.id}`}, target: '_blank' }, f.id);
     }));
   }
 }

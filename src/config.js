@@ -1,4 +1,3 @@
-const process = require('process');
 const _ = require('lodash');
 
 let defaults = {
@@ -18,11 +17,30 @@ let defaults = {
   DB_PASS: undefined,
   DB_CERT: undefined,
   // factoid specific urls
-  FACTOID_URL: 'http://alpha.factoid.baderlab.org/',
+  FACTOID_URL: 'http://unstable.factoid.baderlab.org/',
   BIOPAX_CONVERTERS_URL: 'http://biopax.baderlab.org/'
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );
+
+
+// these vars are always included in the bundle because they ref `process.env.${name}` directly
+// NB DO NOT include passwords etc. here
+let clientVars = {
+  NODE_ENV: process.env.NODE_ENV,
+  PC_URL: process.env.PC_URL,
+  FACTOID_URL: process.env.FACTOID_URL
+};
+
+_.assign(envVars, clientVars);
+
+for( let key in envVars ){
+  let val = envVars[key];
+
+  if( val === '' || val == null ){
+    delete envVars[key];
+  }
+}
 
 let conf = Object.assign( {}, defaults, envVars );
 

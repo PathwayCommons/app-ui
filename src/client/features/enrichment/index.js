@@ -69,7 +69,7 @@ class Enrichment extends React.Component {
     });
 
     let updateNetworkJSON = async () => {
-      let analysisResult = await ServerAPI.enrichmentAPI({ genes: genes }, "analysis");
+      let analysisResult = await ServerAPI.enrichmentAPI({ query: genes }, "analysis");
 
       if( !analysisResult || !analysisResult.pathwayInfo ) {
         this.setState({ timedOut: true, loading: false });

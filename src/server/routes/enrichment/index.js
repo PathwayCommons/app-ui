@@ -126,14 +126,14 @@ enrichmentRouter.post('/validation', (req, res) => {
 */
 // expose a rest endpoint for enrichment service
 enrichmentRouter.post('/analysis', (req, res) => {
-  const genes = req.body.genes.sort();
+  const query = req.body.query.sort();
   const tmpOptions = {
     minSetSize: req.body.minSetSize,
     maxSetSize: req.body.maxSetSize,
-    backgroundGenes: req.body.backgroundGenes
+    background: req.body.background
   };
 
-  enrichment(genes, tmpOptions).then(enrichmentResult => {
+  enrichment(query, tmpOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
   }).catch((err) => {
     res.status(400).send(err.message);
@@ -491,9 +491,9 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *       required:
  *       - genes
  *       properties:
- *         genes:
+ *         query:
  *           type: array
- *           description: an array of genes
+ *           description: Biological identifiers [ ENSG, HGNCSYMBOL, HGNC, UNIPROT, NCBIGENE ]
  *           example: ["AFF4"]
  *           items:
  *             type: string
@@ -507,9 +507,9 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           description: "maximum size of functional category, larger categories are
  *             excluded \n default: 200"
  *           example: 400
- *         backgroundGenes:
+ *         background:
  *           type: array
- *           description: "an array of genes used
+ *           description: "Biological identifiers used
  *             as a custom statistical background \n default: []"
  *           example: []
  *           items:

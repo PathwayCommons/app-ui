@@ -84,11 +84,11 @@ enrichmentRouter.get('/docs', ( req, res ) => {
 */
 // expose a rest endpoint for validation service
 enrichmentRouter.post('/validation', (req, res) => {
-  const genes = req.body.genes;
+  const query = req.body.query;
   const tmpOptions = {};
   tmpOptions.organism = req.body.organism;
   tmpOptions.target = req.body.targetDb;
-  validatorGconvert(genes, tmpOptions).then(gconvertResult => {
+  validatorGconvert(query, tmpOptions).then(gconvertResult => {
     res.json(gconvertResult);
   }).catch( error => res.status( 400 ).send( error ) );
 });
@@ -207,12 +207,12 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *     validationObj:
  *       type: object
  *       required:
- *       - genes
+ *       - query
  *       properties:
- *         genes:
+ *         query:
  *           type: array
- *           description: "Input genes as an array
- *                        \n By default, numerical inputs will be interpreted as NCBI Gene IDs."
+ *           description: "Input (identifiers) as an array.
+ *                        \n Integer interpreted as NCBI Gene ID."
  *           example: ["TP53", "111", "AFF4", "111", "11998"]
  *           items:
  *             type: string

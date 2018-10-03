@@ -68,10 +68,15 @@ router.get('/:factoidDocId', ( req, res ) => {
   Promise.all([getFactoidJson( factoidDocId ), getFactoidSbgnJson( factoidDocId )])
     .then( results => {
       let [ factoidJson, factoidSbgnJson ] = results;
+      let { authorName, name, summary, year, journalName } = factoidJson;
+
+      let docName = !_.isEmpty(name) ? name : 'Factoid Document';
+
+      let title = `${docName} - ${authorName !== '' ? authorName + ' et al.' : '' } ${year !== '' ? year + ',' : ''} ${journalName}`;
 
       return _.assign({}, factoidSbgnJson, { pathwayMetadata: {
         title: [
-          _.get(factoidJson, 'name', 'untitled pathway')
+          title
         ],
         dataSource: ['Factoid'],
         organism: [
@@ -79,7 +84,7 @@ router.get('/:factoidDocId', ( req, res ) => {
         ],
         url: FACTOID_URL + 'document/' + factoidDocId,
         comments: [
-          _.get(factoidJson, 'summary', undefined)
+          summary
         ]
       }});
     } )

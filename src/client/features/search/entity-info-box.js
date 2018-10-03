@@ -87,10 +87,10 @@ class EntityInfoBoxList extends React.Component {
 
     let interactionsLinkLabel = sources => {
       if( sources.length === 1 ){
-        return `Top ${config.MAX_SIF_NODES} interactions involving ${sources[0]}`;
+        return `Interactions between ${sources[0]} and top ${config.MAX_SIF_NODES} genes`;
       }
 
-      return `Top ${config.MAX_SIF_NODES} interactions involving ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
+      return `Interactions between ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
     };
 
     let ViewMultipleInteractionsEntry = () => {

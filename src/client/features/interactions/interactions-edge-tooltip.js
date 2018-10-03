@@ -51,7 +51,7 @@ class InteractionsEdgeTooltip extends React.Component {
     });
 
     let detailedViewsList = pcIds.map( (pcId, index)  => {
-      return h('a.plain-link', { href: '/pathways?' + queryString.stringify({ uri: pcId }), target: '_blank' }, `[ ${index + 1} ]`);
+      return h('a.plain-link', { href: '/pathways?' + queryString.stringify({ uri: pcId }), target: '_blank' }, ` ${index + 1} `);
     } );
 
     return h('div.cy-tooltip', [
@@ -74,7 +74,7 @@ class InteractionsEdgeTooltip extends React.Component {
           h('div', publicationList)
         ]) : null,
         detailedViewsList.length > 0 ? h('div.cy-tooltip-section', [
-          h('div.cy-tooltip-field-name', 'Pathway Links'),
+          h('div.cy-tooltip-field-name', 'Open a detailed view of this interaction'),
           h('div.cy-tooltip-links', detailedViewsList)
         ]) : null,
         // h('div.cy-tooltip-section', [

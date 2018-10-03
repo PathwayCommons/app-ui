@@ -73,6 +73,7 @@ class Interactions extends React.Component {
     let appBar = h('div.app-bar.interactions-bar', [
       h('div.app-bar-branding', [
         h(PcLogoLink),
+        sources.length === 1 ?  h('div.app-bar-title', `Top ${config.MAX_SIF_NODES} interactions involving ${sources[0]}`):
         h('div.app-bar-title', `Top ${config.MAX_SIF_NODES} interactions involving ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`)
       ]),
       h(InteractionsToolbar, { cySrv, activeMenu, sources: this.state.sources, controller: this })

@@ -3,6 +3,8 @@ const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
 const queryString = require('query-string');
 
+const config = require('../../../config');
+
 const GENE_OTHER_NAMES_LIMIT = 4;
 const GENE_DESCRIPTION_WORD_LIMIT = 40;
 const GENE_INFO_DISPLAY_LIMIT = 6;
@@ -85,10 +87,10 @@ class EntityInfoBoxList extends React.Component {
 
     let interactionsLinkLabel = sources => {
       if( sources.length === 1 ){
-        return `Interactions with ${sources[0]}`;
+        return `Top ${config.MAX_SIF_NODES} interactions involving ${sources[0]}`;
       }
 
-      return `Interactions between ${ sources.slice(0, sources.length - 1).join(', ') + (sources.length > 2 ? ',' : '') } and ${sources.slice(-1)}`;
+      return `Top ${config.MAX_SIF_NODES} interactions involving ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
     };
 
     let ViewMultipleInteractionsEntry = () => {

@@ -96,6 +96,7 @@
   & a {
     display: inline-block;
     margin-right: 10px;
+    padding: 0 0.5em;
   }
 }
 

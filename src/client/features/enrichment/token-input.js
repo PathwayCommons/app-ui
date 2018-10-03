@@ -38,7 +38,7 @@ class TokenInput extends React.Component {
 
     let tokenList = _.pull(inputBoxContents.split(/\s/g), "");
      ServerAPI.enrichmentAPI({
-       genes: tokenList,
+       query: tokenList,
        targetDb: "HGNCSYMBOL"
       }, "validation")
     .then( result => {

@@ -51,7 +51,7 @@ const enrichment = (query, userSetting) => {
   userSetting = _.mapKeys(userSetting, (value, key) => {
     if (key === 'minSetSize') return 'min_set_size';
     if (key === 'maxSetSize') return 'max_set_size';
-    if (key === 'backgroundGenes') return 'custbg';
+    if (key === 'background') return 'custbg';
     return key;
   });
 

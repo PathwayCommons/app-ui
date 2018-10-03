@@ -263,7 +263,7 @@ const queryEntityInfo = query => {
    // create entity recognizer queries
    entityQueries = dbsToQuery.map( db => {
      return ServerAPI.geneQuery({
-       genes: genes,
+       query: genes,
        targetDb: db.gProfiler
      }).then(res => {
        let { geneInfo: entityInfos, unrecognized: unrecognizedEntities } = res;

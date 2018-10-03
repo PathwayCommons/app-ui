@@ -84,11 +84,11 @@ enrichmentRouter.get('/docs', ( req, res ) => {
 */
 // expose a rest endpoint for validation service
 enrichmentRouter.post('/validation', (req, res) => {
-  const genes = req.body.genes;
+  const query = req.body.query;
   const tmpOptions = {};
   tmpOptions.organism = req.body.organism;
   tmpOptions.target = req.body.targetDb;
-  validatorGconvert(genes, tmpOptions).then(gconvertResult => {
+  validatorGconvert(query, tmpOptions).then(gconvertResult => {
     res.json(gconvertResult);
   }).catch( error => res.status( 400 ).send( error ) );
 });
@@ -126,14 +126,14 @@ enrichmentRouter.post('/validation', (req, res) => {
 */
 // expose a rest endpoint for enrichment service
 enrichmentRouter.post('/analysis', (req, res) => {
-  const genes = req.body.genes.sort();
+  const query = req.body.query.sort();
   const tmpOptions = {
     minSetSize: req.body.minSetSize,
     maxSetSize: req.body.maxSetSize,
-    backgroundGenes: req.body.backgroundGenes
+    background: req.body.background
   };
 
-  enrichment(genes, tmpOptions).then(enrichmentResult => {
+  enrichment(query, tmpOptions).then(enrichmentResult => {
     res.json(enrichmentResult);
   }).catch((err) => {
     res.status(400).send(err.message);
@@ -207,12 +207,12 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *     validationObj:
  *       type: object
  *       required:
- *       - genes
+ *       - query
  *       properties:
- *         genes:
+ *         query:
  *           type: array
- *           description: "Input genes as an array
- *                        \n By default, numerical inputs will be interpreted as NCBI Gene IDs."
+ *           description: "Input (identifiers) as an array.
+ *                        \n Integer interpreted as NCBI Gene ID."
  *           example: ["TP53", "111", "AFF4", "111", "11998"]
  *           items:
  *             type: string
@@ -491,9 +491,9 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *       required:
  *       - genes
  *       properties:
- *         genes:
+ *         query:
  *           type: array
- *           description: an array of genes
+ *           description: Biological identifiers [ ENSG, HGNCSYMBOL, HGNC, UNIPROT, NCBIGENE ]
  *           example: ["AFF4"]
  *           items:
  *             type: string
@@ -507,9 +507,9 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           description: "maximum size of functional category, larger categories are
  *             excluded \n default: 200"
  *           example: 400
- *         backgroundGenes:
+ *         background:
  *           type: array
- *           description: "an array of genes used
+ *           description: "Biological identifiers used
  *             as a custom statistical background \n default: []"
  *           example: []
  *           items:

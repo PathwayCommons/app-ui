@@ -116,7 +116,7 @@
     "swagger-jsdoc": "^1.9.7",
     "swagger-ui-express": "^3.0.8",
     "uglifyjs-webpack-plugin": "^0.4.6",
-    "webpack": "^3.6.0",
+    "webpack": "^3.12.0",
     "webpack-bundle-analyzer": "^2.9.0"
   },
   "engines": {

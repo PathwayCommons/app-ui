@@ -1,10 +1,8 @@
-const io = require('socket.io-client');
-const qs = require('querystring');
+const qs = require('query-string');
 const _ = require('lodash');
 
 const { PC_URL } = require('../../../config');
 
-const socket = io.connect('/');
 const FETCH_TIMEOUT = 5000; //ms
 
 let absoluteURL = (href) => {
@@ -19,8 +17,48 @@ const defaultFetchOpts = {
 };
 
 const ServerAPI = {
+  // a generic method that gets pathway sbgn json from various sources
+  // e.g. pathwaycommons, factoid, or human created layouts
+  getAPIResource(opts){
+    let { type, uri, id } = opts;
+    if( type === 'pathways' ){
+      if( uri !== null ){
+        return this.getPathway( uri );
+      } else {
+        throw new Error('Invalid parameter.  Pathways api calls require a uri parameter');
+      }
+    }
+    if( type === 'factoids' ){
+      if( id !== null ){
+        return this.getFactoid(opts.id);
+      } else {
+        throw new Error('Invalid paramter. Factoids api calls require a id parameter');
+      }
+    }
+  },
+
   getPathway(uri) {
     let url = absoluteURL(`/api/pathways?${ qs.stringify({ uri }) }`);
+    return (
+      fetch(url, defaultFetchOpts)
+        .then(res =>  res.json())
+        .then( pathwayJson => {
+          return {
+            graph: pathwayJson
+          };
+        })
+    );
+  },
+
+  getFactoids() {
+    return (
+      fetch('/api/factoids', defaultFetchOpts)
+        .then( res => res.json() )
+    );
+  },
+
+  getFactoid(id) {
+    let url = absoluteURL(`/api/factoids/${ id }`);
     return (
       fetch(url, defaultFetchOpts)
         .then(res =>  res.json())
@@ -119,39 +157,6 @@ const ServerAPI = {
     return fetch( `https://rest.genenames.org/fetch/symbol/${id}`, {headers: {'Accept': 'application/json'}} )
     .then(res => res.json())
     .catch(() => undefined);
-  },
-
-  // Send a diff in a node to the backend. The backend will deal with merging these diffs into
-  // a layout
-  submitNodeChange(uri, version, nodeId, bbox) {
-    socket.emit('submitDiff', {
-      uri: uri,
-      version: version.toString(),
-      diff: {
-        nodeID: nodeId,
-        bbox: bbox
-      }
-    });
-  },
-
-  submitLayoutChange(uri, version, layout) {
-    socket.emit('submitLayout', {
-      uri: uri,
-      version: version,
-      layout: layout
-    });
-  },
-
-  initReceiveLayoutChange(callback) {
-    socket.on('layoutChange', layoutJSON => {
-      callback(layoutJSON);
-    });
-  },
-
-  initReceiveNodeChange(callback) {
-    socket.on('nodeChange', nodeDiff => {
-      callback(nodeDiff);
-    });
   }
 };
 

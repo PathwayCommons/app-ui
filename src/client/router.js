@@ -2,6 +2,7 @@ const {BrowserRouter, Route, Switch} = require('react-router-dom');
 const h = require('react-hyperscript');
 const ReactGA = require('react-ga');
 const _ = require('lodash');
+const qs = require('query-string');
 
 const Features = require('./features');
 
@@ -37,9 +38,39 @@ module.exports = () => {
         path: '/pathways',
         render: props => {
           let { location } = props;
+          let { pathname } = location;
+          let uri = qs.parse(location.search).uri;
+          let apiOpts = {
+            type: 'pathways',
+            uri
+          };
+
+          logPageView(pathname + uri);
+          return h(Features.Pathways, _.assign( {}, props, { apiOpts } ));
+        }
+      },
+      {
+        path: '/factoids',
+        render: props => {
+          let { location } = props;
           let { pathname, search } = location;
           logPageView(pathname + search);
-          return h(Features.Pathways, props);
+          return h(Features.Factoids, props);
+        }
+      },
+      {
+        path: '/factoids/:factoidId',
+        render: props => {
+          let { location, match } = props;
+          let { pathname } = location;
+          let id = match.params.factoidId;
+          let apiOpts = {
+            type: 'factoids',
+            id
+          };
+
+          logPageView( pathname + id );
+          return h(Features.Pathways, _.assign( {}, props, { apiOpts } ));
         }
       },
       {

@@ -20,12 +20,20 @@ const ServerAPI = {
   // a generic method that gets pathway sbgn json from various sources
   // e.g. pathwaycommons, factoid, or human created layouts
   getAPIResource(opts){
-    let { type } = opts;
+    let { type, uri, id } = opts;
     if( type === 'pathways' ){
-      return this.getPathway(opts.uri);
+      if( uri !== null ){
+        return this.getPathway( uri );
+      } else {
+        throw new Error('Invalid parameter.  Pathways api calls require a uri parameter');
+      }
     }
     if( type === 'factoids' ){
-      return this.getFactoid(opts.id);
+      if( id !== null ){
+        return this.getFactoid(opts.id);
+      } else {
+        throw new Error('Invalid paramter. Factoids api calls require a id parameter');
+      }
     }
   },
 

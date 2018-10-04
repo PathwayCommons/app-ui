@@ -1,5 +1,13 @@
 const _ = require('lodash');
 
+let geneIntersection = (pathway, expressionTable) => {
+  let ms = pathway.macromolecules();
+  let genesInPathway = _.flattenDeep(_.uniq([...ms.map(node => node.data.label), ...ms.map(node => node.data.geneSynonyms)]));
+  let genesInExpressionData = expressionTable.rawExpressions.map( e => e.geneName);
+
+  return _.intersection(genesInPathway, genesInExpressionData);
+};
+
 
 const expressionDataToNodeStyle = (value, range) => {
   const [, max] = range;
@@ -145,19 +153,38 @@ const createRawExpressions = (expressionJSON, networkJSON) => {
 };
 
 class ExpressionTable {
-  constructor(rawJsonData, networkJSON) {
-    const expressionClasses = _.get(rawJsonData.dataSetClassList, '0.classes', []);
-    const expressions = createRawExpressions(_.get(rawJsonData.dataSetExpressionList, '0.expressions', []), networkJSON);
+  constructor() {
+    this.loaded = false;
+  }
 
-    this.classes = _.uniq(expressionClasses);
+  load( rawJsonData ){
+    this.raw = rawJsonData;
+    let rawExpressionClasses = _.get(rawJsonData.dataSetClassList, '0.classes', []);
+    let rawExpressions = _.get(rawJsonData.dataSetExpressionList, '0.expressions', []);
+
+    this.rawExpressions = rawExpressions;
+    this.rawExpressionClasses = rawExpressionClasses;
+    this.classes = _.uniq(rawExpressionClasses);
+    this.loaded = true;
+
+  }
+
+  loadPathway( pathwayJSON ){
+    if( !this.loaded ){
+      throw new Error('You must call load() with enrichment JSON first');
+    }
+
+    let expressionClasses = this.rawExpressionClasses;
+    let expressions = createRawExpressions(this.rawExpressions, pathwayJSON);
     this.rows = [];
     this.expressionMap = new Map();
 
-    for (const rawExpression of expressions) {
-      const exp = new Expression(rawExpression, expressionClasses);
+    for (let rawExpression of expressions) {
+      let exp = new Expression(rawExpression, expressionClasses);
       this.rows.push(exp);
       this.expressionMap.set(rawExpression.geneName, exp);
     }
+
   }
 
   expressions(geneName = null) {
@@ -194,4 +221,4 @@ class ExpressionTable {
   }
 }
 
-module.exports = { ExpressionTable, applyExpressionData };
+module.exports = { ExpressionTable, applyExpressionData, geneIntersection };

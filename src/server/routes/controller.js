@@ -76,24 +76,8 @@ function endSession(pcID, releaseID, userID) {
   });
 }
 
-// getInteractionGraph(interactionID)
-// return the latest graph
-// specified by interactionID. It wll execute a
-// series of fallbacks if something goes wrong.
 function getInteractionGraph(interactionIDs) {
   return getInteractionGraphFromPC(interactionIDs);
-
-  //TODO: retrieve graph from database.
-  /*
-  return db.connect().then((connection) => {
-    return Promise.all(
-      query.getInteractionGraph(interactionID, connection).catch(() => getInteractionGraphFallback(interactionID, connection))
-    ).catch((e)=>{
-      logger.error(e);
-      return `ERROR : could not retrieve graph for ${interactionID}`;
-    });
-  });
-  */
 }
 
 module.exports = {

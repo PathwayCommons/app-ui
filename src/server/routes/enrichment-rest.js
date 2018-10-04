@@ -124,7 +124,7 @@ enrichmentRouter.post('/validation', (req, res) => {
 */
 // expose a rest endpoint for enrichment service
 enrichmentRouter.post('/analysis', (req, res) => {
-  const genes = req.body.genes;
+  const genes = req.body.genes.sort();
   const tmpOptions = {
     minSetSize: req.body.minSetSize,
     maxSetSize: req.body.maxSetSize,
@@ -524,7 +524,7 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           example:
  *             GO:0043525: {}
  *             GO:0043523:
- *               p-value: 0.05
+ *               p_value: 0.05
  *         similarityCutoff:
  *           type: number
  *           description: "cutoff point for filtering edge similarity rates
@@ -576,11 +576,11 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           additionalProperties:
  *             type: object
  *             required:
- *             - p-value
+ *             - p_value
  *             - description
  *             - intersection
  *             properties:
- *               p-value:
+ *               p_value:
  *                 type: string
  *                 example: 0.2
  *               description:
@@ -668,9 +668,20 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *             id:
  *               type: string
  *               example: GO:0043525
- *             p-value:
+ *             p_value:
  *               type: number
  *               example: 0.2
+ *             geneCount:
+ *               type: number
+ *               example: 51
+ *             geneSet:
+ *               type: array
+ *               items:
+ *                 type: string
+ *                 example:
+ *                 - TP53
+ *                 - CASP9
+ *                 - CDK5
 */
 
 

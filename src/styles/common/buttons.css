@@ -1,0 +1,18 @@
+button.call-to-action {
+  text-align: center;
+  text-transform: uppercase;
+
+  &:not(:active) {
+    border-color: var(--activeColor);
+    color: var(--activeColor);
+  }
+}
+
+.icon-button {
+  width: 1.75em;
+  text-align: center;
+
+  & i {
+    font-size: 1.2em;
+  }
+}

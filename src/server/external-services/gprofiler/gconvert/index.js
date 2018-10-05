@@ -13,11 +13,11 @@ const cache = require('../../../cache');
 const GCONVERT_URL = GPROFILER_URL + 'gconvert.cgi';
 
 
-const resultTemplate = ( unrecognized, duplicate, geneInfo ) => {
+const resultTemplate = ( unrecognized, duplicate, alias ) => {
   return {
     unrecognized: Array.from( unrecognized ) || [],
     duplicate: duplicate || {},
-    geneInfo: geneInfo || []
+    alias: alias || {}
   };
 };
 
@@ -61,15 +61,15 @@ const getForm = ( query, defaultOptions, userOptions ) => {
 };
 
 const bodyHandler = body =>  {
-  const geneInfoList = _.map(body.split('\n'), ele => { return ele.split('\t'); });
-  geneInfoList.splice(-1, 1); // remove last element ''
+  const entityInfoList = _.map(body.split('\n'), ele => { return ele.split('\t'); });
+  entityInfoList.splice(-1, 1); // remove last element ''
   const unrecognized = new Set();
   let duplicate = {};
   const previous = new Map();
-  let geneInfo = new Set();
+  let alias = {};
   const initialAliasIndex = 1;
   const convertedAliasIndex = 3;
-  _.forEach(geneInfoList, info => {
+  _.forEach(entityInfoList, info => {
     const convertedAlias = info[convertedAliasIndex];
     let initialAlias = info[initialAliasIndex];
     initialAlias = cleanUpEntrez(initialAlias);
@@ -84,14 +84,13 @@ const bodyHandler = body =>  {
         }
         duplicate[convertedAlias].add(initialAlias);
       }
-      geneInfo.add(JSON.stringify({initialAlias: initialAlias, convertedAlias: convertedAlias}));
+      alias[initialAlias] = convertedAlias;
     }
   });
   for (const initialAlias in duplicate) {
     duplicate[initialAlias] = Array.from(duplicate[initialAlias]);
   }
-  geneInfo = _.map(Array.from(geneInfo), ele => { return JSON.parse(ele); });
-  return resultTemplate( unrecognized, duplicate, geneInfo );
+  return resultTemplate( unrecognized, duplicate, alias );
 };
 
 

@@ -90,7 +90,7 @@ enrichmentRouter.post('/validation', (req, res) => {
   tmpOptions.target = req.body.targetDb;
   validatorGconvert(query, tmpOptions).then(gconvertResult => {
     res.json(gconvertResult);
-  }).catch( error => res.status( 400 ).send( error ) );
+  }).catch( error => res.status( 400 ).send( { "error": error.message } ));
 });
 
 
@@ -543,7 +543,7 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *       required:
  *       - unrecognized
  *       - duplicate
- *       - geneInfo
+ *       - alias
  *       properties:
  *         unrecognized:
  *           type: array
@@ -557,17 +557,12 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *             items:
  *               type: string
  *               example: '11998'
- *         geneInfo:
- *           type: array
- *           items:
- *             type: object
- *             properties:
- *               initialAlias:
- *                 type: string
- *                 example: TP53
- *               convertedAlias:
- *                 type: string
- *                 example: HGNC:11998
+ *         alias:
+ *           type: object
+ *           properties:
+ *             initial alias (TP53):
+ *               type: string
+ *               example: converted alias (HGNC:11998)
  *     analysisSuccess:
  *       type: object
  *       required:

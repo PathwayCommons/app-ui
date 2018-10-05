@@ -22,15 +22,16 @@ const _sanitize = (s) => {
 
 const _processPhrase = (phrase) => {
   return validatorGconvert(phrase.split(' '),{}).then(result => {
-    const genes = result.geneInfo.map(gene=>'xrefid:' + _sanitize(gene.initialAlias.toUpperCase()));
-    const otherIds = result.unrecognized.map(id=>{
+    let { unrecognized, alias  } = result;
+    const entities = _.keys( alias ).map( initialAlias =>'xrefid:' + _sanitize( initialAlias.toUpperCase()) );
+    const otherIds = unrecognized.map(id=>{
       id=id.toUpperCase();
       const recognized = /^SMP\d{5}$/.test(id) // check for a smpdb or chebi id
         ||/^CHEBI:\d+$/.test(id) && (id.length <= ("CHEBI:".length + 6));
       const sanitized = _sanitize(id);
       return recognized ? ( 'xrefid:' + sanitized ) : ( 'name:' + '*' + sanitized + '*' );
     });
-    return genes.concat(otherIds);
+    return entities.concat(otherIds);
   });
 };
 

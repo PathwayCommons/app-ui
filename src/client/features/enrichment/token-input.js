@@ -42,13 +42,11 @@ class TokenInput extends React.Component {
        targetDb: "HGNCSYMBOL"
       }, "validation")
     .then( result => {
-      const aliases = result.geneInfo.map( value => {
-        return value.convertedAlias;
-      });
+      let { unrecognized, alias } = result;
 
       controller.handleGeneQueryResult( {
-        genes: aliases,
-        unrecognized: result.unrecognized,
+        genes: _.values( alias ),
+        unrecognized: unrecognized,
       });
     });
   }

@@ -261,23 +261,18 @@ const queryEntityInfo = query => {
    let dbsToQuery = Object.entries(dbInfos).map( dbInfo => dbInfo[1] );
 
    // create entity recognizer queries
+   //This is temp fix for updated backend; super-complicated code will go away in move to server...
    entityQueries = dbsToQuery.map( db => {
      return ServerAPI.geneQuery({
        query: genes,
        targetDb: db.gProfiler
      }).then(res => {
-       let { geneInfo: entityInfos, unrecognized: unrecognizedEntities } = res;
-       let duplicates = new Set();
-       let entities = { unrecognizedEntities };
-
-       entityInfos.forEach( entityInfo => {
-         let { convertedAlias } = entityInfo;
-         if( !duplicates.has( convertedAlias ) ){
-           entities[ entityInfo.initialAlias ] = { [db.name]: convertedAlias };
-           duplicates.add( convertedAlias );
-         }
+       let { alias } = res;
+       let entities = {};
+       const initialAliases = _.keys( alias );
+       initialAliases.forEach( ia => {
+        entities[ ia ] = { [db.name]: alias[ia] };
        });
-
        return entities;
      });
    });

@@ -61,6 +61,47 @@ const validResult = {
 	}
 };
 
+const validResult_prefixed_HGNC = {
+	"TP53": {
+		"dataSource": "http://identifiers.org/hgnc.symbol/",
+		"displayName": "tumor protein p53",
+		"localID": "TP53",
+		"description": "",
+		"aliasName": [
+			"Li-Fraumeni syndrome"
+		],
+		"aliasId": [
+			"p53",
+			"LFS1"
+		],
+		"xref": {
+			"http://identifiers.org/genecards/": "TP53",
+			"http://identifiers.org/ncbigene/": "7157",
+			"http://identifiers.org/uniprot/": "P04637"
+		}
+	}
+};
+
+const validResult_prefixed_UNIPROT = {
+	"P04637": {
+		"dataSource": "http://identifiers.org/uniprot/",
+		"displayName": "Cellular tumor antigen p53",
+		"localID": "P04637",
+		"description": "Acts as a tumor suppressor in many tumor types; induces growth arrest or apoptosis depending on the physiological circumstances and cell type. Involved in cell cycle regulation as a trans-activator that acts to negatively regulate cell division by controlling a set of genes required for this process. One of the activated genes is an inhibitor of cyclin-dependent kinases. Apoptosis induction seems to be mediated either by stimulation of BAX and FAS antigen expression, or by repression of Bcl-2 expression. In cooperation with mitochondrial PPIF is involved in activating oxidative stress-induced necrosis; the function is largely independent of transcription. Induces the transcription of long intergenic non-coding RNA p21 (lincRNA-p21) and lincRNA-Mkln1. LincRNA-p21 participates in TP53-dependent transcriptional repression leading to apoptosis and seems to have an effect on cell-cycle regulation. Implicated in Notch signaling cross-over. Prevents CDK7 kinase activity when associated to CAK complex in response to DNA damage, thus stopping cell cycle progression. Isoform 2 enhances the transactivation activity of isoform 1 from some but not all TP53-inducible promoters. Isoform 4 suppresses transactivation activity and impairs growth suppression mediated by isoform 1. Isoform 7 inhibits isoform 1-mediated apoptosis. Regulates the circadian clock by repressing CLOCK-ARNTL/BMAL1-mediated transcriptional activation of PER2 (PubMed:24051492)",
+		"aliasName": [
+			"Antigen NY-CO-13",
+			"Phosphoprotein p53",
+			"Tumor suppressor p53"
+		],
+		"aliasId": [],
+		"xref": {
+			"http://identifiers.org/ncbigene/": "7157",
+			"http://identifiers.org/hgnc.symbol/": "TP53",
+			"http://identifiers.org/genecards/": "TP53"
+		}
+	}
+};
+
 const validResult_NCBIGENE = {
 	"4193": {
 		"dataSource": "http://identifiers.org/ncbigene/",
@@ -113,7 +154,6 @@ const validResult_NCBIGENE = {
 		}
 	}
 };
-
 
 const validResult_HGNC = {
 	"TP53":{
@@ -206,7 +246,18 @@ describe('Test of summary entitySearch function', function() {
   it('should return empty summary for tokens not known to be IDs', async () => {
     const result = await entitySearch(['foo', 'bar']);
     expect( result ).to.be.an('object').that.is.empty;
+	});
+
+  it('should return correct summary for prefixed HGNC symbol', async () => {
+    const result = await entitySearch(['hgnc:TP53']);
+    expect( result ).to.deep.equal( validResult_prefixed_HGNC );
+	});
+
+	it('should return correct summary for prefixed HGNC symbol', async () => {
+    const result = await entitySearch(['uniprot:P04637']);
+    expect( result ).to.deep.equal( validResult_prefixed_UNIPROT );
   });
+
 
 });
 

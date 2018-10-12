@@ -40,11 +40,27 @@ const entityFetch = async ( localIds, dataSource ) => {
  */
 const entitySearch = async tokens => {
 
+  let summary = {};
+
+  // look for special tokens
+  if ( tokens.length === 1 ) {
+    const token = tokens[0];
+    const [ dbId, entityId ] = token.split(':');
+    if( /hgnc:\w+$/i.test( token ) ){
+      summary = await getHgncSummary( [ entityId ], dataSources.HGNC );
+    } else if ( /ncbi:[0-9]+$/i.test( token ) ) {
+      summary = await getNcbiGeneSummary( [ entityId ], dataSources.NCBIGENE );
+    } else if( /uniprot:\w+$/i.test( token ) ){
+      summary = await getUniProtSummary( [ entityId ], dataSources.UNIPROT );
+    }
+    return summary;
+  }
+
   const { alias } = await validatorGconvert( tokens, { target: 'NCBIGene' } );
   const  ncbiIds = _.values( alias );
 
   // get the entity references
-  const summary = await entityFetch( ncbiIds );
+  summary = await entityFetch( ncbiIds );
 
   // NCBI Gene won't give UniProt Accession, so gotta go get em
   const { alias: aliasUniProt } = await validatorGconvert( ncbiIds, { target: 'UniProt' } );

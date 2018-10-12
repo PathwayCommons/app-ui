@@ -2,6 +2,8 @@ const fetch = require('node-fetch');
 const { NCBI_EUTILS_BASE_URL, PUB_CACHE_MAX_SIZE } = require('../../config');
 const { URLSearchParams } = require('url');
 const LRUCache = require('lru-cache');
+const _ = require('lodash');
+const { EntitySummary } = require('../../models/entity/summary');
 
 const pubCache = LRUCache({ max: PUB_CACHE_MAX_SIZE, length: () => 1 });
 
@@ -60,4 +62,47 @@ const getPublications = (pubmedIds) => {
   );
 };
 
-module.exports = { getPublications };
+const fetchByGeneIds = ( geneIds ) => {
+  return fetch(`${NCBI_EUTILS_BASE_URL}/esummary.fcgi?retmode=json&db=gene&id=${geneIds.join(',')}`,
+    {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+    .then(res => res.json());
+};
+
+const getEntitySummary = async ( uids ) => {
+
+  const summary = {};
+  if ( _.isEmpty( uids ) ) return summary;
+
+  const results = await fetchByGeneIds( uids );
+  const result = results.result;
+
+  result.uids.forEach( uid => {
+    if( _.has( result, uid['error'] ) ) return;
+    const doc = result[ uid ];
+
+    const eSummary = new EntitySummary(
+      'http://identifiers.org/ncbigene/',
+      _.get( doc, 'description', ''),
+      _.get( doc, 'uid', ''),
+      _.get( doc, 'summary', ''),
+      _.get( doc, 'otherdesignations', '').split('|'),
+      _.get( doc, 'otheraliases', '').split(',')
+    );
+
+    // Add database links
+    if ( _.has( doc, 'name' ) ){
+      eSummary.xref['http://identifiers.org/hgnc.symbol/'] = _.get( doc, 'name' ,'');
+      eSummary.xref['http://identifiers.org/genecards/'] = _.get( doc, 'name', '');
+    }
+    return summary[ uid ] = eSummary;
+  });
+
+  return summary;
+};
+
+module.exports = { getPublications, getEntitySummary };

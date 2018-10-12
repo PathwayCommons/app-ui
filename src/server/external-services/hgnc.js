@@ -3,6 +3,7 @@ const _ = require('lodash');
 const { HGNC_BASE_URL } = require('../../config');
 const { EntitySummary, DATASOURCES } = require('../../models/entity/summary');
 
+//Could cache somewhere here.
 const fetchBySymbol = symbol => {
   return fetch( `${HGNC_BASE_URL}/fetch/symbol/${symbol}`,
     { headers: {

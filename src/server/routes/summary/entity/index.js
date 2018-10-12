@@ -50,23 +50,25 @@ const entitySearch = async tokens => {
 
   const uniqueTokens = _.uniq( tokens );
   const { alias } = await validatorGconvert( uniqueTokens, { target: 'NCBIGene' } );
-  const  ncbiIds = _.values( alias );
+  // Duplication of work (src/server/external-services/pathway-commons.js).
+  // Could consider a single piece of logic that tokenizes and sends to validator.
 
-  // get the entity references
-  const summary = await entityFetch( ncbiIds, DATASOURCES.NCBIGENE );
+  // get the entity summaries for successfully mapped tokens
+  const mappedIds = _.values( alias );
+  const summary = await entityFetch( mappedIds, DATASOURCES.NCBIGENE );
 
   // NCBI Gene won't give UniProt Accession, so gotta go get em
-  const { alias: aliasUniProt } = await validatorGconvert( ncbiIds, { target: 'UniProt' } );
+  const { alias: aliasUniProt } = await validatorGconvert( mappedIds, { target: 'UniProt' } );
 
   // Update the entity summaries
   _.keys( aliasUniProt ).forEach( ncbiId => {
     const eSummary = _.get( summary, ncbiId );
-    if ( eSummary ) eSummary.xref[DATASOURCES.UNIPROT] = _.get( aliasUniProt, ncbiId );
+    if ( eSummary ) eSummary.xref[ DATASOURCES.UNIPROT ] = _.get( aliasUniProt, ncbiId );
   });
 
   // Want key to be original input token, unfortunately, validator transforms to upper case
   const output =  {};
-  _.entries( alias ).forEach( pair => output[pair[0]] = summary[pair[1]] );
+  _.entries( alias ).forEach( pair => output[ pair[0] ] = summary[ pair[1] ] );
 
   return output;
 };

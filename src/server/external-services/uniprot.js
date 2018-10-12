@@ -3,7 +3,7 @@ const { UNIPROT_API_BASE_URL } = require('../../config');
 const _ = require('lodash');
 const { EntitySummary, DATASOURCES } = require('../../models/entity/summary');
 
-
+//Could cache somewhere here.
 const fetchByAccessions = ( accessions ) => {
   return fetch( `${UNIPROT_API_BASE_URL}/proteins?offset=0&accession=${accessions.join(',')}`,
     { headers: {

@@ -62,6 +62,7 @@ const getPublications = (pubmedIds) => {
   );
 };
 
+//Could cache somewhere here.
 const fetchByGeneIds = ( geneIds ) => {
   return fetch(`${NCBI_EUTILS_BASE_URL}/esummary.fcgi?retmode=json&db=gene&id=${geneIds.join(',')}`,
     {

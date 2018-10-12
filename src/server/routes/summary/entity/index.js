@@ -1,12 +1,42 @@
 const _ = require('lodash');
 const { validatorGconvert } = require('../../../external-services/gprofiler/gconvert');
 const { getEntitySummary: getNcbiGeneSummary } = require('../../../external-services/ncbi');
+const { getEntitySummary: getHgncSummary } = require('../../../external-services/hgnc');
+const { getEntitySummary: getUniProtSummary } = require('../../../external-services/uniprot');
+
+const dataSources = {
+  NCBIGENE: 'http://identifiers.org/ncbigene/',
+  HGNC: 'http://identifiers.org/hgnc/',
+  UNIPROT: 'http://identifiers.org/uniprot/'
+};
 
 /**
- * entitySearch
+ * entityFetch: Retrieve EntitySummary for a given id from a datasource
+ *
+ * @param { array } localID string(s) that should be fetched
+ * @return { object } value is EntitySummary keyed by the local ID
+ */
+const entityFetch = async ( localIds, dataSource ) => {
+  let eSummary;
+  switch ( dataSource ) {
+    case dataSources.HGNC:
+      eSummary = await getHgncSummary( localIds );
+      break;
+    case dataSources.UNIPROT:
+      eSummary = await getUniProtSummary( localIds );
+      break;
+    default:
+      eSummary = await getNcbiGeneSummary( localIds );
+  }
+  return eSummary;
+};
+
+/**
+ * entitySearch: Search a list of strings for recognized gene/protein identifiers
+ * and return an EntitySummary for each
  *
  * @param { array } tokens string(s) that should be queried
- * @return { object } and EntitySummary keyed by the local ID
+ * @return { object } value is EntitySummary keyed by the local ID
  */
 const entitySearch = async tokens => {
 
@@ -14,9 +44,9 @@ const entitySearch = async tokens => {
   const  ncbiIds = _.values( alias );
 
   // get the entity references
-  const summary = await getNcbiGeneSummary( ncbiIds );
+  const summary = await entityFetch( ncbiIds );
 
-  // // // NCBI Gene won't give UniProt Accession, so gotta go get em
+  // NCBI Gene won't give UniProt Accession, so gotta go get em
   const { alias: aliasUniProt } = await validatorGconvert( ncbiIds, { target: 'UniProt' } );
 
   // Update the entity summaries
@@ -28,4 +58,4 @@ const entitySearch = async tokens => {
   return summary;
 };
 
-module.exports = { entitySearch };
+module.exports = { entitySearch, entityFetch };

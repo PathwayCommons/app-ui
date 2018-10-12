@@ -64,7 +64,7 @@ const entitySearch = async tokens => {
     if ( eSummary ) eSummary.xref[DATASOURCES.UNIPROT] = _.get( aliasUniProt, ncbiId );
   });
 
-  // Want key to be original input token
+  // Want key to be original input token, unfortunately, validator transforms to upper case
   const output =  {};
   _.entries( alias ).forEach( pair => output[pair[0]] = summary[pair[1]] );
 

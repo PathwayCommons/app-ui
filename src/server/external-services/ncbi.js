@@ -91,7 +91,7 @@ const getEntitySummary = async ( uids ) => {
       _.get( doc, 'uid', ''),
       _.get( doc, 'summary', ''),
       _.get( doc, 'otherdesignations', '').split('|'),
-      _.get( doc, 'otheraliases', '').split(',')
+      _.get( doc, 'otheraliases', '').split(',').map( a => a.trim() )
     );
 
     // Add database links

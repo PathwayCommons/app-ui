@@ -253,7 +253,7 @@ describe('Test of summary entitySearch function', function() {
     expect( result ).to.deep.equal( validResult_prefixed_HGNC );
 	});
 
-	it('should return correct summary for prefixed HGNC symbol', async () => {
+	it('should return correct summary for prefixed uniprot accession', async () => {
     const result = await entitySearch(['uniprot:P04637']);
     expect( result ).to.deep.equal( validResult_prefixed_UNIPROT );
   });

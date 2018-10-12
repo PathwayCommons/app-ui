@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const _ = require('lodash');
 const { HGNC_BASE_URL } = require('../../config');
-const { EntitySummary } = require('../../models/entity/summary');
+const { EntitySummary, DATASOURCES } = require('../../models/entity/summary');
 
 const fetchBySymbol = symbol => {
   return fetch( `${HGNC_BASE_URL}/fetch/symbol/${symbol}`,
@@ -32,22 +32,22 @@ const getEntitySummary = async symbols => {
 
     const symbol = _.get( doc, 'symbol', '');
     const eSummary = new EntitySummary(
-      'http://identifiers.org/hgnc.symbol/',
+      DATASOURCES.HGNC,
       _.get( doc, 'name', ''),
       symbol,
       '',
       _.get( doc, 'alias_name', []),
       _.get( doc, 'alias_symbol', []),
       {
-        'http://identifiers.org/genecards/' : symbol
+        [DATASOURCES.GENECARDS] : symbol
       }
     );
     // Add database links
     if ( _.has( doc, 'entrez_id') ){
-      eSummary.xref['http://identifiers.org/ncbigene/']  = _.get( doc, 'entrez_id');
+      eSummary.xref[DATASOURCES.NCBIGENE]  = _.get( doc, 'entrez_id');
     }
     if ( _.has( doc, 'uniprot_ids') ){
-      eSummary.xref['http://identifiers.org/uniprot/'] = _.get( doc, 'uniprot_ids[0]', '');
+      eSummary.xref[DATASOURCES.UNIPROT] = _.get( doc, 'uniprot_ids[0]', '');
     }
 
     return summary[ symbol ] = eSummary;

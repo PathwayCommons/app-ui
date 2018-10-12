@@ -7,7 +7,7 @@ const dataSources = {
   UNIPROT: 'http://identifiers.org/uniprot/'
 };
 const validResult = {
-	"4193": {
+	"MDM2": {
 		"dataSource": "http://identifiers.org/ncbigene/",
 		"displayName": "MDM2 proto-oncogene",
 		"localID": "4193",
@@ -27,12 +27,12 @@ const validResult = {
 			" hdm2"
 		],
 		"xref": {
-			"http://identifiers.org/hgnc.symbol/": "MDM2",
+			"http://identifiers.org/hgnc/": "MDM2",
 			"http://identifiers.org/genecards/": "MDM2",
 			"http://identifiers.org/uniprot/": "Q00987"
 		}
 	},
-	"7157": {
+	"TP53": {
 		"dataSource": "http://identifiers.org/ncbigene/",
 		"displayName": "tumor protein p53",
 		"localID": "7157",
@@ -54,7 +54,7 @@ const validResult = {
 			" TRP53"
 		],
 		"xref": {
-			"http://identifiers.org/hgnc.symbol/": "TP53",
+			"http://identifiers.org/hgnc/": "TP53",
 			"http://identifiers.org/genecards/": "TP53",
 			"http://identifiers.org/uniprot/": "P04637"
 		}
@@ -63,7 +63,7 @@ const validResult = {
 
 const validResult_prefixed_HGNC = {
 	"TP53": {
-		"dataSource": "http://identifiers.org/hgnc.symbol/",
+		"dataSource": "http://identifiers.org/hgnc/",
 		"displayName": "tumor protein p53",
 		"localID": "TP53",
 		"description": "",
@@ -96,7 +96,7 @@ const validResult_prefixed_UNIPROT = {
 		"aliasId": [],
 		"xref": {
 			"http://identifiers.org/ncbigene/": "7157",
-			"http://identifiers.org/hgnc.symbol/": "TP53",
+			"http://identifiers.org/hgnc/": "TP53",
 			"http://identifiers.org/genecards/": "TP53"
 		}
 	}
@@ -123,7 +123,7 @@ const validResult_NCBIGENE = {
 			" hdm2"
 		],
 		"xref": {
-			"http://identifiers.org/hgnc.symbol/": "MDM2",
+			"http://identifiers.org/hgnc/": "MDM2",
 			"http://identifiers.org/genecards/": "MDM2"
 		}
 	},
@@ -149,7 +149,7 @@ const validResult_NCBIGENE = {
 			" TRP53"
 		],
 		"xref": {
-			"http://identifiers.org/hgnc.symbol/": "TP53",
+			"http://identifiers.org/hgnc/": "TP53",
 			"http://identifiers.org/genecards/": "TP53"
 		}
 	}
@@ -157,7 +157,7 @@ const validResult_NCBIGENE = {
 
 const validResult_HGNC = {
 	"TP53":{
-		"dataSource":"http://identifiers.org/hgnc.symbol/",
+		"dataSource":"http://identifiers.org/hgnc/",
 		"displayName":"tumor protein p53",
 		"localID":"TP53",
 		"description":"",
@@ -175,7 +175,7 @@ const validResult_HGNC = {
 		}
 	},
 	"MDM2":{
-		"dataSource":"http://identifiers.org/hgnc.symbol/",
+		"dataSource":"http://identifiers.org/hgnc/",
 		"displayName":"MDM2 proto-oncogene",
 		"localID":"MDM2",
 		"description":"",
@@ -209,7 +209,7 @@ const validResult_UNIPROT = {
 		],
 		"xref":{
 			"http://identifiers.org/ncbigene/":"7157",
-			"http://identifiers.org/hgnc.symbol/":"TP53",
+			"http://identifiers.org/hgnc/":"TP53",
 			"http://identifiers.org/genecards/":"TP53"
 		}
 	},
@@ -229,7 +229,7 @@ const validResult_UNIPROT = {
 		],
 		"xref":{
 			"http://identifiers.org/ncbigene/":"4193",
-			"http://identifiers.org/hgnc.symbol/":"MDM2",
+			"http://identifiers.org/hgnc/":"MDM2",
 			"http://identifiers.org/genecards/":"MDM2"
 		}
 	}

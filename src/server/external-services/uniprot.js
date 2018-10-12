@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const { UNIPROT_API_BASE_URL } = require('../../config');
 const _ = require('lodash');
-const { EntitySummary } = require('../../models/entity/summary');
+const { EntitySummary, DATASOURCES } = require('../../models/entity/summary');
 
 
 const fetchByAccessions = ( accessions ) => {
@@ -25,7 +25,7 @@ const getEntitySummary = async ( accessions ) => {
 
     const accession = _.get( doc, 'accession', '');
     const eSummary = new EntitySummary(
-      'http://identifiers.org/uniprot/',
+      DATASOURCES.UNIPROT,
       _.get( doc, 'protein.recommendedName.fullName.value', ''),
       accession,
       _.get( doc, 'comments[0].text[0].value', ''),
@@ -36,13 +36,13 @@ const getEntitySummary = async ( accessions ) => {
     // Add database links
     doc.dbReferences.forEach( xrf => {
       if ( xrf.type === 'GeneID' ) {
-        eSummary.xref['http://identifiers.org/ncbigene/']
+        eSummary.xref[DATASOURCES.NCBIGENE]
           = _.get( xrf, 'id', '');
       }
       if ( xrf.type === 'HGNC' ) {
-        eSummary.xref['http://identifiers.org/hgnc.symbol/']
+        eSummary.xref[DATASOURCES.HGNC]
           =  _.get( xrf, "properties['gene designation']");
-          eSummary.xref['http://identifiers.org/genecards/']
+          eSummary.xref[DATASOURCES.GENECARDS]
           =  _.get( xrf, "properties['gene designation']");
       }
     });

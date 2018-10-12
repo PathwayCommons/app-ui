@@ -3,12 +3,7 @@ const { validatorGconvert } = require('../../../external-services/gprofiler/gcon
 const { getEntitySummary: getNcbiGeneSummary } = require('../../../external-services/ncbi');
 const { getEntitySummary: getHgncSummary } = require('../../../external-services/hgnc');
 const { getEntitySummary: getUniProtSummary } = require('../../../external-services/uniprot');
-
-const dataSources = {
-  NCBIGENE: 'http://identifiers.org/ncbigene/',
-  HGNC: 'http://identifiers.org/hgnc/',
-  UNIPROT: 'http://identifiers.org/uniprot/'
-};
+const { DATASOURCES } = require('../../../../models/entity/summary');
 
 /**
  * entityFetch: Retrieve EntitySummary for a given id from a datasource
@@ -19,10 +14,10 @@ const dataSources = {
 const entityFetch = async ( localIds, dataSource ) => {
   let eSummary;
   switch ( dataSource ) {
-    case dataSources.HGNC:
+    case DATASOURCES.HGNC:
       eSummary = await getHgncSummary( localIds );
       break;
-    case dataSources.UNIPROT:
+    case DATASOURCES.UNIPROT:
       eSummary = await getUniProtSummary( localIds );
       break;
     default:
@@ -36,31 +31,29 @@ const entityFetch = async ( localIds, dataSource ) => {
  * and return an EntitySummary for each
  *
  * @param { array } tokens string(s) that should be queried
- * @return { object } value is EntitySummary keyed by the local ID
+ * @return { object } value is EntitySummary keyed by the input token
  */
 const entitySearch = async tokens => {
-
-  let summary = {};
 
   // look for special tokens
   if ( tokens.length === 1 ) {
     const token = tokens[0];
     const [ dbId, entityId ] = token.split(':');
     if( /hgnc:\w+$/i.test( token ) ){
-      summary = await getHgncSummary( [ entityId ], dataSources.HGNC );
+      return getHgncSummary( [ entityId ], DATASOURCES.HGNC );
     } else if ( /ncbi:[0-9]+$/i.test( token ) ) {
-      summary = await getNcbiGeneSummary( [ entityId ], dataSources.NCBIGENE );
+      return getNcbiGeneSummary( [ entityId ], DATASOURCES.NCBIGENE );
     } else if( /uniprot:\w+$/i.test( token ) ){
-      summary = await getUniProtSummary( [ entityId ], dataSources.UNIPROT );
+      return getUniProtSummary( [ entityId ], DATASOURCES.UNIPROT );
     }
-    return summary;
   }
 
-  const { alias } = await validatorGconvert( tokens, { target: 'NCBIGene' } );
+  const uniqueTokens = _.uniq( tokens );
+  const { alias } = await validatorGconvert( uniqueTokens, { target: 'NCBIGene' } );
   const  ncbiIds = _.values( alias );
 
   // get the entity references
-  summary = await entityFetch( ncbiIds );
+  const summary = await entityFetch( ncbiIds, DATASOURCES.NCBIGENE );
 
   // NCBI Gene won't give UniProt Accession, so gotta go get em
   const { alias: aliasUniProt } = await validatorGconvert( ncbiIds, { target: 'UniProt' } );
@@ -68,10 +61,14 @@ const entitySearch = async tokens => {
   // Update the entity summaries
   _.keys( aliasUniProt ).forEach( ncbiId => {
     const eSummary = _.get( summary, ncbiId );
-    if ( eSummary ) eSummary.xref['http://identifiers.org/uniprot/'] = _.get( aliasUniProt, ncbiId );
+    if ( eSummary ) eSummary.xref[DATASOURCES.UNIPROT] = _.get( aliasUniProt, ncbiId );
   });
 
-  return summary;
+  // Want key to be original input token
+  const output =  {};
+  _.entries( alias ).forEach( pair => output[pair[0]] = summary[pair[1]] );
+
+  return output;
 };
 
 module.exports = { entitySearch, entityFetch };

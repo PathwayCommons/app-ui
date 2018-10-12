@@ -3,7 +3,7 @@ const { NCBI_EUTILS_BASE_URL, PUB_CACHE_MAX_SIZE } = require('../../config');
 const { URLSearchParams } = require('url');
 const LRUCache = require('lru-cache');
 const _ = require('lodash');
-const { EntitySummary } = require('../../models/entity/summary');
+const { EntitySummary, DATASOURCES } = require('../../models/entity/summary');
 
 const pubCache = LRUCache({ max: PUB_CACHE_MAX_SIZE, length: () => 1 });
 
@@ -86,7 +86,7 @@ const getEntitySummary = async ( uids ) => {
     const doc = result[ uid ];
 
     const eSummary = new EntitySummary(
-      'http://identifiers.org/ncbigene/',
+      DATASOURCES.NCBIGENE,
       _.get( doc, 'description', ''),
       _.get( doc, 'uid', ''),
       _.get( doc, 'summary', ''),
@@ -96,8 +96,8 @@ const getEntitySummary = async ( uids ) => {
 
     // Add database links
     if ( _.has( doc, 'name' ) ){
-      eSummary.xref['http://identifiers.org/hgnc.symbol/'] = _.get( doc, 'name' ,'');
-      eSummary.xref['http://identifiers.org/genecards/'] = _.get( doc, 'name', '');
+      eSummary.xref[DATASOURCES.HGNC] = _.get( doc, 'name' ,'');
+      eSummary.xref[DATASOURCES.GENECARDS] = _.get( doc, 'name', '');
     }
     return summary[ uid ] = eSummary;
   });

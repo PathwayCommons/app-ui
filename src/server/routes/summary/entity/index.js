@@ -68,7 +68,10 @@ const entitySearch = async tokens => {
 
   // Want key to be original input token, unfortunately, validator transforms to upper case
   const output =  {};
-  _.entries( alias ).forEach( pair => output[ pair[0] ] = summary[ pair[1] ] );
+  _.entries( alias ).forEach( pair => {
+    const tokenIndex =  _.findIndex( uniqueTokens, t => t.toUpperCase() ===  pair[0] );
+    output[ uniqueTokens[tokenIndex] ] = summary[ pair[1] ];
+});
 
   return output;
 };

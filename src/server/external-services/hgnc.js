@@ -17,8 +17,7 @@ const fetchBySymbols = async symbols => {
   const docs = symbols.map( async symbol => {
     // Process each symbol individually
     const result = await fetchBySymbol( symbol );
-    if( result.response.numFound !== 1 ) return;
-    return result.response.docs[0];
+    return result;
   });
   return await Promise.all( docs );
 };
@@ -29,7 +28,9 @@ const getEntitySummary = async symbols => {
   if ( _.isEmpty( symbols ) ) return summary;
 
   const results = await fetchBySymbols( symbols );
-  results.forEach( doc => {
+  const nonEmptyResults = _.filter( results, o => _.get( o, 'response.numFound') );
+  const docList = _.map( nonEmptyResults, o => _.get( o, 'response.docs[0]') );
+  docList.forEach( doc => {
 
     const symbol = _.get( doc, 'symbol', '');
     const eSummary = new EntitySummary(

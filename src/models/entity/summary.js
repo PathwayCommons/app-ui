@@ -7,13 +7,13 @@ const DATASOURCES = {
 };
 
 class EntitySummary {
-  constructor( dataSource, displayName, localID, description, aliasName, aliasId, xref ){
+  constructor( dataSource, displayName, localID, description, aliases, aliasIds, xref ){
     this.dataSource = dataSource || '';
     this.displayName = displayName || '';
     this.localID = localID || '';
     this.description = description || '';
-    this.aliasName = aliasName || [];
-    this.aliasId = aliasId || [];
+    this.aliases = aliases || [];
+    this.aliasIds = aliasIds || [];
     this.xref = xref || {};
   }
 }

@@ -38,7 +38,7 @@ const entitySearch = async tokens => {
   // look for special tokens
   if ( tokens.length === 1 ) {
     const token = tokens[0];
-    const [ dbId, entityId ] = token.split(':');
+    const [ dbId, entityId ] = token.split(':'); // eslint-disable-line no-unused-vars
     if( /hgnc:\w+$/i.test( token ) ){
       return getHgncSummary( [ entityId ], DATASOURCES.HGNC );
     } else if ( /ncbi:[0-9]+$/i.test( token ) ) {

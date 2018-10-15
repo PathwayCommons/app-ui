@@ -23,8 +23,8 @@ const validResult = {
 		],
 		"aliasId": [
 			"ACTFS",
-			" HDMX",
-			" hdm2"
+			"HDMX",
+			"hdm2"
 		],
 		"xref": {
 			"http://identifiers.org/hgnc/": "MDM2",
@@ -49,9 +49,9 @@ const validResult = {
 		],
 		"aliasId": [
 			"BCC7",
-			" LFS1",
-			" P53",
-			" TRP53"
+			"LFS1",
+			"P53",
+			"TRP53"
 		],
 		"xref": {
 			"http://identifiers.org/hgnc/": "TP53",
@@ -119,8 +119,8 @@ const validResult_NCBIGENE = {
 		],
 		"aliasId": [
 			"ACTFS",
-			" HDMX",
-			" hdm2"
+			"HDMX",
+			"hdm2"
 		],
 		"xref": {
 			"http://identifiers.org/hgnc/": "MDM2",
@@ -144,9 +144,9 @@ const validResult_NCBIGENE = {
 		],
 		"aliasId": [
 			"BCC7",
-			" LFS1",
-			" P53",
-			" TRP53"
+			"LFS1",
+			"P53",
+			"TRP53"
 		],
 		"xref": {
 			"http://identifiers.org/hgnc/": "TP53",

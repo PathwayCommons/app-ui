@@ -248,6 +248,11 @@ describe('Test of summary entitySearch function', function() {
     expect( result ).to.be.an('object').that.is.empty;
 	});
 
+	it('should return correct summary for prefixed NCBI Gene ID', async () => {
+    const result = await entitySearch(['ncbi:7157']);
+    expect( result ).to.deep.equal( { "7157": validResult_NCBIGENE["7157"] } );
+	});
+
   it('should return correct summary for prefixed HGNC symbol', async () => {
     const result = await entitySearch(['hgnc:TP53']);
     expect( result ).to.deep.equal( validResult_prefixed_HGNC );

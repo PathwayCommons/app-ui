@@ -28,8 +28,8 @@ const getEntitySummary = async symbols => {
   if ( _.isEmpty( symbols ) ) return summary;
 
   const results = await fetchBySymbols( symbols );
-  const nonEmptyResults = _.filter( results, o => _.get( o, 'response.numFound') );
-  const docList = _.map( nonEmptyResults, o => _.get( o, 'response.docs[0]') );
+  const nonEmptyResults = results.filter( o => _.get( o, 'response.numFound') );
+  const docList = nonEmptyResults.map( o => _.get( o, 'response.docs[0]') );
   docList.forEach( doc => {
 
     const symbol = _.get( doc, 'symbol', '');

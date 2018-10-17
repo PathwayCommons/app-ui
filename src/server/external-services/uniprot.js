@@ -28,28 +28,26 @@ const getEntitySummary = async ( accessions ) => {
 
   results.forEach( doc => {
 
-    const accession = _.get( doc, 'accession', '');
-    const eSummary = new EntitySummary(
-      DATASOURCES.UNIPROT,
-      _.get( doc, 'protein.recommendedName.fullName.value', ''),
-      accession,
-      _.get( doc, 'comments[0].text[0].value', ''),
-      _.get( doc, 'protein.alternativeName', []).map( elt =>  _.get( elt, 'fullName.value') ),
-      _.get( doc, 'protein.recommendedName.shortName', []).map( elt =>  _.get( elt, 'value') )
-    );
-
-    // Add database links
+    // Fetch external database links first
+    const xref = {};
     doc.dbReferences.forEach( xrf => {
       if ( xrf.type === 'GeneID' ) {
-        eSummary.xref[DATASOURCES.NCBIGENE]
-          = _.get( xrf, 'id', '');
+        xref[DATASOURCES.NCBIGENE] = _.get( xrf, 'id', '');
       }
       if ( xrf.type === 'HGNC' ) {
-        eSummary.xref[DATASOURCES.HGNC]
-          =  _.get( xrf, "properties['gene designation']");
-          eSummary.xref[DATASOURCES.GENECARDS]
-          =  _.get( xrf, "properties['gene designation']");
+        xref[DATASOURCES.HGNC] = _.get( xrf, "properties['gene designation']");
+        xref[DATASOURCES.GENECARDS] = _.get( xrf, "properties['gene designation']");
       }
+    });
+    const accession = _.get( doc, 'accession', '');
+    const eSummary = new EntitySummary({
+      dataSource: DATASOURCES.UNIPROT,
+      displayName: _.get( doc, 'protein.recommendedName.fullName.value', ''),
+      localID: accession,
+      description: _.get( doc, 'comments[0].text[0].value', ''),
+      aliases: _.get( doc, 'protein.alternativeName', []).map( elt =>  _.get( elt, 'fullName.value') ),
+      aliasIds: _.get( doc, 'protein.recommendedName.shortName', []).map( elt =>  _.get( elt, 'value') ),
+      xref: xref
     });
 
     return summary[ accession ] = eSummary;

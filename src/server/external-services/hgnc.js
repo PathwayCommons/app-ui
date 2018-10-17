@@ -18,14 +18,7 @@ const fetchBySymbol = symbol => {
     });
 };
 
-const fetchBySymbols = async symbols => {
-  const docs = symbols.map( async symbol => {
-    // Process each symbol individually
-    const result = await fetchBySymbol( symbol );
-    return result;
-  });
-  return await Promise.all( docs );
-};
+const fetchBySymbols = symbols => Promise.all( symbols.map(fetchBySymbol) );
 
 const getEntitySummary = async symbols => {
 
@@ -38,24 +31,24 @@ const getEntitySummary = async symbols => {
   docList.forEach( doc => {
 
     const symbol = _.get( doc, 'symbol', '');
-    const eSummary = new EntitySummary(
-      DATASOURCES.HGNC,
-      _.get( doc, 'name', ''),
-      symbol,
-      '',
-      _.get( doc, 'alias_name', []),
-      _.get( doc, 'alias_symbol', []),
-      {
-        [DATASOURCES.GENECARDS] : symbol
-      }
-    );
+    const xref = {
+      [DATASOURCES.GENECARDS] : symbol
+    };
     // Add database links
     if ( _.has( doc, 'entrez_id') ){
-      eSummary.xref[DATASOURCES.NCBIGENE]  = _.get( doc, 'entrez_id');
+      xref[DATASOURCES.NCBIGENE]  = _.get( doc, 'entrez_id');
     }
     if ( _.has( doc, 'uniprot_ids') ){
-      eSummary.xref[DATASOURCES.UNIPROT] = _.get( doc, 'uniprot_ids[0]', '');
+      xref[DATASOURCES.UNIPROT] = _.get( doc, 'uniprot_ids[0]', '');
     }
+    const eSummary = new EntitySummary({
+      dataSource: DATASOURCES.HGNC,
+      displayName: _.get( doc, 'name', ''),
+      localID: symbol,
+      aliases: _.get( doc, 'alias_name', []),
+      aliasIds:_.get( doc, 'alias_symbol', []),
+      xref: xref
+    });
 
     return summary[ symbol ] = eSummary;
   });

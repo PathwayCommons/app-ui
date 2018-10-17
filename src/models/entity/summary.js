@@ -1,4 +1,7 @@
 // Entity summary
+const _ = require('lodash');
+
+//To be moved and integrated with all the other 'datasource'
 const DATASOURCES = {
   NCBIGENE: 'http://identifiers.org/ncbigene/',
   HGNC: 'http://identifiers.org/hgnc/',
@@ -6,15 +9,19 @@ const DATASOURCES = {
   GENECARDS: 'http://identifiers.org/genecards/'
 };
 
+const DEFAULTS = {
+  dataSource: '',
+  displayName: '',
+  localID: '',
+  description: '',
+  aliases: [],
+  aliasIds: [],
+  xref: {}
+};
+
 class EntitySummary {
-  constructor( dataSource, displayName, localID, description, aliases, aliasIds, xref ){
-    this.dataSource = dataSource || '';
-    this.displayName = displayName || '';
-    this.localID = localID || '';
-    this.description = description || '';
-    this.aliases = aliases || [];
-    this.aliasIds = aliasIds || [];
-    this.xref = xref || {};
+  constructor( options ){
+    _.assign(this, DEFAULTS, options );
   }
 }
 

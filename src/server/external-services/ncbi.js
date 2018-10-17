@@ -90,21 +90,24 @@ const getEntitySummary = async ( uids ) => {
   result.uids.forEach( uid => {
     if( _.has( result, uid['error'] ) ) return;
     const doc = result[ uid ];
+    const xref = {};
 
-    const eSummary = new EntitySummary(
-      DATASOURCES.NCBIGENE,
-      _.get( doc, 'description', ''),
-      _.get( doc, 'uid', ''),
-      _.get( doc, 'summary', ''),
-      _.get( doc, 'otherdesignations', '').split('|'),
-      _.get( doc, 'otheraliases', '').split(',').map( a => a.trim() )
-    );
-
-    // Add database links
+    // Fetch external database links first
     if ( _.has( doc, 'name' ) ){
-      eSummary.xref[DATASOURCES.HGNC] = _.get( doc, 'name' ,'');
-      eSummary.xref[DATASOURCES.GENECARDS] = _.get( doc, 'name', '');
+      xref[DATASOURCES.HGNC] = _.get( doc, 'name' ,'');
+      xref[DATASOURCES.GENECARDS] = _.get( doc, 'name', '');
     }
+
+    const eSummary = new EntitySummary({
+      dataSource: DATASOURCES.NCBIGENE,
+      displayName: _.get( doc, 'description', ''),
+      localID: _.get( doc, 'uid', ''),
+      description: _.get( doc, 'summary', ''),
+      aliases: _.get( doc, 'otherdesignations', '').split('|'),
+      aliasIds: _.get( doc, 'otheraliases', '').split(',').map( a => a.trim() ),
+      xref: xref
+    });
+
     return summary[ uid ] = eSummary;
   });
 

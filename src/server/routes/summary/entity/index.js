@@ -37,43 +37,49 @@ const entitySearch = async tokens => {
 
   // look for special tokens
   if ( tokens.length === 1 ) {
+    let db;
     const token = tokens[0];
     const [ dbId, entityId ] = token.split(':'); // eslint-disable-line no-unused-vars
     if( /hgnc:\w+$/i.test( token ) ){
-      return getHgncSummary( [ entityId ], DATASOURCES.HGNC );
+      db = DATASOURCES.HGNC;
     } else if ( /ncbi:[0-9]+$/i.test( token ) ) {
-      return getNcbiGeneSummary( [ entityId ], DATASOURCES.NCBIGENE );
+      db = DATASOURCES.NCBIGENE;
     } else if( /uniprot:\w+$/i.test( token ) ){
-      return getUniProtSummary( [ entityId ], DATASOURCES.UNIPROT );
+      db = DATASOURCES.UNIPROT;
     }
+    if( db ) return entityFetch( [ entityId ], db );
   }
 
-  const uniqueTokens = _.uniq( tokens );
-  const { alias } = await validatorGconvert( uniqueTokens, { target: 'NCBIGene' } );
-  // Duplication of work (src/server/external-services/pathway-commons.js).
-  // Could consider a single piece of logic that tokenizes and sends to validator.
+  try {
+    const uniqueTokens = _.uniq( tokens );
+    const { alias } = await validatorGconvert( uniqueTokens, { target: 'NCBIGene' } );
+    // Duplication of work (src/server/external-services/pathway-commons.js).
+    // Could consider a single piece of logic that tokenizes and sends to validator.
 
-  // get the entity summaries for successfully mapped tokens
-  const mappedIds = _.values( alias );
-  const summary = await entityFetch( mappedIds, DATASOURCES.NCBIGENE );
+    // get the entity summaries for successfully mapped tokens
+    const mappedIds = _.values( alias );
+    const summary = await entityFetch( mappedIds, DATASOURCES.NCBIGENE );
 
-  // NCBI Gene won't give UniProt Accession, so gotta go get em
-  const { alias: aliasUniProt } = await validatorGconvert( mappedIds, { target: 'UniProt' } );
+    // NCBI Gene won't give UniProt Accession, so gotta go get em
+    const { alias: aliasUniProt } = await validatorGconvert( mappedIds, { target: 'UniProt' } );
 
-  // Update the entity summaries
-  _.keys( aliasUniProt ).forEach( ncbiId => {
-    const eSummary = _.get( summary, ncbiId );
-    if ( eSummary ) eSummary.xref[ DATASOURCES.UNIPROT ] = _.get( aliasUniProt, ncbiId );
-  });
+    // Update the entity summaries
+    _.keys( aliasUniProt ).forEach( ncbiId => {
+      const eSummary = _.get( summary, ncbiId );
+      if ( eSummary ) eSummary.xref[ DATASOURCES.UNIPROT ] = _.get( aliasUniProt, ncbiId );
+    });
 
-  // Want key to be original input token, unfortunately, validator transforms to upper case
-  const output =  {};
-  _.entries( alias ).forEach( pair => {
-    const tokenIndex =  _.findIndex( uniqueTokens, t => t.toUpperCase() ===  pair[0] );
-    output[ uniqueTokens[tokenIndex] ] = summary[ pair[1] ];
-});
+    // Want key to be original input token, unfortunately, validator transforms to upper case
+    const output =  {};
+    _.entries( alias ).forEach( pair => {
+      const tokenIndex =  _.findIndex( uniqueTokens, t => t.toUpperCase() ===  pair[0] );
+      output[ uniqueTokens[tokenIndex] ] = summary[ pair[1] ];
+    });
 
-  return output;
+    return output;
+  } catch ( error ) {
+    throw error; // just rethrow and delegate logging to async functions
+  }
 };
 
 module.exports = { entitySearch, entityFetch };

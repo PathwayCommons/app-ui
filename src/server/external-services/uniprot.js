@@ -2,6 +2,7 @@ const fetch = require('node-fetch');
 const { UNIPROT_API_BASE_URL } = require('../../config');
 const _ = require('lodash');
 const { EntitySummary, DATASOURCES } = require('../../models/entity/summary');
+const logger = require('../logger');
 
 //Could cache somewhere here.
 const fetchByAccessions = ( accessions ) => {
@@ -10,7 +11,11 @@ const fetchByAccessions = ( accessions ) => {
       'Accept': 'application/json'
       }
     })
-    .then(res => res.json());
+    .then(res => res.json())
+    .catch( error => {
+      logger.error(`${error.name} in uniprot fetchByAccessions: ${error.message}`);
+      throw error;
+    });
 };
 
 const getEntitySummary = async ( accessions ) => {

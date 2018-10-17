@@ -4,6 +4,7 @@ const { URLSearchParams } = require('url');
 const LRUCache = require('lru-cache');
 const _ = require('lodash');
 const { EntitySummary, DATASOURCES } = require('../../models/entity/summary');
+const logger = require('../logger');
 
 const pubCache = LRUCache({ max: PUB_CACHE_MAX_SIZE, length: () => 1 });
 
@@ -71,7 +72,11 @@ const fetchByGeneIds = ( geneIds ) => {
         'Accept': 'application/json'
       }
     })
-    .then(res => res.json());
+    .then(res => res.json())
+    .catch( error => {
+      logger.error(`${error.name} in ncbi fetchByGeneIds: ${error.message}`);
+      throw error;
+    });
 };
 
 const getEntitySummary = async ( uids ) => {

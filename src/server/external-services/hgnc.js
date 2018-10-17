@@ -2,6 +2,7 @@ const fetch = require('node-fetch');
 const _ = require('lodash');
 const { HGNC_BASE_URL } = require('../../config');
 const { EntitySummary, DATASOURCES } = require('../../models/entity/summary');
+const logger = require('../logger');
 
 //Could cache somewhere here.
 const fetchBySymbol = symbol => {
@@ -10,7 +11,11 @@ const fetchBySymbol = symbol => {
       'Accept': 'application/json'
       }
     })
-    .then(res => res.json());
+    .then(res => res.json())
+    .catch( error => {
+      logger.error(`${error.name} in hgnc fetchBySymbol: ${error.message}`);
+      throw error;
+    });
 };
 
 const fetchBySymbols = async symbols => {

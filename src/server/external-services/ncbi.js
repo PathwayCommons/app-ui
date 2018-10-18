@@ -2,6 +2,9 @@ const fetch = require('node-fetch');
 const { NCBI_EUTILS_BASE_URL, PUB_CACHE_MAX_SIZE } = require('../../config');
 const { URLSearchParams } = require('url');
 const LRUCache = require('lru-cache');
+const _ = require('lodash');
+const { EntitySummary, DATASOURCES } = require('../../models/entity/summary');
+const logger = require('../logger');
 
 const pubCache = LRUCache({ max: PUB_CACHE_MAX_SIZE, length: () => 1 });
 
@@ -60,4 +63,55 @@ const getPublications = (pubmedIds) => {
   );
 };
 
-module.exports = { getPublications };
+//Could cache somewhere here.
+const fetchByGeneIds = ( geneIds ) => {
+  return fetch(`${NCBI_EUTILS_BASE_URL}/esummary.fcgi?retmode=json&db=gene&id=${geneIds.join(',')}`,
+    {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+    .then(res => res.json())
+    .catch( error => {
+      logger.error(`${error.name} in ncbi fetchByGeneIds: ${error.message}`);
+      throw error;
+    });
+};
+
+const getEntitySummary = async ( uids ) => {
+
+  const summary = {};
+  if ( _.isEmpty( uids ) ) return summary;
+
+  const results = await fetchByGeneIds( uids );
+  const result = results.result;
+
+  result.uids.forEach( uid => {
+    if( _.has( result, uid['error'] ) ) return;
+    const doc = result[ uid ];
+    const xref = {};
+
+    // Fetch external database links first
+    if ( _.has( doc, 'name' ) ){
+      xref[DATASOURCES.HGNC] = _.get( doc, 'name' ,'');
+      xref[DATASOURCES.GENECARDS] = _.get( doc, 'name', '');
+    }
+
+    const eSummary = new EntitySummary({
+      dataSource: DATASOURCES.NCBIGENE,
+      displayName: _.get( doc, 'description', ''),
+      localID: _.get( doc, 'uid', ''),
+      description: _.get( doc, 'summary', ''),
+      aliases: _.get( doc, 'otherdesignations', '').split('|'),
+      aliasIds: _.get( doc, 'otheraliases', '').split(',').map( a => a.trim() ),
+      xref: xref
+    });
+
+    return summary[ uid ] = eSummary;
+  });
+
+  return summary;
+};
+
+module.exports = { getPublications, getEntitySummary };

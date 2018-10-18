@@ -5,6 +5,7 @@ const concat = require('unique-concat');
 //Requires a subtree consisting of database ID objects
 //Note : [] is returned if no ID is found.
 function parseDatabaseIDs(subTree) {
+  // console.log(subTree);
   let result = [];
 
   //Loop through all different database ids

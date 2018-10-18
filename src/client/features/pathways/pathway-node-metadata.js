@@ -13,7 +13,8 @@ class PathwayNodeMetadataView extends React.Component {
   }
 
   render(){
-    let { metadata } = this.props;
+    let { metadata, node } = this.props;
+    console.log(node.data());
 
     if ( metadata.isEmpty() ) {
       return h('div.cy-tooltip', [

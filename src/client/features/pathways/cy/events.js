@@ -35,7 +35,7 @@ let bindCyEvents = cy => {
 
     metadata.getPublicationData().then( () => {
       let tooltip = new CytoscapeTooltip( node.popperRef(), {
-        html: h(PathwayNodeMetadataView, { metadata })
+        html: h(PathwayNodeMetadataView, { node, metadata })
       } );
       node.scratch('_tooltip', tooltip);
       tooltip.show();

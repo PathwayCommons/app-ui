@@ -1,0 +1,991 @@
+[
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/ec1",
+      "class": "nucleic acid feature",
+      "label": "ATM",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [
+        {
+          "id": null,
+          "class": "unit of information",
+          "label": {
+            "text": "mt:DNA"
+          }
+        }
+      ],
+      "bbox": {
+        "x": 25,
+        "y": 15,
+        "w": 50,
+        "h": 30
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/c68ce",
+      "class": "omitted process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/acd80",
+      "class": "complex",
+      "label": "noname",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 24,
+        "y": 10,
+        "w": 48,
+        "h": 20
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/d20ab_LEFTTORIGHT",
+      "class": "process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/ef6",
+      "class": "nucleic acid feature",
+      "label": "GADD45A",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [
+        {
+          "id": null,
+          "class": "unit of information",
+          "label": {
+            "text": "mt:DNA"
+          }
+        }
+      ],
+      "bbox": {
+        "x": 25,
+        "y": 15,
+        "w": 50,
+        "h": 30
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/de1",
+      "class": "nucleic acid feature",
+      "label": "MNAT1",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [
+        {
+          "id": null,
+          "class": "unit of information",
+          "label": {
+            "text": "mt:DNA"
+          }
+        }
+      ],
+      "bbox": {
+        "x": 25,
+        "y": 15,
+        "w": 50,
+        "h": 30
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/a7d",
+      "class": "nucleic acid feature",
+      "label": "PCNA",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [
+        {
+          "id": null,
+          "class": "unit of information",
+          "label": {
+            "text": "mt:DNA"
+          }
+        }
+      ],
+      "bbox": {
+        "x": 25,
+        "y": 15,
+        "w": 50,
+        "h": 30
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/c94d5",
+      "class": "omitted process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/b74",
+      "class": "nucleic acid feature",
+      "label": "TP53",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [
+        {
+          "id": null,
+          "class": "unit of information",
+          "label": {
+            "text": "mt:DNA"
+          }
+        }
+      ],
+      "bbox": {
+        "x": 25,
+        "y": 15,
+        "w": 50,
+        "h": 30
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/afc7f",
+      "class": "omitted process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/fbc",
+      "class": "nucleic acid feature",
+      "label": "CDC25A",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [
+        {
+          "id": null,
+          "class": "unit of information",
+          "label": {
+            "text": "mt:DNA"
+          }
+        }
+      ],
+      "bbox": {
+        "x": 25,
+        "y": 15,
+        "w": 50,
+        "h": 30
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/d5185",
+      "class": "omitted process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/fc1",
+      "class": "nucleic acid feature",
+      "label": "CCNE1",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [
+        {
+          "id": null,
+          "class": "unit of information",
+          "label": {
+            "text": "mt:DNA"
+          }
+        }
+      ],
+      "bbox": {
+        "x": 25,
+        "y": 15,
+        "w": 50,
+        "h": 30
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/d75b8_LEFTTORIGHT",
+      "class": "process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/e9fd8_LEFTTORIGHT",
+      "class": "process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/d30",
+      "class": "nucleic acid feature",
+      "label": "MYC",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [
+        {
+          "id": null,
+          "class": "unit of information",
+          "label": {
+            "text": "mt:DNA"
+          }
+        }
+      ],
+      "bbox": {
+        "x": 25,
+        "y": 15,
+        "w": 50,
+        "h": 30
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/c5ddf",
+      "class": "complex",
+      "label": "noname",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 24,
+        "y": 10,
+        "w": 52,
+        "h": 24
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/acd80_fd282ef4a9605789270ed99c28776df7",
+      "class": "complex",
+      "label": "noname",
+      "parent": "http://identifiers.org/wikipathways/WP45/c5ddf",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 24,
+        "y": 10,
+        "w": 48,
+        "h": 20
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/bcbb6",
+      "class": "omitted process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/e78c7",
+      "class": "complex",
+      "label": "noname",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 24,
+        "y": 10,
+        "w": 48,
+        "h": 20
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/c7d",
+      "class": "nucleic acid feature",
+      "label": "TP53",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [
+        {
+          "id": null,
+          "class": "unit of information",
+          "label": {
+            "text": "mt:DNA"
+          }
+        }
+      ],
+      "bbox": {
+        "x": 25,
+        "y": 15,
+        "w": 50,
+        "h": 30
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/fb81b",
+      "class": "omitted process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/df3",
+      "class": "unspecified entity",
+      "label": "DNA replication",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 20,
+        "y": 20,
+        "w": 40,
+        "h": 40
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/c6cfe",
+      "class": "complex",
+      "label": "noname",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 20,
+        "y": 20,
+        "w": 44,
+        "h": 44
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/d6232_e9ba6cf4c6df6b4aba54b4d8f757af3d",
+      "class": "unspecified entity",
+      "label": "CyclinD",
+      "parent": "http://identifiers.org/wikipathways/WP45/c6cfe",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 20,
+        "y": 20,
+        "w": 40,
+        "h": 40
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/a5fef_e9ba6cf4c6df6b4aba54b4d8f757af3d",
+      "class": "unspecified entity",
+      "label": "CdK",
+      "parent": "http://identifiers.org/wikipathways/WP45/c6cfe",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 20,
+        "y": 20,
+        "w": 40,
+        "h": 40
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/a744f",
+      "class": "omitted process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/ec9ea",
+      "class": "omitted process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/a183d",
+      "class": "omitted process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/a28c4",
+      "class": "complex",
+      "label": "noname",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 24,
+        "y": 10,
+        "w": 48,
+        "h": 20
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/b4c",
+      "class": "nucleic acid feature",
+      "label": "E2f",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [
+        {
+          "id": null,
+          "class": "unit of information",
+          "label": {
+            "text": "mt:DNA"
+          }
+        }
+      ],
+      "bbox": {
+        "x": 25,
+        "y": 15,
+        "w": 50,
+        "h": 30
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/e702e",
+      "class": "omitted process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/dbce3",
+      "class": "complex",
+      "label": "noname",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 24,
+        "y": 10,
+        "w": 48,
+        "h": 20
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/e25b0_LEFTTORIGHT",
+      "class": "process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/d95a4",
+      "class": "omitted process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/ec3",
+      "class": "unspecified entity",
+      "label": "Cell cycle DNA replication genes",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 20,
+        "y": 20,
+        "w": 40,
+        "h": 40
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/c83ee",
+      "class": "complex",
+      "label": "noname",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 24,
+        "y": 10,
+        "w": 48,
+        "h": 20
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/a11d4",
+      "class": "omitted process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/a966c",
+      "class": "complex",
+      "label": "noname",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 20,
+        "y": 20,
+        "w": 44,
+        "h": 44
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/a2fc9_83d84c3580ad2b41da16d3d5c63d6343",
+      "class": "unspecified entity",
+      "label": "CyclinD",
+      "parent": "http://identifiers.org/wikipathways/WP45/a966c",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 20,
+        "y": 20,
+        "w": 40,
+        "h": 40
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/c7838_83d84c3580ad2b41da16d3d5c63d6343",
+      "class": "unspecified entity",
+      "label": "CdK",
+      "parent": "http://identifiers.org/wikipathways/WP45/a966c",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 20,
+        "y": 20,
+        "w": 40,
+        "h": 40
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/d139f",
+      "class": "omitted process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/dbc65",
+      "class": "complex",
+      "label": "noname",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 24,
+        "y": 10,
+        "w": 48,
+        "h": 20
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/c9c53",
+      "class": "complex",
+      "label": "noname",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 24,
+        "y": 10,
+        "w": 48,
+        "h": 20
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/aa2be",
+      "class": "omitted process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/fc77f",
+      "class": "omitted process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/adb05_LEFTTORIGHT",
+      "class": "process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/fae2c",
+      "class": "omitted process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/c5378",
+      "class": "omitted process",
+      "label": "",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 7.5,
+        "y": 7.5,
+        "w": 15,
+        "h": 15
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/b9599",
+      "class": "complex",
+      "label": "noname",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 24,
+        "y": 10,
+        "w": 52,
+        "h": 24
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/e7636_b10ec13ba07e04c4e20254e2b71bad8d",
+      "class": "complex",
+      "label": "noname",
+      "parent": "http://identifiers.org/wikipathways/WP45/b9599",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 24,
+        "y": 10,
+        "w": 48,
+        "h": 20
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/e4d",
+      "class": "unspecified entity",
+      "label": "phosphorylation of proteins involved in G1/S transition",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [],
+      "bbox": {
+        "x": 20,
+        "y": 20,
+        "w": 40,
+        "h": 40
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "http://identifiers.org/wikipathways/WP45/c06",
+      "class": "nucleic acid feature",
+      "label": "MDM2",
+      "parent": "",
+      "clonemarker": false,
+      "stateVariables": [],
+      "unitsOfInformation": [
+        {
+          "id": null,
+          "class": "unit of information",
+          "label": {
+            "text": "mt:DNA"
+          }
+        }
+      ],
+      "bbox": {
+        "x": 25,
+        "y": 15,
+        "w": 50,
+        "h": 30
+      }
+    }
+  }
+]

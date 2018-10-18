@@ -1,0 +1,830 @@
+{
+  "@graph": [
+    {
+      "@id": "http://identifiers.org/ncbigene/1647",
+      "@type": "bp:DnaReference",
+      "comment": "growth arrest and DNA-damage-inducible, alpha. Refer to BioSeq for sequence information derived from PMID 12808131. Note that the listed BioSeq may not describe the complete GADD45A promoter.",
+      "displayName": "GADD45A promoter",
+      "organism": "http://identifiers.org/taxonomy/9606",
+      "xref": [
+        "http://pathwaycommons.org/pc2/RelationshipXref_uniprot_knowledgebase_P24522_see-also",
+        "http://pathwaycommons.org/pc2/RelationshipXref_omim_126335_identity",
+        "http://pathwaycommons.org/pc2/RelationshipXref_hgnc_symbol_GADD45A_see-also",
+        "http://pathwaycommons.org/pc2/UnificationXref_ncbi_gene_1647"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/ncbigene/4193",
+      "@type": "bp:DnaReference",
+      "xref": [
+        "http://pathwaycommons.org/pc2/RelationshipXref_uniprot_knowledgebase_Q00987_see-also",
+        "http://pathwaycommons.org/pc2/UnificationXref_ncbi_gene_4193",
+        "http://pathwaycommons.org/pc2/RelationshipXref_hgnc_symbol_MDM2_see-also"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/ncbigene/4331",
+      "@type": "bp:DnaReference",
+      "xref": [
+        "http://pathwaycommons.org/pc2/RelationshipXref_hgnc_symbol_MNAT1_see-also",
+        "http://pathwaycommons.org/pc2/RelationshipXref_uniprot_knowledgebase_P51948_see-also",
+        "http://pathwaycommons.org/pc2/UnificationXref_ncbi_gene_4331"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/ncbigene/4609",
+      "@type": "bp:DnaReference",
+      "comment": "v-myc myelocytomatosis viral oncogene homolog (avian). Refer to BioSeq for sequence information derived from PMID 12808131. Note that the listed BioSeq may not describe the complete MYC promoter.",
+      "displayName": "MYC promoter",
+      "organism": "http://identifiers.org/taxonomy/9606",
+      "xref": [
+        "http://pathwaycommons.org/pc2/RelationshipXref_omim_190080_identity",
+        "http://pathwaycommons.org/pc2/UnificationXref_ncbi_gene_4609",
+        "http://pathwaycommons.org/pc2/RelationshipXref_uniprot_knowledgebase_P01106_see-also",
+        "http://pathwaycommons.org/pc2/RelationshipXref_hgnc_symbol_MYC_see-also"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/ncbigene/472",
+      "@type": "bp:DnaReference",
+      "comment": "ataxia telangiectasia mutated (includes complementation groups A, C and D). Refer to BioSeq for sequence information derived from PMID 12808131. Note that the listed BioSeq may not describe the complete ATM promoter.",
+      "displayName": "ATM promoter",
+      "organism": "http://identifiers.org/taxonomy/9606",
+      "xref": [
+        "http://pathwaycommons.org/pc2/UnificationXref_ncbi_gene_472",
+        "http://pathwaycommons.org/pc2/RelationshipXref_omim_607585_identity",
+        "http://pathwaycommons.org/pc2/RelationshipXref_uniprot_knowledgebase_Q13315_see-also",
+        "http://pathwaycommons.org/pc2/RelationshipXref_hgnc_symbol_ATM_see-also"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/ncbigene/5111",
+      "@type": "bp:DnaReference",
+      "comment": "proliferating cell nuclear antigen. Refer to BioSeq for sequence information derived from PMID 12808131. Note that the listed BioSeq may not describe the complete PCNA promoter.",
+      "displayName": "PCNA promoter",
+      "organism": "http://identifiers.org/taxonomy/9606",
+      "xref": [
+        "http://pathwaycommons.org/pc2/RelationshipXref_omim_176740_identity",
+        "http://pathwaycommons.org/pc2/UnificationXref_ncbi_gene_5111",
+        "http://pathwaycommons.org/pc2/RelationshipXref_uniprot_knowledgebase_P12004_see-also",
+        "http://pathwaycommons.org/pc2/RelationshipXref_hgnc_symbol_PCNA_see-also"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/ncbigene/7157",
+      "@type": "bp:DnaReference",
+      "comment": "Homo sapiens tumor protein p53 (Li-Fraumeni syndrome) (TP53). Refer to BioSeq for sequence information derived from PMID 12808131. Note that the listed BioSeq may not describe the complete TP53 promoter.",
+      "displayName": "TP53 promoter",
+      "organism": "http://identifiers.org/taxonomy/9606",
+      "xref": [
+        "http://pathwaycommons.org/pc2/RelationshipXref_hgnc_symbol_TP53_see-also",
+        "http://pathwaycommons.org/pc2/RelationshipXref_uniprot_knowledgebase_P04637_see-also",
+        "http://pathwaycommons.org/pc2/UnificationXref_ncbi_gene_7157",
+        "http://pathwaycommons.org/pc2/RelationshipXref_omim_191170_identity"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/ncbigene/898",
+      "@type": "bp:DnaReference",
+      "xref": [
+        "http://pathwaycommons.org/pc2/RelationshipXref_hgnc_symbol_CCNE1_see-also",
+        "http://pathwaycommons.org/pc2/UnificationXref_ncbi_gene_898",
+        "http://pathwaycommons.org/pc2/RelationshipXref_uniprot_knowledgebase_P24864_see-also"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/ncbigene/993",
+      "@type": "bp:DnaReference",
+      "comment": [
+        "cell division cycle 25A. Refer to BioSeq for sequence information derived from PMID 12808131. Note that the listed BioSeq may not describe the complete CDC25A:500 promoter.",
+        "cell division cycle 25A. Refer to BioSeq for sequence information derived from PMID 12808131. Note that the listed BioSeq may not describe the complete CDC25A promoter.",
+        "cell division cycle 25A. Refer to BioSeq for sequence information derived from PMID 12808131. Note that the listed BioSeq may not describe the complete CDC25A:950 promoter."
+      ],
+      "displayName": "CDC25A promoter",
+      "name": [
+        "CDC25A:950 promoter",
+        "CDC25A:500 promoter"
+      ],
+      "organism": "http://identifiers.org/taxonomy/9606",
+      "xref": [
+        "http://pathwaycommons.org/pc2/RelationshipXref_uniprot_knowledgebase_P30304_see-also",
+        "http://pathwaycommons.org/pc2/UnificationXref_ncbi_gene_993",
+        "http://pathwaycommons.org/pc2/RelationshipXref_hgnc_symbol_CDC25A_see-also",
+        "http://pathwaycommons.org/pc2/RelationshipXref_omim_116947_identity"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/psimi/MI:0356",
+      "@type": "bp:RelationshipTypeVocabulary",
+      "term": "identity",
+      "xref": "http://pathwaycommons.org/pc2/UnificationXref_molecular_interactions_ontology_MI_0356"
+    },
+    {
+      "@id": "http://identifiers.org/psimi/MI:0361",
+      "@type": "bp:RelationshipTypeVocabulary",
+      "term": "see-also",
+      "xref": "http://pathwaycommons.org/pc2/UnificationXref_molecular_interactions_ontology_MI_0361"
+    },
+    {
+      "@id": "http://identifiers.org/taxonomy/9606",
+      "@type": "bp:BioSource",
+      "displayName": "Homo sapiens",
+      "name": [
+        "BiologicalState14",
+        "human",
+        "Homo sapiens, Cell Membrane",
+        "Human",
+        "Homo sapiens, Nucleus",
+        "Homo sapiens (human)",
+        "BiologicalState27",
+        "BiologicalState15",
+        "Homo sapiens, Extracellular Space"
+      ],
+      "xref": "http://pathwaycommons.org/pc2/UnificationXref_taxonomy_9606"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/a11d4",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "participant": [
+        "http://identifiers.org/wikipathways/WP45/c06",
+        "http://identifiers.org/wikipathways/WP45/ec1"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/a183d",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "participant": [
+        "http://identifiers.org/wikipathways/WP45/b4c",
+        "http://identifiers.org/wikipathways/WP45/dbce3"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/a28c4",
+      "@type": "bp:Complex",
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/a2a5d",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/a2fc9",
+      "@type": "bp:PhysicalEntity",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "displayName": "CyclinD"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/a5674",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/a5fef",
+      "@type": "bp:PhysicalEntity",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "displayName": "CdK"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/a744f",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "participant": [
+        "http://identifiers.org/wikipathways/WP45/de1",
+        "http://identifiers.org/wikipathways/WP45/adb05"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/a7d",
+      "@type": "bp:Dna",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "displayName": "PCNA",
+      "entityReference": "http://identifiers.org/ncbigene/5111"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/a966c",
+      "@type": "bp:Complex",
+      "component": [
+        "http://identifiers.org/wikipathways/WP45/a2fc9",
+        "http://identifiers.org/wikipathways/WP45/c7838"
+      ],
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/aa2be",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "participant": [
+        "http://identifiers.org/wikipathways/WP45/e4d",
+        "http://identifiers.org/wikipathways/WP45/a28c4"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/acd80",
+      "@type": "bp:Complex",
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/adb05",
+      "@type": "bp:Conversion",
+      "conversionDirection": "LEFT_TO_RIGHT",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "left": "http://identifiers.org/wikipathways/WP45/a966c",
+      "right": "http://identifiers.org/wikipathways/WP45/c6cfe"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/ae7b4",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/afc7f",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "participant": [
+        "http://identifiers.org/wikipathways/WP45/d30",
+        "http://identifiers.org/wikipathways/WP45/ef6"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/b4c",
+      "@type": "bp:Dna",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "displayName": "E2f",
+      "entityReference": "http://pathwaycommons.org/pc2/DnaReference_cbea9658bb13951c176509afe3be6641"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/b74",
+      "@type": "bp:Dna",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "displayName": "TP53",
+      "entityReference": "http://identifiers.org/ncbigene/7157"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/b9599",
+      "@type": "bp:Complex",
+      "component": "http://identifiers.org/wikipathways/WP45/e7636",
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/bcbb6",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "participant": [
+        "http://identifiers.org/wikipathways/WP45/b74",
+        "http://identifiers.org/wikipathways/WP45/c7d"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/c06",
+      "@type": "bp:Dna",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "displayName": "MDM2",
+      "entityReference": "http://identifiers.org/ncbigene/4193"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/c5378",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "participant": [
+        "http://identifiers.org/wikipathways/WP45/b74",
+        "http://identifiers.org/wikipathways/WP45/ef6"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/c5ddf",
+      "@type": "bp:Complex",
+      "component": "http://identifiers.org/wikipathways/WP45/acd80",
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/c68ce",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "participant": [
+        "http://identifiers.org/wikipathways/WP45/d378f",
+        "http://identifiers.org/wikipathways/WP45/ec3"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/c6cfe",
+      "@type": "bp:Complex",
+      "component": [
+        "http://identifiers.org/wikipathways/WP45/a5fef",
+        "http://identifiers.org/wikipathways/WP45/d6232"
+      ],
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/c7838",
+      "@type": "bp:PhysicalEntity",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "displayName": "CdK"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/c7d",
+      "@type": "bp:Dna",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "displayName": "TP53",
+      "entityReference": "http://identifiers.org/ncbigene/7157"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/c83ee",
+      "@type": "bp:Complex",
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/c94d5",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "participant": [
+        "http://identifiers.org/wikipathways/WP45/fc1",
+        "http://identifiers.org/wikipathways/WP45/b9599"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/c9c53",
+      "@type": "bp:Complex",
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/d139f",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "participant": [
+        "http://identifiers.org/wikipathways/WP45/acd80",
+        "http://identifiers.org/wikipathways/WP45/e78c7"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/d20ab",
+      "@type": "bp:Conversion",
+      "conversionDirection": "LEFT_TO_RIGHT",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "left": "http://identifiers.org/wikipathways/WP45/dbc65",
+      "right": "http://identifiers.org/wikipathways/WP45/a28c4"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/d30",
+      "@type": "bp:Dna",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "displayName": "MYC",
+      "entityReference": "http://identifiers.org/ncbigene/4609"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/d378f",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/d5185",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "participant": [
+        "http://identifiers.org/wikipathways/WP45/c06",
+        "http://identifiers.org/wikipathways/WP45/bcbb6"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/d6232",
+      "@type": "bp:PhysicalEntity",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "displayName": "CyclinD"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/d75b8",
+      "@type": "bp:Conversion",
+      "conversionDirection": "LEFT_TO_RIGHT",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "left": "http://identifiers.org/wikipathways/WP45/a28c4",
+      "right": "http://identifiers.org/wikipathways/WP45/dbc65"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/d95a4",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "participant": [
+        "http://identifiers.org/wikipathways/WP45/fbc",
+        "http://identifiers.org/wikipathways/WP45/d20ab"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/dbc65",
+      "@type": "bp:Complex",
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/dbce3",
+      "@type": "bp:Complex",
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/de1",
+      "@type": "bp:Dna",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "displayName": "MNAT1",
+      "entityReference": "http://identifiers.org/ncbigene/4331"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/df3",
+      "@type": "bp:PhysicalEntity",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "displayName": "DNA replication"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/e25b0",
+      "@type": "bp:Conversion",
+      "conversionDirection": "LEFT_TO_RIGHT",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "left": "http://identifiers.org/wikipathways/WP45/c6cfe",
+      "right": "http://identifiers.org/wikipathways/WP45/dbce3"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/e4d",
+      "@type": "bp:PhysicalEntity",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "displayName": "phosphorylation of proteins involved in G1/S transition"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/e702e",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "participant": [
+        "http://identifiers.org/wikipathways/WP45/e4d",
+        "http://identifiers.org/wikipathways/WP45/ef6"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/e7636",
+      "@type": "bp:Complex",
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/e78c7",
+      "@type": "bp:Complex",
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/e9fd8",
+      "@type": "bp:Conversion",
+      "conversionDirection": "LEFT_TO_RIGHT",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "left": "http://identifiers.org/wikipathways/WP45/c5ddf",
+      "right": "http://identifiers.org/wikipathways/WP45/a966c"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/ea16a",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/ec1",
+      "@type": "bp:Dna",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "displayName": "ATM",
+      "entityReference": "http://identifiers.org/ncbigene/472"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/ec3",
+      "@type": "bp:PhysicalEntity",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "displayName": "Cell cycle DNA replication genes"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/ec9ea",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "participant": [
+        "http://identifiers.org/wikipathways/WP45/c9c53",
+        "http://identifiers.org/wikipathways/WP45/b74"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/ef6",
+      "@type": "bp:Dna",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "displayName": "GADD45A",
+      "entityReference": "http://identifiers.org/ncbigene/1647"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/f034c",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/f32f6",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/fae2c",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "participant": [
+        "http://identifiers.org/wikipathways/WP45/e4d",
+        "http://identifiers.org/wikipathways/WP45/df3"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/fb81b",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "participant": [
+        "http://identifiers.org/wikipathways/WP45/c83ee",
+        "http://identifiers.org/wikipathways/WP45/d75b8"
+      ]
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/fbc",
+      "@type": "bp:Dna",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "displayName": "CDC25A",
+      "entityReference": "http://identifiers.org/ncbigene/993"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/fc1",
+      "@type": "bp:Dna",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "displayName": "CCNE1",
+      "entityReference": "http://identifiers.org/ncbigene/898"
+    },
+    {
+      "@id": "http://identifiers.org/wikipathways/WP45/fc77f",
+      "@type": "bp:Interaction",
+      "dataSource": "http://pathwaycommons.org/pc2/wp",
+      "participant": [
+        "http://identifiers.org/wikipathways/WP45/a7d",
+        "http://identifiers.org/wikipathways/WP45/df3"
+      ]
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/",
+      "@type": "owl:Ontology",
+      "imports": "http://www.biopax.org/release/biopax-level3.owl#"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/DnaReference_cbea9658bb13951c176509afe3be6641",
+      "@type": "bp:DnaReference",
+      "comment": "auto-generated by Paxtools",
+      "displayName": "E2f"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_hgnc_symbol_ATM_see-also",
+      "@type": "bp:RelationshipXref",
+      "db": "hgnc symbol",
+      "id": "ATM",
+      "relationshipType": "http://identifiers.org/psimi/MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_hgnc_symbol_CCNE1_see-also",
+      "@type": "bp:RelationshipXref",
+      "db": "hgnc symbol",
+      "id": "CCNE1",
+      "relationshipType": "http://identifiers.org/psimi/MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_hgnc_symbol_CDC25A_see-also",
+      "@type": "bp:RelationshipXref",
+      "db": "hgnc symbol",
+      "id": "CDC25A",
+      "relationshipType": "http://identifiers.org/psimi/MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_hgnc_symbol_GADD45A_see-also",
+      "@type": "bp:RelationshipXref",
+      "db": "hgnc symbol",
+      "id": "GADD45A",
+      "relationshipType": "http://identifiers.org/psimi/MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_hgnc_symbol_MDM2_see-also",
+      "@type": "bp:RelationshipXref",
+      "db": "hgnc symbol",
+      "id": "MDM2",
+      "relationshipType": "http://identifiers.org/psimi/MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_hgnc_symbol_MNAT1_see-also",
+      "@type": "bp:RelationshipXref",
+      "db": "hgnc symbol",
+      "id": "MNAT1",
+      "relationshipType": "http://identifiers.org/psimi/MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_hgnc_symbol_MYC_see-also",
+      "@type": "bp:RelationshipXref",
+      "db": "hgnc symbol",
+      "id": "MYC",
+      "relationshipType": "http://identifiers.org/psimi/MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_hgnc_symbol_PCNA_see-also",
+      "@type": "bp:RelationshipXref",
+      "db": "hgnc symbol",
+      "id": "PCNA",
+      "relationshipType": "http://identifiers.org/psimi/MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_hgnc_symbol_TP53_see-also",
+      "@type": "bp:RelationshipXref",
+      "db": "hgnc symbol",
+      "id": "TP53",
+      "relationshipType": "http://identifiers.org/psimi/MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_omim_116947_identity",
+      "@type": "bp:RelationshipXref",
+      "db": "omim",
+      "id": "116947",
+      "relationshipType": "http://identifiers.org/psimi/MI:0356"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_omim_126335_identity",
+      "@type": "bp:RelationshipXref",
+      "db": "omim",
+      "id": "126335",
+      "relationshipType": "http://identifiers.org/psimi/MI:0356"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_omim_176740_identity",
+      "@type": "bp:RelationshipXref",
+      "db": "omim",
+      "id": "176740",
+      "relationshipType": "http://identifiers.org/psimi/MI:0356"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_omim_190080_identity",
+      "@type": "bp:RelationshipXref",
+      "db": "omim",
+      "id": "190080",
+      "relationshipType": "http://identifiers.org/psimi/MI:0356"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_omim_191170_identity",
+      "@type": "bp:RelationshipXref",
+      "db": "omim",
+      "id": "191170",
+      "relationshipType": "http://identifiers.org/psimi/MI:0356"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_omim_607585_identity",
+      "@type": "bp:RelationshipXref",
+      "db": "omim",
+      "id": "607585",
+      "relationshipType": "http://identifiers.org/psimi/MI:0356"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_uniprot_knowledgebase_P01106_see-also",
+      "@type": "bp:RelationshipXref",
+      "comment": "PRIMARY",
+      "db": "uniprot",
+      "id": "P01106",
+      "relationshipType": "http://identifiers.org/psimi/MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_uniprot_knowledgebase_P04637_see-also",
+      "@type": "bp:RelationshipXref",
+      "comment": "PRIMARY",
+      "db": "uniprot",
+      "id": "P04637",
+      "relationshipType": "http://identifiers.org/psimi/MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_uniprot_knowledgebase_P12004_see-also",
+      "@type": "bp:RelationshipXref",
+      "comment": "PRIMARY",
+      "db": "uniprot",
+      "id": "P12004",
+      "relationshipType": "http://identifiers.org/psimi/MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_uniprot_knowledgebase_P24522_see-also",
+      "@type": "bp:RelationshipXref",
+      "comment": "PRIMARY",
+      "db": "uniprot",
+      "id": "P24522",
+      "relationshipType": "http://identifiers.org/psimi/MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_uniprot_knowledgebase_P24864_see-also",
+      "@type": "bp:RelationshipXref",
+      "comment": "PRIMARY",
+      "db": "uniprot",
+      "id": "P24864",
+      "relationshipType": "http://identifiers.org/psimi/MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_uniprot_knowledgebase_P30304_see-also",
+      "@type": "bp:RelationshipXref",
+      "comment": "PRIMARY",
+      "db": "uniprot",
+      "id": "P30304",
+      "relationshipType": "http://identifiers.org/psimi/MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_uniprot_knowledgebase_P51948_see-also",
+      "@type": "bp:RelationshipXref",
+      "comment": "PRIMARY",
+      "db": "uniprot",
+      "id": "P51948",
+      "relationshipType": "http://identifiers.org/psimi/MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_uniprot_knowledgebase_Q00987_see-also",
+      "@type": "bp:RelationshipXref",
+      "comment": "PRIMARY",
+      "db": "uniprot",
+      "id": "Q00987",
+      "relationshipType": "http://identifiers.org/psimi/MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/RelationshipXref_uniprot_knowledgebase_Q13315_see-also",
+      "@type": "bp:RelationshipXref",
+      "comment": "PRIMARY",
+      "db": "uniprot",
+      "id": "Q13315",
+      "relationshipType": "http://identifiers.org/psimi/MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/UnificationXref_molecular_interactions_ontology_MI_0356",
+      "@type": "bp:UnificationXref",
+      "db": "mi",
+      "id": "MI:0356"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/UnificationXref_molecular_interactions_ontology_MI_0361",
+      "@type": "bp:UnificationXref",
+      "db": "mi",
+      "id": "MI:0361"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/UnificationXref_ncbi_gene_1647",
+      "@type": "bp:UnificationXref",
+      "db": "ncbi gene",
+      "id": "1647"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/UnificationXref_ncbi_gene_4193",
+      "@type": "bp:UnificationXref",
+      "db": "ncbi gene",
+      "id": "4193"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/UnificationXref_ncbi_gene_4331",
+      "@type": "bp:UnificationXref",
+      "db": "ncbi gene",
+      "id": "4331"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/UnificationXref_ncbi_gene_4609",
+      "@type": "bp:UnificationXref",
+      "db": "ncbi gene",
+      "id": "4609"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/UnificationXref_ncbi_gene_472",
+      "@type": "bp:UnificationXref",
+      "db": "ncbi gene",
+      "id": "472"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/UnificationXref_ncbi_gene_5111",
+      "@type": "bp:UnificationXref",
+      "db": "ncbi gene",
+      "id": "5111"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/UnificationXref_ncbi_gene_7157",
+      "@type": "bp:UnificationXref",
+      "db": "ncbi gene",
+      "id": "7157"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/UnificationXref_ncbi_gene_898",
+      "@type": "bp:UnificationXref",
+      "db": "ncbi gene",
+      "id": "898"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/UnificationXref_ncbi_gene_993",
+      "@type": "bp:UnificationXref",
+      "db": "ncbi gene",
+      "id": "993"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/UnificationXref_taxonomy_9606",
+      "@type": "bp:UnificationXref",
+      "db": "taxonomy",
+      "id": "9606"
+    },
+    {
+      "@id": "http://pathwaycommons.org/pc2/wp",
+      "@type": "bp:Provenance",
+      "comment": "Source http://pointer.ucsf.edu/wp/biopax/wikipathways-human-v20150929-biopax3.zip type: BIOPAX, WikiPathways - Community Curated Human Pathways; 29/09/2015 (human)",
+      "displayName": "WikiPathways",
+      "standardName": "WikiPathways"
+    }
+  ]
+}

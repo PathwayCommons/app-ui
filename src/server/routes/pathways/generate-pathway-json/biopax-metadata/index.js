@@ -1,5 +1,6 @@
 const fs = require('fs');
 const metadataParser = require('./metadata-parser');
+const { populateMetadata } = require('./simple');
 const _ = require('lodash');
 
 var biopaxMap = null;
@@ -57,6 +58,8 @@ function collectEntityMetadata(biopaxElement, nodeType = 'default'){
  * @returns Tree array containing all metadata about the given entity
  */
 function buildBiopaxTree(entity) {
+  // console.log(entity);
+  // console.log('\n\n\n\n');
   let result = [];
 
   //make sure the metadata exists
@@ -102,6 +105,7 @@ function processXrefs(xrefList,eref,collectedData){
 
     //Get Referenced element and make sure it's valid
     let refElement = getByNodeId(xrefList[i], biopaxMap);
+
     if (!(refElement)) {
       continue;
     }
@@ -131,7 +135,8 @@ function processXrefs(xrefList,eref,collectedData){
 
     collectedData.push([keyName,collectEntityMetadata(refElement,keyName)]);
   }
-
+  // console.log(erefXrefList);
+  // console.log(xrefList);
 }
 
 /**
@@ -168,7 +173,7 @@ function getBiopaxMap(biopaxJsonText) {
 
   //parse String into JSON object, rename '@id' property to 'pathid'
   const graph = JSON.parse(biopaxJsonText.replace(new RegExp('@id', 'g'), 'pathid'))['@graph'];
-
+  // console.log(JSON.parse(biopaxJsonText)['@graph']);
   const biopaxMap = new Map();
 
   //'pathid' is the absolute URI (URL, by design) of a biopax object, and so we use it as map key:
@@ -201,11 +206,15 @@ function getBiopaxMetadata(biopaxJsonText, nodes) {
 
   const nodeMetadataMap = {};
 
+  // console.log(populateMetadata( nodes, biopaxJsonText ));
   //Iterate through nodes in Cy network, adding metadata to each
   nodes.forEach(node => {
     const bpe = getByNodeId(node.data.id, biopaxMap);
     //build the tree for metadata and add it to the map
-    nodeMetadataMap[node.data.id] = metadataParser(buildBiopaxTree(bpe));
+    let data = metadataParser(buildBiopaxTree(bpe));
+    // console.log(JSON.stringify(data, null, 2));
+    // console.log('\n\n\n\n');
+    nodeMetadataMap[node.data.id] = data;
   });
 
   return nodeMetadataMap;

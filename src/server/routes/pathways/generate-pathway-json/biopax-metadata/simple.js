@@ -40,36 +40,42 @@ let biopaxText2ElementMap = biopaxJsonText => {
 
   // extract db ids from specific elements that have 'db' and 'id' fields
   externalReferences.forEach( element => {
-    let xRefElementId = _.get(element, '@id');
     let xrefs = [].concat(_.get(element, 'xref', []));
-    let dbIds = {};
 
-    xrefs.forEach( xref => {
-      if( rawMap.has( xref ) ){
-        let { db, id } = rawMap.get( xref );
+    xrefs.forEach( xrefId => {
+      if( rawMap.has( xrefId ) ){
+        let { db, id } = rawMap.get( xrefId );
 
         if( db != null && id != null ){
-          // e.g.  { 'uniprot': 'Q00987', originalUrl: 'http://identifiers.org/uniprot/Q00987' }
-          if( _.has(dbIds, db) ){
-            dbIds[db] = dbIds[db].concat(id);
-          } else {
-            dbIds[db] = [id];
-          }
+          xRefMap.set(xrefId, { k: db, v: id });
         }
       }
     });
-
-    xRefMap.set(xRefElementId, { dbIds } );
   });
 
   biopaxElementGraph.forEach( element => {
     let entityReference = _.get(element, 'entityReference', null);
+    let xrefIds = [].concat( _.get(element, 'xref', []) );
     let elementId = _.get(element, '@id');
-    let dbIds = [];
+    let dbIds = {};
 
     if( entityReference != null ){
-      dbIds = xRefMap.get( entityReference );
+      let entRefEl = rawMap.get( entityReference );
+
+      let entRefXrefs = _.get(entRefEl, 'xref', []);
+      xrefIds.concat( entRefXrefs );
     }
+
+    xrefIds.filter( xrefId => xrefId != null ).forEach( xrefId => {
+      let { k, v } = xRefMap.get( xrefId );
+
+      if( dbIds[k] != null ){
+        dbIds[k] = dbIds[k].concat(v);
+      } else {
+        dbIds[k] = [v];
+      }
+    });
+
     elementMap.set( elementId, _.assign( element, { dbIds } ) );
   });
 

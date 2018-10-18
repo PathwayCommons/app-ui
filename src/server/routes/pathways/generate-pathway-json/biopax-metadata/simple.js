@@ -4,7 +4,7 @@ let extractBiopaxMetadata = biopaxJsonEntry => {
   let type = _.get(biopaxJsonEntry, '@type', '');
   let datasource = _.get(biopaxJsonEntry, 'dataSource', '');
   let displayName = _.get(biopaxJsonEntry, 'displayName', '');
-  let synonyms = _.get(biopaxJsonEntry, 'name', []);
+  let synonyms = [].concat(_.get(biopaxJsonEntry, 'name', []));
   let standardName = _.get(biopaxJsonEntry, 'standardName', '');
   let comments = _.get(biopaxJsonEntry, 'comment', []);
   let databaseIds = _.get(biopaxJsonEntry, 'dbIds', []);

@@ -206,6 +206,8 @@ function getBiopaxMetadata(biopaxJsonText, nodes) {
 
   const nodeMetadataMap = {};
 
+  // console.log(JSON.stringify(JSON.parse(biopaxJsonText), null, 2));
+
   // console.log(populateMetadata( nodes, biopaxJsonText ));
   //Iterate through nodes in Cy network, adding metadata to each
   nodes.forEach(node => {

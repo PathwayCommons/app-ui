@@ -47,7 +47,7 @@ function getPathwayNodesAndEdges(uri) {
     const augmentedNodes = cyJson.nodes.map(node => {
       const augmentedNode = node;
       augmentedNode.data.metadata = nodesMetadata[node.data.id] || {};
-      augmentedNode.data.parsedMetadata = oldNodesMetadata[node.data.id] || {};
+      augmentedNode.data.parsedMetadata = oldNodesMetadata[node.data.id];
       augmentedNode.data.geneSynonyms = nodesGeneSynonyms[node.data.id];
       return augmentedNode;
     });

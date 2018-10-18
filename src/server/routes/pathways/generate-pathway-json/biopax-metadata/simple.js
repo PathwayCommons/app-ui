@@ -63,7 +63,7 @@ let biopaxText2ElementMap = biopaxJsonText => {
       let entRefEl = rawMap.get( entityReference );
 
       let entRefXrefs = _.get(entRefEl, 'xref', []);
-      xrefIds.concat( entRefXrefs );
+      xrefIds = xrefIds.concat( entRefXrefs );
     }
 
     xrefIds.filter( xrefId => xrefId != null ).forEach( xrefId => {

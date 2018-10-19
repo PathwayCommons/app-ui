@@ -1,13 +1,31 @@
 const _ = require('lodash');
 
 let extractBiopaxMetadata = biopaxJsonEntry => {
+  let databaseIds = _.get(biopaxJsonEntry, 'dbIds', []);
+  let entRefEl = _.get(biopaxJsonEntry, 'entRefEl', []);
+
   let type = _.get(biopaxJsonEntry, '@type', '');
   let datasource = _.get(biopaxJsonEntry, 'dataSource', '');
-  let displayName = _.get(biopaxJsonEntry, 'displayName', '');
-  let synonyms = [].concat(_.get(biopaxJsonEntry, 'name', []));
-  let standardName = _.get(biopaxJsonEntry, 'standardName', '');
   let comments = _.get(biopaxJsonEntry, 'comment', []);
-  let databaseIds = _.get(biopaxJsonEntry, 'dbIds', []);
+
+
+  let entryDisplayName = _.get(biopaxJsonEntry, 'displayName', '');
+  let entryNames = [].concat(_.get(biopaxJsonEntry, 'name', []));
+  let entryStdName = _.get(biopaxJsonEntry, 'standardName', '');
+
+  let entRefNames = _.get(entRefEl, 'name', []);
+  let entRefStdName = _.get(entRefEl, 'standardName', '');
+  let entRefDisplayName = _.get(entRefEl, 'displayName', '');
+
+
+  let synonyms = ( 
+    _.uniq( 
+      _.flatten( [entryNames, entRefNames] ) 
+    ).filter( name => !_.isEmpty( name ) )
+  );
+
+  let standardName = entryStdName || entRefStdName || '';
+  let displayName = entryDisplayName || entRefDisplayName || '';
 
   return {
     comments,
@@ -27,11 +45,12 @@ let biopaxText2ElementMap = biopaxJsonText => {
   let xRefMap = new Map();
 
   let biopaxElementGraph = JSON.parse(biopaxJsonText)['@graph'];
-  let externalReferences = [];
+  let externalReferences = [];  
 
   biopaxElementGraph.forEach( element => {
-    let uri = element['@id'];
-    rawMap.set(uri, element);
+    if( _.has(element, '@id') ){
+      rawMap.set(element['@id'], element);
+    }
 
     if( _.has(element, 'xref' ) ){
       externalReferences.push(element);
@@ -58,14 +77,14 @@ let biopaxText2ElementMap = biopaxJsonText => {
     let xrefIds = [].concat( _.get(element, 'xref', []) );
     let elementId = _.get(element, '@id');
     let dbIds = {};
+    let entRefEl = rawMap.get( entityReference );
 
-    if( entityReference != null ){
-      let entRefEl = rawMap.get( entityReference );
-
+    if( entRefEl != null ){
       let entRefXrefs = _.get(entRefEl, 'xref', []);
       xrefIds = xrefIds.concat( entRefXrefs );
     }
 
+    // consolidate all the db ids from all the xrefs relevant to this element
     xrefIds.filter( xrefId => xrefId != null ).forEach( xrefId => {
       let { k, v } = xRefMap.get( xrefId );
 
@@ -76,7 +95,10 @@ let biopaxText2ElementMap = biopaxJsonText => {
       }
     });
 
-    elementMap.set( elementId, _.assign( element, { dbIds } ) );
+    // each 'element' does not contain all of the data we need, it 
+    // is scattered across various xref elements and entityReference elements.
+    // we merge all this data into one object for easy processing
+    elementMap.set( elementId, _.assign( element, { dbIds, entRefEl } ) );
   });
 
   return elementMap;

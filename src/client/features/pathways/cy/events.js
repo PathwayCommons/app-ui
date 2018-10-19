@@ -4,7 +4,6 @@ const h = require('react-hyperscript');
 const PathwayNodeMetadataView = require('../pathway-node-metadata');
 const { PATHWAYS_LAYOUT_OPTS } = require('./layout');
 
-const PathwayNodeMetadata = require('../../../../models/pathway/pathway-node-metadata');
 const CytoscapeTooltip = require('../../../common/cy/cytoscape-tooltip');
 
 const EXPAND_COLLAPSE_OPTS = {
@@ -31,15 +30,12 @@ let bindCyEvents = cy => {
   cy.expandCollapse(EXPAND_COLLAPSE_OPTS);
   cy.on(SHOW_TOOLTIPS_EVENT, 'node[class != "compartment"]', function (evt) {
     let node = evt.target;
-    let metadata = new PathwayNodeMetadata(node);
 
-    metadata.getPublicationData().then( () => {
-      let tooltip = new CytoscapeTooltip( node.popperRef(), {
-        html: h(PathwayNodeMetadataView, { node, metadata })
-      } );
-      node.scratch('_tooltip', tooltip);
-      tooltip.show();
-    });
+    let tooltip = new CytoscapeTooltip( node.popperRef(), {
+      html: h(PathwayNodeMetadataView, { node })
+    } );
+    node.scratch('_tooltip', tooltip);
+    tooltip.show();
   });
 
   cy.on('tap', evt => {

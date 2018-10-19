@@ -2,36 +2,73 @@ const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
 
-let DEFAULT_NUM_LINKS = 3;
-let DEFAULT_NUM_NAMES = 3;
+const { generateIdentifiersUrl } = require('../../common/external-service-data');
+const { ServerAPI } = require('../../services');
+
+const DEFAULT_NUM_NAMES = 3;
+const SUPPORTED_DB_LINKS = {
+  'Reactome': 'reactome',
+  'UniProt': 'uniprot knowledgebase',
+  'NCBI Gene': 'ncbi gene',
+  'HGNC Symbol': 'hgnc symbol'
+};
+
+const PUBMED_DB_KEY = 'pubmed';
+
 
 // A component that displays a pathway node's metadata
 // props:
-// - metadata (Cytoscape node)
+// - cytoscape node)
 class PathwayNodeMetadataView extends React.Component {
   constructor(props){
     super(props);
+
+    this.state = {
+      publications: []
+    };
+  }
+
+  componentDidMount(){
+    let { node } = this.props;
+    let metadata = node.data('metadata');
+    let pubmedIds = _.get(metadata, `databaseIds.${PUBMED_DB_KEY}`, null);
+
+    if( pubmedIds != null ){
+      ServerAPI.getPubmedPublications(pubmedIds).then( publications => {
+        this.setState({ publications });
+      });
+    }
   }
 
   render(){
-    let { metadata, node } = this.props;
+    let { node } = this.props;
+    let { publications } = this.state;
     let md = node.data('metadata');
     let { synonyms, type, standardName, displayName, databaseIds } = md;
+    let searchLinkQuery = node.data('class') === 'process' ? displayName : node.data('label');
     let label = node.data('label');
 
     if( _.isEmpty( md ) ){
       return h('div.cy-tooltip', [
         h('div.cy-tooltip-content', [
           h('div.cy-tooltip-header', [
-            h('h2.cy-tooltip-title',  `${metadata.sbgnClass()}`)
+            h('h2.cy-tooltip-title',  node.data('class'))
           ])
         ])
       ]);
     }
-    let isChemicalFormula = name => !name.trim().match(/^([^J][0-9BCOHNSOPrIFla@+\-[\]()\\=#$]{6,})$/ig);
-    let oldSyns = metadata.synonyms().filter(isChemicalFormula).slice(0, DEFAULT_NUM_NAMES).join(', ');
 
-    let oldPubs = metadata.publications().map(publication => {
+    let dbLinks = [];
+    Object.entries(SUPPORTED_DB_LINKS).forEach( entry =>{
+      let [dbDisplayName, dbLookupId] = entry;
+
+      if( !_.isEmpty(databaseIds[dbLookupId]) ){
+        let id = _.get(databaseIds, `${dbLookupId}.0`);
+        dbLinks.push(h('a.plain-link', { href: generateIdentifiersUrl( dbLookupId, id) }, dbDisplayName));
+      }
+    });
+
+    let publicationEles = publications.map(publication => {
       let { id, title, firstAuthor, date, source } = publication;
       return h('div.cy-overflow-content', [
         h('a.plain-link', { href: 'http://identifiers.org/pubmed/' + id, target: '_blank'  }, title),
@@ -39,55 +76,45 @@ class PathwayNodeMetadataView extends React.Component {
       ]);
     });
 
-    let showType = metadata.type() !== '';
+    let showType = type !== '';
 
-    let showStdName = metadata.standardName() !== '';
-    let showDispName = metadata.displayName() !== '' && metadata.displayName() !== metadata.label();
+    let showStdName = standardName !== '';
+    let showDispName = displayName !== '' && displayName !== label;
     let showSynonyms = synonyms.length > 0;
-    let showPubs = oldPubs.length > 0;
+    let showPubs = publicationEles.length > 0;
 
     let showBody = showStdName || showDispName || showSynonyms || showPubs;
-    let showLinks = metadata.databaseLinks().length > 0;
-    let showPcSearchLink = metadata.label() || metadata.displayName();
+    let showLinks = dbLinks.length > 0;
+    let showPcSearchLink = label || displayName;
 
     return h('div.cy-tooltip', [
-      h('div', [
-        h('div', 'new'),
-        h('div', label || displayName || ''),
-        h('div', standardName),
-        h('div', type),
-        h('div', synonyms),
-        h('div', _.get( databaseIds, 'pubmed', []).map( id => h('div', id))),
-        h('div', _.flatten(Object.values(_.omit(databaseIds, ['pubmed']))).map( id => h('div', id)))
-
-      ]),
       h('div.cy-tooltip-content', [
         h('div.cy-tooltip-header', [
-          h('h2.cy-tooltip-title',  `${metadata.label() || metadata.displayName() || ''}`),
-          showType ? h('div.cy-tooltip-type-chip', metadata.type()) : null,
+          h('h2.cy-tooltip-title',  `${label || displayName || ''}`),
+          showType ? h('div.cy-tooltip-type-chip', type) : null,
         ]),
         showBody ? h('div.cy-tooltip-body', [
           showStdName ? h('div.cy-tooltip-section', [
             h('div.cy-tooltip-field-name', 'Name'),
-            h('div.cy-tooltip-field-value', metadata.standardName())
+            h('div.cy-tooltip-field-value', standardName)
           ]) : null,
           showDispName ? h('div.cy-tooltip-section', [
             h('div.cy-tooltip-field-name', 'Display Name'),
-            h('div.cy-tooltip-field-value', metadata.displayName())
+            h('div.cy-tooltip-field-value', displayName)
           ]) : null,
           showSynonyms ? h('div.cy-tooltip-section', [
             h('div.cy-tooltip-field-name', [
               'Synonyms',
               // h('i.material-icons', 'expand_more')
             ]),
-            h('div.cy-tooltip-field-value', oldSyns)
+            h('div.cy-tooltip-field-value', synonyms.slice(0, DEFAULT_NUM_NAMES).join(', '))
           ]) : null,
           showPubs ? h('div.cy-tooltip-section', [
             h('div.cy-tooltip-field-name', [
               'Publications',
               // h('i.material-icons', 'keyboard_arrow_right')
             ]),
-            h('div', oldPubs)
+            h('div', publicationEles)
           ]) : null
         ]): null,
         h('div.cy-tooltip-footer', [
@@ -96,15 +123,13 @@ class PathwayNodeMetadataView extends React.Component {
               'Links',
               // h('i.material-icons', 'keyboard_arrow_right')
             ]),
-            h('div.cy-tooltip-links', metadata.databaseLinks().slice(0, DEFAULT_NUM_LINKS).map(link => {
-              return h('a.plain-link', { href: link.url, target: '_blank'}, link.name);
-            }))
+            h('div.cy-tooltip-links', dbLinks)
           ]) : null
         ]),
         showPcSearchLink ? h('div.cy-tooltip-call-to-action', [
           h('a', {
             target: '_blank',
-            href: '/search?q=' + metadata.searchLink()
+            href: '/search?q=' + searchLinkQuery
           }, [
             h('button.call-to-action', 'Find Related Pathways')
           ])

@@ -5,6 +5,7 @@ let defaults = {
   MASTER_PASSWORD: '',
   PC_URL: 'http://www.pathwaycommons.org/',
   GPROFILER_URL: "http://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/",
+  IDENTIFIERS_URL: 'http://identifiers.org',
   NCBI_EUTILS_BASE_URL: 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils',
   HGNC_BASE_URL: 'https://rest.genenames.org',
   UNIPROT_API_BASE_URL: 'https://www.ebi.ac.uk/proteins/api',

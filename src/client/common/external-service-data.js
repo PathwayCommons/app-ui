@@ -1,4 +1,6 @@
-module.exports = [
+const { IDENTIFIERS_URL } = require('../../config');
+
+let externalServiceData = [
   {database:'Reactome', url:'http://identifiers.org/reactome/', search:''},
   {database:'UniProt', url:'http://identifiers.org/uniprot/', search:''},
   {database:'HGNC Symbol', url:'http://identifiers.org/hgnc.symbol/', search:''},
@@ -9,3 +11,10 @@ module.exports = [
   {database:'NCBI Gene',url:'http://identifiers.org/ncbigene/',search:''},
   {database:'Gene Cards',url:'http://identifiers.org/genecards/',search:''}
 ];
+
+let generateIdentifiersUrl = ( db, id ) => `${IDENTIFIERS_URL}/${db}/${id}`;
+
+module.exports = {
+  externalServiceData,
+  generateIdentifiersUrl
+};

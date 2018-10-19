@@ -53,9 +53,7 @@ router.get('/', ( req, res ) => {
     if( result == null ){
       getAndStorePathway( uri ).then( pathwayJson => res.json( pathwayJson ) );
     } else {
-      getAndStorePathway( uri ).then( pathwayJson => res.json( pathwayJson ) );
-
-      // res.json( result );
+      res.json( result );
     }
   });
 });

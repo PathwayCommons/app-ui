@@ -6,12 +6,28 @@ const { generateIdentifiersUrl } = require('../../common/external-service-data')
 const { ServerAPI } = require('../../services');
 
 const DEFAULT_NUM_NAMES = 3;
-const SUPPORTED_DB_LINKS = {
-  'Reactome': 'reactome',
-  'UniProt': 'uniprot knowledgebase',
-  'NCBI Gene': 'ncbi gene',
-  'HGNC Symbol': 'hgnc symbol'
-};
+const SUPPORTED_DB_LINKS = [
+  {
+    metadataDbId: 'reactome',
+    displayName: 'Reactome',
+    identifiersUrl: id => generateIdentifiersUrl('reactome', id)
+  },
+  {
+    metadataDbId: 'uniprot knowledgebase',
+    displayName: 'UniProt',
+    identifiersUrl: id => generateIdentifiersUrl('uniprot', id)
+  },
+  {
+    metadataDbId: 'ncbi gene',
+    displayName: 'NCBI Gene',
+    identifiersUrl: id => generateIdentifiersUrl('ncbi', id)
+  },
+  {
+    metadataDbId: 'hgnc symbol',
+    displayName: 'HGNC Symbol',
+    identifiersUrl: id => generateIdentifiersUrl('hgnc.symbol', id)
+  }
+];
 
 const PUBMED_DB_KEY = 'pubmed';
 
@@ -58,14 +74,14 @@ class PathwayNodeMetadataView extends React.Component {
       ]);
     }
 
-    let dbLinks = [];
-    Object.entries(SUPPORTED_DB_LINKS).forEach( entry =>{
-      let [dbDisplayName, dbLookupId] = entry;
+    let dbLinks = SUPPORTED_DB_LINKS.map( entry =>{
+      let { metadataDbId, displayName, identifiersUrl } = entry;
 
-      if( !_.isEmpty(databaseIds[dbLookupId]) ){
-        let id = _.get(databaseIds, `${dbLookupId}.0`);
-        dbLinks.push(h('a.plain-link', { href: generateIdentifiersUrl( dbLookupId, id) }, dbDisplayName));
+      if( !_.isEmpty(databaseIds[metadataDbId]) ){
+        let id = _.get(databaseIds, `${metadataDbId}.0`);
+        return h('a.plain-link', { href: identifiersUrl( id ), target: '_blank' }, displayName);
       }
+      return null;
     });
 
     let publicationEles = publications.map(publication => {

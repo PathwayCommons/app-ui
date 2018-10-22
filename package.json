@@ -33,7 +33,8 @@
     "watch": "run-p watch:*",
     "test": "mocha --recursive",
     "test:travis": "run-s test lint",
-    "ci": "run-s test lint"
+    "ci": "run-s test lint",
+    "debug": "node --inspect ./src/server"
   },
   "dependencies": {
     "bluebird": "^3.5.2",

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sbgn xmlns="http://sbgn.org/libsbgn/0.2">
+    <notes>
+        <bp:Model xmlns:bp="http://www.biopax.org/release/biopax-level3.owl#" name="Resolution of Abasic Sites (AP sites) {http://identifiers.org/reactome/R-HSA-73933}"/>
+    </notes>
+    <map language="process description">
+        <glyph class="compartment" id="nucleoplasm">
+            <label text="nucleoplasm"/>
+            <bbox w="56.0" h="48.0" x="-4.0" y="-4.0"/>
+        </glyph>
+        <glyph class="complex" id="http://pathwaycommons.org/pc2/Complex_33e9cc33a1deb82520f252c5d04388d2" compartmentRef="nucleoplasm">
+            <extension>
+                <bp:Complex xmlns:bp="http://www.biopax.org/release/biopax-level3.owl#" uri="http://pathwaycommons.org/pc2/Complex_33e9cc33a1deb82520f252c5d04388d2"/>
+            </extension>
+            <label text="APEX1:AP-dsDNA"/>
+            <bbox w="52.0" h="44.0" x="-2.0" y="-2.0"/>
+            <glyph class="unspecified entity" id="http://pathwaycommons.org/pc2/PhysicalEntity_aeae56047fb5280534eb4c58d35acc86_b389657633c79a4ceeb15969b06064a4" compartmentRef="nucleoplasm">
+                <label text="AP-dsDNA"/>
+                <bbox w="40.0" h="40.0" x="0.0" y="0.0"/>
+            </glyph>
+            <glyph class="macromolecule" id="http://pathwaycommons.org/pc2/Protein_292448bea814241b90c35c523080fabf_b389657633c79a4ceeb15969b06064a4" compartmentRef="nucleoplasm">
+                <label text="APEX1"/>
+                <bbox w="48.0" h="30.0" x="0.0" y="0.0"/>
+                <glyph class="state variable" compartmentRef="nucleoplasm">
+                    <state value="x[2 - 318]"/>
+                    <bbox w="35.0" h="10.0" x="0.0" y="0.0"/>
+                </glyph>
+            </glyph>
+        </glyph>
+        <glyph class="complex" id="http://pathwaycommons.org/pc2/Complex_3beb15eb932947ba6870b54e74558397" compartmentRef="nucleoplasm">
+            <extension>
+                <bp:Complex xmlns:bp="http://www.biopax.org/release/biopax-level3.owl#" uri="http://pathwaycommons.org/pc2/Complex_3beb15eb932947ba6870b54e74558397"/>
+            </extension>
+            <label text="APEX1:SSB(AP-&gt;5'-dRP)-dsDNA"/>
+            <bbox w="52.0" h="44.0" x="-2.0" y="-2.0"/>
+            <glyph class="unspecified entity" id="http://pathwaycommons.org/pc2/PhysicalEntity_ed0854a645b43ba84ba4b94c8e6cdbec_a6f638126741c8a8cd0743b89b22467e" compartmentRef="nucleoplasm">
+                <label text="SSB(AP-&gt;5'-dRP)-dsDNA"/>
+                <bbox w="40.0" h="40.0" x="0.0" y="0.0"/>
+            </glyph>
+            <glyph class="macromolecule" id="http://pathwaycommons.org/pc2/Protein_292448bea814241b90c35c523080fabf_a6f638126741c8a8cd0743b89b22467e" compartmentRef="nucleoplasm">
+                <label text="APEX1"/>
+                <bbox w="48.0" h="30.0" x="0.0" y="0.0"/>
+                <glyph class="state variable" compartmentRef="nucleoplasm">
+                    <state value="x[2 - 318]"/>
+                    <bbox w="35.0" h="10.0" x="0.0" y="0.0"/>
+                </glyph>
+            </glyph>
+        </glyph>
+        <glyph class="process" id="http://identifiers.org/reactome/R-HSA-110359_LEFTTORIGHT" compartmentRef="nucleoplasm">
+            <bbox w="15.0" h="15.0" x="0.0" y="0.0"/>
+            <port id="INP_http://identifiers.org/reactome/R-HSA-110359_LEFTTORIGHT" x="0.0" y="0.0"/>
+            <port id="OUT_http://identifiers.org/reactome/R-HSA-110359_LEFTTORIGHT" x="0.0" y="0.0"/>
+        </glyph>
+        <arc class="consumption" id="http://pathwaycommons.org/pc2/Complex_33e9cc33a1deb82520f252c5d04388d2--TO--INP_http://identifiers.org/reactome/R-HSA-110359_LEFTTORIGHT" source="http://pathwaycommons.org/pc2/Complex_33e9cc33a1deb82520f252c5d04388d2" target="http://identifiers.org/reactome/R-HSA-110359_LEFTTORIGHT">
+            <start x="0.0" y="0.0"/>
+            <end x="0.0" y="0.0"/>
+        </arc>
+        <arc class="production" id="OUT_http://identifiers.org/reactome/R-HSA-110359_LEFTTORIGHT--TO--http://pathwaycommons.org/pc2/Complex_3beb15eb932947ba6870b54e74558397" source="http://identifiers.org/reactome/R-HSA-110359_LEFTTORIGHT" target="http://pathwaycommons.org/pc2/Complex_3beb15eb932947ba6870b54e74558397">
+            <start x="0.0" y="0.0"/>
+            <end x="0.0" y="0.0"/>
+        </arc>
+        <arc class="catalysis" id="http://pathwaycommons.org/pc2/Complex_33e9cc33a1deb82520f252c5d04388d2--TO--http://identifiers.org/reactome/R-HSA-110359_LEFTTORIGHT" source="http://pathwaycommons.org/pc2/Complex_33e9cc33a1deb82520f252c5d04388d2" target="http://identifiers.org/reactome/R-HSA-110359_LEFTTORIGHT">
+            <start x="0.0" y="0.0"/>
+            <end x="0.0" y="0.0"/>
+        </arc>
+    </map>
+</sbgn>
+

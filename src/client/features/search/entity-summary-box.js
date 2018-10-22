@@ -7,9 +7,9 @@ const _ = require('lodash');
 const config = require('../../../config');
 let { DATASOURCES } = require('../../../models/entity/summary');
 
-const GENE_OTHER_NAMES_LIMIT = 4;
-const GENE_DESCRIPTION_WORD_LIMIT = 40;
-const GENE_INFO_DISPLAY_LIMIT = 6;
+const ENTITY_OTHER_NAMES_LIMIT = 4;
+const ENTITY_DESCRIPTION_WORD_LIMIT = 40;
+const ENTITY_SUMMARY_DISPLAY_LIMIT = 6;
 
 class EntitySummaryBox extends React.Component {
   constructor(props){
@@ -22,29 +22,32 @@ class EntitySummaryBox extends React.Component {
 
   }
   render(){
-    let { entity } = this.props;
-    let { name, officialSymbol, otherNames, links, function: description } = entity;
+    let { summary } = this.props;
+    let { displayName, localID, description, aliasIds, xref } = summary;
+    // Retrieve the HGNC symbol (http://www.pathwaycommons.org/sifgraph/swagger-ui.html)
+    let hgncSymbol = summary.xref[ DATASOURCES.HGNC ] || localID; // Prefix is hgnc
 
-    let sortedLinks = links.sort((l1, l2) => l1.displayName > l2.displayName).map( link => h('a.plain-link.entity-info-link', { href: link.link, target:'_blank' }, link.displayName));
+
+    // let sortedLinks = links.sort((l1, l2) => l1.displayName > l2.displayName).map( link => h('a.plain-link.entity-info-link', { href: link.link, target:'_blank' }, link.displayName));
 
     let collapsedDescription = descrTxt => {
       let tokens = descrTxt.split(' ');
-      if( tokens.length <= GENE_DESCRIPTION_WORD_LIMIT ){
+      if( tokens.length <= ENTITY_DESCRIPTION_WORD_LIMIT ){
         return descrTxt;
       }
 
-      return tokens.slice(0, GENE_DESCRIPTION_WORD_LIMIT).join(' ') + '...';
+      return tokens.slice(0, ENTITY_DESCRIPTION_WORD_LIMIT).join(' ') + '...';
     };
 
     let moreInfo = h('div.entity-more-info',[
       h('div.entity-names', [
-        h('div.entity-official-symbol', [
-          h('h5', 'Official Symbol'),
-          officialSymbol
+        h('div.entity-gene-symbol', [
+          h('h5', 'Gene Symbol'),
+          hgncSymbol
         ]),
         h('div.entity-other-names', [
           h('h5', 'Other Names'),
-          otherNames.split(',').slice(0, GENE_OTHER_NAMES_LIMIT).join(',')
+          aliasIds.slice(0, ENTITY_OTHER_NAMES_LIMIT).join(', ')
         ])
       ]),
       description != '' ? h('div.entity-description', [
@@ -61,14 +64,15 @@ class EntitySummaryBox extends React.Component {
         ])
       ]) : null,
       h('div.entity-links', [
-        h('div.entity-links-container', sortedLinks)
+        // h('div.entity-links-container', sortedLinks)
+        h('div.entity-links-container', [])
       ])
     ]);
 
     return (
-      h('div.entity-info-box', [
-        h('div.entity-info-title', { onClick: () => this.setState({ expanded: !this.state.expanded }) }, [
-          h('h3.entity-title', name),
+      h('div.entity-summary-box', [
+        h('div.entity-summary-title', { onClick: () => this.setState({ expanded: !this.state.expanded }) }, [
+          h('h3.entity-title', displayName),
           this.state.expanded ? h('i.material-icons', 'expand_more') : h('i.material-icons', 'keyboard_arrow_right')
         ]),
         this.state.expanded ? moreInfo : null
@@ -115,9 +119,8 @@ class EntitySummaryBoxList extends React.Component {
        ]);
     };
 
-    let entitySummaryBoxes = () => {
-      entitySummaryKeys
-       .slice( 0, GENE_INFO_DISPLAY_LIMIT )
+    let entitySummaryBoxes = entitySummaryKeys
+       .slice( 0, ENTITY_SUMMARY_DISPLAY_LIMIT )
        .map( ( key, index ) => {
          const summary = _.get( entitySummaryResults, key );
          let props = { summary };
@@ -126,11 +129,10 @@ class EntitySummaryBoxList extends React.Component {
          }
          return h(EntitySummaryBox, props);
        });
-    };
 
-    return h('div.entity-info-list', [
-      h('div.entity-info-list-entries', entitySummaryBoxes),
-      entitySummaryKeys.length != 0 ? h('div.entity-info-view-interactions', [
+    return h('div.entity-summary-list', [
+      h('div.entity-summary-list-entries', entitySummaryBoxes),
+      entitySummaryKeys.length != 0 ? h('div.entity-summary-view-interactions', [
         h(ViewMultipleInteractionsEntry)
        ]) : null
     ]);

@@ -1,21 +1,21 @@
-.entity-info-list {
+.entity-summary-list {
   max-width: var(--search-width);
   width: 100%;
   margin-top: 20px;
 }
 
-.entity-info-list-entries {
+.entity-summary-list-entries {
   margin-bottom: 1.5em;
 }
 
-.entity-info-box {
+.entity-summary-box {
   margin: 0.5em 0;
   border: 1px solid var(--light-base-colour-dark);
   border-radius: 0.5em;
   pointer-events: all;
 }
 
-.entity-info-title {
+.entity-summary-title {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -40,7 +40,7 @@
   padding-top: 0;
 }
 
-.entity-official-symbol {
+.entity-gene-symbol {
   & h5 {
     margin: 0;
     margin-bottom: 5px;
@@ -89,6 +89,6 @@
   margin-top: 10px;
 }
 
-.entity-info-view-interactions {
+.entity-summary-view-interactions {
 
 }

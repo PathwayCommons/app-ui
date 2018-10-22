@@ -11,6 +11,14 @@ const ENTITY_OTHER_NAMES_LIMIT = 4;
 const ENTITY_DESCRIPTION_WORD_LIMIT = 40;
 const ENTITY_SUMMARY_DISPLAY_LIMIT = 6;
 
+//Temporary - to be dealt with in #1116 (https://github.com/PathwayCommons/app-ui/issues/1116)
+const DATASOURCE_NAMES = {
+  [DATASOURCES.NCBIGENE]: 'NCBI Gene',
+  [DATASOURCES.HGNC]: 'HGNC',
+  [DATASOURCES.UNIPROT]: 'UniProt',
+  [DATASOURCES.GENECARDS]: 'GeneCards'
+};
+
 class EntitySummaryBox extends React.Component {
   constructor(props){
     super(props);
@@ -23,12 +31,13 @@ class EntitySummaryBox extends React.Component {
   }
   render(){
     let { summary } = this.props;
-    let { displayName, localID, description, aliasIds, xref } = summary;
+    let { dataSource, displayName, localID, description, aliasIds, xref } = summary;
     // Retrieve the HGNC symbol (http://www.pathwaycommons.org/sifgraph/swagger-ui.html)
     let hgncSymbol = summary.xref[ DATASOURCES.HGNC ] || localID; // Prefix is hgnc
 
-
-    // let sortedLinks = links.sort((l1, l2) => l1.displayName > l2.displayName).map( link => h('a.plain-link.entity-info-link', { href: link.link, target:'_blank' }, link.displayName));
+    let sortedLinks = _.toPairs( xref ).concat([[ dataSource, localID ]])
+        .sort( (p1, p2) => p1[0] > p2[0] ? 1: -1 )
+        .map( pair => h('a.plain-link', { href: pair[0] + pair[1], target:'_blank' }, DATASOURCE_NAMES[pair[0]]));
 
     let collapsedDescription = descrTxt => {
       let tokens = descrTxt.split(' ');
@@ -64,8 +73,7 @@ class EntitySummaryBox extends React.Component {
         ])
       ]) : null,
       h('div.entity-links', [
-        // h('div.entity-links-container', sortedLinks)
-        h('div.entity-links-container', [])
+        h('div.entity-links-container', sortedLinks)
       ])
     ]);
 

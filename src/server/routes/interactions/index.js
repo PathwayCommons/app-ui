@@ -22,7 +22,7 @@ router.get('/image', ( req, res ) => {
     let { network } = interactionsJson;
     return snap.shot({
       elements: network,
-      layout: { name: 'concentric', minNodeSpacing: 50 },
+      layout: { name: 'concentric', minNodeSpacing: network.nodes.length > 5 ? 5 : 50, fit: false },
       style: [
         {
           selector: 'edge',
@@ -84,13 +84,13 @@ router.get('/image', ( req, res ) => {
       ],
       resolvesTo: 'base64uri',
       format: 'png',
-      width: 640,
-      height: 460,
+      width: 740,
+      height: 740,
       background: 'transparent'
     });
   })
   .then( img => {
-    res.json(img);
+    res.json( { img } );
   })
   .catch( e => {
     logger.error( e );

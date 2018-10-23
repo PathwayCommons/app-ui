@@ -104,9 +104,29 @@ class EntitySummaryBox extends React.Component {
 // props:
 //  - entityQuery (List of strings representing genes)
 class EntitySummaryBoxList extends React.Component {
+  constructor(props){
+    super(props);
+
+    this.state = {
+      img: ''
+    };
+  }
+
+  componentDidMount(){
+    let { entitySummaryResults } = this.props;
+    let hgncSymbols = _.values( entitySummaryResults )
+        .map( summary => summary.xref[ DATASOURCES.HGNC ] || summary.xref[ 'localID' ] ); // Prefix is hgnc
+
+
+    fetch('/api/interactions/image?' + queryString.stringify({ sources: hgncSymbols })).then( r => r.json() ).then( res => {
+      let { img } = res;
+      this.setState({ img });
+    });
+  }
 
   render(){
     let { entitySummaryResults } = this.props;
+    let { img } = this.state;
     const entitySummaryKeys = _.keys( entitySummaryResults );
 
     // Retrieve the HGNC symbol (http://www.pathwaycommons.org/sifgraph/swagger-ui.html)
@@ -123,19 +143,22 @@ class EntitySummaryBoxList extends React.Component {
 
     let ViewMultipleInteractionsEntry = () => {
       const hgncSymbols = getHGNCSymbols( entitySummaryResults );
-      return h('div.search-item', [
-        h('div.search-item-icon',[
-           h('img', { src: '/img/icon.png' })
-         ]),
-         h('div.search-item-content', [
-           h(Link, {
-             className: 'plain-link',
-             to: { pathname: '/interactions', search: queryString.stringify({ source: hgncSymbols.join(',') }) },
-             target: '_blank'
-            }, interactionsLinkLabel( hgncSymbols )),
-           h('p.search-item-content-datasource', 'Pathway Commons')
-         ])
-       ]);
+      return h('img', { src: img }, [
+        // h()
+      ]);
+      // return h('div.search-item', [
+      //   h('div.search-item-icon',[
+      //      h('img', { src: img })
+      //    ]),
+      //    h('div.search-item-content', [
+      //      h(Link, {
+      //        className: 'plain-link',
+      //        to: { pathname: '/interactions', search: queryString.stringify({ source: hgncSymbols.join(',') }) },
+      //        target: '_blank'
+      //       }, interactionsLinkLabel( hgncSymbols )),
+      //      h('p.search-item-content-datasource', 'Pathway Commons')
+      //    ])
+      //  ]);
     };
 
     let entitySummaryBoxes = entitySummaryKeys
@@ -150,10 +173,10 @@ class EntitySummaryBoxList extends React.Component {
        });
 
     return h('div.entity-summary-list', [
-      h('div.entity-summary-list-entries', entitySummaryBoxes),
       entitySummaryKeys.length != 0 ? h('div.entity-summary-view-interactions', [
         h(ViewMultipleInteractionsEntry)
-       ]) : null
+       ]) : null,
+      h('div.entity-summary-list-entries', entitySummaryBoxes)
     ]);
   }
 }

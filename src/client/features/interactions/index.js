@@ -14,7 +14,7 @@ const EmptyNetwork = require('../../common/components/empty-network');
 const PcLogoLink = require('../../common/components/pc-logo-link');
 const CytoscapeNetwork = require('../../common/components/cytoscape-network');
 
-const { interactionsStylesheet, INTERACTIONS_LAYOUT_OPTS, bindEvents } = require('./cy');
+const { interactionsStylesheet, interactionsLayoutOpts, bindEvents } = require('./cy');
 
 const InteractionsMenu = require('./interactions-menu');
 
@@ -50,7 +50,7 @@ class Interactions extends React.Component {
         return;
       }
 
-      cy.layout(_.assign({}, INTERACTIONS_LAYOUT_OPTS, {
+      cy.layout(_.assign({}, interactionsLayoutOpts( cy ), {
         stop: () => {
           this.setState({
             loading: false,

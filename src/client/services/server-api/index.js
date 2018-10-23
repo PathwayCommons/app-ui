@@ -141,20 +141,8 @@ const ServerAPI = {
     return this.enrichmentAPI(query, "validation");
   },
 
-  getGeneInformation(ids){
-    return fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?retmode=json&db=gene&id=${ids.join(',')}`,{method: 'GET'})
-    .then(res => res.json())
-    .catch(() => undefined);
-  },
-
-  getUniprotInformation(ids){
-    return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&accession=${ids.join(',')}`,defaultFetchOpts)
-    .then(res => res.json())
-    .catch(() => []);
-  },
-
-  getHgncInformation(id) {
-    return fetch( `https://rest.genenames.org/fetch/symbol/${id}`, {headers: {'Accept': 'application/json'}} )
+  entitySummaryQuery( query ){
+    return fetch(`/api/summary/entity/search?q=${ query }`, defaultFetchOpts)
     .then(res => res.json())
     .catch(() => undefined);
   }

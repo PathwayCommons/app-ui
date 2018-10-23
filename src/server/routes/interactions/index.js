@@ -4,6 +4,8 @@ const cytosnap = require('cytosnap');
 
 const { getInteractionGraphFromPC } = require('./generate-interactions-json');
 
+const logger = require('../../logger');
+
 let snap = cytosnap();
 
 router.get('/', ( req, res ) => {
@@ -90,7 +92,10 @@ router.get('/image', ( req, res ) => {
   .then( img => {
     res.json(img);
   })
-  .catch( () => res.status( 500 ).end( 'Server error' ) );
+  .catch( e => {
+    logger.error( e );
+    res.status( 500 ).end( 'Server error' );
+  });
 });
 
 module.exports = router;

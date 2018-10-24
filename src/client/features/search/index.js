@@ -27,7 +27,7 @@ class Search extends React.Component {
         type: 'Pathway',
         datasource: []
       }, query),
-      entitySummaryResults: [],
+      entitySummaryResults: {},
       entitySummaryResultsLoading: false,
       searchResults: [],
       searchLoading: false
@@ -159,7 +159,7 @@ class Search extends React.Component {
           h('div.search-result-filter', [searchResultFilter]),
           h('div.search-result-hit-count', [searchResultHitCount])
         ]),
-        h(EntitySummaryBoxList, { entitySummaryResults: entitySummaryResults}),
+        !_.isEmpty(entitySummaryResults) > 0 ? h(EntitySummaryBoxList, { entitySummaryResults }) : null,
         h('div.search-list', searchResults)
       ])
     ]);

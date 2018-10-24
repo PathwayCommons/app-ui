@@ -4,8 +4,9 @@ let snap = cytosnap();
 
 let snapshotInteractionsLayout = network => ({
   name: 'concentric',
-  minNodeSpacing: network.nodes.length > 5 ? 5 : 50,
-  fit: false
+  minNodeSpacing: network.nodes.length > 3 ? 5 : 50,
+  fit: network.nodes.length > 3 ? false : true,
+  padding: 0
 });
 
 // a cytoscape jsonstylesheet that is compatible with cytosnap
@@ -80,7 +81,7 @@ let generateInteractionsImg = interactionsJson => {
       resolvesTo: 'base64uri',
       format: 'png',
       width: 740,
-      height: 740,
+      height: 200,
       background: 'transparent'
     });
   });

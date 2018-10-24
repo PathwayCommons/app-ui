@@ -130,36 +130,13 @@ class EntitySummaryBoxList extends React.Component {
     const entitySummaryKeys = _.keys( entitySummaryResults );
 
     // Retrieve the HGNC symbol (http://www.pathwaycommons.org/sifgraph/swagger-ui.html)
-    let getHGNCSymbols = summaries => _.values( summaries )
+    let sources = _.values( entitySummaryResults )
         .map( summary => summary.xref[ DATASOURCES.HGNC ] || summary.xref[ 'localID' ] ); // Prefix is hgnc
 
-    let interactionsLinkLabel = sources => {
-      if( sources.length === 1 ){
-        return `Interactions between ${sources[0]} and top ${config.MAX_SIF_NODES} genes`;
-      }
+    let singleSrcLabel = `View interactions between ${sources[0]} and top ${config.MAX_SIF_NODES} genes`;
+    let multiSrcLabel = `View iteractions between ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
 
-      return `Interactions between ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
-    };
-
-    let ViewMultipleInteractionsEntry = () => {
-      const hgncSymbols = getHGNCSymbols( entitySummaryResults );
-      return h('img', { src: img }, [
-        // h()
-      ]);
-      // return h('div.search-item', [
-      //   h('div.search-item-icon',[
-      //      h('img', { src: img })
-      //    ]),
-      //    h('div.search-item-content', [
-      //      h(Link, {
-      //        className: 'plain-link',
-      //        to: { pathname: '/interactions', search: queryString.stringify({ source: hgncSymbols.join(',') }) },
-      //        target: '_blank'
-      //       }, interactionsLinkLabel( hgncSymbols )),
-      //      h('p.search-item-content-datasource', 'Pathway Commons')
-      //    ])
-      //  ]);
-    };
+    let interactionsLinkLabel = sources.length === 1 ? singleSrcLabel : multiSrcLabel;
 
     let entitySummaryBoxes = entitySummaryKeys
        .slice( 0, ENTITY_SUMMARY_DISPLAY_LIMIT )
@@ -172,11 +149,35 @@ class EntitySummaryBoxList extends React.Component {
          return h(EntitySummaryBox, props);
        });
 
+    // let interactionsLink =
+
     return h('div.entity-summary-list', [
-      entitySummaryKeys.length != 0 ? h('div.entity-summary-view-interactions', [
-        h(ViewMultipleInteractionsEntry)
-       ]) : null,
-      h('div.entity-summary-list-entries', entitySummaryBoxes)
+      h('div.entity-summary-view-interactions', [
+        h(Link, {
+          target: '_blank',
+          to: {
+            pathname: '/interactions',
+            search: queryString.stringify({ source: sources.join(',') })
+          }
+        }, [
+          h('div.entity-summary-interactions-snapshot', { style: { backgroundImage: `url(${img})` } }, [
+            h('button.plain-button.entity-summary-interactions-snapshot-button', [
+              h('i.material-icons', 'launch')
+            ])
+          ])
+        ]),
+        h('div.entity-summary-list-entries', entitySummaryBoxes),
+        h('div.entity-summary-footer', [
+          h(Link, {
+            className: 'plain-link',
+            target: '_blank',
+            to: {
+              pathname: '/interactions',
+              search: queryString.stringify({ source: sources.join(',') })
+            }
+          }, interactionsLinkLabel)
+        ])
+      ]),
     ]);
   }
 }

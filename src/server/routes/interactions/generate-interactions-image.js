@@ -1,4 +1,9 @@
 const cytosnap = require('cytosnap');
+const LRUCache = require('lru-cache');
+
+const cache = require('../../cache');
+
+const { PC_CACHE_MAX_SIZE } = require('../../../config');
 
 let snap = cytosnap();
 
@@ -87,4 +92,7 @@ let generateInteractionsImg = interactionsJson => {
   });
 };
 
-module.exports = { generateInteractionsImg };
+let imgCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
+
+
+module.exports = { generateInteractionsImg: cache(generateInteractionsImg, imgCache) };

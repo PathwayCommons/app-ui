@@ -87,6 +87,25 @@ class EntitySummaryBoxList extends React.Component {
     };
   }
 
+  getInteractionsPreviewImage( sources ){
+    let { img } = this.state;
+    if( img ){ return `url(${img})`; }
+
+    let numSources = sources.length;
+
+    if( numSources === 1 ){
+      return `url(${'/img/interactions-placeholder-single.png'})`;
+    }
+
+    if( numSources === 2 ){
+      return `url(${'/img/interactions-placeholder-double.png'})`;
+    }
+
+    if( numSources === 3 ){
+      return `url(${'img/interactions-placeholder-triple.png'})`;
+    }
+  }
+
   componentDidMount(){
     let { entitySummaryResults } = this.props;
     let hgncSymbols = _.values( entitySummaryResults )
@@ -101,7 +120,6 @@ class EntitySummaryBoxList extends React.Component {
 
   render(){
     let { entitySummaryResults } = this.props;
-    let { img } = this.state;
     const entitySummaryKeys = _.keys( entitySummaryResults );
 
     // Retrieve the HGNC symbol (http://www.pathwaycommons.org/sifgraph/swagger-ui.html)
@@ -121,6 +139,8 @@ class EntitySummaryBoxList extends React.Component {
          return h(EntitySummaryBox, props);
        });
 
+    let img = this.getInteractionsPreviewImage(sources);
+
     return h('div.entity-summary-list', [
       h('div.entity-summary-view-interactions', [
         h(Link, {
@@ -131,9 +151,9 @@ class EntitySummaryBoxList extends React.Component {
             search: queryString.stringify({ source: sources.join(',') })
           }
         }, [
-          h('div.entity-summary-interactions-snapshot', { style: { backgroundImage: `url(${img})` } }),
+          h('div.entity-summary-interactions-snapshot', { style: { backgroundImage: img } }),
           h('button.entity-summary-interactions-snapshot-button', {
-            className: classNames('entity-summary-interactions-snapshot-button', entitySummaryKeys.length === 1 ? 'snapshot-button-center' : 'snapshot-button-left')
+            className: classNames('entity-summary-interactions-snapshot-button', sources.length === 1 ? 'snapshot-button-center' : 'snapshot-button-left')
           }, [
             h('div', interactionsLinkLabel)
           ])

@@ -2,7 +2,6 @@ const _ = require('lodash');
 const LRUCache = require('lru-cache');
 
 const pc = require('../../external-services/pathway-commons');
-const logger = require('../../logger');
 const cache = require('../../cache');
 // const ncbi = require('../../external-services/ncbi');
 
@@ -176,11 +175,6 @@ let getInteractionsNetwork = sources => {
     return getInteractionsCyJson(res, uniqueGeneIds);
   // }).then(network => {
   //   // return addNetworkPublications(network);
-  }).then(network => {
-    return { network };
-  }).catch( e => {
-    logger.error( e );
-    throw e;
   });
 };
 

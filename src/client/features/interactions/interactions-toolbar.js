@@ -6,7 +6,7 @@ const h = require('react-hyperscript');
 const Popover = require('../../common/components/popover');
 const IconButton = require('../../common/components/icon-button');
 
-const { INTERACTIONS_LAYOUT_OPTS, searchInteractionNodes } = require('./cy');
+const { interactionsLayoutOpts, searchInteractionNodes } = require('./cy');
 
 const InteractionsDownloadMenu = require('./interactions-download-menu');
 
@@ -58,7 +58,7 @@ class InteractionsToolbar extends React.Component {
       }),
       h(IconButton, {
         description: 'Reset arrangement',
-        onClick: () => cy.layout(INTERACTIONS_LAYOUT_OPTS).run(),
+        onClick: () => cy.layout(interactionsLayoutOpts( cy )).run(),
         isActive: false,
         icon: 'replay'
       }),

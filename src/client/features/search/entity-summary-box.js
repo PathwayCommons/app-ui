@@ -3,12 +3,12 @@ const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
 const queryString = require('query-string');
 const _ = require('lodash');
+const classNames = require('classnames');
 
 const config = require('../../../config');
 let { DATASOURCES } = require('../../../models/entity/summary');
 
 const ENTITY_OTHER_NAMES_LIMIT = 4;
-const ENTITY_DESCRIPTION_WORD_LIMIT = 40;
 const ENTITY_SUMMARY_DISPLAY_LIMIT = 6;
 
 //Temporary - to be dealt with in #1116 (https://github.com/PathwayCommons/app-ui/issues/1116)
@@ -36,8 +36,7 @@ class EntitySummaryBox extends React.Component {
     super(props);
 
     this.state = {
-      expanded: props.expanded || false,
-      descriptionExpanded: false
+      expanded: props.expanded || false
     };
 
   }
@@ -50,21 +49,8 @@ class EntitySummaryBox extends React.Component {
         .sort( (p1, p2) => p1[0] > p2[0] ? 1: -1 )
         .map( pair => h('a.plain-link', { href: (DATASOURCE_NAMES[pair[0]]).linkUrl + pair[1], target:'_blank' }, (DATASOURCE_NAMES[pair[0]]).displayName));
 
-    let collapsedDescription = descrTxt => {
-      let tokens = descrTxt.split(' ');
-      if( tokens.length <= ENTITY_DESCRIPTION_WORD_LIMIT ){
-        return descrTxt;
-      }
-
-      return tokens.slice(0, ENTITY_DESCRIPTION_WORD_LIMIT).join(' ') + '...';
-    };
-
     let moreInfo = h('div.entity-more-info',[
       h('div.entity-names', [
-        h('div.entity-gene-symbol', [
-          h('h5', 'Gene Symbol'),
-          hgncSymbol
-        ]),
         h('div.entity-other-names', [
           h('h5', 'Other Names'),
           aliasIds.slice(0, ENTITY_OTHER_NAMES_LIMIT).join(', ')
@@ -72,26 +58,15 @@ class EntitySummaryBox extends React.Component {
       ]),
       description != '' ? h('div.entity-description', [
         h('h5', 'Description'),
-        h('div', [
-          this.state.descriptionExpanded ? description : collapsedDescription(description)
-        ]),
-        h('div.entity-description-more', {
-          onClick: () => {
-            this.setState({descriptionExpanded: !this.state.descriptionExpanded});
-          } }, [
-          h('i.material-icons', this.state.descriptionExpanded ? 'expand_less' : 'expand_more'),
-          !this.state.descriptionExpanded ? h('div', 'View full description') : h('div', 'Hide full description')
-        ])
-      ]) : null,
-      h('div.entity-links', [
-        h('div.entity-links-container', sortedLinks)
-      ])
+        h('div', [ description ])
+      ]) : null
     ]);
 
     return (
       h('div.entity-summary-box', [
         h('div.entity-summary-title', { onClick: () => this.setState({ expanded: !this.state.expanded }) }, [
-          h('h3.entity-title', displayName),
+          h('h3.entity-title', `${hgncSymbol}: ${displayName}`),
+          ...sortedLinks,
           this.state.expanded ? h('i.material-icons', 'expand_more') : h('i.material-icons', 'keyboard_arrow_right')
         ]),
         this.state.expanded ? moreInfo : null
@@ -104,56 +79,87 @@ class EntitySummaryBox extends React.Component {
 // props:
 //  - entityQuery (List of strings representing genes)
 class EntitySummaryBoxList extends React.Component {
+  constructor(props){
+    super(props);
+
+    this.state = {
+      img: ''
+    };
+  }
+
+  getInteractionsPreviewImage( sources ){
+    let { img } = this.state;
+    if( img ){ return `url(${img})`; }
+
+    let numSources = sources.length;
+
+    if( numSources === 1 ){
+      return `url(${'/img/interactions-placeholder-single.png'})`;
+    }
+
+    if( numSources === 2 ){
+      return `url(${'/img/interactions-placeholder-double.png'})`;
+    }
+
+    if( numSources === 3 ){
+      return `url(${'img/interactions-placeholder-triple.png'})`;
+    }
+  }
+
+  componentDidMount(){
+    let { entitySummaryResults } = this.props;
+    let hgncSymbols = _.values( entitySummaryResults )
+        .map( summary => summary.xref[ DATASOURCES.HGNC ] || summary.xref[ 'localID' ] ); // Prefix is hgnc
+
+
+    fetch('/api/interactions/image?' + queryString.stringify({ sources: hgncSymbols })).then( r => r.json() ).then( res => {
+      let { img } = res;
+      this.setState({ img });
+    });
+  }
 
   render(){
     let { entitySummaryResults } = this.props;
     const entitySummaryKeys = _.keys( entitySummaryResults );
 
     // Retrieve the HGNC symbol (http://www.pathwaycommons.org/sifgraph/swagger-ui.html)
-    let getHGNCSymbols = summaries => _.values( summaries )
+    let sources = _.values( entitySummaryResults )
         .map( summary => summary.xref[ DATASOURCES.HGNC ] || summary.xref[ 'localID' ] ); // Prefix is hgnc
 
-    let interactionsLinkLabel = sources => {
-      if( sources.length === 1 ){
-        return `Interactions between ${sources[0]} and top ${config.MAX_SIF_NODES} genes`;
-      }
+    let singleSrcLabel = `View interactions between ${sources[0]} and top ${config.MAX_SIF_NODES} genes`;
+    let multiSrcLabel = `View iteractions between ${sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
 
-      return `Interactions between ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
-    };
-
-    let ViewMultipleInteractionsEntry = () => {
-      const hgncSymbols = getHGNCSymbols( entitySummaryResults );
-      return h('div.search-item', [
-        h('div.search-item-icon',[
-           h('img', { src: '/img/icon.png' })
-         ]),
-         h('div.search-item-content', [
-           h(Link, {
-             className: 'plain-link',
-             to: { pathname: '/interactions', search: queryString.stringify({ source: hgncSymbols.join(',') }) },
-             target: '_blank'
-            }, interactionsLinkLabel( hgncSymbols )),
-           h('p.search-item-content-datasource', 'Pathway Commons')
-         ])
-       ]);
-    };
+    let interactionsLinkLabel = sources.length === 1 ? singleSrcLabel : multiSrcLabel;
 
     let entitySummaryBoxes = entitySummaryKeys
        .slice( 0, ENTITY_SUMMARY_DISPLAY_LIMIT )
-       .map( ( key, index ) => {
+       .map( key => {
          const summary = _.get( entitySummaryResults, key );
          let props = { summary };
-         if( index === 0 ){
-           props.expanded = true;
-         }
          return h(EntitySummaryBox, props);
        });
 
+    let img = this.getInteractionsPreviewImage(sources);
+
     return h('div.entity-summary-list', [
-      h('div.entity-summary-list-entries', entitySummaryBoxes),
-      entitySummaryKeys.length != 0 ? h('div.entity-summary-view-interactions', [
-        h(ViewMultipleInteractionsEntry)
-       ]) : null
+      h('div.entity-summary-view-interactions', [
+        h(Link, {
+          target: '_blank',
+          className: 'entity-summary-interactions-snapshot-container',
+          to: {
+            pathname: '/interactions',
+            search: queryString.stringify({ source: sources.join(',') })
+          }
+        }, [
+          h('div.entity-summary-interactions-snapshot', { style: { backgroundImage: img } }),
+          h('button.entity-summary-interactions-snapshot-button', {
+            className: classNames('entity-summary-interactions-snapshot-button', sources.length === 1 ? 'snapshot-button-center' : 'snapshot-button-left')
+          }, [
+            h('div', interactionsLinkLabel)
+          ])
+        ]),
+        h('div.entity-summary-list-entries', entitySummaryBoxes),
+      ])
     ]);
   }
 }

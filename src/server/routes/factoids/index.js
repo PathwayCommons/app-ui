@@ -1,13 +1,11 @@
 const express = require('express');
 const Promise = require('bluebird');
-const fetch = require('node-fetch');
+const { fetch } = require('../../../util');
 const sbgn2CyJson = require('sbgnml-to-cytoscape');
 const _ = require('lodash');
 const { FACTOID_URL, BIOPAX_CONVERTERS_URL } = require('../../../config');
 
 const router = express.Router();
-
-
 
 let getFactoidIdsJson = () => {
   return fetch( FACTOID_URL + 'api/document/', { method: 'get', accept: 'application/json' })

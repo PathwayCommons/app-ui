@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const { fetch } = require('../../util');
 const { UNIPROT_API_BASE_URL } = require('../../config');
 const _ = require('lodash');
 const { EntitySummary, DATASOURCES } = require('../../models/entity/summary');

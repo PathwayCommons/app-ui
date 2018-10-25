@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const { fetch } = require('../../util');
 const { NCBI_EUTILS_BASE_URL, PUB_CACHE_MAX_SIZE } = require('../../config');
 const { URLSearchParams } = require('url');
 const LRUCache = require('lru-cache');

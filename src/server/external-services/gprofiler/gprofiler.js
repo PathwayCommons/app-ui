@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const { fetch } = require('../../../util');
 const _ = require('lodash');
 const qs = require('query-string');
 

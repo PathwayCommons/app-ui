@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const { fetch } = require('../../../../util');
 const _ = require('lodash');
 const qs = require('query-string');
 const LRUCache = require('lru-cache');
@@ -61,6 +61,7 @@ const getForm = ( query, defaultOptions, userOptions ) => {
 };
 
 const bodyHandler = body =>  {
+
   const entityInfoList = _.map(body.split('\n'), ele => { return ele.split('\t'); });
   entityInfoList.splice(-1, 1); // remove last element ''
   const unrecognized = new Set();
@@ -109,18 +110,14 @@ const rawValidatorGconvert = ( query, userOptions ) => {
     'prefix': 'ENTREZGENE_ACC'
   };
 
-  return new Promise(( resolve, reject ) => {
-    const form = getForm( query, defaultOptions, userOptions );
+  const form = getForm( query, defaultOptions, userOptions );
 
-    fetch( GCONVERT_URL, {
-        method: 'post',
-        body: qs.stringify( form )
-    })
-    .then( response => response.text() )
-    .then( bodyHandler )
-    .then( resolve )
-    .catch( reject );
-  });
+  return fetch( GCONVERT_URL, {
+      method: 'post',
+      body: qs.stringify( form )
+  })
+  .then( response => response.text() )
+  .then( bodyHandler );
 };
 
 const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });

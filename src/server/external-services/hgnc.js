@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const { fetch } = require('../../util');
 const _ = require('lodash');
 const { HGNC_BASE_URL } = require('../../config');
 const { EntitySummary, DATASOURCES } = require('../../models/entity/summary');

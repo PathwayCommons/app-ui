@@ -1,5 +1,5 @@
 const qs = require('query-string');
-const fetch = require('node-fetch');
+const { fetch } = require('../../util');
 const _ = require('lodash');
 const logger = require('../logger');
 const config = require('../../config');

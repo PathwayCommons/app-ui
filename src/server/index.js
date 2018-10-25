@@ -12,6 +12,9 @@ const Promise = require('bluebird');
 
 const config = require('../config');
 
+// make fetch() available as a global just like it is on the client side
+global.fetch = require('node-fetch');
+
 const db = require('./db');
 const logger = require('./logger');
 

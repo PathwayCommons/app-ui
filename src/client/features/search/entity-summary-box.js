@@ -3,6 +3,7 @@ const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
 const queryString = require('query-string');
 const _ = require('lodash');
+const classNames = require('classnames');
 
 const config = require('../../../config');
 let { DATASOURCES } = require('../../../models/entity/summary');
@@ -108,7 +109,7 @@ class EntitySummaryBoxList extends React.Component {
         .map( summary => summary.xref[ DATASOURCES.HGNC ] || summary.xref[ 'localID' ] ); // Prefix is hgnc
 
     let singleSrcLabel = `View interactions between ${sources[0]} and top ${config.MAX_SIF_NODES} genes`;
-    let multiSrcLabel = `View iteractions between ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
+    let multiSrcLabel = `View iteractions between ${sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
 
     let interactionsLinkLabel = sources.length === 1 ? singleSrcLabel : multiSrcLabel;
 
@@ -130,8 +131,10 @@ class EntitySummaryBoxList extends React.Component {
             search: queryString.stringify({ source: sources.join(',') })
           }
         }, [
-          h('img.entity-summary-interactions-snapshot', { src: img }),
-          h('button.entity-summary-interactions-snapshot-button', [
+          h('div.entity-summary-interactions-snapshot', { style: { backgroundImage: `url(${img})` } }),
+          h('button.entity-summary-interactions-snapshot-button', {
+            className: classNames('entity-summary-interactions-snapshot-button', entitySummaryKeys.length === 1 ? 'snapshot-button-center' : 'snapshot-button-left')
+          }, [
             h('div', interactionsLinkLabel)
           ])
         ]),

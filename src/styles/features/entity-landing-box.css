@@ -1,16 +1,16 @@
 .entity-summary-list {
   max-width: var(--search-width);
   width: 100%;
-  margin-top: 20px;
+  margin-top: 0.5em;
 }
 
 .entity-summary-list-entries {
   border: 1px solid var(--light-base-colour-dark);
+  border-bottom: 0;
   border-right: 0;
   border-left: 0;
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
 }
 
 .entity-summary-box {
@@ -54,9 +54,6 @@
 .entity-summary-interactions-snapshot {
   height: 200px;
   background-position: center;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .entity-summary-interactions-snapshot-container {
@@ -72,10 +69,16 @@
 .entity-summary-interactions-snapshot-button {
   position: relative;
   top: -28px;
-  background-color: var(--light-base-colour-dark);
-  color:  var(--dark-base-colour);
-  border-radius: 0;
+  background-color: var(--dark-base-colour);
   border: 1px solid var(--dark-base-colour);
+  color: var(--light-base-colour);
+  border-radius: 0;
+  opacity: 0.9;
+}
+
+.snapshot-button-center {
+  left: 50%;
+  transform: translate(-50%, 0);
 }
 
 .entity-summary-footer {

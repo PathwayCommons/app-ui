@@ -4,7 +4,7 @@ let defaults = {
   PORT: 3000,
   MASTER_PASSWORD: '',
   PC_URL: 'http://www.pathwaycommons.org/',
-  GPROFILER_URL: "http://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/",
+  GPROFILER_URL: "https://biit.cs.ut.ee/gprofiler/",
   IDENTIFIERS_URL: 'http://identifiers.org',
   NCBI_EUTILS_BASE_URL: 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils',
   HGNC_BASE_URL: 'https://rest.genenames.org',

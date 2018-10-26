@@ -78,19 +78,19 @@ enrichmentRouter.get('/docs', ( req, res ) => {
  *         schema:
  *           "$ref": "#/definitions/success/validationSuccess"
  *       '400':
- *         description: Invalid input (organism, targetDb, or JSON format)
+ *         description: Parameter value error
  *         schema:
  *           "$ref": "#/definitions/error/validationError"
 */
 // expose a rest endpoint for validation service
-enrichmentRouter.post('/validation', (req, res) => {
+enrichmentRouter.post('/validation', (req, res, next) => {
   const query = req.body.query;
-  const tmpOptions = {};
-  tmpOptions.organism = req.body.organism;
-  tmpOptions.target = req.body.targetDb;
-  validatorGconvert(query, tmpOptions).then(gconvertResult => {
-    res.json(gconvertResult);
-  }).catch( error => res.status( 400 ).send( { "error": error.message } ));
+  const tmpOptions = {
+    organism: req.body.organism,
+    target: req.body.targetDb
+  };
+
+  validatorGconvert( query, tmpOptions ).then( result => res.json( result ) ).catch( next );
 });
 
 
@@ -189,14 +189,8 @@ enrichmentRouter.post('/visualization', (req, res) => {
  * definitions:
  *   error:
  *     validationError:
- *       type: object
- *       properties:
- *         invalidTargetDb:
- *           type: string
- *           example: ENSGGGGG
- *         invalidOrganism:
- *           type: string
- *           example: hsapiensss
+ *       type: string
+ *       example: Unrecognized organism
  *     analysisError:
  *       type: string
  *       example: 'ERROR: minSetSize should be >= 0'

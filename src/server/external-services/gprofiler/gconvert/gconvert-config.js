@@ -1,7 +1,13 @@
 // all valid organisms
-
+const  { DATASOURCE_NAMES } = require('../../../../models/entity/summary');
 module.exports = {
-  targetDatabases: ['ENSG', 'HGNCSYMBOL', 'HGNC', 'UNIPROT', 'NCBIGENE' ],
+  targetDatabases: [
+    DATASOURCE_NAMES.HGNC,
+    DATASOURCE_NAMES.HGNC_SYMBOL,
+    DATASOURCE_NAMES.UNIPROT,
+    DATASOURCE_NAMES.NCBI_GENE,
+    DATASOURCE_NAMES.ENSEMBL
+  ],
   organisms: [
     'aaegypti',
     'acarolinensis',

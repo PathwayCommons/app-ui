@@ -2,16 +2,18 @@ const { fetch } = require('../../../../util');
 const _ = require('lodash');
 const qs = require('query-string');
 const LRUCache = require('lru-cache');
+const InvalidParamError = require('../../../errors/invalid-param');
+const logger = require('../../../logger');
 
 const { organisms, targetDatabases } = require('./gconvert-config');
 const cleanUpEntrez = require('../clean-up-entrez');
-
+const  { DATASOURCE_NAMES } = require('../../../../models/entity/summary.js');
 
 const { GPROFILER_URL, PC_CACHE_MAX_SIZE } = require('../../../../config');
 const cache = require('../../../cache');
 
 const GCONVERT_URL = GPROFILER_URL + 'gconvert.cgi';
-
+// const GCONVERT_URL = 'https://httpstat.us/504';
 
 const resultTemplate = ( unrecognized, duplicate, alias ) => {
   return {
@@ -23,10 +25,11 @@ const resultTemplate = ( unrecognized, duplicate, alias ) => {
 
 const mapDBNames = officalSynonym  => {
   officalSynonym = officalSynonym.toUpperCase();
-  if ( officalSynonym === 'HGNCSYMBOL' ) { return 'HGNC'; }
-  if ( officalSynonym === 'HGNC' ) { return 'HGNC_ACC'; }
-  if ( officalSynonym === 'UNIPROT' ) { return 'UNIPROTSWISSPROT'; }
-  if ( officalSynonym === 'NCBIGENE' ) { return 'ENTREZGENE_ACC'; }
+  if ( officalSynonym === DATASOURCE_NAMES.HGNC_SYMBOL.toUpperCase() ) { return 'HGNC'; }
+  if ( officalSynonym === DATASOURCE_NAMES.HGNC.toUpperCase() ) { return 'HGNC_ACC'; }
+  if ( officalSynonym === DATASOURCE_NAMES.UNIPROT.toUpperCase() ) { return 'UNIPROTSWISSPROT'; }
+  if ( officalSynonym === DATASOURCE_NAMES.NCBI_GENE.toUpperCase() ) { return 'ENTREZGENE_ACC'; }
+  if ( officalSynonym === DATASOURCE_NAMES.ENSEMBL.toUpperCase() ) { return 'ENSG'; }
   return officalSynonym;
 };
 
@@ -45,13 +48,13 @@ const getForm = ( query, defaultOptions, userOptions ) => {
   );
 
   if (!Array.isArray( form.query )) {
-    throw new Error( 'Invalid genes: Must be an array' );
+    throw new InvalidParamError( 'Query must be an array' );
   }
   if ( !organisms.includes( form.organism.toLowerCase() ) ) {
-    throw new Error( 'Invalid organism' );
+    throw new InvalidParamError( 'Unrecognized organism' );
   }
-  if ( !targetDatabases.includes( form.target.toUpperCase() ) ) {
-    throw new Error( 'Invalid target' );
+  if ( !targetDatabases.map( s => s.toUpperCase() ).includes( form.target.toUpperCase() ) ) {
+    throw new InvalidParamError( 'Unrecognized targetDb' );
   }
 
   form.target = mapDBNames( form.target );
@@ -116,6 +119,11 @@ const rawValidatorGconvert = ( query, userOptions ) => {
       method: 'post',
       body: qs.stringify( form )
   })
+  .catch(err => {
+    logger.error(`Gprofiler convert query failed`);
+
+    throw err;
+  })
   .then( response => response.text() )
   .then( bodyHandler );
 };
@@ -124,4 +132,4 @@ const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
 
 const validatorGconvert = cache(rawValidatorGconvert, pcCache);
 
-module.exports = { validatorGconvert };
+module.exports = { validatorGconvert, getForm, mapDBNames, bodyHandler };

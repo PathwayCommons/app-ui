@@ -59,26 +59,17 @@ app.use('/', require('./routes/'));
 app.use(function (req, res, next) {
   let err = new Error('Not Found');
   err.status = 404;
+
   next(err);
 });
 
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function (err, req, res/*, next*/) {
-    res.status(err.status || 500);
-    res.render('error');
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
-// error page handler
-app.use(function (err, req, res/*, next*/) {
+// on thrown error in route, send http 500 and send just the error text message
+app.use(function (err, req, res, next) {
   res.status(err.status || 500);
-  res.render('error');
-});
+  res.send(err.message);
 
+  next(err);
+});
 
 let port = normalizePort(config.PORT);
 

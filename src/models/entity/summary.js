@@ -2,6 +2,15 @@
 const _ = require('lodash');
 
 //To be moved and integrated with all the other 'datasource'
+// Value is the MIRIAM recommended name
+const DATASOURCE_NAMES = {
+  HGNC: 'HGNC',
+  HGNC_SYMBOL: 'HGNC Symbol',
+  UNIPROT: 'UniProt Knowledgebase',
+  NCBI_GENE: 'NCBI Gene',
+  ENSEMBL: 'Ensembl'
+};
+
 const DATASOURCES = {
   NCBIGENE: 'http://identifiers.org/ncbigene/',
   HGNC: 'http://identifiers.org/hgnc/',
@@ -25,4 +34,4 @@ class EntitySummary {
   }
 }
 
-module.exports = { EntitySummary, DATASOURCES };
+module.exports = { EntitySummary, DATASOURCE_NAMES, DATASOURCES };

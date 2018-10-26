@@ -78,7 +78,7 @@ enrichmentRouter.get('/docs', ( req, res ) => {
  *         schema:
  *           "$ref": "#/definitions/success/validationSuccess"
  *       '400':
- *         description: Parameter value error
+ *         description: Invalid parameter value
  *         schema:
  *           "$ref": "#/definitions/error/validationError"
 */
@@ -212,13 +212,13 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *             type: string
  *         targetDb:
  *           type: string
- *           description: "Target database nomenclature to convert gene list to\n Default: HGNC"
+ *           description: "Target database to map to. Using MIRIAM preferred names\n Default: HGNC"
  *           enum:
- *           - ENSG
- *           - HGNCSYMBOL
- *           - HGNC
- *           - UNIPROT
- *           - NCBIGENE
+ *           - 'HGNC Symbol'
+ *           - 'HGNC'
+ *           - 'UniProt Knowledgebase'
+ *           - 'NCBI Gene'
+ *           - 'Ensembl'
  *         organism:
  *           type: string
  *           description: "Organism to analyze

@@ -2,6 +2,7 @@
 const _ = require('lodash');
 
 //To be moved and integrated with all the other 'datasource'
+// These are temporary, and will be addressed as part of https://github.com/PathwayCommons/app-ui/issues/1108: evaluate whether we need external-service-data
 // Value is the MIRIAM recommended name
 const DATASOURCE_NAMES = {
   HGNC: 'HGNC',

@@ -1,9 +1,7 @@
 const qs = require('query-string');
 const _ = require('lodash');
-
+const { fetch } = require('../../../util');
 const { PC_URL } = require('../../../config');
-
-const FETCH_TIMEOUT = 5000; //ms
 
 let absoluteURL = (href) => {
   return ( location.origin + href) ;
@@ -125,15 +123,8 @@ const ServerAPI = {
   },
 
   enrichmentAPI(query, type){
-    return fetch(absoluteURL(`/api/enrichment/${type}`), {
-      method:'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(query),
-      timeout: FETCH_TIMEOUT
-    })
+    const opts = _.assign({}, defaultFetchOpts, { method: 'POST', body: JSON.stringify( query ) });
+    return fetch(absoluteURL(`/api/enrichment/${type}`), opts)
     .then(res => res.json());
   },
 
@@ -142,9 +133,8 @@ const ServerAPI = {
   },
 
   entitySummaryQuery( query ){
-    return fetch(`/api/summary/entity/search?q=${ query }`, defaultFetchOpts)
-    .then(res => res.json())
-    .catch(() => undefined);
+    return fetch(`/api/summary/entity/search?q=${ query }`)
+    .then(res => res.json());
   }
 };
 

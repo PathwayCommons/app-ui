@@ -3,7 +3,7 @@ const { validatorGconvert } = require('../../../external-services/gprofiler/gcon
 const { getEntitySummary: getNcbiGeneSummary } = require('../../../external-services/ncbi');
 const { getEntitySummary: getHgncSummary } = require('../../../external-services/hgnc');
 const { getEntitySummary: getUniProtSummary } = require('../../../external-services/uniprot');
-const { DATASOURCES } = require('../../../../models/entity/summary');
+const { DATASOURCES, DATASOURCE_NAMES } = require('../../../../models/entity/summary');
 
 /**
  * entityFetch: Retrieve EntitySummary for a given id from a datasource
@@ -51,7 +51,7 @@ const entitySearch = async tokens => {
   }
 
   const uniqueTokens = _.uniq( tokens );
-  const { alias } = await validatorGconvert( uniqueTokens, { target: 'NCBIGene' } );
+  const { alias } = await validatorGconvert( uniqueTokens, { target: DATASOURCE_NAMES.NCBI_GENE } );
   // Duplication of work (src/server/external-services/pathway-commons.js).
   // Could consider a single piece of logic that tokenizes and sends to validator.
 
@@ -60,7 +60,7 @@ const entitySearch = async tokens => {
   const summary = await entityFetch( mappedIds, DATASOURCES.NCBIGENE );
 
   // NCBI Gene won't give UniProt Accession, so gotta go get em
-  const { alias: aliasUniProt } = await validatorGconvert( mappedIds, { target: 'UniProt' } );
+  const { alias: aliasUniProt } = await validatorGconvert( mappedIds, { target: DATASOURCE_NAMES.UNIPROT } );
 
   // Update the entity summaries
   _.keys( aliasUniProt ).forEach( ncbiId => {

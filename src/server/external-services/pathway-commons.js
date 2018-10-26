@@ -20,19 +20,26 @@ const _sanitize = (s) => {
   return s.replace(/([!*+\-&|()[\]{}^~?:/\\"\s])/g, '\\$1');
 };
 
+// NB: This function uses validatorGonvert. If for any reason it fails, we should catch it here and
+// let the search move on. In particular, added a timeout in the config named GPROFILER_FETCH_TIMEOUT
 const _processPhrase = (phrase) => {
-  return validatorGconvert(phrase.split(' '),{}).then(result => {
-    let { unrecognized, alias  } = result;
-    const entities = _.keys( alias ).map( initialAlias =>'xrefid:' + _sanitize( initialAlias.toUpperCase()) );
-    const otherIds = unrecognized.map(id=>{
-      id=id.toUpperCase();
-      const recognized = /^SMP\d{5}$/.test(id) // check for a smpdb or chebi id
-        ||/^CHEBI:\d+$/.test(id) && (id.length <= ("CHEBI:".length + 6));
-      const sanitized = _sanitize(id);
-      return recognized ? ( 'xrefid:' + sanitized ) : ( 'name:' + '*' + sanitized + '*' );
+  const tokens = phrase.split(' ');
+  return validatorGconvert( tokens, {} )
+    .then(result => {
+      let { unrecognized, alias  } = result;
+      const entities = _.keys( alias ).map( initialAlias =>'xrefid:' + _sanitize( initialAlias.toUpperCase()) );
+      const otherIds = unrecognized.map(id=>{
+        id=id.toUpperCase();
+        const recognized = /^SMP\d{5}$/.test(id) // check for a smpdb or chebi id
+          ||/^CHEBI:\d+$/.test(id) && (id.length <= ("CHEBI:".length + 6));
+        const sanitized = _sanitize(id);
+        return recognized ? ( 'xrefid:' + sanitized ) : ( 'name:' + '*' + sanitized + '*' );
+      });
+      return entities.concat(otherIds);
+    })
+    .catch( () => { // Let the validator fail - prefix with 'name' and move on
+      return tokens.map( token => 'name:' + '*' + _sanitize( token ) + '*' );
     });
-    return entities.concat(otherIds);
-  });
 };
 
 const _processQueryString = async (inputString) => {

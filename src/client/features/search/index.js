@@ -39,21 +39,24 @@ class Search extends React.Component {
     const query = state.query;
     if (query.q !== '') {
       this.setState({
-        searchLoading: true,
+        searchLoading: false,
         entitySummaryResultsLoading: true
       });
-      ServerAPI.entitySummaryQuery( query.q ).then( entitySummaryResults => {
-        this.setState({
-          entitySummaryResults: entitySummaryResults,
-          entitySummaryResultsLoading: false
+      ServerAPI.entitySummaryQuery( query.q )
+        .then( entitySummaryResults => {
+          this.setState({ entitySummaryResults });
+        })
+        .catch( () => {} ) // swallow
+        .finally(() => {
+          this.setState({ entitySummaryResultsLoading: false });
         });
-      });
-      ServerAPI.search(query).then(searchResults => {
-          this.setState({
-            searchResults: searchResults,
-            searchLoading: false
-          });
-      });
+      ServerAPI.search(query)
+        .then( searchResults => {
+          this.setState({ searchResults });
+        })
+        .finally( () => {
+          this.setState({ searchLoading: false });
+        });
     }
   }
 

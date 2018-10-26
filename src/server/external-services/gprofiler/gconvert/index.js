@@ -9,11 +9,10 @@ const { organisms, targetDatabases } = require('./gconvert-config');
 const cleanUpEntrez = require('../clean-up-entrez');
 const  { DATASOURCE_NAMES } = require('../../../../models/entity/summary.js');
 
-const { GPROFILER_URL, PC_CACHE_MAX_SIZE } = require('../../../../config');
+const { GPROFILER_URL, GPROFILER_FETCH_TIMEOUT, PC_CACHE_MAX_SIZE } = require('../../../../config');
 const cache = require('../../../cache');
 
 const GCONVERT_URL = GPROFILER_URL + 'gconvert.cgi';
-// const GCONVERT_URL = 'https://httpstat.us/504';
 
 const resultTemplate = ( unrecognized, duplicate, alias ) => {
   return {
@@ -117,7 +116,8 @@ const rawValidatorGconvert = ( query, userOptions ) => {
 
   return fetch( GCONVERT_URL, {
       method: 'post',
-      body: qs.stringify( form )
+      body: qs.stringify( form ),
+      timeout: GPROFILER_FETCH_TIMEOUT
   })
   .catch(err => {
     logger.error(`Gprofiler convert query failed`);

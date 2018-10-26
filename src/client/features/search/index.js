@@ -39,7 +39,7 @@ class Search extends React.Component {
     const query = state.query;
     if (query.q !== '') {
       this.setState({
-        searchLoading: false,
+        searchLoading: true,
         entitySummaryResultsLoading: true
       });
       ServerAPI.entitySummaryQuery( query.q )

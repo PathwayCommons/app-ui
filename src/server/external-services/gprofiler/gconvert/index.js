@@ -3,15 +3,20 @@ const _ = require('lodash');
 const qs = require('query-string');
 const LRUCache = require('lru-cache');
 
-const { organisms, targetDatabases } = require('./gconvert-config');
 const cleanUpEntrez = require('../clean-up-entrez');
-
-
-const { GPROFILER_URL, PC_CACHE_MAX_SIZE } = require('../../../../config');
+const InvalidParamError = require('../../../../server/errors/invalid-param');
+const { GPROFILER_URL, PC_CACHE_MAX_SIZE, DATASOURCE_HGNC, DATASOURCE_HGNC_SYMBOL, DATASOURCE_UNIPROT, DATASOURCE_NCBI_GENE, DATASOURCE_ENSEMBL } = require('../../../../config');
 const cache = require('../../../cache');
-
 const GCONVERT_URL = GPROFILER_URL + 'gconvert.cgi';
 
+const DATASOURCE_NAMES = [DATASOURCE_HGNC, DATASOURCE_HGNC_SYMBOL, DATASOURCE_UNIPROT, DATASOURCE_NCBI_GENE, DATASOURCE_ENSEMBL];
+const GPROFILER_DATASOURCE_NAMES = {
+  HGNC: 'HGNC_ACC',
+  HGNC_SYMBOL: 'HGNC',
+  UNIPROT: 'UNIPROTSWISSPROT',
+  NCBI_GENE: 'ENTREZGENE_ACC',
+  ENSEMBL: 'ENSG'
+};
 
 const resultTemplate = ( unrecognized, duplicate, alias ) => {
   return {
@@ -21,13 +26,41 @@ const resultTemplate = ( unrecognized, duplicate, alias ) => {
   };
 };
 
-const mapDBNames = officalSynonym  => {
-  officalSynonym = officalSynonym.toUpperCase();
-  if ( officalSynonym === 'HGNCSYMBOL' ) { return 'HGNC'; }
-  if ( officalSynonym === 'HGNC' ) { return 'HGNC_ACC'; }
-  if ( officalSynonym === 'UNIPROT' ) { return 'UNIPROTSWISSPROT'; }
-  if ( officalSynonym === 'NCBIGENE' ) { return 'ENTREZGENE_ACC'; }
-  return officalSynonym;
+const mapTarget = target  => {
+  let mappedTarget;
+
+  switch( target.toUpperCase() ){
+    case DATASOURCE_HGNC:
+      mappedTarget = GPROFILER_DATASOURCE_NAMES.HGNC;
+      break;
+    case DATASOURCE_HGNC_SYMBOL:
+      mappedTarget = GPROFILER_DATASOURCE_NAMES.HGNC_SYMBOL;
+      break;
+    case DATASOURCE_UNIPROT:
+      mappedTarget =  GPROFILER_DATASOURCE_NAMES.UNIPROT;
+      break;
+    case DATASOURCE_NCBI_GENE:
+      mappedTarget =  GPROFILER_DATASOURCE_NAMES.NCBI_GENE;
+      break;
+    case DATASOURCE_ENSEMBL:
+      mappedTarget =  GPROFILER_DATASOURCE_NAMES.ENSEMBL;
+      break;
+    default:
+      mappedTarget = GPROFILER_DATASOURCE_NAMES.HGNC;
+  }
+  return mappedTarget;
+};
+
+const mapQuery = query => query.join(" ");
+
+/*
+ * mapParams
+ * @param { object } params the input parameters
+ */
+const mapParams = params => {
+  const target = mapTarget( params.target );
+  const query = mapQuery( params.query );
+  return _.assign({}, params, { target,  query });
 };
 
 /*
@@ -38,29 +71,23 @@ const mapDBNames = officalSynonym  => {
  */
 const getForm = ( query, defaultOptions, userOptions ) => {
 
-  const form = _.assign( {},
+  let form = _.assign( {},
     defaultOptions,
     JSON.parse( JSON.stringify( userOptions ) ),
     { query: query }
   );
 
-  if (!Array.isArray( form.query )) {
-    throw new Error( 'Invalid genes: Must be an array' );
+  if ( !Array.isArray( form.query ) ) {
+    throw new InvalidParamError( 'Invalid query format' );
   }
-  if ( !organisms.includes( form.organism.toLowerCase() ) ) {
-    throw new Error( 'Invalid organism' );
-  }
-  if ( !targetDatabases.includes( form.target.toUpperCase() ) ) {
-    throw new Error( 'Invalid target' );
+  if ( !(_.values( DATASOURCE_NAMES )).includes( form.target.toUpperCase() ) ) {
+    throw new InvalidParamError( 'Unrecognized targetDb' );
   }
 
-  form.target = mapDBNames( form.target );
-  form.query = form.query.join(" ");
-
-  return form;
+  return mapParams( form );
 };
 
-const bodyHandler = body =>  {
+const gConvertResponseHandler = body =>  {
 
   const entityInfoList = _.map(body.split('\n'), ele => { return ele.split('\t'); });
   entityInfoList.splice(-1, 1); // remove last element ''
@@ -117,11 +144,16 @@ const rawValidatorGconvert = ( query, userOptions ) => {
       body: qs.stringify( form )
   })
   .then( response => response.text() )
-  .then( bodyHandler );
+  .then( gConvertResponseHandler );
 };
 
 const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
 
 const validatorGconvert = cache(rawValidatorGconvert, pcCache);
 
-module.exports = { validatorGconvert };
+module.exports = { validatorGconvert,
+  getForm,
+  mapParams,
+  gConvertResponseHandler,
+  GPROFILER_DATASOURCE_NAMES
+};

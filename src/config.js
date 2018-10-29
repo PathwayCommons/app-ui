@@ -4,7 +4,7 @@ let defaults = {
   PORT: 3000,
   MASTER_PASSWORD: '',
   PC_URL: 'http://www.pathwaycommons.org/',
-  GPROFILER_URL: "http://biit.cs.ut.ee/gprofiler_archive3/r1741_e90_eg37/web/",
+  GPROFILER_URL: "https://biit.cs.ut.ee/gprofiler/",
   IDENTIFIERS_URL: 'http://identifiers.org',
   NCBI_EUTILS_BASE_URL: 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils',
   HGNC_BASE_URL: 'https://rest.genenames.org',
@@ -21,7 +21,12 @@ let defaults = {
   DB_CERT: undefined,
   // factoid specific urls
   FACTOID_URL: 'http://unstable.factoid.baderlab.org/',
-  BIOPAX_CONVERTERS_URL: 'http://biopax.baderlab.org/'
+  BIOPAX_CONVERTERS_URL: 'http://biopax.baderlab.org/',
+  DATASOURCE_HGNC: 'HGNC', // !!!temporary , will be updated as part of 'identifiers url generation module' https://github.com/PathwayCommons/app-ui/issues/1116
+  DATASOURCE_HGNC_SYMBOL: 'HGNCSYMBOL',
+  DATASOURCE_UNIPROT: 'UNIPROT',
+  DATASOURCE_NCBI_GENE: 'NCBIGENE',
+  DATASOURCE_ENSEMBL: 'ENSEMBL'
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );

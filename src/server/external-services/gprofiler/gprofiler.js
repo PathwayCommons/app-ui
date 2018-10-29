@@ -109,4 +109,4 @@ const enrichment = (query, userSetting) => {
 };
 
 
-module.exports = { enrichment };
+module.exports = { enrichment, parseGProfilerResponse };

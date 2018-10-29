@@ -121,7 +121,25 @@ const sifGraph = async ( queryObj ) => {
   });
 };
 
+/* xref2Uri
+ * Light wrapper around pc metadata service for mapping Xrefs db, id to url
+ * http://www.pathwaycommons.org/pc2/swagger-ui.html#!/metadata45controller/identifierOrgUriUsingGET
+ */
+const xref2Uri =  ( db, id ) => {
+  const url = config.PC_URL + 'pc2/miriam/uri/' + db + '/' + id + '/';
+  return fetch( url , {
+   method: 'GET',
+   headers: {
+     'Accept': 'text/plain'
+   }
+ })
+ .then( res => res.text() )
+ .catch( e => {
+   logger.error( `xref2Uri error with ${db}, ${id} - ${e}` );
+   throw e;
+ });
+};
 
 const search = _.memoize(_search, query => JSON.stringify(query));
 
-module.exports = {query, search, sifGraph};
+module.exports = { query, search, sifGraph, xref2Uri };

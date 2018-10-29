@@ -153,5 +153,6 @@ const validatorGconvert = cache(rawValidatorGconvert, pcCache);
 module.exports = { validatorGconvert,
   getForm,
   mapParams,
-  gConvertResponseHandler
+  gConvertResponseHandler,
+  GPROFILER_DATASOURCE_NAMES
 };

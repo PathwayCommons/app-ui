@@ -5,15 +5,8 @@ const path = require ('path');
 const _ = require('lodash');
 
 const { DATASOURCE_NAMES } = require('../../../../src/config');
-const { getForm, mapParams, gConvertResponseHandler } = require ('../../../../src/server/external-services/gprofiler/gconvert');
+const { getForm, mapParams, gConvertResponseHandler, GPROFILER_DATASOURCE_NAMES } = require ('../../../../src/server/external-services/gprofiler/gconvert');
 const InvalidParamError = require('../../../../src/server/errors/invalid-param');
-const GPROFILER_DATASOURCE_NAMES = {
-  HGNC: 'HGNC_ACC',
-  HGNC_SYMBOL: 'HGNC',
-  UNIPROT: 'UNIPROTSWISSPROT',
-  NCBI_GENE: 'ENTREZGENE_ACC',
-  ENSEMBL: 'ENSG'
-};
 
 const query1 = [
   'TP53',

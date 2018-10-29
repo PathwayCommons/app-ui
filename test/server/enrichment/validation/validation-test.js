@@ -4,7 +4,7 @@ const fs = require ('fs');
 const path = require ('path');
 const _ = require('lodash');
 
-const { DATASOURCE_NAMES } = require('../../../../src/config');
+const { DATASOURCE_HGNC, DATASOURCE_HGNC_SYMBOL, DATASOURCE_UNIPROT, DATASOURCE_NCBI_GENE, DATASOURCE_ENSEMBL } = require('../../../../src/config');
 const { getForm, mapParams, gConvertResponseHandler, GPROFILER_DATASOURCE_NAMES } = require ('../../../../src/server/external-services/gprofiler/gconvert');
 const InvalidParamError = require('../../../../src/server/errors/invalid-param');
 
@@ -20,12 +20,12 @@ const query1 = [
 const defaultOptions = {
   'output': 'mini',
   'organism': 'hsapiens',
-  'target': DATASOURCE_NAMES.HGNC,
+  'target': DATASOURCE_HGNC,
   'prefix': 'ENTREZGENE_ACC'
 };
 
 const userOptions = {
-  'target': DATASOURCE_NAMES.HGNC_SYMBOL
+  'target': DATASOURCE_HGNC_SYMBOL
 };
 
 const validResult1 = {
@@ -63,31 +63,31 @@ describe ('Enrichment service: validation', function () {
     });
 
     it ('should map name for HGNC Symbol', function () {
-      const params = _.assign( {}, baseParams, { 'target': DATASOURCE_NAMES.HGNC_SYMBOL } );
+      const params = _.assign( {}, baseParams, { 'target': DATASOURCE_HGNC_SYMBOL } );
       const result = mapParams( params );
       expect( result.target ).to.equal( GPROFILER_DATASOURCE_NAMES.HGNC_SYMBOL );
     });
 
     it ('should map name for HGNC Symbol', function () {
-      const params = _.assign( {}, baseParams, { 'target': DATASOURCE_NAMES.HGNC } );
+      const params = _.assign( {}, baseParams, { 'target': DATASOURCE_HGNC } );
       const result = mapParams( params );
       expect( result.target ).to.equal( GPROFILER_DATASOURCE_NAMES.HGNC );
     });
 
     it ('should map name for UniProt', function () {
-      const params = _.assign( {}, baseParams, { 'target': DATASOURCE_NAMES.UNIPROT } );
+      const params = _.assign( {}, baseParams, { 'target': DATASOURCE_UNIPROT } );
       const result = mapParams( params );
       expect( result.target ).to.equal( GPROFILER_DATASOURCE_NAMES.UNIPROT );
     });
 
     it ('should map name for NCBI Gene', function () {
-      const params = _.assign( {}, baseParams, { 'target': DATASOURCE_NAMES.NCBI_GENE } );
+      const params = _.assign( {}, baseParams, { 'target': DATASOURCE_NCBI_GENE } );
       const result = mapParams( params );
       expect( result.target ).to.equal( GPROFILER_DATASOURCE_NAMES.NCBI_GENE );
     });
 
     it ('should map name for Ensembl Gene', function () {
-      const params = _.assign( {}, baseParams, { 'target': DATASOURCE_NAMES.ENSEMBL } );
+      const params = _.assign( {}, baseParams, { 'target': DATASOURCE_ENSEMBL } );
       const result = mapParams( params );
       expect( result.target ).to.equal( GPROFILER_DATASOURCE_NAMES.ENSEMBL );
     });

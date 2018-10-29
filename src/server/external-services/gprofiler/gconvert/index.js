@@ -5,10 +5,11 @@ const LRUCache = require('lru-cache');
 
 const cleanUpEntrez = require('../clean-up-entrez');
 const InvalidParamError = require('../../../../server/errors/invalid-param');
-const { GPROFILER_URL, PC_CACHE_MAX_SIZE, DATASOURCE_NAMES } = require('../../../../config');
+const { GPROFILER_URL, PC_CACHE_MAX_SIZE, DATASOURCE_HGNC, DATASOURCE_HGNC_SYMBOL, DATASOURCE_UNIPROT, DATASOURCE_NCBI_GENE, DATASOURCE_ENSEMBL } = require('../../../../config');
 const cache = require('../../../cache');
 const GCONVERT_URL = GPROFILER_URL + 'gconvert.cgi';
 
+const DATASOURCE_NAMES = [DATASOURCE_HGNC, DATASOURCE_HGNC_SYMBOL, DATASOURCE_UNIPROT, DATASOURCE_NCBI_GENE, DATASOURCE_ENSEMBL];
 const GPROFILER_DATASOURCE_NAMES = {
   HGNC: 'HGNC_ACC',
   HGNC_SYMBOL: 'HGNC',
@@ -29,19 +30,19 @@ const mapTarget = target  => {
   let mappedTarget;
 
   switch( target.toUpperCase() ){
-    case DATASOURCE_NAMES.HGNC:
+    case DATASOURCE_HGNC:
       mappedTarget = GPROFILER_DATASOURCE_NAMES.HGNC;
       break;
-    case DATASOURCE_NAMES.HGNC_SYMBOL:
+    case DATASOURCE_HGNC_SYMBOL:
       mappedTarget = GPROFILER_DATASOURCE_NAMES.HGNC_SYMBOL;
       break;
-    case DATASOURCE_NAMES.UNIPROT:
+    case DATASOURCE_UNIPROT:
       mappedTarget =  GPROFILER_DATASOURCE_NAMES.UNIPROT;
       break;
-    case DATASOURCE_NAMES.NCBI_GENE:
+    case DATASOURCE_NCBI_GENE:
       mappedTarget =  GPROFILER_DATASOURCE_NAMES.NCBI_GENE;
       break;
-    case DATASOURCE_NAMES.ENSEMBL:
+    case DATASOURCE_ENSEMBL:
       mappedTarget =  GPROFILER_DATASOURCE_NAMES.ENSEMBL;
       break;
     default:

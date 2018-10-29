@@ -1,8 +1,9 @@
 const fs = require('fs');
 const _ = require('lodash');
+const { xref2Uri } = require('../../../../external-services/pathway-commons');
 
 let extractBiopaxMetadata = biopaxJsonEntry => {
-  let databaseIds = _.get(biopaxJsonEntry, 'dbIds', []);
+  let xrefLinks = _.get(biopaxJsonEntry, 'xrefLinks', []);
   let entRefEl = _.get(biopaxJsonEntry, 'entRefEl', []);
 
   let type = _.get(biopaxJsonEntry, '@type', '');
@@ -19,9 +20,9 @@ let extractBiopaxMetadata = biopaxJsonEntry => {
   let entRefDisplayName = _.get(entRefEl, 'displayName', '');
 
 
-  let synonyms = ( 
-    _.uniq( 
-      _.flatten( [entryNames, entRefNames] ) 
+  let synonyms = (
+    _.uniq(
+      _.flatten( [entryNames, entRefNames] )
     ).filter( name => !_.isEmpty( name ) )
   );
 
@@ -35,18 +36,21 @@ let extractBiopaxMetadata = biopaxJsonEntry => {
     type: type.includes(':') ? type.split(':')[1] : type,
     standardName,
     displayName,
-    databaseIds
+    xrefLinks
   };
 };
 
+// helper for converting xrefs to map `{ label: uri, ... }`
+const xref2link = ( db, id ) => xref2Uri( db, id ).then( uri => ({ [db]: uri  }) );
+
 // transform biopaxJsonText into a consolidated js object
-let biopaxText2ElementMap = biopaxJsonText => {
+let biopaxText2ElementMap = async biopaxJsonText => {
   let rawMap = new Map();
   let elementMap = new Map();
   let xRefMap = new Map();
 
   let biopaxElementGraph = JSON.parse(biopaxJsonText)['@graph'];
-  let externalReferences = [];  
+  let externalReferences = [];
 
   biopaxElementGraph.forEach( element => {
     if( _.has(element, '@id') ){
@@ -73,11 +77,10 @@ let biopaxText2ElementMap = biopaxJsonText => {
     });
   });
 
-  biopaxElementGraph.forEach( element => {
+  for ( const element of biopaxElementGraph ){
     let entityReference = _.get(element, 'entityReference', null);
     let xrefIds = [].concat( _.get(element, 'xref', []) );
     let elementId = _.get(element, '@id');
-    let dbIds = {};
     let entRefEl = rawMap.get( entityReference );
 
     if( entRefEl != null ){
@@ -85,29 +88,25 @@ let biopaxText2ElementMap = biopaxJsonText => {
       xrefIds = xrefIds.concat( entRefXrefs );
     }
 
-    // consolidate all the db ids from all the xrefs relevant to this element
-    xrefIds.filter( xrefId => xrefId != null ).forEach( xrefId => {
+    const linkPromises = xrefIds.filter( xrefId => xrefId != null ).map( xrefId => {
       let { k, v } = xRefMap.get( xrefId );
-
-      if( dbIds[k] != null ){
-        dbIds[k] = dbIds[k].concat(v);
-      } else {
-        dbIds[k] = [v];
-      }
+      return xref2link( k, v );
     });
 
-    // each 'element' does not contain all of the data we need, it 
+    const xrefLinks = await Promise.all( linkPromises );
+
+    // each 'element' does not contain all of the data we need, it
     // is scattered across various xref elements and entityReference elements.
     // we merge all this data into one object for easy processing
-    elementMap.set( elementId, _.assign( element, { dbIds, entRefEl } ) );
-  });
+    elementMap.set( elementId, _.assign( element, { xrefLinks, entRefEl } ) );
+  }
 
   return elementMap;
 };
 
 
-let getBiopaxMetadata = ( cyJsonNodes, biopaxJsonText ) => {
-  let bm = biopaxText2ElementMap( biopaxJsonText );
+let getBiopaxMetadata = async ( cyJsonNodes, biopaxJsonText ) => {
+  let bm = await biopaxText2ElementMap( biopaxJsonText );
   let cyJsonNodeMetadataMap = {};
 
   cyJsonNodes.forEach( node => {

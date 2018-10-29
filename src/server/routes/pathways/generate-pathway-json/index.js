@@ -38,9 +38,10 @@ function getPathwayNodesAndEdges(uri) {
       cyJson = sbgn2CyJson(file);
     }),
     pcServices.query({uri, format: 'jsonld'}).then(file => biopaxJson = file)
-  ]).then(() => {
+  ])
+  .then( () => getBiopaxMetadata(cyJson.nodes, biopaxJson) )
+  .then( nodesMetadata => {
 
-    const nodesMetadata = getBiopaxMetadata(cyJson.nodes, biopaxJson);
     const nodesGeneSynonyms = getGenericPhyiscalEntityData(cyJson.nodes);
 
     const augmentedNodes = cyJson.nodes.map(node => {

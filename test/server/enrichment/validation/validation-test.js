@@ -4,8 +4,16 @@ const fs = require ('fs');
 const path = require ('path');
 const _ = require('lodash');
 
-const { getForm, mapParams, gConvertResponseHandler, DATASOURCE_NAMES, GPROFILER_DATASOURCE_NAMES } = require ('../../../../src/server/external-services/gprofiler/gconvert');
+const { DATASOURCE_NAMES } = require('../../../../src/config');
+const { getForm, mapParams, gConvertResponseHandler } = require ('../../../../src/server/external-services/gprofiler/gconvert');
 const InvalidParamError = require('../../../../src/server/errors/invalid-param');
+const GPROFILER_DATASOURCE_NAMES = {
+  HGNC: 'HGNC_ACC',
+  HGNC_SYMBOL: 'HGNC',
+  UNIPROT: 'UNIPROTSWISSPROT',
+  NCBI_GENE: 'ENTREZGENE_ACC',
+  ENSEMBL: 'ENSG'
+};
 
 const query1 = [
   'TP53',
@@ -24,8 +32,7 @@ const defaultOptions = {
 };
 
 const userOptions = {
-  'target': DATASOURCE_NAMES.HGNC_SYMBOL,
-  'organism': 'hsapiens'
+  'target': DATASOURCE_NAMES.HGNC_SYMBOL
 };
 
 const validResult1 = {
@@ -116,7 +123,6 @@ describe ('Enrichment service: validation', function () {
     it ('should throw error with invalid user options', function () {
       expect( getForm.bind( getForm, query1, defaultOptions, { target: 'bloat' } ) ).to.throw ( InvalidParamError );
       expect( getForm.bind( getForm, {}, defaultOptions, {} ) ).to.throw ( InvalidParamError );
-      expect( getForm.bind( getForm, query1, defaultOptions, { organism: 'bloat' } ) ).to.throw ( InvalidParamError );
     });
   });
 

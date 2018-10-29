@@ -3,15 +3,19 @@ const _ = require('lodash');
 const qs = require('query-string');
 const LRUCache = require('lru-cache');
 
-const { organisms, targetDatabases } = require('./gconvert-config');
 const cleanUpEntrez = require('../clean-up-entrez');
 const InvalidParamError = require('../../../../server/errors/invalid-param');
-
-const { GPROFILER_URL, PC_CACHE_MAX_SIZE } = require('../../../../config');
+const { GPROFILER_URL, PC_CACHE_MAX_SIZE, DATASOURCE_NAMES } = require('../../../../config');
 const cache = require('../../../cache');
-
 const GCONVERT_URL = GPROFILER_URL + 'gconvert.cgi';
 
+const GPROFILER_DATASOURCE_NAMES = {
+  HGNC: 'HGNC_ACC',
+  HGNC_SYMBOL: 'HGNC',
+  UNIPROT: 'UNIPROTSWISSPROT',
+  NCBI_GENE: 'ENTREZGENE_ACC',
+  ENSEMBL: 'ENSG'
+};
 
 const resultTemplate = ( unrecognized, duplicate, alias ) => {
   return {
@@ -19,23 +23,6 @@ const resultTemplate = ( unrecognized, duplicate, alias ) => {
     duplicate: duplicate || {},
     alias: alias || {}
   };
-};
-
-// !!!temporary , will be updated as part of 'identifiers url generation module' https://github.com/PathwayCommons/app-ui/issues/1116
-const DATASOURCE_NAMES = {
-  HGNC: 'HGNC',
-  HGNC_SYMBOL: 'HGNCSYMBOL',
-  UNIPROT: 'UNIPROT',
-  NCBI_GENE: 'NCBIGENE',
-  ENSEMBL: 'ENSEMBL'
-};
-
-const GPROFILER_DATASOURCE_NAMES = {
-  HGNC: 'HGNC_ACC',
-  HGNC_SYMBOL: 'HGNC',
-  UNIPROT: 'UNIPROTSWISSPROT',
-  NCBI_GENE: 'ENTREZGENE_ACC',
-  ENSEMBL: 'ENSEMBL'
 };
 
 const mapTarget = target  => {
@@ -89,13 +76,10 @@ const getForm = ( query, defaultOptions, userOptions ) => {
     { query: query }
   );
 
-  if (!Array.isArray( form.query )) {
+  if ( !Array.isArray( form.query ) ) {
     throw new InvalidParamError( 'Invalid query format' );
   }
-  if ( !organisms.includes( form.organism.toLowerCase() ) ) {
-    throw new InvalidParamError( 'Unrecognized organism' );
-  }
-  if ( !targetDatabases.includes( form.target.toUpperCase() ) ) {
+  if ( !(_.values( DATASOURCE_NAMES )).includes( form.target.toUpperCase() ) ) {
     throw new InvalidParamError( 'Unrecognized targetDb' );
   }
 
@@ -169,7 +153,5 @@ const validatorGconvert = cache(rawValidatorGconvert, pcCache);
 module.exports = { validatorGconvert,
   getForm,
   mapParams,
-  gConvertResponseHandler,
-  DATASOURCE_NAMES,
-  GPROFILER_DATASOURCE_NAMES
+  gConvertResponseHandler
 };

@@ -50,11 +50,11 @@ router.get('/', ( req, res ) => {
   let uri = req.query.uri;
 
   findPathwayByUri( uri ).then( result => {
-    // if( result == null ){
+    if( result == null ){
       getAndStorePathway( uri ).then( pathwayJson => res.json( pathwayJson ) );
-    // } else {
-    //   res.json( result );
-    // }
+    } else {
+      res.json( result );
+    }
   });
 });
 

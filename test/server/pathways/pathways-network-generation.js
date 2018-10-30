@@ -1,16 +1,27 @@
-const chai = require('chai');
-const expect = chai.expect;
-const { getPathwayJson } = require('../../../src/server/routes/pathways/generate-pathway-json');
+const { expect } = require('chai');
+const fs = require('fs');
+const path = require('path');
+const { getBiopaxMetadata } = require('../../../src/server/routes/pathways/generate-pathway-json/biopax-metadata');
+const sampleCyjsonData = require('./sample-cyjson-data');
+const sampleMetadataOut = require('./sample-metadata-out.json');
 
+describe('Pathways network generation', function(){
+  beforeEach(function() {
+    global.fetch = () => {
+      return new Promise( resolve => {
+        resolve({
+          ok: true,
+          Id: '123',
+          text: () => 'http://identifiers.org/mockdb/mockid'
+        });
+      });
+    };
+  });
 
-const URI_TEST_EXPECTED_RESULT = require('./uri.output.json');
+  it('Should return correct metadata from getBiopaxMetadata', async () => {
+    let sampleBiopaxData = fs.readFileSync(path.resolve(__dirname, './sample-biopax-data.txt'), 'utf-8');
 
-describe('pathways network generation', function(){
-  it('should return a json representation of a pathway given a uri', async () => {
-    let uri = 'http://identifiers.org/reactome/R-HSA-73933';
-    let result = await getPathwayJson( uri );
-
-
-    expect( result ).to.deep.equal( URI_TEST_EXPECTED_RESULT );
+    let result = await getBiopaxMetadata( sampleCyjsonData.nodes, sampleBiopaxData );
+    expect( result ).to.deep.equal( sampleMetadataOut );
   });
 });

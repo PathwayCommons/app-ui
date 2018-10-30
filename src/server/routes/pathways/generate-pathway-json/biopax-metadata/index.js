@@ -40,8 +40,17 @@ let extractBiopaxMetadata = biopaxJsonEntry => {
   };
 };
 
-// helper for converting xrefs to map `{ label: uri, ... }`
-const xref2link = ( db, id ) => xref2Uri( db, id ).then( uri => ({ [db]: uri  }) );
+// helper for converting xrefs to map of uris grouped by db
+const xref2link = ( db, id, xrefLinks ) => {
+  return xref2Uri( db, id )
+    .then( uri => {
+      if( xrefLinks[ db ] != null ){
+        xrefLinks[ db ] = xrefLinks[ db ].concat( uri );
+      } else {
+        xrefLinks[ db ] = [ uri ];
+      }
+    });
+};
 
 // transform biopaxJsonText into a consolidated js object
 let biopaxText2ElementMap = async biopaxJsonText => {
@@ -82,6 +91,7 @@ let biopaxText2ElementMap = async biopaxJsonText => {
     let xrefIds = [].concat( _.get(element, 'xref', []) );
     let elementId = _.get(element, '@id');
     let entRefEl = rawMap.get( entityReference );
+    const xrefLinks = {};
 
     if( entRefEl != null ){
       let entRefXrefs = _.get(entRefEl, 'xref', []);
@@ -90,10 +100,10 @@ let biopaxText2ElementMap = async biopaxJsonText => {
 
     const linkPromises = xrefIds.filter( xrefId => xrefId != null ).map( xrefId => {
       let { k, v } = xRefMap.get( xrefId );
-      return xref2link( k, v );
+      return xref2link( k, v, xrefLinks );
     });
 
-    const xrefLinks = await Promise.all( linkPromises );
+    await Promise.all( linkPromises );
 
     // each 'element' does not contain all of the data we need, it
     // is scattered across various xref elements and entityReference elements.

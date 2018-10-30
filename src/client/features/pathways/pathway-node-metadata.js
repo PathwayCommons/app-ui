@@ -6,11 +6,13 @@ const { ServerAPI } = require('../../services');
 
 const DEFAULT_NUM_NAMES = 3;
 // TODO - collection names (keys) should be accessed from config https://github.com/PathwayCommons/app-ui/issues/1131
-const SUPPORTED_DB_LINKS = new Map([
+const SUPPORTED_COLLECTIONS = new Map([
   ['Reactome'.toLowerCase(), 'Reactome'],
   ['UniProt Knowledgebase'.toLowerCase(), 'UniProt'],
   ['NCBI Gene'.toLowerCase(), 'NCBI'],
-  ['HGNC Symbol'.toLowerCase(), 'HGNC']
+  ['HGNC Symbol'.toLowerCase(), 'HGNC'],
+  ['ChEBI'.toLowerCase(), 'ChEBI'],
+  ['Ensembl'.toLowerCase(), 'Ensembl']
 ]);
 const PUBMED_DB_KEY = 'pubmed';
 
@@ -61,7 +63,7 @@ class PathwayNodeMetadataView extends React.Component {
 
     let dbLinks = _.keys( xrefLinks ).map( db => {
       let link = null;
-      const displayName = SUPPORTED_DB_LINKS.get( db.toLowerCase() );
+      const displayName = SUPPORTED_COLLECTIONS.get( db.toLowerCase() );
       const uri = _.get( xrefLinks, `${db}[0]` );
       if ( displayName && uri ) link = h('a.plain-link', { href: uri, target: '_blank' }, displayName );
       return link;

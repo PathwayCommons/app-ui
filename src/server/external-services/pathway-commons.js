@@ -1,8 +1,12 @@
 const qs = require('query-string');
+const url = require('url');
 const { fetch } = require('../../util');
 const _ = require('lodash');
 const logger = require('../logger');
 const config = require('../../config');
+const LRUCache = require('lru-cache');
+const cache = require('../cache');
+const pcCache = LRUCache({ max: config.PC_CACHE_MAX_SIZE, length: () => 1 });
 
 const { validatorGconvert } = require('./gprofiler');
 
@@ -121,12 +125,14 @@ const sifGraph = async ( queryObj ) => {
   });
 };
 
-/* xref2Uri
- * Light wrapper around pc metadata service for mapping Xrefs db, id to url
+/* _fetchFromMiriamUri
+ * Using (abusing) this service to get the MIRIAM collection namespace from a name
  * http://www.pathwaycommons.org/pc2/swagger-ui.html#!/metadata45controller/identifierOrgUriUsingGET
+ * NB: Does do some regex pattern validation of localId?
  */
-const xref2Uri =  ( db, id ) => {
-  const url = config.PC_URL + 'pc2/miriam/uri/' + db + '/' + id + '/';
+const _fetchFromMiriamUri = ( name, localId ) => {
+  console.log(`_fetchFromMiriamUri -name: ${name}; localId: ${localId}`);
+  const url = config.PC_URL + 'pc2/miriam/uri/' + name + '/' + localId + '/';
   return fetch( url , {
    method: 'GET',
    headers: {
@@ -135,9 +141,36 @@ const xref2Uri =  ( db, id ) => {
  })
  .then( res => res.text() )
  .catch( e => {
-   logger.error( `xref2Uri error with ${db}, ${id} - ${e}` );
+   logger.error( `_fetchFromMiriamUri with ${name} - ${e}` );
    throw e;
  });
+};
+
+// Obtain the last two path elements from uri (e.g. 'http://identifiers.org/namespace/localId')
+const _namespaceFromUri = uri => {
+  const uriParts = url.parse( uri );
+  const pathParts = _.compact( uriParts.pathname.split('/') );
+  return pathParts.length === 2 ? pathParts[0] : null;
+};
+
+const _rawGetNamespace = async ( name, localId ) => {
+  const uri = await _fetchFromMiriamUri( name, localId );
+  return _namespaceFromUri( uri );
+};
+const _getNamespace  = cache( _rawGetNamespace, pcCache );
+
+const _constructUri = ( namespace, localId ) => `${ config.IDENTIFIERS_URL }/${ namespace }/${ localId }`;
+
+/*
+ * xref2Uri: Obtain the uri for an xref
+ * @param {string} name -  MIRIAM 'name' OR MI CV database citation (MI:0444) 'label'
+ * @param {string} localId - For a collection registered with MIRIAM
+ * @return a uri
+ */
+const xref2Uri =  async ( name, localId ) => {
+  const namespace = await _getNamespace( name, localId );
+  const uri = _constructUri( namespace, localId );
+  return uri;
 };
 
 const search = _.memoize(_search, query => JSON.stringify(query));

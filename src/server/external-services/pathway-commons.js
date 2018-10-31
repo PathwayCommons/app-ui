@@ -5,7 +5,7 @@ const _ = require('lodash');
 const logger = require('../logger');
 const config = require('../../config');
 const LRUCache = require('lru-cache');
-const cache = require('../cache');
+const hasher = require('node-object-hash')();
 const pcCache = LRUCache({ max: config.PC_CACHE_MAX_SIZE, length: () => 1 });
 
 const { validatorGconvert } = require('./gprofiler');
@@ -125,52 +125,60 @@ const sifGraph = async ( queryObj ) => {
   });
 };
 
-/* _fetchFromMiriamUri
- * Using (abusing) this service to get the MIRIAM collection namespace from a name
+/* fetchEntityUri
+ * Light wrapper around the pc2 service to get the uri given a collection name and local ID for entity
  * http://www.pathwaycommons.org/pc2/swagger-ui.html#!/metadata45controller/identifierOrgUriUsingGET
- * NB: Does do some regex pattern validation of localId?
  */
-const _fetchFromMiriamUri = ( name, localId ) => {
-  console.log(`_fetchFromMiriamUri -name: ${name}; localId: ${localId}`);
-  const url = config.PC_URL + 'pc2/miriam/uri/' + name + '/' + localId + '/';
-  return fetch( url , {
-   method: 'GET',
-   headers: {
-     'Accept': 'text/plain'
-   }
- })
- .then( res => res.text() )
- .catch( e => {
-   logger.error( `_fetchFromMiriamUri with ${name} - ${e}` );
-   throw e;
- });
+const fetchEntityUri = ( name, localId ) => {
+  const url = config.PC_URL + 'pc2/miriam/uri/' + name + '/' + localId;
+  return fetch( url , { method: 'GET', headers: { 'Accept': 'text/plain' } })
+    .then( res => res.text() );
 };
 
-// Obtain the last two path elements from uri (e.g. 'http://identifiers.org/namespace/localId')
-const _namespaceFromUri = uri => {
-  const uriParts = url.parse( uri );
+// Break down a URI and return all but the trailing local ID (e.g. '<origin/<namespace>/<localId>')
+const extractUriBase= uri => {
+  if( !uri ) throw new Error( 'No URI available' );
+
+  const uriParts = new url.URL( uri );
   const pathParts = _.compact( uriParts.pathname.split('/') );
-  return pathParts.length === 2 ? pathParts[0] : null;
+  if( _.isEmpty( pathParts ) ) throw new Error( 'Unrecognized URI' );
+
+  const namespace = _.head( pathParts );
+  return uriParts.origin + '/' + namespace;
 };
 
-const _rawGetNamespace = async ( name, localId ) => {
-  const uri = await _fetchFromMiriamUri( name, localId );
-  return _namespaceFromUri( uri );
-};
-const _getNamespace  = cache( _rawGetNamespace, pcCache );
+// Get the entity URI minus the local id from cache or go fetch
+const getUriBase = ( name, localId ) => {
+  let hash = hasher.hash( name );
 
-const _constructUri = ( namespace, localId ) => `${ config.IDENTIFIERS_URL }/${ namespace }/${ localId }`;
+  if( pcCache.has( hash ) ){
+    //console.log(`cache HIT with ${name}`);
+    return pcCache.get( hash );
+  } else {
+    return fetchEntityUri( name, localId ) //careful as requests are sent in parralel
+      .then( extractUriBase )
+      .then( uriBase => {
+        pcCache.set( hash, uriBase );
+        return uriBase;
+      })
+      .catch( err => {
+        pcCache.del( hash );
+        logger.error( `A cache failed to be filled with name: ${name} and localId: ${localId}` );
+        logger.error( err );
+        throw err;
+      });
+  }
+};
 
 /*
  * xref2Uri: Obtain the uri for an xref
- * @param {string} name -  MIRIAM 'name' OR MI CV database citation (MI:0444) 'label'
- * @param {string} localId - For a collection registered with MIRIAM
+ * @param {string} name -  MIRIAM 'name', 'synonym' ?OR MI CV database citation (MI:0444) 'label'
+ * @param {string} localId - Entity local entity identifier, should be valid
  * @return a uri
  */
 const xref2Uri =  async ( name, localId ) => {
-  const namespace = await _getNamespace( name, localId );
-  const uri = _constructUri( namespace, localId );
-  return uri;
+  const uriBase = await getUriBase( name, localId );
+  return uriBase + '/' + localId;
 };
 
 const search = _.memoize(_search, query => JSON.stringify(query));

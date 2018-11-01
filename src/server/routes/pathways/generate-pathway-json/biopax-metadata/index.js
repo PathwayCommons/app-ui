@@ -49,7 +49,8 @@ const xref2link = ( db, id, xrefLinks ) => {
       } else {
         xrefLinks[ db ] = [ uri ];
       }
-    });
+    })
+    .catch( () => {}); //swallow
 };
 
 // transform biopaxJsonText into a consolidated js object

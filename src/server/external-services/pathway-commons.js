@@ -1,15 +1,15 @@
 const qs = require('query-string');
 const url = require('url');
-const { fetch } = require('../../util');
+const LRUCache = require('lru-cache');
 const _ = require('lodash');
+const hasher = require('node-object-hash')();
+
+const { fetch } = require('../../util');
 const logger = require('../logger');
 const config = require('../../config');
-const LRUCache = require('lru-cache');
-const hasher = require('node-object-hash')();
-const pcCache = LRUCache({ max: config.PC_CACHE_MAX_SIZE, length: () => 1 });
-
 const { validatorGconvert } = require('./gprofiler');
 
+const pcCache = LRUCache({ max: config.PC_CACHE_MAX_SIZE, length: () => 1 });
 
 const fetchOptions = {
   method: 'GET',
@@ -125,60 +125,70 @@ const sifGraph = async ( queryObj ) => {
   });
 };
 
-/* fetchEntityUri
+const handleEntityUriResponse = text => {
+  if( !text ) return ''; // Go ahead so we can cache, but gotta throw to inform clients
+
+  const uri = new url.URL( text ); // Throws TypeError
+  const pathParts = _.compact( uri.pathname.split('/') );
+  if( _.isEmpty( pathParts ) || pathParts.length !== 2 ) throw new Error( 'Unrecognized URI' );
+  const namespace = _.head( pathParts );
+  return uri.origin + '/' + namespace;
+};
+
+const constructQueryPath = ( name, localId ) => {
+  // Edge case - localId has periods e.g. 'enzyme nomenclature/6.1.1.5' gotta add a trailing slash
+  const suffix = /\./.test( localId ) ? '/' : '';
+  return name + '/' + localId + suffix;
+};
+
+/* fetchEntityUriBase
  * Light wrapper around the pc2 service to get the uri given a collection name and local ID for entity
  * http://www.pathwaycommons.org/pc2/swagger-ui.html#!/metadata45controller/identifierOrgUriUsingGET
+ * NB: pc2 service returns 200 and empty body if collection name and/or local ID are unrecognized.
+ *   If the local ID is empty, throws a 404
+ * @return { object } a node URL object
  */
-const fetchEntityUri = ( name, localId ) => {
-  const url = config.PC_URL + 'pc2/miriam/uri/' + name + '/' + localId;
+const fetchEntityUriBase = ( name, localId ) => {
+  //console.log( `fetchEntityUriBase with collection = ${name}; ID = ${localId}` );
+  const url = config.PC_URL + 'pc2/miriam/uri/' + constructQueryPath( name, localId ) ;
   return fetch( url , { method: 'GET', headers: { 'Accept': 'text/plain' } })
-    .then( res => res.text() );
+    .then( res => res.text() )
+    .then( handleEntityUriResponse );
 };
 
-// Break down a URI and return all but the trailing local ID (e.g. '<origin/<namespace>/<localId>')
-const extractUriBase= uri => {
-  if( !uri ) throw new Error( 'No URI available' );
-
-  const uriParts = new url.URL( uri );
-  const pathParts = _.compact( uriParts.pathname.split('/') );
-  if( _.isEmpty( pathParts ) ) throw new Error( 'Unrecognized URI' );
-
-  const namespace = _.head( pathParts );
-  return uriParts.origin + '/' + namespace;
-};
-
-// Get the entity URI minus the local id from cache or go fetch
-const getUriBase = ( name, localId ) => {
+// Custom cache since 1. want to hash off only one param 2. cases I don't wish to delete on error
+// I hacked the cache previously to hash off a single param index, but wasn't sure...
+const rawGetEntityUriBase = ( name, localId ) => {
   let hash = hasher.hash( name );
-
   if( pcCache.has( hash ) ){
-    //console.log(`cache HIT with ${name}`);
     return pcCache.get( hash );
   } else {
-    return fetchEntityUri( name, localId ) //careful as requests are sent in parralel
-      .then( extractUriBase )
-      .then( uriBase => {
-        pcCache.set( hash, uriBase );
-        return uriBase;
-      })
-      .catch( err => {
-        pcCache.del( hash );
-        logger.error( `A cache failed to be filled with name: ${name} and localId: ${localId}` );
-        logger.error( err );
-        throw err;
-      });
+    let res = fetchEntityUriBase( name, localId );
+    pcCache.set( hash, res );
+    res.catch( err => {
+      pcCache.del( hash );
+      logger.error(`Failed to fill cache with ${name} and ${localId} - ${err}`);
+    });
+    return res;
   }
 };
 
+// If empty, notify client
+const validateUriBase = uriBase => {
+  if( !uriBase ) throw new Error ('Unable to map to URI');
+  return uriBase;
+};
+
 /*
- * xref2Uri: Obtain the uri for an xref
+ * xref2Uri: Obtain the URI for an xref
  * @param {string} name -  MIRIAM 'name', 'synonym' ?OR MI CV database citation (MI:0444) 'label'
  * @param {string} localId - Entity local entity identifier, should be valid
- * @return a uri
+ * @return a URI, if availble. Throws if nothing could be found.
  */
-const xref2Uri =  async ( name, localId ) => {
-  const uriBase = await getUriBase( name, localId );
-  return uriBase + '/' + localId;
+const xref2Uri =  ( name, localId ) => {
+  return rawGetEntityUriBase( name, localId )
+    .then( validateUriBase )
+    .then( uriBase => uriBase + '/' + localId );
 };
 
 const search = _.memoize(_search, query => JSON.stringify(query));

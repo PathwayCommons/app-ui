@@ -2,8 +2,7 @@ const qs = require('query-string');
 const _ = require('lodash');
 
 const { PC_URL } = require('../../../config');
-
-const FETCH_TIMEOUT = 5000; //ms
+const { fetch } = require('../../../util');
 
 let absoluteURL = (href) => {
   return ( location.origin + href) ;
@@ -131,8 +130,7 @@ const ServerAPI = {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(query),
-      timeout: FETCH_TIMEOUT
+      body: JSON.stringify(query)
     })
     .then(res => res.json());
   },

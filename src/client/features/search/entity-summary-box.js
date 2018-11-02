@@ -5,6 +5,7 @@ const queryString = require('query-string');
 const _ = require('lodash');
 const classNames = require('classnames');
 
+const { fetch } = require('../../../util');
 const config = require('../../../config');
 let { DATASOURCES } = require('../../../models/entity/summary');
 

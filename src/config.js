@@ -12,6 +12,7 @@ let defaults = {
   PC_CACHE_MAX_SIZE: 1000,
   PUB_CACHE_MAX_SIZE: 1000000,
   MAX_SIF_NODES: 25,
+  FETCH_TIMEOUT: 5000,
   // DB config values
   DB_NAME:  'appui',
   DB_HOST:  '127.0.0.1',

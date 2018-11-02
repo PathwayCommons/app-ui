@@ -2,7 +2,6 @@ const qs = require('query-string');
 const url = require('url');
 const LRUCache = require('lru-cache');
 const _ = require('lodash');
-const hasher = require('node-object-hash')();
 
 const { fetch } = require('../../util');
 const logger = require('../logger');
@@ -156,17 +155,15 @@ const fetchEntityUriBase = ( name, localId ) => {
     .then( handleEntityUriResponse );
 };
 
-// Custom cache since 1. want to hash off only one param 2. cases I don't wish to delete on error
-// I hacked the cache previously to hash off a single param index, but wasn't sure...
+// TODO: Use p-memoize() https://github.com/PathwayCommons/app-ui/issues/1139
 const rawGetEntityUriBase = ( name, localId ) => {
-  let hash = hasher.hash( name );
-  if( pcCache.has( hash ) ){
-    return pcCache.get( hash );
+  if( pcCache.has( name ) ){
+    return pcCache.get( name );
   } else {
     let res = fetchEntityUriBase( name, localId );
-    pcCache.set( hash, res );
+    pcCache.set( name, res );
     res.catch( err => {
-      pcCache.del( hash );
+      pcCache.del( name );
       logger.error(`Failed to fill cache with ${name} and ${localId} - ${err}`);
     });
     return res;

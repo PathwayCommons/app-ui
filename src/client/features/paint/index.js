@@ -6,6 +6,7 @@ const classNames = require('classnames');
 const Loader = require('react-loader');
 const Promise = require('bluebird').Promise;
 
+const { fetch } = require('../../../util');
 const CytoscapeService = require('../../common/cy');
 const { ServerAPI } = require('../../services');
 

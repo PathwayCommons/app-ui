@@ -3,7 +3,6 @@ const express = require('express');
 const enrichmentRouter = express.Router();
 const swaggerJSDoc = require('swagger-jsdoc');
 
-const { InvalidParamError } = require('../../errors/invalid-param');
 const { validatorGconvert, enrichment } = require('../../external-services/gprofiler');
 const { generateGraphInfo } = require('./visualization');
 

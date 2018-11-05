@@ -4,8 +4,8 @@ const fs = require ('fs');
 const path = require ('path');
 const _ = require('lodash');
 
-const { DATASOURCE_HGNC, DATASOURCE_HGNC_SYMBOL, DATASOURCE_UNIPROT, DATASOURCE_NCBI_GENE, DATASOURCE_ENSEMBL } = require('../../../../src/config');
-const { getForm, mapParams, gConvertResponseHandler, GPROFILER_DATASOURCE_NAMES } = require ('../../../../src/server/external-services/gprofiler/gconvert');
+const { COLLECTION_NAMESPACE_HGNC, COLLECTION_NAMESPACE_HGNC_SYMBOL, COLLECTION_NAMESPACE_UNIPROT, COLLECTION_NAMESPACE_NCBI_GENE, COLLECTION_NAMESPACE_ENSEMBL } = require('../../../../src/config');
+const { getForm, mapParams, gConvertResponseHandler, GPROFILER_COLLECTION_NAMESPACE_MAP } = require ('../../../../src/server/external-services/gprofiler/gconvert');
 const InvalidParamError = require('../../../../src/server/errors/invalid-param');
 
 const query1 = [
@@ -20,12 +20,12 @@ const query1 = [
 const defaultOptions = {
   'output': 'mini',
   'organism': 'hsapiens',
-  'target': DATASOURCE_HGNC,
+  'target': COLLECTION_NAMESPACE_HGNC,
   'prefix': 'ENTREZGENE_ACC'
 };
 
 const userOptions = {
-  'target': DATASOURCE_HGNC_SYMBOL
+  'target': COLLECTION_NAMESPACE_HGNC_SYMBOL
 };
 
 const validResult1 = {
@@ -53,7 +53,7 @@ describe ('Enrichment service: validation', function () {
   describe ('Test mapParams ()', function () {
     const baseParams = {
       'query': query1,
-      'target': 'HGNCSYMBOL',
+      'target': COLLECTION_NAMESPACE_HGNC,
       'organism': 'hsapiens'
     };
 
@@ -63,33 +63,33 @@ describe ('Enrichment service: validation', function () {
     });
 
     it ('should map name for HGNC Symbol', function () {
-      const params = _.assign( {}, baseParams, { 'target': DATASOURCE_HGNC_SYMBOL } );
+      const params = _.assign( {}, baseParams, { 'target': COLLECTION_NAMESPACE_HGNC_SYMBOL } );
       const result = mapParams( params );
-      expect( result.target ).to.equal( GPROFILER_DATASOURCE_NAMES.HGNC_SYMBOL );
+      expect( result.target ).to.equal( GPROFILER_COLLECTION_NAMESPACE_MAP.get(COLLECTION_NAMESPACE_HGNC_SYMBOL) );
     });
 
-    it ('should map name for HGNC Symbol', function () {
-      const params = _.assign( {}, baseParams, { 'target': DATASOURCE_HGNC } );
+    it ('should map name for HGNC', function () {
+      const params = _.assign( {}, baseParams, { 'target': COLLECTION_NAMESPACE_HGNC } );
       const result = mapParams( params );
-      expect( result.target ).to.equal( GPROFILER_DATASOURCE_NAMES.HGNC );
+      expect( result.target ).to.equal( GPROFILER_COLLECTION_NAMESPACE_MAP.get(COLLECTION_NAMESPACE_HGNC) );
     });
 
     it ('should map name for UniProt', function () {
-      const params = _.assign( {}, baseParams, { 'target': DATASOURCE_UNIPROT } );
+      const params = _.assign( {}, baseParams, { 'target': COLLECTION_NAMESPACE_UNIPROT } );
       const result = mapParams( params );
-      expect( result.target ).to.equal( GPROFILER_DATASOURCE_NAMES.UNIPROT );
+      expect( result.target ).to.equal( GPROFILER_COLLECTION_NAMESPACE_MAP.get(COLLECTION_NAMESPACE_UNIPROT) );
     });
 
     it ('should map name for NCBI Gene', function () {
-      const params = _.assign( {}, baseParams, { 'target': DATASOURCE_NCBI_GENE } );
+      const params = _.assign( {}, baseParams, { 'target': COLLECTION_NAMESPACE_NCBI_GENE } );
       const result = mapParams( params );
-      expect( result.target ).to.equal( GPROFILER_DATASOURCE_NAMES.NCBI_GENE );
+      expect( result.target ).to.equal( GPROFILER_COLLECTION_NAMESPACE_MAP.get(COLLECTION_NAMESPACE_NCBI_GENE) );
     });
 
     it ('should map name for Ensembl Gene', function () {
-      const params = _.assign( {}, baseParams, { 'target': DATASOURCE_ENSEMBL } );
+      const params = _.assign( {}, baseParams, { 'target': COLLECTION_NAMESPACE_ENSEMBL } );
       const result = mapParams( params );
-      expect( result.target ).to.equal( GPROFILER_DATASOURCE_NAMES.ENSEMBL );
+      expect( result.target ).to.equal( GPROFILER_COLLECTION_NAMESPACE_MAP.get(COLLECTION_NAMESPACE_ENSEMBL) );
     });
 
   });
@@ -99,7 +99,7 @@ describe ('Enrichment service: validation', function () {
       const result = getForm( query1, defaultOptions, {} );
       const expected = _.assign( {}, defaultOptions, {
         query: query1.join (" "),
-        target: GPROFILER_DATASOURCE_NAMES.HGNC
+        target: GPROFILER_COLLECTION_NAMESPACE_MAP.get(COLLECTION_NAMESPACE_HGNC)
       });
       expect( result ).to.deep.equal( expected );
     });
@@ -108,7 +108,7 @@ describe ('Enrichment service: validation', function () {
       const result = getForm( query1, defaultOptions, userOptions);
       const expected = _.assign( {}, defaultOptions, {
         query: query1.join (" "),
-        target: GPROFILER_DATASOURCE_NAMES.HGNC_SYMBOL
+        target: GPROFILER_COLLECTION_NAMESPACE_MAP.get(COLLECTION_NAMESPACE_HGNC_SYMBOL)
       });
       expect( result ).to.deep.equal( expected );
     });

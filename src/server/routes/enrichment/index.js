@@ -2,6 +2,8 @@
 const express = require('express');
 const enrichmentRouter = express.Router();
 const swaggerJSDoc = require('swagger-jsdoc');
+
+const { InvalidParamError } = require('../../errors/invalid-param');
 const { validatorGconvert, enrichment } = require('../../external-services/gprofiler');
 const { generateGraphInfo } = require('./visualization');
 
@@ -83,14 +85,14 @@ enrichmentRouter.get('/docs', ( req, res ) => {
  *           "$ref": "#/definitions/error/validationError"
 */
 // expose a rest endpoint for validation service
-enrichmentRouter.post('/validation', (req, res) => {
+enrichmentRouter.post('/validation', (req, res, next) => {
   const query = req.body.query;
-  const tmpOptions = {};
-  tmpOptions.organism = req.body.organism;
-  tmpOptions.target = req.body.targetDb;
-  validatorGconvert(query, tmpOptions).then(gconvertResult => {
-    res.json(gconvertResult);
-  }).catch( error => res.status( 400 ).send( { "error": error.message } ));
+  const tmpOptions = {
+    target: req.body.targetDb
+  };
+  validatorGconvert(query, tmpOptions)
+    .then( gconvertResult => res.json(gconvertResult))
+    .catch( next );
 });
 
 
@@ -218,14 +220,14 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *             type: string
  *         targetDb:
  *           type: string
- *           description: "Target database nomenclature to convert gene list to\n Default: HGNC"
- *           example: "ENSEMBL"
+ *           description: "MIRIAM collection namespace to map to (see http://identifiers.org/) \n Default: hgnc"
+ *           example: "ensembl"
  *           enum:
- *           - "ENSEMBL"
- *           - "HGNC"
- *           - "HGNCSYMBOL"
- *           - "UNIPROT"
- *           - "NCBIGENE"
+ *           - "ensembl"
+ *           - "hgnc"
+ *           - "hgnc.symbol"
+ *           - "ncbigene"
+ *           - "uniprot"
  *     analysisObj:
  *       type: object
  *       required:

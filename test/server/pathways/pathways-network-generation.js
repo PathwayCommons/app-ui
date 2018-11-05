@@ -9,7 +9,7 @@ global.fetch = () => {
   return new Promise( resolve => {
     resolve({
       ok: true,
-      text: () => ''
+      text: () => 'http://identifiers.org/namespace/localId'
     });
   });
 };

@@ -125,8 +125,6 @@ const sifGraph = async ( queryObj ) => {
 };
 
 const handleEntityUriResponse = text => {
-  if( !text ) return ''; // Go ahead so we can cache, but gotta throw to inform clients
-
   const uri = new url.URL( text ); // Throws TypeError
   const pathParts = _.compact( uri.pathname.split('/') );
   if( _.isEmpty( pathParts ) || pathParts.length !== 2 ) throw new Error( 'Unrecognized URI' );
@@ -170,12 +168,6 @@ const rawGetEntityUriBase = ( name, localId ) => {
   }
 };
 
-// If empty, notify client
-const validateUriBase = uriBase => {
-  if( !uriBase ) throw new Error ('Unable to map to URI');
-  return uriBase;
-};
-
 /*
  * xref2Uri: Obtain the URI for an xref
  * @param {string} name -  MIRIAM 'name', 'synonym' ?OR MI CV database citation (MI:0444) 'label'
@@ -184,7 +176,6 @@ const validateUriBase = uriBase => {
  */
 const xref2Uri =  ( name, localId ) => {
   return rawGetEntityUriBase( name, localId )
-    .then( validateUriBase )
     .then( uriBase => uriBase + '/' + localId );
 };
 

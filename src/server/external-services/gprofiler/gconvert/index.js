@@ -1,8 +1,9 @@
-const { fetch } = require('../../../../util');
 const _ = require('lodash');
 const qs = require('query-string');
 const LRUCache = require('lru-cache');
+const logger = require('../../../logger');
 
+const { fetch } = require('../../../../util');
 const cleanUpEntrez = require('../clean-up-entrez');
 const InvalidParamError = require('../../../../server/errors/invalid-param');
 const { GPROFILER_URL, PC_CACHE_MAX_SIZE, COLLECTION_NAMESPACE_HGNC, COLLECTION_NAMESPACE_HGNC_SYMBOL, COLLECTION_NAMESPACE_UNIPROT, COLLECTION_NAMESPACE_NCBI_GENE, COLLECTION_NAMESPACE_ENSEMBL } = require('../../../../config');
@@ -105,7 +106,7 @@ const gConvertResponseHandler = body =>  {
  * @param { object } userOptions - options
  * @return { object } list of unrecognized, object with duplicated and list of mapped IDs
  */
-const rawValidatorGconvert = ( query, userOptions ) => {
+const rawValidatorGconvert = async ( query, userOptions ) => {
 
   const defaultOptions = {
     'output': 'mini',
@@ -114,14 +115,18 @@ const rawValidatorGconvert = ( query, userOptions ) => {
     'prefix': 'ENTREZGENE_ACC'
   };
 
-  const form = getForm( query, defaultOptions, userOptions );
-
-  return fetch( GCONVERT_URL, {
+  try{
+    const form = getForm( query, defaultOptions, userOptions );
+    return fetch( GCONVERT_URL, {
       method: 'post',
       body: qs.stringify( form )
-  })
-  .then( response => response.text() )
-  .then( gConvertResponseHandler );
+    })
+    .then( response => response.text() )
+    .then( gConvertResponseHandler );
+  } catch ( err ) {
+    logger.error(`Gprofiler convert query failed - ${ err }`);
+    throw err;
+  }
 };
 
 const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });

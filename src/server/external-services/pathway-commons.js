@@ -1,11 +1,14 @@
 const qs = require('query-string');
-const { fetch } = require('../../util');
+const url = require('url');
+const LRUCache = require('lru-cache');
 const _ = require('lodash');
+
+const { fetch } = require('../../util');
 const logger = require('../logger');
 const config = require('../../config');
-
 const { validatorGconvert } = require('./gprofiler');
 
+const pcCache = LRUCache({ max: config.PC_CACHE_MAX_SIZE, length: () => 1 });
 
 const fetchOptions = {
   method: 'GET',
@@ -121,23 +124,59 @@ const sifGraph = async ( queryObj ) => {
   });
 };
 
-/* xref2Uri
- * Light wrapper around pc metadata service for mapping Xrefs db, id to url
+const handleEntityUriResponse = text => {
+  const uri = new url.URL( text ); // Throws TypeError
+  const pathParts = _.compact( uri.pathname.split('/') );
+  if( _.isEmpty( pathParts ) || pathParts.length !== 2 ) throw new Error( 'Unrecognized URI' );
+  const namespace = _.head( pathParts );
+  return uri.origin + '/' + namespace;
+};
+
+const constructQueryPath = ( name, localId ) => {
+  // Edge case - localId has periods e.g. 'enzyme nomenclature/6.1.1.5' gotta add a trailing slash
+  const suffix = /\./.test( localId ) ? '/' : '';
+  return name + '/' + localId + suffix;
+};
+
+/* fetchEntityUriBase
+ * Light wrapper around the pc2 service to get the uri given a collection name and local ID for entity
  * http://www.pathwaycommons.org/pc2/swagger-ui.html#!/metadata45controller/identifierOrgUriUsingGET
+ * NB: pc2 service returns 200 and empty body if collection name and/or local ID are unrecognized.
+ *   If the local ID is empty, throws a 404
+ * @return { object } a node URL object
  */
-const xref2Uri =  ( db, id ) => {
-  const url = config.PC_URL + 'pc2/miriam/uri/' + db + '/' + id + '/';
-  return fetch( url , {
-   method: 'GET',
-   headers: {
-     'Accept': 'text/plain'
-   }
- })
- .then( res => res.text() )
- .catch( e => {
-   logger.error( `xref2Uri error with ${db}, ${id} - ${e}` );
-   throw e;
- });
+const fetchEntityUriBase = ( name, localId ) => {
+  //console.log( `fetchEntityUriBase with collection = ${name}; ID = ${localId}` );
+  const url = config.PC_URL + 'pc2/miriam/uri/' + constructQueryPath( name, localId ) ;
+  return fetch( url , { method: 'GET', headers: { 'Accept': 'text/plain' } })
+    .then( res => res.text() )
+    .then( handleEntityUriResponse );
+};
+
+// TODO: Use p-memoize() https://github.com/PathwayCommons/app-ui/issues/1139
+const rawGetEntityUriBase = ( name, localId ) => {
+  if( pcCache.has( name ) ){
+    return pcCache.get( name );
+  } else {
+    let res = fetchEntityUriBase( name, localId );
+    pcCache.set( name, res );
+    res.catch( err => {
+      pcCache.del( name );
+      logger.error(`Failed to fill cache with ${name} and ${localId} - ${err}`);
+    });
+    return res;
+  }
+};
+
+/*
+ * xref2Uri: Obtain the URI for an xref
+ * @param {string} name -  MIRIAM 'name', 'synonym' ?OR MI CV database citation (MI:0444) 'label'
+ * @param {string} localId - Entity local entity identifier, should be valid
+ * @return a URI, if availble. Throws if nothing could be found.
+ */
+const xref2Uri =  ( name, localId ) => {
+  return rawGetEntityUriBase( name, localId )
+    .then( uriBase => uriBase + '/' + localId );
 };
 
 const search = _.memoize(_search, query => JSON.stringify(query));

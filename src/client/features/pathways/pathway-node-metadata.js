@@ -2,35 +2,21 @@ const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
 
-const { generateIdentifiersUrl } = require('../../common/external-service-data');
 const { ServerAPI } = require('../../services');
 
 const DEFAULT_NUM_NAMES = 3;
-const SUPPORTED_DB_LINKS = [
-  {
-    metadataDbId: 'reactome',
-    displayName: 'Reactome',
-    identifiersUrl: id => generateIdentifiersUrl('reactome', id)
-  },
-  {
-    metadataDbId: 'uniprot knowledgebase',
-    displayName: 'UniProt',
-    identifiersUrl: id => generateIdentifiersUrl('uniprot', id)
-  },
-  {
-    metadataDbId: 'ncbi gene',
-    displayName: 'NCBI Gene',
-    identifiersUrl: id => generateIdentifiersUrl('ncbi', id)
-  },
-  {
-    metadataDbId: 'hgnc symbol',
-    displayName: 'HGNC Symbol',
-    identifiersUrl: id => generateIdentifiersUrl('hgnc.symbol', id)
-  }
-];
-
+// TODO - collection names (keys) should be accessed from config https://github.com/PathwayCommons/app-ui/issues/1131
+const SUPPORTED_COLLECTIONS = new Map([
+  ['Reactome'.toLowerCase(), 'Reactome'],
+  ['UniProt Knowledgebase'.toLowerCase(), 'UniProt'],
+  ['NCBI Gene'.toLowerCase(), 'NCBI'],
+  ['HGNC Symbol'.toLowerCase(), 'HGNC'],
+  ['ChEBI'.toLowerCase(), 'ChEBI'],
+  ['Ensembl'.toLowerCase(), 'Ensembl']
+]);
 const PUBMED_DB_KEY = 'pubmed';
 
+const getUriIds = uris => uris.map( uri => _.last( uri.split( '/' ) ) );
 
 // A component that displays a pathway node's metadata
 // props:
@@ -47,9 +33,10 @@ class PathwayNodeMetadataView extends React.Component {
   componentDidMount(){
     let { node } = this.props;
     let metadata = node.data('metadata');
-    let pubmedIds = _.get(metadata, `databaseIds.${PUBMED_DB_KEY}`, null);
+    let pubmedUris = _.get(metadata, `xrefLinks.${PUBMED_DB_KEY}`, null);
 
-    if( pubmedIds != null ){
+    if( pubmedUris != null ){
+      const pubmedIds = getUriIds( pubmedUris );
       ServerAPI.getPubmedPublications(pubmedIds).then( publications => {
         this.setState({ publications });
       });
@@ -60,7 +47,7 @@ class PathwayNodeMetadataView extends React.Component {
     let { node } = this.props;
     let { publications } = this.state;
     let md = node.data('metadata');
-    let { synonyms, type, standardName, displayName, databaseIds } = md;
+    let { synonyms, type, standardName, displayName, xrefLinks } = md;
     let searchLinkQuery = node.data('class') === 'process' ? displayName : node.data('label');
     let label = node.data('label');
 
@@ -74,14 +61,12 @@ class PathwayNodeMetadataView extends React.Component {
       ]);
     }
 
-    let dbLinks = SUPPORTED_DB_LINKS.map( entry =>{
-      let { metadataDbId, displayName, identifiersUrl } = entry;
-
-      if( !_.isEmpty(databaseIds[metadataDbId]) ){
-        let id = _.get(databaseIds, `${metadataDbId}.0`);
-        return h('a.plain-link', { href: identifiersUrl( id ), target: '_blank' }, displayName);
-      }
-      return null;
+    let dbLinks = _.keys( xrefLinks ).map( db => {
+      let link = null;
+      const displayName = SUPPORTED_COLLECTIONS.get( db.toLowerCase() );
+      const uri = _.get( xrefLinks, `${db}[0]` );
+      if ( displayName && uri ) link = h('a.plain-link', { href: uri, target: '_blank' }, displayName );
+      return link;
     });
 
     let publicationEles = publications.map(publication => {

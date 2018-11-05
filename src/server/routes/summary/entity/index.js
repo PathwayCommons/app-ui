@@ -3,6 +3,7 @@ const { validatorGconvert } = require('../../../external-services/gprofiler/gcon
 const { getEntitySummary: getNcbiGeneSummary } = require('../../../external-services/ncbi');
 const { getEntitySummary: getHgncSummary } = require('../../../external-services/hgnc');
 const { getEntitySummary: getUniProtSummary } = require('../../../external-services/uniprot');
+const { COLLECTION_NAMESPACE_NCBI_GENE, COLLECTION_NAMESPACE_UNIPROT } = require('../../../../config');
 const { DATASOURCES } = require('../../../../models/entity/summary');
 
 /**
@@ -14,7 +15,7 @@ const { DATASOURCES } = require('../../../../models/entity/summary');
 const entityFetch = async ( localIds, dataSource ) => {
   let eSummary;
   switch ( dataSource ) {
-    case DATASOURCES.HGNC:
+    case DATASOURCES.HGNC: //TODO https://github.com/PathwayCommons/app-ui/issues/1131
       eSummary = await getHgncSummary( localIds );
       break;
     case DATASOURCES.UNIPROT:
@@ -51,7 +52,7 @@ const entitySearch = async tokens => {
   }
 
   const uniqueTokens = _.uniq( tokens );
-  const { alias } = await validatorGconvert( uniqueTokens, { target: 'NCBIGene' } );
+  const { alias } = await validatorGconvert( uniqueTokens, { target: COLLECTION_NAMESPACE_NCBI_GENE } );
   // Duplication of work (src/server/external-services/pathway-commons.js).
   // Could consider a single piece of logic that tokenizes and sends to validator.
 
@@ -60,7 +61,7 @@ const entitySearch = async tokens => {
   const summary = await entityFetch( mappedIds, DATASOURCES.NCBIGENE );
 
   // NCBI Gene won't give UniProt Accession, so gotta go get em
-  const { alias: aliasUniProt } = await validatorGconvert( mappedIds, { target: 'UniProt' } );
+  const { alias: aliasUniProt } = await validatorGconvert( mappedIds, { target: COLLECTION_NAMESPACE_UNIPROT } );
 
   // Update the entity summaries
   _.keys( aliasUniProt ).forEach( ncbiId => {

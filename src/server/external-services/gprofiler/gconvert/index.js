@@ -115,18 +115,18 @@ const rawValidatorGconvert = ( query, userOptions ) => {
     'prefix': 'ENTREZGENE_ACC'
   };
 
-  try{
-    const form = getForm( query, defaultOptions, userOptions );
-    return fetch( GCONVERT_URL, {
+  return Promise.resolve()
+    .then( () => getForm( query, defaultOptions, userOptions ) )
+    .then( form => fetch( GCONVERT_URL, {
       method: 'post',
       body: qs.stringify( form )
-    })
+    }))
     .then( response => response.text() )
-    .then( gConvertResponseHandler );
-  } catch ( err ) {
-    logger.error(`Gprofiler convert query failed - ${ err }`);
-    throw err;
-  }
+    .then( gConvertResponseHandler )
+    .catch( err => {
+      logger.error(`Error in validatorGconvert - ${err.message}`);
+      throw err;
+    });
 };
 
 const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });

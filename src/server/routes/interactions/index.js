@@ -23,11 +23,11 @@ router.get('/image', ( req, res ) => {
 
   getInteractionGraphFromPC( sources )
   .then( generateInteractionsImg )
-  .then( img => res.json( { img } ) );
-  // .catch( e => {
-  //   logger.error( e );
-  //   res.status( 500 ).end( 'Server error' );
-  // });
+  .then( img => res.json( { img } ) )
+  .catch( e => {
+    logger.error( e );
+    res.status( 500 ).end( 'Server error' );
+  });
 });
 
 module.exports = router;

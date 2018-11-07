@@ -1,22 +1,22 @@
-const { fetch } = require('../../../../util');
 const _ = require('lodash');
 const qs = require('query-string');
 const LRUCache = require('lru-cache');
+const logger = require('../../../logger');
 
+const { fetch } = require('../../../../util');
 const cleanUpEntrez = require('../clean-up-entrez');
 const InvalidParamError = require('../../../../server/errors/invalid-param');
-const { GPROFILER_URL, PC_CACHE_MAX_SIZE, DATASOURCE_HGNC, DATASOURCE_HGNC_SYMBOL, DATASOURCE_UNIPROT, DATASOURCE_NCBI_GENE, DATASOURCE_ENSEMBL } = require('../../../../config');
+const { GPROFILER_URL, PC_CACHE_MAX_SIZE, NS_HGNC, NS_HGNC_SYMBOL, NS_UNIPROT, NS_NCBI_GENE, NS_ENSEMBL } = require('../../../../config');
 const cache = require('../../../cache');
 const GCONVERT_URL = GPROFILER_URL + 'gconvert.cgi';
 
-const DATASOURCE_NAMES = [DATASOURCE_HGNC, DATASOURCE_HGNC_SYMBOL, DATASOURCE_UNIPROT, DATASOURCE_NCBI_GENE, DATASOURCE_ENSEMBL];
-const GPROFILER_DATASOURCE_NAMES = {
-  HGNC: 'HGNC_ACC',
-  HGNC_SYMBOL: 'HGNC',
-  UNIPROT: 'UNIPROTSWISSPROT',
-  NCBI_GENE: 'ENTREZGENE_ACC',
-  ENSEMBL: 'ENSG'
-};
+const GPROFILER_NS_MAP = new Map([
+  [NS_HGNC, 'HGNC_ACC'],
+  [NS_HGNC_SYMBOL, 'HGNC'],
+  [NS_UNIPROT, 'UNIPROTSWISSPROT'],
+  [NS_NCBI_GENE, 'ENTREZGENE_ACC'],
+  [NS_ENSEMBL, 'ENSG']
+]);
 
 const resultTemplate = ( unrecognized, duplicate, alias ) => {
   return {
@@ -27,28 +27,9 @@ const resultTemplate = ( unrecognized, duplicate, alias ) => {
 };
 
 const mapTarget = target  => {
-  let mappedTarget;
-
-  switch( target.toUpperCase() ){
-    case DATASOURCE_HGNC:
-      mappedTarget = GPROFILER_DATASOURCE_NAMES.HGNC;
-      break;
-    case DATASOURCE_HGNC_SYMBOL:
-      mappedTarget = GPROFILER_DATASOURCE_NAMES.HGNC_SYMBOL;
-      break;
-    case DATASOURCE_UNIPROT:
-      mappedTarget =  GPROFILER_DATASOURCE_NAMES.UNIPROT;
-      break;
-    case DATASOURCE_NCBI_GENE:
-      mappedTarget =  GPROFILER_DATASOURCE_NAMES.NCBI_GENE;
-      break;
-    case DATASOURCE_ENSEMBL:
-      mappedTarget =  GPROFILER_DATASOURCE_NAMES.ENSEMBL;
-      break;
-    default:
-      mappedTarget = GPROFILER_DATASOURCE_NAMES.HGNC;
-  }
-  return mappedTarget;
+  const gconvertNamespace = GPROFILER_NS_MAP.get( target );
+  if( !gconvertNamespace ) throw new InvalidParamError( 'Unrecognized targetDb' );
+  return gconvertNamespace;
 };
 
 const mapQuery = query => query.join(" ");
@@ -79,9 +60,6 @@ const getForm = ( query, defaultOptions, userOptions ) => {
 
   if ( !Array.isArray( form.query ) ) {
     throw new InvalidParamError( 'Invalid query format' );
-  }
-  if ( !(_.values( DATASOURCE_NAMES )).includes( form.target.toUpperCase() ) ) {
-    throw new InvalidParamError( 'Unrecognized targetDb' );
   }
 
   return mapParams( form );
@@ -133,18 +111,22 @@ const rawValidatorGconvert = ( query, userOptions ) => {
   const defaultOptions = {
     'output': 'mini',
     'organism': 'hsapiens',
-    'target': 'HGNC',
+    'target': NS_HGNC,
     'prefix': 'ENTREZGENE_ACC'
   };
 
-  const form = getForm( query, defaultOptions, userOptions );
-
-  return fetch( GCONVERT_URL, {
+  return Promise.resolve()
+    .then( () => getForm( query, defaultOptions, userOptions ) )
+    .then( form => fetch( GCONVERT_URL, {
       method: 'post',
       body: qs.stringify( form )
-  })
-  .then( response => response.text() )
-  .then( gConvertResponseHandler );
+    }))
+    .then( response => response.text() )
+    .then( gConvertResponseHandler )
+    .catch( err => {
+      logger.error(`Error in validatorGconvert - ${err.message}`);
+      throw err;
+    });
 };
 
 const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
@@ -155,5 +137,5 @@ module.exports = { validatorGconvert,
   getForm,
   mapParams,
   gConvertResponseHandler,
-  GPROFILER_DATASOURCE_NAMES
+  GPROFILER_NS_MAP
 };

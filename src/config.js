@@ -23,11 +23,11 @@ let defaults = {
   // factoid specific urls
   FACTOID_URL: 'http://unstable.factoid.baderlab.org/',
   BIOPAX_CONVERTERS_URL: 'http://biopax.baderlab.org/',
-  DATASOURCE_HGNC: 'HGNC', // !!!temporary , will be updated as part of 'identifiers url generation module' https://github.com/PathwayCommons/app-ui/issues/1116
-  DATASOURCE_HGNC_SYMBOL: 'HGNCSYMBOL',
-  DATASOURCE_UNIPROT: 'UNIPROT',
-  DATASOURCE_NCBI_GENE: 'NCBIGENE',
-  DATASOURCE_ENSEMBL: 'ENSEMBL'
+  NS_HGNC: 'hgnc',
+  NS_HGNC_SYMBOL: 'hgnc.symbol',
+  NS_UNIPROT: 'uniprot',
+  NS_NCBI_GENE: 'ncbigene',
+  NS_ENSEMBL: 'ensembl'
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );

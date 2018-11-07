@@ -1,0 +1,24 @@
+{
+	"Q99988": {
+		"dataSource": "http://identifiers.org/uniprot/",
+		"displayName": "Growth/differentiation factor 15",
+		"localID": "Q99988",
+		"description": "Regulates food intake, energy expenditure and body weight in response to metabolic and toxin-induced stresses (PubMed:28953886, PubMed:28846097, PubMed:28846098, PubMed:28846099, PubMed:23468844, PubMed:29046435). Binds to its receptor, GFRAL, and activates GFRAL-expressing neurons localized in the area postrema and nucleus tractus solitarius of the brainstem (PubMed:28953886, PubMed:28846097, PubMed:28846098, PubMed:28846099). It then triggers the activation of neurons localized within the parabrachial nucleus and central amygdala, which contitutes part of the 'emergency circuit' that shapes feeding responses to stressful conditions (PubMed:28953886). On hepatocytes, inhibits growth hormone signaling",
+		"aliases": [
+			"Macrophage inhibitory cytokine 1",
+			"NSAID-activated gene 1 protein",
+			"NSAID-regulated gene 1 protein",
+			"Placental TGF-beta",
+			"Placental bone morphogenetic protein",
+			"Prostate differentiation factor"
+		],
+		"aliasIds": [
+			"GDF-15"
+		],
+		"xref": {
+			"http://identifiers.org/ncbigene/": "9518",
+			"http://identifiers.org/hgnc/": "GDF15",
+			"http://identifiers.org/genecards/": "GDF15"
+		}
+	}
+}

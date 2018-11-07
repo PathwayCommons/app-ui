@@ -1,7 +1,7 @@
 const { fetch } = require('../../../../util');
 const _ = require('lodash');
 const qs = require('query-string');
-const LRUCache = require('lru-cache');
+const QuickLRU = require('quick-lru');
 
 const cleanUpEntrez = require('../clean-up-entrez');
 const InvalidParamError = require('../../../../server/errors/invalid-param');
@@ -147,7 +147,7 @@ const rawValidatorGconvert = ( query, userOptions ) => {
   .then( gConvertResponseHandler );
 };
 
-const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
+const pcCache = new QuickLRU({ maxSize: PC_CACHE_MAX_SIZE });
 
 const validatorGconvert = cache(rawValidatorGconvert, pcCache);
 

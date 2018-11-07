@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const LRUCache = require('lru-cache');
+const QuickLRU = require('quick-lru');
 
 const pc = require('../../external-services/pathway-commons');
 const cache = require('../../cache');
@@ -178,7 +178,7 @@ let getInteractionsNetwork = sources => {
   });
 };
 
-let pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
+let pcCache = new QuickLRU({ maxSize: PC_CACHE_MAX_SIZE });
 
 module.exports = {
   sifText2CyJson,

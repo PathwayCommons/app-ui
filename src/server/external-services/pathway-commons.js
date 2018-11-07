@@ -1,6 +1,6 @@
 const qs = require('query-string');
 const url = require('url');
-const LRUCache = require('lru-cache');
+const QuickLRU = require('quick-lru');
 const _ = require('lodash');
 
 const { fetch } = require('../../util');
@@ -8,7 +8,7 @@ const logger = require('../logger');
 const config = require('../../config');
 const { validatorGconvert } = require('./gprofiler');
 
-const pcCache = LRUCache({ max: config.PC_CACHE_MAX_SIZE, length: () => 1 });
+const pcCache = new QuickLRU({ maxSize: config.PC_CACHE_MAX_SIZE });
 
 const fetchOptions = {
   method: 'GET',

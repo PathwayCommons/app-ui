@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const qs = require('query-string');
-const LRUCache = require('lru-cache');
+const QuickLRU = require('quick-lru');
 const logger = require('../../../logger');
 
 const { fetch } = require('../../../../util');
@@ -129,7 +129,7 @@ const rawValidatorGconvert = ( query, userOptions ) => {
     });
 };
 
-const pcCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
+const pcCache = new QuickLRU({ maxSize: PC_CACHE_MAX_SIZE });
 
 const validatorGconvert = cache(rawValidatorGconvert, pcCache);
 

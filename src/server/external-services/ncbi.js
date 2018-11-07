@@ -1,12 +1,12 @@
 const { fetch } = require('../../util');
 const { NCBI_EUTILS_BASE_URL, PUB_CACHE_MAX_SIZE } = require('../../config');
 const { URLSearchParams } = require('url');
-const LRUCache = require('lru-cache');
+const QuickLRU = require('quick-lru');
 const _ = require('lodash');
 const { EntitySummary, DATASOURCES } = require('../../models/entity/summary');
 const logger = require('../logger');
 
-const pubCache = LRUCache({ max: PUB_CACHE_MAX_SIZE, length: () => 1 });
+const pubCache = new QuickLRU({ maxSize: PUB_CACHE_MAX_SIZE });
 
 const processPublications = res => {
   let { result } = res;

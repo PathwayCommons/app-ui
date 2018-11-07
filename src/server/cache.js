@@ -1,4 +1,4 @@
-const hasher = require('node-object-hash')();
+const hasher = require('node-object-hash')({ sort: true });
 const pMemoize = require('p-memoize');
 
 /**

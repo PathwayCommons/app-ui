@@ -2,7 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
 const { ServerAPI } = require('../../services/');
-const { COLLECTION_NAMESPACE_HGNC_SYMBOL } = require('../../../config');
+const { NS_HGNC_SYMBOL } = require('../../../config');
 let Textarea = require('react-textarea-autosize').default;
 
 class TokenInput extends React.Component {
@@ -40,7 +40,7 @@ class TokenInput extends React.Component {
     let tokenList = _.pull(inputBoxContents.split(/\s/g), "");
      ServerAPI.enrichmentAPI({
        query: tokenList,
-       targetDb: COLLECTION_NAMESPACE_HGNC_SYMBOL
+       targetDb: NS_HGNC_SYMBOL
       }, "validation")
     .then( result => {
       let { unrecognized, alias } = result;

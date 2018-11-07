@@ -6,16 +6,16 @@ const logger = require('../../../logger');
 const { fetch } = require('../../../../util');
 const cleanUpEntrez = require('../clean-up-entrez');
 const InvalidParamError = require('../../../../server/errors/invalid-param');
-const { GPROFILER_URL, PC_CACHE_MAX_SIZE, COLLECTION_NAMESPACE_HGNC, COLLECTION_NAMESPACE_HGNC_SYMBOL, COLLECTION_NAMESPACE_UNIPROT, COLLECTION_NAMESPACE_NCBI_GENE, COLLECTION_NAMESPACE_ENSEMBL } = require('../../../../config');
+const { GPROFILER_URL, PC_CACHE_MAX_SIZE, NS_HGNC, NS_HGNC_SYMBOL, NS_UNIPROT, NS_NCBI_GENE, NS_ENSEMBL } = require('../../../../config');
 const cache = require('../../../cache');
 const GCONVERT_URL = GPROFILER_URL + 'gconvert.cgi';
 
-const GPROFILER_COLLECTION_NAMESPACE_MAP = new Map([
-  [COLLECTION_NAMESPACE_HGNC, 'HGNC_ACC'],
-  [COLLECTION_NAMESPACE_HGNC_SYMBOL, 'HGNC'],
-  [COLLECTION_NAMESPACE_UNIPROT, 'UNIPROTSWISSPROT'],
-  [COLLECTION_NAMESPACE_NCBI_GENE, 'ENTREZGENE_ACC'],
-  [COLLECTION_NAMESPACE_ENSEMBL, 'ENSG']
+const GPROFILER_NS_MAP = new Map([
+  [NS_HGNC, 'HGNC_ACC'],
+  [NS_HGNC_SYMBOL, 'HGNC'],
+  [NS_UNIPROT, 'UNIPROTSWISSPROT'],
+  [NS_NCBI_GENE, 'ENTREZGENE_ACC'],
+  [NS_ENSEMBL, 'ENSG']
 ]);
 
 const resultTemplate = ( unrecognized, duplicate, alias ) => {
@@ -27,7 +27,7 @@ const resultTemplate = ( unrecognized, duplicate, alias ) => {
 };
 
 const mapTarget = target  => {
-  const gconvertNamespace = GPROFILER_COLLECTION_NAMESPACE_MAP.get( target );
+  const gconvertNamespace = GPROFILER_NS_MAP.get( target );
   if( !gconvertNamespace ) throw new InvalidParamError( 'Unrecognized targetDb' );
   return gconvertNamespace;
 };
@@ -111,7 +111,7 @@ const rawValidatorGconvert = ( query, userOptions ) => {
   const defaultOptions = {
     'output': 'mini',
     'organism': 'hsapiens',
-    'target': COLLECTION_NAMESPACE_HGNC,
+    'target': NS_HGNC,
     'prefix': 'ENTREZGENE_ACC'
   };
 
@@ -137,5 +137,5 @@ module.exports = { validatorGconvert,
   getForm,
   mapParams,
   gConvertResponseHandler,
-  GPROFILER_COLLECTION_NAMESPACE_MAP
+  GPROFILER_NS_MAP
 };

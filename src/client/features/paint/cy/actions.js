@@ -35,30 +35,23 @@ let searchNodes = (cy, query) => {
   let ecAPI = cy.expandCollapse('get');
   let allNodes = cy.nodes().union(ecAPI.getAllCollapsedChildrenRecursively());
 
-  let getSynonyms = node => {
-    let parsedMetadata = node.data('parsedMetadata');
+  let getSyns = node => {
+    let metadata = node.data('metadata');
+    let { synonyms = [], standardName = '', displayName = '' } = metadata;
     let geneSynonyms = node.data('geneSynonyms');
-    let labels = node.data('label')? [node.data('label')]:[node.data('description')];
-  
-    if (!parsedMetadata) return labels;
-  
-    //Get Various Names
-    let standardName = parsedMetadata.filter(pair => pair[0] === 'Standard Name');
-    let names = parsedMetadata.filter(pair => pair[0] === 'Names');
-    let displayName = parsedMetadata.filter(pair => pair[0] === 'Display Name');
-  
-    //Append names to main array
-    if (standardName.length > 0){ labels = labels.concat(standardName[0][1]); }
-    if (names.length > 0){ labels = labels.concat(names[0][1]); }
-    if (displayName.length > 0){ labels = labels.concat(displayName[0][1]); }
-  
-    if(_.isArray(geneSynonyms)){ labels = labels.concat(node.data('geneSynonyms')); }
-  
-    return labels.filter(synonym => synonym != null);
+    let label = node.data('label');
+
+    return _.uniq([
+      ...synonyms,
+      ...geneSynonyms,
+      standardName, 
+      displayName, 
+      label
+    ]).filter( el => !_.isEmpty( el ) );
   };
 
   let matched = allNodes.filter(node => {
-    let synonyms = getSynonyms(node).filter( synonym => synonym != null);
+    let synonyms = getSyns(node);
 
     let synonymMatch = synonyms.find( synonym => synonym.toUpperCase().includes( query.toUpperCase() ));
 

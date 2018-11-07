@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const fs = require('fs');
 const path = require('path');
-const { sifText2CyJson, getInteractionsCyJson  } = require('../../../src/server/graph-generation/interaction');
+const { sifText2CyJson, getInteractionsCyJson  } = require('../../../src/server/routes/interactions/generate-interactions-json');
 const { MAX_SIF_NODES } = require('../../../src/config');
 
 describe('Interactions network to cy.js conversion', function(){

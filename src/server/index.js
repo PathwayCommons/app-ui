@@ -6,18 +6,22 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const debug = require('debug')('app-ui:server');
 const http = require('http');
-const config = require('../config');
-const dbConfig = require('./database/config');
-const logger = require('./logger');
 const stream = require('stream');
 const fs = require('fs');
-const checkTables = require('./database/createTables');
+const Promise = require('bluebird');
+
+const config = require('../config');
+
+// make fetch() available as a global just like it is on the client side
+global.fetch = require('node-fetch');
+
+const db = require('./db');
+const logger = require('./logger');
 
 const app = express();
 const server = http.createServer(app);
 
 require('./io').set(server);
-require('./routes/sockets');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -55,24 +59,16 @@ app.use('/', require('./routes/'));
 app.use(function (req, res, next) {
   let err = new Error('Not Found');
   err.status = 404;
+
   next(err);
 });
 
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function (err, req, res/*, next*/) {
-    res.status(err.status || 500);
-    res.render('error');
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
-// error page handler
-app.use(function (err, req, res/*, next*/) {
+// on thrown error in route, send http 500 and send just the error text message
+app.use(function (err, req, res, next) {
   res.status(err.status || 500);
-  res.render('error');
+  res.send(err.message);
+
+  next(err);
 });
 
 
@@ -131,10 +127,21 @@ function onListening() {
   debug('Listening on ' + bind);
 }
 
-// Create database instance if one does not already exist. And start
-// the server once that is complete.
-checkTables.checkDatabase(dbConfig).then(()=>{
+
+// set up rethinkdb
+Promise.try( () => {
+  let log = (...msg) => function( val ){ logger.debug( ...msg ); return val; };
+  let access = name => db.accessTable( name );
+  let setup = name => {
+    return access( name )
+      .then( log('Accessed table "%s"', name) )
+      .then( log('Set up synching for "%s"', name) )
+    ;
+  };
+
+  return Promise.all( ['pathways'].map( setup ) );
+} ).then( () => {
   server.listen(port);
-});
+} );
 
 module.exports = app;

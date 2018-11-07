@@ -2,6 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
 const { ServerAPI } = require('../../services/');
+const { NS_HGNC_SYMBOL } = require('../../../config');
 let Textarea = require('react-textarea-autosize').default;
 
 class TokenInput extends React.Component {
@@ -38,17 +39,15 @@ class TokenInput extends React.Component {
 
     let tokenList = _.pull(inputBoxContents.split(/\s/g), "");
      ServerAPI.enrichmentAPI({
-       genes: tokenList,
-       targetDb: "HGNCSYMBOL"
+       query: tokenList,
+       targetDb: NS_HGNC_SYMBOL
       }, "validation")
     .then( result => {
-      const aliases = result.geneInfo.map( value => {
-        return value.convertedAlias;
-      });
+      let { unrecognized, alias } = result;
 
       controller.handleGeneQueryResult( {
-        genes: aliases,
-        unrecognized: result.unrecognized,
+        genes: _.values( alias ),
+        unrecognized: unrecognized,
       });
     });
   }

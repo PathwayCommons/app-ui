@@ -1,6 +1,6 @@
 const chai = require('chai');
 const expect = chai.expect;
-const { generateGraphInfo } = require('../../../../src/server/enrichment/visualization');
+const { generateGraphInfo } = require('../../../../src/server/routes/enrichment/visualization');
 
 //generateGraphInfo( pathways, similarityCutoff, jaccardOverlapWeight);
 

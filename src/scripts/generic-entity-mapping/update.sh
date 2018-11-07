@@ -40,6 +40,6 @@ echo "Processing $DATA"
 
 curl -s "$DATA" | gunzip -c | jq -cS 'map(select(.generic)) | reduce .[] as $o ({}; . + {($o.uri): {name: $o.name, label:$o.label, synonyms:$o."HGNC Symbol"}})' > generic-physical-entity-map.json
 
-mv generic-physical-entity-map.json ../../server/graph-generation/biopax-metadata/
+mv generic-physical-entity-map.json ../../server/routes/pathways/generate-pathway-json/biopax-metadata/
 
 echo "\nUpdated generic-physical-entity-map.json"

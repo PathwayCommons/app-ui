@@ -1,9 +1,8 @@
-const io = require('socket.io-client');
-const qs = require('querystring');
+const qs = require('query-string');
 const _ = require('lodash');
 
-const socket = io.connect('/');
-const FETCH_TIMEOUT = 5000; //ms
+const { PC_URL } = require('../../../config');
+const { fetch } = require('../../../util');
 
 let absoluteURL = (href) => {
   return ( location.origin + href) ;
@@ -17,8 +16,64 @@ const defaultFetchOpts = {
 };
 
 const ServerAPI = {
-  getPathway(uri, version) {
-    return fetch(absoluteURL(`/api/get-graph-and-layout?${qs.stringify({uri, version})}`), defaultFetchOpts).then(res => res.json());
+  // a generic method that gets pathway sbgn json from various sources
+  // e.g. pathwaycommons, factoid, or human created layouts
+  getAPIResource(opts){
+    let { type, uri, id } = opts;
+    if( type === 'pathways' ){
+      if( uri !== null ){
+        return this.getPathway( uri );
+      } else {
+        throw new Error('Invalid parameter.  Pathways api calls require a uri parameter');
+      }
+    }
+    if( type === 'factoids' ){
+      if( id !== null ){
+        return this.getFactoid(opts.id);
+      } else {
+        throw new Error('Invalid paramter. Factoids api calls require a id parameter');
+      }
+    }
+  },
+
+  getPathway(uri) {
+    let url = absoluteURL(`/api/pathways?${ qs.stringify({ uri }) }`);
+    return (
+      fetch(url, defaultFetchOpts)
+        .then(res =>  res.json())
+        .then( pathwayJson => {
+          return {
+            graph: pathwayJson
+          };
+        })
+    );
+  },
+
+  getFactoids() {
+    return (
+      fetch('/api/factoids', defaultFetchOpts)
+        .then( res => res.json() )
+    );
+  },
+
+  getFactoid(id) {
+    let url = absoluteURL(`/api/factoids/${ id }`);
+    return (
+      fetch(url, defaultFetchOpts)
+        .then(res =>  res.json())
+        .then( pathwayJson => {
+          return {
+            graph: pathwayJson
+          };
+        })
+    );
+  },
+
+  getInteractionGraph(sources) {
+    return (
+      fetch(absoluteURL(`/api/interactions?${qs.stringify(sources)}`), defaultFetchOpts)
+       .then( res => res.json())
+    );
   },
 
   getPubmedPublications( pubmedIds ){
@@ -56,13 +111,8 @@ const ServerAPI = {
     .then( res => res.json() );
   },
 
-  getInteractionGraph(sources) {
-    return fetch(absoluteURL(`/api/get-interaction-graph?${qs.stringify(sources)}`), defaultFetchOpts).then(res => res.json());
-  },
-
-  //method is a request path, e.g., 'pc2/get' or 'sifgraph/v1/pathsbetween'
-  pcQuery(method, params){
-    return fetch(absoluteURL(`/pc-client/${method}?${qs.stringify(params)}`), defaultFetchOpts);
+  downloadFileFromPathwayCommons( uri, format ){
+    return fetch(PC_URL + 'pc2/get?' + qs.stringify({ uri, format}), defaultFetchOpts);
   },
 
   search(query){
@@ -70,18 +120,17 @@ const ServerAPI = {
     if (/^((uniprot|hgnc):\w+|ncbi:[0-9]+)$/i.test(queryClone.q)) {
       queryClone.q=queryClone.q.replace(/^(uniprot|ncbi|hgnc):/i,"");
     }
-    return fetch(absoluteURL(`/pc-client/querySearch?${qs.stringify(queryClone)}`), defaultFetchOpts).then(res => res.json());
+    return fetch(absoluteURL(`/api/pc/search?${qs.stringify(queryClone)}`), defaultFetchOpts).then(res => res.json());
   },
 
   enrichmentAPI(query, type){
-    return fetch(absoluteURL(`/api/${type}`), {
+    return fetch(absoluteURL(`/api/enrichment/${type}`), {
       method:'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(query),
-      timeout: FETCH_TIMEOUT
+      body: JSON.stringify(query)
     })
     .then(res => res.json());
   },
@@ -90,55 +139,10 @@ const ServerAPI = {
     return this.enrichmentAPI(query, "validation");
   },
 
-  getGeneInformation(ids){
-    return fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?retmode=json&db=gene&id=${ids.join(',')}`,{method: 'GET'})
+  entitySummaryQuery( query ){
+    return fetch(`/api/summary/entity/search?q=${ query }`, defaultFetchOpts)
     .then(res => res.json())
     .catch(() => undefined);
-  },
-
-  getUniprotInformation(ids){
-    return fetch(`https://www.ebi.ac.uk/proteins/api/proteins?offset=0&accession=${ids.join(',')}`,defaultFetchOpts)
-    .then(res => res.json())
-    .catch(() => []);
-  },
-
-  getHgncInformation(id) {
-    return fetch( `https://rest.genenames.org/fetch/symbol/${id}`, {headers: {'Accept': 'application/json'}} )
-    .then(res => res.json())
-    .catch(() => undefined);
-  },
-
-  // Send a diff in a node to the backend. The backend will deal with merging these diffs into
-  // a layout
-  submitNodeChange(uri, version, nodeId, bbox) {
-    socket.emit('submitDiff', {
-      uri: uri,
-      version: version.toString(),
-      diff: {
-        nodeID: nodeId,
-        bbox: bbox
-      }
-    });
-  },
-
-  submitLayoutChange(uri, version, layout) {
-    socket.emit('submitLayout', {
-      uri: uri,
-      version: version,
-      layout: layout
-    });
-  },
-
-  initReceiveLayoutChange(callback) {
-    socket.on('layoutChange', layoutJSON => {
-      callback(layoutJSON);
-    });
-  },
-
-  initReceiveNodeChange(callback) {
-    socket.on('nodeChange', nodeDiff => {
-      callback(nodeDiff);
-    });
   }
 };
 

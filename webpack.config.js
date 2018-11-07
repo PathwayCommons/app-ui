@@ -6,6 +6,8 @@ const isNonNil = x => x != null;
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const isProfile = env.PROFILE == 'true';
 
+const envVars = ['NODE_ENV', 'PC_URL', 'FACTOID_URL'];
+
 let conf = {
   entry: './src/client/index.js',
 
@@ -23,7 +25,7 @@ let conf = {
   plugins: [
     isProfile ? new BundleAnalyzerPlugin() : null,
 
-    new webpack.EnvironmentPlugin(['NODE_ENV']),
+    new webpack.EnvironmentPlugin(envVars),
 
     new webpack.optimize.CommonsChunkPlugin({
       name: 'deps',

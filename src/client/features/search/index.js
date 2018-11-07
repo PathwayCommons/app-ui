@@ -10,8 +10,7 @@ const { ServerAPI } = require('../../services');
 const Datasources = require('../../../models/datasources');
 
 const PcLogoLink = require('../../common/components/pc-logo-link');
-const queryEntityInfo = require('./query-entity-info');
-const EntityInfoBoxList = require('./entity-info-box');
+const EntitySummaryBoxList = require('./entity-summary-box');
 
 class Search extends React.Component {
 
@@ -28,8 +27,8 @@ class Search extends React.Component {
         type: 'Pathway',
         datasource: []
       }, query),
-      entityInfoResults: [],
-      entityInfoResultsLoading: false,
+      entitySummaryResults: {},
+      entitySummaryResultsLoading: false,
       searchResults: [],
       searchLoading: false
     };
@@ -41,14 +40,14 @@ class Search extends React.Component {
     if (query.q !== '') {
       this.setState({
         searchLoading: true,
-        entityInfoResultsLoading: true
+        entitySummaryResultsLoading: true
       });
-      queryEntityInfo(query.q).then(entityInfoResults =>
+      ServerAPI.entitySummaryQuery( query.q ).then( entitySummaryResults => {
         this.setState({
-          entityInfoResultsLoading: false,
-          entityInfoResults: entityInfoResults
-        })
-      );
+          entitySummaryResults: entitySummaryResults,
+          entitySummaryResultsLoading: false
+        });
+      });
       ServerAPI.search(query).then(searchResults => {
           this.setState({
             searchResults: searchResults,
@@ -112,8 +111,8 @@ class Search extends React.Component {
 
   render() {
     const state = this.state;
-    const entityInfoResults = state.entityInfoResults;
-    const loaded = !(state.searchLoading || state.entityInfoResultsLoading);
+    const entitySummaryResults = state.entitySummaryResults;
+    const loaded = !(state.searchLoading || state.entitySummaryResultsLoading);
 
     const searchResults = state.searchResults.map(result => {
       let datasourceUri = _.get(result, 'dataSource.0', '');
@@ -160,7 +159,7 @@ class Search extends React.Component {
           h('div.search-result-filter', [searchResultFilter]),
           h('div.search-result-hit-count', [searchResultHitCount])
         ]),
-        h(EntityInfoBoxList, { entityInfoList: entityInfoResults}),
+        !_.isEmpty(entitySummaryResults) > 0 ? h(EntitySummaryBoxList, { entitySummaryResults }) : null,
         h('div.search-list', searchResults)
       ])
     ]);

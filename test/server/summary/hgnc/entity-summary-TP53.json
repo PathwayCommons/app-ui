@@ -1,0 +1,20 @@
+{
+	"TP53": {
+		"dataSource": "http://identifiers.org/hgnc/",
+		"displayName": "tumor protein p53",
+		"localID": "TP53",
+		"description": "",
+		"aliases": [
+			"Li-Fraumeni syndrome"
+		],
+		"aliasIds": [
+			"p53",
+			"LFS1"
+		],
+		"xref": {
+			"http://identifiers.org/genecards/": "TP53",
+			"http://identifiers.org/ncbigene/": "7157",
+			"http://identifiers.org/uniprot/": "P04637"
+		}
+	}
+}

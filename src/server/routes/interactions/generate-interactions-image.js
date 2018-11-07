@@ -3,7 +3,7 @@ const LRUCache = require('lru-cache');
 
 const cache = require('../../cache');
 
-const { PC_CACHE_MAX_SIZE } = require('../../../config');
+const { PC_IMAGE_CACHE_MAX_SIZE } = require('../../../config');
 
 let snap = cytosnap();
 
@@ -92,7 +92,7 @@ let generateInteractionsImg = interactionsJson => {
   });
 };
 
-let imgCache = LRUCache({ max: PC_CACHE_MAX_SIZE, length: () => 1 });
+let imgCache = LRUCache({ max: PC_IMAGE_CACHE_MAX_SIZE, length: () => 1 });
 
 
 module.exports = { generateInteractionsImg: cache(generateInteractionsImg, imgCache) };

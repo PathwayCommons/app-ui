@@ -9,6 +9,7 @@ let defaults = {
   NCBI_EUTILS_BASE_URL: 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils',
   HGNC_BASE_URL: 'https://rest.genenames.org',
   UNIPROT_API_BASE_URL: 'https://www.ebi.ac.uk/proteins/api',
+  PC_IMAGE_CACHE_MAX_SIZE: 10000,
   PC_CACHE_MAX_SIZE: 1000,
   PUB_CACHE_MAX_SIZE: 1000000,
   MAX_SIF_NODES: 25,

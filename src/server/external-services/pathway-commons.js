@@ -57,20 +57,23 @@ let extractEntityIds = inputString => {
     });
 
     return entities.concat(otherIds);
+  })
+  .catch( e => {
+    logger.error('unable to get response from gconvert with the following inputstring: ' + inputString);
+    logger.error(e);
+    return [];
   });
 };
 
 // generate three search query candidates: the first one is the fastest, the last - slowest
-let generateSearchQueries = inputString => {
+let generateSearchQueries = async inputString => {
   let phrase = sanitize( inputString );
-
-  return extractEntityIds( inputString ).then( entities => {
-    return [
-      '(name:' + phrase + ') OR (' + 'name:*' + phrase + '*) OR (' + entities.join(' AND ') + ')',
-      '(' + entities.join(' OR ') + ')',
-      inputString //"as is" (won't additionally escape Lucene query syntax, spaces, etc.)
-    ];
-  });
+  let entities = await extractEntityIds( inputString );
+  return [
+    '(name:' + phrase + ') OR (' + 'name:*' + phrase + '*) OR (' + entities.join(' AND ') + ')',
+    '(' + entities.join(' OR ') + ')',
+    inputString //"as is" (won't additionally escape Lucene query syntax, spaces, etc.)
+  ];
 };
 
 // A fine-tuned PC search to improve relevance of full-text search and filter out unwanted hits.

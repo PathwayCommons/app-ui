@@ -67,10 +67,7 @@ const getEntitySummary = async ( accessions ) => {
       xrefLinks: xrefLinks
     });
 
-    summary.push({
-      "query": accession,
-      "entitySummary": eSummary
-    });
+    summary.push(eSummary);
   });
 
   return summary;

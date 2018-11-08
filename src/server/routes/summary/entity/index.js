@@ -3,8 +3,7 @@ const { validatorGconvert } = require('../../../external-services/gprofiler/gcon
 const { getEntitySummary: getNcbiGeneSummary } = require('../../../external-services/ncbi');
 const { getEntitySummary: getHgncSummary } = require('../../../external-services/hgnc');
 const { getEntitySummary: getUniProtSummary } = require('../../../external-services/uniprot');
-const { NS_NCBI_GENE, NS_UNIPROT } = require('../../../../config');
-const { DATASOURCES } = require('../../../../models/entity/summary');
+const { NS_HGNC_SYMBOL, NS_NCBI_GENE, NS_UNIPROT, IDENTIFIERS_URL } = require('../../../../config');
 
 /**
  * entityFetch: Retrieve EntitySummary for a given id from a datasource
@@ -15,10 +14,10 @@ const { DATASOURCES } = require('../../../../models/entity/summary');
 const entityFetch = async ( localIds, dataSource ) => {
   let eSummary;
   switch ( dataSource ) {
-    case DATASOURCES.HGNC: //TODO https://github.com/PathwayCommons/app-ui/issues/1131
+    case NS_HGNC_SYMBOL:
       eSummary = await getHgncSummary( localIds );
       break;
-    case DATASOURCES.UNIPROT:
+    case NS_UNIPROT:
       eSummary = await getUniProtSummary( localIds );
       break;
     default:
@@ -26,6 +25,8 @@ const entityFetch = async ( localIds, dataSource ) => {
   }
   return eSummary;
 };
+
+const createUri = ( namespace, localId ) => IDENTIFIERS_URL + '/' + namespace + '/' + localId;
 
 /**
  * entitySearch: Search a list of strings for recognized gene/protein identifiers
@@ -42,42 +43,42 @@ const entitySearch = async tokens => {
     const token = tokens[0];
     const [ dbId, entityId ] = token.split(':'); // eslint-disable-line no-unused-vars
     if( /hgnc:\w+$/i.test( token ) ){
-      db = DATASOURCES.HGNC;
+      db = NS_HGNC_SYMBOL;
     } else if ( /ncbi:[0-9]+$/i.test( token ) ) {
-      db = DATASOURCES.NCBIGENE;
+      db = NS_NCBI_GENE;
     } else if( /uniprot:\w+$/i.test( token ) ){
-      db = DATASOURCES.UNIPROT;
+      db = NS_UNIPROT;
     }
     if( db ) return entityFetch( [ entityId ], db );
   }
 
   const uniqueTokens = _.uniq( tokens );
   const { alias } = await validatorGconvert( uniqueTokens, { target: NS_NCBI_GENE } );
-  // Duplication of work (src/server/external-services/pathway-commons.js).
-  // Could consider a single piece of logic that tokenizes and sends to validator.
 
   // get the entity summaries for successfully mapped tokens
   const mappedIds = _.values( alias );
-  const summary = await entityFetch( mappedIds, DATASOURCES.NCBIGENE );
+  const summaries = await entityFetch( mappedIds, NS_NCBI_GENE );
 
   // NCBI Gene won't give UniProt Accession, so gotta go get em
   const { alias: aliasUniProt } = await validatorGconvert( mappedIds, { target: NS_UNIPROT } );
 
-  // Update the entity summaries
+  // Push in the UniProt xrefLinks into each Summary if available
   _.keys( aliasUniProt ).forEach( ncbiId => {
-    const eSummary = _.get( summary, ncbiId );
-    if ( eSummary ) eSummary.xref[ DATASOURCES.UNIPROT ] = _.get( aliasUniProt, ncbiId );
+    const eSummary = _.find( summaries, s => s.localId === ncbiId );
+    if ( eSummary ) eSummary.xrefLinks.push({
+      "namespace": NS_UNIPROT,
+      "uri": createUri(NS_UNIPROT, _.get( aliasUniProt, ncbiId ))
+    });
   });
 
-  // Want key to be original input token, unfortunately, validator transforms to upper case
-  const output =  {};
-  _.entries( alias ).forEach( pair => {
-    const tokenIndex =  _.findIndex( uniqueTokens, t => t.toUpperCase() ===  pair[0] );
-    output[ uniqueTokens[tokenIndex] ] = summary[ pair[1] ];
-  });
+  // // Want key to be original input token, unfortunately, validator transforms to upper case
+  // const output =  {};
+  // _.entries( alias ).forEach( pair => {
+  //   const tokenIndex =  _.findIndex( uniqueTokens, t => t.toUpperCase() ===  pair[0] );
+  //   output[ uniqueTokens[tokenIndex] ] = summary[ pair[1] ];
+  // });
 
-  return output;
-
+  return summaries;
 };
 
 module.exports = { entitySearch, entityFetch };

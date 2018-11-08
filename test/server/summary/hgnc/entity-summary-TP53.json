@@ -1,34 +1,31 @@
 [{
-	"query": "TP53",
-	"entitySummary": {
-		"namespace": "hgnc.symbol",
-		"displayName": "tumor protein p53",
-		"localID": "TP53",
-		"description": "",
-		"aliases": [
-			"Li-Fraumeni syndrome"
-		],
-		"aliasIds": [
-			"p53",
-			"LFS1"
-		],
-		"xrefLinks": [
-			{
-				"namespace": "genecards",
-				"uri": "http://identifiers.org/genecards/TP53"
-			},
-			{
-				"namespace": "hgnc.symbol",
-				"uri": "http://identifiers.org/hgnc.symbol/TP53"
-			},
-			{
-				"namespace": "ncbigene",
-				"uri": "http://identifiers.org/ncbigene/7157"
-			},
-			{
-				"namespace": "uniprot",
-				"uri": "http://identifiers.org/uniprot/P04637"
-			}
-		]
-	}
+	"namespace": "hgnc.symbol",
+	"displayName": "tumor protein p53",
+	"localID": "TP53",
+	"description": "",
+	"aliases": [
+		"Li-Fraumeni syndrome"
+	],
+	"aliasIds": [
+		"p53",
+		"LFS1"
+	],
+	"xrefLinks": [
+		{
+			"namespace": "genecards",
+			"uri": "http://identifiers.org/genecards/TP53"
+		},
+		{
+			"namespace": "hgnc.symbol",
+			"uri": "http://identifiers.org/hgnc.symbol/TP53"
+		},
+		{
+			"namespace": "ncbigene",
+			"uri": "http://identifiers.org/ncbigene/7157"
+		},
+		{
+			"namespace": "uniprot",
+			"uri": "http://identifiers.org/uniprot/P04637"
+		}
+	]
 }]

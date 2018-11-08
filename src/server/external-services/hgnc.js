@@ -66,10 +66,7 @@ const getEntitySummary = async symbols => {
       xrefLinks: xrefLinks
     });
 
-    summary.push({
-      "query": symbol,
-      "entitySummary": eSummary
-    });
+    summary.push(eSummary);
   });
 
   return summary;

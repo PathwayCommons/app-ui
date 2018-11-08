@@ -120,10 +120,7 @@ const getEntitySummary = async ( uids ) => {
       xrefLinks: xrefLinks
     });
 
-    summary.push({
-      "query": uid,
-      "entitySummary": eSummary
-    });
+    summary.push(eSummary);
   });
 
   return summary;

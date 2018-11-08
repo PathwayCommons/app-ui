@@ -11,9 +11,9 @@ router.get('/search', function (req, res) {
 
 //for debugging
 router.get('/xref2Uri/:name/:localId', function (req, res) {
-  res.set('Content-Type', 'text/plain');
+  res.set('Content-Type', 'application/json');
   pc.xref2Uri( req.params.name, req.params.localId )
-    .then( r => res.send( r ))
+    .then( r => res.json( r ))
     .catch( err => res.end( err.message ) );
 });
 

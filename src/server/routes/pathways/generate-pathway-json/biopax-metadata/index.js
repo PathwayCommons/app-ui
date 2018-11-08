@@ -90,11 +90,11 @@ let biopaxText2ElementMap = async biopaxJsonText => {
     for ( const xrefId of filtXrefIds ) {
       let { k, v } = xRefMap.get( xrefId );
       try {
-        let xrefUri = await xref2Uri( k, v );
-        if( xrefLinks[ k ] != null ){
-          xrefLinks[ k ] = xrefLinks[ k ].concat( xrefUri );
+        const { uri, namespace } = await xref2Uri( k, v );
+        if( xrefLinks[ namespace ] != null ){
+          xrefLinks[ namespace ] = xrefLinks[ namespace ].concat( uri );
         } else {
-          xrefLinks[ k ] = [ xrefUri ];
+          xrefLinks[ namespace ] = [ uri ];
         }
       } catch( err ) {
         //swallow

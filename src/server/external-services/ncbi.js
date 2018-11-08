@@ -1,9 +1,9 @@
 const { fetch } = require('../../util');
-const { NCBI_EUTILS_BASE_URL, PUB_CACHE_MAX_SIZE } = require('../../config');
+const { NCBI_EUTILS_BASE_URL, PUB_CACHE_MAX_SIZE, NS_GENECARDS, NS_HGNC_SYMBOL, NS_NCBI_GENE, IDENTIFIERS_URL } = require('../../config');
 const { URLSearchParams } = require('url');
 const QuickLRU = require('quick-lru');
 const _ = require('lodash');
-const { EntitySummary, DATASOURCES } = require('../../models/entity/summary');
+const { EntitySummary } = require('../../models/entity/summary');
 const logger = require('../logger');
 
 const pubCache = new QuickLRU({ maxSize: PUB_CACHE_MAX_SIZE });
@@ -79,9 +79,11 @@ const fetchByGeneIds = ( geneIds ) => {
     });
 };
 
+const createUri = ( namespace, localId ) => IDENTIFIERS_URL + '/' + namespace + '/' + localId;
+
 const getEntitySummary = async ( uids ) => {
 
-  const summary = {};
+  const summary = [];
   if ( _.isEmpty( uids ) ) return summary;
 
   const results = await fetchByGeneIds( uids );
@@ -90,25 +92,38 @@ const getEntitySummary = async ( uids ) => {
   result.uids.forEach( uid => {
     if( _.has( result, uid['error'] ) ) return;
     const doc = result[ uid ];
-    const xref = {};
+    const xrefLinks = [];
 
     // Fetch external database links first
-    if ( _.has( doc, 'name' ) ){
-      xref[DATASOURCES.HGNC] = _.get( doc, 'name' ,'');
-      xref[DATASOURCES.GENECARDS] = _.get( doc, 'name', '');
+    const localId = _.get( doc, 'name');
+    if( localId ){
+      [ NS_HGNC_SYMBOL, NS_GENECARDS ].forEach( namespace => {
+        xrefLinks.push({
+          "namespace": namespace,
+          "uri": createUri( namespace, localId )
+        });
+      });
     }
+    // push in NCBI xrefLink too
+    xrefLinks.push({
+      "namespace": NS_NCBI_GENE,
+      "uri": createUri( NS_NCBI_GENE, uid )
+    });
 
     const eSummary = new EntitySummary({
-      dataSource: DATASOURCES.NCBIGENE,
+      namespace: NS_NCBI_GENE,
       displayName: _.get( doc, 'description', ''),
-      localID: _.get( doc, 'uid', ''),
+      localID: uid,
       description: _.get( doc, 'summary', ''),
       aliases: _.get( doc, 'otherdesignations', '').split('|'),
       aliasIds: _.get( doc, 'otheraliases', '').split(',').map( a => a.trim() ),
-      xref: xref
+      xrefLinks: xrefLinks
     });
 
-    return summary[ uid ] = eSummary;
+    summary.push({
+      "query": uid,
+      "entitySummary": eSummary
+    });
   });
 
   return summary;

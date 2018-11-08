@@ -1,6 +1,7 @@
-{
-	"7157": {
-		"dataSource": "http://identifiers.org/ncbigene/",
+[{
+	"query": "7157",
+	"entitySummary": {
+		"namespace": "ncbigene",
 		"displayName": "tumor protein p53",
 		"localID": "7157",
 		"description": "This gene encodes a tumor suppressor protein containing transcriptional activation, DNA binding, and oligomerization domains. The encoded protein responds to diverse cellular stresses to regulate expression of target genes, thereby inducing cell cycle arrest, apoptosis, senescence, DNA repair, or changes in metabolism. Mutations in this gene are associated with a variety of human cancers, including hereditary cancers such as Li-Fraumeni syndrome. Alternative splicing of this gene and the use of alternate promoters result in multiple transcript variants and isoforms. Additional isoforms have also been shown to result from the use of alternate translation initiation codons from identical transcript variants (PMIDs: 12032546, 20937277). [provided by RefSeq, Dec 2016]",
@@ -20,9 +21,19 @@
 			"P53",
 			"TRP53"
 		],
-		"xref": {
-			"http://identifiers.org/hgnc/": "TP53",
-			"http://identifiers.org/genecards/": "TP53"
-		}
+		"xrefLinks": [
+			{
+				"namespace": "hgnc.symbol",
+				"uri": "http://identifiers.org/hgnc.symbol/TP53"
+			},
+			{
+				"namespace": "genecards",
+				"uri": "http://identifiers.org/genecards/TP53"
+			},
+			{
+				"namespace": "ncbigene",
+				"uri": "http://identifiers.org/ncbigene/7157"
+			}
+		]
 	}
-}
+}]

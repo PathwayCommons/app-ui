@@ -21,7 +21,7 @@ describe ('External service: NCBI', function () {
     it('Should return an empty object with no input', async () => {
       global.fetch = mockFetch( { json: () => EMPTY_RESPONSE_DATA_7157 } );
       const result =  await getEntitySummary( [ '0000' ] );
-      expect( result ).to.deep.equal( {} );
+      expect( result ).to.deep.equal( [] );
     });
 
   });

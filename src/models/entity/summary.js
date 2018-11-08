@@ -1,22 +1,14 @@
 // Entity summary
 const _ = require('lodash');
 
-//To be moved and integrated with all the other 'datasource'
-const DATASOURCES = {
-  NCBIGENE: 'http://identifiers.org/ncbigene/',
-  HGNC: 'http://identifiers.org/hgnc/',
-  UNIPROT: 'http://identifiers.org/uniprot/',
-  GENECARDS: 'http://identifiers.org/genecards/'
-};
-
 const DEFAULTS = {
-  dataSource: '',
+  namespace: '',
   displayName: '',
   localID: '',
   description: '',
   aliases: [],
   aliasIds: [],
-  xref: {}
+  xrefLinks: []
 };
 
 class EntitySummary {
@@ -25,4 +17,4 @@ class EntitySummary {
   }
 }
 
-module.exports = { EntitySummary, DATASOURCES };
+module.exports = { EntitySummary };

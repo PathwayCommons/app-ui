@@ -129,7 +129,10 @@ const handleEntityUriResponse = text => {
   const pathParts = _.compact( uri.pathname.split('/') );
   if( _.isEmpty( pathParts ) || pathParts.length !== 2 ) throw new Error( 'Unrecognized URI' );
   const namespace = _.head( pathParts );
-  return uri.origin + '/' + namespace;
+  return {
+    origin: uri.origin,
+    namespace
+  };
 };
 
 const constructQueryPath = ( name, localId ) => {
@@ -143,18 +146,16 @@ const constructQueryPath = ( name, localId ) => {
  * http://www.pathwaycommons.org/pc2/swagger-ui.html#!/metadata45controller/identifierOrgUriUsingGET
  * NB: pc2 service returns 200 and empty body if collection name and/or local ID are unrecognized.
  *   If the local ID is empty, throws a 404
- * @return { object } a node URL object
+ * @return { object } the URL origin and namespace
  */
 const fetchEntityUriBase = ( name, localId ) => {
-  //console.log( `fetchEntityUriBase with collection = ${name}; ID = ${localId}` );
   const url = config.PC_URL + 'pc2/miriam/uri/' + constructQueryPath( name, localId ) ;
   return fetch( url , { method: 'GET', headers: { 'Accept': 'text/plain' } })
     .then( res => res.text() )
     .then( handleEntityUriResponse );
 };
 
-// TODO: Use p-memoize() https://github.com/PathwayCommons/app-ui/issues/1139
-const rawGetEntityUriBase = ( name, localId ) => {
+const getEntityUriParts = ( name, localId ) => {
   if( pcCache.has( name ) ){
     return pcCache.get( name );
   } else {
@@ -172,11 +173,14 @@ const rawGetEntityUriBase = ( name, localId ) => {
  * xref2Uri: Obtain the URI for an xref
  * @param {string} name -  MIRIAM 'name', 'synonym' ?OR MI CV database citation (MI:0444) 'label'
  * @param {string} localId - Entity local entity identifier, should be valid
- * @return a URI, if availble. Throws if nothing could be found.
+ * @return {Object} return the origin and 'namespace' in path
  */
 const xref2Uri =  ( name, localId ) => {
-  return rawGetEntityUriBase( name, localId )
-    .then( uriBase => uriBase + '/' + localId );
+  return getEntityUriParts( name, localId )
+    .then( uriParts => ({
+      uri: uriParts.origin + '/' + uriParts.namespace + '/' + localId,
+      namespace: uriParts.namespace
+    }) );
 };
 
 const search = _.memoize(_search, query => JSON.stringify(query));

@@ -3,18 +3,18 @@ const h = require('react-hyperscript');
 const _ = require('lodash');
 
 const { ServerAPI } = require('../../services');
+const { NS_CHEBI, NS_ENSEMBL, NS_HGNC, NS_HGNC_SYMBOL, NS_NCBI_GENE, NS_PUBMED, NS_REACTOME, NS_UNIPROT } = require('../../../config');
 
 const DEFAULT_NUM_NAMES = 3;
-// TODO - collection names (keys) should be accessed from config https://github.com/PathwayCommons/app-ui/issues/1131
 const SUPPORTED_COLLECTIONS = new Map([
-  ['Reactome'.toLowerCase(), 'Reactome'],
-  ['UniProt Knowledgebase'.toLowerCase(), 'UniProt'],
-  ['NCBI Gene'.toLowerCase(), 'NCBI'],
-  ['HGNC Symbol'.toLowerCase(), 'HGNC'],
-  ['ChEBI'.toLowerCase(), 'ChEBI'],
-  ['Ensembl'.toLowerCase(), 'Ensembl']
+  [NS_CHEBI, 'ChEBI'],
+  [NS_ENSEMBL, 'Ensembl'],
+  [NS_HGNC, 'HGNC'],
+  [NS_HGNC_SYMBOL, 'HGNC'],
+  [NS_NCBI_GENE, 'NCBI Gene'],
+  [NS_REACTOME, 'Reactome'],
+  [NS_UNIPROT, 'UniProt']
 ]);
-const PUBMED_DB_KEY = 'pubmed';
 
 const getUriIds = uris => uris.map( uri => _.last( uri.split( '/' ) ) );
 
@@ -33,7 +33,7 @@ class PathwayNodeMetadataView extends React.Component {
   componentDidMount(){
     let { node } = this.props;
     let metadata = node.data('metadata');
-    let pubmedUris = _.get(metadata, `xrefLinks.${PUBMED_DB_KEY}`, null);
+    let pubmedUris = _.get(metadata, `xrefLinks.${NS_PUBMED}`, null);
 
     if( pubmedUris != null ){
       const pubmedIds = getUriIds( pubmedUris );
@@ -61,10 +61,10 @@ class PathwayNodeMetadataView extends React.Component {
       ]);
     }
 
-    let dbLinks = _.keys( xrefLinks ).map( db => {
+    let dbLinks = _.keys( xrefLinks ).map( collection => {
       let link = null;
-      const displayName = SUPPORTED_COLLECTIONS.get( db.toLowerCase() );
-      const uri = _.get( xrefLinks, `${db}[0]` );
+      const displayName = SUPPORTED_COLLECTIONS.get( collection );
+      const uri = _.get( xrefLinks, `${collection}[0]` );
       if ( displayName && uri ) link = h('a.plain-link', { href: uri, target: '_blank' }, displayName );
       return link;
     });

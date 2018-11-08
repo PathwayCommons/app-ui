@@ -1,7 +1,7 @@
 const { fetch } = require('../../util');
 const { UNIPROT_API_BASE_URL, NS_GENECARDS, NS_HGNC_SYMBOL, NS_NCBI_GENE, NS_UNIPROT, IDENTIFIERS_URL } = require('../../config');
 const _ = require('lodash');
-const { EntitySummary, DATASOURCES } = require('../../models/entity/summary');
+const { EntitySummary } = require('../../models/entity/summary');
 const logger = require('../logger');
 
 //Could cache somewhere here.

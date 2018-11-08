@@ -24,11 +24,15 @@ let defaults = {
   // factoid specific urls
   FACTOID_URL: 'http://unstable.factoid.baderlab.org/',
   BIOPAX_CONVERTERS_URL: 'http://biopax.baderlab.org/',
+  NS_CHEBI: 'chebi',
+  NS_ENSEMBL: 'ensembl',
+  NS_GENECARDS: 'genecards',
   NS_HGNC: 'hgnc',
   NS_HGNC_SYMBOL: 'hgnc.symbol',
-  NS_UNIPROT: 'uniprot',
   NS_NCBI_GENE: 'ncbigene',
-  NS_ENSEMBL: 'ensembl'
+  NS_PUBMED: 'pubmed',
+  NS_REACTOME: 'reactome',
+  NS_UNIPROT: 'uniprot'
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );

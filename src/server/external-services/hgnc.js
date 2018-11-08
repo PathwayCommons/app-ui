@@ -1,7 +1,7 @@
 const { fetch } = require('../../util');
 const _ = require('lodash');
-const { HGNC_BASE_URL } = require('../../config');
-const { EntitySummary, DATASOURCES } = require('../../models/entity/summary');
+const { HGNC_BASE_URL, NS_GENECARDS, NS_HGNC_SYMBOL, NS_NCBI_GENE, NS_UNIPROT, IDENTIFIERS_URL } = require('../../config');
+const { EntitySummary } = require('../../models/entity/summary');
 const logger = require('../logger');
 
 //Could cache somewhere here.
@@ -20,9 +20,11 @@ const fetchBySymbol = symbol => {
 
 const fetchBySymbols = symbols => Promise.all( symbols.map(fetchBySymbol) );
 
+const createUri = ( namespace, localId ) => IDENTIFIERS_URL + '/' + namespace + '/' + localId;
+
 const getEntitySummary = async symbols => {
 
-  const summary = {};
+  const summary = [];
   if ( _.isEmpty( symbols ) ) return summary;
 
   const results = await fetchBySymbols( symbols );
@@ -31,26 +33,43 @@ const getEntitySummary = async symbols => {
   docList.forEach( doc => {
 
     const symbol = _.get( doc, 'symbol', '');
-    const xref = {
-      [DATASOURCES.GENECARDS] : symbol
-    };
+
     // Add database links
+    const xrefLinks = [{
+      "namespace": NS_GENECARDS,
+      "uri": createUri( NS_GENECARDS, symbol )
+    }, {
+      "namespace": NS_HGNC_SYMBOL,
+      "uri": createUri( NS_HGNC_SYMBOL, symbol )
+    }];
+
     if ( _.has( doc, 'entrez_id') ){
-      xref[DATASOURCES.NCBIGENE]  = _.get( doc, 'entrez_id');
+      xrefLinks.push({
+        "namespace": NS_NCBI_GENE,
+        "uri": createUri( NS_NCBI_GENE, _.get( doc, 'entrez_id') )
+      });
     }
+
     if ( _.has( doc, 'uniprot_ids') ){
-      xref[DATASOURCES.UNIPROT] = _.get( doc, 'uniprot_ids[0]', '');
+      xrefLinks.push({
+        "namespace": NS_UNIPROT,
+        "uri": createUri( NS_UNIPROT, _.get( doc, 'uniprot_ids') )
+      });
     }
+
     const eSummary = new EntitySummary({
-      dataSource: DATASOURCES.HGNC,
+      namespace: NS_HGNC_SYMBOL,
       displayName: _.get( doc, 'name', ''),
       localID: symbol,
       aliases: _.get( doc, 'alias_name', []),
       aliasIds:_.get( doc, 'alias_symbol', []),
-      xref: xref
+      xrefLinks: xrefLinks
     });
 
-    return summary[ symbol ] = eSummary;
+    summary.push({
+      "query": symbol,
+      "entitySummary": eSummary
+    });
   });
 
   return summary;

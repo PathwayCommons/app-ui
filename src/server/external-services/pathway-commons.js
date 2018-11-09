@@ -61,7 +61,8 @@ let extractEntityIds = inputString => {
   .catch( e => {
     logger.error('unable to get response from gconvert with the following inputstring: ' + inputString);
     logger.error(e);
-    return [];
+    // luncene each token in place of recognized entities
+    return tokens.map( token => 'name:' + '*' + sanitize(token) + '*');
   });
 };
 

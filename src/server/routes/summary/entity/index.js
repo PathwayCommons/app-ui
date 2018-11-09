@@ -33,9 +33,13 @@ const createUri = ( namespace, localId ) => IDENTIFIERS_URL + '/' + namespace + 
  * and return an EntitySummary for each
  *
  * @param { array } tokens string(s) that should be queried
- * @return { object } value is EntitySummary keyed by the input token
+ * @return { object }
+ *   - query: token that has an associated NCBI Gene ID
+ *   - EntitySummary object
  */
 const entitySearch = async tokens => {
+
+  const results = [];
 
   // look for special tokens
   if ( tokens.length === 1 ) {
@@ -53,16 +57,17 @@ const entitySearch = async tokens => {
   }
 
   const uniqueTokens = _.uniq( tokens );
-  const { alias } = await validatorGconvert( uniqueTokens, { target: NS_NCBI_GENE } );
+  const { alias: aliasNCBIGene } = await validatorGconvert( uniqueTokens, { target: NS_NCBI_GENE } );
 
   // get the entity summaries for successfully mapped tokens
-  const mappedIds = _.values( alias );
+  const mappedIds = _.values( aliasNCBIGene );
   const summaries = await entityFetch( mappedIds, NS_NCBI_GENE );
 
   // NCBI Gene won't give UniProt Accession, so gotta go get em
   const { alias: aliasUniProt } = await validatorGconvert( mappedIds, { target: NS_UNIPROT } );
 
-  // Push in the UniProt xrefLinks into each Summary if available
+  // Push in the UniProt xrefLinks into each matching Summary, may not be available
+  // since some genes may not have am associated protein.
   _.keys( aliasUniProt ).forEach( ncbiId => {
     const eSummary = _.find( summaries, s => s.localId === ncbiId );
     if ( eSummary ) eSummary.xrefLinks.push({
@@ -71,14 +76,24 @@ const entitySearch = async tokens => {
     });
   });
 
-  // // Want key to be original input token, unfortunately, validator transforms to upper case
+  // Format the output as object with keys: query, EntitySummary
+  // Unfortunately, validator transforms original query to upper-case
   // const output =  {};
-  // _.entries( alias ).forEach( pair => {
-  //   const tokenIndex =  _.findIndex( uniqueTokens, t => t.toUpperCase() ===  pair[0] );
-  //   output[ uniqueTokens[tokenIndex] ] = summary[ pair[1] ];
-  // });
+  _.entries( aliasNCBIGene ).forEach( pair => { // pair is [ <token>, <ncbi gene id>]
 
-  return summaries;
+    // get index of the original input token (must exist)
+    const indexOfToken =  _.findIndex( uniqueTokens, t => t.toUpperCase() ===  pair[0] );
+
+    // get index of the summary (must exist)
+    const indexOfSummary =  _.findIndex( summaries, s => s.localId ===  pair[1] );
+
+    results.push({
+      "query": uniqueTokens[ indexOfToken ],
+      "summary": summaries[ indexOfSummary ]
+    });
+  });
+
+  return results;
 };
 
 module.exports = { entitySearch, entityFetch };

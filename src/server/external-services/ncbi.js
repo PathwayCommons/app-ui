@@ -113,7 +113,7 @@ const getEntitySummary = async ( uids ) => {
     const eSummary = new EntitySummary({
       namespace: NS_NCBI_GENE,
       displayName: _.get( doc, 'description', ''),
-      localID: uid,
+      localId: uid,
       description: _.get( doc, 'summary', ''),
       aliases: _.get( doc, 'otherdesignations', '').split('|'),
       aliasIds: _.get( doc, 'otheraliases', '').split(',').map( a => a.trim() ),

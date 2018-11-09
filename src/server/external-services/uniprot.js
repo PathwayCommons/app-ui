@@ -60,7 +60,7 @@ const getEntitySummary = async ( accessions ) => {
     const eSummary = new EntitySummary({
       namespace: NS_UNIPROT,
       displayName: _.get( doc, 'protein.recommendedName.fullName.value', ''),
-      localID: accession,
+      localId: accession,
       description: _.get( doc, 'comments[0].text[0].value', ''),
       aliases: _.get( doc, 'protein.alternativeName', []).map( elt =>  _.get( elt, 'fullName.value') ),
       aliasIds: _.get( doc, 'protein.recommendedName.shortName', []).map( elt =>  _.get( elt, 'value') ),

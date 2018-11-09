@@ -4,7 +4,7 @@ const _ = require('lodash');
 const DEFAULTS = {
   namespace: '',
   displayName: '',
-  localID: '',
+  localId: '',
   description: '',
   aliases: [],
   aliasIds: [],

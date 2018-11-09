@@ -60,7 +60,7 @@ const getEntitySummary = async symbols => {
     const eSummary = new EntitySummary({
       namespace: NS_HGNC_SYMBOL,
       displayName: _.get( doc, 'name', ''),
-      localID: symbol,
+      localId: symbol,
       aliases: _.get( doc, 'alias_name', []),
       aliasIds:_.get( doc, 'alias_symbol', []),
       xrefLinks: xrefLinks

@@ -1,7 +1,7 @@
 [{
 	"namespace": "hgnc.symbol",
 	"displayName": "tumor protein p53",
-	"localID": "TP53",
+	"localId": "TP53",
 	"description": "",
 	"aliases": [
 		"Li-Fraumeni syndrome"

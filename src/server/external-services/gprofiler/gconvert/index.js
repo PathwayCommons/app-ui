@@ -106,7 +106,7 @@ const gConvertResponseHandler = body =>  {
  * @param { object } userOptions - options
  * @return { object } list of unrecognized, object with duplicated and list of mapped IDs
  */
-const rawValidatorGconvert = ( query, userOptions ) => {
+const rawValidatorGconvert = ( query, userOptions = {} ) => {
 
   const defaultOptions = {
     'output': 'mini',

@@ -6,30 +6,23 @@ const _ = require('lodash');
 const classNames = require('classnames');
 
 const { fetch } = require('../../../util');
-const config = require('../../../config');
-let { DATASOURCES } = require('../../../models/entity/summary');
+const { MAX_SIF_NODES, NS_HGNC_SYMBOL, NS_GENECARDS, NS_NCBI_GENE, NS_UNIPROT } = require('../../../config');
 
 const ENTITY_OTHER_NAMES_LIMIT = 4;
 const ENTITY_SUMMARY_DISPLAY_LIMIT = 6;
 
-//Temporary - to be dealt with in #1116 (https://github.com/PathwayCommons/app-ui/issues/1116)
-const DATASOURCE_NAMES = {
-  [DATASOURCES.NCBIGENE]: {
-    displayName: 'NCBI Gene',
-    linkUrl: DATASOURCES.NCBIGENE
-  },
-  [DATASOURCES.HGNC]: {
-    displayName: 'HGNC',
-    linkUrl: 'http://identifiers.org/hgnc.symbol/'
-  },
-  [DATASOURCES.UNIPROT]: {
-    displayName: 'UniProt',
-    linkUrl: DATASOURCES.UNIPROT
-  },
-  [DATASOURCES.GENECARDS]: {
-    displayName: 'GeneCards',
-    linkUrl: 'https://www.genecards.org/cgi-bin/carddisp.pl?gene='
-  },
+const SUPPORTED_COLLECTIONS = new Map([
+  [NS_GENECARDS, 'GeneCards'],
+  [NS_HGNC_SYMBOL, 'HGNC'],
+  [NS_NCBI_GENE, 'NCBI Gene'],
+  [NS_UNIPROT, 'UniProt']
+]);
+
+const getHgncFromXref = xrefLinks => {
+  let symbol;
+  const hgncXrefLink = _.find( xrefLinks, link  => link.namespace === NS_HGNC_SYMBOL );
+  if( hgncXrefLink ) symbol = _.last( _.compact( hgncXrefLink.uri.split('/') ) );
+  return symbol;
 };
 
 class EntitySummaryBox extends React.Component {
@@ -43,12 +36,11 @@ class EntitySummaryBox extends React.Component {
   }
   render(){
     let { summary } = this.props;
-    let { dataSource, displayName, localID, description, aliasIds, xref } = summary;
-    // Retrieve the HGNC symbol (http://www.pathwaycommons.org/sifgraph/swagger-ui.html)
-    let hgncSymbol = summary.xref[ DATASOURCES.HGNC ] || localID; // Prefix is hgnc
-    let sortedLinks = _.toPairs( xref ).concat([[ dataSource, localID ]])
-        .sort( (p1, p2) => p1[0] > p2[0] ? 1: -1 )
-        .map( pair => h('a.plain-link', { href: (DATASOURCE_NAMES[pair[0]]).linkUrl + pair[1], target:'_blank' }, (DATASOURCE_NAMES[pair[0]]).displayName));
+    let { displayName, description, aliasIds, xrefLinks } = summary;
+    const hgncSymbol = getHgncFromXref( xrefLinks );
+
+    let sortedLinks = xrefLinks.sort( (p1, p2) => p1.namespace > p2.namespace ? 1: -1 )
+        .map( link => h( 'a.plain-link', { href: link.uri, target:'_blank' }, SUPPORTED_COLLECTIONS.get( link.namespace ) ) );
 
     let moreInfo = h('div.entity-more-info',[
       h('div.entity-names', [
@@ -109,9 +101,7 @@ class EntitySummaryBoxList extends React.Component {
 
   componentDidMount(){
     let { entitySummaryResults } = this.props;
-    let hgncSymbols = _.values( entitySummaryResults )
-        .map( summary => summary.xref[ DATASOURCES.HGNC ] || summary.xref[ 'localID' ] ); // Prefix is hgnc
-
+    let hgncSymbols = entitySummaryResults.map( summaryResult => getHgncFromXref( _.get( summaryResult, ['summary', 'xrefLinks'] ) ) );
 
     fetch('/api/interactions/image?' + queryString.stringify({ sources: hgncSymbols })).then( r => r.json() ).then( res => {
       let { img } = res;
@@ -121,21 +111,15 @@ class EntitySummaryBoxList extends React.Component {
 
   render(){
     let { entitySummaryResults } = this.props;
-    const entitySummaryKeys = _.keys( entitySummaryResults );
-
-    // Retrieve the HGNC symbol (http://www.pathwaycommons.org/sifgraph/swagger-ui.html)
-    let sources = _.values( entitySummaryResults )
-        .map( summary => summary.xref[ DATASOURCES.HGNC ] || summary.xref[ 'localID' ] ); // Prefix is hgnc
-
-    let singleSrcLabel = `View interactions between ${sources[0]} and top ${config.MAX_SIF_NODES} genes`;
+    let sources = entitySummaryResults.map( summaryResult => getHgncFromXref( _.get( summaryResult, ['summary', 'xrefLinks'] ) ) );
+    let singleSrcLabel = `View interactions between ${sources[0]} and top ${MAX_SIF_NODES} genes`;
     let multiSrcLabel = `View iteractions between ${sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
-
     let interactionsLinkLabel = sources.length === 1 ? singleSrcLabel : multiSrcLabel;
 
-    let entitySummaryBoxes = entitySummaryKeys
+    let entitySummaryBoxes = entitySummaryResults
        .slice( 0, ENTITY_SUMMARY_DISPLAY_LIMIT )
-       .map( key => {
-         const summary = _.get( entitySummaryResults, key );
+       .map( summaryResult => {
+         const summary = _.get( summaryResult, 'summary' );
          let props = { summary };
          return h(EntitySummaryBox, props);
        });

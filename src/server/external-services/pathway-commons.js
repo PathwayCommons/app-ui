@@ -89,19 +89,16 @@ let search = async opts => {
   for( let queryString of queryStrings ) {
     let queryOpts = _.assign( opts, { cmd: 'pc2/search', q: queryString } );
     let searchResult = await query( queryOpts );
-    let searchResults = _.get( searchResult, 'searchHit', []);
+    let searchResults = _.get( searchResult, 'searchHit', []).filter( result => { 
+      let size = _.get( result, 'numParticipants', 0);
 
-    if( searchResults.length > 0 ){
-      let filteredResults = searchResults.filter( result => {
-        let size = _.get( result, 'numParticipants', 0);
+      return minSize < size && size < maxSize;
+    });
 
-        return minSize < size && size < maxSize;
-      });
-
-      if (filteredResults.length > 0) {
-        return filteredResults;
-      }
+    if ( searchResults.length > 0 ){
+      return searchResults;
     }
+
   }
 
   return [];

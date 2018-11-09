@@ -162,7 +162,7 @@ const getEntityUriParts = ( name, localId ) => {
     let res = fetchEntityUriBase( name, localId );
     pcCache.set( name, res );
     res.catch( err => {
-      pcCache.del( name );
+      pcCache.delete( name );
       logger.error(`Failed to fill cache with ${name} and ${localId} - ${err}`);
     });
     return res;

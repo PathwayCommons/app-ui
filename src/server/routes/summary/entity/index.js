@@ -1,17 +1,20 @@
 const _ = require('lodash');
+const QuickLRU = require('quick-lru');
+
 const { validatorGconvert } = require('../../../external-services/gprofiler/gconvert');
 const { getEntitySummary: getNcbiGeneSummary } = require('../../../external-services/ncbi');
 const { getEntitySummary: getHgncSummary } = require('../../../external-services/hgnc');
 const { getEntitySummary: getUniProtSummary } = require('../../../external-services/uniprot');
-const { NS_HGNC_SYMBOL, NS_NCBI_GENE, NS_UNIPROT, IDENTIFIERS_URL } = require('../../../../config');
-
+const { NS_HGNC_SYMBOL, NS_NCBI_GENE, NS_UNIPROT, IDENTIFIERS_URL, PC_CACHE_MAX_SIZE } = require('../../../../config');
+const cache = require('../../../cache');
+const pcCache = new QuickLRU({ maxSize: PC_CACHE_MAX_SIZE });
 /**
  * entityFetch: Retrieve EntitySummary for a given id from a datasource
  *
  * @param { array } localID string(s) that should be fetched
  * @return { object } value is EntitySummary keyed by the local ID
  */
-const entityFetch = async ( localIds, dataSource ) => {
+const rawEntityFetch = async ( localIds, dataSource ) => {
   let eSummary;
   switch ( dataSource ) {
     case NS_HGNC_SYMBOL:
@@ -37,7 +40,7 @@ const createUri = ( namespace, localId ) => IDENTIFIERS_URL + '/' + namespace + 
  *   - query: token that has an associated NCBI Gene ID
  *   - EntitySummary object
  */
-const entitySearch = async tokens => {
+const rawEntitySearch = async tokens => {
 
   const results = [];
 
@@ -95,5 +98,8 @@ const entitySearch = async tokens => {
 
   return results;
 };
+
+const entitySearch = cache(rawEntitySearch, pcCache);
+const entityFetch = cache(rawEntityFetch, pcCache);
 
 module.exports = { entitySearch, entityFetch };

@@ -1,9 +1,12 @@
-const fetch = require('node-fetch');
-const { NCBI_EUTILS_BASE_URL, PUB_CACHE_MAX_SIZE } = require('../../config');
+const { fetch } = require('../../util');
+const { NCBI_EUTILS_BASE_URL, PUB_CACHE_MAX_SIZE, NS_GENECARDS, NS_HGNC_SYMBOL, NS_NCBI_GENE, IDENTIFIERS_URL } = require('../../config');
 const { URLSearchParams } = require('url');
-const LRUCache = require('lru-cache');
+const QuickLRU = require('quick-lru');
+const _ = require('lodash');
+const { EntitySummary } = require('../../models/entity/summary');
+const logger = require('../logger');
 
-const pubCache = LRUCache({ max: PUB_CACHE_MAX_SIZE, length: () => 1 });
+const pubCache = new QuickLRU({ maxSize: PUB_CACHE_MAX_SIZE });
 
 const processPublications = res => {
   let { result } = res;
@@ -60,4 +63,67 @@ const getPublications = (pubmedIds) => {
   );
 };
 
-module.exports = { getPublications };
+//Could cache somewhere here.
+const fetchByGeneIds = ( geneIds ) => {
+  return fetch(`${NCBI_EUTILS_BASE_URL}/esummary.fcgi?retmode=json&db=gene&id=${geneIds.join(',')}`,
+    {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+    .then(res => res.json())
+    .catch( error => {
+      logger.error(`${error.name} in ncbi fetchByGeneIds: ${error.message}`);
+      throw error;
+    });
+};
+
+const createUri = ( namespace, localId ) => IDENTIFIERS_URL + '/' + namespace + '/' + localId;
+
+const getEntitySummary = async ( uids ) => {
+
+  const summary = [];
+  if ( _.isEmpty( uids ) ) return summary;
+
+  const results = await fetchByGeneIds( uids );
+  const result = results.result;
+
+  result.uids.forEach( uid => {
+    if( _.has( result, uid['error'] ) ) return;
+    const doc = result[ uid ];
+    const xrefLinks = [];
+
+    // Fetch external database links first
+    const localId = _.get( doc, 'name');
+    if( localId ){
+      [ NS_HGNC_SYMBOL, NS_GENECARDS ].forEach( namespace => {
+        xrefLinks.push({
+          "namespace": namespace,
+          "uri": createUri( namespace, localId )
+        });
+      });
+    }
+    // push in NCBI xrefLink too
+    xrefLinks.push({
+      "namespace": NS_NCBI_GENE,
+      "uri": createUri( NS_NCBI_GENE, uid )
+    });
+
+    const eSummary = new EntitySummary({
+      namespace: NS_NCBI_GENE,
+      displayName: _.get( doc, 'description', ''),
+      localId: uid,
+      description: _.get( doc, 'summary', ''),
+      aliases: _.get( doc, 'otherdesignations', '').split('|'),
+      aliasIds: _.get( doc, 'otheraliases', '').split(',').map( a => a.trim() ),
+      xrefLinks: xrefLinks
+    });
+
+    summary.push(eSummary);
+  });
+
+  return summary;
+};
+
+module.exports = { getPublications, getEntitySummary };

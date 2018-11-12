@@ -1,4 +1,16 @@
+const { FACTOID_URL } = require('../config');
+
 let dsMap = {
+  'Factoid': {
+    'id': 'factoid',
+    'uri': FACTOID_URL,
+    'homepage': FACTOID_URL,
+    'name': 'Factoid',
+    'description': 'Factoid',
+    'type': 'BIOPAX',
+    'iconUrl': '',
+    'hasPathways': true
+  },
   'Reactome': {
     'id': 'reactome',
     'uri': 'http://pathwaycommons.org/pc2/reactome',

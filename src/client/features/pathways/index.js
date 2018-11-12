@@ -1,6 +1,5 @@
 const React = require('react');
 const h = require('react-hyperscript');
-const queryString = require('query-string');
 const Loader = require('react-loader');
 const classNames = require('classnames');
 
@@ -37,7 +36,7 @@ class Pathways extends React.Component {
   // called after CytoscapeNetwork has mounted
   loadPathway(){
     let { pathway, cySrv} = this.state;
-    let { uri } = queryString.parse(this.props.location.search);
+    let { apiOpts } = this.props;
 
     let initializeCytoscape = pathway => {
 
@@ -55,7 +54,7 @@ class Pathways extends React.Component {
       layout.run();
     };
 
-    ServerAPI.getPathway(uri, 'latest').then( pathwayJSON => {
+    ServerAPI.getAPIResource( apiOpts ).then( pathwayJSON => {
       if( pathwayJSON.graph.nodes.length === 0 ){
         this.setState({
           loading: false,

@@ -1,0 +1,524 @@
+{
+	"http://identifiers.org/reactome/R-HSA-6803403_LEFTTORIGHT":{
+		 "comments":[
+				"Edited: Orlic-Milacic, Marija, 2015-10-14",
+				"PCBP4 binds the 3'-UTR of the CDKN1A (p21) mRNA and reduces its stability (Scoumanne et al. 2011).",
+				"Reviewed: Zaccara, Sara, 2016-02-04",
+				"Authored: Orlic-Milacic, Marija, 2015-10-14",
+				"Reviewed: Inga, Alberto, 2016-02-04"
+		 ],
+		 "synonyms":[
+
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"BiochemicalReaction",
+		 "standardName":"",
+		 "displayName":"PCBP4 binds the CDKN1A mRNA",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/20817677",
+					 "http://identifiers.org/namespace/R-HSA-6803403"
+				]
+		 }
+	},
+	"http://identifiers.org/reactome/R-HSA-6803411_LEFTTORIGHT":{
+		 "comments":[
+				"Reviewed: Zaccara, Sara, 2016-02-04",
+				"Reviewed: Inga, Alberto, 2016-02-04",
+				"Edited: Orlic-Milacic, Marija, 2015-10-14",
+				"Authored: Orlic-Milacic, Marija, 2015-10-14",
+				"PCBP4 binding to the 3'-UTR of the CDKN1A (p21) mRNA reduces half-life of the CDKN1A mRNA and the amount of CDKN1A protein. Upon DNA damage, TP53-mediated induction of CDKN1A is rapid, while the induction of PCBP4 is more gradual. It is hypothesized that, under prolonged stress, PCBP4-mediated down-regulation of CDKN1A may switch from G1 cell cycle arrest to G2 arrest, which may precede apoptosis (Scoumanne et al. 2011)."
+		 ],
+		 "synonyms":[
+
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"BiochemicalReaction",
+		 "standardName":"",
+		 "displayName":"PCBP4 modulates CDKN1A translation",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/20817677",
+					 "http://identifiers.org/namespace/R-HSA-6803411"
+				]
+		 }
+	},
+	"http://pathwaycommons.org/pc2/Complex_e5eadb29e1ffa1af7e4743cca5684049":{
+		 "comments":[
+				"REPLACED http://www.reactome.org/biopax/64/48887#Complex4632",
+				"Reactome DB_ID: 6803405"
+		 ],
+		 "synonyms":[
+
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"Complex",
+		 "standardName":"",
+		 "displayName":"PCBP4:CDKN1A mRNA",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-6803405"
+				]
+		 }
+	},
+	"http://pathwaycommons.org/pc2/Rna_b0c799710a192ab1ed6794a6332e3b0f_5178567a47ecc386c9cd4c86331da218":{
+		 "comments":[
+				"REPLACED http://www.reactome.org/biopax/64/48887#Rna95",
+				"Reactome DB_ID: 6803386"
+		 ],
+		 "synonyms":[
+				"CDKN1A mRNA",
+				"ENSEMBL:ENST00000244741 CDKN1A"
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"Rna",
+		 "standardName":"",
+		 "displayName":"p21 mRNA",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-6803386",
+					 "http://identifiers.org/namespace/CDKN1A",
+					 "http://identifiers.org/namespace/P38936",
+					 "http://identifiers.org/namespace/ENST00000244741"
+				]
+		 }
+	},
+	"http://pathwaycommons.org/pc2/Protein_c1f5c065e6bc72127ca56ee0bf005494_5178567a47ecc386c9cd4c86331da218":{
+		 "comments":[
+				"Reactome DB_ID: 6803382",
+				"REPLACED http://www.reactome.org/biopax/64/48887#Protein10458"
+		 ],
+		 "synonyms":[
+				"Alpha-CP4",
+				"Poly(rC)-binding protein 4",
+				"MCG10",
+				"PCBP4"
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"Protein",
+		 "standardName":"Poly(rC)-binding protein 4",
+		 "displayName":"PCBP4",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-6803382",
+					 "http://identifiers.org/namespace/PCBP4",
+					 "http://identifiers.org/namespace/P57723"
+				]
+		 }
+	},
+	"http://pathwaycommons.org/pc2/Protein_c1f5c065e6bc72127ca56ee0bf005494":{
+		 "comments":[
+				"Reactome DB_ID: 6803382",
+				"REPLACED http://www.reactome.org/biopax/64/48887#Protein10458"
+		 ],
+		 "synonyms":[
+				"Alpha-CP4",
+				"Poly(rC)-binding protein 4",
+				"MCG10",
+				"PCBP4"
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"Protein",
+		 "standardName":"Poly(rC)-binding protein 4",
+		 "displayName":"PCBP4",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-6803382",
+					 "http://identifiers.org/namespace/PCBP4",
+					 "http://identifiers.org/namespace/P57723"
+				]
+		 }
+	},
+	"http://pathwaycommons.org/pc2/Rna_b0c799710a192ab1ed6794a6332e3b0f":{
+		 "comments":[
+				"REPLACED http://www.reactome.org/biopax/64/48887#Rna95",
+				"Reactome DB_ID: 6803386"
+		 ],
+		 "synonyms":[
+				"CDKN1A mRNA",
+				"ENSEMBL:ENST00000244741 CDKN1A"
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"Rna",
+		 "standardName":"",
+		 "displayName":"p21 mRNA",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-6803386",
+					 "http://identifiers.org/namespace/CDKN1A",
+					 "http://identifiers.org/namespace/P38936",
+					 "http://identifiers.org/namespace/ENST00000244741"
+				]
+		 }
+	},
+	"http://identifiers.org/reactome/R-HSA-6803719_LEFTTORIGHT":{
+		 "comments":[
+				"Reviewed: Inga, Alberto, 2016-02-04",
+				"Reviewed: Zaccara, Sara, 2016-02-04",
+				"ZNF385A (HZF) forms a complex with TP53 (p53), interacting with the DNA binding domain of TP53. The complex of TP53 and ZNF385A associates with p53 response elements of cell cycle arrest genes, such as CDKN1A (p21) and stimulates their transcription. Under prolonged stress, ZNF385A undergoes ubiquitination and proteasome-mediated degradation, which coincides with expression of TP53-regulated pro-apoptotic genes (Das et al. 2007).",
+				"Authored: Orlic-Milacic, Marija, 2015-10-14",
+				"Edited: Orlic-Milacic, Marija, 2015-10-14"
+		 ],
+		 "synonyms":[
+
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"BiochemicalReaction",
+		 "standardName":"",
+		 "displayName":"TP53 binds ZNF385A",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-6803719",
+					 "http://identifiers.org/namespace/17719541"
+				]
+		 }
+	},
+	"http://identifiers.org/reactome/R-HSA-6803388_LEFTTORIGHT":{
+		 "comments":[
+				"Authored: Orlic-Milacic, Marija, 2015-10-14",
+				"Edited: Orlic-Milacic, Marija, 2015-10-14",
+				"Reviewed: Inga, Alberto, 2016-02-04",
+				"Reviewed: Coqueret, O, 2006-10-06 08:59:06",
+				"Binding of TP53 (p53) to its response elements in the promoter of the CDKN1A (p21) gene stimulates CDKN1A transcription (El-Deiry et al. 1993). Binding of ZNF385A (HZF) to the DNA binding domain of TP53 facilitates CDKN1A induction and the consequent cell cycle arrest (Das et al. 2007).",
+				"Reviewed: Zaccara, Sara, 2016-02-04",
+				"Authored: Matthews, L, 2006-09-29 13:54:26"
+		 ],
+		 "synonyms":[
+
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"BiochemicalReaction",
+		 "standardName":"",
+		 "displayName":"TP53 stimulates CDKN1A (p21) transcription",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-6803388",
+					 "http://identifiers.org/namespace/17719541",
+					 "http://identifiers.org/namespace/8242752"
+				]
+		 }
+	},
+	"http://identifiers.org/reactome/R-HSA-6803801_LEFTTORIGHT":{
+		 "comments":[
+				"Reviewed: Inga, Alberto, 2016-02-04",
+				"Edited: Orlic-Milacic, Marija, 2015-10-14",
+				"TP53 (p53) binds at least two p53 response elements in the promoter of the CDKN1A (p21, WAF1) gene (El-Deiry et al. 1993, Espinosa et al. 2003). Formation of the complex of TP53 and ZNF385A (HZF) facilitates binding of TP53 to the CDKN1A promoter (Das et al. 2007).",
+				"Authored: Orlic-Milacic, M, 2013-07-15",
+				"Reviewed: Samarajiwa, Shamith, 2013-09-03",
+				"Reviewed: Zaccara, Sara, 2016-02-04",
+				"Authored: Orlic-Milacic, Marija, 2015-10-14"
+		 ],
+		 "synonyms":[
+
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"BiochemicalReaction",
+		 "standardName":"",
+		 "displayName":"TP53 in complex with ZNF385A binds the CDKN1A promoter",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/14580351",
+					 "http://identifiers.org/namespace/8242752",
+					 "http://identifiers.org/namespace/R-HSA-6803801",
+					 "http://identifiers.org/namespace/17719541"
+				]
+		 }
+	},
+	"http://pathwaycommons.org/pc2/Protein_74816ffc8af8e1d43b16b1226a5c0db2":{
+		 "comments":[
+				"Reactome DB_ID: 6803421",
+				"REPLACED http://www.reactome.org/biopax/64/48887#Protein10457"
+		 ],
+		 "synonyms":[
+				"Zinc finger protein 385A",
+				"ZNF385A",
+				"ZNF385",
+				"Retinal zinc finger protein",
+				"Hematopoietic zinc finger protein",
+				"RZF",
+				"HZF"
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"Protein",
+		 "standardName":"Zinc finger protein 385A",
+		 "displayName":"HZF",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-6803421",
+					 "http://identifiers.org/namespace/ZNF385A",
+					 "http://identifiers.org/namespace/Q96PM9"
+				]
+		 }
+	},
+	"http://pathwaycommons.org/pc2/Protein_9d656b3e41b0c69ff45a305f058b3cef":{
+		 "comments":[
+				"Reactome DB_ID: 182585",
+				"REPLACED http://www.reactome.org/biopax/64/48887#Protein1393"
+		 ],
+		 "synonyms":[
+				"CDKN1A",
+				"CAP20",
+				"WAF1",
+				"CDKN1",
+				"PIC1",
+				"p21",
+				"MDA-6",
+				"MDA6",
+				"Melanoma differentiation-associated protein 6",
+				"SDI1",
+				"CDK-interacting protein 1",
+				"CIP1"
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"Protein",
+		 "standardName":"Cyclin-dependent kinase inhibitor 1",
+		 "displayName":"p21",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-182585",
+					 "http://identifiers.org/namespace/CDKN1A",
+					 "http://identifiers.org/namespace/P38936"
+				]
+		 }
+	},
+	"http://pathwaycommons.org/pc2/Complex_293d627d8f9f22b9e72ebcd86909d334":{
+		 "comments":[
+				"REPLACED http://www.reactome.org/biopax/64/48887#Complex4631",
+				"Reactome DB_ID: 6803802"
+		 ],
+		 "synonyms":[
+
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"Complex",
+		 "standardName":"",
+		 "displayName":"p-S15,S20-TP53 Tetramer:ZNF385A:CDKN1A Gene",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-6803802"
+				]
+		 }
+	},
+	"http://pathwaycommons.org/pc2/Protein_1bda2d80d7f26e79f1ec46b69ea62814_e084db4218995c6713265fec7de6398c":{
+		 "comments":[
+				"REPLACED http://www.reactome.org/biopax/64/48887#Protein10449",
+				"Reactome DB_ID: 69683"
+		 ],
+		 "synonyms":[
+				"Tumor suppressor p53",
+				"TP53",
+				"Antigen NY-CO-13",
+				"Phosphoprotein p53",
+				"P53"
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"Protein",
+		 "standardName":"Cellular tumor antigen p53",
+		 "displayName":"p-S15,S20-TP53",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-69683",
+					 "http://identifiers.org/namespace/TP53",
+					 "http://identifiers.org/namespace/P04637"
+				]
+		 }
+	},
+	"http://pathwaycommons.org/pc2/Dna_91b0bb49fefe3673ba23d46ddacefc56_e084db4218995c6713265fec7de6398c":{
+		 "comments":[
+				"Reactome DB_ID: 3786256",
+				"REPLACED http://www.reactome.org/biopax/64/48887#Dna50"
+		 ],
+		 "synonyms":[
+				"WAF1 gene",
+				"CIP1 gene",
+				"CDKN1A gene",
+				"PIC1",
+				"CAP20",
+				"CDKN1A",
+				"WAF1",
+				"MDA6",
+				"CDKN1",
+				"SDI1",
+				"ENSEMBL:ENSG00000124762 CDKN1A"
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"Dna",
+		 "standardName":"",
+		 "displayName":"p21 gene",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-3786256",
+					 "http://identifiers.org/namespace/P38936",
+					 "http://identifiers.org/namespace/ENSG00000124762",
+					 "http://identifiers.org/namespace/CDKN1A"
+				]
+		 }
+	},
+	"http://pathwaycommons.org/pc2/Protein_74816ffc8af8e1d43b16b1226a5c0db2_e084db4218995c6713265fec7de6398c":{
+		 "comments":[
+				"Reactome DB_ID: 6803421",
+				"REPLACED http://www.reactome.org/biopax/64/48887#Protein10457"
+		 ],
+		 "synonyms":[
+				"Zinc finger protein 385A",
+				"ZNF385A",
+				"ZNF385",
+				"Retinal zinc finger protein",
+				"Hematopoietic zinc finger protein",
+				"RZF",
+				"HZF"
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"Protein",
+		 "standardName":"Zinc finger protein 385A",
+		 "displayName":"HZF",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-6803421",
+					 "http://identifiers.org/namespace/ZNF385A",
+					 "http://identifiers.org/namespace/Q96PM9"
+				]
+		 }
+	},
+	"http://pathwaycommons.org/pc2/Dna_91b0bb49fefe3673ba23d46ddacefc56":{
+		 "comments":[
+				"Reactome DB_ID: 3786256",
+				"REPLACED http://www.reactome.org/biopax/64/48887#Dna50"
+		 ],
+		 "synonyms":[
+				"WAF1 gene",
+				"CIP1 gene",
+				"CDKN1A gene",
+				"PIC1",
+				"CAP20",
+				"CDKN1A",
+				"WAF1",
+				"MDA6",
+				"CDKN1",
+				"SDI1",
+				"ENSEMBL:ENSG00000124762 CDKN1A"
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"Dna",
+		 "standardName":"",
+		 "displayName":"p21 gene",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-3786256",
+					 "http://identifiers.org/namespace/P38936",
+					 "http://identifiers.org/namespace/ENSG00000124762",
+					 "http://identifiers.org/namespace/CDKN1A"
+				]
+		 }
+	},
+	"http://pathwaycommons.org/pc2/Complex_e4c55477314b3d4bfd4b8f47ceff3e14":{
+		 "comments":[
+				"REPLACED http://www.reactome.org/biopax/64/48887#Complex4625",
+				"Reactome DB_ID: 3222171"
+		 ],
+		 "synonyms":[
+
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"Complex",
+		 "standardName":"",
+		 "displayName":"p-S15,S20-TP53 Tetramer",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-3222171"
+				]
+		 }
+	},
+	"http://pathwaycommons.org/pc2/Protein_1bda2d80d7f26e79f1ec46b69ea62814_118feaa670629f9e2393b181ce87eec2":{
+		 "comments":[
+				"REPLACED http://www.reactome.org/biopax/64/48887#Protein10449",
+				"Reactome DB_ID: 69683"
+		 ],
+		 "synonyms":[
+				"Tumor suppressor p53",
+				"TP53",
+				"Antigen NY-CO-13",
+				"Phosphoprotein p53",
+				"P53"
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"Protein",
+		 "standardName":"Cellular tumor antigen p53",
+		 "displayName":"p-S15,S20-TP53",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-69683",
+					 "http://identifiers.org/namespace/TP53",
+					 "http://identifiers.org/namespace/P04637"
+				]
+		 }
+	},
+	"http://pathwaycommons.org/pc2/Complex_3b9bde21e8f130870b91f73ac31dcaba":{
+		 "comments":[
+				"REPLACED http://www.reactome.org/biopax/64/48887#Complex4630",
+				"Reactome DB_ID: 6803718"
+		 ],
+		 "synonyms":[
+
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"Complex",
+		 "standardName":"",
+		 "displayName":"p-S15,S20-TP53 Tetramer:ZNF385A",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-6803718"
+				]
+		 }
+	},
+	"http://pathwaycommons.org/pc2/Protein_1bda2d80d7f26e79f1ec46b69ea62814_8f3ce9a594ac249a622a48b0f53f0b29":{
+		 "comments":[
+				"REPLACED http://www.reactome.org/biopax/64/48887#Protein10449",
+				"Reactome DB_ID: 69683"
+		 ],
+		 "synonyms":[
+				"Tumor suppressor p53",
+				"TP53",
+				"Antigen NY-CO-13",
+				"Phosphoprotein p53",
+				"P53"
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"Protein",
+		 "standardName":"Cellular tumor antigen p53",
+		 "displayName":"p-S15,S20-TP53",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-69683",
+					 "http://identifiers.org/namespace/TP53",
+					 "http://identifiers.org/namespace/P04637"
+				]
+		 }
+	},
+	"http://pathwaycommons.org/pc2/Protein_74816ffc8af8e1d43b16b1226a5c0db2_8f3ce9a594ac249a622a48b0f53f0b29":{
+		 "comments":[
+				"Reactome DB_ID: 6803421",
+				"REPLACED http://www.reactome.org/biopax/64/48887#Protein10457"
+		 ],
+		 "synonyms":[
+				"Zinc finger protein 385A",
+				"ZNF385A",
+				"ZNF385",
+				"Retinal zinc finger protein",
+				"Hematopoietic zinc finger protein",
+				"RZF",
+				"HZF"
+		 ],
+		 "datasource":"http://pathwaycommons.org/pc2/reactome",
+		 "type":"Protein",
+		 "standardName":"Zinc finger protein 385A",
+		 "displayName":"HZF",
+		 "xrefLinks":{
+				"namespace":[
+					 "http://identifiers.org/namespace/R-HSA-6803421",
+					 "http://identifiers.org/namespace/ZNF385A",
+					 "http://identifiers.org/namespace/Q96PM9"
+				]
+		 }
+	}
+}

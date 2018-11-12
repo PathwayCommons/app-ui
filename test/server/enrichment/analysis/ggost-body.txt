@@ -1,0 +1,76 @@
+#	signf	p-value	T	Q	Q&T	Q&T/Q	Q&T/T	term ID	t type	t group	t name	t depth	Q&T list
+#
+1	!	2.77e-02	18	60	10	0.167	0.556	GO:0006354	BP	1	   DNA-templated transcription, elongation	1	PAF1,ZMYND11,POLR2B,AFF4,SUPT16H,ELP4,GTF2H1,BRD4,SSRP1,SETD2
+1	!	2.77e-02	18	60	10	0.167	0.556	GO:0006368	BP	1	    transcription elongation from RNA polymerase II promoter	2	PAF1,ZMYND11,POLR2B,AFF4,SUPT16H,ELP4,GTF2H1,BRD4,SSRP1,SETD2
+#INFO:	PARAMETERS: fdr = 1
+#INFO:	PARAMETERS: user_thr = 0.05
+#INFO:	PARAMETERS: organism = hsapiens
+#INFO:	PARAMETERS: sort_by_structure = 1
+#INFO:	User: http
+#INFO:	Host: arak-prod
+#INFO:	Time: 2018-8-27  21:26:45
+#INFO:	Version: r1741_e90_eg37
+#INFO:	Effective domain size for GO_NOIEA: 392, threshold 0.05
+#INFO:
+#INFO:	--- Gene names and descriptions
+#INFO:
+#INFO:	QUERY:	DOT1L	DOT1L	DOT1 like histone lysine methyltransferase [Source:HGNC Symbol;Acc:HGNC:24948]
+#INFO:	QUERY:	AFF4	AFF4	AF4/FMR2 family member 4 [Source:HGNC Symbol;Acc:HGNC:17869]
+#INFO:	QUERY:	NAP1L3	NAP1L3	nucleosome assembly protein 1 like 3 [Source:HGNC Symbol;Acc:HGNC:7639]
+#INFO:	QUERY:	BRPF1	BRPF1	bromodomain and PHD finger containing 1 [Source:HGNC Symbol;Acc:HGNC:14255]
+#INFO:	QUERY:	TCF20	TCF20	transcription factor 20 [Source:HGNC Symbol;Acc:HGNC:11631]
+#INFO:	QUERY:	HLTF	HLTF	helicase like transcription factor [Source:HGNC Symbol;Acc:HGNC:11099]
+#INFO:	QUERY:	SIRT1	SIRT1	sirtuin 1 [Source:HGNC Symbol;Acc:HGNC:14929]
+#INFO:	QUERY:	TDG	TDG	thymine DNA glycosylase [Source:HGNC Symbol;Acc:HGNC:11700]
+#INFO:	QUERY:	SUV39H2	SUV39H2	suppressor of variegation 3-9 homolog 2 [Source:HGNC Symbol;Acc:HGNC:17287]
+#INFO:	QUERY:	CBX7	CBX7	chromobox 7 [Source:HGNC Symbol;Acc:HGNC:1557]
+#INFO:	QUERY:	DNMT1	DNMT1	DNA methyltransferase 1 [Source:HGNC Symbol;Acc:HGNC:2976]
+#INFO:	QUERY:	DPY30	DPY30	dpy-30, histone methyltransferase complex regulatory subunit [Source:HGNC Symbol;Acc:HGNC:24590]
+#INFO:	QUERY:	ING5	ING5	inhibitor of growth family member 5 [Source:HGNC Symbol;Acc:HGNC:19421]
+#INFO:	QUERY:	MLLT6	MLLT6	MLLT6, PHD finger containing [Source:HGNC Symbol;Acc:HGNC:7138]
+#INFO:	QUERY:	CHD1L	CHD1L	chromodomain helicase DNA binding protein 1 like [Source:HGNC Symbol;Acc:HGNC:1916]
+#INFO:	QUERY:	USP27X	USP27X	ubiquitin specific peptidase 27, X-linked [Source:HGNC Symbol;Acc:HGNC:13486]
+#INFO:	QUERY:	BRPF3	BRPF3	bromodomain and PHD finger containing 3 [Source:HGNC Symbol;Acc:HGNC:14256]
+#INFO:	QUERY:	ELP4	ELP4	elongator acetyltransferase complex subunit 4 [Source:HGNC Symbol;Acc:HGNC:1171]
+#INFO:	QUERY:	HCFC1	HCFC1	host cell factor C1 [Source:HGNC Symbol;Acc:HGNC:4839]
+#INFO:	QUERY:	MARCH5	MARCH5	membrane associated ring-CH-type finger 5 [Source:HGNC Symbol;Acc:HGNC:26025]
+#INFO:	QUERY:	SCML2	SCML2	sex comb on midleg like 2 (Drosophila) [Source:HGNC Symbol;Acc:HGNC:10581]
+#INFO:	QUERY:	PRDM10	PRDM10	PR/SET domain 10 [Source:HGNC Symbol;Acc:HGNC:13995]
+#INFO:	QUERY:	SUPT16H	SUPT16H	SPT16 homolog, facilitates chromatin remodeling subunit [Source:HGNC Symbol;Acc:HGNC:11465]
+#INFO:	QUERY:	TRIM24	TRIM24	tripartite motif containing 24 [Source:HGNC Symbol;Acc:HGNC:11812]
+#INFO:	QUERY:	GTF2H1	GTF2H1	general transcription factor IIH subunit 1 [Source:HGNC Symbol;Acc:HGNC:4655]
+#INFO:	QUERY:	KDM3A	KDM3A	lysine demethylase 3A [Source:HGNC Symbol;Acc:HGNC:20815]
+#INFO:	QUERY:	PAF1	PAF1	PAF1 homolog, Paf1/RNA polymerase II complex component [Source:HGNC Symbol;Acc:HGNC:25459]
+#INFO:	QUERY:	PCGF5	PCGF5	polycomb group ring finger 5 [Source:HGNC Symbol;Acc:HGNC:28264]
+#INFO:	QUERY:	BAZ1B	BAZ1B	bromodomain adjacent to zinc finger domain 1B [Source:HGNC Symbol;Acc:HGNC:961]
+#INFO:	QUERY:	NCOA1	NCOA1	nuclear receptor coactivator 1 [Source:HGNC Symbol;Acc:HGNC:7668]
+#INFO:	QUERY:	UBE2B	UBE2B	ubiquitin conjugating enzyme E2 B [Source:HGNC Symbol;Acc:HGNC:12473]
+#INFO:	QUERY:	SGF29	SGF29	SAGA complex associated factor 29 [Source:HGNC Symbol;Acc:HGNC:25156]
+#INFO:	QUERY:	KDM5B	KDM5B	lysine demethylase 5B [Source:HGNC Symbol;Acc:HGNC:18039]
+#INFO:	QUERY:	MTA3	MTA3	metastasis associated 1 family member 3 [Source:HGNC Symbol;Acc:HGNC:23784]
+#INFO:	QUERY:	PCMT1	PCMT1	protein-L-isoaspartate (D-aspartate) O-methyltransferase [Source:HGNC Symbol;Acc:HGNC:8728]
+#INFO:	QUERY:	GTF3C4	GTF3C4	general transcription factor IIIC subunit 4 [Source:HGNC Symbol;Acc:HGNC:4667]
+#INFO:	QUERY:	MTA2	MTA2	metastasis associated 1 family member 2 [Source:HGNC Symbol;Acc:HGNC:7411]
+#INFO:	QUERY:	RBBP4	RBBP4	RB binding protein 4, chromatin remodeling factor [Source:HGNC Symbol;Acc:HGNC:9887]
+#INFO:	QUERY:	RNF20	RNF20	ring finger protein 20 [Source:HGNC Symbol;Acc:HGNC:10062]
+#INFO:	QUERY:	SETD2	SETD2	SET domain containing 2 [Source:HGNC Symbol;Acc:HGNC:18420]
+#INFO:	QUERY:	SSRP1	SSRP1	structure specific recognition protein 1 [Source:HGNC Symbol;Acc:HGNC:11327]
+#INFO:	QUERY:	MBD1	MBD1	methyl-CpG binding domain protein 1 [Source:HGNC Symbol;Acc:HGNC:6916]
+#INFO:	QUERY:	POLR2B	POLR2B	RNA polymerase II subunit B [Source:HGNC Symbol;Acc:HGNC:9188]
+#INFO:	QUERY:	TP53BP1	TP53BP1	tumor protein p53 binding protein 1 [Source:HGNC Symbol;Acc:HGNC:11999]
+#INFO:	QUERY:	UBR7	UBR7	ubiquitin protein ligase E3 component n-recognin 7 (putative) [Source:HGNC Symbol;Acc:HGNC:20344]
+#INFO:	QUERY:	ARID4B	ARID4B	AT-rich interaction domain 4B [Source:HGNC Symbol;Acc:HGNC:15550]
+#INFO:	QUERY:	ASH1L	ASH1L	ASH1 like histone lysine methyltransferase [Source:HGNC Symbol;Acc:HGNC:19088]
+#INFO:	QUERY:	BRD4	BRD4	bromodomain containing 4 [Source:HGNC Symbol;Acc:HGNC:13575]
+#INFO:	QUERY:	HAT1	HAT1	histone acetyltransferase 1 [Source:HGNC Symbol;Acc:HGNC:4821]
+#INFO:	QUERY:	HDAC1	HDAC1	histone deacetylase 1 [Source:HGNC Symbol;Acc:HGNC:4852]
+#INFO:	QUERY:	KAT2A	KAT2A	lysine acetyltransferase 2A [Source:HGNC Symbol;Acc:HGNC:4201]
+#INFO:	QUERY:	MBD3	MBD3	methyl-CpG binding domain protein 3 [Source:HGNC Symbol;Acc:HGNC:6918]
+#INFO:	QUERY:	MSL3	MSL3	MSL complex subunit 3 [Source:HGNC Symbol;Acc:HGNC:7370]
+#INFO:	QUERY:	RPA3	RPA3	replication protein A3 [Source:HGNC Symbol;Acc:HGNC:10291]
+#INFO:	QUERY:	BAZ2A	BAZ2A	bromodomain adjacent to zinc finger domain 2A [Source:HGNC Symbol;Acc:HGNC:962]
+#INFO:	QUERY:	JMJD6	JMJD6	arginine demethylase and lysine hydroxylase [Source:HGNC Symbol;Acc:HGNC:19355]
+#INFO:	QUERY:	PHF7	PHF7	PHD finger protein 7 [Source:HGNC Symbol;Acc:HGNC:18458]
+#INFO:	QUERY:	SIN3B	SIN3B	SIN3 transcription regulator family member B [Source:HGNC Symbol;Acc:HGNC:19354]
+#INFO:	QUERY:	SP100	SP100	SP100 nuclear antigen [Source:HGNC Symbol;Acc:HGNC:11206]
+#INFO:	QUERY:	ZMYND11	ZMYND11	zinc finger MYND-type containing 11 [Source:HGNC Symbol;Acc:HGNC:16966]

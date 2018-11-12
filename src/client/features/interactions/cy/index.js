@@ -5,13 +5,20 @@ const _ = require('lodash');
 const InteractionsNodeTooltip = require('../interactions-node-tooltip');
 const InteractionsEdgeTooltip = require('../interactions-edge-tooltip');
 
-const INTERACTIONS_LAYOUT_OPTS = {
+const SINGLE_SRC_LAYOUT = {
   name: 'concentric',
   concentric: node => node.data('queried') ? 1 : 0,
   levelWidth: () => 1,
   animate: true,
   animationDuration: 800,
   animationEasing: 'ease-in-out'
+};
+
+const interactionsLayoutOpts = cy => {
+  if( cy.nodes('[?queried]').size() > 1){
+    return _.assign({}, SINGLE_SRC_LAYOUT, { minNodeSpacing: 50 });
+  }
+  return SINGLE_SRC_LAYOUT;
 };
 
 const SHOW_INTERACTIONS_TOOLTIPS_EVENT = 'showinteractionstooltip';
@@ -116,7 +123,7 @@ let searchInteractionNodes = _.debounce((cy, query) => {
 
 
 module.exports = {
-  INTERACTIONS_LAYOUT_OPTS,
+  interactionsLayoutOpts,
   searchInteractionNodes,
   interactionsStylesheet: require('./interactions-stylesheet'),
   bindEvents

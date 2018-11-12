@@ -21,7 +21,7 @@ describe ('External service: HGNC', function () {
     it('Should return an empty object with no input', async () => {
       global.fetch = mockFetch( { json: () => EMPTY_RESPONSE_DATA_TP53 } );
       const result =  await getEntitySummary( [ 'TTTT' ] );
-      expect( result ).to.deep.equal( {} );
+      expect( result ).to.deep.equal( [] );
     });
 
   });

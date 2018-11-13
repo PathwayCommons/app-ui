@@ -30,12 +30,10 @@ let query = opts => {
     });
 };
 
-// A fine-tuned PC search to improve relevance of full-text search and filter out unwanted hits.
+// A wrapper for PC web services search.
 // The argument (query object) has the following fields:
 //  - q: user input - search query string
 //  - type: BioPAX type to match/filter by
-//  - lt: max graph size result returned
-//  - gt: min graph size result returned
 let search = async opts => {
   let queryOpts = _.assign( opts, { cmd: 'pc2/search' } );
   let searchResult = await query( queryOpts );

@@ -186,6 +186,7 @@ class Search extends React.Component {
                   type: 'text',
                   placeholder: 'Enter pathway name or gene names',
                   value: state.query.q,
+                  maxlength: 250, // 250 chars max of user input
                   onChange: e => this.onSearchValueChange(e),
                   onKeyPress: e => this.onSearchValueChange(e)
                 }),

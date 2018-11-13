@@ -6,7 +6,6 @@ const _ = require('lodash');
 const { fetch } = require('../../util');
 const logger = require('../logger');
 const config = require('../../config');
-const { validatorGconvert } = require('./gprofiler');
 
 const pcCache = new QuickLRU({ maxSize: config.PC_CACHE_MAX_SIZE });
 
@@ -31,52 +30,6 @@ let query = opts => {
     });
 };
 
-let sanitize = s => {
-  // Escape (with '\'), to treat them literally, symbols, such as '*', ':', or space,
-  // which otherwise play special roles in a Lucene query string.
-  return s.replace(/([!*+\-&|()[\]{}^~?:/\\"\s])/g, '\\$1');
-};
-
-
-// recognize biological entities from an input string
-let extractEntityIds = inputString => {
-  let tokens = inputString.split(' ');
-
-  return validatorGconvert( tokens ).then( result => {
-    let { unrecognized, alias  } = result;
-    let entities = _.keys( alias ).map( initialAlias => 'xrefid:' + sanitize( initialAlias.toUpperCase() ) );
-
-    let otherIds = unrecognized.map( id => {
-      id = id.toUpperCase();
-      let isChebiId = /^CHEBI:\d+$/.test( id );
-      let isSmpdbId = /^SMP\d{5}$/.test( id );
-      let recognized = isSmpdbId || isChebiId && ( id.length <= ("CHEBI:".length + 6) );
-      let sanitized = sanitize(id);
-
-      return recognized ? ( 'xrefid:' + sanitized ) : ( 'name:' + '*' + sanitized + '*' );
-    });
-
-    return entities.concat(otherIds);
-  })
-  .catch( e => {
-    logger.error('unable to get response from gconvert with the following inputstring: ' + inputString);
-    logger.error(e);
-    // luncene each token in place of recognized entities
-    return tokens.map( token => 'name:' + '*' + sanitize(token) + '*');
-  });
-};
-
-// generate three search query candidates: the first one is the fastest, the last - slowest
-let generateSearchQueries = async inputString => {
-  let phrase = sanitize( inputString );
-  let entities = await extractEntityIds( inputString );
-  return [
-    '(name:' + phrase + ') OR (' + 'name:*' + phrase + '*) OR (' + entities.join(' AND ') + ')',
-    '(' + entities.join(' OR ') + ')',
-    inputString //"as is" (won't additionally escape Lucene query syntax, spaces, etc.)
-  ];
-};
-
 // A fine-tuned PC search to improve relevance of full-text search and filter out unwanted hits.
 // The argument (query object) has the following fields:
 //  - q: user input - search query string
@@ -84,25 +37,11 @@ let generateSearchQueries = async inputString => {
 //  - lt: max graph size result returned
 //  - gt: min graph size result returned
 let search = async opts => {
-  let { gt:minSize = 0, lt:maxSize = 250, q } = opts;
-  let queryStrings = await generateSearchQueries( q.trim() );
+  let queryOpts = _.assign( opts, { cmd: 'pc2/search' } );
+  let searchResult = await query( queryOpts );
+  let searchResults = _.get( searchResult, 'searchHit', []);
 
-  for( let queryString of queryStrings ) {
-    let queryOpts = _.assign( opts, { cmd: 'pc2/search', q: queryString } );
-    let searchResult = await query( queryOpts );
-    let searchResults = _.get( searchResult, 'searchHit', []).filter( result => { 
-      let size = _.get( result, 'numParticipants', 0);
-
-      return minSize < size && size < maxSize;
-    });
-
-    if ( searchResults.length > 0 ){
-      return searchResults;
-    }
-
-  }
-
-  return [];
+  return searchResults;
 };
 
 const sifGraph = opts => {

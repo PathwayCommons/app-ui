@@ -127,9 +127,7 @@ function onListening() {
   debug('Listening on ' + bind);
 }
 
-
-// set up rethinkdb
-Promise.try( () => {
+let setUpDb = () => {
   let log = (...msg) => function( val ){ logger.debug( ...msg ); return val; };
   let access = name => db.accessTable( name );
   let setup = name => {
@@ -140,7 +138,13 @@ Promise.try( () => {
   };
 
   return Promise.all( ['pathways'].map( setup ) );
-} ).then( () => {
+};
+
+// for now disable db stuff...
+setUpDb = () => {};
+
+// set up rethinkdb
+Promise.try( setUpDb ).then( () => {
   server.listen(port);
 } );
 

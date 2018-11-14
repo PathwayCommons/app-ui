@@ -1,9 +1,15 @@
 const _ = require('lodash');
+const Future = require('fibers/future');
 const sbgn2CyJson = require('sbgnml-to-cytoscape');
 
 const pcServices = require('../../../external-services/pathway-commons');
 const { getBiopaxMetadata, getGenericPhyiscalEntityData } = require('./biopax-metadata');
 
+const sbgn2CyJsonInThread = file => {
+  return Future.task(function(){ // code in this block runs in its own thread
+    return sbgn2CyJson(file);
+  }).promise();
+};
 
 //Get pathway name, description, and datasource
 //Requires a valid pathway uri
@@ -35,7 +41,7 @@ function getPathwayNodesAndEdges(uri) {
 
   return Promise.all([
     pcServices.query({uri, format: 'sbgn'}).then(file => {
-      cyJson = sbgn2CyJson(file);
+      cyJson = sbgn2CyJsonInThread(file);
     }),
     pcServices.query({uri, format: 'jsonld'}).then(file => biopaxJson = file)
   ])

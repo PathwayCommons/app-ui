@@ -14,7 +14,7 @@ const sbgn2CyJsonInThread = file => {
 const getBiopaxMetadataInThread = (nodes, biopaxJson) => {
   return Future.task(function(){  // code in this block runs in its own thread
     return getBiopaxMetadata(nodes, biopaxJson);
-  });
+  }).promise();
 };
 
 //Get pathway name, description, and datasource
@@ -47,11 +47,11 @@ function getPathwayNodesAndEdges(uri) {
 
   return Promise.all([
     pcServices.query({uri, format: 'sbgn'}).then(file => {
-      cyJson = sbgn2CyJsonInThread(file);
+      cyJson = sbgn2CyJson(file);
     }),
     pcServices.query({uri, format: 'jsonld'}).then(file => biopaxJson = file)
   ])
-  .then( () => getBiopaxMetadataInThread(cyJson.nodes, biopaxJson) )
+  .then( () => getBiopaxMetadata(cyJson.nodes, biopaxJson) )
   .then( nodesMetadata => {
 
     const nodesGeneSynonyms = getGenericPhyiscalEntityData(cyJson.nodes);

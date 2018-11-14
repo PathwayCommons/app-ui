@@ -1,6 +1,8 @@
 const uuid = require('uuid');
 const express = require('express');
 const router = express.Router();
+const Promise = require('bluebird');
+const logger = require('../../logger');
 
 const { getPathwayJson } = require('./generate-pathway-json');
 
@@ -49,13 +51,18 @@ let getAndStorePathway = ( uri ) => {
 router.get('/', ( req, res ) => {
   let uri = req.query.uri;
 
-  findPathwayByUri( uri ).then( result => {
-    if( result == null ){
-      getAndStorePathway( uri ).then( pathwayJson => res.json( pathwayJson ) );
-    } else {
-      res.json( result );
-    }
-  });
+  let find = () => findPathwayByUri( uri );
+  let storeIfNoResult = result => result != null ? result : getAndStorePathway( uri );
+  let sendResponse = result => res.json(result);
+
+  ( Promise.try(find)
+    .then(storeIfNoResult)
+    .then(sendResponse)
+    .catch( err => {
+      logger.error( err );
+      res.status( 500 ).end( 'Server error' );
+    } )
+  );
 });
 
 module.exports = router;

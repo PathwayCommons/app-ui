@@ -11,6 +11,12 @@ const sbgn2CyJsonInThread = file => {
   }).promise();
 };
 
+const getBiopaxMetadataInThread = (nodes, biopaxJson) => {
+  return Future.task(function(){  // code in this block runs in its own thread
+    return getBiopaxMetadata(nodes, biopaxJson);
+  });
+};
+
 //Get pathway name, description, and datasource
 //Requires a valid pathway uri
 function getPathwayMetadata(uri) {
@@ -45,7 +51,7 @@ function getPathwayNodesAndEdges(uri) {
     }),
     pcServices.query({uri, format: 'jsonld'}).then(file => biopaxJson = file)
   ])
-  .then( () => getBiopaxMetadata(cyJson.nodes, biopaxJson) )
+  .then( () => getBiopaxMetadataInThread(cyJson.nodes, biopaxJson) )
   .then( nodesMetadata => {
 
     const nodesGeneSynonyms = getGenericPhyiscalEntityData(cyJson.nodes);

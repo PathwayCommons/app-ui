@@ -22,8 +22,6 @@ class Search extends React.Component {
     this.state = {
       query: _.assign({
         q: '',
-        gt: 0,
-        lt: 250,
         type: 'Pathway',
         datasource: []
       }, query),

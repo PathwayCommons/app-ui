@@ -5,10 +5,12 @@ const pMemoize = require('p-memoize');
  * @param { Function } The function to cache
  * @param { Object } cache. Default is new Map(). Must implement: .has(key), .get(key), .set(key, value), .delete(key), and optionally .clear().
  */
-const cache = (fn, cache) => {
+const cache = (fn, cache, getKey) => {
+  getKey = getKey || function(){ return arguments; };
+
   return pMemoize(fn, {
     cacheKey: function(){
-      return hasher.hash(arguments);
+      return hasher.hash(getKey(arguments));
     },
     cache
   });

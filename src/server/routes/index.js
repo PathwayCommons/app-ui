@@ -3,14 +3,14 @@ const router = express.Router();
 const pc = require('./pathway-commons-router');
 const summary = require('./summary');
 
-
+router.use('/api/search', require('./search'));
 router.use('/api/summary', summary);
 router.use('/api/pc', pc);
 router.use('/api/pathways', require('./pathways'));
 router.use('/api/interactions', require('./interactions'));
 router.use('/api/enrichment', require('./enrichment'));
 router.use('/api/factoids', require('./factoids'));
-router.get('/api/test/', (req, res) => { 
+router.get('/api/test/', (req, res) => {
   Promise.resolve().then( () => setTimeout( () => res.json({ msg:'hi'}), 10000));
 });
 

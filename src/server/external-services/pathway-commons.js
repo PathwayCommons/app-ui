@@ -3,12 +3,14 @@ const url = require('url');
 const QuickLRU = require('quick-lru');
 const _ = require('lodash');
 
+const cache = require('../cache');
 const { fetch } = require('../../util');
 const logger = require('../logger');
 const config = require('../../config');
 const { validatorGconvert } = require('./gprofiler');
 
-const pcCache = new QuickLRU({ maxSize: config.PC_CACHE_MAX_SIZE });
+const xrefCache = new QuickLRU({ maxSize: config.PC_CACHE_MAX_SIZE });
+const queryCache = new QuickLRU({ maxSize: config.PC_CACHE_MAX_SIZE });
 
 const fetchOptions = {
   method: 'GET',
@@ -90,7 +92,7 @@ let search = async opts => {
   for( let queryString of queryStrings ) {
     let queryOpts = _.assign( opts, { cmd: 'pc2/search', q: queryString } );
     let searchResult = await query( queryOpts );
-    let searchResults = _.get( searchResult, 'searchHit', []).filter( result => { 
+    let searchResults = _.get( searchResult, 'searchHit', []).filter( result => {
       let size = _.get( result, 'numParticipants', 0);
 
       return minSize < size && size < maxSize;
@@ -104,6 +106,8 @@ let search = async opts => {
 
   return [];
 };
+
+const cachedSearch = cache(search, queryCache);
 
 const sifGraph = opts => {
   let hasMultipleSources = _.get(opts, 'source', []).length > 1;
@@ -155,19 +159,7 @@ const fetchEntityUriBase = ( name, localId ) => {
     .then( handleEntityUriResponse );
 };
 
-const getEntityUriParts = ( name, localId ) => {
-  if( pcCache.has( name ) ){
-    return pcCache.get( name );
-  } else {
-    let res = fetchEntityUriBase( name, localId );
-    pcCache.set( name, res );
-    res.catch( err => {
-      pcCache.delete( name );
-      logger.error(`Failed to fill cache with ${name} and ${localId} - ${err}`);
-    });
-    return res;
-  }
-};
+const getEntityUriParts = cache(fetchEntityUriBase, xrefCache, name => name);
 
 /*
  * xref2Uri: Obtain the URI for an xref
@@ -183,5 +175,4 @@ const xref2Uri =  ( name, localId ) => {
     }) );
 };
 
-
-module.exports = { query, search: _.memoize( search, query => JSON.stringify( query ) ), sifGraph, xref2Uri };
+module.exports = { query, search: cachedSearch, sifGraph, xref2Uri };

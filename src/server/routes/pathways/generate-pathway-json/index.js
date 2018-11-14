@@ -3,7 +3,7 @@ const Future = require('fibers/future');
 const sbgn2CyJson = require('sbgnml-to-cytoscape');
 
 const pcServices = require('../../../external-services/pathway-commons');
-const { getBiopaxMetadata, getGenericPhyiscalEntityData } = require('./biopax-metadata');
+const { fillInBiopaxMetadata } = require('./biopax-metadata');
 
 const sbgn2CyJsonInThread = file => {
   let task = Future.wrap(function(file, next){ // code in this block runs in its own thread
@@ -19,10 +19,10 @@ const sbgn2CyJsonInThread = file => {
   return task(file).promise();
 };
 
-const getBiopaxMetadataInThread = (nodes, biopaxJson) => {
+const fillInBiopaxMetadataInThread = (nodes, biopaxJson) => {
   let task = Future.wrap(function(nodes, biopaxJson, next){ // code in this block runs in its own thread
     try {
-      let res = getBiopaxMetadata(nodes, biopaxJson);
+      let res = fillInBiopaxMetadata(nodes, biopaxJson);
 
       next(null, res);
     } catch( err ){
@@ -59,33 +59,13 @@ function getPathwayMetadata(uri) {
  * @returns A Cytoscape JSON which represents the network, enhanced with BioPAX metadata
  */
 function getPathwayNodesAndEdges(uri) {
-  let cyJson, biopaxJson;
+  let getSbgn = () => pcServices.query({uri, format: 'sbgn'}).then(file => sbgn2CyJsonInThread(file));
+  let getBiopax = () => pcServices.query({uri, format: 'jsonld'});
 
-  return Promise.all([
-    pcServices.query({uri, format: 'sbgn'}).then(file => {
-      return sbgn2CyJsonInThread(file);
-    }).then(res => {
-      cyJson = res;
-    }),
-    pcServices.query({uri, format: 'jsonld'}).then(file => biopaxJson = file)
-  ])
-  .then( () => getBiopaxMetadataInThread(cyJson.nodes, biopaxJson) )
-  .then( nodesMetadata => {
-
-    const nodesGeneSynonyms = getGenericPhyiscalEntityData(cyJson.nodes);
-
-    const augmentedNodes = cyJson.nodes.map(node => {
-      const augmentedNode = node;
-      augmentedNode.data.metadata = nodesMetadata[node.data.id] || {};
-      augmentedNode.data.geneSynonyms = nodesGeneSynonyms[node.data.id];
-      return augmentedNode;
-    });
-
-    return {
-      nodes: augmentedNodes,
-      edges: cyJson.edges
-    };
-  });
+  return (
+    Promise.all([ getSbgn(), getBiopax() ])
+    .then( ([ cyJson, biopaxJson ]) => fillInBiopaxMetadataInThread(cyJson, biopaxJson) )
+  );
 }
 
 /**

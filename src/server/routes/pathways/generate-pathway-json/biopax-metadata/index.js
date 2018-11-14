@@ -111,11 +111,12 @@ let biopaxText2ElementMap = async biopaxJsonText => {
 };
 
 
-let getBiopaxMetadata = async ( cyJsonNodes, biopaxJsonText ) => {
+let fillInBiopaxMetadata = async ( cyJsonEles, biopaxJsonText ) => {
   let bm = await biopaxText2ElementMap( biopaxJsonText );
   let cyJsonNodeMetadataMap = {};
+  let nodes = cyJsonEles.nodes;
 
-  cyJsonNodes.forEach( node => {
+  nodes.forEach( node => {
     let nodeId = node.data.id;
     let altPCId = nodeId.substring(0, nodeId.lastIndexOf('_'));
 
@@ -129,7 +130,18 @@ let getBiopaxMetadata = async ( cyJsonNodes, biopaxJsonText ) => {
     }
   });
 
-  return cyJsonNodeMetadataMap;
+  fillInSynonyms(nodes, cyJsonNodeMetadataMap);
+
+  return cyJsonEles;
+};
+
+const fillInSynonyms = (nodes, nodesMetadata) => {
+  const nodesGeneSynonyms = getGenericPhyiscalEntityData(nodes);
+
+  nodes.forEach(node => {
+    node.data.metadata = nodesMetadata[node.data.id] || {};
+    node.data.geneSynonyms = nodesGeneSynonyms[node.data.id];
+  });
 };
 
 
@@ -154,4 +166,4 @@ let getGenericPhyiscalEntityData = nodes => {
 };
 
 
-module.exports = { getBiopaxMetadata, getGenericPhyiscalEntityData };
+module.exports = { fillInBiopaxMetadata, getGenericPhyiscalEntityData };

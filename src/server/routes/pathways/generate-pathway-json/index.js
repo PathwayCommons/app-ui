@@ -6,15 +6,31 @@ const pcServices = require('../../../external-services/pathway-commons');
 const { getBiopaxMetadata, getGenericPhyiscalEntityData } = require('./biopax-metadata');
 
 const sbgn2CyJsonInThread = file => {
-  return Future.task(function(){ // code in this block runs in its own thread
-    return sbgn2CyJson(file);
-  }).promise();
+  let task = Future.wrap(function(file, next){ // code in this block runs in its own thread
+    try {
+      let res = sbgn2CyJson(file);
+
+      next(null, res);
+    } catch( err ){
+      next(err);
+    }
+  });
+
+  return task(file).promise();
 };
 
 const getBiopaxMetadataInThread = (nodes, biopaxJson) => {
-  return Future.task(function(){  // code in this block runs in its own thread
-    return getBiopaxMetadata(nodes, biopaxJson);
-  }).promise();
+  let task = Future.wrap(function(nodes, biopaxJson, next){ // code in this block runs in its own thread
+    try {
+      let res = getBiopaxMetadata(nodes, biopaxJson);
+
+      next(null, res);
+    } catch( err ){
+      next(err);
+    }
+  });
+
+  return task(nodes, biopaxJson).promise();
 };
 
 //Get pathway name, description, and datasource
@@ -47,11 +63,13 @@ function getPathwayNodesAndEdges(uri) {
 
   return Promise.all([
     pcServices.query({uri, format: 'sbgn'}).then(file => {
-      cyJson = sbgn2CyJson(file);
+      return sbgn2CyJsonInThread(file);
+    }).then(res => {
+      cyJson = res;
     }),
     pcServices.query({uri, format: 'jsonld'}).then(file => biopaxJson = file)
   ])
-  .then( () => getBiopaxMetadata(cyJson.nodes, biopaxJson) )
+  .then( () => getBiopaxMetadataInThread(cyJson.nodes, biopaxJson) )
   .then( nodesMetadata => {
 
     const nodesGeneSynonyms = getGenericPhyiscalEntityData(cyJson.nodes);

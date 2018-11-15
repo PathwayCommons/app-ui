@@ -39,7 +39,10 @@ let query = opts => {
 let search = async opts => {
   let queryOpts = _.assign( opts, { cmd: 'pc2/search' } );
   let searchResult = await query( queryOpts );
-  let searchResults = _.get( searchResult, 'searchHit', []);
+  let searchResults = _.get( searchResult, 'searchHit', []).filter( result => {
+    let size = _.get( result, 'numParticipants', 0);
+    return size > 0;
+  });
   return searchResults;
 };
 

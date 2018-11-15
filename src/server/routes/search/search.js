@@ -5,31 +5,46 @@ const { validatorGconvert } = require('../../external-services/gprofiler/gconver
 const pc = require('../../external-services/pathway-commons');
 const { entityFetch } = require('../summary/entity');
 
-const ENTITY_SUMMARY_DISPLAY_LIMIT = 6; //temp - from the summary box
-const SEARCH_DEFAULTS = {
+const QUERY_MAX_CHARS = 5000; //temp - to be in config
+const QUERY_MAX_TOKENS = 100; //temp - to be in config
+const RAW_SEARCH_MAX_CHARS = 250; //temp - to be in config
+const ENTITY_SUMMARY_DISPLAY_LIMIT = 6; //temp - stoelen from the summary box
+
+const PATHWAY_SEARCH_DEFAULTS = {
   q: '',
   type: 'pathway'
 };
 
+const sanitize = ( rawQuery, maxLength = QUERY_MAX_CHARS ) => rawQuery.trim().substring( 0, maxLength );
+const tokenize = ( rawQuery, maxNum = QUERY_MAX_TOKENS ) => rawQuery.split(/,?\s+/).slice( 0, maxNum ); //  limit token size?
+
 // Simple wrapper around the pc search module
-const getPathways = phrase => {
-  const opts = _.assign( {}, SEARCH_DEFAULTS, { q: phrase });
+const getPathways = query => {
+  const sanitized = sanitize( query, RAW_SEARCH_MAX_CHARS );
+  const opts = _.assign( {}, PATHWAY_SEARCH_DEFAULTS, { q: sanitized });
   return pc.search( opts );
 };
 
-// Coordinates the retrieval of relevant data that would constituate a box/card
-// Chooses based on the number of genes recognized in phrase
-const getCard = async phrase => {
-  const tokens = phrase.split(/,?\s+/);
+// Coordinates test and retrieval of data based on mapped gene IDs
+const getCard = async query => {
+  const tokens = tokenize( query );
   const uniqueTokens = _.uniq( tokens );
-  const { alias } = await validatorGconvert( uniqueTokens, { target: NS_NCBI_GENE } );
 
-  if( _.values( alias ).length < ENTITY_SUMMARY_DISPLAY_LIMIT ) {
+  // Could check here for 'special tokens' i.e. prefix with 'ncbi:' | 'hgnc:' rather than inside entitySearch
+  const { alias } = await validatorGconvert( uniqueTokens, { target: NS_NCBI_GENE } );
+  const mapped = _.values( alias );
+
+  if( mapped.length && mapped.length <= ENTITY_SUMMARY_DISPLAY_LIMIT ) {
+
     return {
-      summary: await entityFetch( _.values( alias ), NS_NCBI_GENE )
+      entities: await entityFetch( _.values( alias ), NS_NCBI_GENE ) // Should use/update entitySearch() to drop redundant tasks
     };
+
+  } else if ( mapped.length ) {
+    return { enrichment: [] }; // stub for enrichment
+
   } else {
-    return []; //enrichment data
+    return null;
   }
 };
 
@@ -39,9 +54,7 @@ const getCard = async phrase => {
  */
 const search = async ( query ) => {
 
-  const phrase = query.trim();
-
-  return Promise.all([ getCard( phrase ), getPathways( phrase ) ])
+  return Promise.all([ getCard( query ), getPathways( query ) ])
    .then( ([ card, pathways ]) => ({ card, pathways }) );
 };
 

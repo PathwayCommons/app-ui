@@ -18,26 +18,23 @@ const PATHWAY_SEARCH_DEFAULTS = {
 const sanitize = ( rawQuery, maxLength = QUERY_MAX_CHARS ) => rawQuery.trim().substring( 0, maxLength );
 const tokenize = ( rawQuery, maxNum = QUERY_MAX_TOKENS ) => rawQuery.split(/,?\s+/).slice( 0, maxNum ); //  limit token size?
 
-// Simple wrapper around the pc search module
-const getPathways = query => {
+// Simple wrapper for pc search
+const searchPathways = query => {
   const sanitized = sanitize( query, RAW_SEARCH_MAX_CHARS );
   const opts = _.assign( {}, PATHWAY_SEARCH_DEFAULTS, { q: sanitized });
   return pc.search( opts );
 };
 
-// Coordinates test and retrieval of data based on mapped gene IDs
+// Find the number of recognized gene IDs then act accordingly
 const getCard = async query => {
   const tokens = tokenize( query );
   const uniqueTokens = _.uniq( tokens );
-
-  // Could check here for 'special tokens' i.e. prefix with 'ncbi:' | 'hgnc:' rather than inside entitySearch
   const { alias } = await validatorGconvert( uniqueTokens, { target: NS_NCBI_GENE } );
   const mapped = _.values( alias );
 
   if( mapped.length && mapped.length <= ENTITY_SUMMARY_DISPLAY_LIMIT ) {
-
-    return {
-      entities: await entityFetch( _.values( alias ), NS_NCBI_GENE ) // Should use/update entitySearch() to drop redundant tasks
+    return {// Should use/update entitySearch() to drop redundant tasks (uniqueness, initial mapping to NCBI)
+      entities: await entityFetch( _.values( alias ), NS_NCBI_GENE )
     };
 
   } else if ( mapped.length ) {
@@ -49,13 +46,13 @@ const getCard = async query => {
 };
 
 /**
- * search base endpoint - coordinates downstream queries for pathways and interactions.
- * query {string} the input phrase
+ * search
+ * App search entrypoint which coordinates queries for pathways and other info (interactions).
+ * @param { String } query Raw input to search by
  */
 const search = async ( query ) => {
-
-  return Promise.all([ getCard( query ), getPathways( query ) ])
-   .then( ([ card, pathways ]) => ({ card, pathways }) );
+  return Promise.all([ getCard( query ), searchPathways( query ) ])
+    .then( ([ card, pathways ]) => ({ card, pathways }) );
 };
 
 module.exports = { search };

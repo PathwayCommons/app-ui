@@ -1,6 +1,7 @@
 const _ = require('lodash');
+const logger = require('../../logger');
 
-const { NS_NCBI_GENE } = require('../../../config');
+const { NS_NCBI_GENE, NS_HGNC_SYMBOL } = require('../../../config');
 const { validatorGconvert } = require('../../external-services/gprofiler/gconvert');
 const pc = require('../../external-services/pathway-commons');
 const { entityFetch } = require('../summary/entity');
@@ -8,15 +9,57 @@ const { entityFetch } = require('../summary/entity');
 const QUERY_MAX_CHARS = 5000; //temp - to be in config
 const QUERY_MAX_TOKENS = 100; //temp - to be in config
 const RAW_SEARCH_MAX_CHARS = 250; //temp - to be in config
-const ENTITY_SUMMARY_DISPLAY_LIMIT = 6; //temp - stoelen from the summary box
+const INTERACTION_GENES_COUNT_THRESHOLD = 5;
 
 const PATHWAY_SEARCH_DEFAULTS = {
   q: '',
   type: 'pathway'
 };
 
+// Get the HGNC Symbol from an EntitySummary's xrefLinks
+const hgncSymbolsFromXrefs = xrefLinks => {
+  let symbol;
+  const hgncXrefLink = _.find( xrefLinks, link  => link.namespace === NS_HGNC_SYMBOL );
+  if( hgncXrefLink ) symbol = _.last( _.compact( hgncXrefLink.uri.split('/') ) );
+  return symbol;
+};
+
 const sanitize = ( rawQuery, maxLength = QUERY_MAX_CHARS ) => rawQuery.trim().substring( 0, maxLength );
 const tokenize = ( rawQuery, maxNum = QUERY_MAX_TOKENS ) => rawQuery.split(/,?\s+/).slice( 0, maxNum ); //  limit token size?
+
+// Map tokens to a given collection (NS_NCBI_GENE)
+const pickEntityIds = async ( query, namespace = NS_NCBI_GENE ) => {
+  const tokens = tokenize( query );
+  const uniqueTokens = _.uniq( tokens );
+  const { alias } = await validatorGconvert( uniqueTokens, { target: namespace } );
+  const geneIds = _.values( alias );
+  return geneIds;
+};
+
+// Get the info related to gene-based interactions
+const geneInteraction = async entityIds => {
+  const summaries = await entityFetch( entityIds, NS_NCBI_GENE );
+  const sources = summaries.map( summary => hgncSymbolsFromXrefs( summary.xrefLinks ) );
+  return { sources, summaries };
+};
+
+// Return information about interactions
+// Logic herein decides type of data (genes [, pathways])
+const searchInteractions = async query => {
+  const result = {};
+
+  try {
+    const entityIds = await pickEntityIds( query );
+    if ( entityIds.length && entityIds.length <= INTERACTION_GENES_COUNT_THRESHOLD ) {
+      result.genes = await geneInteraction( entityIds );
+    }
+    return result;
+
+  } catch( error ) { //swallow
+    logger.error( `An error was encountered in searchInteractions - ${error}` );
+    return result;
+  }
+};
 
 // Simple wrapper for pc search
 const searchPathways = query => {
@@ -25,34 +68,14 @@ const searchPathways = query => {
   return pc.search( opts );
 };
 
-// Find the number of recognized gene IDs then act accordingly
-const getCard = async query => {
-  const tokens = tokenize( query );
-  const uniqueTokens = _.uniq( tokens );
-  const { alias } = await validatorGconvert( uniqueTokens, { target: NS_NCBI_GENE } );
-  const mapped = _.values( alias );
-
-  if( mapped.length && mapped.length <= ENTITY_SUMMARY_DISPLAY_LIMIT ) {
-    return {// Should use/update entitySearch() to drop redundant tasks (uniqueness, initial mapping to NCBI)
-      entities: await entityFetch( _.values( alias ), NS_NCBI_GENE )
-    };
-
-  } else if ( mapped.length ) {
-    return { enrichment: [] }; // stub for enrichment
-
-  } else {
-    return null;
-  }
-};
-
 /**
  * search
  * App search entrypoint which coordinates queries for pathways and other info (interactions).
  * @param { String } query Raw input to search by
  */
 const search = async ( query ) => {
-  return Promise.all([ getCard( query ), searchPathways( query ) ])
-    .then( ([ card, pathways ]) => ({ card, pathways }) );
+  return Promise.all([ searchInteractions( query ), searchPathways( query ) ])
+    .then( ([ interactions, pathways ]) => ({ interactions, pathways }) );
 };
 
 module.exports = { search };

@@ -74,13 +74,8 @@ const searchPathways = query => {
  * @param { String } query Raw input to search by
  */
 const search = async ( query ) => {
-<<<<<<< HEAD
   return Promise.all([ searchNetworks( query ), searchPathways( query ) ])
     .then( ([ networks, pathways ]) => ({ networks, pathways }) );
-=======
-  return Promise.all([ searchInteractions( query ), searchPathways( query ) ])
-    .then( ([ interactions, pathways ]) => ({ interactions, pathways }) );
->>>>>>> c866f9ed5896cf70cd325aeac22099954360fa63
 };
 
 module.exports = { search };

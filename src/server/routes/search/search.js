@@ -43,9 +43,9 @@ const geneInteraction = async entityIds => {
   return { sources, summaries };
 };
 
-// Return information about interactions
+// Return information about networks
 // Logic herein decides type of data (genes [, pathways])
-const searchInteractions = async query => {
+const searchNetworks = async query => {
   const result = {};
 
   try {
@@ -74,8 +74,8 @@ const searchPathways = query => {
  * @param { String } query Raw input to search by
  */
 const search = async ( query ) => {
-  return Promise.all([ searchInteractions( query ), searchPathways( query ) ])
-    .then( ([ interactions, pathways ]) => ({ interactions, pathways }) );
+  return Promise.all([ searchNetworks( query ), searchPathways( query ) ])
+    .then( ([ networks, pathways ]) => ({ networks, pathways }) );
 };
 
 module.exports = { search };

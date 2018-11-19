@@ -8,9 +8,9 @@ const { ServerAPI } = require('../../../services');
 
 const ENRICHMENT_MAP_LAYOUT = {
   name: 'cose-bilkent',
-  nodeRepulsion: 300000,
-  edgeElasticity: 0.05,
-  idealEdgeLength: 200,
+  nodeRepulsion: 1000,
+  edgeElasticity: 1,
+  idealEdgeLength: 150,
   animate: 'end',
   animationEasing: 'ease-in-out',
   animationDuration: 800,
@@ -92,6 +92,34 @@ let bindEvents = cy => {
   cy.on('pan', () => hideTooltips());
   cy.on('zoom', () => hideTooltips());
   cy.on('layoutstart', () => hideTooltips());
+
+  let nodeHoverMouseOver = _.debounce(evt => {
+    let node = evt.target;
+    let elesToHighlight = cy.collection();
+
+    //Create a list of the hovered node & its neighbourhood
+    node.neighborhood().nodes().union(node).forEach(node => {
+      elesToHighlight.merge(node.ancestors());
+      elesToHighlight.merge(node.descendants());
+      elesToHighlight.merge(node);
+    });
+    elesToHighlight.merge(node.neighborhood().edges());
+
+    //Add highlighted class to node & its neighbourhood, unhighlighted to everything else
+    cy.elements().addClass('unhighlighted');
+    elesToHighlight.forEach(ele => {
+      ele.removeClass('unhighlighted');
+      ele.addClass('highlighted');
+    });
+
+  }, 200);
+
+  //call style-applying and style-removing functions on 'mouseover' and 'mouseout' for non-compartment nodes
+  cy.on('mouseover', 'node[class!="compartment"]', nodeHoverMouseOver);
+  cy.on('mouseout', 'node[class!="compartment"]', () => {
+    nodeHoverMouseOver.cancel();
+    cy.elements().removeClass('highlighted unhighlighted');
+  });
 };
 
 let searchEnrichmentNodes = _.debounce((cy, query) => {

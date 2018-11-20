@@ -158,7 +158,6 @@ class Search extends React.Component {
           h('div.search-result-hit-count', [searchResultHitCount])
         ]),
         !_.isEmpty(entitySummaryResults) > 0 ? h(EntitySummaryBoxList, { entitySummaryResults }) : null,
-        h(EntitySummaryBoxList, { entitySummaryResults }),
         h('div.search-list', searchResults)
       ])
     ]);

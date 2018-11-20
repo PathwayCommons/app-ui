@@ -89,7 +89,9 @@ let generateInteractionsImg = interactionsJson => {
       height: 200,
       background: 'transparent'
     });
-  });
+  })
+  .then( img => Promise.all([ snap.stop(), Promise.resolve(img) ]) ) // stop the cytonsap browser instance to prevent multiple from running
+  .then( res => res[1] );
 };
 
 let imgCache = new QuickLRU({ maxSize: PC_IMAGE_CACHE_MAX_SIZE, length: () => 1 });

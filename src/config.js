@@ -7,6 +7,7 @@ let defaults = {
   GPROFILER_URL: "https://biit.cs.ut.ee/gprofiler/",
   IDENTIFIERS_URL: 'http://identifiers.org',
   NCBI_EUTILS_BASE_URL: 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils',
+  NCBI_API_KEY: 'define your ncbi api key in your env',
   HGNC_BASE_URL: 'https://rest.genenames.org',
   UNIPROT_API_BASE_URL: 'https://www.ebi.ac.uk/proteins/api',
   PC_IMAGE_CACHE_MAX_SIZE: 10000,

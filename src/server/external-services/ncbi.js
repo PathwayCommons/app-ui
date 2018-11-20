@@ -1,12 +1,42 @@
 const { fetch } = require('../../util');
-const { NCBI_EUTILS_BASE_URL, PUB_CACHE_MAX_SIZE, NS_GENECARDS, NS_HGNC_SYMBOL, NS_NCBI_GENE, IDENTIFIERS_URL } = require('../../config');
+const {
+  NCBI_EUTILS_BASE_URL,
+  PUB_CACHE_MAX_SIZE,
+  NS_GENECARDS,
+  NS_HGNC_SYMBOL,
+  NS_NCBI_GENE,
+  NCBI_API_KEY,
+  IDENTIFIERS_URL } = require('../../config');
 const { URLSearchParams } = require('url');
 const QuickLRU = require('quick-lru');
 const _ = require('lodash');
+const qs = require('query-string');
 const { EntitySummary } = require('../../models/entity/summary');
 const logger = require('../logger');
 
 const pubCache = new QuickLRU({ maxSize: PUB_CACHE_MAX_SIZE });
+
+const authParams = {
+  tool: 'PathwayCommons',
+  email: 'pathway-commons-dev@googlegroups.com',
+  api_key: NCBI_API_KEY
+};
+
+const ncbiRequest = ( url, opts ) => {
+  let { query, body } = opts;
+
+  if( query != null ){
+    _.assign( query, authParams );
+    url += '?' + qs.stringify( query );
+  } else {
+    Object.entries( authParams ).forEach( entry => {
+      let [ k, v ] = entry;
+      body.append(k, v);
+    } );
+  }
+
+  return fetch( url, opts );
+};
 
 const processPublications = res => {
   let { result } = res;
@@ -48,14 +78,12 @@ const getPublications = (pubmedIds) => {
 
   let body = new URLSearchParams();
 
-  body.append('tool', 'PathwayCommons');
-  body.append('email', 'gary.bader@utoronto.ca');
   body.append('db', 'pubmed');
   body.append('retmode', 'json');
   body.append('id', uncachedIds.join(','));
 
   return (
-    fetch(`${NCBI_EUTILS_BASE_URL}/esummary.fcgi`, { method: 'POST', body })
+    ncbiRequest(`${NCBI_EUTILS_BASE_URL}/esummary.fcgi`, { method: 'POST', body })
       .then(res => res.json())
       .then(processPublications)
       .then(storePublicationsInCache)
@@ -65,8 +93,13 @@ const getPublications = (pubmedIds) => {
 
 //Could cache somewhere here.
 const fetchByGeneIds = ( geneIds ) => {
-  return fetch(`${NCBI_EUTILS_BASE_URL}/esummary.fcgi?retmode=json&db=gene&id=${geneIds.join(',')}`,
+  return ncbiRequest(`${NCBI_EUTILS_BASE_URL}/esummary.fcgi`,
     {
+      query: {
+        retmode: 'json',
+        db: 'gene',
+        id: geneIds.join(',')
+      },
       method: 'GET',
       headers: {
         'Accept': 'application/json'

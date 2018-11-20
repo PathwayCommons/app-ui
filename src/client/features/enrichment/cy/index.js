@@ -7,14 +7,13 @@ const EnrichmentTooltip = require('../enrichment-tooltip');
 const { ServerAPI } = require('../../../services');
 
 const ENRICHMENT_MAP_LAYOUT = {
-  name: 'cose-bilkent',
-  nodeRepulsion: 1000,
-  edgeElasticity: 1,
-  idealEdgeLength: 150,
-  animate: 'end',
-  animationEasing: 'ease-in-out',
-  animationDuration: 800,
-  padding: 20
+  name: 'cola',
+  refresh: 10,
+  maxSimulationTime: 10500,
+  nodeDimensionsIncludeLabels: true,
+  randomize: true,
+  convergenceThreshold: 1,
+  padding: 50
 };
 
 const SHOW_ENRICHMENT_TOOLTIPS_EVENT = 'showenrichmenttooltip';

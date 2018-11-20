@@ -5,7 +5,7 @@ const DEFAULT_NODE_SIZE = 30;
 let  getNodeSize = node => {
   let geneCount = node.data('geneCount') || DEFAULT_NODE_SIZE;
 
-  return Math.max(DEFAULT_NODE_SIZE, geneCount);
+  return Math.min( Math.max(DEFAULT_NODE_SIZE, geneCount), 100 );
 };
 
 const enrichmentStylesheet=cytoscape.stylesheet()
@@ -13,13 +13,13 @@ const enrichmentStylesheet=cytoscape.stylesheet()
   .css({
     'opacity': 0.3,
     'curve-style': 'haystack',
-    'haystack-radius': 0.25,
+    'haystack-radius': 0,
     'line-color': '#555',
     'width': 4
   })
 .selector('node')
   .css({
-    'font-size': 20,
+    'font-size': 14,
     'color': '#fff',
     'background-color': '#555',
     'text-outline-color': '#555',
@@ -29,6 +29,7 @@ const enrichmentStylesheet=cytoscape.stylesheet()
     'width': node => getNodeSize(node),
     'height': node => getNodeSize(node),
     'label': node => node.data('description'),
+    'min-zoomed-font-size': 20,
     'text-halign': 'center',
     'text-valign': 'center',
   })

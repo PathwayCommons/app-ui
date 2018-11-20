@@ -46,6 +46,11 @@ const enrichmentStylesheet=cytoscape.stylesheet()
     'background-color': '#0169d9',
     'text-outline-color': '#0169d9'
   })
+.selector('edge:selected')
+  .css({
+    'z-index': 999,
+    'opacity': 1
+  })
 .selector('.hidden')
   .css({
     'display':'none',

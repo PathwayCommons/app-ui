@@ -1,9 +1,52 @@
 const React = require('react');
 const h = require('react-hyperscript');
+const _ = require('lodash');
+
+const { ServerAPI } = require('../../services');
+
 
 class EnrichmentTooltip extends React.Component {
+  constructor(props){
+    super(props);
+
+    this.state = {
+      description: ''
+    };
+  }
+
+  componentDidMount(){
+    let { node } = this.props;
+    let id = node.data('id');
+    let isGOId = /^GO:\d+$/.test(id);
+    let isReactomeId = /^REAC:\d+$/.test(id);
+
+
+    if( isGOId ){
+      ServerAPI.getGoInformation( id.replace('GO:', '') ).then( res => {
+        let description = _.get(res, 'results[0].definition.text', '');
+
+        if( description !== '' ){
+          this.setState({ description });
+
+        }
+      });
+    }
+
+    if( isReactomeId ){
+      ServerAPI.getReactomeInformation( id.replace('REAC:', 'R-HSA-') ).then( res => {
+        let description = _.get(res, 'summation[0].text');
+
+        if( description !== '' ){
+          this.setState({ description });
+        }
+      });
+    }
+
+
+  }
   render(){
-    let {node, overviewDesc} = this.props;
+    let {node} = this.props;
+    let { description } = this.state;
     let title = node.data('description');
     let id = node.data('id');
     let sharedGeneList = node.data('intersection').sort();
@@ -22,7 +65,7 @@ class EnrichmentTooltip extends React.Component {
       h('div.cy-tooltip-body', [
         h('div.cy-tooltip-section', [
           h('div.cy-tooltip-field-name', 'Pathway Overview'),
-          h('div.cy-tooltip-field-value', overviewDesc)
+          h('div.cy-tooltip-field-value', description)
         ]),
         h('div.cy-tooltip-section', [
           h('div.cy-tooltip-field-name', 'Genes Shared with Entered List (' + sharedGeneCount + ')'),

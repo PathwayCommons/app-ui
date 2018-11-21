@@ -4,8 +4,6 @@ const _ = require('lodash');
 
 const EnrichmentTooltip = require('../enrichment-tooltip');
 
-const { ServerAPI } = require('../../../services');
-
 const ENRICHMENT_MAP_LAYOUT = {
   name: 'cose-bilkent',
   nodeRepulsion: 300000,
@@ -31,41 +29,13 @@ let bindEvents = cy => {
 
   cy.on(SHOW_ENRICHMENT_TOOLTIPS_EVENT, 'node[class != "compartment"]', function (evt) {
     let node = evt.target;
-    let getEnrichmentTooltipData = () => {
-      let id = node.data('id');
-
-      if( /^GO:\d+$/.test(id) ) return ServerAPI.getGoInformation( id.replace("GO:", "") );
-      else if( /^REAC:\d+$/.test(id) ) return ServerAPI.getReactomeInformation( id.replace("REAC:", "R-HSA-") );
-      else return Promise.resolve(null);
-    };
-
-    getEnrichmentTooltipData().then( result => {
-      //default
-      let pathwayOverview = 'Information not available';
-      //successful GO API call
-      if(result && result.numberOfHits) pathwayOverview = result.results[0].definition.text;
-      //successful Reactome API call
-      else if(result && result.summation) pathwayOverview = result.summation[0].text;
-
-      let tooltip = new CytoscapeTooltip( node.popperRef(), {
-        html: h(EnrichmentTooltip, {
-          node: node,
-          overviewDesc: pathwayOverview
-          })
-      } );
-      node.scratch('_tooltip', tooltip);
-      tooltip.show();
-    })
-    .catch( () => {
-      let tooltip = new CytoscapeTooltip( node.popperRef(), {
-        html: h(EnrichmentTooltip, {
-          node: node,
-          overviewDesc: 'Information not available'
-          })
-      } );
-      node.scratch('_tooltip', tooltip);
-      tooltip.show();
-    });
+    let tooltip = new CytoscapeTooltip( node.popperRef(), {
+      html: h(EnrichmentTooltip, {
+        node: node,
+        })
+    } );
+    node.scratch('_tooltip', tooltip);
+    tooltip.show();
   });
 
   cy.on('tap', evt => {

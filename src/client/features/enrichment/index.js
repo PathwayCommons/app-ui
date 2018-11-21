@@ -7,9 +7,7 @@ const queryString = require('query-string');
 
 const { NS_HGNC_SYMBOL } = require('../../../config');
 
-const EnrichmentDownloadMenu = require('./enrichment-download-menu');
 const EnrichmentToolbar = require('./enrichment-toolbar');
-const EnrichmentMenu = require('./enrichment-menu');
 const EmptyNetwork = require('../../common/components/empty-network');
 const PcLogoLink = require('../../common/components/pc-logo-link');
 const CytoscapeNetwork = require('../../common/components/cytoscape-network');
@@ -78,7 +76,7 @@ class Enrichment extends React.Component {
   }
 
   render(){
-    let { loading, cySrv, invalidTokens, networkEmpty, sources } = this.state;
+    let { loading, cySrv, networkEmpty, sources } = this.state;
 
     let appBar = h('div.app-bar.interactions-bar', [
       h('div.app-bar-branding', [

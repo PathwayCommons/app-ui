@@ -34,6 +34,10 @@
   max-width: 315px;
 }
 
+.enrichment-download-menu {
+  max-width: 315px;
+}
+
 .file-download-menu h2 {
   font-size: 1em;
   padding: 0.25em;

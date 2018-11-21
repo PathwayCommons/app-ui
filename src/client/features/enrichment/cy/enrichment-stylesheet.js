@@ -32,6 +32,7 @@ const enrichmentStylesheet=cytoscape.stylesheet()
     'min-zoomed-font-size': 20,
     'text-halign': 'center',
     'text-valign': 'center',
+    'text-events': 'yes'
   })
 .selector('node[?queried]')
   .css({

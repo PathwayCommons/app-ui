@@ -21,7 +21,6 @@ class EnrichmentTooltip extends React.Component {
     let isReactomeId = /^REAC:\d+$/.test(id);
     const descriptionOnFail = 'No description available';
 
-
     if( isGOId ){
       ServerAPI.getGoInformation( id.replace('GO:', '') ).then( res => {
         let description = _.get(res, 'results[0].definition.text', descriptionOnFail);
@@ -35,8 +34,6 @@ class EnrichmentTooltip extends React.Component {
         this.setState({ description });
       });
     }
-
-
   }
   render(){
     let {node} = this.props;

@@ -9,10 +9,11 @@ const { ServerAPI } = require('../../../services');
 const ENRICHMENT_MAP_LAYOUT = {
   name: 'cola',
   refresh: 10,
-  maxSimulationTime: 10500,
+  animate: false,
+  maxSimulationTime: 500,
   nodeDimensionsIncludeLabels: true,
   randomize: true,
-  convergenceThreshold: 1,
+  convergenceThreshold: 50,
   padding: 50
 };
 

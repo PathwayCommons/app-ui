@@ -10,7 +10,7 @@ class EnrichmentTooltip extends React.Component {
     super(props);
 
     this.state = {
-      description: ''
+      description: 'No description available'
     };
   }
 

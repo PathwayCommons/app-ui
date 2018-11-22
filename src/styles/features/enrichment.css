@@ -1,3 +1,12 @@
 .enrichment {
   overflow: hidden;
 }
+
+.enrichment-tooltip-gene-list {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.enrichment-tooltip-gene-link {
+  margin-right: 0.25em;
+}

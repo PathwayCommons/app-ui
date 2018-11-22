@@ -63,7 +63,7 @@ class EnrichmentDownloadMenu extends React.Component {
           h('div.download-option-header', [
             h('h3', 'Cytoscape JSON'),
           ]),
-          h('div.download-option-description', 'Download a Cytoscape Desktop compatible JSON file')
+          h('div.download-option-description', 'Download a Cytoscape JSON file, compatible with Cytoscape and Cytoscape.js')
         ]),
         h(Loader, { loaded: !this.state.loading })
       ])

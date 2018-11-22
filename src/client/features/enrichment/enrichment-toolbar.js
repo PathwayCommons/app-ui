@@ -43,7 +43,12 @@ class EnrichmentToolbar extends React.Component {
       }),
       h(IconButton, {
         description: 'Fit to screen',
-        onClick: () => cy.fit(),
+        onClick: () => cy.animate({
+          fit: {
+            padding: 25
+          },
+          easing: 'ease-in-out'
+        }),
         isActive: false,
         icon: 'fullscreen'
       }),

@@ -31,10 +31,22 @@ class EnrichmentDownloadMenu extends React.Component {
     this.setState({ loading: true }, () => saveCyPng() );
   }
 
-  downloadSif(){
-    // let { cySrv } = this.props;
+  downloadJson(){
+    let { cySrv } = this.props;
+    let cy = cySrv.get();
+    let saveCyJson = () => {
+      setTimeout(() => {
+        saveAs(cy.json({
+          output: 'blob',
+          scale: 2,
+          bg: 'white',
+          full: true
+        }), `enrichment-map.json`);
+        this.setState({ loading: false });
+      }, 1);
+    };
 
-    // TODO
+    this.setState({ loading: true }, () => saveCyJson() );
   }
 
   render() {
@@ -47,13 +59,12 @@ class EnrichmentDownloadMenu extends React.Component {
           ]),
           h('div.download-option-description', 'Download an image of the entire view')
         ]),
-        // h('div.download-option', { onClick: () => this.downloadSif() }, [
-        //   h('div.download-option-header', [
-        //     h('h3', 'SIF'),
-        //   ]),
-        //   h('div.download-option-description', 'List of interaction pairs to be used with Cytoscape desktop, analysis, and graph algorithms.')
-        // ]),
-
+        h('div.download-option', { onClick: () => this.downloadJson() }, [
+          h('div.download-option-header', [
+            h('h3', 'Cytoscape JSON'),
+          ]),
+          h('div.download-option-description', 'Download a Cytoscape JSON file, compatible with Cytoscape and Cytoscape.js')
+        ]),
         h(Loader, { loaded: !this.state.loading })
       ])
     ]);

@@ -7,7 +7,7 @@ const { fetch } = require('../../../../util');
 const cleanUpEntrez = require('../clean-up-entrez');
 const InvalidParamError = require('../../../../server/errors/invalid-param');
 const { GPROFILER_URL, PC_CACHE_MAX_SIZE, NS_HGNC, NS_HGNC_SYMBOL, NS_UNIPROT, NS_NCBI_GENE, NS_ENSEMBL } = require('../../../../config');
-const cache = require('../../../cache');
+const { cachePromise } = require('../../../cache');
 const GCONVERT_URL = GPROFILER_URL + 'gconvert.cgi';
 
 const GPROFILER_NS_MAP = new Map([
@@ -131,7 +131,7 @@ const rawValidatorGconvert = ( query, userOptions = {} ) => {
 
 const pcCache = new QuickLRU({ maxSize: PC_CACHE_MAX_SIZE });
 
-const validatorGconvert = cache(rawValidatorGconvert, pcCache);
+const validatorGconvert = cachePromise(rawValidatorGconvert, pcCache);
 
 module.exports = { validatorGconvert,
   getForm,

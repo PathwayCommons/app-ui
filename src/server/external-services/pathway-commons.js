@@ -3,7 +3,7 @@ const url = require('url');
 const QuickLRU = require('quick-lru');
 const _ = require('lodash');
 
-const cache = require('../cache');
+const { cachePromise } = require('../cache');
 const { fetch } = require('../../util');
 const logger = require('../logger');
 const config = require('../../config');
@@ -46,7 +46,7 @@ let search = async opts => {
   return searchResults;
 };
 
-const cachedSearch = cache(search, queryCache);
+const cachedSearch = cachePromise(search, queryCache);
 
 const sifGraph = opts => {
   let hasMultipleSources = _.get(opts, 'source', []).length > 1;
@@ -98,7 +98,7 @@ const fetchEntityUriBase = ( name, localId ) => {
     .then( handleEntityUriResponse );
 };
 
-const getEntityUriParts = cache(fetchEntityUriBase, xrefCache, name => name);
+const getEntityUriParts = cachePromise(fetchEntityUriBase, xrefCache, name => name);
 
 /*
  * xref2Uri: Obtain the URI for an xref

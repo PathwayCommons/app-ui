@@ -1,7 +1,7 @@
 const cytosnap = require('cytosnap');
 const QuickLRU = require('quick-lru');
 
-const cache = require('../../cache');
+const { cachePromise } = require('../../cache');
 
 const { PC_IMAGE_CACHE_MAX_SIZE } = require('../../../config');
 
@@ -96,4 +96,4 @@ let generateInteractionsImg = interactionsJson => {
 
 let imgCache = new QuickLRU({ maxSize: PC_IMAGE_CACHE_MAX_SIZE, length: () => 1 });
 
-module.exports = { generateInteractionsImg: cache(generateInteractionsImg, imgCache) };
+module.exports = { generateInteractionsImg: cachePromise(generateInteractionsImg, imgCache) };

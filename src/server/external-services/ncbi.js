@@ -1,5 +1,5 @@
 const { fetch } = require('../../util');
-const cache = require('../cache');
+const { cache } = require('../cache');
 const {
   NCBI_EUTILS_BASE_URL,
   PUB_CACHE_MAX_SIZE,
@@ -98,7 +98,7 @@ const getPublications = (pubmedIds) => {
 
 const sortEnts = ents => {
   // newer ids first
-  return ents.sort((a, b) => b.id - a.id);
+  return ents.sort((a, b) => parseInt(b.id) - parseInt(a.id));
 };
 
 const storeEntsInCache = ents => {
@@ -181,20 +181,15 @@ const rawMakeSummary = (ent) => {
   return eSummary;
 };
 
-const makeSummary = cache(rawMakeSummary, entSummaryCache, (ent) => ent.uid); // eslint-disable-line no-unused-vars
+const makeSummary = cache(rawMakeSummary, entSummaryCache, ent => parseInt(ent.uid));
 
 const getEntitySummary = async ( uids ) => {
 
-  const summary = [];
-  if ( _.isEmpty( uids ) ) return summary;
+  if ( _.isEmpty(uids) ) return [];
 
   const ents = await fetchByGeneIds( uids );
 
-  ents.forEach( ent => {
-    summary.push( makeSummary(ent) );
-  });
-
-  return summary;
+  return ents.map(makeSummary);
 };
 
 module.exports = { getPublications, getEntitySummary };

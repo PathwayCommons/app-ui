@@ -6,7 +6,7 @@ const { getEntitySummary: getNcbiGeneSummary } = require('../../../external-serv
 const { getEntitySummary: getHgncSummary } = require('../../../external-services/hgnc');
 const { getEntitySummary: getUniProtSummary } = require('../../../external-services/uniprot');
 const { NS_HGNC_SYMBOL, NS_NCBI_GENE, NS_UNIPROT, IDENTIFIERS_URL, PC_CACHE_MAX_SIZE } = require('../../../../config');
-const cache = require('../../../cache');
+const { cachePromise } = require('../../../cache');
 const pcCache = new QuickLRU({ maxSize: PC_CACHE_MAX_SIZE });
 /**
  * entityFetch: Retrieve EntitySummary for a given id from a datasource
@@ -99,7 +99,7 @@ const rawEntitySearch = async tokens => {
   return results;
 };
 
-const entitySearch = cache(rawEntitySearch, pcCache);
-const entityFetch = cache(rawEntityFetch, pcCache);
+const entitySearch = cachePromise(rawEntitySearch, pcCache);
+const entityFetch = cachePromise(rawEntityFetch, pcCache);
 
 module.exports = { entitySearch, entityFetch };

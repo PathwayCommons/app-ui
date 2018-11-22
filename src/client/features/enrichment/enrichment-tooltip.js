@@ -10,7 +10,7 @@ class EnrichmentTooltip extends React.Component {
     super(props);
 
     this.state = {
-      description: 'No description available'
+      description: ''
     };
   }
 
@@ -19,26 +19,20 @@ class EnrichmentTooltip extends React.Component {
     let id = node.data('id');
     let isGOId = /^GO:\d+$/.test(id);
     let isReactomeId = /^REAC:\d+$/.test(id);
+    const descriptionOnFail = 'No description available';
 
 
     if( isGOId ){
       ServerAPI.getGoInformation( id.replace('GO:', '') ).then( res => {
-        let description = _.get(res, 'results[0].definition.text', '');
-
-        if( description !== '' ){
-          this.setState({ description });
-
-        }
+        let description = _.get(res, 'results[0].definition.text', descriptionOnFail);
+        this.setState({ description });
       });
     }
 
     if( isReactomeId ){
       ServerAPI.getReactomeInformation( id.replace('REAC:', 'R-HSA-') ).then( res => {
-        let description = _.get(res, 'summation[0].text');
-
-        if( description !== '' ){
-          this.setState({ description });
-        }
+        let description = _.get(res, 'summation[0].text', descriptionOnFail);
+        this.setState({ description });
       });
     }
 

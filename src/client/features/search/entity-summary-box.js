@@ -127,6 +127,15 @@ class EntitySummaryBoxList extends React.Component {
     let img = this.getInteractionsPreviewImage(sources);
 
     return h('div.entity-summary-list', [
+      h('div.enrichment-link', [
+        h(Link, {
+          target: '_blank',
+          to: {
+            pathname: '/enrichment',
+            search: queryString.stringify({ source: sources.join(',')})
+          }
+        }, 'Enrichment')
+      ]),
       h('div.entity-summary-view-interactions', [
         h(Link, {
           target: '_blank',
@@ -143,7 +152,7 @@ class EntitySummaryBoxList extends React.Component {
             h('div', interactionsLinkLabel)
           ])
         ]),
-        h('div.entity-summary-list-entries', entitySummaryBoxes),
+        h('div.entity-summary-list-entries', entitySummaryBoxes)
       ])
     ]);
   }

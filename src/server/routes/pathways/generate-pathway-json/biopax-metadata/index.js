@@ -112,7 +112,6 @@ let biopaxText2ElementMap = async biopaxJsonText => {
 
 
 let fillInBiopaxMetadata = async ( cyJsonEles, biopaxJsonText ) => {
-  let cyJsonNodeMetadataMap = {};
   let nodes = cyJsonEles.nodes;
 
   let bm = await biopaxText2ElementMap( biopaxJsonText );
@@ -121,19 +120,16 @@ let fillInBiopaxMetadata = async ( cyJsonEles, biopaxJsonText ) => {
   nodes.forEach( node => {
     let nodeId = node.data.id;
     let altPCId = nodeId.substring(0, nodeId.lastIndexOf('_'));
+    node.data.metadata = {};
 
     // weird legacy hack to get extra metadata for certain nodes that have PC prefixes
     if( bm.has( nodeId ) ){
-      cyJsonNodeMetadataMap[nodeId] = extractBiopaxMetadata( bm.get(nodeId), physicalEntityData[nodeId] );
+      node.data.metadata = extractBiopaxMetadata( bm.get(nodeId), physicalEntityData[nodeId] );
     } else {
       if( bm.has( altPCId ) ){
-        cyJsonNodeMetadataMap[nodeId] = extractBiopaxMetadata( bm.get(altPCId), physicalEntityData[nodeId] );
+        node.data.metadata = extractBiopaxMetadata( bm.get(altPCId), physicalEntityData[nodeId] );
       }
     }
-  });
-
-  nodes.forEach(node => {
-    node.data.metadata = cyJsonNodeMetadataMap[node.data.id] || {};
   });
 
   return cyJsonEles;

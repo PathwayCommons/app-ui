@@ -1,9 +1,13 @@
 const { fetch } = require('../../../util');
 const _ = require('lodash');
 const qs = require('query-string');
+const QuickLRU = require('quick-lru');
 
 const cleanUpEntrez = require('./clean-up-entrez');
 const { GPROFILER_URL } = require('../../../config');
+const logger = require('../../logger');
+const { cachePromise } = require('../../cache');
+
 
 const GPROFILER_DEFAULT_OPTS = {
   'output': 'mini',
@@ -64,7 +68,7 @@ const parseGProfilerResponse = gProfilerResponse => {
 // and an object of user settings userSetting
 // and extracts enrichment information
 // from g:Profiler for the query list based on userSetting
-const enrichment = (query, userSetting) => {
+const rawEnrichment = (query, userSetting) => {
   // map camelCase to snake case (g:Profiler uses snake case parameters)
   userSetting = _.mapKeys(userSetting, (value, key) => {
     if (key === 'minSetSize') return 'min_set_size';
@@ -106,9 +110,18 @@ const enrichment = (query, userSetting) => {
     fetch(GPROFILER_URL, { method: 'post', body: qs.stringify(formData)})
       .then( res => res.text() )
       .then( gprofilerRes =>  parseGProfilerResponse( gprofilerRes ) )
-      .then( pathwayInfo => resolve( pathwayInfo ) );
+      .then( pathwayInfo => resolve( pathwayInfo ) )
+      .catch( err =>{
+        logger.error(`Error in validatorGconvert - ${err.message}`);
+        throw err;
+      });
   });
 };
+
+const lruCache = new QuickLRU({ maxSize: 100 });
+
+const enrichment = cachePromise(rawEnrichment, lruCache);
+
 
 
 module.exports = { enrichment, parseGProfilerResponse };

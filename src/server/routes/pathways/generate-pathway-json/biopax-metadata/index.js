@@ -2,14 +2,13 @@ const fs = require('fs');
 const _ = require('lodash');
 const { xref2Uri } = require('../../../../external-services/pathway-commons');
 
-let extractBiopaxMetadata = biopaxJsonEntry => {
-  let xrefLinks = _.get(biopaxJsonEntry, 'xrefLinks', []);
+let extractBiopaxMetadata = ( biopaxJsonEntry, physicalEntityData ) => {
+  let xrefLinks = _.get(biopaxJsonEntry, 'xrefLinks', {});
   let entRefEl = _.get(biopaxJsonEntry, 'entRefEl', []);
 
   let type = _.get(biopaxJsonEntry, '@type', '');
   let datasource = _.get(biopaxJsonEntry, 'dataSource', '');
   let comments = _.get(biopaxJsonEntry, 'comment', []);
-
 
   let entryDisplayName = _.get(biopaxJsonEntry, 'displayName', '');
   let entryNames = [].concat(_.get(biopaxJsonEntry, 'name', []));
@@ -19,10 +18,11 @@ let extractBiopaxMetadata = biopaxJsonEntry => {
   let entRefStdName = _.get(entRefEl, 'standardName', '');
   let entRefDisplayName = _.get(entRefEl, 'displayName', '');
 
+  let genericPhysicalEntitySynonyms = physicalEntityData || [];
 
   let synonyms = (
     _.uniq(
-      _.flatten( [entryNames, entRefNames] )
+      _.flatten( [entryNames, entRefNames, genericPhysicalEntitySynonyms] )
     ).filter( name => !_.isEmpty( name ) )
   );
 
@@ -112,9 +112,11 @@ let biopaxText2ElementMap = async biopaxJsonText => {
 
 
 let fillInBiopaxMetadata = async ( cyJsonEles, biopaxJsonText ) => {
-  let bm = await biopaxText2ElementMap( biopaxJsonText );
   let cyJsonNodeMetadataMap = {};
   let nodes = cyJsonEles.nodes;
+
+  let bm = await biopaxText2ElementMap( biopaxJsonText );
+  let physicalEntityData = getGenericPhyiscalEntityData( nodes );
 
   nodes.forEach( node => {
     let nodeId = node.data.id;
@@ -122,34 +124,25 @@ let fillInBiopaxMetadata = async ( cyJsonEles, biopaxJsonText ) => {
 
     // weird legacy hack to get extra metadata for certain nodes that have PC prefixes
     if( bm.has( nodeId ) ){
-      cyJsonNodeMetadataMap[nodeId] = extractBiopaxMetadata( bm.get(nodeId) );
+      cyJsonNodeMetadataMap[nodeId] = extractBiopaxMetadata( bm.get(nodeId), physicalEntityData[nodeId] );
     } else {
       if( bm.has( altPCId ) ){
-        cyJsonNodeMetadataMap[nodeId] = extractBiopaxMetadata( bm.get(altPCId) );
+        cyJsonNodeMetadataMap[nodeId] = extractBiopaxMetadata( bm.get(altPCId), physicalEntityData[nodeId] );
       }
     }
   });
 
-  fillInSynonyms(nodes, cyJsonNodeMetadataMap);
+  nodes.forEach(node => {
+    node.data.metadata = cyJsonNodeMetadataMap[node.data.id] || {};
+  });
 
   return cyJsonEles;
-};
-
-const fillInSynonyms = (nodes, nodesMetadata) => {
-  const nodesGeneSynonyms = getGenericPhyiscalEntityData(nodes);
-
-  nodes.forEach(node => {
-    node.data.metadata = nodesMetadata[node.data.id] || {};
-    node.data.geneSynonyms = nodesGeneSynonyms[node.data.id];
-  });
 };
 
 
 let getGenericPhysicalEntityMap = _.memoize(() => JSON.parse(
   fs.readFileSync(__dirname + '/generic-physical-entity-map.json', 'utf-8')
 ));
-
-
 
 let getGenericPhyiscalEntityData = nodes => {
   let nodeGeneSynonyms = {};

@@ -1,13 +1,11 @@
 const _ = require('lodash');
 
 let geneIntersection = (pathway, expressionTable) => {
-  let ms = pathway.macromolecules();
-  let genesInPathway = _.flattenDeep(_.uniq([...ms.map(node => node.data.label), ...ms.map(node => node.data.geneSynonyms)]));
+  let genesInPathway = pathway.geneNames();
   let genesInExpressionData = expressionTable.rawExpressions.map( e => e.geneName);
 
   return _.intersection(genesInPathway, genesInExpressionData);
 };
-
 
 const expressionDataToNodeStyle = (value, range) => {
   const [, max] = range;
@@ -39,14 +37,15 @@ const expressionDataToNodeStyle = (value, range) => {
 
 const applyExpressionData = (cy, expressionTable, selectedClass, selectedFunction) => {
   const geneNodes = cy.nodes('[class="macromolecule"]');
+  const nodeNames = node => [node.data('label'), ..._.get(node.data('metadata'), 'synonyms', [])];
   const geneNodeLabels = _.uniq(
-    _.flattenDeep(geneNodes.map(node => [node.data('label'), ...node.data('geneSynonyms')])
+    _.flattenDeep(geneNodes.map(node => nodeNames(node))
   )).sort();
 
   const expressionsInNetwork = expressionTable.expressions().filter(expression => geneNodeLabels.includes(expression.geneName));
 
   const expressionLabels = expressionsInNetwork.map(expression => expression.geneName);
-  geneNodes.filter(node => _.intersection(expressionLabels, [node.data('label'), ...node.data('geneSynonyms')]).length === 0).style({
+  geneNodes.filter(node => _.intersection(expressionLabels, nodeNames(node)).length === 0).style({
     'background-color': 'grey',
     'color': 'grey',
     'opacity': 0.4
@@ -59,9 +58,8 @@ const applyExpressionData = (cy, expressionTable, selectedClass, selectedFunctio
     const fv = expression.foldChange(selectedClass, selectedFunction);
 
     if (fv !== Infinity && fv !== -Infinity) {
-      const matchedNodes = cy.nodes().filter(node => {
-        return node.data('label') === expression.geneName || node.data('geneSynonyms').includes(expression.geneName);
-      });
+
+      const matchedNodes = cy.nodes().filter(node => nodeNames(node).includes(expression.geneName));
 
       const style = expressionDataToNodeStyle(fv, range);
       matchedNodes.style(style);
@@ -134,7 +132,7 @@ const createRawExpressions = (expressionJSON, networkJSON) => {
   });
 
   networkJSON.nodes.forEach(node => {
-    const geneIntersection =  _.intersection([...expressionByGeneName.keys()], node.data.geneSynonyms);
+    const geneIntersection =  _.intersection([...expressionByGeneName.keys()], node.data.metadata.synonyms);
     const isGenericMapping = !expressionByGeneName.has(node.data.label) && geneIntersection.length > 0;
 
     if (isGenericMapping) {

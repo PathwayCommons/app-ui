@@ -17,14 +17,9 @@ const createEnrichmentNetworkNode = pathwayInfo => {
 
 // given two genelists, compute the intersection between them
 const pathwayIntersection = ( p1Genes, p2Genes ) => {
-  let intersection = [];
-  let allGenes = p1Genes.concat(p2Genes).sort();
+  let s = new Set(p1Genes);
 
-  for( let i = 1; i < allGenes.length; ++i ){
-    if( allGenes[i] === allGenes[i-1] ){
-      intersection.push(allGenes[i]);
-    }
-  }
+  let intersection = [... new Set( p2Genes.filter( gene => s.has( gene ) ) ) ];
 
   return intersection;
 };
@@ -59,7 +54,6 @@ const createEnrichmentNetworkEdge = (pathway1, pathway2, jaccardOverlapWeight) =
 // create an edge for each unique pair of pathways P1 and P2.  Filter them 'similarityCutoff'
 const createEnrichmentNetworkEdges = (pathwayInfoList, jaccardOverlapWeight, similarityCutoff = 0.375) => {
   let edges = [];
-
   for (let i = 0; i < pathwayInfoList.length; ++i) {
     for (let j = i + 1; j < pathwayInfoList.length; ++j) {
       let edge = createEnrichmentNetworkEdge( pathwayInfoList[i], pathwayInfoList[j], jaccardOverlapWeight );

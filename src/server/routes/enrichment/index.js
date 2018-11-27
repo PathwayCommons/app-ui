@@ -4,7 +4,7 @@ const enrichmentRouter = express.Router();
 const swaggerJSDoc = require('swagger-jsdoc');
 
 const { validatorGconvert, enrichment } = require('../../external-services/gprofiler');
-const { generateGraphInfo } = require('./visualization');
+const { generateEnrichmentNetworkJson } = require('./visualization');
 
 // swagger definition
 let swaggerDefinition = {
@@ -178,7 +178,7 @@ enrichmentRouter.post('/visualization', (req, res) => {
   const similarityCutoff = req.body.similarityCutoff;
   const jaccardOverlapWeight = req.body.jaccardOverlapWeight;
   try {
-    res.json(generateGraphInfo(pathways, similarityCutoff, jaccardOverlapWeight));
+    res.json(generateEnrichmentNetworkJson(pathways, similarityCutoff, jaccardOverlapWeight));
   } catch (err) {
     res.status(400).send(err.message);
   }
@@ -406,9 +406,6 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *             id:
  *               type: string
  *               example: GO:0043525
- *             p_value:
- *               type: number
- *               example: 0.2
  *             geneCount:
  *               type: number
  *               example: 51

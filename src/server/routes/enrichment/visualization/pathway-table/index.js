@@ -14,13 +14,13 @@ gmtPathwayData.split('\n').forEach( pathwayInfoLine => {
 
   let pathwayId = pathwayInfoTokens[PATHWAY_ID_INDEX];
   let description = pathwayInfoTokens[DESCRIPTION_INDEX];
-  let geneset = [];
+  let geneSet = [];
 
   for( let i = GENE_LIST_START_INDEX; i < pathwayInfoTokens.length; ++i ){
-    geneset.push(pathwayInfoTokens[i]);
+    geneSet.push(pathwayInfoTokens[i]);
   }
 
-  pathwayInfoTable.set(pathwayId, { description, geneset } );
+  pathwayInfoTable.set(pathwayId, { pathwayId, description, geneSet } );
 } );
 
 pathwayInfoTable.delete('');

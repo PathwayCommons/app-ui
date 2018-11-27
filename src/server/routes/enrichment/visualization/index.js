@@ -1,24 +1,11 @@
 const _ = require('lodash');
-
 const { pathwayInfoTable } = require('./pathway-table');
 const { generateEdgeInfo } = require('./generate-info');
 
-// fetchPathwayInfo(pathwayList) takes a list of pathway identifiers pathwayList
-// and returns the corresponding information for each pathway ID from
-// pathwayInfoTable
-const fetchPathwayInfo = (pathwayList) => {
-  const ret = [];
-  _.forEach(pathwayList, pathwayId => {
-    ret.push({'pathwayId': pathwayId, 'description': pathwayInfoTable.get(pathwayId)['description'], 'genes': pathwayInfoTable.get(pathwayId)['geneset']});
-  });
-  return ret;
-};
 
-// generateGraphInfo(pathways, similarityCutoff = 0.375, jaccardOverlapWeight) takes a
-// list of pathway information 'pathways', a number for cutoff point 'similarityCutoff'
-// and the weight for Jaccard coefficient 'jaccardOverlapWeight'
-// and returns the graph information for pathways based on 'similarityCutoff' and 'jaccardOverlapWeight'
-const generateGraphInfo = (pathways, similarityCutoff = 0.375, jaccardOverlapWeight = 0.5) => {
+
+// generate cytoscape.js compatible network JSON for enrichment
+const generateEnrichmentNetworkJson = (pathways, similarityCutoff = 0.375, jaccardOverlapWeight = 0.5) => {
   if (similarityCutoff < 0 || similarityCutoff > 1) {
     throw new Error('ERROR: similarityCutoff out of range [0, 1]');
   }
@@ -33,57 +20,48 @@ const generateGraphInfo = (pathways, similarityCutoff = 0.375, jaccardOverlapWei
   }
 
   // check unrecognized and duplicates, modify pathwayIdList
-  const unrecognized = new Set();
-  for (let pathwayId in pathways) {
-    if (!pathways.hasOwnProperty(pathwayId)) continue;
-    if (!pathwayInfoTable.has(pathwayId)) {
+  let unrecognized = new Set();
+  let pathwayInfoList = [];
+  Object.keys( pathways ).forEach( pathwayId => {
+    let pathwayInfo = pathwayInfoTable.get( pathwayId );
+
+    if( pathwayInfo == null ){
       unrecognized.add(pathwayId);
-      delete pathways[pathwayId];
+    } else {
+      pathwayInfoList.push( _.assign( pathwayInfo, { intersection: pathways[ pathwayId ].intersection } ) );
     }
-  }
-  const pathwayIdList = [];
-  for (let pathwayId in pathways) {
-    if (!pathways.hasOwnProperty(pathwayId)) continue;
-    pathwayIdList.push(pathwayId);
-  }
-  // generate node and edge info
-  const elements = {};
-  elements.nodes = [];
-  elements.edges = [];
+  } );
 
-  const pathywayInfo = fetchPathwayInfo(pathwayIdList);
-  for (let pathwayId in pathways) {
-    if (!pathways.hasOwnProperty(pathwayId)) continue;
-    const geneCount = _.find(pathywayInfo, {pathwayId: pathwayId}).genes.length;
-    elements.nodes.push({
-      data: _.assign(
-        { id: pathwayId },
-        pathways[pathwayId],
-        {'geneCount': geneCount },
-        {'geneSet': _.find(pathywayInfo, {pathwayId: pathwayId}).genes }
-      )
-    });
-  }
+  let nodes = pathwayInfoList.map( pathwayInfo => {
+    let { pathwayId, geneSet, description, intersection } = pathwayInfo;
 
-  const edgeInfo = generateEdgeInfo(pathywayInfo, jaccardOverlapWeight, similarityCutoff);
-  _.forEach(edgeInfo, edge => {
-    const sourceIndex = 0;
-    const targetIndex = 1;
-    const sourceTarget = edge.edgeId.split('_');
-    const source = sourceTarget[sourceIndex];
-    const target = sourceTarget[targetIndex];
-    elements.edges.push({
+    return {
       data: {
-        id: edge.edgeId,
-        source: source,
-        target: target,
-        similarity: edge.similarity,
-        intersection: edge.intersection
+        id: pathwayId,
+        intersection,
+        geneCount: geneSet.length,
+        geneSet,
+        description
       }
-    });
+    };
+  } );
+
+  let edges = generateEdgeInfo(pathwayInfoList, jaccardOverlapWeight, similarityCutoff).map( edge => {
+    let { edgeId, source, target, similarity, intersection } = edge;
+
+    return {
+      data: {
+        id: edgeId,
+        source,
+        target,
+        similarity,
+        intersection
+      }
+    };
   });
-  return { unrecognized: Array.from(unrecognized), graph: {elements: elements} };
+
+  return { unrecognized: Array.from(unrecognized), graph: { elements: { nodes, edges } } };
 };
 
 
-module.exports = { generateGraphInfo };
+module.exports = { generateEnrichmentNetworkJson };

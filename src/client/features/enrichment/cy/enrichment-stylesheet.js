@@ -28,7 +28,7 @@ const enrichmentStylesheet=cytoscape.stylesheet()
     'text-max-width': 175,
     'width': node => getNodeSize(node),
     'height': node => getNodeSize(node),
-    'label': node => node.data('description'),
+    'label': node => node.data('name'),
     'min-zoomed-font-size': 5,
     'text-halign': 'center',
     'text-valign': 'center',

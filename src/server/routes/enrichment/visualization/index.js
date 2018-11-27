@@ -2,7 +2,7 @@ const _ = require('lodash');
 const { pathwayInfoTable } = require('./pathway-table');
 
 const createEnrichmentNetworkNode = pathwayInfo => {
-  let { pathwayId, geneSet, description, intersection } = pathwayInfo;
+  let { pathwayId, geneSet, name, intersection } = pathwayInfo;
 
   return {
     data: {
@@ -10,7 +10,7 @@ const createEnrichmentNetworkNode = pathwayInfo => {
       intersection,
       geneCount: geneSet.length,
       geneSet,
-      description
+      name
     }
   };
 };

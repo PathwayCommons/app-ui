@@ -38,7 +38,7 @@ class EnrichmentTooltip extends React.Component {
   render(){
     let {node} = this.props;
     let { description } = this.state;
-    let title = node.data('description');
+    let title = node.data('name');
     let id = node.data('id');
     let sharedGeneList = node.data('intersection').sort();
     let sharedGeneCount = sharedGeneList.length;

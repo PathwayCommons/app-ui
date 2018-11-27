@@ -1,12 +1,12 @@
 const chai = require('chai');
 const expect = chai.expect;
-const { generateGraphInfo } = require('../../../../src/server/routes/enrichment/visualization');
+const { generateEnrichmentNetworkJson } = require('../../../../src/server/routes/enrichment/visualization');
 
 //generateGraphInfo( pathways, similarityCutoff, jaccardOverlapWeight);
 
 describe('Test generateGraphInfo - Enrichment Vizualization Service', function () {
   it('parameters: all valid', function () {
-    const res = generateGraphInfo({"GO:0006354": { "p_value": .1 }, "GO:0006368": { "intersection": ["AFF4"] }}, 0.3, 0.55 );
+    const res = generateEnrichmentNetworkJson({"GO:0006354": { "p_value": .1 }, "GO:0006368": { "intersection": ["AFF4"] }}, 0.3, 0.55 );
     const result = {
       "unrecognized": [],
       "graph": {
@@ -15,7 +15,8 @@ describe('Test generateGraphInfo - Enrichment Vizualization Service', function (
             {
               "data": {
                 "id": "GO:0006354",
-                "p_value": 0.1,
+                "name": "DNA-templated transcription, elongation",
+                "intersection": [],
                 "geneCount": 129,
                 "geneSet": [
                   "TAF12",
@@ -153,6 +154,7 @@ describe('Test generateGraphInfo - Enrichment Vizualization Service', function (
             {
               "data": {
                 "id": "GO:0006368",
+                "name": "transcription elongation from RNA polymerase II promoter",
                 "intersection": [
                   "AFF4"
                 ],
@@ -390,14 +392,14 @@ describe('Test generateGraphInfo - Enrichment Vizualization Service', function (
 
   it('parameters: invalid similarityCutoff', function () {
     chai.assert.throws(function(){
-      generateGraphInfo({ "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}, 3.55 );},
+      generateEnrichmentNetworkJson({ "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}, 3.55 );},
       Error, "similarityCutoff out of range [0, 1]"
     );
   });
 
   it('parameters: invalid jaccardOverlapWeight', function () {
     chai.assert.throws(function(){
-      generateGraphInfo({ "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}, .55, 75 );},
+      generateEnrichmentNetworkJson({ "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}, .55, 75 );},
       Error, "jaccardOverlapWeight out of range [0, 1]"
     );
   });

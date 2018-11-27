@@ -9,18 +9,18 @@ const pathwayInfoTable = new Map();
 gmtPathwayData.split('\n').forEach( pathwayInfoLine => {
   let pathwayInfoTokens = pathwayInfoLine.split('\t');
   let PATHWAY_ID_INDEX = 0;
-  let DESCRIPTION_INDEX = 1;
+  let PATHWAY_NAME_INDEX = 1;
   let GENE_LIST_START_INDEX = 2;
 
   let pathwayId = pathwayInfoTokens[PATHWAY_ID_INDEX];
-  let description = pathwayInfoTokens[DESCRIPTION_INDEX];
+  let name = pathwayInfoTokens[PATHWAY_NAME_INDEX];
   let geneSet = [];
 
   for( let i = GENE_LIST_START_INDEX; i < pathwayInfoTokens.length; ++i ){
     geneSet.push(pathwayInfoTokens[i]);
   }
 
-  pathwayInfoTable.set(pathwayId, { pathwayId, description, geneSet } );
+  pathwayInfoTable.set(pathwayId, { pathwayId, name, geneSet } );
 } );
 
 pathwayInfoTable.delete('');

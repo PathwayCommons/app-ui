@@ -1,17 +1,3 @@
-const _ = require('lodash');
-
-const { pathwayInfoTable } = require('./pathway-table');
-
-// fetchPathwayInfo(pathwayList) takes a list of pathway identifiers pathwayList
-// and returns the corresponding information for each pathway ID from
-// pathwayInfoTable
-const fetchPathwayInfo = (pathwayList) => {
-  const ret = [];
-  _.forEach(pathwayList, pathwayId => {
-    ret.push({'pathwayId': pathwayId, 'description': pathwayInfoTable.get(pathwayId)['description'], 'genes': pathwayInfoTable.get(pathwayId)['geneset']});
-  });
-  return ret;
-};
 
 // pathwayPairGraph(pathway1, pathway2, jaccardOverlapWeight) takes two pathway IDs
 // pathway1 and pathway1 and a weight for Jaccard coefficient
@@ -57,4 +43,4 @@ const generateEdgeInfo = (pathwayInfo, jaccardOverlapWeight, similarityCutoff = 
 };
 
 
-module.exports = { generateEdgeInfo, fetchPathwayInfo };
+module.exports = { generateEdgeInfo };

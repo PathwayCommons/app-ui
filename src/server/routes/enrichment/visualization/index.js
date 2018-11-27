@@ -1,14 +1,24 @@
 const _ = require('lodash');
 
 const { pathwayInfoTable } = require('./pathway-table');
-const { generateEdgeInfo, fetchPathwayInfo } = require('./generate-info');
+const { generateEdgeInfo } = require('./generate-info');
 
+// fetchPathwayInfo(pathwayList) takes a list of pathway identifiers pathwayList
+// and returns the corresponding information for each pathway ID from
+// pathwayInfoTable
+const fetchPathwayInfo = (pathwayList) => {
+  const ret = [];
+  _.forEach(pathwayList, pathwayId => {
+    ret.push({'pathwayId': pathwayId, 'description': pathwayInfoTable.get(pathwayId)['description'], 'genes': pathwayInfoTable.get(pathwayId)['geneset']});
+  });
+  return ret;
+};
 
 // generateGraphInfo(pathways, similarityCutoff = 0.375, jaccardOverlapWeight) takes a
 // list of pathway information 'pathways', a number for cutoff point 'similarityCutoff'
 // and the weight for Jaccard coefficient 'jaccardOverlapWeight'
 // and returns the graph information for pathways based on 'similarityCutoff' and 'jaccardOverlapWeight'
-const generateGraphInfo = (pathways, similarityCutoff = 0.375, jaccardOverlapWeight) => {
+const generateGraphInfo = (pathways, similarityCutoff = 0.375, jaccardOverlapWeight = 0.5) => {
   if (similarityCutoff < 0 || similarityCutoff > 1) {
     throw new Error('ERROR: similarityCutoff out of range [0, 1]');
   }
@@ -20,10 +30,6 @@ const generateGraphInfo = (pathways, similarityCutoff = 0.375, jaccardOverlapWei
   }
   if (jaccardOverlapWeight != undefined && typeof(jaccardOverlapWeight) != 'number') {
     throw new Error('ERROR: jaccardOverlapWeight should be a number');
-  }
-  //default jaccardOverlapWeight = 0.5
-  if (jaccardOverlapWeight === undefined ) {
-    jaccardOverlapWeight = 0.5;
   }
 
   // check unrecognized and duplicates, modify pathwayIdList

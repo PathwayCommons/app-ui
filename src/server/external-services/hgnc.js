@@ -36,24 +36,24 @@ const getEntitySummary = async symbols => {
 
     // Add database links
     const xrefLinks = [{
-      "namespace": NS_GENECARDS,
-      "uri": createUri( NS_GENECARDS, symbol )
+      namespace: NS_GENECARDS,
+      uri: createUri( NS_GENECARDS, symbol )
     }, {
-      "namespace": NS_HGNC_SYMBOL,
-      "uri": createUri( NS_HGNC_SYMBOL, symbol )
+      namespace: NS_HGNC_SYMBOL,
+      uri: createUri( NS_HGNC_SYMBOL, symbol )
     }];
 
     if ( _.has( doc, 'entrez_id') ){
       xrefLinks.push({
-        "namespace": NS_NCBI_GENE,
-        "uri": createUri( NS_NCBI_GENE, _.get( doc, 'entrez_id') )
+        namespace: NS_NCBI_GENE,
+        uri: createUri( NS_NCBI_GENE, _.get( doc, 'entrez_id') )
       });
     }
 
     if ( _.has( doc, 'uniprot_ids') ){
       xrefLinks.push({
-        "namespace": NS_UNIPROT,
-        "uri": createUri( NS_UNIPROT, _.get( doc, 'uniprot_ids') )
+        namespace: NS_UNIPROT,
+        uri: createUri( NS_UNIPROT, _.get( doc, 'uniprot_ids') )
       });
     }
 

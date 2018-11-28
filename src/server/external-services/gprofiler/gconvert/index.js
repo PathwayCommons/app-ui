@@ -22,11 +22,12 @@ const GPROFILER_NS_MAP = new Map([
 // validates params
 const createGConvertOpts = opts => {
   const defaults = {
-    'output': 'mini',
-    'organism': 'hsapiens',
-    'target': NS_HGNC,
-    'prefix': 'ENTREZGENE_ACC'
+    ouput: 'mini',
+    organism: 'hsapiens',
+    target: NS_HGNC,
+    prefix: 'ENTREZGENE_ACC'
   };
+
   let gConvertOpts = _.assign({}, defaults, opts);
   let { query, target } = gConvertOpts;
 

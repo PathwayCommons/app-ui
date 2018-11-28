@@ -157,15 +157,15 @@ const rawMakeSummary = (ent) => {
   if( localId ){
     [ NS_HGNC_SYMBOL, NS_GENECARDS ].forEach( namespace => {
       xrefLinks.push({
-        "namespace": namespace,
-        "uri": createUri( namespace, localId )
+        namespace: namespace,
+        uri: createUri( namespace, localId )
       });
     });
   }
   // push in NCBI xrefLink too
   xrefLinks.push({
-    "namespace": NS_NCBI_GENE,
-    "uri": createUri( NS_NCBI_GENE, uid )
+    namespace: NS_NCBI_GENE,
+    uri: createUri( NS_NCBI_GENE, uid )
   });
 
   const eSummary = new EntitySummary({

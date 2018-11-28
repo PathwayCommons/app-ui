@@ -52,6 +52,7 @@ const createEnrichmentNetworkEdge = (pathway1, pathway2, jaccardOverlapWeight) =
 };
 
 // create an edge for each unique pair of pathways P1 and P2.  Filter them 'similarityCutoff'
+// an edge is created when the similarity of pathways P1 and P2 is greated than the defined threshold 'similarityCutoff'
 const createEnrichmentNetworkEdges = (pathwayInfoList, jaccardOverlapWeight, similarityCutoff = 0.375) => {
   let edges = [];
   for (let i = 0; i < pathwayInfoList.length; ++i) {

@@ -18,21 +18,13 @@ const GPROFILER_NS_MAP = new Map([
   [NS_ENSEMBL, 'ENSG']
 ]);
 
-const resultTemplate = ( unrecognized, duplicate, alias ) => {
-  return {
-    unrecognized: Array.from( unrecognized ) || [],
-    duplicate: duplicate || {},
-    alias: alias || {}
-  };
-};
-
 const mapTarget = target  => {
   const gconvertNamespace = GPROFILER_NS_MAP.get( target );
   if( !gconvertNamespace ) throw new InvalidParamError( 'Unrecognized targetDb' );
   return gconvertNamespace;
 };
 
-const mapQuery = query => query.join(" ");
+const mapQuery = query => query.join(' ');
 
 /*
  * mapParams
@@ -66,37 +58,42 @@ const getForm = ( query, defaultOptions, userOptions ) => {
 };
 
 const gConvertResponseHandler = body =>  {
-
-  const entityInfoList = _.map(body.split('\n'), ele => { return ele.split('\t'); });
-  entityInfoList.splice(-1, 1); // remove last element ''
-  const unrecognized = new Set();
+  let entityInfoList = body.split('\n').map( ele => ele.split('\t') ).filter( ele => ele != '');
+  let unrecognized = new Set();
   let duplicate = {};
-  const previous = new Map();
+  let entityMap = new Map();
   let alias = {};
-  const initialAliasIndex = 1;
-  const convertedAliasIndex = 3;
-  _.forEach(entityInfoList, info => {
-    const convertedAlias = info[convertedAliasIndex];
-    let initialAlias = info[initialAliasIndex];
-    initialAlias = cleanUpEntrez(initialAlias);
-    if (convertedAlias === 'N/A') {
+  const INITIAL_ALIAS_INDEX = 1;
+  const CONVERTED_ALIAS_INDEX = 3;
+
+  entityInfoList.forEach( entityInfo => {
+    let convertedAlias = entityInfo[CONVERTED_ALIAS_INDEX];
+    let initialAlias = cleanUpEntrez(entityInfo[INITIAL_ALIAS_INDEX]);
+
+    if( convertedAlias === 'N/A' ){
       unrecognized.add(initialAlias);
-    } else {
-      if (!previous.has(convertedAlias)) {
-        previous.set(convertedAlias, initialAlias);
-      } else {
-        if (!(convertedAlias in duplicate)) {
-          duplicate[convertedAlias] = new Set([previous.get(convertedAlias)]);
-        }
-        duplicate[convertedAlias].add(initialAlias);
-      }
-      alias[initialAlias] = convertedAlias;
+      return;
     }
-  });
-  for (const initialAlias in duplicate) {
-    duplicate[initialAlias] = Array.from(duplicate[initialAlias]);
-  }
-  return resultTemplate( unrecognized, duplicate, alias );
+
+    if( !entityMap.has( convertedAlias ) ){
+      entityMap.set( convertedAlias, initialAlias );
+    } else {
+      if( duplicate[ convertedAlias ] == null ){
+        duplicate[ convertedAlias ] = new Set([entityMap.get( convertedAlias )]);
+      }
+      duplicate[ convertedAlias ].add( initialAlias );
+    }
+  } );
+
+  Object.keys( duplicate ).forEach( key => {
+    duplicate[ key ] = Array.from( duplicate[ key ] ); // turn each set into a array for serialization
+  } );
+
+  return {
+    unrecognized: Array.from( unrecognized ) || [],
+    duplicate: duplicate || {},
+    alias: alias || {}
+  };
 };
 
 

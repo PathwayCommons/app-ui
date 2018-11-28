@@ -18,43 +18,31 @@ const GPROFILER_NS_MAP = new Map([
   [NS_ENSEMBL, 'ENSG']
 ]);
 
-const mapTarget = target  => {
-  const gconvertNamespace = GPROFILER_NS_MAP.get( target );
-  if( !gconvertNamespace ) throw new InvalidParamError( 'Unrecognized targetDb' );
-  return gconvertNamespace;
-};
+// create gconvert opts for a gconvert request
+// validates params
+const createGConvertOpts = opts => {
+  const defaults = {
+    'output': 'mini',
+    'organism': 'hsapiens',
+    'target': NS_HGNC,
+    'prefix': 'ENTREZGENE_ACC'
+  };
+  let gConvertOpts = _.assign({}, defaults, opts);
+  let { query, target } = gConvertOpts;
 
-const mapQuery = query => query.join(' ');
-
-/*
- * mapParams
- * @param { object } params the input parameters
- */
-const mapParams = params => {
-  const target = mapTarget( params.target );
-  const query = mapQuery( params.query );
-  return _.assign({}, params, { target,  query });
-};
-
-/*
- * getForm
- * @param { array } query - Gene IDs
- * @param { object } userOptions
- * @returns { object } error and form
- */
-const getForm = ( query, defaultOptions, userOptions ) => {
-
-  let form = _.assign( {},
-    defaultOptions,
-    JSON.parse( JSON.stringify( userOptions ) ),
-    { query: query }
-  );
-
-  if ( !Array.isArray( form.query ) ) {
-    throw new InvalidParamError( 'Invalid query format' );
+  if( !Array.isArray( query ) ){
+    throw new InvalidParamError( `Error creating gconvert request - expected an array of strings for "query", got ${query}`);
+  }
+  let gconvertQuery = query.join(' ');
+  let gconvertTarget = GPROFILER_NS_MAP.get( target );
+  if( target == null ){
+    throw new InvalidParamError( `Error creating gconvert request - expected a valid targetDb, got ${target}`);
   }
 
-  return mapParams( form );
+  gConvertOpts.query = gconvertQuery;
+  gConvertOpts.target = gconvertTarget;
+
+  return gConvertOpts;
 };
 
 const gConvertResponseHandler = body =>  {
@@ -103,20 +91,12 @@ const gConvertResponseHandler = body =>  {
  * @param { object } userOptions - options
  * @return { object } list of unrecognized, object with duplicated and list of mapped IDs
  */
-const rawValidatorGconvert = ( query, userOptions = {} ) => {
-
-  const defaultOptions = {
-    'output': 'mini',
-    'organism': 'hsapiens',
-    'target': NS_HGNC,
-    'prefix': 'ENTREZGENE_ACC'
-  };
-
+const rawValidatorGconvert = ( query, opts = {} ) => {
   return Promise.resolve()
-    .then( () => getForm( query, defaultOptions, userOptions ) )
-    .then( form => fetch( GCONVERT_URL, {
+    .then( () => createGConvertOpts( _.assign(opts, { query }) ) )
+    .then( gconvertOpts => fetch( GCONVERT_URL, {
       method: 'post',
-      body: qs.stringify( form )
+      body: qs.stringify( gconvertOpts )
     }))
     .then( response => response.text() )
     .then( gConvertResponseHandler )
@@ -130,9 +110,9 @@ const pcCache = new QuickLRU({ maxSize: PC_CACHE_MAX_SIZE });
 
 const validatorGconvert = cachePromise(rawValidatorGconvert, pcCache);
 
-module.exports = { validatorGconvert,
-  getForm,
-  mapParams,
+module.exports = {
+  validatorGconvert,
+  createGConvertOpts,
   gConvertResponseHandler,
   GPROFILER_NS_MAP
 };

@@ -10,24 +10,24 @@ const { cachePromise } = require('../../cache');
 
 
 const GPROFILER_DEFAULT_OPTS = {
-  'output': 'mini',
-  'organism': 'hsapiens',
-  'significant': 0,
-  'sort_by_structure': 1,
-  'ordered_query': 0,
-  'as_ranges': 0,
-  'no_iea': 1,
-  'underrep': 0,
-  'hierfiltering': 'none',
-  'user_thr': 0.05,
-  'min_set_size': 5,
-  'max_set_size': 200,
-  'threshold_algo': 'fdr',
-  'domain_size_type': 'annotated',
-  'custbg': [],
+  output: 'mini',
+  organism: 'hsapiens',
+  significant: 0,
+  sort_by_structure: 1,
+  ordered_query: 0,
+  as_ranges: 0,
+  no_iea: 1,
+  underrep: 0,
+  hierfiltering: 'none',
+  user_thr: 0.05,
+  min_set_size: 5,
+  max_set_size: 200,
+  threshold_algo: 'fdr',
+  domain_size_type: 'annotated',
+  custbg: [],
   'sf_GO:BP': 1,
-  'sf_REAC': 1,
-  'prefix': 'ENTREZGENE_ACC'
+  sf_REAC: 1,
+  prefix: 'ENTREZGENE_ACC'
 };
 
 // parseGProfilerResponse(gProfilerResponse) takes the text response

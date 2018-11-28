@@ -42,10 +42,7 @@
                     "http://identifiers.org/reactome/R-HSA-6803403"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -90,10 +87,7 @@
                     "http://identifiers.org/reactome/R-HSA-6803411"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -132,10 +126,7 @@
                     "http://identifiers.org/reactome/R-HSA-6803405"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -187,10 +178,7 @@
                     "http://identifiers.org/ensembl/ENST00000244741"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -245,10 +233,7 @@
                     "http://identifiers.org/uniprot/P57723"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -303,10 +288,7 @@
                     "http://identifiers.org/uniprot/P57723"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -358,10 +340,7 @@
                     "http://identifiers.org/ensembl/ENST00000244741"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -406,10 +385,7 @@
                     "http://identifiers.org/pubmed/17719541"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -457,10 +433,7 @@
                     "http://identifiers.org/pubmed/8242752"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -509,10 +482,7 @@
                     "http://identifiers.org/reactome/R-HSA-6803801"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -563,10 +533,7 @@
                     "http://identifiers.org/uniprot/Q96PM9"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -629,10 +596,7 @@
                     "http://identifiers.org/uniprot/P38936"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -671,10 +635,7 @@
                     "http://identifiers.org/reactome/R-HSA-6803802"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -746,10 +707,7 @@
                     "http://identifiers.org/uniprot/P04637"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -810,10 +768,7 @@
                     "http://identifiers.org/hgnc.symbol/CDKN1A"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -864,10 +819,7 @@
                     "http://identifiers.org/uniprot/Q96PM9"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -928,10 +880,7 @@
                     "http://identifiers.org/hgnc.symbol/CDKN1A"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -970,10 +919,7 @@
                     "http://identifiers.org/reactome/R-HSA-3222171"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -1045,10 +991,7 @@
                     "http://identifiers.org/uniprot/P04637"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -1087,10 +1030,7 @@
                     "http://identifiers.org/reactome/R-HSA-6803718"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -1162,10 +1102,7 @@
                     "http://identifiers.org/uniprot/P04637"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -1216,10 +1153,7 @@
                     "http://identifiers.org/uniprot/Q96PM9"
                  ]
               }
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -1243,10 +1177,7 @@
            },
            "metadata":{
 
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      },
      {
@@ -1270,10 +1201,7 @@
            },
            "metadata":{
 
-           },
-           "geneSynonyms":[
-
-           ]
+           }
         }
      }
   ],

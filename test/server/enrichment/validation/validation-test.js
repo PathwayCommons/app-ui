@@ -116,11 +116,11 @@ describe ('Enrichment service: validation', function () {
     });
   });
 
-  describe ('Test gConvertResponseHandler()', function () {
+  describe ('Test gConvertResponseHandler', function () {
     it ('should return to a correct object', function () {
       const gConvertbodytxt = fs.readFileSync( path.resolve( __dirname, 'gconvert-body.txt' ), 'utf-8' );
       const result = gConvertResponseHandler( gConvertbodytxt );
-      expect ( result ).to.deep.equal ( validResult1 );
+      expect ( result ).to.deep.equal( validResult1 );
     });
   });
 

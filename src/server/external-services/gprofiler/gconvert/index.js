@@ -35,8 +35,9 @@ const createGConvertOpts = opts => {
   }
   let gconvertQuery = query.join(' ');
   let gconvertTarget = GPROFILER_NS_MAP.get( target );
-  if( target == null ){
-    throw new InvalidParamError( `Error creating gconvert request - expected a valid targetDb, got ${target}`);
+
+  if( gconvertTarget == null ){
+    throw new InvalidParamError( `Error creating gconvert request - expected a valid "targetDb", got ${target}`);
   }
 
   gConvertOpts.query = gconvertQuery;
@@ -71,6 +72,8 @@ const gConvertResponseHandler = body =>  {
       }
       duplicate[ convertedAlias ].add( initialAlias );
     }
+
+    alias[ initialAlias ] = convertedAlias;
   } );
 
   Object.keys( duplicate ).forEach( key => {

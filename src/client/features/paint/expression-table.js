@@ -132,14 +132,16 @@ const createRawExpressions = (expressionJSON, networkJSON) => {
   });
 
   networkJSON.nodes.forEach(node => {
-    const geneIntersection =  _.intersection([...expressionByGeneName.keys()], node.data.metadata.synonyms);
-    const isGenericMapping = !expressionByGeneName.has(node.data.label) && geneIntersection.length > 0;
+    const label = _.get(node, 'data.label', '');
+    const synonyms = _.get(node, 'data.metadata.synonyms', []);
+    const geneIntersection =  _.intersection([...expressionByGeneName.keys()], synonyms);
+    const isGenericMapping = !expressionByGeneName.has(label) && geneIntersection.length > 0;
 
     if (isGenericMapping) {
       const mappingCandidate = geneIntersection[0];
       const existingExpression = expressionByGeneName.get(mappingCandidate);
       expressionByGeneName.delete(mappingCandidate);
-      expressionByGeneName.set(node.data.label, {geneName: node.data.label, values: existingExpression.values, replaced: existingExpression});
+      expressionByGeneName.set(label, {geneName: label, values: existingExpression.values, replaced: existingExpression});
 
       for (const gene of geneIntersection) {
         expressionByGeneName.delete(gene);

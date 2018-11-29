@@ -26,7 +26,7 @@ let defaults = {
   DB_CERT: undefined,
   // factoid specific urls
   FACTOID_URL: 'http://unstable.factoid.baderlab.org/',
-  BIOPAX_CONVERTERS_URL: 'http://biopax.baderlab.org/',
+  BIOPAX_CONVERTERS_URL: 'http://biopax.baderlab.org/convert/v2/',
   NS_CHEBI: 'chebi',
   NS_ENSEMBL: 'ensembl',
   NS_GENECARDS: 'genecards',

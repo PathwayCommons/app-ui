@@ -19,7 +19,7 @@ let getFactoidJson = ( id ) => {
 
 let getFactoidBiopax = ( id ) => {
   return new Promise( ( resolve, reject ) => {
-    fetch( FACTOID_URL + 'api/document/biopax/' + id, { method: 'get', accept: 'application/xml'})
+    fetch( FACTOID_URL + 'api/document/biopax/' + id, { method: 'get', accept: 'application/vnd.biopax.rdf+xml'})
     .then( res => res.text() )
     .then( resolve )
     .catch( reject );
@@ -28,7 +28,7 @@ let getFactoidBiopax = ( id ) => {
 
 let biopax2Sbgn = biopax => {
   return new Promise(( resolve, reject ) => {
-    fetch( BIOPAX_CONVERTERS_URL + 'factoid-converters/v1/biopax-to-sbgn', {
+    fetch( BIOPAX_CONVERTERS_URL + 'biopax-to-sbgn', {
       method: 'post',
       body: biopax,
       headers: {

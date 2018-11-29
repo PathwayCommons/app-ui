@@ -64,50 +64,42 @@ const parseGProfilerResponse = gProfilerResponse => {
 };
 
 
-// enrichmemt(query, userSetting) takes a list of gene identifiers query
-// and an object of user settings userSetting
+// enrichmemt(query, opts) takes a list of gene identifiers query
+// and an object of user settings opts
 // and extracts enrichment information
 // from g:Profiler for the query list based on userSetting
-const rawEnrichment = (query, userSetting) => {
-  // map camelCase to snake case (g:Profiler uses snake case parameters)
-  userSetting = _.mapKeys(userSetting, (value, key) => {
-    if (key === 'minSetSize') return 'min_set_size';
-    if (key === 'maxSetSize') return 'max_set_size';
-    if (key === 'background') return 'custbg';
-    return key;
-  });
-
+const rawEnrichment = (query, opts) => {
   return new Promise((resolve, reject) => {
-    let formData = _.assign({}, GPROFILER_DEFAULT_OPTS, JSON.parse(JSON.stringify(userSetting)), { query: query });
-    let {
-      query: queryVal,
-      min_set_size: minSetSize,
-      max_set_size: maxSetSize,
-      custbg: backgroundGenes
-    } = formData;
+    let { minSetSize, maxSetSize, background } = opts;
 
-    if (!Array.isArray(queryVal)) {
+    if (!Array.isArray(query)) {
       reject(new Error('ERROR: genes should be an array'));
     }
-    formData.query = query.join(' ');
-    if (typeof(formData.min_set_size) != 'number') {
+    if( typeof(minSetSize) != 'number' ) {
       reject(new Error('ERROR: minSetSize should be a number'));
     }
-    if (minSetSize < 0) {
+    if( minSetSize < 0 ){
       reject(new Error('ERROR: minSetSize should be >= 0'));
     }
-    if (typeof(formData.max_set_size) != 'number') {
+    if( typeof(maxSetSize) != 'number' ){
       reject(new Error('ERROR: maxSetSize should be a number'));
     }
-    if (maxSetSize < minSetSize) {
+    if( maxSetSize < minSetSize ){
       reject(new Error('ERROR: maxSetSize should be >= minSetSize'));
     }
-    if (!Array.isArray(backgroundGenes)) {
+    if( !Array.isArray(background) ){
       reject(new Error('ERROR: backgroundGenes should be an array'));
     }
-    formData.custbg = backgroundGenes.join(' ');
 
-    fetch(GPROFILER_URL, { method: 'post', body: qs.stringify(formData)})
+    let gProfilerOpts = _.assign( {}, GPROFILER_DEFAULT_OPTS, {
+      query: query.sort().join(' '),
+      min_set_size: minSetSize,
+      max_set_size: maxSetSize,
+      custbg: background.join(' ')
+    } );
+
+
+    fetch(GPROFILER_URL, { method: 'post', body: qs.stringify(gProfilerOpts)})
       .then( res => res.text() )
       .then( gprofilerRes =>  parseGProfilerResponse( gprofilerRes ) )
       .then( pathwayInfo => resolve( pathwayInfo ) )

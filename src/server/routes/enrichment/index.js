@@ -126,19 +126,11 @@ enrichmentRouter.post('/validation', (req, res, next) => {
  *           "$ref": "#/definitions/error/analysisError"
 */
 // expose a rest endpoint for enrichment service
-enrichmentRouter.post('/analysis', (req, res) => {
-  const query = req.body.query.sort();
-  const tmpOptions = {
-    minSetSize: req.body.minSetSize,
-    maxSetSize: req.body.maxSetSize,
-    background: req.body.background
-  };
+enrichmentRouter.post('/analysis', (req, res, next) => {
+  let { query, minSetSize, maxSetSize, background } = req.body;
+  let opts = { minSetSize, maxSetSize, background };
 
-  enrichment(query, tmpOptions).then(enrichmentResult => {
-    res.json(enrichmentResult);
-  }).catch((err) => {
-    res.status(400).send(err.message);
-  });
+  enrichment(query, opts).then(enrichmentResult => res.json( enrichmentResult ) ).catch( next );
 });
 
 

@@ -96,7 +96,7 @@ let searchEnrichmentNodes = _.debounce((cy, query) => {
   let queryEmpty = _.trim(query) === '';
   let allNodes = cy.nodes();
   let matched = allNodes.filter( node =>
-    node.data('geneSet').join(' ').includes( query.toUpperCase() ) || node.data('description').toUpperCase().includes( query.toUpperCase() )
+    node.data('geneSet').join(' ').includes( query.toUpperCase() ) || node.data('name').toUpperCase().includes( query.toUpperCase() )
   );
 
   cy.batch(() => {

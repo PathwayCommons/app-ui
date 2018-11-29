@@ -15,7 +15,19 @@ const enrichmentStylesheet=cytoscape.stylesheet()
     'curve-style': 'haystack',
     'haystack-radius': 0,
     'line-color': '#555',
-    'width': 4
+    'width': edge => {
+      let similarity = edge.data('similarity');
+
+      if( similarity <= 0.3 ){
+        return 2;
+      }
+
+      if( similarity <= 0.75 ){
+        return 4;
+      }
+
+      return 12;
+    }
   })
 .selector('node')
   .css({

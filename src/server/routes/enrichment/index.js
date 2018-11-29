@@ -166,7 +166,7 @@ enrichmentRouter.post('/analysis', (req, res, next) => {
 */
 // Expose a rest endpoint for visualization service
 enrichmentRouter.post('/visualization', (req, res, next) => {
-  let { pathways, similarityCutoff, jaccardOverlapWeight } = req.body.pathways;
+  let { pathways, similarityCutoff, jaccardOverlapWeight } = req.body;
 
   Promise.resolve()
   .then( () => generateEnrichmentNetworkJson( pathways, similarityCutoff, jaccardOverlapWeight ) )

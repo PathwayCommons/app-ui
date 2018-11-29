@@ -70,7 +70,11 @@ const parseGProfilerResponse = gProfilerResponse => {
 // from g:Profiler for the query list based on userSetting
 const rawEnrichment = (query, opts) => {
   return new Promise((resolve, reject) => {
-    let { minSetSize, maxSetSize, background } = opts;
+    let {
+      minSetSize = GPROFILER_DEFAULT_OPTS.min_set_size,
+      maxSetSize = GPROFILER_DEFAULT_OPTS.max_set_size,
+      background = []
+    } = opts;
 
     if (!Array.isArray(query)) {
       reject(new Error('ERROR: genes should be an array'));

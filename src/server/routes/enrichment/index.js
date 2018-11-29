@@ -165,15 +165,13 @@ enrichmentRouter.post('/analysis', (req, res, next) => {
  *           "$ref": "#/definitions/error/visualizationError"
 */
 // Expose a rest endpoint for visualization service
-enrichmentRouter.post('/visualization', (req, res) => {
-  const pathways = req.body.pathways;
-  const similarityCutoff = req.body.similarityCutoff;
-  const jaccardOverlapWeight = req.body.jaccardOverlapWeight;
-  try {
-    res.json(generateEnrichmentNetworkJson(pathways, similarityCutoff, jaccardOverlapWeight));
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
+enrichmentRouter.post('/visualization', (req, res, next) => {
+  let { pathways, similarityCutoff, jaccardOverlapWeight } = req.body.pathways;
+
+  Promise.resolve()
+  .then( () => generateEnrichmentNetworkJson( pathways, similarityCutoff, jaccardOverlapWeight ) )
+  .then( enrichmentNetwork => res.json( enrichmentNetwork ) )
+  .catch( next );
 });
 
 

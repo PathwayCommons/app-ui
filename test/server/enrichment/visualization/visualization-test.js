@@ -1,12 +1,12 @@
 const chai = require('chai');
 const expect = chai.expect;
-const { generateGraphInfo } = require('../../../../src/server/routes/enrichment/visualization');
+const { generateEnrichmentNetworkJson } = require('../../../../src/server/routes/enrichment/visualization');
 
 //generateGraphInfo( pathways, similarityCutoff, jaccardOverlapWeight);
 
 describe('Test generateGraphInfo - Enrichment Vizualization Service', function () {
   it('parameters: all valid', function () {
-    const res = generateGraphInfo({"GO:0006354": { "p_value": .1 }, "GO:0006368": { "intersection": ["AFF4"] }}, 0.3, 0.55 );
+    const res = generateEnrichmentNetworkJson({"GO:0006354": { "p_value": .1 }, "GO:0006368": { "intersection": ["AFF4"] }}, 0.3, 0.55 );
     const result = {
       "unrecognized": [],
       "graph": {
@@ -15,7 +15,8 @@ describe('Test generateGraphInfo - Enrichment Vizualization Service', function (
             {
               "data": {
                 "id": "GO:0006354",
-                "p_value": 0.1,
+                "name": "DNA-templated transcription, elongation",
+                "intersection": [],
                 "geneCount": 129,
                 "geneSet": [
                   "TAF12",
@@ -153,11 +154,128 @@ describe('Test generateGraphInfo - Enrichment Vizualization Service', function (
             {
               "data": {
                 "id": "GO:0006368",
+                "name": "transcription elongation from RNA polymerase II promoter",
                 "intersection": [
                   "AFF4"
                 ],
                 "geneCount": 104,
                 "geneSet": [
+                    "BRD4",
+                    "CDK13",
+                    "GTF2F1",
+                    "PCID2",
+                    "ELP2",
+                    "POLR2B",
+                    "TCEA1",
+                    "ELOF1",
+                    "GTF2E1",
+                    "CCNK",
+                    "CCNH",
+                    "ELP1",
+                    "IWS1",
+                    "MLLT3",
+                    "CTDP1",
+                    "GTF2A2",
+                    "ELOA2",
+                    "CDK9",
+                    "WDR61",
+                    "TAF3",
+                    "AFF4",
+                    "ZMYND11",
+                    "NELFE",
+                    "POLR2D",
+                    "RNF8",
+                    "GTF2F2",
+                    "TAF6",
+                    "ELOA3B",
+                    "SOX10",
+                    "POLR2G",
+                    "POLR2J",
+                    "POLR2C",
+                    "CDK12",
+                    "ELOC",
+                    "RNF168",
+                    "EAPP",
+                    "POLR2F",
+                    "POLR2K",
+                    "TAF9B",
+                    "POLR2E",
+                    "TAF1L",
+                    "CCNT1",
+                    "ELP4",
+                    "AXIN1",
+                    "PAF1",
+                    "SSRP1",
+                    "GTF2H2",
+                    "SETD2",
+                    "TAF7",
+                    "GTF2E2",
+                    "RECQL5",
+                    "ELOA3D",
+                    "POLR2A",
+                    "GTF2A1",
+                    "SHH",
+                    "POLR2I",
+                    "SUPT4H1",
+                    "GTF2H1",
+                    "ELOA3",
+                    "SUPT5H",
+                    "CDC73",
+                    "NCBP1",
+                    "RTF1",
+                    "MNAT1",
+                    "TAF10",
+                    "TAF1",
+                    "TAF5",
+                    "EAF2",
+                    "ERCC2",
+                    "ENY2",
+                    "ELOB",
+                    "TAF2",
+                    "POLR2H",
+                    "NELFB",
+                    "TAF13",
+                    "CTR9",
+                    "GTF2H5",
+                    "TAF12",
+                    "GTF2H3",
+                    "MLLT1",
+                    "NCBP2",
+                    "CDK7",
+                    "LEO1",
+                    "TAF11",
+                    "TAF9",
+                    "ELL2",
+                    "ADRM1",
+                    "EAF1",
+                    "ELL3",
+                    "EZH2",
+                    "POLR2L",
+                    "TAF4",
+                    "SUPT16H",
+                    "GTF2H4",
+                    "GTF2B",
+                    "ELOA",
+                    "ELP3",
+                    "CCNT2",
+                    "TAF4B",
+                    "ELL",
+                    "SUPT6H",
+                    "NELFA",
+                    "ERCC3",
+                    "TBP"
+                ]
+              }
+            }
+          ],
+          "edges": [
+            {
+              "data": {
+                "id": "GO:0006354_GO:0006368",
+                "source": "GO:0006354",
+                "target": "GO:0006368",
+                "similarity": 0.8934108527131783,
+                "intersection": [
                   "BRD4",
                   "CDK13",
                   "GTF2F1",
@@ -265,122 +383,6 @@ describe('Test generateGraphInfo - Enrichment Vizualization Service', function (
                 ]
               }
             }
-          ],
-          "edges": [
-            {
-              "data": {
-                "id": "GO:0006354_GO:0006368",
-                "source": "GO:0006354",
-                "target": "GO:0006368",
-                "similarity": 0.8934108527131783,
-                "intersection": [
-                  "ADRM1",
-                  "AFF4",
-                  "AXIN1",
-                  "BRD4",
-                  "CCNH",
-                  "CCNK",
-                  "CCNT1",
-                  "CCNT2",
-                  "CDC73",
-                  "CDK12",
-                  "CDK13",
-                  "CDK7",
-                  "CDK9",
-                  "CTDP1",
-                  "CTR9",
-                  "EAF1",
-                  "EAF2",
-                  "EAPP",
-                  "ELL",
-                  "ELL2",
-                  "ELL3",
-                  "ELOA",
-                  "ELOA2",
-                  "ELOA3",
-                  "ELOA3B",
-                  "ELOA3D",
-                  "ELOB",
-                  "ELOC",
-                  "ELOF1",
-                  "ELP1",
-                  "ELP2",
-                  "ELP3",
-                  "ELP4",
-                  "ENY2",
-                  "ERCC2",
-                  "ERCC3",
-                  "EZH2",
-                  "GTF2A1",
-                  "GTF2A2",
-                  "GTF2B",
-                  "GTF2E1",
-                  "GTF2E2",
-                  "GTF2F1",
-                  "GTF2F2",
-                  "GTF2H1",
-                  "GTF2H2",
-                  "GTF2H3",
-                  "GTF2H4",
-                  "GTF2H5",
-                  "IWS1",
-                  "LEO1",
-                  "MLLT1",
-                  "MLLT3",
-                  "MNAT1",
-                  "NCBP1",
-                  "NCBP2",
-                  "NELFA",
-                  "NELFB",
-                  "NELFE",
-                  "PAF1",
-                  "PCID2",
-                  "POLR2A",
-                  "POLR2B",
-                  "POLR2C",
-                  "POLR2D",
-                  "POLR2E",
-                  "POLR2F",
-                  "POLR2G",
-                  "POLR2H",
-                  "POLR2I",
-                  "POLR2J",
-                  "POLR2K",
-                  "POLR2L",
-                  "RECQL5",
-                  "RNF168",
-                  "RNF8",
-                  "RTF1",
-                  "SETD2",
-                  "SHH",
-                  "SOX10",
-                  "SSRP1",
-                  "SUPT16H",
-                  "SUPT4H1",
-                  "SUPT5H",
-                  "SUPT6H",
-                  "TAF1",
-                  "TAF10",
-                  "TAF11",
-                  "TAF12",
-                  "TAF13",
-                  "TAF1L",
-                  "TAF2",
-                  "TAF3",
-                  "TAF4",
-                  "TAF4B",
-                  "TAF5",
-                  "TAF6",
-                  "TAF7",
-                  "TAF9",
-                  "TAF9B",
-                  "TBP",
-                  "TCEA1",
-                  "WDR61",
-                  "ZMYND11"
-                ]
-              }
-            }
           ]
         }
       }
@@ -390,14 +392,14 @@ describe('Test generateGraphInfo - Enrichment Vizualization Service', function (
 
   it('parameters: invalid similarityCutoff', function () {
     chai.assert.throws(function(){
-      generateGraphInfo({ "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}, 3.55 );},
+      generateEnrichmentNetworkJson({ "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}, 3.55 );},
       Error, "similarityCutoff out of range [0, 1]"
     );
   });
 
   it('parameters: invalid jaccardOverlapWeight', function () {
     chai.assert.throws(function(){
-      generateGraphInfo({ "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}, .55, 75 );},
+      generateEnrichmentNetworkJson({ "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}, .55, 75 );},
       Error, "jaccardOverlapWeight out of range [0, 1]"
     );
   });

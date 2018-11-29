@@ -5,8 +5,6 @@ const Loader = require('react-loader');
 const classNames = require('classnames');
 const queryString = require('query-string');
 
-const { NS_HGNC_SYMBOL } = require('../../../config');
-
 const EnrichmentToolbar = require('./enrichment-toolbar');
 const EmptyNetwork = require('../../common/components/empty-network');
 const PcLogoLink = require('../../common/components/pc-logo-link');
@@ -25,7 +23,6 @@ class Enrichment extends React.Component {
       sources: _.uniq(queryString.parse(props.location.search).source.split(',')),
       errored: false,
       loading: true,
-      invalidTokens: [],
       networkEmpty: false
     };
 
@@ -44,8 +41,7 @@ class Enrichment extends React.Component {
 
     let getNetworkJson = async () => {
       try {
-        let { unrecognized, alias } = await ServerAPI.enrichmentAPI({ query: sources, targetDb: NS_HGNC_SYMBOL }, 'validation');
-        let { pathwayInfo } = await ServerAPI.enrichmentAPI({ query: _.values( alias )}, 'analysis');
+        let { pathwayInfo } = await ServerAPI.enrichmentAPI({ query: sources}, 'analysis');
         let enrichmentNetwork = await ServerAPI.enrichmentAPI({ pathways: pathwayInfo }, 'visualization');
 
         cy.remove('*');
@@ -58,7 +54,6 @@ class Enrichment extends React.Component {
           stop: () => {
             this.setState({
               loading: false,
-              invalidTokens: unrecognized,
               openToolBar: true
             });
           }

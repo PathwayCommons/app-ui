@@ -1,14 +1,77 @@
 const _ = require('lodash');
-
 const { pathwayInfoTable } = require('./pathway-table');
-const { generateEdgeInfo, fetchPathwayInfo } = require('./generate-info');
 
+const createEnrichmentNetworkNode = pathwayInfo => {
+  let { pathwayId, geneSet, name, intersection } = pathwayInfo;
 
-// generateGraphInfo(pathways, similarityCutoff = 0.375, jaccardOverlapWeight) takes a
-// list of pathway information 'pathways', a number for cutoff point 'similarityCutoff'
-// and the weight for Jaccard coefficient 'jaccardOverlapWeight'
-// and returns the graph information for pathways based on 'similarityCutoff' and 'jaccardOverlapWeight'
-const generateGraphInfo = (pathways, similarityCutoff = 0.375, jaccardOverlapWeight) => {
+  return {
+    data: {
+      id: pathwayId,
+      intersection,
+      geneCount: geneSet.length,
+      geneSet,
+      name
+    }
+  };
+};
+
+// given two genelists, compute the intersection between them
+const pathwayIntersection = ( p1Genes, p2Genes ) => {
+  let s = new Set(p1Genes);
+
+  let intersection = [... new Set( p2Genes.filter( gene => s.has( gene ) ) ) ];
+
+  return intersection;
+};
+
+// pathwayPairGraph(geneset1, pathway2, jaccardOverlapWeight) takes two pathway IDs
+// pathway1 and pathway1 and a weight for Jaccard coefficient
+// and generates the edge information between pathway1 and pathway2
+const createEnrichmentNetworkEdge = (pathway1, pathway2, jaccardOverlapWeight) => {
+  let p1Genes = pathway1.geneSet;
+  let p2Genes = pathway2.geneSet;
+  let p1Id = pathway1.pathwayId;
+  let p2Id = pathway2.pathwayId;
+  let p1Length = p1Genes.length;
+  let p2Length = p2Genes.length;
+
+  let intersection = pathwayIntersection( p1Genes, p2Genes );
+  let ilen = intersection.length;
+
+  let similarity = jaccardOverlapWeight * (ilen / (p1Length + p2Length - ilen)) + (1 - jaccardOverlapWeight) * (ilen / Math.min(p1Length, p2Length));
+
+  return {
+    data: {
+      id: p1Id + '_' + p2Id,
+      source: p1Id,
+      target: p2Id,
+      intersection,
+      similarity
+    }
+  };
+};
+
+// create an edge for each unique pair of pathways P1 and P2.  Filter them 'similarityCutoff'
+// an edge is created when the similarity of pathways P1 and P2 is greated than the defined threshold 'similarityCutoff'
+const createEnrichmentNetworkEdges = (pathwayInfoList, jaccardOverlapWeight, similarityCutoff = 0.375) => {
+  let edges = [];
+  for (let i = 0; i < pathwayInfoList.length; ++i) {
+    for (let j = i + 1; j < pathwayInfoList.length; ++j) {
+      let edge = createEnrichmentNetworkEdge( pathwayInfoList[i], pathwayInfoList[j], jaccardOverlapWeight );
+      let { data } = edge;
+      let { similarity } = data;
+
+      if( similarity >= similarityCutoff ){
+        edges.push( edge );
+      }
+    }
+  }
+
+  return edges;
+};
+
+// generate cytoscape.js compatible network JSON for enrichment
+const generateEnrichmentNetworkJson = (pathways, similarityCutoff = 0.375, jaccardOverlapWeight = 0.5) => {
   if (similarityCutoff < 0 || similarityCutoff > 1) {
     throw new Error('ERROR: similarityCutoff out of range [0, 1]');
   }
@@ -21,63 +84,27 @@ const generateGraphInfo = (pathways, similarityCutoff = 0.375, jaccardOverlapWei
   if (jaccardOverlapWeight != undefined && typeof(jaccardOverlapWeight) != 'number') {
     throw new Error('ERROR: jaccardOverlapWeight should be a number');
   }
-  //default jaccardOverlapWeight = 0.5
-  if (jaccardOverlapWeight === undefined ) {
-    jaccardOverlapWeight = 0.5;
-  }
 
-  // check unrecognized and duplicates, modify pathwayIdList
-  const unrecognized = new Set();
-  for (let pathwayId in pathways) {
-    if (!pathways.hasOwnProperty(pathwayId)) continue;
-    if (!pathwayInfoTable.has(pathwayId)) {
+  // check unrecognized pathway ids and
+  let unrecognized = new Set();
+  let pathwayInfoList = [];
+  Object.keys( pathways ).forEach( pathwayId => {
+    let pathwayInfo = pathwayInfoTable.get( pathwayId );
+    let intersection = _.get(pathways, `${pathwayId}.intersection`, []);
+
+    if( pathwayInfo == null ){
       unrecognized.add(pathwayId);
-      delete pathways[pathwayId];
+    } else {
+      pathwayInfoList.push( _.assign( pathwayInfo, { intersection } ) );
     }
-  }
-  const pathwayIdList = [];
-  for (let pathwayId in pathways) {
-    if (!pathways.hasOwnProperty(pathwayId)) continue;
-    pathwayIdList.push(pathwayId);
-  }
-  // generate node and edge info
-  const elements = {};
-  elements.nodes = [];
-  elements.edges = [];
+  } );
 
-  const pathywayInfo = fetchPathwayInfo(pathwayIdList);
-  for (let pathwayId in pathways) {
-    if (!pathways.hasOwnProperty(pathwayId)) continue;
-    const geneCount = _.find(pathywayInfo, {pathwayId: pathwayId}).genes.length;
-    elements.nodes.push({
-      data: _.assign(
-        { id: pathwayId },
-        pathways[pathwayId],
-        {'geneCount': geneCount },
-        {'geneSet': _.find(pathywayInfo, {pathwayId: pathwayId}).genes }
-      )
-    });
-  }
+  let nodes = pathwayInfoList.map( pathwayInfo => createEnrichmentNetworkNode( pathwayInfo ) );
 
-  const edgeInfo = generateEdgeInfo(pathywayInfo, jaccardOverlapWeight, similarityCutoff);
-  _.forEach(edgeInfo, edge => {
-    const sourceIndex = 0;
-    const targetIndex = 1;
-    const sourceTarget = edge.edgeId.split('_');
-    const source = sourceTarget[sourceIndex];
-    const target = sourceTarget[targetIndex];
-    elements.edges.push({
-      data: {
-        id: edge.edgeId,
-        source: source,
-        target: target,
-        similarity: edge.similarity,
-        intersection: edge.intersection
-      }
-    });
-  });
-  return { unrecognized: Array.from(unrecognized), graph: {elements: elements} };
+  let edges = createEnrichmentNetworkEdges( pathwayInfoList, jaccardOverlapWeight, similarityCutoff );
+
+  return { unrecognized: Array.from(unrecognized), graph: { elements: { nodes, edges } } };
 };
 
 
-module.exports = { generateGraphInfo };
+module.exports = { generateEnrichmentNetworkJson };

@@ -15,7 +15,19 @@ const enrichmentStylesheet=cytoscape.stylesheet()
     'curve-style': 'haystack',
     'haystack-radius': 0,
     'line-color': '#555',
-    'width': 4
+    'width': edge => {
+      let similarity = edge.data('similarity');
+
+      if( similarity <= 0.3 ){
+        return 2;
+      }
+
+      if( similarity <= 0.75 ){
+        return 4;
+      }
+
+      return 12;
+    }
   })
 .selector('node')
   .css({
@@ -28,7 +40,7 @@ const enrichmentStylesheet=cytoscape.stylesheet()
     'text-max-width': 175,
     'width': node => getNodeSize(node),
     'height': node => getNodeSize(node),
-    'label': node => node.data('description'),
+    'label': node => node.data('name'),
     'min-zoomed-font-size': 5,
     'text-halign': 'center',
     'text-valign': 'center',

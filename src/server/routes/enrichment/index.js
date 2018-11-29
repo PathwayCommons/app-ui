@@ -4,7 +4,7 @@ const enrichmentRouter = express.Router();
 const swaggerJSDoc = require('swagger-jsdoc');
 
 const { validatorGconvert, enrichment } = require('../../external-services/gprofiler');
-const { generateGraphInfo } = require('./visualization');
+const { generateEnrichmentNetworkJson } = require('./visualization');
 
 // swagger definition
 let swaggerDefinition = {
@@ -126,19 +126,11 @@ enrichmentRouter.post('/validation', (req, res, next) => {
  *           "$ref": "#/definitions/error/analysisError"
 */
 // expose a rest endpoint for enrichment service
-enrichmentRouter.post('/analysis', (req, res) => {
-  const query = req.body.query.sort();
-  const tmpOptions = {
-    minSetSize: req.body.minSetSize,
-    maxSetSize: req.body.maxSetSize,
-    background: req.body.background
-  };
+enrichmentRouter.post('/analysis', (req, res, next) => {
+  let { query, minSetSize, maxSetSize, background } = req.body;
+  let opts = { minSetSize, maxSetSize, background };
 
-  enrichment(query, tmpOptions).then(enrichmentResult => {
-    res.json(enrichmentResult);
-  }).catch((err) => {
-    res.status(400).send(err.message);
-  });
+  enrichment(query, opts).then(enrichmentResult => res.json( enrichmentResult ) ).catch( next );
 });
 
 
@@ -173,15 +165,13 @@ enrichmentRouter.post('/analysis', (req, res) => {
  *           "$ref": "#/definitions/error/visualizationError"
 */
 // Expose a rest endpoint for visualization service
-enrichmentRouter.post('/visualization', (req, res) => {
-  const pathways = req.body.pathways;
-  const similarityCutoff = req.body.similarityCutoff;
-  const jaccardOverlapWeight = req.body.jaccardOverlapWeight;
-  try {
-    res.json(generateGraphInfo(pathways, similarityCutoff, jaccardOverlapWeight));
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
+enrichmentRouter.post('/visualization', (req, res, next) => {
+  let { pathways, similarityCutoff, jaccardOverlapWeight } = req.body;
+
+  Promise.resolve()
+  .then( () => generateEnrichmentNetworkJson( pathways, similarityCutoff, jaccardOverlapWeight ) )
+  .then( enrichmentNetwork => res.json( enrichmentNetwork ) )
+  .catch( next );
 });
 
 
@@ -406,9 +396,6 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *             id:
  *               type: string
  *               example: GO:0043525
- *             p_value:
- *               type: number
- *               example: 0.2
  *             geneCount:
  *               type: number
  *               example: 51

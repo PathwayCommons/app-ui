@@ -74,8 +74,8 @@ const rawEntitySearch = async tokens => {
   _.keys( aliasUniProt ).forEach( ncbiId => {
     const eSummary = _.find( summaries, s => s.localId === ncbiId );
     if ( eSummary ) eSummary.xrefLinks.push({
-      "namespace": NS_UNIPROT,
-      "uri": createUri(NS_UNIPROT, _.get( aliasUniProt, ncbiId ))
+      namespace: NS_UNIPROT,
+      uri: createUri(NS_UNIPROT, _.get( aliasUniProt, ncbiId ))
     });
   });
 
@@ -91,8 +91,8 @@ const rawEntitySearch = async tokens => {
     const indexOfSummary =  _.findIndex( summaries, s => s.localId ===  pair[1] );
 
     results.push({
-      "query": uniqueTokens[ indexOfToken ],
-      "summary": summaries[ indexOfSummary ]
+      query: uniqueTokens[ indexOfToken ],
+      summary: summaries[ indexOfSummary ]
     });
   });
 

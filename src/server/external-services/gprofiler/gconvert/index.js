@@ -22,7 +22,7 @@ const GPROFILER_NS_MAP = new Map([
 // validates params
 const createGConvertOpts = opts => {
   const defaults = {
-    ouput: 'mini',
+    output: 'mini',
     organism: 'hsapiens',
     target: NS_HGNC,
     prefix: 'ENTREZGENE_ACC'

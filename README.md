@@ -36,7 +36,6 @@ The following environment variables can be used to configure the server:
 - `NODE_ENV` : the environment mode, either `production` or `development` (default)
 - `PC_URL` : root Pathway Commons URL (default: 'http://www.pathwaycommons.org/')
 - `FACTOID_URL` : the Factoid app URL (default: 'http://unstable.factoid.baderlab.org/')
-- `BIOPAX_CONVERTERS_URL` : the BioPAX/SBGN micro-converter URL (default: 'http://biopax.baderlab.org/convert/v2/')
 - `PORT` : the port on which the server runs (default 3000)
 
 ### Configure RethinkDB

@@ -17,14 +17,14 @@ let getFactoidJson = ( id ) => {
   .then( res => res.json() );
 };
 
-let getFactoidBiopax = ( id ) => {
-  return new Promise( ( resolve, reject ) => {
-    fetch( FACTOID_URL + 'api/document/biopax/' + id, { method: 'get', accept: 'application/vnd.biopax.rdf+xml'})
-    .then( res => res.text() )
-    .then( resolve )
-    .catch( reject );
-  });
-};
+// let getFactoidBiopax = ( id ) => {
+//   return new Promise( ( resolve, reject ) => {
+//     fetch( FACTOID_URL + 'api/document/biopax/' + id, { method: 'get', accept: 'application/vnd.biopax.rdf+xml'})
+//     .then( res => res.text() )
+//     .then( resolve )
+//     .catch( reject );
+//   });
+// };
 
 let getFactoidSbgn = ( id ) => {
   return new Promise( ( resolve, reject ) => {
@@ -45,7 +45,6 @@ let getFactoidSbgnJson = id => {
     })
   );
 };
-
 
 router.get('/', ( req, res ) => getFactoidIdsJson().then( j => res.json( j ) ) );
 

@@ -3,7 +3,7 @@ const Promise = require('bluebird');
 const { fetch } = require('../../../util');
 const sbgn2CyJson = require('sbgnml-to-cytoscape');
 const _ = require('lodash');
-const { FACTOID_URL, BIOPAX_CONVERTERS_URL } = require('../../../config');
+const { FACTOID_URL } = require('../../../config');
 
 const router = express.Router();
 
@@ -26,29 +26,18 @@ let getFactoidBiopax = ( id ) => {
   });
 };
 
-let biopax2Sbgn = biopax => {
-  return new Promise(( resolve, reject ) => {
-    fetch( BIOPAX_CONVERTERS_URL + 'biopax-to-sbgn', {
-      method: 'post',
-      body: biopax,
-      headers: {
-        'Content-Type': 'application/vnd.biopax.rdf+xml',
-        'Accept': 'application/xml'
-      },
-    })
-    .then( res => res.text() )
-    .then( resolve )
-    .catch( reject );
+let getFactoidSbgn = ( id ) => {
+  return new Promise( ( resolve, reject ) => {
+    fetch( FACTOID_URL + 'api/document/sbgn/' + id, { method: 'get', accept: 'application/xml'})
+      .then( res => res.text() )
+      .then( resolve )
+      .catch( reject );
   });
 };
 
-
 let getFactoidSbgnJson = id => {
   return (
-    getFactoidBiopax( id )
-    .then( biopax => {
-      return biopax2Sbgn( biopax );
-    })
+    getFactoidSbgn( id )
     .then( sbgn => {
       let cyjson = sbgn2CyJson( sbgn );
 

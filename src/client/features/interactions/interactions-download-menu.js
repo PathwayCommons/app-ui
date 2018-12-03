@@ -23,7 +23,7 @@ class InteractionsDownloadMenu extends React.Component {
           scale: 2,
           bg: 'white',
           full: true
-        }), `${sources.join(',')}_interactions.png`);
+        }), `${sources.join('_')}_interactions.png`);
         this.setState({ loading: false });
       }, 1);
     };

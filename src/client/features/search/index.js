@@ -152,7 +152,7 @@ class Search extends React.Component {
     ]);
 
     const searchListing = h(Loader, { loaded: loaded, options: { left: '50%', color: '#16A085' } }, [
-      h('div.search-list-container', [
+      h('div.search-body', [
         h('div.search-tools', [
           h('div.search-result-filter', [searchResultFilter]),
           h('div.search-result-hit-count', [searchResultHitCount])
@@ -168,12 +168,10 @@ class Search extends React.Component {
       h('div.search-header-container', [
         h('div.search-header', [
           h('div.search-branding', [
-            h('div.search-title', [
-              h(PcLogoLink, { className: 'search-logo'})
-            ]),
+            h(PcLogoLink, { className: 'search-logo'} ),
             h('div.search-branding-descriptor', [
-              h('h2.search-pc-title', 'Pathway Commons'),
-              h('h1.search-search-title', 'Search')
+              h('h2.search-subtitle', 'Pathway Commons'),
+              h('h1.search-title', 'Search')
             ])
           ]),
           h('div.search-searchbar-container', {
@@ -201,7 +199,7 @@ class Search extends React.Component {
             ])
         ])
       ]),
-      h('div.search-body', [searchBody])
+      h('div', [searchBody])
     ]);
   }
 }

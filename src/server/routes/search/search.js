@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const logger = require('../../logger');
 
-const { NS_NCBI_GENE, NS_HGNC_SYMBOL } = require('../../../config');
+const { NS_NCBI_GENE, NS_HGNC_SYMBOL, NS_UNIPROT } = require('../../../config');
 const { validatorGconvert } = require('../../external-services/gprofiler/gconvert');
 const pc = require('../../external-services/pathway-commons');
 const { entityFetch } = require('../summary/entity');
@@ -9,7 +9,6 @@ const { entityFetch } = require('../summary/entity');
 const QUERY_MAX_CHARS = 5000; //temp - to be in config
 const QUERY_MAX_TOKENS = 100; //temp - to be in config
 const RAW_SEARCH_MAX_CHARS = 250; //temp - to be in config
-const INTERACTION_GENES_COUNT_THRESHOLD = 5;
 
 const PATHWAY_SEARCH_DEFAULTS = {
   q: '',
@@ -27,38 +26,64 @@ const hgncSymbolsFromXrefs = xrefLinks => {
 const sanitize = ( rawQuery, maxLength = QUERY_MAX_CHARS ) => rawQuery.trim().substring( 0, maxLength );
 const tokenize = ( rawQuery, maxNum = QUERY_MAX_TOKENS ) => rawQuery.split(/,?\s+/).slice( 0, maxNum ); //  limit token size?
 
-// Map tokens to a given collection (NS_NCBI_GENE)
-const pickEntityIds = async ( query, namespace = NS_NCBI_GENE ) => {
+// Take the entity summaries (summaries) and augment with xref corresponding to recommended name (name)
+// Only alter those summaries that have a mapping (alias).
+const fillInXref = async ( summaries, alias, name ) => {
+   const mappedIds = _.keys( alias );
+   for( const id of mappedIds ){
+    const eSummary = _.find( summaries, s => s.localId === id );
+    if ( eSummary ) await pc.xref2Uri( name, _.get( alias, id ) ).then( xref => eSummary.xrefLinks.push( xref ) );
+   }
+};
+
+// Create an entity summary using NCBI, augmented with UniProt Xref
+const getNcbiSummary = async ( ncbiAlias, uniprotAlias ) => {
+  const ncbiIds = _.values( ncbiAlias );
+  const summaries = await entityFetch( ncbiIds, NS_NCBI_GENE );
+  await fillInXref( summaries, uniprotAlias, NS_UNIPROT );
+  return summaries;
+};
+
+// Collect the summary, HGNC symbol and original query
+const getGeneInfo = async ( uniqueTokens, ncbiAlias, uniprotAlias ) => {
+  let geneInfo = [];
+  const eSummaries = await getNcbiSummary( ncbiAlias, uniprotAlias );
+
+  _.entries( ncbiAlias ).forEach( pair => { // pair is [ <token>, <ncbi gene id>]
+    // get index of the original input token (must exist)
+    const indexOfToken =  _.findIndex( uniqueTokens, t => t.toUpperCase() ===  pair[0] );
+    // get index of the summary (must exist)
+    const indexOfSummary =  _.findIndex( eSummaries, s => s.localId ===  pair[1] );
+    const summary = eSummaries[ indexOfSummary ];
+    geneInfo.push({
+      query: uniqueTokens[ indexOfToken ],
+      geneSymbol: hgncSymbolsFromXrefs( summary.xrefLinks ),
+      summary
+    });
+  });
+  return geneInfo;
+};
+
+// Return information about genes
+const searchGenes = query => {
+
   const tokens = tokenize( query );
   const uniqueTokens = _.uniq( tokens );
-  const { alias } = await validatorGconvert( uniqueTokens, { target: namespace } );
-  const geneIds = _.values( alias );
-  return geneIds;
-};
 
-// Get the info related to gene-based interactions
-const geneInteraction = async entityIds => {
-  const summaries = await entityFetch( entityIds, NS_NCBI_GENE );
-  const sources = summaries.map( summary => hgncSymbolsFromXrefs( summary.xrefLinks ) );
-  return { sources, summaries };
-};
-
-// Return information about networks
-// Logic herein decides type of data (genes [, pathways])
-const searchNetworks = async query => {
-  const result = {};
-
-  try {
-    const entityIds = await pickEntityIds( query );
-    if ( entityIds.length && entityIds.length <= INTERACTION_GENES_COUNT_THRESHOLD ) {
-      result.genes = await geneInteraction( entityIds );
-    }
-    return result;
-
-  } catch( error ) { //swallow
-    logger.error( `An error was encountered in searchInteractions - ${error}` );
-    return result;
-  }
+  return Promise.all([
+    uniqueTokens,
+    validatorGconvert( uniqueTokens, { target: NS_NCBI_GENE } ),
+    validatorGconvert( uniqueTokens, { target: NS_UNIPROT } )
+  ])
+  .then( ([ uniqueTokens, ncbiValidation, uniprotValidation ]) => {
+    const { alias: ncbiAlias } = ncbiValidation;
+    const { alias: uniprotAlias } = uniprotValidation;
+    return getGeneInfo( uniqueTokens, ncbiAlias, uniprotAlias );
+  })
+  .catch( error => {
+    logger.error( `An error was encountered in searchGenes - ${error}` );
+    return []; //swallow
+  });
 };
 
 // Simple wrapper for pc search
@@ -74,8 +99,8 @@ const searchPathways = query => {
  * @param { String } query Raw input to search by
  */
 const search = async ( query ) => {
-  return Promise.all([ searchNetworks( query ), searchPathways( query ) ])
-    .then( ([ networks, pathways ]) => ({ networks, pathways }) );
+  return Promise.all([ searchGenes( query ), searchPathways( query ) ])
+    .then( ([ genes, pathways ]) => ({ genes, pathways }) );
 };
 
 module.exports = { search };

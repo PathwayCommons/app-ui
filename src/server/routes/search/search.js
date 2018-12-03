@@ -27,20 +27,24 @@ const sanitize = ( rawQuery, maxLength = QUERY_MAX_CHARS ) => rawQuery.trim().su
 const tokenize = ( rawQuery, maxNum = QUERY_MAX_TOKENS ) => rawQuery.split(/,?\s+/).slice( 0, maxNum ); //  limit token size?
 
 // Take the entity summaries (summaries) and augment with xref corresponding to recommended name (name)
-// Only alter those summaries that have a mapping (alias).
-const fillInXref = async ( summaries, alias, name ) => {
-   const mappedIds = _.keys( alias );
-   for( const id of mappedIds ){
-    const eSummary = _.find( summaries, s => s.localId === id );
-    if ( eSummary ) await pc.xref2Uri( name, _.get( alias, id ) ).then( xref => eSummary.xrefLinks.push( xref ) );
-   }
+const fillInXref = async ( summaries, ncbiAlias, uniprotAlias, name ) => {
+  const tokensWithUniprot = _.keys( uniprotAlias );
+  for( const token of tokensWithUniprot ){
+    const ncbiGeneId = ncbiAlias[ token ];
+    const eSummary = _.find( summaries, s => s.localId === ncbiGeneId );
+    if ( eSummary ) {
+      // Use our internal service to grab the xref info
+      const xref = await pc.xref2Uri( name, _.get( uniprotAlias, token ) );
+      eSummary.xrefLinks.push( xref );
+    }
+  }
 };
 
 // Create an entity summary using NCBI, augmented with UniProt Xref
 const getNcbiSummary = async ( ncbiAlias, uniprotAlias ) => {
   const ncbiIds = _.values( ncbiAlias );
   const summaries = await entityFetch( ncbiIds, NS_NCBI_GENE );
-  await fillInXref( summaries, uniprotAlias, NS_UNIPROT );
+  await fillInXref( summaries, ncbiAlias, uniprotAlias, NS_UNIPROT );
   return summaries;
 };
 

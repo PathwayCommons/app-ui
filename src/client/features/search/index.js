@@ -165,38 +165,36 @@ class Search extends React.Component {
     const searchBody =  this.props.notFoundError ? notFoundErrorMessage : searchListing;
 
     return h('div.search', [
-      h('div.search-header-container', [
-        h('div.search-header', [
-          h('div.search-branding', [
-            h(PcLogoLink, { className: 'search-logo'} ),
-            h('div.search-branding-descriptor', [
-              h('h2.search-subtitle', 'Pathway Commons'),
-              h('h1.search-title', 'Search')
+      h('div.search-header', [
+        h('div.search-branding', [
+          h(PcLogoLink, { className: 'search-logo'} ),
+          h('div.search-branding-descriptor', [
+            h('h2.search-subtitle', 'Pathway Commons'),
+            h('h1.search-title', 'Search')
+          ])
+        ]),
+        h('div.search-searchbar-container', {
+          ref: dom => this.searchBar = dom
+        }, [
+          h('div.search-searchbar', [
+            h('input', {
+              type: 'text',
+              placeholder: 'Enter pathway name or gene names',
+              value: state.query.q,
+              maxLength: 250, // 250 chars max of user input
+              onChange: e => this.onSearchValueChange(e),
+              onKeyPress: e => this.onSearchValueChange(e)
+            }),
+            h(Link, { to: { pathname: '/search', search: queryString.stringify(state.query)},className:"search-search-button"}, [
+              h('i.material-icons', 'search')
             ])
           ]),
-          h('div.search-searchbar-container', {
-            ref: dom => this.searchBar = dom
-          }, [
-              h('div.search-searchbar', [
-                h('input', {
-                  type: 'text',
-                  placeholder: 'Enter pathway name or gene names',
-                  value: state.query.q,
-                  maxLength: 250, // 250 chars max of user input
-                  onChange: e => this.onSearchValueChange(e),
-                  onKeyPress: e => this.onSearchValueChange(e)
-                }),
-                h(Link, { to: { pathname: '/search', search: queryString.stringify(state.query)},className:"search-search-button"}, [
-                  h('i.material-icons', 'search')
-                ])
-              ]),
-              h('div.search-suggestions', [
-                'e.g. ',
-                h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, state.query, {q: 'cell cycle'})) }}, 'cell cycle, '),
-                h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, state.query, {q: 'TP53 MDM2'})) }}, 'TP53 MDM2, '),
-                h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, state.query, {q: 'P04637'})) }}, 'P04637')
-              ])
-            ])
+          h('div.search-suggestions', [
+            'e.g. ',
+            h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, state.query, {q: 'cell cycle'})) }}, 'cell cycle, '),
+            h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, state.query, {q: 'TP53 MDM2'})) }}, 'TP53 MDM2, '),
+            h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, state.query, {q: 'P04637'})) }}, 'P04637')
+          ])
         ])
       ]),
       h('div', [searchBody])

@@ -23,7 +23,7 @@ class InteractionsDownloadMenu extends React.Component {
           scale: 2,
           bg: 'white',
           full: true
-        }), `${sources.join(',')}_interactions.png`);
+        }), `${sources.join('_')}_interactions.png`);
         this.setState({ loading: false });
       }, 1);
     };
@@ -35,7 +35,7 @@ class InteractionsDownloadMenu extends React.Component {
     let { cySrv, sources } = this.props;
     let edgeIds = cySrv.get().edges().map( edge => edge.data('id') ).sort().join('\n');
 
-    saveAs(new File([edgeIds], `${sources.join(',')}_interactions.sif` , { type: 'text/plain;charset=utf-8' }));
+    saveAs(new File([edgeIds], `${sources.join('_')}_interactions.sif` , { type: 'text/plain;charset=utf-8' }));
   }
 
   render() {

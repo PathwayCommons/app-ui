@@ -10,9 +10,7 @@ const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services/');
 
 const InteractionsToolbar = require('./interactions-toolbar');
-const EmptyNetwork = require('../../common/components/empty-network');
-const PcLogoLink = require('../../common/components/pc-logo-link');
-const CytoscapeNetwork = require('../../common/components/cytoscape-network');
+const { EmptyNetwork, PcLogoLink, CytoscapeNetwork } = require('../../common/components/');
 
 const { interactionsStylesheet, interactionsLayoutOpts, bindEvents } = require('./cy');
 

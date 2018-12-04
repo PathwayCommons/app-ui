@@ -6,9 +6,7 @@ const classNames = require('classnames');
 const queryString = require('query-string');
 
 const EnrichmentToolbar = require('./enrichment-toolbar');
-const EmptyNetwork = require('../../common/components/empty-network');
-const PcLogoLink = require('../../common/components/pc-logo-link');
-const CytoscapeNetwork = require('../../common/components/cytoscape-network');
+const { EmptyNetwork, PcLogoLink, CytoscapeNetwork } = require('../../common/components/');
 
 const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services');

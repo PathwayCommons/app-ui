@@ -86,7 +86,7 @@ const searchGenes = query => {
   })
   .catch( error => {
     logger.error( `An error was encountered in searchGenes - ${error}` );
-    return []; //swallow
+    return null; //swallow
   });
 };
 

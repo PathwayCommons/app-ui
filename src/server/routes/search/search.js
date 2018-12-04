@@ -68,6 +68,8 @@ const getGeneInfo = async ( uniqueTokens, ncbiAlias, uniprotAlias ) => {
   return geneInfo;
 };
 
+const errorHandler = () => [];
+
 // Return information about genes
 const searchGenes = query => {
 
@@ -84,17 +86,15 @@ const searchGenes = query => {
     const { alias: uniprotAlias } = uniprotValidation;
     return getGeneInfo( uniqueTokens, ncbiAlias, uniprotAlias );
   })
-  .catch( error => {
-    logger.error( `An error was encountered in searchGenes - ${error}` );
-    return null; //swallow
-  });
+  .catch( errorHandler );
 };
 
 // Simple wrapper for pc search
 const searchPathways = query => {
   const sanitized = sanitize( query, RAW_SEARCH_MAX_CHARS );
   const opts = _.assign( {}, PATHWAY_SEARCH_DEFAULTS, { q: sanitized });
-  return pc.search( opts );
+  return pc.search( opts )
+    .catch( errorHandler );
 };
 
 /**

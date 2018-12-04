@@ -26,9 +26,9 @@ let query = opts => {
 
   return fetch(url, fetchOptions)
     .then(res => ( cmd === 'pc2/get' || cmd === 'pc2/graph' ? res.text() : res.json() ) )
-    .catch((e) => {
+    .catch( e => {
       logger.error('query ' + queryOpts + ' failed - ' + e);
-      return null;
+      throw e;
     });
 };
 

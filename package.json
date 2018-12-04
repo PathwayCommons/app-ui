@@ -32,8 +32,8 @@
     "lint": "run-s lint:*",
     "watch": "run-p watch:*",
     "test": "mocha --recursive",
-    "test:travis": "run-s test lint",
-    "ci": "run-s test lint",
+    "test:travis": "run-s test lint build-prod",
+    "ci": "run-s test lint build-prod",
     "debug": "node --inspect ./src/server"
   },
   "dependencies": {

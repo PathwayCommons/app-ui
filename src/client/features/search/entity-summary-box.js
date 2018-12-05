@@ -36,33 +36,29 @@ class EntitySummaryBox extends React.Component {
   }
   render(){
     let { summary } = this.props;
-    let { displayName, description, aliasIds, xrefLinks } = summary;
+    let { displayName, aliasIds, xrefLinks } = summary;
     const hgncSymbol = getHgncFromXref( xrefLinks );
 
-    let sortedLinks = xrefLinks.sort( (p1, p2) => p1.namespace > p2.namespace ? 1: -1 )
+    // sometimes duplicated namespace/uri pairs are received e.g. uniprot/tp53 twice
+    let sortedLinks = _.uniqWith(xrefLinks.sort( (p1, p2) => p1.namespace > p2.namespace ? 1: -1 ), (p1, p2) => p1.namespace === p2.namespace )
         .map( link => h( 'a.plain-link', { href: link.uri, target:'_blank' }, SUPPORTED_COLLECTIONS.get( link.namespace ) ) );
 
-    let moreInfo = h('div.entity-more-info',[
-      h('div.entity-names', [
-        h('div.entity-other-names', [
-          h('h5', 'Other Names'),
-          aliasIds.slice(0, ENTITY_OTHER_NAMES_LIMIT).join(', ')
-        ])
-      ]),
-      description != '' ? h('div.entity-description', [
-        h('h5', 'Description'),
-        h('div', [ description ])
-      ]) : null
-    ]);
-
-    return (
+        return (
       h('div.entity-summary-box', [
-        h('div.entity-summary-title', { onClick: () => this.setState({ expanded: !this.state.expanded }) }, [
-          h('h3.entity-title', `${hgncSymbol}: ${displayName}`),
-          ...sortedLinks,
-          this.state.expanded ? h('i.material-icons', 'expand_more') : h('i.material-icons', 'keyboard_arrow_right')
+          h('h5.entity-subtitle', displayName),
+          h('h3.entity-title', hgncSymbol),
+        h('div.entity-names', [
+          h('div.entity-other-names', [
+            h('h5', 'Other Names'),
+            aliasIds.slice(0, ENTITY_OTHER_NAMES_LIMIT).join(', ')
+          ])
         ]),
-        this.state.expanded ? moreInfo : null
+        h('h5', 'Learn more'),
+        h('div.entity-links-container', [
+          ...sortedLinks
+
+
+        ])
       ])
     );
 

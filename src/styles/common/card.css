@@ -1,14 +1,15 @@
 .card {
-  height: 200px;
+  height: 145px;
   width: 350px;
-
   border: 1px solid var(--light-base-colour-dark);
-  overflow: scroll;
+  overflow: hidden;
+  margin-right: 0.25em;
+  margin-bottom: 0.25em;
 }
 
 .card-grid {
   display: flex;
   flex-flow: row wrap;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: flex-start;
 }

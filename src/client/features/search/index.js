@@ -30,6 +30,7 @@ class Search extends React.Component {
       entitySummaryResults: {},
       entitySummaryResultsLoading: false,
       searchResults: [],
+      geneCarouselIndex: 0,
       searchLoading: false
     };
   }
@@ -132,11 +133,17 @@ class Search extends React.Component {
   }
 
   render() {
-    const state = this.state;
-    const entitySummaryResults = state.entitySummaryResults;
-    const loaded = !(state.searchLoading || state.entitySummaryResultsLoading);
+    const {
+      entitySummaryResults,
+      searchResults,
+      geneCarouselIndex,
+      searchLoading,
+      entitySummaryResultsLoading,
+      query
+    } = this.state;
+    const loaded = !(searchLoading || entitySummaryResultsLoading);
 
-    const searchResults = state.searchResults.map(result => {
+    const searchList = searchResults.map(result => {
       let datasourceUri = _.get(result, 'dataSource.0', '');
       let dsInfo = Datasources.findByUri(datasourceUri);
       let iconUrl = dsInfo.iconUrl || '';
@@ -156,7 +163,7 @@ class Search extends React.Component {
 
     const searchResultFilter = h('div.search-filters', [
       h('select.search-datasource-filter', {
-        value: !Array.isArray(state.query.datasource) ? state.query.datasource : '',
+        value: !Array.isArray(query.datasource) ? query.datasource : '',
         multiple: false,
         onChange: e => this.setAndSubmitSearchQuery({ datasource: e.target.value })
       }, [
@@ -178,18 +185,21 @@ class Search extends React.Component {
         entitySummaryResults.length > 0 ? h('div.search-genes-results', [
           h('h3.search-genes-header', `Genes (${entitySummaryResults.length})`),
           h('div.card-grid', [
-            ...entitySummaryResults.map( s => h('div.card.card-large', [
-              h(EntitySummaryBox, { summary: _.get(s, 'summary') } )
-            ]) ),
-            h('div', this.determineAppsToDisplay())
+
+            ...entitySummaryResults.slice(geneCarouselIndex, geneCarouselIndex + 2).map( s => {
+              return h('div.card.card-large', [
+                h(EntitySummaryBox, { summary: _.get(s, `summary`) } )
+              ]);
+            }),
+            h('div.card', this.determineAppsToDisplay())
           ])
         ]) : null,
-        searchResults.length > 0 ? h('div.search-pathway-results', [
+        searchList.length > 0 ? h('div.search-pathway-results', [
           h('div.search-tools', [
-            h('h3.search-pathways-header', `Pathways (${searchResults.length})`),
+            h('h3.search-pathways-header', `Pathways (${searchList.length})`),
             h('div.search-result-filter', [searchResultFilter])
           ]),
-          ...searchResults
+          ...searchList
         ]) : null
       ])
     ]);
@@ -212,20 +222,20 @@ class Search extends React.Component {
             h('input', {
               type: 'text',
               placeholder: 'Enter pathway name or gene names',
-              value: state.query.q,
+              value: query.q,
               maxLength: 250, // 250 chars max of user input
               onChange: e => this.onSearchValueChange(e),
               onKeyPress: e => this.onSearchValueChange(e)
             }),
-            h(Link, { to: { pathname: '/search', search: queryString.stringify(state.query)},className:"search-search-button"}, [
+            h(Link, { to: { pathname: '/search', search: queryString.stringify(query)},className:"search-search-button"}, [
               h('i.material-icons', 'search')
             ])
           ]),
           h('div.search-suggestions', [
             'e.g. ',
-            h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, state.query, {q: 'cell cycle'})) }}, 'cell cycle, '),
-            h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, state.query, {q: 'TP53 MDM2'})) }}, 'TP53 MDM2, '),
-            h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, state.query, {q: 'P04637'})) }}, 'P04637')
+            h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, query, {q: 'cell cycle'})) }}, 'cell cycle, '),
+            h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, query, {q: 'TP53 MDM2'})) }}, 'TP53 MDM2, '),
+            h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, query, {q: 'P04637'})) }}, 'P04637')
           ])
         ])
       ]),

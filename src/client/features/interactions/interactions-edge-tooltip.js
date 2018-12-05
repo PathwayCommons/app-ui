@@ -51,7 +51,7 @@ class InteractionsEdgeTooltip extends React.Component {
     });
 
     let detailedViewsList = pcIds.map( (pcId, index)  => {
-      return h('a.plain-link', { href: '/pathways?' + queryString.stringify({ uri: pcId }), target: '_blank' }, ` ${index + 1} `);
+      return h('a.plain-link.cy-tooltip-number-link', { href: '/pathways?' + queryString.stringify({ uri: pcId }), target: '_blank' }, ` ${index + 1} `);
     } );
 
     return h('div.cy-tooltip', [

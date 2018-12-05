@@ -42,8 +42,6 @@ class EnrichmentTooltip extends React.Component {
     let id = node.data('id');
     let sharedGeneList = node.data('intersection').sort();
     let sharedGeneCount = sharedGeneList.length;
-    let geneSet = node.data('geneSet').sort();
-    let geneCount = node.data('geneCount');
     let dbInfo = {};
 
     if( id.includes('GO') ) dbInfo = {name: 'Gene Ontology', url:'http://identifiers.org/go/' + id};
@@ -62,17 +60,6 @@ class EnrichmentTooltip extends React.Component {
           h('div.cy-tooltip-section', [
             h('div.cy-tooltip-field-name', 'Genes Shared with Entered List (' + sharedGeneCount + ')'),
             h('div.cy-tooltip-field-value', sharedGeneList.join(', ')),
-          ]),
-          h('div.cy-tooltip-section', [
-            h('div.cy-tooltip-field-name', 'Genes in Pathway (' + geneCount + ')'),
-            h('div.cy-tooltip-field-value', [
-              h('div.enrichment-tooltip-gene-list', geneSet.map( ( gene, index ) => {
-                return h('div.enrichment-tooltip-gene-link', [
-                  h('a.plain-link', { target: '_blank', href: '/search?q=' + gene }, gene),
-                  index === geneSet.length - 1 ? '': ','
-                ]);
-              }))
-            ])
           ])
         ]),
         h('div.cy-tooltip-footer', [

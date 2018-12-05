@@ -71,8 +71,8 @@ const errorHandler = () => [];
 
 // Return information about genes
 const searchGenes = query => {
-
-  const tokens = tokenize( query );
+  const rawQuery = query.q;
+  const tokens = tokenize( rawQuery );
   const uniqueTokens = _.uniq( tokens );
 
   return Promise.all([
@@ -90,7 +90,8 @@ const searchGenes = query => {
 
 // Simple wrapper for pc search
 const searchPathways = query => {
-  const sanitized = sanitize( query, RAW_SEARCH_MAX_CHARS );
+  const rawQuery = query.q;
+  const sanitized = sanitize( rawQuery, RAW_SEARCH_MAX_CHARS );
   const opts = _.assign( {}, PATHWAY_SEARCH_DEFAULTS, { q: sanitized });
   return pc.search( opts )
     .catch( errorHandler );
@@ -103,7 +104,9 @@ const searchPathways = query => {
  */
 const search = async ( query ) => {
   return Promise.all([ searchGenes( query ), searchPathways( query ) ])
-    .then( ([ genes, pathways ]) => ({ genes, pathways }) );
+    .then( ([ genes, pathways ]) => {
+      return { genes, pathways };
+    } );
 };
 
 module.exports = { search };

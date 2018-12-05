@@ -10,7 +10,8 @@ class EnrichmentTooltip extends React.Component {
     super(props);
 
     this.state = {
-      description: ''
+      description: '',
+      descriptionLoaded: false
     };
   }
 
@@ -24,14 +25,18 @@ class EnrichmentTooltip extends React.Component {
     if( isGOId ){
       ServerAPI.getGoInformation( id.replace('GO:', '') ).then( res => {
         let description = _.get(res, 'results[0].definition.text', descriptionOnFail);
-        this.setState({ description });
+        let update = () => this.setState({ description, descriptionLoaded: true });
+
+        update();
       });
     }
 
     if( isReactomeId ){
       ServerAPI.getReactomeInformation( id.replace('REAC:', 'R-HSA-') ).then( res => {
         let description = _.get(res, 'summation[0].text', descriptionOnFail);
-        this.setState({ description });
+        let update = () => this.setState({ description, descriptionLoaded: true });
+
+        update();
       });
     }
   }
@@ -42,17 +47,30 @@ class EnrichmentTooltip extends React.Component {
     let id = node.data('id');
     let sharedGeneList = node.data('intersection').sort();
     let sharedGeneCount = sharedGeneList.length;
-    let geneSet = node.data('geneSet').sort();
-    let geneCount = node.data('geneCount');
     let dbInfo = {};
 
     if( id.includes('GO') ) dbInfo = {name: 'Gene Ontology', url:'http://identifiers.org/go/' + id};
     else if( id.includes('REAC') ) dbInfo = {name: 'Reactome', url:'http://identifiers.org/reactome/' + id.replace("REAC:", "R-HSA-") };
 
+    if( !this.state.descriptionLoaded ){
+      return h('div.cy-tooltip', [
+        h('div.cy-tooltip-content', [
+          h('div.cy-tooltip-header',[
+            h('h2.cy-tooltip-title', 'Loading...')
+          ]),
+          h('div.cy-tooltip-body', [
+            h('div.cy-tooltip-loading-section', [
+              h('i.icon.icon-spinner')
+            ])
+          ])
+        ])
+      ]);
+    }
+
     return h('div.cy-tooltip', [
       h('div.cy-tooltip-content', [
         h('div.cy-tooltip-header',[
-          h('h2.cy-tooltip-title', title)
+          h('h2.cy-tooltip-title', title[0].toUpperCase() + title.substr(1))
         ]),
         h('div.cy-tooltip-body', [
           h('div.cy-tooltip-section', [
@@ -62,17 +80,6 @@ class EnrichmentTooltip extends React.Component {
           h('div.cy-tooltip-section', [
             h('div.cy-tooltip-field-name', 'Genes Shared with Entered List (' + sharedGeneCount + ')'),
             h('div.cy-tooltip-field-value', sharedGeneList.join(', ')),
-          ]),
-          h('div.cy-tooltip-section', [
-            h('div.cy-tooltip-field-name', 'Genes in Pathway (' + geneCount + ')'),
-            h('div.cy-tooltip-field-value', [
-              h('div.enrichment-tooltip-gene-list', geneSet.map( ( gene, index ) => {
-                return h('div.enrichment-tooltip-gene-link', [
-                  h('a.plain-link', { target: '_blank', href: '/search?q=' + gene }, gene),
-                  index === geneSet.length - 1 ? '': ','
-                ]);
-              }))
-            ])
           ])
         ]),
         h('div.cy-tooltip-footer', [
@@ -81,8 +88,10 @@ class EnrichmentTooltip extends React.Component {
               'Links'
             ])
           ]),
-          h('div.cy-tooltip-links', [
-            h('a.plain-link', { href: dbInfo.url, target: '_blank', }, dbInfo.name)
+          h('div.cy-tooltip-section', [
+            h('div.cy-tooltip-links', [
+              h('a.plain-link', { href: dbInfo.url, target: '_blank', }, dbInfo.name)
+            ])
           ])
         ]),
         h('div.cy-tooltip-call-to-action', [

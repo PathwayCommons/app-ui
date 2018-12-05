@@ -33,8 +33,8 @@ const enrichmentStylesheet=cytoscape.stylesheet()
   .css({
     'font-size': 14,
     'color': '#fff',
-    'background-color': '#555',
-    'text-outline-color': '#555',
+    'background-color': '#333',
+    'text-outline-color': '#333',
     'text-outline-width': 4,
     'text-wrap': 'wrap',
     'text-max-width': 175,
@@ -62,7 +62,8 @@ const enrichmentStylesheet=cytoscape.stylesheet()
 .selector('edge:selected')
   .css({
     'z-index': 999,
-    'opacity': 1
+    'opacity': 1,
+    'line-color': '#0169d9'
   })
 .selector('.hidden')
   .css({
@@ -70,11 +71,11 @@ const enrichmentStylesheet=cytoscape.stylesheet()
   })
 .selector('.highlighted')
   .css({
-    'opacity':1,
+    'opacity': 1,
   })
 .selector('.unhighlighted')
   .css({
-    'opacity':0.4,
+    'opacity': 0.1,
   })
 .selector(`.matched`)
   .css({

@@ -96,7 +96,10 @@
   & a {
     display: inline-block;
     margin-right: 10px;
-    padding: 0 0.5em;
+
+    &.cy-tooltip-number-link {
+      padding: 0 0.5em;
+    }
   }
 }
 
@@ -151,4 +154,10 @@ a.cy-tooltip-edge-link {
   cursor: pointer;
   font-weight: bold;
   font-size: 1.25em;
+}
+
+.cy-tooltip-loading-section {
+  font-size: 1.5em;
+  text-align: center;
+  margin: 0.25em;
 }

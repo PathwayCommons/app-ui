@@ -70,7 +70,7 @@ class EnrichmentTooltip extends React.Component {
     return h('div.cy-tooltip', [
       h('div.cy-tooltip-content', [
         h('div.cy-tooltip-header',[
-          h('h2.cy-tooltip-title', title)
+          h('h2.cy-tooltip-title', title[0].toUpperCase() + title.substr(1))
         ]),
         h('div.cy-tooltip-body', [
           h('div.cy-tooltip-section', [

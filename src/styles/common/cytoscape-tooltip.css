@@ -37,7 +37,6 @@
   margin: 0;
   line-height: 1em;
   display: inline-block;
-  text-transform: capitalize;
 }
 
 .cy-tooltip-type-chip {

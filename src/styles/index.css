@@ -4,6 +4,7 @@
 
 @import "./vars.css";
 @import "./fonts.css";
+@import "./animations.css";
 @import "./base.css";
 @import "./common/index.css";
 @import "./features/search.css";

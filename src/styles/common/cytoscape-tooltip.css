@@ -156,3 +156,9 @@ a.cy-tooltip-edge-link {
   font-weight: bold;
   font-size: 1.25em;
 }
+
+.cy-tooltip-loading-section {
+  font-size: 1.5em;
+  text-align: center;
+  margin: 0.25em;
+}

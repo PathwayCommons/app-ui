@@ -158,4 +158,4 @@ class EntitySummaryBoxList extends React.Component {
   }
 }
 
-module.exports = EntitySummaryBoxList;
+module.exports = { EntitySummaryBoxList, EntitySummaryBox };

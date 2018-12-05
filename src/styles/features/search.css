@@ -46,7 +46,7 @@
 
 .search-searchbar-container {
   max-width: 100%;
-  width: 45%;
+  width: var(--search-width);
   display: flex;
   flex-direction: column;
 }
@@ -210,7 +210,7 @@
     display: none;
   }
 
-  .search-list-container {
+  .search-body {
     padding-left: 10px;
   }
 

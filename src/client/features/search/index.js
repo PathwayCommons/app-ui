@@ -30,7 +30,6 @@ class Search extends React.Component {
       entitySummaryResults: {},
       entitySummaryResultsLoading: false,
       searchResults: [],
-      geneCarouselIndex: 0,
       searchLoading: false
     };
   }
@@ -136,13 +135,11 @@ class Search extends React.Component {
     const {
       entitySummaryResults,
       searchResults,
-      geneCarouselIndex,
       searchLoading,
       entitySummaryResultsLoading,
       query
     } = this.state;
     const loaded = !(searchLoading || entitySummaryResultsLoading);
-
     const searchList = searchResults.map(result => {
       let datasourceUri = _.get(result, 'dataSource.0', '');
       let dsInfo = Datasources.findByUri(datasourceUri);
@@ -186,7 +183,7 @@ class Search extends React.Component {
           h('h3.search-genes-header', `Genes (${entitySummaryResults.length})`),
           h('div.card-grid', [
 
-            ...entitySummaryResults.slice(geneCarouselIndex, geneCarouselIndex + 2).map( s => {
+            ...entitySummaryResults.map( s => {
               return h('div.card.card-large', [
                 h(EntitySummaryBox, { summary: _.get(s, `summary`) } )
               ]);

@@ -5,7 +5,7 @@
 
 .search-header {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
   background-color: var(--light-base-colour);
   padding: 1em;
@@ -102,10 +102,10 @@
 
 .search-body {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
   flex-direction: column;
-  padding: 0.5em;
+  padding-left: 210px;
 }
 
 .search-tools {

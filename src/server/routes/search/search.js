@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const logger = require('../../logger');
 
 const { NS_NCBI_GENE, NS_HGNC_SYMBOL, NS_UNIPROT } = require('../../../config');
 const { validatorGconvert } = require('../../external-services/gprofiler/gconvert');

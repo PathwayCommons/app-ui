@@ -2,7 +2,7 @@ const hasher = require('node-object-hash')({ sort: true });
 const pMemoize = require('p-memoize');
 const mem = require('mem');
 
-const defaultGetKey = function(arguments){ return arguments; };
+const defaultGetKey = function( ){ return arguments; };
 
 /**
  * @param { Function } The promise function to cache

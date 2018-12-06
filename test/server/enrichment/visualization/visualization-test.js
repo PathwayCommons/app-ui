@@ -1,5 +1,8 @@
 const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 const expect = chai.expect;
+chai.use(chaiAsPromised);
+chai.should();
 
 const { mockFetch } = require('../../../util');
 const { generateEnrichmentNetworkJson } = require('../../../../src/server/routes/enrichment/visualization');
@@ -327,18 +330,14 @@ describe('Test generateGraphInfo - Enrichment Vizualization Service', function (
     expect(res).to.deep.equal(result);
   });
 
-  // it('parameters: invalid similarityCutoff', function () {
-  //   chai.assert.throws(function(){
-  //     generateEnrichmentNetworkJson({ "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}, 3.55 );},
-  //     Error, "similarityCutoff out of range [0, 1]"
-  //   );
-  // });
+  it('parameters: invalid similarityCutoff', () => {
+    const result = generateEnrichmentNetworkJson({ "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}, 3.55 );
+    return result.should.be.rejectedWith(Error);
+  });
 
-  // it('parameters: invalid jaccardOverlapWeight', function () {
-  //   chai.assert.throws(function(){
-  //     generateEnrichmentNetworkJson({ "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}, .55, 75 );},
-  //     Error, "jaccardOverlapWeight out of range [0, 1]"
-  //   );
-  // });
+  it('parameters: invalid jaccardOverlapWeight', function () {
+    const result =  generateEnrichmentNetworkJson({ "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}, .55, 75 );
+    return result.should.be.rejectedWith(Error);
+  });
 
 });

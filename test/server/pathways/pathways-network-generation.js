@@ -31,10 +31,12 @@ function mockFetch(){
   });
 }
 
-global.fetch = mockFetch;
+
 
 describe('Pathways network generation', function(){
+
   it('Should return correct metadata from getBiopaxMetadata', async () => {
+    global.fetch = mockFetch;
     let sampleBiopaxData = fs.readFileSync(path.resolve(__dirname, './sample-biopax-data.txt'), 'utf-8');
 
     let result = await fillInBiopaxMetadata( sampleCyjsonData, sampleBiopaxData );

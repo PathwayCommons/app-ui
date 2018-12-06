@@ -119,7 +119,9 @@ describe('Test generateGraphInfo - Enrichment Vizualization Service', function (
                   "ELL2",
                   "GTF2H5"
                 ],
-                "name": "DNA-templated transcription, elongation"
+                "name": "DNA-templated transcription, elongation",
+                "namespace": "name",
+                "uri": "http://identifiers.org/name/GO:0006354"
               }
             },
             {
@@ -216,7 +218,9 @@ describe('Test generateGraphInfo - Enrichment Vizualization Service', function (
                   "WDR61",
                   "POLR2I"
                 ],
-                "name": "transcription elongation from RNA polymerase II promoter"
+                "name": "transcription elongation from RNA polymerase II promoter",
+                "namespace": "name",
+                "uri": "http://identifiers.org/name/GO:0006368"
               }
             }
           ],

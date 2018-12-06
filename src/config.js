@@ -29,6 +29,7 @@ let defaults = {
   NS_CHEBI: 'chebi',
   NS_ENSEMBL: 'ensembl',
   NS_GENECARDS: 'genecards',
+  NS_GENE_ONTOLOGY: 'go',
   NS_HGNC: 'hgnc',
   NS_HGNC_SYMBOL: 'hgnc.symbol',
   NS_NCBI_GENE: 'ncbigene',

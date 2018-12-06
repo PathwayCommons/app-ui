@@ -129,7 +129,7 @@
 .search-genes-info-panel {
   display: flex;
   flex-flow: row wrap;
-  flex-basis: 50%;
+  height: 380px;
 }
 
 .search-genes-results {
@@ -141,6 +141,7 @@
 .search-genes-app-linkout {
   box-shadow: var(--box-shadow);
   border: 1px solid var(--light-base-colour-dark);
+  margin-bottom: 27px;
 }
 
 .search-filters {

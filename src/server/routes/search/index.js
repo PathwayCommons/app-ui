@@ -4,7 +4,7 @@ const router = express.Router();
 const { search } = require('./search');
 
 router.post('/', function (req, res, next) {
-  search( req.body.query )
+  search( req.body )
     .then( result => res.json( result ) )
     .catch( next );
 });

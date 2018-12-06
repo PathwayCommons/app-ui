@@ -116,15 +116,14 @@ const ServerAPI = {
     if (/^((uniprot|hgnc):\w+|ncbi:[0-9]+)$/i.test(queryClone.q)) {
       queryClone.q=queryClone.q.replace(/^(uniprot|ncbi|hgnc):/i,"");
     }
-    return fetch(`/api/pc/search?${qs.stringify(queryClone)}`, defaultFetchOpts).then(res => res.json());
-  },
-
-  s(query){
-    const queryClone=_.assign({},query);
-    if (/^((uniprot|hgnc):\w+|ncbi:[0-9]+)$/i.test(queryClone.q)) {
-      queryClone.q=queryClone.q.replace(/^(uniprot|ncbi|hgnc):/i,"");
-    }
-    return fetch(`/api/search?${qs.stringify(queryClone)}`, defaultFetchOpts).then(res => res.json());
+    return fetch(`/api/search`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(queryClone)
+    }).then(res => res.json());
   },
 
   enrichmentAPI(query, type){

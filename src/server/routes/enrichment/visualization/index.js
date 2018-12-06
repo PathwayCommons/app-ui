@@ -33,7 +33,10 @@ const createEnrichmentNetworkNode = pathwayInfo => {
 
   return Promise.resolve( normalizeId( pathwayId ) )
     .then( getXref )
-    .then( ({ uri, namespace }) => _.assign( node.data, { uri, namespace } ) )
+    .then( ({ uri, namespace }) => {
+      _.assign( node.data, { uri, namespace } );
+      return node;
+    })
     .catch( error => {
       logger.error(`Error in createEnrichmentNetworkNode - ${error}`);
       throw error;

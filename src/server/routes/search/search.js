@@ -92,7 +92,7 @@ const searchGenes = query => {
 const searchPathways = query => {
   const rawQuery = query.q;
   const sanitized = sanitize( rawQuery, RAW_SEARCH_MAX_CHARS );
-  const opts = _.assign( {}, PATHWAY_SEARCH_DEFAULTS, { q: sanitized });
+  const opts = _.assign( {}, PATHWAY_SEARCH_DEFAULTS, query, { q: sanitized });
   return pc.search( opts )
     .catch( errorHandler );
 };

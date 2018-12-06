@@ -6,8 +6,6 @@ const _ = require('lodash');
 
 const { MAX_SIF_NODES, NS_HGNC_SYMBOL, NS_GENECARDS, NS_NCBI_GENE, NS_UNIPROT } = require('../../../config');
 
-const ENTITY_OTHER_NAMES_LIMIT = 4;
-
 const SUPPORTED_COLLECTIONS = new Map([
   [NS_GENECARDS, 'GeneCards'],
   [NS_HGNC_SYMBOL, 'HGNC'],
@@ -23,17 +21,9 @@ const getHgncFromXref = xrefLinks => {
 };
 
 class EntitySummaryBox extends React.Component {
-  constructor(props){
-    super(props);
-
-    this.state = {
-      expanded: props.expanded || false
-    };
-
-  }
   render(){
     let { summary } = this.props;
-    let { displayName, aliasIds, xrefLinks } = summary;
+    let { displayName, xrefLinks } = summary;
     const hgncSymbol = getHgncFromXref( xrefLinks );
 
     // sometimes duplicated namespace/uri pairs are received e.g. uniprot/tp53 twice
@@ -44,13 +34,6 @@ class EntitySummaryBox extends React.Component {
       h('div.entity-summary-box', [
           h('h5.entity-subtitle', displayName),
           h('h3.entity-title', hgncSymbol),
-        h('div.entity-names', [
-          h('div.entity-other-names', [
-            h('h5', 'Other Names'),
-            aliasIds.slice(0, ENTITY_OTHER_NAMES_LIMIT).join(', ')
-          ])
-        ]),
-        h('h5', 'Learn more'),
         h('div.entity-links-container', [
           ...sortedLinks
         ])
@@ -94,14 +77,15 @@ class GeneResultsView extends React.Component {
 
     return h('div.search-genes-results', [
       h('h3.search-genes-header', `Genes (${geneResults.length})`),
-      h('div.card-grid', [
-
-        ...geneResults.map( s => {
-          return h('div.card.card-large', [
-            h(EntitySummaryBox, { summary: _.get(s, `summary`) } )
-          ]);
-        }),
-        h('div.card', [
+      h('div.search-genes-info-panel', [
+        h('div.search-genes-list', [
+          ...geneResults.map( s => {
+            return h('div.card', [
+              h(EntitySummaryBox, { summary: _.get(s, `summary`) } )
+            ]);
+          })
+        ]),
+        h('div.search-genes-app-linkout', [
           h(Link, {
             to: {
               pathname: appPath,

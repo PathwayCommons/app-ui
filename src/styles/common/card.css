@@ -1,16 +1,9 @@
 .card {
-  height: 145px;
-  width: 350px;
+  height: 80px;
+  width: 220px;
   border: 1px solid var(--light-base-colour-dark);
   overflow: hidden;
   margin-right: 1em;
-  margin-bottom: 1em;
+  margin-bottom: 0.5em;
   box-shadow: var(--box-shadow);
-}
-
-.card-grid {
-  display: flex;
-  flex-flow: row wrap;
-  align-items: center;
-  justify-content: flex-start;
 }

@@ -46,33 +46,39 @@ class EntitySummaryBox extends React.Component {
 class GeneResultsView extends React.Component {
   // get whether to show interactions or enrichment labels and links
   determineAppLinkout(){
+    let createEnrichmentAppInfo = sources => {
+      let label = `View enrichment of ${sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
+      let linkPath = '/enrichment';
+      let description = 'Placeholder info text for describing enrichment';
+      let imageClass = 'enrichment-logo';
+      let title = 'Enrichment';
+
+      return { label, title, linkPath, description, imageClass };
+    };
+
+    let createInteractionsAppInfo = sources => {
+      let label = `View interactions between ${sources[0]} and top ${MAX_SIF_NODES} genes`;
+      let description = 'Placeholder info text for describing interactions';
+      let linkPath = '/interactions';
+      let imageClass = 'interactions-logo';
+      let title = 'Interactions';
+      
+      if( sources.length === 1 ){
+        label = `View iteractions between ${sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
+      }
+
+      return { label, title, linkPath, description, imageClass };
+    };
+
     let { geneResults } = this.props;
     let sources = geneResults.map( summaryResult => getHgncFromXref( _.get( summaryResult, ['summary', 'xrefLinks'] ) ) );
-    let appLabel;
-    let appPath;
 
-    if( sources.length === 1 ){
-      appLabel = `View interactions between ${sources[0]} and top ${MAX_SIF_NODES} genes`;
-      appPath = '/interactions';
-
-      return { appPath, appLabel };
-    }
-
-    if( sources.length <= 3 ){
-      appLabel = `View iteractions between ${sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
-      appPath = '/interactions';
-
-      return { appPath, appLabel };
-    }
-
-    appLabel = `View enrichment of ${sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
-    appPath = '/enrichment';
-    return { appPath, appLabel };
+    return sources.length < 4 ? createInteractionsAppInfo(sources) : createEnrichmentAppInfo(sources);
   }
 
   render(){
     let { geneResults } = this.props;
-    let { appPath, appLabel } = this.determineAppLinkout();
+    let { label, title, linkPath, description, imageClass } = this.determineAppLinkout();
     let sources = geneResults.map( summaryResult => getHgncFromXref( _.get( summaryResult, ['summary', 'xrefLinks'] ) ) );
 
     return h('div.search-genes-results', [
@@ -85,14 +91,19 @@ class GeneResultsView extends React.Component {
             ]);
           })
         ]),
-        h('div.search-genes-app-linkout', [
-          h(Link, {
-            to: {
-              pathname: appPath,
-              search: queryString.stringify({ source: sources.join(',') })
-            },
-            target: '_blank'
-          }, appLabel)
+        h(Link, {
+          to: {
+            pathname: linkPath,
+            search: queryString.stringify({ source: sources.join(',') })
+          },
+          target: '_blank'
+        }, [
+          h('div.search-genes-app-linkout', [
+            h(`div.app-image.${imageClass}`),
+            h('h4.app-title', title),
+            h('div.search-genes-app-description', description),
+            h('button.call-to-action', label)
+          ])
         ])
       ])
     ]);

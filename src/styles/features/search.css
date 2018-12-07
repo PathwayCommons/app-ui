@@ -104,7 +104,7 @@
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
-  flex-direction: column;
+  flex-flow: column wrap;
   padding-left: 210px;
 }
 
@@ -129,7 +129,6 @@
 .search-genes-info-panel {
   display: flex;
   flex-flow: row wrap;
-  height: 380px;
 }
 
 .search-genes-results {
@@ -138,11 +137,40 @@
   width: var(--search-width);
 }
 
+.search-genes-list {
+  overflow: scroll;
+  height: 340px;
+  margin-bottom: 0.25em;
+}
+
 .search-genes-app-linkout {
   box-shadow: var(--box-shadow);
   border: 1px solid var(--light-base-colour-dark);
   margin-bottom: 27px;
+  padding: 0.5em 0.25em;
+
+  & .app-title {
+    border-top: 1px solid var(--light-base-colour-dark);
+    margin: 0;
+  }
 }
+
+.app-image {
+  max-width: 430px;
+  height: 200px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center center;
+}
+
+.interactions-logo {
+  background-image: url("../image/interactions-icon.png");
+}
+
+.enrichment-logo {
+  background-image: url("../image/enrichment-icon.png");
+}
+
 
 .search-filters {
   font-size: 12px;
@@ -216,6 +244,10 @@
 
 @media (--small-width-viewport) {
   .search-header {
+    display: block;
+  }
+
+  .search-genes-info-panel {
     display: block;
   }
 

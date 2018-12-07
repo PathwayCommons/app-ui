@@ -2,6 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
 
+const { NS_GENE_ONTOLOGY, NS_REACTOME } = require('../../../config');
 const { ServerAPI } = require('../../services');
 
 
@@ -10,6 +11,7 @@ class EnrichmentTooltip extends React.Component {
     super(props);
 
     this.state = {
+      name: '',
       description: '',
       descriptionLoaded: false
     };
@@ -18,23 +20,22 @@ class EnrichmentTooltip extends React.Component {
   componentDidMount(){
     let { node } = this.props;
     let id = node.data('id');
-    let isGOId = /^GO:\d+$/.test(id);
-    let isReactomeId = /^REAC:\d+$/.test(id);
+    const namespace = node.data('namespace');
     const descriptionOnFail = 'No description available';
 
-    if( isGOId ){
+    if( namespace === NS_GENE_ONTOLOGY ){
       ServerAPI.getGoInformation( id.replace('GO:', '') ).then( res => {
         let description = _.get(res, 'results[0].definition.text', descriptionOnFail);
-        let update = () => this.setState({ description, descriptionLoaded: true });
+        let update = () => this.setState({ name: NS_GENE_ONTOLOGY.toUpperCase(), description, descriptionLoaded: true });
 
         update();
       });
     }
 
-    if( isReactomeId ){
-      ServerAPI.getReactomeInformation( id.replace('REAC:', 'R-HSA-') ).then( res => {
+    if( namespace === NS_REACTOME ){
+      ServerAPI.getReactomeInformation( id.replace('REAC:', '') ).then( res => {
         let description = _.get(res, 'summation[0].text', descriptionOnFail);
-        let update = () => this.setState({ description, descriptionLoaded: true });
+        let update = () => this.setState({ name: NS_REACTOME.toUpperCase(), description, descriptionLoaded: true });
 
         update();
       });
@@ -42,15 +43,11 @@ class EnrichmentTooltip extends React.Component {
   }
   render(){
     let {node} = this.props;
-    let { description } = this.state;
+    let { description, name } = this.state;
     let title = node.data('name');
-    let id = node.data('id');
     let sharedGeneList = node.data('intersection').sort();
     let sharedGeneCount = sharedGeneList.length;
-    let dbInfo = {};
-
-    if( id.includes('GO') ) dbInfo = {name: 'Gene Ontology', url:'http://identifiers.org/go/' + id};
-    else if( id.includes('REAC') ) dbInfo = {name: 'Reactome', url:'http://identifiers.org/reactome/' + id.replace("REAC:", "R-HSA-") };
+    let url = node.data('uri');
 
     if( !this.state.descriptionLoaded ){
       return h('div.cy-tooltip', [
@@ -70,28 +67,19 @@ class EnrichmentTooltip extends React.Component {
     return h('div.cy-tooltip', [
       h('div.cy-tooltip-content', [
         h('div.cy-tooltip-header',[
-          h('h2.cy-tooltip-title', title[0].toUpperCase() + title.substr(1))
+          h('h2.cy-tooltip-title', [
+            h('a.plain-link', { href: url, target: '_blank', }, title[0].toUpperCase() + title.substr(1) ),
+            h('div.cy-tooltip-type-chip', name )
+          ])
         ]),
         h('div.cy-tooltip-body', [
           h('div.cy-tooltip-section', [
-            h('div.cy-tooltip-field-name', 'Pathway Overview'),
+            h('div.cy-tooltip-field-name', 'Description'),
             h('div.cy-tooltip-field-value', description)
           ]),
           h('div.cy-tooltip-section', [
             h('div.cy-tooltip-field-name', 'Genes Shared with Entered List (' + sharedGeneCount + ')'),
             h('div.cy-tooltip-field-value', sharedGeneList.join(', ')),
-          ])
-        ]),
-        h('div.cy-tooltip-footer', [
-          h('div.cy-tooltip-section', [
-            h('div.cy-tooltip-field-name', [
-              'Links'
-            ])
-          ]),
-          h('div.cy-tooltip-section', [
-            h('div.cy-tooltip-links', [
-              h('a.plain-link', { href: dbInfo.url, target: '_blank', }, dbInfo.name)
-            ])
           ])
         ]),
         h('div.cy-tooltip-call-to-action', [

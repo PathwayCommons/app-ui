@@ -41,8 +41,8 @@ const createEnrichmentNetworkNode = pathwayInfo => {
 
   return Promise.resolve( normalizeId( pathwayId ) )
     .then( getXref )
-    .then( ({ uri, namespace }) => {
-      _.assign( node.data, { uri, namespace } );
+    .then( xref => {
+      _.assign( node.data, xref );
       return node;
     })
     .catch( error => {

@@ -39,7 +39,7 @@ const createEnrichmentNetworkNode = pathwayInfo => {
     })
     .catch( error => {
       logger.error(`Error in createEnrichmentNetworkNode - ${error}`);
-      throw error;
+      return node; // Allow the node through
     });
 };
 

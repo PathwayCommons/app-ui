@@ -1,21 +1,29 @@
 const _ = require('lodash');
 
+const { TimeoutError } = require('../../../../util');
 const { pathwayInfoTable } = require('./pathway-table');
 const logger = require('../../../logger');
-const { NS_GENE_ONTOLOGY, NS_REACTOME } = require('../../../../config');
+const { IDENTIFIERS_URL, NS_GENE_ONTOLOGY, NS_REACTOME } = require('../../../../config');
 const { xref2Uri } = require('../../../external-services/pathway-commons');
 
 const isGOId = token => /^GO:\d+$/.test( token );
 const isReactomeId = token => /^R-HSA-\d+$/.test( token );
 const normalizeId = pathwayId => pathwayId.replace('REAC:', '');
+
+const reThrow = error => { throw error; };
+const fallbackXref = ( namespace, record ) => ({ uri: IDENTIFIERS_URL + '/' + namespace + '/' + record, namespace });
+
 const getXref = id => {
   let name;
+
   if( isGOId( id ) ){
     name = NS_GENE_ONTOLOGY;
   } else if ( isReactomeId( id ) ) {
     name = NS_REACTOME;
   }
-  return xref2Uri( name, id );
+  // Try the service. Fallback to manually constructing xref if TimeoutError
+  return xref2Uri( name, id )
+      .catch( error => error instanceof TimeoutError ? fallbackXref( name, id ): reThrow( error ) );
 };
 
 const createEnrichmentNetworkNode = pathwayInfo => {
@@ -39,7 +47,7 @@ const createEnrichmentNetworkNode = pathwayInfo => {
     })
     .catch( error => {
       logger.error(`Error in createEnrichmentNetworkNode - ${error}`);
-      return node; // Allow the node through
+      throw error;
     });
 };
 
@@ -133,6 +141,7 @@ const generateEnrichmentNetworkJson = async (pathways, similarityCutoff = 0.375,
   let edges = createEnrichmentNetworkEdges( pathwayInfoList, jaccardOverlapWeight, similarityCutoff );
 
   return { unrecognized: Array.from(unrecognized), graph: { elements: { nodes, edges } } };
+
 };
 
 

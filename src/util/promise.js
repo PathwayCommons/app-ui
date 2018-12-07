@@ -7,4 +7,7 @@ let promiseTimeout = fn => {
 };
 
 
-module.exports = promiseTimeout;
+module.exports = {
+  promiseTimeout,
+  TimeoutError: Promise.TimeoutError
+};

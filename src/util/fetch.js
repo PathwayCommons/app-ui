@@ -1,4 +1,4 @@
-const promiseTimeout = require('./promise');
+const { promiseTimeout, TimeoutError } = require('./promise');
 
 const failOnBadStatus = res => {
   if(!res.ok){
@@ -12,4 +12,4 @@ const safeFetch =  ( url, options ) => {
   return promiseTimeout( () => fetch( url, options ).then( failOnBadStatus ) );
 };
 
-module.exports = safeFetch;
+module.exports = { safeFetch, TimeoutError };

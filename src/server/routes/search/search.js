@@ -21,7 +21,7 @@ const idFromXrefs = ( xrefLinks, namespace ) => {
 };
 
 const sanitize = ( rawQuery, maxLength = QUERY_MAX_CHARS ) => rawQuery.trim().substring( 0, maxLength );
-const tokenize = ( rawQuery, maxNum = QUERY_MAX_TOKENS ) => rawQuery.split(/,?\s+/).slice( 0, maxNum ); //  limit token size?
+const tokenize = ( rawQuery, maxNum = QUERY_MAX_TOKENS ) => rawQuery.split(/,?\s*/).slice( 0, maxNum ); //  limit token size?
 
 // Take the entity summaries (summaries) and augment with xref corresponding to recommended name (name)
 const fillInXref = async ( summaries, ncbiAlias, uniprotAlias, name ) => {

@@ -41,6 +41,7 @@ class Enrichment extends React.Component {
       try {
         let { pathwayInfo } = await ServerAPI.enrichmentAPI({ query: sources}, 'analysis');
         let enrichmentNetwork = await ServerAPI.enrichmentAPI({ pathways: pathwayInfo }, 'visualization');
+        let networkHasZeroNodes = enrichmentNetwork.graph.elements.nodes.length === 0;
 
         cy.remove('*');
         cy.add({
@@ -52,7 +53,8 @@ class Enrichment extends React.Component {
           stop: () => {
             this.setState({
               loading: false,
-              openToolBar: true
+              openToolBar: true,
+              networkEmpty: networkHasZeroNodes
             });
           }
         })).run();

@@ -62,6 +62,7 @@
     "mem": "^4.0.0",
     "morgan": "^1.9.0",
     "mousetrap": "^1.6.2",
+    "node-cron": "^2.0.3",
     "node-fetch": "^1.7.3",
     "node-object-hash": "^1.4.1",
     "object-hash": "^1.2.0",

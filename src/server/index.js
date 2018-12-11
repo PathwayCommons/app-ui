@@ -9,6 +9,7 @@ const http = require('http');
 const stream = require('stream');
 const fs = require('fs');
 const Promise = require('bluebird');
+const cron = require('node-cron');
 
 const config = require('../config');
 
@@ -147,5 +148,9 @@ setUpDb = () => {};
 Promise.try( setUpDb ).then( () => {
   server.listen(port);
 } );
+
+cron.schedule('* 0 * * 0', () => {
+  console.log('Run Sundays @ midnight');
+});
 
 module.exports = app;

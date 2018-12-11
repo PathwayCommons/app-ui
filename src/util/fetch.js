@@ -1,4 +1,4 @@
-const promiseTimeout = require('./promise');
+const { promiseTimeout, TimeoutError } = require('./promise');
 const _ = require('lodash');
 
 const { FETCH_TIMEOUT } = require('../config');

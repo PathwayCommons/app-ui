@@ -12,6 +12,7 @@ const Promise = require('bluebird');
 const cron = require('node-cron');
 
 const config = require('../config');
+const { updateEnrichmentGmt } = require('./routes/enrichment/visualization');
 
 // make fetch() available as a global just like it is on the client side
 global.fetch = require('node-fetch');
@@ -149,8 +150,8 @@ Promise.try( setUpDb ).then( () => {
   server.listen(port);
 } );
 
-cron.schedule('* 0 * * 0', () => {
-  console.log('Run Sundays @ midnight');
+cron.schedule('* * * * * *', () => {
+  updateEnrichmentGmt();
 });
 
 module.exports = app;

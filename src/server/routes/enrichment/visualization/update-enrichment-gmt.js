@@ -1,5 +1,7 @@
+const logger = require('../../../logger');
+
 const updateEnrichmentGmt = () => {
-  console.log('Hello cron!');
+  logger.info('Triggered cron job');
 };
 
 module.exports = { updateEnrichmentGmt };

@@ -138,12 +138,31 @@
 }
 
 .search-genes-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   overflow: scroll;
-  height: 340px;
+  width: var(--search-width);
   margin-bottom: 0.25em;
+
+  & * {
+    flex-shrink: 0;
+  }
 }
 
-.search-genes-app-linkout {
+.app-links {
+  width: var(--search-width);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  & a {
+    width: 50%;
+  }
+}
+
+.app-linkout {
+  /* width: 50%; */
+  height: 300px;
   box-shadow: var(--box-shadow);
   border: 1px solid var(--light-base-colour-dark);
   margin-bottom: 27px;
@@ -157,6 +176,7 @@
 
 .app-image {
   max-width: 430px;
+  width: 100%;
   height: 200px;
   background-repeat: no-repeat;
   background-size: contain;
@@ -170,7 +190,6 @@
 .enrichment-logo {
   background-image: url("../image/enrichment-icon.png");
 }
-
 
 .search-filters {
   font-size: 12px;

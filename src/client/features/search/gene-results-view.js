@@ -37,67 +37,66 @@ class EntitySummaryBox extends React.Component {
 }
 
 class GeneResultsView extends React.Component {
-  // get whether to show interactions or enrichment labels and links
-  determineAppLinkout(){
-    let createEnrichmentAppInfo = sources => {
-      let label = `View enrichment of ${sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
-      let linkPath = '/enrichment';
-      let description = 'Placeholder info text for describing enrichment';
-      let imageClass = 'enrichment-logo';
-      let title = 'Enrichment';
+  getEnrichmentAppInfo( sources ){
+    let label = `View enrichment of ${sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
+    let linkPath = '/enrichment';
+    let description = 'Placeholder info text for describing enrichment';
+    let imageClass = 'enrichment-logo';
+    let title = 'Enrichment';
 
-      return { label, title, linkPath, description, imageClass };
-    };
+    return { label, title, linkPath, description, imageClass };
+  }
 
-    let createInteractionsAppInfo = sources => {
-      let label = `View interactions between ${sources[0]} and top ${MAX_SIF_NODES} genes`;
-      let description = 'Placeholder info text for describing interactions';
-      let linkPath = '/interactions';
-      let imageClass = 'interactions-logo';
-      let title = 'Interactions';
+  getInteractionsAppInfo( sources ){
+    let label = `View interactions between ${sources[0]} and top ${MAX_SIF_NODES} genes`;
+    let description = 'Placeholder info text for describing interactions';
+    let linkPath = '/interactions';
+    let imageClass = 'interactions-logo';
+    let title = 'Interactions';
 
-      if( sources.length === 1 ){
-        label = `View iteractions between ${sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
-      }
+    if( sources.length === 1 ){
+      label = `View iteractions between ${sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
+    }
 
-      return { label, title, linkPath, description, imageClass };
-    };
-
-    let { geneResults } = this.props;
-    let sources = geneResults.map( geneInfo => geneInfo.geneSymbol );
-
-    return sources.length < 4 ? createInteractionsAppInfo(sources) : createEnrichmentAppInfo(sources);
+    return { label, title, linkPath, description, imageClass };
   }
 
   render(){
     let { geneResults } = this.props;
-    let { label, title, linkPath, description, imageClass } = this.determineAppLinkout();
     let sources = geneResults.map( geneInfo => geneInfo.geneSymbol );
+    let interactionsAppInfo = this.getInteractionsAppInfo( sources );
+    let enrichmentAppInfo = this.getEnrichmentAppInfo( sources );
+
+    let AppLink = appInfo => {
+      let { linkPath, imageClass, title, description, label } = appInfo;
+      return h(Link, {
+        to: {
+          pathname: linkPath,
+          search: queryString.stringify({ source: sources.join(',') })
+        },
+        target: '_blank'
+      }, [
+        h('div.app-linkout', [
+          h(`div.app-image.${imageClass}`),
+          h('h4.app-title', title),
+          h('div.search-genes-app-description', description),
+          h('button.call-to-action', label)
+        ])
+      ]);
+    };
 
     return h('div.search-genes-results', [
       h('h3.search-genes-header', `Genes (${geneResults.length})`),
-      h('div.search-genes-info-panel', [
-        h('div.search-genes-list', [
-          ...geneResults.map( geneInfo => {
-            return h('div.card', [
-              h(EntitySummaryBox, { geneInfo } )
-            ]);
-          })
-        ]),
-        h(Link, {
-          to: {
-            pathname: linkPath,
-            search: queryString.stringify({ source: sources.join(',') })
-          },
-          target: '_blank'
-        }, [
-          h('div.search-genes-app-linkout', [
-            h(`div.app-image.${imageClass}`),
-            h('h4.app-title', title),
-            h('div.search-genes-app-description', description),
-            h('button.call-to-action', label)
-          ])
-        ])
+      h('div.search-genes-list', [
+        ...geneResults.map( geneInfo => {
+          return h('div.card', [
+            h(EntitySummaryBox, { geneInfo } )
+          ]);
+        })
+      ]),
+      h('div.app-links', [
+        h(AppLink, interactionsAppInfo),
+        h(AppLink, enrichmentAppInfo)
       ])
     ]);
   }

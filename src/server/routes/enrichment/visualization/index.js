@@ -1,10 +1,35 @@
 const _ = require('lodash');
+
+const { TimeoutError } = require('../../../../util');
 const { pathwayInfoTable } = require('./pathway-table');
+const logger = require('../../../logger');
+const { IDENTIFIERS_URL, NS_GENE_ONTOLOGY, NS_REACTOME } = require('../../../../config');
+const { xref2Uri } = require('../../../external-services/pathway-commons');
+
+const isGOId = token => /^GO:\d+$/.test( token );
+const isReactomeId = token => /^R-HSA-\d+$/.test( token );
+const normalizeId = pathwayId => pathwayId.replace('REAC:', '');
+
+const reThrow = error => { throw error; };
+const fallbackXref = ( namespace, record ) => ({ uri: IDENTIFIERS_URL + '/' + namespace + '/' + record, namespace });
+
+const getXref = id => {
+  let name;
+
+  if( isGOId( id ) ){
+    name = NS_GENE_ONTOLOGY;
+  } else if ( isReactomeId( id ) ) {
+    name = NS_REACTOME;
+  }
+  // Try the service. Fallback to manually constructing xref if TimeoutError
+  return xref2Uri( name, id )
+      .catch( error => error instanceof TimeoutError ? fallbackXref( name, id ): reThrow( error ) );
+};
 
 const createEnrichmentNetworkNode = pathwayInfo => {
   let { pathwayId, geneSet, name, intersection } = pathwayInfo;
 
-  return {
+  const node = {
     data: {
       id: pathwayId,
       intersection,
@@ -13,6 +38,17 @@ const createEnrichmentNetworkNode = pathwayInfo => {
       name
     }
   };
+
+  return Promise.resolve( normalizeId( pathwayId ) )
+    .then( getXref )
+    .then( xref => {
+      _.assign( node.data, xref );
+      return node;
+    })
+    .catch( error => {
+      logger.error(`Error in createEnrichmentNetworkNode - ${error}`);
+      throw error;
+    });
 };
 
 // given two genelists, compute the intersection between them
@@ -71,7 +107,7 @@ const createEnrichmentNetworkEdges = (pathwayInfoList, jaccardOverlapWeight, sim
 };
 
 // generate cytoscape.js compatible network JSON for enrichment
-const generateEnrichmentNetworkJson = (pathways, similarityCutoff = 0.375, jaccardOverlapWeight = 0.5) => {
+const generateEnrichmentNetworkJson = async (pathways, similarityCutoff = 0.375, jaccardOverlapWeight = 0.5) => {
   if (similarityCutoff < 0 || similarityCutoff > 1) {
     throw new Error('ERROR: similarityCutoff out of range [0, 1]');
   }
@@ -99,11 +135,13 @@ const generateEnrichmentNetworkJson = (pathways, similarityCutoff = 0.375, jacca
     }
   } );
 
-  let nodes = pathwayInfoList.map( pathwayInfo => createEnrichmentNetworkNode( pathwayInfo ) );
+  let nodePromises = pathwayInfoList.map( async pathwayInfo =>  await createEnrichmentNetworkNode( pathwayInfo ) );
+  const nodes = await Promise.all( nodePromises );
 
   let edges = createEnrichmentNetworkEdges( pathwayInfoList, jaccardOverlapWeight, similarityCutoff );
 
   return { unrecognized: Array.from(unrecognized), graph: { elements: { nodes, edges } } };
+
 };
 
 

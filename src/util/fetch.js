@@ -17,4 +17,4 @@ const safeFetch =  ( url, options ) => {
   return promiseTimeout( () => fetch( url, opts ).then( failOnBadStatus ), timeout );
 };
 
-module.exports = safeFetch;
+module.exports = { safeFetch, TimeoutError };

@@ -150,7 +150,7 @@ Promise.try( setUpDb ).then( () => {
   server.listen(port);
 } );
 
-cron.schedule('* * * * * *', () => {
+cron.schedule('*/1 * * * *', () => {
   updateEnrichmentGmt();
 });
 

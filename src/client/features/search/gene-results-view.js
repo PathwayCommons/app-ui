@@ -87,17 +87,17 @@ class GeneResultsView extends React.Component {
 
     return h('div.search-genes-results', [
       h('h3.search-genes-header', `Genes (${geneResults.length})`),
-      h('div.search-genes-list', [
-        ...geneResults.map( geneInfo => {
-          return h('div.card', [
-            h(EntitySummaryBox, { geneInfo } )
-          ]);
-        })
-      ]),
-      h('div.app-links', [
-        h(AppLink, interactionsAppInfo),
-        h(AppLink, enrichmentAppInfo)
-      ])
+        h('div.search-genes-list', [
+          ...geneResults.map( geneInfo => {
+            return h('div.card', [
+              h(EntitySummaryBox, { geneInfo } )
+            ]);
+          })
+        ]),
+        h('div.app-links', [
+          h(AppLink, interactionsAppInfo),
+          h(AppLink, enrichmentAppInfo)
+        ])
     ]);
   }
 }

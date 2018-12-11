@@ -139,10 +139,8 @@
 
 .search-genes-list {
   display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  overflow: scroll;
-  width: var(--search-width);
+  flex-flow: row nowrap;
+  overflow-x: scroll;
   margin-bottom: 0.25em;
 
   & * {
@@ -151,17 +149,13 @@
 }
 
 .app-links {
-  width: var(--search-width);
   display: flex;
-  flex-direction: row;
+  flex-flow: row wrap;
   justify-content: space-between;
-  & a {
-    width: 50%;
-  }
 }
 
 .app-linkout {
-  /* width: 50%; */
+  width: 350px;
   height: 300px;
   box-shadow: var(--box-shadow);
   border: 1px solid var(--light-base-colour-dark);
@@ -177,7 +171,7 @@
 .app-image {
   max-width: 430px;
   width: 100%;
-  height: 200px;
+  height: 150px;
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center center;

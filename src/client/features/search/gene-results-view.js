@@ -4,7 +4,7 @@ const { Link } = require('react-router-dom');
 const queryString = require('query-string');
 const _ = require('lodash');
 
-const { MAX_SIF_NODES, NS_HGNC_SYMBOL, NS_GENECARDS, NS_NCBI_GENE, NS_UNIPROT } = require('../../../config');
+const { NS_HGNC_SYMBOL, NS_GENECARDS, NS_NCBI_GENE, NS_UNIPROT } = require('../../../config');
 
 const SUPPORTED_COLLECTIONS = new Map([
   [NS_GENECARDS, 'GeneCards'],
@@ -37,26 +37,22 @@ class EntitySummaryBox extends React.Component {
 }
 
 class GeneResultsView extends React.Component {
-  getEnrichmentAppInfo( sources ){
-    let label = `View enrichment of ${sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
+  getEnrichmentAppInfo(){
+    let label = `View`;
     let linkPath = '/enrichment';
-    let description = 'Placeholder info text for describing enrichment';
+    let description = 'Explore a network of pathways that contain genes identified in your query.';
     let imageClass = 'enrichment-logo';
     let title = 'Enrichment';
 
     return { label, title, linkPath, description, imageClass };
   }
 
-  getInteractionsAppInfo( sources ){
-    let label = `View interactions between ${sources[0]} and top ${MAX_SIF_NODES} genes`;
-    let description = 'Placeholder info text for describing interactions';
+  getInteractionsAppInfo(){
+    let label = `View`;
+    let description = 'Visualize interactions between the genes identified in your query.';
     let linkPath = '/interactions';
     let imageClass = 'interactions-logo';
     let title = 'Interactions';
-
-    if( sources.length === 1 ){
-      label = `View iteractions between ${sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`;
-    }
 
     return { label, title, linkPath, description, imageClass };
   }
@@ -67,26 +63,38 @@ class GeneResultsView extends React.Component {
     let interactionsAppInfo = this.getInteractionsAppInfo( sources );
     let enrichmentAppInfo = this.getEnrichmentAppInfo( sources );
 
-    let AppLink = appInfo => {
+    let AppLinkout = appInfo => {
       let { linkPath, imageClass, title, description, label } = appInfo;
-      return h(Link, {
+
+      let appLink = h(Link, {
         to: {
           pathname: linkPath,
           search: queryString.stringify({ source: sources.join(',') })
         },
         target: '_blank'
-      }, [
-        h('div.app-linkout', [
-          h(`div.app-image.${imageClass}`),
+      }, [ h(`div.app-image.${imageClass}`) ] );
+
+      let actionLink = h(Link, {
+        to: {
+          pathname: linkPath,
+          search: queryString.stringify({ source: sources.join(',') })
+        },
+        className: 'plain-link app-link-action',
+        target: '_blank'
+      }, [ label ]);
+
+      return h('div.app-linkout', [
+        appLink,
+        h('div.app-linkout-content', [
           h('h4.app-title', title),
-          h('div.search-genes-app-description', description),
-          h('button.call-to-action', label)
+          h('div.app-description', description),
+          actionLink
         ])
       ]);
     };
 
     return h('div.search-genes-results', [
-      h('h3.search-genes-header', `Genes (${geneResults.length})`),
+      h('h3.search-genes-header', `Recognized genes (${geneResults.length})`),
         h('div.search-genes-list', [
           ...geneResults.map( geneInfo => {
             return h('div.card', [
@@ -94,9 +102,9 @@ class GeneResultsView extends React.Component {
             ]);
           })
         ]),
-        h('div.app-links', [
-          h(AppLink, interactionsAppInfo),
-          h(AppLink, enrichmentAppInfo)
+        h('div.app-linkouts', [
+          h(AppLinkout, interactionsAppInfo),
+          h(AppLinkout, enrichmentAppInfo)
         ])
     ]);
   }

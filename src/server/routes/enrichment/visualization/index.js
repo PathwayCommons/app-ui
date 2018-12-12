@@ -1,4 +1,4 @@
 const { generateEnrichmentNetworkJson } = require('./generate-enrichment-network-json');
-const { updateEnrichmentGmt } = require('./update-enrichment-gmt');
+const { updateEnrichment } = require('./update-enrichment');
 
-module.exports = { generateEnrichmentNetworkJson, updateEnrichmentGmt };
+module.exports = { generateEnrichmentNetworkJson, updateEnrichment };

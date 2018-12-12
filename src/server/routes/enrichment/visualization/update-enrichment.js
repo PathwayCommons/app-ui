@@ -14,19 +14,15 @@ const { GPROFILER_URL } = require('../../../../config');
 const GMT_URL = 'http://techslides.com/demos/samples/sample.zip'; // testing (13KB)
 const GMT_FILENAME = 'apple-touch-icon-57-precomposed.png'; // testing (2KB)
 
-const fetchZipCD = url => unzipper.Open.url( request, url );
-const getCDFiles = cd => cd.files;
+const fetchZipCDFiles = url => unzipper.Open.url( request, url ).then( cd => cd.files );
 const pickFile = ( files, fileName  ) => _.head( files.filter( d => d.path === fileName ) );
-const createOutputStream = pathString => fs.createWriteStream( pathString );
-
 const handleFile = ( file, fileName ) => {
-  const outputStream = createOutputStream( path.resolve( __dirname, '.', fileName ) );
+  const outputStream = fs.createWriteStream( path.resolve( __dirname, '.', fileName ) );
   file.stream().pipe( outputStream );
 };
 
 const updateGmt = ( url, fileName ) => {
-  fetchZipCD( url )
-    .then( getCDFiles )
+  fetchZipCDFiles( url )
     .then( files => pickFile( files, fileName ) )
     .then( file => handleFile( file, fileName ) )
     .then( () => logger.info(`Enrichment: Updated ${fileName} from ${url}`) )

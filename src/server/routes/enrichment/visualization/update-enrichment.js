@@ -1,5 +1,7 @@
+const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
+const request = require('request');
 const unzipper = require('unzipper');
 
 const { fetch } = require('../../../../util');
@@ -12,22 +14,23 @@ const { GPROFILER_URL } = require('../../../../config');
 const GMT_URL = 'http://techslides.com/demos/samples/sample.zip'; // testing (13KB)
 const GMT_FILENAME = 'apple-touch-icon-57-precomposed.png'; // testing (2KB)
 
-const fetchDataStream = url => fetch( url ).then( res => res.body );
-const extract = readableStream => readableStream.pipe( unzipper.Parse() );
-
+const fetchZipCD = url => unzipper.Open.url( request, url );
+const getCDFiles = cd => cd.files;
+const pickFile = ( files, fileName  ) => _.head( files.filter( d => d.path === fileName ) );
 const createOutputStream = pathString => fs.createWriteStream( pathString );
 
-const handleStream = ( inputStream, fileName, outputDirectory = '.' ) => {
-  const outputStream = createOutputStream( path.resolve( __dirname, outputDirectory, fileName ) );
-  inputStream.on('entry', entry =>  entry.path === fileName ? entry.pipe( outputStream ) : entry.autodrain() );
+const handleFile = ( file, fileName ) => {
+  const outputStream = createOutputStream( path.resolve( __dirname, '.', fileName ) );
+  file.stream().pipe( outputStream );
 };
 
 const updateGmt = ( url, fileName ) => {
-  fetchDataStream( url )
-    .then( extract )
-    .then( inputStream => handleStream( inputStream, fileName ) )
-    .then( () => logger.info(`Enrichment module updated ${fileName} from ${url}`) )
-    .catch( error => logger.error(`Enrichment module error updating ${fileName} from ${url} - ${error}`) );
+  fetchZipCD( url )
+    .then( getCDFiles )
+    .then( files => pickFile( files, fileName ) )
+    .then( file => handleFile( file, fileName ) )
+    .then( () => logger.info(`Enrichment: Updated ${fileName} from ${url}`) )
+    .catch( error => logger.error(`Enrichment: Failed to update ${fileName} from ${url} - ${error}`) );
 };
 
 const updateEnrichment = () => {

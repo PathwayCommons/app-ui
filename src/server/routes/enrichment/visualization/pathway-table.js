@@ -28,5 +28,14 @@ gmtPathwayData.split('\n').forEach( pathwayInfoLine => {
 
 pathwayInfoTable.delete('');
 
+/**
+ * handleGMTFileUpdate
+ * @external {*} file
+ * @see {@link https://www.npmjs.com/package/unzipper}
+ */
+const handleGMTFileUpdate = file => {
+  file.stream().pipe( fs.createWriteStream( path.resolve( __dirname, file.path ) ) );
+};
 
-module.exports = { pathwayInfoTable, GMT_ZIP_FILENAME, GMT_FILENAME };
+
+module.exports = { pathwayInfoTable, handleGMTFileUpdate, GMT_ZIP_FILENAME, GMT_FILENAME };

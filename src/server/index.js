@@ -9,7 +9,7 @@ const http = require('http');
 const stream = require('stream');
 const fs = require('fs');
 const Promise = require('bluebird');
-const cron = require('node-cron');
+// const cron = require('node-cron');
 
 const config = require('../config');
 const update = require('./update');

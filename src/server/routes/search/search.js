@@ -14,16 +14,16 @@ const PATHWAY_SEARCH_DEFAULTS = {
   type: 'pathway'
 };
 
-// Get the HGNC Symbol from an EntitySummary's xrefLinks
-const hgncSymbolsFromXrefs = xrefLinks => {
-  let symbol;
-  const hgncXrefLink = _.find( xrefLinks, link  => link.namespace === NS_HGNC_SYMBOL );
-  if( hgncXrefLink ) symbol = _.last( _.compact( hgncXrefLink.uri.split('/') ) );
-  return symbol;
+// Get the identifier from an EntitySummary's xrefLinks
+const idFromXrefs = ( xrefLinks, namespace ) => {
+  const xref = _.find( xrefLinks, link  => link.namespace === namespace );
+  return xref ? _.last( _.compact( xref.uri.split('/') ) ) : undefined;
 };
 
 const sanitize = ( rawQuery, maxLength = QUERY_MAX_CHARS ) => rawQuery.trim().substring( 0, maxLength );
-const tokenize = ( rawQuery, maxNum = QUERY_MAX_TOKENS ) => rawQuery.split(/,?\s+/).slice( 0, maxNum ); //  limit token size?
+const splitOnWhitespace = tokens => _.flatten( tokens.map( t => t.split(/\s+/) ) );
+const splitOnCommas = queryString => queryString.split(/,/).map( t => t.trim() );
+const tokenize = ( rawQuery, maxNum = QUERY_MAX_TOKENS ) => splitOnWhitespace( splitOnCommas( rawQuery ) ).slice( 0, maxNum );
 
 // Take the entity summaries (summaries) and augment with xref corresponding to recommended name (name)
 const fillInXref = async ( summaries, ncbiAlias, uniprotAlias, name ) => {
@@ -31,7 +31,8 @@ const fillInXref = async ( summaries, ncbiAlias, uniprotAlias, name ) => {
   for( const token of tokensWithUniprot ){
     const ncbiGeneId = ncbiAlias[ token ];
     const eSummary = _.find( summaries, s => s.localId === ncbiGeneId );
-    if ( eSummary ) {
+    const hasUniProt = idFromXrefs( _.get( eSummary, 'xrefLinks' ), NS_UNIPROT );
+    if ( eSummary && !hasUniProt ) {
       // Use our internal service to grab the xref info
       const xref = await pc.xref2Uri( name, _.get( uniprotAlias, token ) );
       eSummary.xrefLinks.push( xref );
@@ -60,7 +61,7 @@ const getGeneInfo = async ( uniqueTokens, ncbiAlias, uniprotAlias ) => {
     const summary = eSummaries[ indexOfSummary ];
     geneInfo.push({
       query: uniqueTokens[ indexOfToken ],
-      geneSymbol: hgncSymbolsFromXrefs( summary.xrefLinks ),
+      geneSymbol: idFromXrefs( summary.xrefLinks, NS_HGNC_SYMBOL ),
       summary
     });
   });

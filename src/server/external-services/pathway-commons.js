@@ -3,6 +3,7 @@ const url = require('url');
 const QuickLRU = require('quick-lru');
 const _ = require('lodash');
 
+const InvalidParamError = require('../errors/invalid-param');
 const { cachePromise } = require('../cache');
 const { fetch } = require('../../util');
 const logger = require('../logger');
@@ -95,7 +96,11 @@ const fetchEntityUriBase = ( name, localId ) => {
   const url = config.PC_URL + 'pc2/miriam/uri/' + constructQueryPath( name, localId ) ;
   return fetch( url , { method: 'GET', headers: { 'Accept': 'text/plain' } })
     .then( res => res.text() )
-    .then( handleEntityUriResponse );
+    .then( handleEntityUriResponse )
+    .catch( error => {
+      if( error instanceof TypeError ) throw new InvalidParamError('Unrecognized parameters');
+      throw error;
+    });
 };
 
 const getEntityUriParts = cachePromise(fetchEntityUriBase, xrefCache, name => name);

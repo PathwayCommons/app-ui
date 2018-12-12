@@ -1,6 +1,9 @@
 const fs = require('fs');
 const path = require('path');
-const gmtPathwayData = fs.readFileSync(path.resolve(__dirname, 'hsapiens.pathways.NAME.gmt')).toString('utf8');
+
+const GMT_ZIP_FILENAME = 'gprofiler_hsapiens.NAME.gmt.zip';
+const GMT_FILENAME = 'hsapiens.pathways.NAME.gmt';
+const gmtPathwayData = fs.readFileSync( path.resolve( __dirname, GMT_FILENAME ) ).toString( 'utf8' );
 
 // pathwayInfoTable is map where the keys are GO/REACTOME pathway identifiers
 // and values are description and geneset
@@ -26,4 +29,4 @@ gmtPathwayData.split('\n').forEach( pathwayInfoLine => {
 pathwayInfoTable.delete('');
 
 
-module.exports = { pathwayInfoTable };
+module.exports = { pathwayInfoTable, GMT_ZIP_FILENAME, GMT_FILENAME };

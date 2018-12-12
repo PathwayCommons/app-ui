@@ -4,20 +4,17 @@ const path = require('path');
 const request = require('request');
 const unzipper = require('unzipper');
 
-const { fetch } = require('../../../../util');
 const logger = require('../../../logger');
-const { GPROFILER_URL } = require('../../../../config');
-
-// const GMT_ZIP_FILENAME = 'gprofiler_hsapiens.NAME.gmt.zip';
+// const { GPROFILER_URL } = require('../../../../config');
+// const { GMT_ZIP_FILENAME, GMT_FILENAME } = require('./pathway-table');
 // const GMT_URL =  GPROFILER_URL + 'gmt/' + GMT_ZIP_FILENAME;
-// const GMT_FILENAME = 'hsapiens.pathways.NAME.gmt';
 const GMT_URL = 'http://techslides.com/demos/samples/sample.zip'; // testing (13KB)
 const GMT_FILENAME = 'apple-touch-icon-57-precomposed.png'; // testing (2KB)
 
 const fetchZipCDFiles = url => unzipper.Open.url( request, url ).then( cd => cd.files );
 const pickFile = ( files, fileName  ) => _.head( files.filter( d => d.path === fileName ) );
 const handleFile = ( file, fileName ) => {
-  const outputStream = fs.createWriteStream( path.resolve( __dirname, '.', fileName ) );
+  const outputStream = fs.createWriteStream( path.resolve( __dirname, fileName ) );
   file.stream().pipe( outputStream );
 };
 

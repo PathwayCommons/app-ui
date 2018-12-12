@@ -1,5 +1,9 @@
 const fs = require('fs');
 const path = require('path');
+
+const { GPROFILER_URL } = require('../../../../config');
+const GMT_ARCHIVE_URL = GPROFILER_URL + 'gmt/gprofiler_hsapiens.NAME.gmt.zip';
+const GMT_FILENAME = 'hsapiens.pathways.NAME.gmt';
 const gmtPathwayData = fs.readFileSync(path.resolve(__dirname, 'hsapiens.pathways.NAME.gmt')).toString('utf8');
 
 // pathwayInfoTable is map where the keys are GO/REACTOME pathway identifiers
@@ -25,5 +29,11 @@ gmtPathwayData.split('\n').forEach( pathwayInfoLine => {
 
 pathwayInfoTable.delete('');
 
+/**
+ * handleFileUpdate
+ * @external file
+ * @see {@link https://www.npmjs.com/package/unzipper}
+ */
+const handleFileUpdate = file => file.stream().pipe( fs.createWriteStream( path.resolve( __dirname, file.path ) ) );
 
-module.exports = { pathwayInfoTable };
+module.exports = { pathwayInfoTable, handleFileUpdate, GMT_ARCHIVE_URL, GMT_FILENAME };

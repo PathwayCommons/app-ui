@@ -297,28 +297,30 @@ enrichmentRouter.post('/visualization', (req, res, next) => {
  *     analysisSuccess:
  *       type: object
  *       required:
- *       - pathwayInfo
+ *       - pathways
  *       properties:
- *         pathwayInfo:
- *           type: object
- *           additionalProperties:
+ *         pathways:
+ *           type: array
+ *           items:
  *             type: object
- *             required:
- *             - p_value
- *             - description
- *             - intersection
  *             properties:
- *               p_value:
+ *               id:
  *                 type: string
- *                 example: 0.2
- *               description:
- *                 type: string
- *                 example: DNA-templated transcription, elongation
- *               intersection:
- *                 type: array
- *                 items:
- *                   type: string
- *                   example: AFF4
+ *                 example: GO:0006354
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   p_value:
+ *                     type: string
+ *                     example: 1.29e-03
+ *                   name:
+ *                     type: string
+ *                     example: DNA-templated transcription, elongation
+ *                   intersection:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                       example: PAF1
  *     visualizationSuccess:
  *       type: object
  *       required:

@@ -66,8 +66,8 @@ const pathwayIntersection = ( p1Genes, p2Genes ) => {
 const createEnrichmentNetworkEdge = (pathway1, pathway2, jaccardOverlapWeight) => {
   let p1Genes = pathway1.geneSet;
   let p2Genes = pathway2.geneSet;
-  let p1Id = pathway1.pathwayId;
-  let p2Id = pathway2.pathwayId;
+  let p1Id = pathway1.id;
+  let p2Id = pathway2.id;
   let p1Length = p1Genes.length;
   let p2Length = p2Genes.length;
 
@@ -89,11 +89,11 @@ const createEnrichmentNetworkEdge = (pathway1, pathway2, jaccardOverlapWeight) =
 
 // create an edge for each unique pair of pathways P1 and P2.  Filter them 'similarityCutoff'
 // an edge is created when the similarity of pathways P1 and P2 is greated than the defined threshold 'similarityCutoff'
-const createEnrichmentNetworkEdges = (pathwayInfoList, jaccardOverlapWeight, similarityCutoff = 0.375) => {
+const createEnrichmentNetworkEdges = ( pathwayList, jaccardOverlapWeight, similarityCutoff = 0.375 ) => {
   let edges = [];
-  for (let i = 0; i < pathwayInfoList.length; ++i) {
-    for (let j = i + 1; j < pathwayInfoList.length; ++j) {
-      let edge = createEnrichmentNetworkEdge( pathwayInfoList[i], pathwayInfoList[j], jaccardOverlapWeight );
+  for (let i = 0; i < pathwayList.length; ++i) {
+    for (let j = i + 1; j < pathwayList.length; ++j) {
+      let edge = createEnrichmentNetworkEdge( pathwayList[i], pathwayList[j], jaccardOverlapWeight );
       let { data } = edge;
       let { similarity } = data;
 
@@ -129,8 +129,7 @@ const generateEnrichmentNetworkJson = async (pathways, similarityCutoff = 0.375,
     if( pathwayInfo == null ){
       unrecognized.add( pathway.id );
     } else {
-      const droppedId = _.pick( pathwayInfo, ['name', 'geneSet'] );
-      pathwayList.push( _.assign( pathway, droppedId ) );
+      pathwayList.push( _.assign( pathwayInfo, pathway.data ) );
     }
   });
 

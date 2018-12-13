@@ -33,12 +33,6 @@
 @custom-media --small-width-viewport (width <= 600px);
 @custom-media --small-portrait-viewport (width <= 736px) and (height <= 736px) and (height > 414px);
 
-%flex-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 %no-select {
   cursor: default;
 }

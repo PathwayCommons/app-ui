@@ -7,9 +7,7 @@ const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services/');
 
 const PathwaysToolbar = require('./pathways-toolbar');
-const PcLogoLink = require('../../common/components/pc-logo-link');
-const EmptyNetwork = require('../../common/components/empty-network');
-const CytoscapeNetwork = require('../../common/components/cytoscape-network');
+const { PcLogoLink, EmptyNetwork, CytoscapeNetwork } = require('../../common/components/');
 
 const Pathway = require('../../../models/pathway/pathway-model');
 

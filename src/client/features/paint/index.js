@@ -15,10 +15,9 @@ const Pathway = require('../../../models/pathway/pathway-model');
 const FileDownloadMenu = require('./menus/file-download-menu');
 const InfoMenu = require('./menus/network-info-menu');
 const PaintMenu = require('./menus/paint-menu');
-const Sidebar = require('../../common/components/sidebar');
-const PcLogoLink = require('../../common/components/pc-logo-link');
-const CytoscapeNetwork = require('../../common/components/cytoscape-network');
 const PathwaysToolbar = require('./pathways-toolbar');
+
+const { Sidebar, PcLogoLink, CytoscapeNetwork } = require('../../common/components/');
 
 const demoExpressions = require('./demo-expressions.json');
 const demoPathways = require('./demo-pathway-results.json');

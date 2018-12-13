@@ -42,7 +42,7 @@ class GeneResultsView extends React.Component {
     let linkPath = '/enrichment';
     let description = 'Explore a network of pathways that contain genes identified in your query.';
     let imageClass = 'enrichment-logo';
-    let title = 'Enrichment';
+    let title = 'Pathway enrichment analysis';
 
     return { label, title, linkPath, description, imageClass };
   }
@@ -52,7 +52,7 @@ class GeneResultsView extends React.Component {
     let description = 'Visualize interactions between the genes identified in your query.';
     let linkPath = '/interactions';
     let imageClass = 'interactions-logo';
-    let title = 'Interactions';
+    let title = 'Gene interactions';
 
     return { label, title, linkPath, description, imageClass };
   }

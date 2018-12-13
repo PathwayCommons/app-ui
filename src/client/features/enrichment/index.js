@@ -77,7 +77,7 @@ class Enrichment extends React.Component {
     if( sources.length === 1 ){
       titleContent.push(h('span', `Pathways enriched for ${sources[0]}`));
     }
-    if( sources.length === 3 ){
+    if( 1 < sources.length && sources.length <= 3 ){
       titleContent.push(h('span', `Pathways enriched for ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`));
     }
     if( sources.length > 3 ){

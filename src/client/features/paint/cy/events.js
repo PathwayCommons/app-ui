@@ -82,7 +82,7 @@ let bindCyEvents = cy => {
       ele.addClass('highlighted');
     });
 
-  }, 200);
+  }, 750);
 
   //call style-applying and style-removing functions on 'mouseover' and 'mouseout' for non-compartment nodes
   cy.on('mouseover', 'node[class!="compartment"]', nodeHoverMouseOver);

@@ -27,16 +27,11 @@ const getXref = id => {
 };
 
 const createEnrichmentNetworkNode = pathway => {
-  let { id, geneSet, name, intersection } = pathway;
+  let { id, geneSet } = pathway;
+  const geneCount = geneSet.length;
 
   const node = {
-    data: {
-      id,
-      intersection,
-      geneCount: geneSet.length,
-      geneSet,
-      name
-    }
+    data: _.assign( pathway, { geneCount })
   };
 
   return Promise.resolve( normalizeId( id ) )

@@ -60,8 +60,8 @@ class GeneResultsView extends React.Component {
   render(){
     let { geneResults } = this.props;
     let sources = geneResults.map( geneInfo => geneInfo.geneSymbol );
-    let interactionsAppInfo = this.getInteractionsAppInfo( sources );
-    let enrichmentAppInfo = this.getEnrichmentAppInfo( sources );
+    let interactionsAppInfo = this.getInteractionsAppInfo( );
+    let enrichmentAppInfo = this.getEnrichmentAppInfo( );
 
     let AppLinkout = appInfo => {
       let { linkPath, imageClass, title, description, label } = appInfo;

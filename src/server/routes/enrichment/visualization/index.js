@@ -26,12 +26,12 @@ const getXref = id => {
       .catch( error => error instanceof TimeoutError ? fallbackXref( name, id ): reThrow( error ) );
 };
 
-const createEnrichmentNetworkNode = pathwayInfo => {
-  let { pathwayId, geneSet, name, intersection } = pathwayInfo;
+const createEnrichmentNetworkNode = pathway => {
+  let { id, geneSet, name, intersection } = pathway;
 
   const node = {
     data: {
-      id: pathwayId,
+      id,
       intersection,
       geneCount: geneSet.length,
       geneSet,
@@ -39,7 +39,7 @@ const createEnrichmentNetworkNode = pathwayInfo => {
     }
   };
 
-  return Promise.resolve( normalizeId( pathwayId ) )
+  return Promise.resolve( normalizeId( id ) )
     .then( getXref )
     .then( xref => {
       _.assign( node.data, xref );
@@ -123,22 +123,21 @@ const generateEnrichmentNetworkJson = async (pathways, similarityCutoff = 0.375,
 
   // check unrecognized pathway ids and
   let unrecognized = new Set();
-  let pathwayInfoList = [];
-  Object.keys( pathways ).forEach( pathwayId => {
-    let pathwayInfo = pathwayInfoTable.get( pathwayId );
-    let intersection = _.get(pathways, `${pathwayId}.intersection`, []);
-
+  let pathwayList = [];
+  pathways.forEach( pathway => {
+    let pathwayInfo = pathwayInfoTable.get( pathway.id );
     if( pathwayInfo == null ){
-      unrecognized.add(pathwayId);
+      unrecognized.add( pathway.id );
     } else {
-      pathwayInfoList.push( _.assign( pathwayInfo, { intersection } ) );
+      const droppedId = _.pick( pathwayInfo, ['name', 'geneSet'] );
+      pathwayList.push( _.assign( pathway, droppedId ) );
     }
-  } );
+  });
 
-  let nodePromises = pathwayInfoList.map( async pathwayInfo =>  await createEnrichmentNetworkNode( pathwayInfo ) );
+  let nodePromises = pathwayList.map( async pathway =>  await createEnrichmentNetworkNode( pathway ) );
   const nodes = await Promise.all( nodePromises );
 
-  let edges = createEnrichmentNetworkEdges( pathwayInfoList, jaccardOverlapWeight, similarityCutoff );
+  let edges = createEnrichmentNetworkEdges( pathwayList, jaccardOverlapWeight, similarityCutoff );
 
   return { unrecognized: Array.from(unrecognized), graph: { elements: { nodes, edges } } };
 

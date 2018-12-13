@@ -41,8 +41,8 @@ class Enrichment extends React.Component {
 
     let getNetworkJson = async () => {
       try {
-        let { pathwayInfo } = await ServerAPI.enrichmentAPI({ query: sources}, 'analysis');
-        let enrichmentNetwork = await ServerAPI.enrichmentAPI({ pathways: pathwayInfo }, 'visualization');
+        let { pathways } = await ServerAPI.enrichmentAPI({ query: sources}, 'analysis');
+        let enrichmentNetwork = await ServerAPI.enrichmentAPI({ pathways }, 'visualization');
 
         cy.remove('*');
         cy.add({

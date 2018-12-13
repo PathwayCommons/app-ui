@@ -2,11 +2,22 @@
   overflow: hidden;
 }
 
-.enrichment-tooltip-gene-list {
-  display: flex;
-  flex-flow: row wrap;
+.enrichment-sources-popover {
+  width: 100px;
+  height: 66vh;
+  max-height: 600px;
+  overflow-y: scroll;
+  text-align: center;
+  padding: 0.5em 0.25em;
 }
 
-.enrichment-tooltip-gene-link {
-  margin-right: 0.25em;
+.enrichment-popover-link {
+  cursor: pointer;
+}
+
+@media( --small-width-viewport ){
+  .enrichment-sources-popover {
+    font-size: 0.8em;
+    height: 300px;
+  }
 }

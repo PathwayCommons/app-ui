@@ -6,7 +6,7 @@ const classNames = require('classnames');
 const queryString = require('query-string');
 
 const EnrichmentToolbar = require('./enrichment-toolbar');
-const { EmptyNetwork, PcLogoLink, CytoscapeNetwork } = require('../../common/components/');
+const { EmptyNetwork, PcLogoLink, CytoscapeNetwork, Popover } = require('../../common/components/');
 
 const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services');
@@ -72,11 +72,29 @@ class Enrichment extends React.Component {
 
   render(){
     let { loading, cySrv, networkEmpty, sources } = this.state;
+    let titleContent = [];
+
+    if( sources.length === 1 ){
+      titleContent.push(h('span', `Pathways enriched for ${sources[0]}`));
+    }
+    if( sources.length === 3 ){
+      titleContent.push(h('span', `Pathways enriched for ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`));
+    }
+    if( sources.length > 3 ){
+      titleContent.push(h('span', `Pathways enriched for ${ sources.slice(0, 2).join(', ')} and `));
+      titleContent.push(h(Popover, {
+        tippy: {
+          position: 'bottom',
+          html: h('div.enrichment-sources-popover', sources.slice(3).sort().map( s => h('div', s) ) )
+        },
+      }, [ h('a.plain-link.enrichment-popover-link', `${sources.length - 3} other gene(s)`) ]
+      ));
+    }
 
     let appBar = h('div.app-bar.interactions-bar', [
       h('div.app-bar-branding', [
         h(PcLogoLink),
-        h('div.app-bar-title', `Enrichment of ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`)
+        h('div.app-bar-title', titleContent)
       ]),
       h(EnrichmentToolbar, { cySrv, sources: this.state.sources, controller: this })
     ]);

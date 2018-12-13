@@ -1,0 +1,42 @@
+{
+  "pathwayInfo": [
+    {
+      "id": "GO:0006354",
+      "data": {
+        "p_value": "2.77e-02",
+        "name": "DNA-templated transcription, elongation",
+        "intersection": [
+          "PAF1",
+          "ZMYND11",
+          "POLR2B",
+          "AFF4",
+          "SUPT16H",
+          "ELP4",
+          "GTF2H1",
+          "BRD4",
+          "SSRP1",
+          "SETD2"
+        ]
+      }
+    },
+    {
+      "id": "GO:0006368",
+      "data": {
+        "p_value": "2.77e-02",
+        "name": "transcription elongation from RNA polymerase II promoter",
+        "intersection": [
+          "PAF1",
+          "ZMYND11",
+          "POLR2B",
+          "AFF4",
+          "SUPT16H",
+          "ELP4",
+          "GTF2H1",
+          "BRD4",
+          "SSRP1",
+          "SETD2"
+        ]
+      }
+    }
+  ]
+}

@@ -408,7 +408,7 @@ enrichmentRouter.post('/visualization', (req, res, next) => {
  *           - geneCount
  *           - geneSet
  *           - uri
- *           - namepspace
+ *           - namespace
  *           properties:
  *             id:
  *               type: string

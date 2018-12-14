@@ -251,13 +251,23 @@ enrichmentRouter.post('/visualization', (req, res, next) => {
  *       - pathways
  *       properties:
  *         pathways:
- *           type: object
- *           description: pathway information keyed by pathway ID
- *           additionalProperties: object
- *           example:
- *             GO:0043525: {}
- *             GO:0043523:
- *               p_value: 0.05
+ *           type: array
+ *           description: pathway objects
+ *           items:
+ *             type: object
+ *             required:
+ *               - id
+ *             properties:
+ *               id:
+ *                 type: string
+ *                 description: The g:GOSt formatted node id
+ *                 example: GO:0006354
+ *               data:
+ *                 type: object
+ *                 description: Additional data forwarded to nodes
+ *                 example:
+ *                   name: DNA-templated transcription, elongation
+ *                   p_value: 1.29e-03
  *         similarityCutoff:
  *           type: number
  *           description: "cutoff point for filtering edge similarity rates
@@ -297,28 +307,30 @@ enrichmentRouter.post('/visualization', (req, res, next) => {
  *     analysisSuccess:
  *       type: object
  *       required:
- *       - pathwayInfo
+ *       - pathways
  *       properties:
- *         pathwayInfo:
- *           type: object
- *           additionalProperties:
+ *         pathways:
+ *           type: array
+ *           items:
  *             type: object
- *             required:
- *             - p_value
- *             - description
- *             - intersection
  *             properties:
- *               p_value:
+ *               id:
  *                 type: string
- *                 example: 0.2
- *               description:
- *                 type: string
- *                 example: DNA-templated transcription, elongation
- *               intersection:
- *                 type: array
- *                 items:
- *                   type: string
- *                   example: AFF4
+ *                 example: GO:0006354
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   p_value:
+ *                     type: string
+ *                     example: 1.29e-03
+ *                   name:
+ *                     type: string
+ *                     example: DNA-templated transcription, elongation
+ *                   intersection:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                       example: PAF1
  *     visualizationSuccess:
  *       type: object
  *       required:
@@ -392,10 +404,18 @@ enrichmentRouter.post('/visualization', (req, res, next) => {
  *           type: object
  *           required:
  *           - id
+ *           - name
+ *           - geneCount
+ *           - geneSet
+ *           - uri
+ *           - namespace
  *           properties:
  *             id:
  *               type: string
  *               example: GO:0043525
+ *             name:
+ *               type: string
+ *               example: DNA-templated transcription, elongation
  *             geneCount:
  *               type: number
  *               example: 51
@@ -407,6 +427,12 @@ enrichmentRouter.post('/visualization', (req, res, next) => {
  *                 - TP53
  *                 - CASP9
  *                 - CDK5
+ *             uri:
+ *               type: string
+ *               example: http://identifiers.org/go/GO:0006354
+ *             namespace:
+ *               type: string
+ *               example: go
 */
 
 

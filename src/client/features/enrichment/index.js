@@ -53,7 +53,6 @@ class Enrichment extends React.Component {
           stop: () => {
             this.setState({
               loading: false,
-              openToolBar: true,
               networkEmpty: networkHasZeroNodes
             });
           }
@@ -67,7 +66,7 @@ class Enrichment extends React.Component {
       }
     };
 
-    this.setState({ loading: true, openToolbar: false, networkEmpty: false }, () => getNetworkJson());
+    this.setState({ loading: true, networkEmpty: false }, () => getNetworkJson());
   }
 
   render(){

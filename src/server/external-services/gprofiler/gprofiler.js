@@ -22,7 +22,7 @@ const GPROFILER_DEFAULT_OPTS = {
   user_thr: 0.05,
   min_set_size: 5,
   max_set_size: 200,
-  threshold_algo: 'fdr',
+  threshold_algo: 'analytical',
   domain_size_type: 'annotated',
   custbg: [],
   'sf_GO:BP': 1,

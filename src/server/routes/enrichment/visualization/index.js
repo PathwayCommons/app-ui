@@ -84,7 +84,20 @@ const createEnrichmentNetworkEdge = (pathway1, pathway2, jaccardOverlapWeight) =
 
 // create an edge for each unique pair of pathways P1 and P2.  Filter them 'similarityCutoff'
 // an edge is created when the similarity of pathways P1 and P2 is greated than the defined threshold 'similarityCutoff'
-const createEnrichmentNetworkEdges = ( pathwayList, jaccardOverlapWeight, similarityCutoff = 0.375 ) => {
+const createEnrichmentNetworkEdges = ( pathwayList, jaccardOverlapWeight = 0.5, similarityCutoff = 0.6 ) => {
+  if (similarityCutoff < 0 || similarityCutoff > 1) {
+    throw new Error('ERROR: similarityCutoff out of range [0, 1]');
+  }
+  if (typeof(similarityCutoff) != 'number') {
+    throw new Error('ERROR: similarityCutoff is not a number');
+  }
+  if (jaccardOverlapWeight < 0 || jaccardOverlapWeight > 1) {
+    throw new Error('ERROR: jaccardOverlapWeight out of range [0, 1]');
+  }
+  if (jaccardOverlapWeight != undefined && typeof(jaccardOverlapWeight) != 'number') {
+    throw new Error('ERROR: jaccardOverlapWeight should be a number');
+  }
+
   let edges = [];
   for (let i = 0; i < pathwayList.length; ++i) {
     for (let j = i + 1; j < pathwayList.length; ++j) {
@@ -102,19 +115,7 @@ const createEnrichmentNetworkEdges = ( pathwayList, jaccardOverlapWeight, simila
 };
 
 // generate cytoscape.js compatible network JSON for enrichment
-const generateEnrichmentNetworkJson = async (pathways, similarityCutoff = 0.375, jaccardOverlapWeight = 0.5) => {
-  if (similarityCutoff < 0 || similarityCutoff > 1) {
-    throw new Error('ERROR: similarityCutoff out of range [0, 1]');
-  }
-  if (typeof(similarityCutoff) != 'number') {
-    throw new Error('ERROR: similarityCutoff is not a number');
-  }
-  if (jaccardOverlapWeight < 0 || jaccardOverlapWeight > 1) {
-    throw new Error('ERROR: jaccardOverlapWeight out of range [0, 1]');
-  }
-  if (jaccardOverlapWeight != undefined && typeof(jaccardOverlapWeight) != 'number') {
-    throw new Error('ERROR: jaccardOverlapWeight should be a number');
-  }
+const generateEnrichmentNetworkJson = async (pathways, similarityCutoff, jaccardOverlapWeight) => {
 
   // check unrecognized pathway ids and
   let unrecognized = new Set();

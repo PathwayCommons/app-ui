@@ -6,7 +6,7 @@ const h = require('react-hyperscript');
 const { Popover, IconButton } = require('../../common/components/');
 const EnrichmentDownloadMenu = require('./enrichment-download-menu');
 
-const { ENRICHMENT_MAP_LAYOUT, searchEnrichmentNodes } = require('./cy');
+const { enrichmentLayout, searchEnrichmentNodes } = require('./cy');
 
 class EnrichmentToolbar extends React.Component {
   constructor(props){
@@ -54,7 +54,7 @@ class EnrichmentToolbar extends React.Component {
       }),
       h(IconButton, {
         description: 'Reset arrangement',
-        onClick: () => cy.layout(ENRICHMENT_MAP_LAYOUT).run(),
+        onClick: () => enrichmentLayout( cy ),
         isActive: false,
         icon: 'replay'
       }),

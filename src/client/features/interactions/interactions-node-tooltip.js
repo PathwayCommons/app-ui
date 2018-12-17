@@ -27,6 +27,7 @@ class InteractionsNodeTooltip extends React.Component {
     let { node } = this.props;
     let { entitySummary, entitySummaryLoaded } = this.state;
     let xrefLinks = _.get(entitySummary, '0.summary.xrefLinks', []);
+    let description = _.get(entitySummary, '0.summary.description', '');
     let title = node.data('id');
     let links = [];
 
@@ -52,7 +53,13 @@ class InteractionsNodeTooltip extends React.Component {
 
     return h('div.cy-tooltip', [
       h('div.cy-tooltip-header', [
-        h('h2.cy-tooltip-title', title)
+        h('h2.cy-tooltip-title', title )
+      ]),
+      h('div.cy-tooltip-body', [
+        description != '' ? h('div.cy-tooltip-section', [
+          h('div.cy-tooltip-field-name', 'Description'),
+          h('div.cy-tooltip-field-value', description)
+        ]) : null
       ]),
       links.length > 0 ? h('div.cy-tooltip-footer', [
         h('div.cy-tooltip-section', [

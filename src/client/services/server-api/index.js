@@ -126,6 +126,17 @@ const ServerAPI = {
     }).then(res => res.json());
   },
 
+  searchGenes( query ){
+    return fetch('/api/search/genes', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify( { query } )
+    }).then( res => res.json() );
+  },
+
   enrichmentAPI(query, type){
     return fetch(`/api/enrichment/${type}`, {
       method:'POST',
@@ -136,16 +147,6 @@ const ServerAPI = {
       body: JSON.stringify(query)
     })
     .then(res => res.json());
-  },
-
-  geneQuery(query){
-    return this.enrichmentAPI(query, "validation");
-  },
-
-  entitySummaryQuery( query ){
-    return fetch(`/api/summary/entity/search?q=${ query }`, defaultFetchOpts)
-    .then(res => res.json())
-    .catch(() => undefined);
   }
 };
 

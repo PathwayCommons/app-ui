@@ -136,16 +136,6 @@ const ServerAPI = {
       body: JSON.stringify(query)
     })
     .then(res => res.json());
-  },
-
-  geneQuery(query){
-    return this.enrichmentAPI(query, "validation");
-  },
-
-  entitySummaryQuery( query ){
-    return fetch(`/api/summary/entity/search?q=${ query }`, defaultFetchOpts)
-    .then(res => res.json())
-    .catch(() => undefined);
   }
 };
 

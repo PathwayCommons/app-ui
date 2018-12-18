@@ -111,7 +111,7 @@ const rawEnrichment = (query, opts) => {
       .then( gprofilerRes =>  parseGProfilerResponse( gprofilerRes ) )
       .then( pathwayInfo => resolve( pathwayInfo ) )
       .catch( err =>{
-        logger.error(`Error in validatorGconvert - ${err.message}`);
+        logger.error(`Error in rawEnrichment - ${err.message}`);
         throw err;
       });
   });

@@ -9,6 +9,8 @@ class InteractionsNodeTooltip extends React.Component {
     let { node, geneMetadata } = this.props;
     let xrefLinks = _.get(geneMetadata, 'summary.xrefLinks', []);
     let description = _.get(geneMetadata, 'summary.description', '');
+    let aliases = _.get(geneMetadata, 'summary.aliases', []);
+
     let title = node.data('id');
     let links = [];
 
@@ -22,6 +24,10 @@ class InteractionsNodeTooltip extends React.Component {
         h('h2.cy-tooltip-title', title )
       ]),
       h('div.cy-tooltip-body', [
+        aliases.length > 0 ? h('div.cy-tooltip-section', [
+          h('div.cy-tooltip-field-name', 'Other names'),
+          ...aliases.slice(0, 3).map( alias => h('div.cy-tooltip-field-value', alias) )
+        ]) : null,
         description != '' ? h('div.cy-tooltip-section', [
           h('div.cy-tooltip-field-name', 'Description'),
           h('div.cy-tooltip-field-value', description)

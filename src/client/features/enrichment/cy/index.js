@@ -4,18 +4,51 @@ const _ = require('lodash');
 
 const EnrichmentTooltip = require('../enrichment-tooltip');
 
-const ENRICHMENT_MAP_LAYOUT = {
+const SHOW_ENRICHMENT_TOOLTIPS_EVENT = 'showenrichmenttooltip';
+const ENRICHMENT_LAYOUT_OPTS = {
   name: 'cola',
   refresh: 10,
   animate: false,
   maxSimulationTime: 500,
   nodeDimensionsIncludeLabels: true,
+
   randomize: true,
   convergenceThreshold: 50,
   padding: 50
 };
 
-const SHOW_ENRICHMENT_TOOLTIPS_EVENT = 'showenrichmenttooltip';
+let enrichmentLayout = cy => {
+  let nodesWithNoEdges = cy.nodes().filter( node => node.connectedEdges().size() === 0 );
+  let nodesWithEdges = cy.elements().difference( nodesWithNoEdges );
+  let w = cy.width();
+  let h = cy.height();
+
+  let firstLayout = nodesWithEdges.layout(ENRICHMENT_LAYOUT_OPTS);
+  let firstLayoutPromise = firstLayout.pon('layoutstop');
+  firstLayout.run();
+
+  return firstLayoutPromise.then( () => {
+    let firstLayoutBB = nodesWithEdges.boundingBox();
+    let secondLayoutBB = {
+      x1: firstLayoutBB.x1,
+      x2: firstLayoutBB.x2,
+      y1: firstLayoutBB.y2 + 200,
+      y2: firstLayoutBB.y2 + 400
+    };
+
+    let secondLayout = nodesWithNoEdges.layout({
+      name: 'grid',
+      nodeDimensionsIncludeLabels: true,
+      boundingBox: secondLayoutBB,
+      stop: () => cy.fit([], Math.min(0.05 * h, 0.05 * w))
+    });
+    let secondLayoutPromise = secondLayout.pon('layoutstop');
+    secondLayout.run();
+
+    return secondLayoutPromise;
+  });
+};
+
 
 let bindEvents = cy => {
   let hideTooltips = () => {
@@ -80,7 +113,7 @@ let searchEnrichmentNodes = _.debounce((cy, query) => {
 }, 250);
 
 module.exports = {
-  ENRICHMENT_MAP_LAYOUT,
+  enrichmentLayout,
   searchEnrichmentNodes,
   enrichmentStylesheet: require('./enrichment-stylesheet'),
   bindEvents

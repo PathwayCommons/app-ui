@@ -11,7 +11,7 @@ const { EmptyNetwork, PcLogoLink, CytoscapeNetwork, Popover } = require('../../c
 const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services');
 
-const { ENRICHMENT_MAP_LAYOUT, enrichmentStylesheet, bindEvents } = require('./cy');
+const { enrichmentLayout, enrichmentStylesheet, bindEvents } = require('./cy');
 class Enrichment extends React.Component {
   constructor(props){
     super(props);
@@ -49,15 +49,12 @@ class Enrichment extends React.Component {
           nodes: enrichmentNetwork.graph.elements.nodes
         });
 
-        cy.layout( _.assign( {}, ENRICHMENT_MAP_LAYOUT, {
-          stop: () => {
-            this.setState({
-              loading: false,
-              networkEmpty: networkHasZeroNodes
-            });
-          }
-        })).run();
-
+        enrichmentLayout( cy ).then ( () => {
+          this.setState({
+            loading: false,
+            networkEmpty: networkHasZeroNodes
+          });
+        });
       } catch( e ){
         this.setState({
           errored: true,

@@ -1,10 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const pc = require('./pathway-commons-router');
-const summary = require('./summary');
 
 router.use('/api/search', require('./search'));
-router.use('/api/summary', summary);
 router.use('/api/pc', pc);
 router.use('/api/pathways', require('./pathways'));
 router.use('/api/interactions', require('./interactions'));

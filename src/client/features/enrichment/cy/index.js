@@ -29,12 +29,23 @@ let enrichmentLayout = cy => {
 
   return firstLayoutPromise.then( () => {
     let firstLayoutBB = nodesWithEdges.boundingBox();
+    let bbIsEmpty = bb => bb.h === 0 && bb.w === 0;
+
     let secondLayoutBB = {
-      x1: firstLayoutBB.x1,
-      x2: firstLayoutBB.x2,
-      y1: firstLayoutBB.y2 + 200,
-      y2: firstLayoutBB.y2 + 400
+      x1: 0,
+      x2: w,
+      y1: 0,
+      y2: h
     };
+
+    if( !bbIsEmpty( firstLayoutBB ) ){
+      secondLayoutBB = {
+        x1: firstLayoutBB.x1,
+        x2: firstLayoutBB.x2,
+        y1: firstLayoutBB.y2 + 200,
+        y2: firstLayoutBB.y2 + 400
+      };
+    }
 
     let secondLayout = nodesWithNoEdges.layout({
       name: 'grid',

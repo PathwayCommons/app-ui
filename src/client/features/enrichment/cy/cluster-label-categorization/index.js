@@ -27,7 +27,7 @@ let textCharacterization = (text) => {
     }
   };
 
-  let wordStems = _.uniq(text.split(delimiterRegex).filter( word => !filterWords.has(word) ).map( word => {
+  let wordStems = _.uniq(text.split(delimiterRegex).filter( word => !filterWords.has(word) && word !== '' ).map( word => word.toLowerCase() ).map( word => {
     incrKey( wordOccurenceMap, word );
     let wordStem = stemmer(word);
     appendKey( stemToWordsMap, wordStem, word );

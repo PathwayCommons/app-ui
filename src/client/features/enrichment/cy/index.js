@@ -4,6 +4,9 @@ const _ = require('lodash');
 
 const EnrichmentTooltip = require('../enrichment-tooltip');
 
+const { generateClusterLabels } = require('./cluster-label-categorization');
+
+
 const SHOW_ENRICHMENT_TOOLTIPS_EVENT = 'showenrichmenttooltip';
 const ENRICHMENT_LAYOUT_OPTS = {
   name: 'cola',
@@ -28,6 +31,27 @@ let enrichmentLayout = cy => {
   firstLayout.run();
 
   return firstLayoutPromise.then( () => {
+
+    // add parent nodes for each component with size > 1
+    cy.elements().components().filter( component => component.size() > 1 ).forEach( (component, index) => {
+      let labelInput = component.nodes().map(node => node.data('name')).join('. ');
+      let tags = generateClusterLabels(labelInput);
+
+      let componentParentId = 'component-' + index;
+      cy.add({
+        group: 'nodes',
+        data: {
+          tags: tags.join(' '),
+          id: componentParentId
+        },
+      });
+
+      component.move({
+        parent: componentParentId
+      });
+    });
+
+
     let firstLayoutBB = nodesWithEdges.boundingBox();
     let bbIsEmpty = bb => bb.h === 0 && bb.w === 0;
 
@@ -71,8 +95,11 @@ let bindEvents = cy => {
     });
   };
 
-  cy.on(SHOW_ENRICHMENT_TOOLTIPS_EVENT, 'node[class != "compartment"]', function (evt) {
+  cy.on(SHOW_ENRICHMENT_TOOLTIPS_EVENT, 'node', function (evt) {
     let node = evt.target;
+
+    if( node.isParent() ){ return; }
+
     let tooltip = new CytoscapeTooltip( node.popperRef(), {
       html: h(EnrichmentTooltip, {
         node: node,

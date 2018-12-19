@@ -46,6 +46,18 @@ const enrichmentStylesheet=cytoscape.stylesheet()
     'text-valign': 'center',
     'text-events': 'yes'
   })
+.selector('$node > node')
+  .css({
+    'label': node => node.data('tags') != '' ? `Tags: ${node.data('tags')}` : '',
+    'border-width': 5,
+    'background-color': 'white',
+    'color': '#333',
+    'text-valign': 'bottom',
+    'text-outline-color': '#333',
+    'text-outline-width': 1,
+    'text-max-width': 1000,
+    'font-size': 40
+  })
 .selector('node[?queried]')
   .css({
     'background-color': 'blue',

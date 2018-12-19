@@ -1,10 +1,11 @@
 const _ = require('lodash');
 
 const { TimeoutError } = require('../../../../util');
-const { pathwayInfoTable } = require('./pathway-table');
 const logger = require('../../../logger');
 const { IDENTIFIERS_URL, NS_GENE_ONTOLOGY, NS_REACTOME } = require('../../../../config');
 const { xref2Uri } = require('../../../external-services/pathway-commons');
+
+const { pathwayInfoTable } = require('./pathway-table');
 
 const isGOId = token => /^GO:\d+$/.test( token );
 const isReactomeId = token => /^R-HSA-\d+$/.test( token );
@@ -130,8 +131,7 @@ const generateEnrichmentNetworkJson = async (pathways, similarityCutoff, jaccard
   });
 
   let nodePromises = pathwayList.map( async pathway =>  await createEnrichmentNetworkNode( pathway ) );
-  const nodes = await Promise.all( nodePromises );
-
+  let nodes = await Promise.all( nodePromises );
   let edges = createEnrichmentNetworkEdges( pathwayList, jaccardOverlapWeight, similarityCutoff );
 
   return { unrecognized: Array.from(unrecognized), graph: { elements: { nodes, edges } } };

@@ -40,6 +40,7 @@ let enrichmentLayout = cy => {
       let componentParentId = 'component-' + index;
       cy.add({
         group: 'nodes',
+        label: '',
         data: {
           tags: tags.join(' '),
           id: componentParentId

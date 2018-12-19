@@ -33,7 +33,7 @@ let enrichmentLayout = cy => {
   return firstLayoutPromise.then( () => {
 
     // add parent nodes for each component with size > 1
-    cy.elements().components().filter( component => component.size() > 1 ).forEach( (component, index) => {
+    cy.elements().components().filter( component => component.size() > 2 ).forEach( (component, index) => {
       let labelInput = component.nodes().map(node => node.data('name')).join('. ');
       let tags = generateClusterLabels(labelInput);
 

@@ -43,10 +43,10 @@ let getPathwaysRelevantTo = (searchParam, expressionTable) => {
   return Promise.all([...geneQueries, searchQuery]).then(searchResults => {
     let pathwaySearchResults = [...searchResults.map( result => result.pathways)];
     let uniqueResults = _.uniqBy(_.flatten(pathwaySearchResults), result => result.uri);
-    let pathwaysJSON = uniqueResults.map(result => ServerAPI.getPathway(result.uri, 'latest'));
+    let pathwaysJSON = uniqueResults.map(result => ServerAPI.getPathway(result.uri, 'latest').catch( () => null ));
 
-    return Promise.all(pathwaysJSON).then(pathways => {
-      return _.uniqWith(pathways.map( pathwayJSON => {
+    return Promise.all(pathwaysJSON).then(pathwaysJSON => {
+      return _.uniqWith(pathwaysJSON.filter( pj => pj != null ).map( pathwayJSON => {
         let p = new Pathway();
         p.load( pathwayJSON );
         return p;

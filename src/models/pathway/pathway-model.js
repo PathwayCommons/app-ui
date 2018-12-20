@@ -54,7 +54,8 @@ class Pathway {
 
   geneNames(){
     let ms = this.macromolecules();
-    return [].concat.apply(ms.map( node => [ ..._.get(node, 'data.metadata.synonyms', []), ..._.get(node, 'data.label', '') ] ) );
+    let names = _.flatten(ms.map( node => [ ..._.get(node, 'data.metadata.synonyms', []), ...[_.get(node, 'data.label', '')] ] ));
+    return _.uniq(names);
   }
 
 }

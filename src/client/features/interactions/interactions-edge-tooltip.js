@@ -20,7 +20,7 @@ class InteractionsEdgeTooltip extends React.Component {
     let pubmedIds = edge.data('pubmedIds');
 
     this.setState({ publicationsLoaded: false }, () => {
-    ServerAPI.getPubmedPublications(pubmedIds).then( publications => {
+      ServerAPI.getPubmedPublications(pubmedIds).then( publications => {
         this.setState({publications, publicationsLoaded: true});
       });
     });

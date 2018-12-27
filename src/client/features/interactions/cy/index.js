@@ -2,6 +2,7 @@ const h = require('react-hyperscript');
 const CytoscapeTooltip = require('../../../common/cy/cytoscape-tooltip');
 const _ = require('lodash');
 
+const { ServerAPI } = require('../../../services');
 const InteractionsNodeTooltip = require('../interactions-node-tooltip');
 const InteractionsEdgeTooltip = require('../interactions-edge-tooltip');
 
@@ -14,16 +15,37 @@ const SINGLE_SRC_LAYOUT = {
   animationEasing: 'ease-in-out'
 };
 
+const MULTI_SRC_LAYOUT = {
+  name: 'cose-bilkent',
+  nodeRepulsion: 2000,
+  nodeDimensionsIncludeLabels: true,
+  animate: 'end',
+  animationEasing: 'ease-in-out',
+  animationDuration: 800,
+  fit: true,
+  padding: 75,
+  randomize: true
+};
+
 const interactionsLayoutOpts = cy => {
-  if( cy.nodes('[?queried]').size() > 1){
-    return _.assign({}, SINGLE_SRC_LAYOUT, { minNodeSpacing: 50 });
+  let numSources = cy.nodes('[?queried]').size();
+  if( numSources > 1 ){
+    return MULTI_SRC_LAYOUT;
   }
   return SINGLE_SRC_LAYOUT;
 };
 
 const SHOW_INTERACTIONS_TOOLTIPS_EVENT = 'showinteractionstooltip';
 
-let bindEvents = cy => {
+let bindEvents = ( cy ) => {
+  let geneData = [];
+
+  // on initial interactions data load, popualate gene metadata
+  cy.one('add', () => {
+    let geneQuery = cy.nodes().map( node => node.data('id') ).join(' ');
+    ServerAPI.searchGenes( geneQuery ).then( res => geneData = res );
+  });
+
   let hideTooltips = () => {
     cy.elements().forEach(ele => {
       let tooltip = ele.scratch('_tooltip');
@@ -35,10 +57,10 @@ let bindEvents = cy => {
 
   cy.on(SHOW_INTERACTIONS_TOOLTIPS_EVENT, 'node', function (evt) {
     let node = evt.target;
+    let geneId = node.data('id');
+    let geneMetadata = geneData.find( info => info.query === geneId ) || {};
     let tooltip = new CytoscapeTooltip( node.popperRef(), {
-      html: h(InteractionsNodeTooltip, {
-        node: node
-        })
+      html: h(InteractionsNodeTooltip, { node, geneMetadata })
     } );
     node.scratch('_tooltip', tooltip);
     tooltip.show();
@@ -96,7 +118,7 @@ let bindEvents = cy => {
       ele.addClass('highlighted');
     });
 
-  }, 200);
+  }, 750);
 
   //call style-applying and style-removing functions on 'mouseover' and 'mouseout' for non-compartment nodes
   cy.on('mouseover', 'node[class!="compartment"]', nodeHoverMouseOver);

@@ -52,6 +52,12 @@ class Pathway {
     return _.get(this.raw, 'graph.nodes', []).filter( node => node.data.class === 'macromolecule' );
   }
 
+  geneNames(){
+    let ms = this.macromolecules();
+    let names = _.flatten(ms.map( node => [ ..._.get(node, 'data.metadata.synonyms', []), ...[_.get(node, 'data.label', '')] ] ));
+    return _.uniq(names);
+  }
+
 }
 
 module.exports = Pathway;

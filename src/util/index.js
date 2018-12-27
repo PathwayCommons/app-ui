@@ -1,3 +1,3 @@
-const fetch = require('./fetch');
+const { safeFetch: fetch, TimeoutError } = require('./fetch');
 
-module.exports = { fetch };
+module.exports = { fetch, TimeoutError };

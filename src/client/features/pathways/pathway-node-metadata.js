@@ -106,14 +106,12 @@ class PathwayNodeMetadataView extends React.Component {
           showSynonyms ? h('div.cy-tooltip-section', [
             h('div.cy-tooltip-field-name', [
               'Synonyms',
-              // h('i.material-icons', 'expand_more')
             ]),
             h('div.cy-tooltip-field-value', synonyms.slice(0, DEFAULT_NUM_NAMES).join(', '))
           ]) : null,
           showPubs ? h('div.cy-tooltip-section', [
             h('div.cy-tooltip-field-name', [
               'Publications',
-              // h('i.material-icons', 'keyboard_arrow_right')
             ]),
             h('div', publicationEles)
           ]) : null
@@ -122,7 +120,6 @@ class PathwayNodeMetadataView extends React.Component {
           showLinks ? h('div.cy-tooltip-section', [
             h('div.cy-tooltip-field-name', [
               'Links',
-              // h('i.material-icons', 'keyboard_arrow_right')
             ]),
             h('div.cy-tooltip-links', dbLinks)
           ]) : null

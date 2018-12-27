@@ -22,6 +22,10 @@
   1px 1px 0 #000;
 }
 
+.paint-menu {
+  width: 100%;
+}
+
 .paint-menu-controls {
   display: flex;
   flex-direction: row;

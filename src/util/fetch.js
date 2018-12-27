@@ -1,4 +1,7 @@
-const promiseTimeout = require('./promise');
+const { promiseTimeout, TimeoutError } = require('./promise');
+const _ = require('lodash');
+
+const { FETCH_TIMEOUT } = require('../config');
 
 const failOnBadStatus = res => {
   if(!res.ok){
@@ -9,7 +12,9 @@ const failOnBadStatus = res => {
 };
 
 const safeFetch =  ( url, options ) => {
-  return promiseTimeout( () => fetch( url, options ).then( failOnBadStatus ) );
+  const timeout = _.get( options, ['timeout'], FETCH_TIMEOUT );
+  const opts = _.omit( options, ['timeout']);
+  return promiseTimeout( () => fetch( url, opts ).then( failOnBadStatus ), timeout );
 };
 
-module.exports = safeFetch;
+module.exports = { safeFetch, TimeoutError };

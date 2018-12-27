@@ -1,161 +1,23 @@
-/*  ********ENRICHMENT INPUT BAR********   */
-
 .enrichment {
   overflow: hidden;
 }
 
-.enrichmentInput {
-  display: flex;
-  padding-left: 8px;
+.enrichment-sources-popover {
+  width: 100px;
+  height: 66vh;
+  max-height: 600px;
+  overflow-y: scroll;
+  text-align: center;
+  padding: 0.5em 0.25em;
 }
 
-.gene-input-container{
-  height: 1.85em;
-  width: 225px;
-  position: relative;
-}
-
-.gene-input-box{
-  min-height: 1.85em;
-  max-height: 80%;
-  width: 225px;
-  background-color: white;
-  padding: 0em 0.5em;
-  box-sizing: border-box;
-  border: 1px solid var(--light-base-colour-dark);
-  border-radius: 0 !important;
-  font-weight: normal;
-  position: fixed;
-  vertical-align: middle;
-  z-index: 20;
-  overflow-y:scroll;
-  line-height: 1.8;
-  resize: none;
-}
-
-.gene-input-box:empty:not(:focus):before {
-  content: attr(placeholder);
-}
-
-.gene-input-box:not(:focus) {
-  max-height: 1.85em;
-}
-
-.enrichment-example-container{
-  position: absolute;
-  box-sizing: border-box;
-  margin-top: 1px;
-  right: 0px;
-  width: 30px;
-  z-index: 20;
-
-  & button{
-    padding: 0;
-    border: none;
-    color: var(--dark-base-colour);
-  }
-
-  & button:hover{
-    color:#16a085;
-  }
-}
-
-/* submit button for gene input */
-.submit{
-  background-color: var(--dark-base-colour);
-  color: white;
-  font-weight: normal;
-  border: 1px solid var(--light-base-colour-dark);
-  border-left: none;
-  border-radius: 0 !important;
-  height: 1.85em;
-  vertical-align: middle;
-}
-
-/*   ********ENRICHMENT TOOLBAR********  */
-
-.enrichment-app-bar {
-  padding: 4px 8px;
-  z-index: 10;
-}
-
-.enrichment-app-toolbar {
-  z-index: 10;
-  position: absolute;
-  top: 100%;
-  left: -1px;
-  border-style: solid;
-  border-width: 1px 1px 1px 1px;
-  border-radius: 0 0 0.25em 0.25em;
-  border-color: var(--light-base-colour-dark);
-}
-
-/*   ********ENRICHMENT SIDE MENU********  */
-
-.enrichment-drawer-tab {
-  display: inline-block;
-  border: 1px solid transparent;
-  border-bottom: none;
-  bottom: -1px;
-  position: relative;
-  list-style: none;
-  padding: 6px 0;
+.enrichment-popover-link {
   cursor: pointer;
-  margin-bottom: 0;
-  margin-right: 10px;
 }
 
-.enrichment-drawer-tab-selected {
-  font-weight: bold;
-  color: var(--accent-1-colour);
-  border-bottom: 3px solid var(--accent-1-colour);
-}
-
-.react-tabs{
-  width: 100%;
-}
-
-.enrichment-legend-container {
-  display: flex;
-  flex-direction: row;
-}
-
-/* for p_value <= 0.05 */
-/* match background with 'p_valueColorScale' */
-.enrichment-legend {
-  padding: 0px 5px 0px 5px;
-  height: 40px;
-  color: white;
-  background: linear-gradient(to right,
-    rgb(0, 128, 0), /* html green */
-    rgb(230, 255, 230)
-  );
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
-
-  & p {
-    padding-top: 10px;
-    font-size: 1em;
-    margin: 0;
-    text-shadow:
-      -1px -1px 0 #000,
-       1px -1px 0 #000,
-      -1px 1px 0 #000,
-       1px 1px 0 #000;
+@media( --small-width-viewport ){
+  .enrichment-sources-popover {
+    font-size: 0.8em;
+    height: 300px;
   }
-}
-
-.enrichment-slider-wrapper{
-  width: 100%;
-  margin-top: 5px;
-}
-
-#enrichment-p_value-slider{
-  width: 100% !important;
-}
-
-.gene-identifier-list {
-  margin: 0 0 3px 0;
 }

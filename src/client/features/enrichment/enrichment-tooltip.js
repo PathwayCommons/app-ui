@@ -1,48 +1,95 @@
 const React = require('react');
 const h = require('react-hyperscript');
+const _ = require('lodash');
+
+const { NS_GENE_ONTOLOGY, NS_REACTOME } = require('../../../config');
+const { ServerAPI } = require('../../services');
+
 
 class EnrichmentTooltip extends React.Component {
-  render(){
-    let {node, overviewDesc} = this.props;
-    let title = node.data('description');
+  constructor(props){
+    super(props);
+
+    this.state = {
+      name: '',
+      description: '',
+      descriptionLoaded: false
+    };
+  }
+
+  componentDidMount(){
+    let { node } = this.props;
     let id = node.data('id');
+    const namespace = node.data('namespace');
+    const descriptionOnFail = 'No description available';
+
+    if( namespace === NS_GENE_ONTOLOGY ){
+      ServerAPI.getGoInformation( id.replace('GO:', '') ).then( res => {
+        let description = _.get(res, 'results[0].definition.text', descriptionOnFail);
+        let update = () => this.setState({ name: NS_GENE_ONTOLOGY.toUpperCase(), description, descriptionLoaded: true });
+
+        update();
+      });
+    }
+
+    if( namespace === NS_REACTOME ){
+      ServerAPI.getReactomeInformation( id.replace('REAC:', '') ).then( res => {
+        let description = _.get(res, 'summation[0].text', descriptionOnFail);
+        let update = () => this.setState({ name: NS_REACTOME.toUpperCase(), description, descriptionLoaded: true });
+
+        update();
+      });
+    }
+  }
+  render(){
+    let {node} = this.props;
+    let { description, name } = this.state;
+    let title = node.data('name');
     let sharedGeneList = node.data('intersection').sort();
     let sharedGeneCount = sharedGeneList.length;
-    let geneSet = node.data('geneSet').sort();
-    let geneCount = node.data('geneCount');
-    let dbInfo = {};
+    let url = node.data('uri');
 
-    if( id.includes('GO') ) dbInfo = {name: 'Gene Ontology', url:'http://identifiers.org/go/' + id};
-    else if( id.includes('REAC') ) dbInfo = {name: 'Reactome', url:'http://identifiers.org/reactome/' + id.replace("REAC:", "R-HSA-") };
+    if( !this.state.descriptionLoaded ){
+      return h('div.cy-tooltip', [
+        h('div.cy-tooltip-content', [
+          h('div.cy-tooltip-header',[
+            h('h2.cy-tooltip-title', 'Loading...')
+          ]),
+          h('div.cy-tooltip-body', [
+            h('div.cy-tooltip-loading-section', [
+              h('i.icon.icon-spinner')
+            ])
+          ])
+        ])
+      ]);
+    }
 
     return h('div.cy-tooltip', [
-      h('div.cy-tooltip-header',[
-        h('h2.cy-tooltip-title', title)
-      ]),
-      h('div.cy-tooltip-body', [
-        h('div.cy-tooltip-section', [
-          h('div.cy-tooltip-field-name', 'Pathway Overview'),
-          h('div.cy-tooltip-field-value', overviewDesc)
+      h('div.cy-tooltip-content', [
+        h('div.cy-tooltip-header',[
+          h('h2.cy-tooltip-title', [
+            h('a.plain-link', { href: url, target: '_blank', }, title[0].toUpperCase() + title.substr(1) ),
+            h('div.cy-tooltip-type-chip', name )
+          ])
         ]),
-        h('div.cy-tooltip-section', [
-          h('div.cy-tooltip-field-name', 'Genes Shared with Entered List (' + sharedGeneCount + ')'),
-          h('div.cy-tooltip-field-value', sharedGeneList.join(', ')),
+        h('div.cy-tooltip-body', [
+          h('div.cy-tooltip-section', [
+            h('div.cy-tooltip-field-name', 'Description'),
+            h('div.cy-tooltip-field-value', description)
+          ]),
+          h('div.cy-tooltip-section', [
+            h('div.cy-tooltip-field-name', 'Genes Shared with Entered List (' + sharedGeneCount + ')'),
+            h('div.cy-tooltip-field-value', sharedGeneList.join(', ')),
+          ])
         ]),
-        h('div.cy-tooltip-section', [
-          h('div.cy-tooltip-field-name', 'Genes in Pathway (' + geneCount + ')'),
-          h('div.cy-tooltip-field-value', geneSet.join(', '))
+        h('div.cy-tooltip-call-to-action', [
+          h('a', {
+            target: '_blank',
+            href: '/search?q=' + title
+            }, [
+              h('button.call-to-action', 'Find Related Pathways')
+          ])
         ])
-      ]),
-      h('div.cy-tooltip-footer', [
-        h('a.plain-link', { href: dbInfo.url, target: '_blank', }, dbInfo.name)
-      ]),
-      h('div.cy-tooltip-call-to-action', [
-        h('a.call-to-action', {
-          target: '_blank',
-          href: '/search?q=' + title
-          },
-          `SEARCH PATHWAY`
-        )
       ])
     ]);
   }

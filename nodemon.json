@@ -1,7 +1,8 @@
 {
   "watch": [
-    "./src/model",
+    "./src/models",
     "./src/server",
-    "./src/util"
+    "./src/util",
+    "./src/config.js"
   ]
 }

@@ -5,7 +5,7 @@ const path = require ('path');
 const _ = require('lodash');
 
 const { NS_HGNC, NS_HGNC_SYMBOL, NS_UNIPROT, NS_NCBI_GENE, NS_ENSEMBL } = require('../../../../src/config');
-const { getForm, mapParams, gConvertResponseHandler, GPROFILER_NS_MAP } = require ('../../../../src/server/external-services/gprofiler/gconvert');
+const { createGConvertOpts, gConvertResponseHandler, GPROFILER_NS_MAP } = require ('../../../../src/server/external-services/gprofiler/gconvert');
 const InvalidParamError = require('../../../../src/server/errors/invalid-param');
 
 const query1 = [
@@ -50,7 +50,7 @@ const validResult1 = {
 
 describe ('Enrichment service: validation', function () {
 
-  describe ('Test mapParams ()', function () {
+  describe ('Test creation of gconvert options', function () {
     const baseParams = {
       'query': query1,
       'target': NS_HGNC,
@@ -58,45 +58,42 @@ describe ('Enrichment service: validation', function () {
     };
 
     it ('should map query array to string', function () {
-      const result = mapParams( baseParams );
+      const result = createGConvertOpts( baseParams );
       expect( result.query ).to.equal( query1.join(" ") );
     });
 
     it ('should map name for HGNC Symbol', function () {
       const params = _.assign( {}, baseParams, { 'target': NS_HGNC_SYMBOL } );
-      const result = mapParams( params );
+      const result = createGConvertOpts( params );
       expect( result.target ).to.equal( GPROFILER_NS_MAP.get(NS_HGNC_SYMBOL) );
     });
 
     it ('should map name for HGNC', function () {
       const params = _.assign( {}, baseParams, { 'target': NS_HGNC } );
-      const result = mapParams( params );
+      const result = createGConvertOpts( params );
       expect( result.target ).to.equal( GPROFILER_NS_MAP.get(NS_HGNC) );
     });
 
     it ('should map name for UniProt', function () {
       const params = _.assign( {}, baseParams, { 'target': NS_UNIPROT } );
-      const result = mapParams( params );
+      const result = createGConvertOpts( params );
       expect( result.target ).to.equal( GPROFILER_NS_MAP.get(NS_UNIPROT) );
     });
 
     it ('should map name for NCBI Gene', function () {
       const params = _.assign( {}, baseParams, { 'target': NS_NCBI_GENE } );
-      const result = mapParams( params );
+      const result = createGConvertOpts( params );
       expect( result.target ).to.equal( GPROFILER_NS_MAP.get(NS_NCBI_GENE) );
     });
 
     it ('should map name for Ensembl Gene', function () {
       const params = _.assign( {}, baseParams, { 'target': NS_ENSEMBL } );
-      const result = mapParams( params );
+      const result = createGConvertOpts( params );
       expect( result.target ).to.equal( GPROFILER_NS_MAP.get(NS_ENSEMBL) );
     });
 
-  });
-
-  describe ('Test getForm ()', function () {
     it ('should return to correct object with default options', function () {
-      const result = getForm( query1, defaultOptions, {} );
+      const result = createGConvertOpts( _.assign( {}, defaultOptions, {query: query1}) );
       const expected = _.assign( {}, defaultOptions, {
         query: query1.join (" "),
         target: GPROFILER_NS_MAP.get(NS_HGNC)
@@ -105,7 +102,7 @@ describe ('Enrichment service: validation', function () {
     });
 
     it ('should return to correct object with user options', function () {
-      const result = getForm( query1, defaultOptions, userOptions);
+      const result = createGConvertOpts( _.assign( {}, defaultOptions, {query: query1}, userOptions) );
       const expected = _.assign( {}, defaultOptions, {
         query: query1.join (" "),
         target: GPROFILER_NS_MAP.get(NS_HGNC_SYMBOL)
@@ -114,16 +111,16 @@ describe ('Enrichment service: validation', function () {
     });
 
     it ('should throw error with invalid user options', function () {
-      expect( getForm.bind( getForm, query1, defaultOptions, { target: 'bloat' } ) ).to.throw ( InvalidParamError );
-      expect( getForm.bind( getForm, {}, defaultOptions, {} ) ).to.throw ( InvalidParamError );
+      expect( () => createGConvertOpts( _.assign( {}, defaultOptions, { query: query1 }, { target: 'bloat' } ) ) ).to.throw ( InvalidParamError );
+      expect( () => createGConvertOpts( _.assign( {}, defaultOptions,  { query: '' } ) ) ).to.throw ( InvalidParamError );
     });
   });
 
-  describe ('Test gConvertResponseHandler()', function () {
+  describe ('Test gConvertResponseHandler', function () {
     it ('should return to a correct object', function () {
       const gConvertbodytxt = fs.readFileSync( path.resolve( __dirname, 'gconvert-body.txt' ), 'utf-8' );
       const result = gConvertResponseHandler( gConvertbodytxt );
-      expect ( result ).to.deep.equal ( validResult1 );
+      expect ( result ).to.deep.equal( validResult1 );
     });
   });
 

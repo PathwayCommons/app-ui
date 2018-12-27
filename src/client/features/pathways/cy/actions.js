@@ -13,7 +13,7 @@ let expandCollapseAll = () => {
     if( expanded ){
       let nodesToCollapse = cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => api.isCollapsible(node));
       api.collapseRecursively(nodesToCollapse);
-  
+
     } else {
       let nodesToExpand = cy.nodes('[class="complex"], [class="complex multimer"]').filter(node => api.isExpandable(node));
       api.expandRecursively(nodesToExpand);
@@ -38,14 +38,12 @@ let searchNodes = (cy, query) => {
   let getSyns = node => {
     let metadata = node.data('metadata');
     let { synonyms = [], standardName = '', displayName = '' } = metadata;
-    let geneSynonyms = node.data('geneSynonyms');
     let label = node.data('label');
 
     return _.uniq([
       ...synonyms,
-      ...geneSynonyms,
-      standardName, 
-      displayName, 
+      standardName,
+      displayName,
       label
     ]).filter( el => !_.isEmpty( el ) );
   };

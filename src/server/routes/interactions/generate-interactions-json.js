@@ -2,7 +2,7 @@ const _ = require('lodash');
 const QuickLRU = require('quick-lru');
 
 const pc = require('../../external-services/pathway-commons');
-const cache = require('../../cache');
+const { cachePromise } = require('../../cache');
 // const ncbi = require('../../external-services/ncbi');
 
 const { PC_CACHE_MAX_SIZE, MAX_SIF_NODES } = require('../../../config');
@@ -183,5 +183,5 @@ let pcCache = new QuickLRU({ maxSize: PC_CACHE_MAX_SIZE });
 module.exports = {
   sifText2CyJson,
   getInteractionsCyJson,
-  getInteractionGraphFromPC: cache(getInteractionsNetwork, pcCache)
+  getInteractionGraphFromPC: cachePromise(getInteractionsNetwork, pcCache)
 };

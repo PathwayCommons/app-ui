@@ -18,7 +18,6 @@ let conf = {
   devtool: 'inline-source-map',
   module: {
     rules: [
-      { test: /node_modules\/cytoscape\/.*/, loader: 'babel-loader'},
       { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' }
     ]
   },

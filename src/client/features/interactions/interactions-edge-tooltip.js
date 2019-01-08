@@ -131,6 +131,7 @@ class InteractionsEdgeTooltip extends React.Component {
       return this.renderEdge(selectedEdge, publications);
     } else {
       if( parallelEdges.length === 1 ){
+        this.selectEdge(parallelEdges[0]);
         return this.renderEdge(parallelEdges[0], []);
       } else {
         return this.renderEdgeChoice(parallelEdges);

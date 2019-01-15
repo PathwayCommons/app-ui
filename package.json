@@ -66,6 +66,7 @@
     "node-object-hash": "^1.4.1",
     "object-hash": "^1.2.0",
     "p-memoize": "^2.1.0",
+    "porter-stemmer": "^0.9.1",
     "query-string": "^5.0.0",
     "quick-lru": "^1.1.0",
     "react": "^16.5.1",

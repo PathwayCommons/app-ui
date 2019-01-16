@@ -112,7 +112,7 @@ class Search extends React.Component {
 
     const searchListing = h(Loader, { loaded: !loading, options: { left: '50%', color: '#16A085' } }, [
       h('div', [
-        geneResults && geneResults.length > 0 ? h(GeneResultsView, { geneResults } ) : null,
+        h(GeneResultsView, { geneResults } ),
         h(PathwayResultsView, { pathwayResults, curDatasource: query.datasource, controller: this})
       ])
     ]);

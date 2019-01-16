@@ -1,0 +1,9 @@
+.card {
+  height: 70px;
+  width: 220px;
+  border: 1px solid var(--light-base-colour-dark);
+  overflow: hidden;
+  margin-right: 1em;
+  margin-bottom: 0.5em;
+  box-shadow: var(--box-shadow);
+}

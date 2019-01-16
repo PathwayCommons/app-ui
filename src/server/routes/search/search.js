@@ -1,9 +1,10 @@
 const _ = require('lodash');
 
 const { NS_NCBI_GENE, NS_HGNC_SYMBOL, NS_UNIPROT } = require('../../../config');
+
+const { getEntitySummary: getNcbiGeneSummary } = require('../../external-services/ncbi');
 const { validatorGconvert } = require('../../external-services/gprofiler/gconvert');
 const pc = require('../../external-services/pathway-commons');
-const { entityFetch } = require('../summary/entity');
 
 const QUERY_MAX_CHARS = 5000; //temp - to be in config
 const QUERY_MAX_TOKENS = 100; //temp - to be in config
@@ -43,7 +44,7 @@ const fillInXref = async ( summaries, ncbiAlias, uniprotAlias, name ) => {
 // Create an entity summary using NCBI, augmented with UniProt Xref
 const getNcbiSummary = async ( ncbiAlias, uniprotAlias ) => {
   const ncbiIds = _.values( ncbiAlias );
-  const summaries = await entityFetch( ncbiIds, NS_NCBI_GENE );
+  const summaries = await getNcbiGeneSummary( ncbiIds );
   await fillInXref( summaries, ncbiAlias, uniprotAlias, NS_UNIPROT );
   return summaries;
 };
@@ -72,8 +73,8 @@ const errorHandler = () => [];
 
 // Return information about genes
 const searchGenes = query => {
-
-  const tokens = tokenize( query );
+  const rawQuery = query;
+  const tokens = tokenize( rawQuery );
   const uniqueTokens = _.uniq( tokens );
 
   return Promise.all([
@@ -91,8 +92,9 @@ const searchGenes = query => {
 
 // Simple wrapper for pc search
 const searchPathways = query => {
-  const sanitized = sanitize( query, RAW_SEARCH_MAX_CHARS );
-  const opts = _.assign( {}, PATHWAY_SEARCH_DEFAULTS, { q: sanitized });
+  const rawQuery = query.q;
+  const sanitized = sanitize( rawQuery, RAW_SEARCH_MAX_CHARS );
+  const opts = _.assign( {}, PATHWAY_SEARCH_DEFAULTS, query, { q: sanitized });
   return pc.search( opts )
     .catch( errorHandler );
 };
@@ -103,8 +105,10 @@ const searchPathways = query => {
  * @param { String } query Raw input to search by
  */
 const search = async ( query ) => {
-  return Promise.all([ searchGenes( query ), searchPathways( query ) ])
-    .then( ([ genes, pathways ]) => ({ genes, pathways }) );
+  return Promise.all([ searchGenes( query.q ), searchPathways( query ) ])
+    .then( ([ genes, pathways ]) => {
+      return { genes, pathways };
+    } );
 };
 
-module.exports = { search };
+module.exports = { search, searchGenes };

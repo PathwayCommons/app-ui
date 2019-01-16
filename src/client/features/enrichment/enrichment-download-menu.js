@@ -23,7 +23,7 @@ class EnrichmentDownloadMenu extends React.Component {
           scale: 2,
           bg: 'white',
           full: true
-        }), `enrichment-map.png`);
+        }), `enrichment-network.png`);
         this.setState({ loading: false });
       }, 1);
     };
@@ -36,12 +36,7 @@ class EnrichmentDownloadMenu extends React.Component {
     let cy = cySrv.get();
     let saveCyJson = () => {
       setTimeout(() => {
-        saveAs(cy.json({
-          output: 'blob',
-          scale: 2,
-          bg: 'white',
-          full: true
-        }), `enrichment-map.json`);
+        saveAs(new Blob([JSON.stringify(cy.json(), null, 2)], { type: 'text/plain;charset=utf-8' }), `enrichment-network.json`);
         this.setState({ loading: false });
       }, 1);
     };

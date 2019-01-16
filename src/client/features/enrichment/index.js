@@ -6,14 +6,12 @@ const classNames = require('classnames');
 const queryString = require('query-string');
 
 const EnrichmentToolbar = require('./enrichment-toolbar');
-const EmptyNetwork = require('../../common/components/empty-network');
-const PcLogoLink = require('../../common/components/pc-logo-link');
-const CytoscapeNetwork = require('../../common/components/cytoscape-network');
+const { EmptyNetwork, PcLogoLink, CytoscapeNetwork, Popover } = require('../../common/components/');
 
 const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services');
 
-const { ENRICHMENT_MAP_LAYOUT, enrichmentStylesheet, bindEvents } = require('./cy');
+const { enrichmentLayout, enrichmentStylesheet, bindEvents } = require('./cy');
 class Enrichment extends React.Component {
   constructor(props){
     super(props);
@@ -41,8 +39,9 @@ class Enrichment extends React.Component {
 
     let getNetworkJson = async () => {
       try {
-        let { pathwayInfo } = await ServerAPI.enrichmentAPI({ query: sources}, 'analysis');
-        let enrichmentNetwork = await ServerAPI.enrichmentAPI({ pathways: pathwayInfo }, 'visualization');
+        let { pathways } = await ServerAPI.enrichmentAPI({ query: sources}, 'analysis');
+        let enrichmentNetwork = await ServerAPI.enrichmentAPI({ pathways }, 'visualization');
+        let networkHasZeroNodes = enrichmentNetwork.graph.elements.nodes.length === 0;
 
         cy.remove('*');
         cy.add({
@@ -50,15 +49,12 @@ class Enrichment extends React.Component {
           nodes: enrichmentNetwork.graph.elements.nodes
         });
 
-        cy.layout( _.assign( {}, ENRICHMENT_MAP_LAYOUT, {
-          stop: () => {
-            this.setState({
-              loading: false,
-              openToolBar: true
-            });
-          }
-        })).run();
-
+        enrichmentLayout( cy ).then ( () => {
+          this.setState({
+            loading: false,
+            networkEmpty: networkHasZeroNodes
+          });
+        });
       } catch( e ){
         this.setState({
           errored: true,
@@ -67,16 +63,34 @@ class Enrichment extends React.Component {
       }
     };
 
-    this.setState({ loading: true, openToolbar: false, networkEmpty: false }, () => getNetworkJson());
+    this.setState({ loading: true, networkEmpty: false }, () => getNetworkJson());
   }
 
   render(){
     let { loading, cySrv, networkEmpty, sources } = this.state;
+    let titleContent = [];
+
+    if( sources.length === 1 ){
+      titleContent.push(h('span', `Pathways enriched for ${sources[0]}`));
+    }
+    if( 1 < sources.length && sources.length <= 3 ){
+      titleContent.push(h('span', `Pathways enriched for ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`));
+    }
+    if( sources.length > 3 ){
+      titleContent.push(h('span', `Pathways enriched for ${ sources.slice(0, 2).join(', ')} and `));
+      titleContent.push(h(Popover, {
+        tippy: {
+          position: 'bottom',
+          html: h('div.enrichment-sources-popover', sources.slice(3).sort().map( s => h('div', s) ) )
+        },
+      }, [ h('a.plain-link.enrichment-popover-link', `${sources.length - 3} other gene(s)`) ]
+      ));
+    }
 
     let appBar = h('div.app-bar.interactions-bar', [
       h('div.app-bar-branding', [
         h(PcLogoLink),
-        h('div.app-bar-title', `Enrichment of ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`)
+        h('div.app-bar-title', titleContent)
       ]),
       h(EnrichmentToolbar, { cySrv, sources: this.state.sources, controller: this })
     ]);

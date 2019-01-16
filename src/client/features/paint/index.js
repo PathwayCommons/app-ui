@@ -15,10 +15,9 @@ const Pathway = require('../../../models/pathway/pathway-model');
 const FileDownloadMenu = require('./menus/file-download-menu');
 const InfoMenu = require('./menus/network-info-menu');
 const PaintMenu = require('./menus/paint-menu');
-const Sidebar = require('../../common/components/sidebar');
-const PcLogoLink = require('../../common/components/pc-logo-link');
-const CytoscapeNetwork = require('../../common/components/cytoscape-network');
 const PathwaysToolbar = require('./pathways-toolbar');
+
+const { Sidebar, PcLogoLink, CytoscapeNetwork } = require('../../common/components/');
 
 const demoExpressions = require('./demo-expressions.json');
 const demoPathways = require('./demo-pathway-results.json');
@@ -42,12 +41,12 @@ let getPathwaysRelevantTo = (searchParam, expressionTable) => {
   let searchQuery = ServerAPI.search({q: searchParam, type: 'Pathway'});
 
   return Promise.all([...geneQueries, searchQuery]).then(searchResults => {
-    let uniqueResults = _.uniqBy(_.flatten(searchResults), result => result.uri);
+    let pathwaySearchResults = [...searchResults.map( result => result.pathways)];
+    let uniqueResults = _.uniqBy(_.flatten(pathwaySearchResults), result => result.uri);
+    let pathwaysJSON = uniqueResults.map(result => ServerAPI.getPathway(result.uri, 'latest').catch( () => null ));
 
-    let pathwaysJSON = uniqueResults.map(result => ServerAPI.getPathway(result.uri, 'latest'));
-
-    return Promise.all(pathwaysJSON).then(pathways => {
-      return _.uniqWith(pathways.map( pathwayJSON => {
+    return Promise.all(pathwaysJSON).then(pathwaysJSON => {
+      return _.uniqWith(pathwaysJSON.filter( pj => pj != null ).map( pathwayJSON => {
         let p = new Pathway();
         p.load( pathwayJSON );
         return p;

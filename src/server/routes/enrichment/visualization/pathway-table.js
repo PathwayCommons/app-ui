@@ -16,7 +16,7 @@ gmtPathwayData.split('\n').forEach( pathwayInfoLine => {
   let PATHWAY_NAME_INDEX = 1;
   let GENE_LIST_START_INDEX = 2;
 
-  let pathwayId = pathwayInfoTokens[PATHWAY_ID_INDEX];
+  let id = pathwayInfoTokens[PATHWAY_ID_INDEX];
   let name = pathwayInfoTokens[PATHWAY_NAME_INDEX];
   let geneSet = [];
 
@@ -24,7 +24,7 @@ gmtPathwayData.split('\n').forEach( pathwayInfoLine => {
     geneSet.push(pathwayInfoTokens[i]);
   }
 
-  pathwayInfoTable.set(pathwayId, { pathwayId, name, geneSet } );
+  pathwayInfoTable.set(id, { id, name, geneSet } );
 } );
 
 pathwayInfoTable.delete('');

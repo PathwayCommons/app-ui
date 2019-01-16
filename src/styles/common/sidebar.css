@@ -23,7 +23,9 @@
 }
 
 .sidebar-close {
-  @extend %flex-center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   box-shadow: var(--box-shadow);
   height: calc(var(--icon-size) * 3 / 2);
   width: calc(var(--icon-size) * 3 / 2);
@@ -46,8 +48,9 @@
 }
 
 .sidebar-text {
-  @extend %flex-center;
-
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 100%;
   width: 100%;
   padding: 1em;

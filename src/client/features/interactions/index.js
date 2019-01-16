@@ -10,9 +10,7 @@ const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services/');
 
 const InteractionsToolbar = require('./interactions-toolbar');
-const EmptyNetwork = require('../../common/components/empty-network');
-const PcLogoLink = require('../../common/components/pc-logo-link');
-const CytoscapeNetwork = require('../../common/components/cytoscape-network');
+const { Popover, EmptyNetwork, PcLogoLink, CytoscapeNetwork } = require('../../common/components/');
 
 const { interactionsStylesheet, interactionsLayoutOpts, bindEvents } = require('./cy');
 
@@ -70,11 +68,29 @@ class Interactions extends React.Component {
 
   render() {
     let { loading, cySrv, activeMenu, sources, networkEmpty } = this.state;
+
+    let titleContent = [];
+    if( sources.length === 1 ){
+      titleContent.push(h('span', `Interactions between ${sources[0]} and ${config.MAX_SIF_NODES} other genes`));
+    }
+    if( 1 < sources.length && sources.length <= 3 ){
+      titleContent.push(h('span', `Interactions between ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`));
+    }
+    if( sources.length > 3 ){
+      titleContent.push(h('span', `Interactions between ${ sources.slice(0, 2).join(', ')} and `));
+      titleContent.push(h(Popover, {
+        tippy: {
+          position: 'bottom',
+          html: h('div.enrichment-sources-popover', sources.slice(3).sort().map( s => h('div', s) ) )
+        },
+      }, [ h('a.plain-link.enrichment-popover-link', `${sources.length - 3} other gene(s)`) ]
+      ));
+    }
+
     let appBar = h('div.app-bar.interactions-bar', [
       h('div.app-bar-branding', [
         h(PcLogoLink),
-        sources.length === 1 ?  h('div.app-bar-title', `Interactions between ${sources[0]} and top ${config.MAX_SIF_NODES} genes`):
-        h('div.app-bar-title', `Interactions between ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`)
+        h('div.app-bar-title', titleContent)
       ]),
       h(InteractionsToolbar, { cySrv, activeMenu, sources: this.state.sources, controller: this })
     ]);

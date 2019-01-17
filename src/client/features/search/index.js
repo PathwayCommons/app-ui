@@ -155,8 +155,8 @@ class Search extends React.Component {
           h('div.search-suggestions', [
             'e.g. ',
             h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, query, {q: 'cell cycle'})) }}, 'cell cycle, '),
-            h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, query, {q: 'TP53 MDM2'})) }}, 'TP53 MDM2, '),
-            h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, query, {q: 'P04637'})) }}, 'P04637')
+            h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, query, {q: 'pcna xrcc2 xrcc3 rad50 rad51'})) }}, 'pcna xrcc2 xrcc3 rad50 rad51, '),
+            h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, query, {q: 'P12004'})) }}, 'P12004')
           ])
         ])
       ]),

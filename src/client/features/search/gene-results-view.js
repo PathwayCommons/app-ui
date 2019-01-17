@@ -42,7 +42,7 @@ class GeneResultsView extends React.Component {
     let linkPath = '/enrichment';
     let description = 'Explore a network of pathways that contain genes identified in your query.';
     let imageClass = 'enrichment-logo';
-    let title = 'Pathway enrichment analysis';
+    let title = 'Enrichment';
 
     return { label, title, linkPath, description, imageClass };
   }
@@ -52,19 +52,24 @@ class GeneResultsView extends React.Component {
     let description = 'Visualize interactions between the genes identified in your query.';
     let linkPath = '/interactions';
     let imageClass = 'interactions-logo';
-    let title = 'Gene interactions';
+    let title = 'Interactions';
 
     return { label, title, linkPath, description, imageClass };
   }
 
   render(){
     let { geneResults } = this.props;
+
+    if( geneResults === null || geneResults.length === 0 ){
+      return null;
+    }
+
     let sources = geneResults.map( geneInfo => geneInfo.geneSymbol );
     let interactionsAppInfo = this.getInteractionsAppInfo( );
     let enrichmentAppInfo = this.getEnrichmentAppInfo( );
 
     let AppLinkout = appInfo => {
-      let { linkPath, imageClass, title, description, label } = appInfo;
+      let { linkPath, imageClass, title, description } = appInfo;
 
       let appLink = h(Link, {
         to: {
@@ -74,21 +79,11 @@ class GeneResultsView extends React.Component {
         target: '_blank'
       }, [ h(`div.app-image.${imageClass}`) ] );
 
-      let actionLink = h(Link, {
-        to: {
-          pathname: linkPath,
-          search: queryString.stringify({ source: sources.join(',') })
-        },
-        className: 'plain-link app-link-action',
-        target: '_blank'
-      }, [ label ]);
-
       return h('div.app-linkout', [
         appLink,
         h('div.app-linkout-content', [
           h('h4.app-title', title),
-          h('div.app-description', description),
-          actionLink
+          h('div.app-description', description)
         ])
       ]);
     };

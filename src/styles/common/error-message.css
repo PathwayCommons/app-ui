@@ -1,0 +1,21 @@
+.error-message {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  /* padding: 10px;
+  padding-left: 215px; */
+  /* width: 60%; */
+}
+
+.error-message-body, .error-message-footer {
+  color: var(--light-base-colour-darker);
+  margin: 0;
+  font-size: 0.9em;
+}
+
+@media (--small-width-viewport) {
+  .error-message {
+    padding-left: 50px;
+  }
+}

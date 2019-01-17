@@ -5,11 +5,17 @@ const queryString = require('query-string');
 const _ = require('lodash');
 
 const Datasources = require('../../../models/datasources');
-
+const { ErrorMessage } = require('../../common/components/error-message');
 
 class PathwayResultsView extends React.Component {
   render(){
     let { pathwayResults, controller, curDatasource } = this.props;
+
+    if( pathwayResults === null ){
+      return null;
+    } else if ( !pathwayResults.length ){
+      return h( ErrorMessage, { title: 'Your search didn\'t match any pathways', footer: 'Try different keywords or gene names.'} );
+    }
 
     const searchList = pathwayResults.map(result => {
       let datasourceUri = _.get(result, 'dataSource.0', '');

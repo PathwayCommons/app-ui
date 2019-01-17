@@ -12,6 +12,8 @@ const PcLogoLink = require('../../common/components/pc-logo-link');
 
 const { PathwayResultsView } = require('./pathway-results-view');
 const { GeneResultsView } = require('./gene-results-view');
+const { TimeoutError } = require('../../../util');
+const { ErrorMessage } = require('../../common/components/error-message');
 
 class Search extends React.Component {
 
@@ -26,9 +28,10 @@ class Search extends React.Component {
         type: 'Pathway',
         datasource: []
       }, query),
-      geneResults: [],
-      pathwayResults: [],
-      loading: false
+      geneResults: null,
+      pathwayResults: null,
+      loading: false,
+      error: null
     };
   }
 
@@ -44,10 +47,11 @@ class Search extends React.Component {
         let { genes, pathways } = res;
         this.setState({
           geneResults: genes,
-          pathwayResults: pathways,
-          loading: false
+          pathwayResults: pathways
          });
-      });
+      })
+      .catch( e => this.setState({ error: e }))
+      .finally( this.setState({ loading: false }));
     }
   }
 
@@ -106,22 +110,22 @@ class Search extends React.Component {
   render() {
     let { geneResults, pathwayResults, query, loading } = this.state;
 
-    const notFoundErrorMessage = h('div.search-error', [
-      h('h1', 'We can\'t find the the resource you are looking for'),
-      h('p', [
-        h('span', 'If difficulties persist, please report this to our '),
-        h('a.plain-link', { href: 'mailto: pathway-commons-help@googlegroups.com' }, 'help forum.')
-      ])
-    ]);
-
     const searchListing = h(Loader, { loaded: !loading, options: { left: '50%', color: '#16A085' } }, [
-      h('div.search-body', [
-        geneResults.length > 0 ? h(GeneResultsView, { geneResults } ) : null,
+      h('div', [
+        h(GeneResultsView, { geneResults } ),
         h(PathwayResultsView, { pathwayResults, curDatasource: query.datasource, controller: this})
       ])
     ]);
 
-    const searchBody =  this.props.notFoundError ? notFoundErrorMessage : searchListing;
+    let errorMessage;
+    if( this.props.notFoundError ) {
+      errorMessage = h( ErrorMessage, { title: 'We couldn\'t find the resource you are looking for', body: 'Check the location and try again.' } );
+    } else if( this.state.error instanceof TimeoutError ) {
+      errorMessage = h( ErrorMessage, { title: 'This is taking longer that we expected', body: 'Try again later.' }  );
+    } else if( this.state.error ) {
+      errorMessage = h( ErrorMessage );
+    }
+    let searchBody = errorMessage ? errorMessage : searchListing;
 
     return h('div.search', [
       h('div.search-header', [
@@ -156,7 +160,7 @@ class Search extends React.Component {
           ])
         ])
       ]),
-      h('div', [searchBody])
+      h('div.search-body', [searchBody])
     ]);
   }
 }

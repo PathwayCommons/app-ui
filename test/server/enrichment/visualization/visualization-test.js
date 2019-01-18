@@ -5,7 +5,9 @@ chai.use(chaiAsPromised);
 chai.should();
 
 const { mockFetch } = require('../../../util');
+// const { generateEnrichmentNetworkJson } = require('../../../../src/server/routes/enrichment/visualization');
 const { generateEnrichmentNetworkJson } = require('../../../../src/server/routes/enrichment/visualization');
+
 const ENRICHMENT_NETWORK_JSON = require('./enrichment-network-json.json');
 
 //generateGraphInfo( pathways, similarityCutoff, jaccardOverlapWeight);

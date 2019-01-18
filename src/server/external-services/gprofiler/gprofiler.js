@@ -22,7 +22,7 @@ const GPROFILER_DEFAULT_OPTS = {
   user_thr: 0.05,
   min_set_size: 5,
   max_set_size: 200,
-  threshold_algo: 'fdr',
+  threshold_algo: 'analytical',
   domain_size_type: 'annotated',
   custbg: [],
   'sf_GO:BP': 1,
@@ -40,7 +40,7 @@ const parseGProfilerResponse = gProfilerResponse => {
 
   let elements = _.compact(lines).map( line => line.split('\t') );
 
-  let pathwayInfo = {};
+  let pathways = [];
   let P_VALUE_INDEX = 2;
   let PATHWAY_ID_INDEX = 8;
   let DESCRIPTION_INDEX = 11;
@@ -50,17 +50,20 @@ const parseGProfilerResponse = gProfilerResponse => {
   elements.forEach( ele => {
     let pathwayId = ele[PATHWAY_ID_INDEX];
     let pValue = ele[P_VALUE_INDEX];
-    let description = ele[DESCRIPTION_INDEX];
+    let description = ele[DESCRIPTION_INDEX].trim();
     let geneIntersectionList = ele[GENE_INTERSECTION_LIST_INDEX].split(',').map( gene => cleanUpEntrez( gene ) );
 
-    pathwayInfo[pathwayId] = {
-      p_value: pValue,
-      description,
-      intersection: geneIntersectionList
-    };
+    pathways.push({
+      id: pathwayId,
+      data: {
+        name: description,
+        p_value: pValue,
+        intersection: geneIntersectionList
+      }
+    });
   });
 
-  return { pathwayInfo };
+  return { pathways };
 };
 
 
@@ -108,7 +111,7 @@ const rawEnrichment = (query, opts) => {
       .then( gprofilerRes =>  parseGProfilerResponse( gprofilerRes ) )
       .then( pathwayInfo => resolve( pathwayInfo ) )
       .catch( err =>{
-        logger.error(`Error in validatorGconvert - ${err.message}`);
+        logger.error(`Error in rawEnrichment - ${err.message}`);
         throw err;
       });
   });

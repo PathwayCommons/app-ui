@@ -14,7 +14,7 @@ const cron = require('node-cron');
 const config = require('../config');
 const updateCron = require('./update-cron');
 
-cron.schedule('10 * * * * *', () => {
+cron.schedule('* * * * 0', () => {
   updateCron();
 });
 

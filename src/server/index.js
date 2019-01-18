@@ -9,14 +9,14 @@ const http = require('http');
 const stream = require('stream');
 const fs = require('fs');
 const Promise = require('bluebird');
-// const cron = require('node-cron');
+const cron = require('node-cron');
 
 const config = require('../config');
-const update = require('./update');
+const updateCron = require('./update-cron');
 
-// cron.schedule('10 * * * * *', () => {
-  update();
-// });
+cron.schedule('10 * * * * *', () => {
+  updateCron();
+});
 
 // make fetch() available as a global just like it is on the client side
 global.fetch = require('node-fetch');

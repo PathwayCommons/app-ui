@@ -25,8 +25,7 @@ class Search extends React.Component {
     this.state = {
       query: _.assign({
         q: '',
-        type: 'Pathway',
-        datasource: []
+        type: 'Pathway'
       }, query),
       geneResults: null,
       pathwayResults: null,
@@ -97,10 +96,7 @@ class Search extends React.Component {
       this.setState({
         query: _.assign({
           q: '',
-          gt: 0,
-          lt: 250,
-          type: 'Pathway',
-          datasource: []
+          type: 'Pathway'
           }, queryString.parse(nextSearch))} , ()=>{
             this.getSearchResult();
           });
@@ -113,7 +109,7 @@ class Search extends React.Component {
     const searchListing = h(Loader, { loaded: !loading, options: { left: '50%', color: '#16A085' } }, [
       h('div', [
         h(GeneResultsView, { geneResults } ),
-        h(PathwayResultsView, { pathwayResults, curDatasource: query.datasource, controller: this})
+        h(PathwayResultsView, { pathwayResults })
       ])
     ]);
 

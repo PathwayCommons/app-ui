@@ -9,7 +9,7 @@ const { ErrorMessage } = require('../../common/components/error-message');
 
 class PathwayResultsView extends React.Component {
   render(){
-    let { pathwayResults, controller, curDatasource } = this.props;
+    let { pathwayResults } = this.props;
 
     if( pathwayResults === null ){
       return null;
@@ -35,21 +35,9 @@ class PathwayResultsView extends React.Component {
       ]);
     });
 
-    const searchResultFilter = h('div.search-filters', [
-      h('select.search-datasource-filter', {
-        value: !Array.isArray(curDatasource) ? curDatasource : '',
-        multiple: false,
-        onChange: e => controller.setAndSubmitSearchQuery({ datasource: e.target.value })
-      }, [
-        h('option', { value: [] }, 'Any datasource')].concat(
-          Datasources.pathwayDatasources().map( ds => h('option', { value: [ds.id ] }, ds.name ))
-          )),
-    ]);
-
     return h('div.search-pathway-results', [
       h('div.search-tools', [
-        h('h3.search-pathways-header', `Pathways (${searchList.length})`),
-        h('div.search-result-filter', [searchResultFilter])
+        h('h3.search-pathways-header', `Pathways (${searchList.length})`)
       ]),
       ...searchList
     ]);

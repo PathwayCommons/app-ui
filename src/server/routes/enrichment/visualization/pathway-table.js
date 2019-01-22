@@ -7,13 +7,25 @@ const GMT_ARCHIVE_URL = GPROFILER_URL + 'gmt/gprofiler_hsapiens.NAME.gmt.zip';
 const GMT_FILENAME = 'hsapiens.pathways.NAME.gmt';
 
 const readFile = Promise.promisify(fs.readFile);
+const stat = Promise.promisify(fs.stat);
+const filePath = path.resolve(__dirname, 'hsapiens.pathways.NAME.gmt');
+
+let lastModTime = null;
+let pathwayInfoTableCache = null;
 
 const getPathwayInfoTable = async function(){
-  // TODO check file for modifications before processing again
+  const fileStats = await stat(filePath);
+  const thisModTime = fileStats.mtimeMs;
 
-  console.log('GET TABLE');
+  if( thisModTime === lastModTime ){
+    return pathwayInfoTableCache;
+  } else {
+    lastModTime = thisModTime;
 
-  const gmtPathwayData = await readFile(path.resolve(__dirname, 'hsapiens.pathways.NAME.gmt'), { encoding: 'utf8' });
+    // allow the function to continue to update the table...
+  }
+
+  const gmtPathwayData = await readFile(filePath, { encoding: 'utf8' });
 
   // pathwayInfoTable is map where the keys are GO/REACTOME pathway identifiers
   // and values are description and geneset
@@ -37,6 +49,8 @@ const getPathwayInfoTable = async function(){
   } );
 
   pathwayInfoTable.delete('');
+
+  pathwayInfoTableCache = pathwayInfoTable;
 
   return pathwayInfoTable;
 };

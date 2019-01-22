@@ -7,7 +7,7 @@ const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services/');
 
 const PathwaysToolbar = require('./pathways-toolbar');
-const { PcLogoLink, EmptyNetwork, CytoscapeNetwork } = require('../../common/components/');
+const { PcLogoLink, CytoscapeNetwork } = require('../../common/components/');
 
 const Pathway = require('../../../models/pathway/pathway-model');
 
@@ -58,17 +58,15 @@ class Pathways extends React.Component {
     ServerAPI.getAPIResource( apiOpts ).then( pathwayJSON => {
       if( pathwayJSON.graph.nodes.length === 0 ){
         this.setState({
-          networkEmpty: true,
-          loading: true
+          loading: false,
+          networkEmpty: true
         });
         return;
       }
       pathway.load( pathwayJSON );
       initializeCytoscape( pathway );
     })
-    .catch( e => this.setState({ error: e }))
-    // .finally( this.setState({ loading: false }))
-    ;
+    .catch( e => this.setState({ error: e }));
   }
 
   render() {

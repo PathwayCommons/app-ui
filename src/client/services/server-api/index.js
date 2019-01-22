@@ -1,7 +1,7 @@
 const qs = require('query-string');
 const _ = require('lodash');
 
-const { PC_URL, CLIENT_FETCH_TIMEOUT } = require('../../../config');
+const { PC_URL } = require('../../../config');
 const { fetch } = require('../../../util');
 
 const defaultFetchOpts = {

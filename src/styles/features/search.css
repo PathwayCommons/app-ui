@@ -204,10 +204,9 @@
 }
 
 .search-datasource-filter {
-  border: none;
   font-size: 12px;
   text-overflow: ellipsis;
-  padding: 0;
+  width: 25em;
 }
 
 .search-datasource-filter > option {

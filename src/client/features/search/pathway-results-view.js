@@ -10,11 +10,10 @@ const { ErrorMessage } = require('../../common/components/error-message');
 class PathwayResultsView extends React.Component {
   render(){
     let { pathwayResults, controller, curDatasource } = this.props;
+    const noPathwaysMsg = h( ErrorMessage, { title: 'Your search didn\'t match any pathways', footer: 'Try different keywords or gene names.'} );
 
     if( pathwayResults === null ){
       return null;
-    } else if ( !pathwayResults.length ){
-      return h( ErrorMessage, { title: 'Your search didn\'t match any pathways', footer: 'Try different keywords or gene names.'} );
     }
 
     const searchList = pathwayResults.map(result => {
@@ -46,12 +45,13 @@ class PathwayResultsView extends React.Component {
           )),
     ]);
 
+    const header = h('h3.search-pathways-header', pathwayResults.length ? `Pathways (${searchList.length})`: null);
+    const filter = pathwayResults.length || curDatasource.length ? searchResultFilter: null;
+    const listing = pathwayResults.length ? searchList: [noPathwaysMsg];
+
     return h('div.search-pathway-results', [
-      h('div.search-tools', [
-        h('h3.search-pathways-header', `Pathways (${searchList.length})`),
-        h('div.search-result-filter', [searchResultFilter])
-      ]),
-      ...searchList
+      h('div.search-tools', [ header, filter ]),
+      ...listing
     ]);
   }
 }

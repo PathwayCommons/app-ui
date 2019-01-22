@@ -1,8 +1,12 @@
 const React = require('react');
 const h = require('react-hyperscript');
 
+const { Link } = require('react-router-dom');
+
 class ErrorMessage extends React.Component {
   render(){
+    const logo = this.props.logo ? h(Link, { to: { pathname: `/`}, target: '_blank' }, [ h('div.pc-logo')]): null;
+
     const title = h('h1.error-message-title',
       this.props.title !== undefined ? this.props.title : 'An error occurred' );
 
@@ -16,10 +20,13 @@ class ErrorMessage extends React.Component {
       h('a.plain-link', { href: 'mailto: pathway-commons-help@googlegroups.com' }, 'help forum.')
     ]);
 
-    return  h('div.error-message', [
-      title,
-      body,
-      footer
+    return  h('div.error-message-container', [
+      logo,
+      h('div.error-message', [
+        title,
+        body,
+        footer
+      ])
     ]);
   }
 }

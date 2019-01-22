@@ -13,6 +13,9 @@ const Pathway = require('../../../models/pathway/pathway-model');
 
 const { stylesheet, bindCyEvents, PATHWAYS_LAYOUT_OPTS } = require('./cy');
 
+const { TimeoutError } = require('../../../util');
+const { ErrorMessage } = require('../../common/components/error-message');
+
 class Pathways extends React.Component {
   constructor(props) {
     super(props);
@@ -55,18 +58,30 @@ class Pathways extends React.Component {
     ServerAPI.getAPIResource( apiOpts ).then( pathwayJSON => {
       if( pathwayJSON.graph.nodes.length === 0 ){
         this.setState({
-          loading: false,
-          networkEmpty: true
+          networkEmpty: true,
+          loading: true
         });
         return;
       }
       pathway.load( pathwayJSON );
       initializeCytoscape( pathway );
-    });
+    })
+    .catch( e => this.setState({ error: e }))
+    // .finally( this.setState({ loading: false }))
+    ;
   }
 
   render() {
-    let { loading, pathway, cySrv, networkEmpty } = this.state;
+    let { loading, pathway, cySrv, networkEmpty, error } = this.state;
+
+    let errorMessage;
+    if( networkEmpty ) {
+      errorMessage = h(ErrorMessage, { title: 'No pathway data available. Please view another result', footer: null } );
+    } else if( error instanceof TimeoutError ) {
+      errorMessage = h( ErrorMessage, { title: 'This is taking longer that we expected', body: 'Try again later.', logo: true } );
+    } else if( error ) {
+      errorMessage = h( ErrorMessage, { logo: true } );
+    }
 
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
@@ -79,7 +94,7 @@ class Pathways extends React.Component {
       h(PathwaysToolbar, { cySrv, pathway })
     ]);
 
-    let content = !networkEmpty ? [
+    let content = !errorMessage ? [
       h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [ appBar ]),
       h(CytoscapeNetwork, {
         cySrv,
@@ -88,7 +103,7 @@ class Pathways extends React.Component {
         'network-loading': loading
         })
       })
-    ] : [ h(EmptyNetwork, { msg: 'No pathway data available. Please view another result' } ) ];
+    ] : [ errorMessage ];
 
     return h('div.pathways', content);
   }

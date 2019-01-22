@@ -4,10 +4,9 @@
 
 .enrichment-sources-popover {
   width: 100px;
-  height: 66vh;
-  max-height: 600px;
+  max-height: 66vh;
   overflow-y: scroll;
-  text-align: center;
+  text-align: left;
   padding: 0.5em 0.25em;
 }
 
@@ -18,6 +17,5 @@
 @media( --small-width-viewport ){
   .enrichment-sources-popover {
     font-size: 0.8em;
-    height: 300px;
   }
 }

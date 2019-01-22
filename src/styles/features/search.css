@@ -101,6 +101,7 @@
 }
 
 .search-body {
+  min-height: 4em;
   padding-left: 200px;
   max-width: var(--search-width);
   position: relative;

@@ -2,7 +2,7 @@ const _ = require('lodash');
 
 let defaults = {
   PORT: 3000,
-  MASTER_PASSWORD: '',
+  METADATA_CRON_SCHEDULE: '* * * * 0', // update file from gprofiler etc.
   PC_URL: 'http://www.pathwaycommons.org/',
   GPROFILER_URL: "https://biit.cs.ut.ee/gprofiler/",
   IDENTIFIERS_URL: 'http://identifiers.org',

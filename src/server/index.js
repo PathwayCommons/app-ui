@@ -11,10 +11,11 @@ const fs = require('fs');
 const Promise = require('bluebird');
 const cron = require('node-cron');
 
-const config = require('../config');
 const updateCron = require('./update-cron');
 
-cron.schedule('* * * * 0', () => {
+const { METADATA_CRON_SCHEDULE, PORT } = require('../config');
+
+cron.schedule(METADATA_CRON_SCHEDULE, () => {
   updateCron();
 });
 
@@ -78,7 +79,7 @@ app.use(function (err, req, res, next) {
 });
 
 
-let port = normalizePort(config.PORT);
+let port = normalizePort(PORT);
 
 app.set('port', port);
 

@@ -5,6 +5,7 @@ const swaggerJSDoc = require('swagger-jsdoc');
 
 const { validatorGconvert, enrichment } = require('../../external-services/gprofiler');
 const { generateEnrichmentNetworkJson } = require('./visualization');
+const { getPathwayInfoTable } = require('./visualization/pathway-table');
 
 // swagger definition
 let swaggerDefinition = {
@@ -169,7 +170,8 @@ enrichmentRouter.post('/visualization', (req, res, next) => {
   let { pathways, similarityCutoff, jaccardOverlapWeight } = req.body;
 
   Promise.resolve()
-  .then( () => generateEnrichmentNetworkJson( pathways, similarityCutoff, jaccardOverlapWeight ) )
+  .then( () => getPathwayInfoTable() )
+  .then( pathwayInfoTable => generateEnrichmentNetworkJson( pathwayInfoTable, pathways, similarityCutoff, jaccardOverlapWeight ) )
   .then( enrichmentNetwork => res.json( enrichmentNetwork ) )
   .catch( next );
 });

@@ -5,8 +5,6 @@ const logger = require('../../../logger');
 const { IDENTIFIERS_URL, NS_GENE_ONTOLOGY, NS_REACTOME } = require('../../../../config');
 const { xref2Uri } = require('../../../external-services/pathway-commons');
 
-const { pathwayInfoTable } = require('./pathway-table');
-
 const isGOId = token => /^GO:\d+$/.test( token );
 const isReactomeId = token => /^R-HSA-\d+$/.test( token );
 const normalizeId = pathwayId => pathwayId.replace('REAC:', '');
@@ -116,7 +114,7 @@ const createEnrichmentNetworkEdges = ( pathwayList, jaccardOverlapWeight = 0.5, 
 };
 
 // generate cytoscape.js compatible network JSON for enrichment
-const generateEnrichmentNetworkJson = async (pathways, similarityCutoff, jaccardOverlapWeight) => {
+const generateEnrichmentNetworkJson = async (pathwayInfoTable, pathways, similarityCutoff, jaccardOverlapWeight) => {
 
   // check unrecognized pathway ids and
   let unrecognized = new Set();
@@ -126,7 +124,7 @@ const generateEnrichmentNetworkJson = async (pathways, similarityCutoff, jaccard
     if( pathwayInfo == null ){
       unrecognized.add( pathway.id );
     } else {
-      pathwayList.push( _.assign( pathwayInfo, pathway.data ) );
+      pathwayList.push( _.assign( {}, pathwayInfo, pathway.data ) );
     }
   });
 

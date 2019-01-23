@@ -20,7 +20,7 @@ class FileDownloadMenu extends React.Component {
 
   downloadFromDisplayName(displayName) {
     let { cySrv, fileName } = this.props;
-    let { downloadTypes, } = this.state;
+    let { downloadTypes } = this.state;
     let option = _.find(downloadTypes, ['displayName', displayName]);
     let { pc2Name, ext, type } = option;
 
@@ -61,18 +61,19 @@ class FileDownloadMenu extends React.Component {
 
   render() {
     const { downloadOpts } = this.props;
-    const opts = _.assign( { disabledTypes: [] }, downloadOpts );
-    let menuContents = this.state.downloadTypes.map( dt => {
-      const optionClass = opts.disabledTypes.indexOf( dt.type ) < 0 ? '': '.disabled';
-      let dlOption = h('div.download-option' + optionClass, { onClick: () => this.downloadFromDisplayName( dt.displayName ) }, [
-          h('div.download-option-header', [
-            h('h3', dt.displayName),
-          ]),
-          h('div.download-option-description', dt.description)
-      ]);
+    const opts = _.assign( { downloadTypes: [ 'png' ] }, downloadOpts );
+    let menuContents = this.state.downloadTypes
+      .filter( dt => opts.downloadTypes.indexOf( dt.type ) >= 0 )
+      .map( dt => {
+        let dlOption = h('div.download-option', { onClick: () => this.downloadFromDisplayName( dt.displayName ) }, [
+            h('div.download-option-header', [
+              h('h3', dt.displayName),
+            ]),
+            h('div.download-option-description', dt.description)
+        ]);
 
-      return dlOption;
-    } );
+        return dlOption;
+      } );
 
     return h('div.file-download-menu', [
       h('h2', 'Download As...'),

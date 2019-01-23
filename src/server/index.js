@@ -9,8 +9,15 @@ const http = require('http');
 const stream = require('stream');
 const fs = require('fs');
 const Promise = require('bluebird');
+const cron = require('node-cron');
 
-const config = require('../config');
+const updateCron = require('./update-cron');
+
+const { METADATA_CRON_SCHEDULE, PORT } = require('../config');
+
+cron.schedule(METADATA_CRON_SCHEDULE, () => {
+  updateCron();
+});
 
 // make fetch() available as a global just like it is on the client side
 global.fetch = require('node-fetch');
@@ -72,7 +79,7 @@ app.use(function (err, req, res, next) {
 });
 
 
-let port = normalizePort(config.PORT);
+let port = normalizePort(PORT);
 
 app.set('port', port);
 

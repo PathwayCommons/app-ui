@@ -1,7 +1,7 @@
 const qs = require('query-string');
 const _ = require('lodash');
 
-const { PC_URL } = require('../../../config');
+const { PC_URL, PATHWAYS_FETCH_TIMEOUT } = require('../../../config');
 const { fetch } = require('../../../util');
 
 const defaultFetchOpts = {
@@ -34,8 +34,9 @@ const ServerAPI = {
 
   getPathway(uri) {
     let url = `/api/pathways?${ qs.stringify({ uri }) }`;
+    const fetchOpts = _.assign( defaultFetchOpts, { timeout: PATHWAYS_FETCH_TIMEOUT } );
     return (
-      fetch(url, defaultFetchOpts)
+      fetch(url, fetchOpts)
         .then(res =>  res.json())
         .then( pathwayJson => {
           return {

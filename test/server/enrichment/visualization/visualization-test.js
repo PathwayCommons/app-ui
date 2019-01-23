@@ -5,15 +5,20 @@ chai.use(chaiAsPromised);
 chai.should();
 
 const { mockFetch } = require('../../../util');
+// const { generateEnrichmentNetworkJson } = require('../../../../src/server/routes/enrichment/visualization');
 const { generateEnrichmentNetworkJson } = require('../../../../src/server/routes/enrichment/visualization');
+const { getPathwayInfoTable } = require('../../../../src/server/routes/enrichment/visualization/pathway-table');
+
 const ENRICHMENT_NETWORK_JSON = require('./enrichment-network-json.json');
 
 //generateGraphInfo( pathways, similarityCutoff, jaccardOverlapWeight);
 
 describe('Test generateGraphInfo - Enrichment Vizualization Service', function () {
   it('parameters: all valid', async () => {
+    const table = await getPathwayInfoTable();
+
     global.fetch = mockFetch( { text: () => 'http://identifiers.org/name/id' } );
-    const res = await generateEnrichmentNetworkJson([
+    const res = await generateEnrichmentNetworkJson(table, [
       {
         "id": "GO:0006354",
         "data": {
@@ -56,13 +61,19 @@ describe('Test generateGraphInfo - Enrichment Vizualization Service', function (
     expect( res ).to.deep.equal( ENRICHMENT_NETWORK_JSON );
   });
 
-  it('parameters: invalid similarityCutoff', () => {
-    const result = generateEnrichmentNetworkJson({ "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}, 3.55 );
+  it('parameters: invalid similarityCutoff', async function(){
+    const table = await getPathwayInfoTable();
+
+    const result = generateEnrichmentNetworkJson(table, { "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}, 3.55 );
+
     return result.should.be.rejectedWith(Error);
   });
 
-  it('parameters: invalid jaccardOverlapWeight', function () {
-    const result =  generateEnrichmentNetworkJson({ "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}, .55, 75 );
+  it('parameters: invalid jaccardOverlapWeight', async function () {
+    const table = await getPathwayInfoTable();
+
+    const result =  generateEnrichmentNetworkJson(table, { "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}, .55, 75 );
+
     return result.should.be.rejectedWith(Error);
   });
 

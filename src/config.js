@@ -2,7 +2,7 @@ const _ = require('lodash');
 
 let defaults = {
   PORT: 3000,
-  MASTER_PASSWORD: '',
+  METADATA_CRON_SCHEDULE: '0 0 * * Monday', // update file from gprofiler etc. (Monday at midnight)
   PC_URL: 'http://www.pathwaycommons.org/',
   GPROFILER_URL: "https://biit.cs.ut.ee/gprofiler/",
   IDENTIFIERS_URL: 'http://identifiers.org',
@@ -17,6 +17,7 @@ let defaults = {
   ENT_SUMMARY_CACHE_MAX_SIZE: 1000000,
   MAX_SIF_NODES: 25,
   FETCH_TIMEOUT: 5000,
+  PATHWAYS_FETCH_TIMEOUT: 15000,
   // DB config values
   DB_NAME:  'appui',
   DB_HOST:  '127.0.0.1',

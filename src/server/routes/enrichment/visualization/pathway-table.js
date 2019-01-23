@@ -1,29 +1,66 @@
 const fs = require('fs');
 const path = require('path');
-const gmtPathwayData = fs.readFileSync(path.resolve(__dirname, 'hsapiens.pathways.NAME.gmt')).toString('utf8');
+const Promise = require('bluebird');
 
-// pathwayInfoTable is map where the keys are GO/REACTOME pathway identifiers
-// and values are description and geneset
-const pathwayInfoTable = new Map();
+const { GPROFILER_URL } = require('../../../../config');
+const GMT_ARCHIVE_URL = GPROFILER_URL + 'gmt/gprofiler_hsapiens.NAME.gmt.zip';
+const GMT_FILENAME = 'hsapiens.pathways.NAME.gmt';
 
-gmtPathwayData.split('\n').forEach( pathwayInfoLine => {
-  let pathwayInfoTokens = pathwayInfoLine.split('\t');
-  let PATHWAY_ID_INDEX = 0;
-  let PATHWAY_NAME_INDEX = 1;
-  let GENE_LIST_START_INDEX = 2;
+const readFile = Promise.promisify(fs.readFile);
+const stat = Promise.promisify(fs.stat);
+const filePath = path.resolve(__dirname, 'hsapiens.pathways.NAME.gmt');
 
-  let id = pathwayInfoTokens[PATHWAY_ID_INDEX];
-  let name = pathwayInfoTokens[PATHWAY_NAME_INDEX];
-  let geneSet = [];
+let lastModTime = null;
+let pathwayInfoTableCache = null;
 
-  for( let i = GENE_LIST_START_INDEX; i < pathwayInfoTokens.length; ++i ){
-    geneSet.push(pathwayInfoTokens[i]);
+const getPathwayInfoTable = async function(){
+  const fileStats = await stat(filePath);
+  const thisModTime = fileStats.mtimeMs;
+
+  if( thisModTime === lastModTime ){
+    return pathwayInfoTableCache;
+  } else {
+    lastModTime = thisModTime;
+
+    // allow the function to continue to update the table...
   }
 
-  pathwayInfoTable.set(id, { id, name, geneSet } );
-} );
+  const gmtPathwayData = await readFile(filePath, { encoding: 'utf8' });
 
-pathwayInfoTable.delete('');
+  // pathwayInfoTable is map where the keys are GO/REACTOME pathway identifiers
+  // and values are description and geneset
+  const pathwayInfoTable = new Map();
 
+  gmtPathwayData.split('\n').forEach( pathwayInfoLine => {
+    let pathwayInfoTokens = pathwayInfoLine.split('\t');
+    let PATHWAY_ID_INDEX = 0;
+    let PATHWAY_NAME_INDEX = 1;
+    let GENE_LIST_START_INDEX = 2;
 
-module.exports = { pathwayInfoTable };
+    let id = pathwayInfoTokens[PATHWAY_ID_INDEX];
+    let name = pathwayInfoTokens[PATHWAY_NAME_INDEX];
+    let geneSet = [];
+
+    for( let i = GENE_LIST_START_INDEX; i < pathwayInfoTokens.length; ++i ){
+      geneSet.push(pathwayInfoTokens[i]);
+    }
+
+    pathwayInfoTable.set(id, { id, name, geneSet } );
+  } );
+
+  pathwayInfoTable.delete('');
+
+  pathwayInfoTableCache = pathwayInfoTable;
+
+  return pathwayInfoTable;
+};
+
+/**
+ * handleFileUpdate
+ * When a cron job to update the file is triggered, this function is called with the fresh file.
+ * @external file
+ * @see {@link https://www.npmjs.com/package/unzipper}
+ */
+const handleFileUpdate = file => file.stream().pipe( fs.createWriteStream( path.resolve( __dirname, file.path ) ) );
+
+module.exports = { getPathwayInfoTable, handleFileUpdate, GMT_ARCHIVE_URL, GMT_FILENAME };

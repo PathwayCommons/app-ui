@@ -122,3 +122,17 @@
   cursor: pointer;
   font-size: 0.8em;
 }
+
+.download-option.disabled, .download-option.disabled:hover {
+  color: var(--light-base-colour-dark);
+  cursor: default;
+  background-color: #fff;
+  pointer-events: none;
+
+  & * {
+    cursor: default;
+    background-color: #fff;
+  }
+}
+
+

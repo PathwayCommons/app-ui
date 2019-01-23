@@ -68,9 +68,12 @@ module.exports = () => {
             type: 'factoids',
             id
           };
+          const downloadOpts = { // see /common/pc-download-types.js
+            disabledTypes: [ 'gmt', 'sif', 'txt', 'biopax', 'jsonld', 'sbgn' ]
+          };
 
           logPageView( pathname + id );
-          return h(Features.Pathways, _.assign( {}, props, { apiOpts } ));
+          return h(Features.Pathways, _.assign( {}, props, { apiOpts, downloadOpts } ));
         }
       },
       {

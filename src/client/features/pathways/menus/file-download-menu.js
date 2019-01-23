@@ -60,8 +60,10 @@ class FileDownloadMenu extends React.Component {
   }
 
   render() {
+    const { disabledTypes = [] } = this.props.downloadOpts;
     let menuContents = this.state.downloadTypes.map( dt => {
-      let dlOption = h('div.download-option', { onClick: () => this.downloadFromDisplayName( dt.displayName ) }, [
+      const optionClass = disabledTypes.indexOf( dt.type ) < 0 ? '': '.disabled';
+      let dlOption = h('div.download-option' + optionClass, { onClick: () => this.downloadFromDisplayName( dt.displayName ) }, [
           h('div.download-option-header', [
             h('h3', dt.displayName),
           ]),

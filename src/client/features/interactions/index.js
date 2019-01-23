@@ -75,7 +75,7 @@ class Interactions extends React.Component {
     let { loading, cySrv, activeMenu, sources, networkEmpty, error } = this.state;
     let errorMessage;
     if( networkEmpty ) {
-      errorMessage = h(ErrorMessage, { title: 'No interactions to display.', footer: null } );
+      errorMessage = h(ErrorMessage, { title: 'No interactions to display.', body: 'Try different genes in your search.' , footer: null, logo: true } );
     } else if( error instanceof TimeoutError ) {
       errorMessage = h( ErrorMessage, { title: 'This is taking longer that we expected', body: 'Try again later.', logo: true } );
     } else if( error ) {

@@ -10,9 +10,11 @@ const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services/');
 
 const InteractionsToolbar = require('./interactions-toolbar');
-const { Popover, EmptyNetwork, PcLogoLink, CytoscapeNetwork } = require('../../common/components/');
+const { Popover, PcLogoLink, CytoscapeNetwork } = require('../../common/components/');
 
 const { interactionsStylesheet, interactionsLayoutOpts, bindEvents } = require('./cy');
+const { TimeoutError } = require('../../../util');
+const { ErrorMessage } = require('../../common/components/error-message');
 
 const InteractionsMenu = require('./interactions-menu');
 
@@ -57,9 +59,11 @@ class Interactions extends React.Component {
       })).run();
     };
 
-    ServerAPI.getInteractionGraph({ sources: sources }).then( result => {
+    ServerAPI.getInteractionGraph({ sources: sources })
+    .then( result => {
       initializeCytoscape( _.get(result, 'network', { nodes: [], edges: [] } ));
-    });
+    })
+    .catch( e => this.setState({ error: e }));
   }
 
   componentWillUnmount(){
@@ -67,7 +71,15 @@ class Interactions extends React.Component {
   }
 
   render() {
-    let { loading, cySrv, activeMenu, sources, networkEmpty } = this.state;
+    let { loading, cySrv, activeMenu, sources, networkEmpty, error } = this.state;
+    let errorMessage;
+    if( networkEmpty ) {
+      errorMessage = h(ErrorMessage, { title: 'No interactions to display.', footer: null } );
+    } else if( error instanceof TimeoutError ) {
+      errorMessage = h( ErrorMessage, { title: 'This is taking longer that we expected', body: 'Try again later.', logo: true } );
+    } else if( error ) {
+      errorMessage = h( ErrorMessage, { logo: true } );
+    }
 
     let titleContent = [];
     if( sources.length === 1 ){
@@ -99,7 +111,7 @@ class Interactions extends React.Component {
       h(InteractionsMenu, { cySrv } )
     ]);
 
-    let content = !networkEmpty ? [
+    let content = !errorMessage ? [
       h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [
         appBar,
         interactionsLegend
@@ -111,7 +123,7 @@ class Interactions extends React.Component {
         'network-loading': loading
         })
       })
-    ] : [ h(EmptyNetwork, { msg: 'No interactions to display', showPcLink: true} ) ];
+    ] : [ errorMessage ];
 
 
     return h('div.interactions', content);

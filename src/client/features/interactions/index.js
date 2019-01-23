@@ -62,6 +62,7 @@ class Interactions extends React.Component {
     ServerAPI.getInteractionGraph({ sources: sources })
     .then( result => {
       initializeCytoscape( _.get(result, 'network', { nodes: [], edges: [] } ));
+      return null; //http://bluebirdjs.com/docs/warning-explanations.html#warning-a-promise-was-created-in-a-handler-but-was-not-returned-from-it
     })
     .catch( e => this.setState({ error: e }));
   }

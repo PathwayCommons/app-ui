@@ -139,9 +139,14 @@ let bindEvents = cy => {
 let searchEnrichmentNodes = _.debounce((cy, query) => {
   let queryEmpty = _.trim(query) === '';
   let allNodes = cy.nodes();
-  let matched = allNodes.filter( node =>
-    node.data('geneSet').join(' ').includes( query.toUpperCase() ) || node.data('name').toUpperCase().includes( query.toUpperCase() )
-  );
+  let matched = allNodes.filter( node => {
+    const geneSet = (node.data('geneSet') || []).map(name => name.toUpperCase());
+    const name = (node.data('name') || '').toUpperCase();
+    const matches = (str, q) => str.indexOf(q) >= 0;
+    const q = query.toUpperCase();
+
+    return matches(name, q) || geneSet.some(geneName => matches(geneName, q));
+  });
 
   cy.batch(() => {
     allNodes.removeClass('matched');

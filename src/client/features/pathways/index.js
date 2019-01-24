@@ -71,6 +71,7 @@ class Pathways extends React.Component {
 
   render() {
     let { loading, pathway, cySrv, networkEmpty, error } = this.state;
+    const { downloadOpts } = this.props;
 
     let errorMessage;
     if( networkEmpty ) {
@@ -89,7 +90,7 @@ class Pathways extends React.Component {
           h('a.plain-link', { href: pathway.datasourceUrl(), target: '_blank' }, ' ' + pathway.datasource())
         ])
       ]),
-      h(PathwaysToolbar, { cySrv, pathway })
+      h(PathwaysToolbar, { cySrv, pathway, downloadOpts })
     ]);
 
     let content = !errorMessage ? [

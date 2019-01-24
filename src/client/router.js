@@ -44,9 +44,12 @@ module.exports = () => {
             type: 'pathways',
             uri
           };
+          const downloadOpts = {
+            downloadTypes: [ 'png', 'gmt', 'sif', 'txt', 'biopax', 'jsonld', 'sbgn' ]
+          };
 
           logPageView(pathname + uri);
-          return h(Features.Pathways, _.assign( {}, props, { apiOpts } ));
+          return h(Features.Pathways, _.assign( {}, props, { apiOpts, downloadOpts } ));
         }
       },
       {

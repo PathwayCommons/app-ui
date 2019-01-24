@@ -48,15 +48,15 @@ const enrichmentStylesheet=cytoscape.stylesheet()
   })
 .selector('$node > node')
   .css({
+    'text-outline-width': 0,
     'label': node => node.data('tags') != '' ? `Tags: ${node.data('tags')}` : '',
     'border-width': 5,
     'background-color': 'white',
     'color': '#333',
     'text-valign': 'bottom',
-    'text-outline-color': '#333',
-    'text-outline-width': 1,
     'text-max-width': 1000,
-    'font-size': 40
+    'font-size': 40,
+    'text-events': 'no'
   })
 .selector('node[?queried]')
   .css({
@@ -91,7 +91,9 @@ const enrichmentStylesheet=cytoscape.stylesheet()
   })
 .selector(`.matched`)
   .css({
-    'background-color': 'yellow',
-    'text-outline-color': 'yellow'
+    'border-color': 'yellow',
+    'border-width': 10,
+    'background-color': '#606000',
+    'text-outline-color': '#606000'
   });
 module.exports = enrichmentStylesheet;

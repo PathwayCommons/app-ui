@@ -47,11 +47,11 @@ class Search extends React.Component {
         let { genes, pathways } = res;
         this.setState({
           geneResults: genes,
-          pathwayResults: pathways
+          pathwayResults: pathways,
+          loading: false
          });
       })
-      .catch( e => this.setState({ error: e }))
-      .finally( this.setState({ loading: false }));
+      .catch( e => this.setState({ error: e, loading: false }));
     }
   }
 

@@ -3,36 +3,28 @@ const h = require('react-hyperscript');
 const _ = require('lodash');
 const Loader = require('react-loader');
 const classNames = require('classnames');
+const queryString = require('query-string');
 
-const EnrichmentDownloadMenu = require('./enrichment-download-menu');
 const EnrichmentToolbar = require('./enrichment-toolbar');
-const EnrichmentMenu = require('./enrichment-menu');
-const TokenInput = require('./token-input');
-const EmptyNetwork = require('../../common/components/empty-network');
-const PcLogoLink = require('../../common/components/pc-logo-link');
-const CytoscapeNetwork = require('../../common/components/cytoscape-network');
+const { PcLogoLink, CytoscapeNetwork, Popover } = require('../../common/components/');
 
 const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services');
-const Sidebar = require('../../common/components/sidebar');
 
-const { ENRICHMENT_MAP_LAYOUT, enrichmentStylesheet, bindEvents } = require('./cy');
+const { enrichmentLayout, enrichmentStylesheet, bindEvents } = require('./cy');
+const { TimeoutError } = require('../../../util');
+const { ErrorMessage } = require('../../common/components/error-message');
+
 class Enrichment extends React.Component {
   constructor(props){
     super(props);
 
     this.state = {
       cySrv: new CytoscapeService({ style: enrichmentStylesheet, onMount: bindEvents }),
-      enrichmentMap: {
-        nodes: [],
-        edges: []
-      },
-      activeMenu: 'closeMenu',
-      loading: false,
-      invalidTokens: [],
-      openToolBar: false,
-      networkEmpty: false,
-      sliderVal: 0.05
+      sources: _.uniq(queryString.parse(props.location.search).source.split(',')),
+      error: null,
+      loading: true,
+      networkEmpty: false
     };
 
     if( process.env.NODE_ENV !== 'production' ){
@@ -40,111 +32,90 @@ class Enrichment extends React.Component {
     }
   }
 
-  changeMenu( menu, cb){
-    let postMenuChange = () => {
-      _.throttle(() => this.state.cySrv.get().resize())();
-      cb ? cb() : null;
-    };
-
-    if( menu === this.state.activeMenu ){
-      this.setState({ activeMenu: 'closeMenu' }, postMenuChange );
-    } else {
-      this.setState({ activeMenu: menu }, postMenuChange );
-    }
+  componentDidMount(){
+    this.loadEnrichment();
   }
 
-  handleGeneQueryResult( result ){
-    let { genes, unrecognized } = result;
-    let { cySrv } = this.state;
+  loadEnrichment(){
+    let { sources, cySrv } = this.state;
     let cy = cySrv.get();
 
-    //close open tooltips
-    cy.elements().forEach(ele => {
-      const tooltip = ele.scratch('_tooltip');
-      if (tooltip) {
-        tooltip.hide();
-        ele.scratch('_tooltip-opened', false);
-      }
-      ele.unselect();
-    });
+    let getNetworkJson = async () => {
+      try {
+        let { pathways } = await ServerAPI.enrichmentAPI({ query: sources}, 'analysis');
+        let enrichmentNetwork = await ServerAPI.enrichmentAPI({ pathways }, 'visualization');
+        let networkHasZeroNodes = enrichmentNetwork.graph.elements.nodes.length === 0;
 
-    let updateNetworkJSON = async () => {
-      let analysisResult = await ServerAPI.enrichmentAPI({ query: genes }, "analysis");
+        cy.remove('*');
+        cy.add({
+          edges: enrichmentNetwork.graph.elements.edges,
+          nodes: enrichmentNetwork.graph.elements.nodes
+        });
 
-      if( !analysisResult || !analysisResult.pathwayInfo ) {
-        this.setState({ timedOut: true, loading: false });
-        return;
-      }
-
-      let visualizationResult = await ServerAPI.enrichmentAPI({ pathways: analysisResult.pathwayInfo }, "visualization");
-
-      if( !visualizationResult ) {
-        this.setState({ timedOut: true, loading: false });
-        return;
-      }
-
-      cy.remove('*');
-      cy.add({
-        edges: visualizationResult.graph.elements.edges,
-        nodes: visualizationResult.graph.elements.nodes
-      });
-
-      this.changeMenu('enrichmentMenu', () => {
-        if( cy.nodes().length === 0 ){
+        enrichmentLayout( cy ).then ( () => {
           this.setState({
-            networkEmpty: true,
             loading: false,
-            invalidTokens: unrecognized,
-            openToolBar: true
+            networkEmpty: networkHasZeroNodes
           });
-        } else {
-          cy.layout(_.assign({}, ENRICHMENT_MAP_LAYOUT, {
-            stop: () => {
-              this.setState({
-                loading: false,
-                invalidTokens: unrecognized,
-                openToolBar: true
-              });
-            }
-          })).run();
-        }
-      });
+        });
+      } catch( e ){
+        this.setState({
+          error: e,
+          loading: false
+        });
+      }
     };
 
-    this.changeMenu('closeMenu', () => this.setState({ loading: true, openToolbar: false, networkEmpty: false }, updateNetworkJSON));
-  }
-
-  updateSlider( sliderVal ){
-    this.setState({ sliderVal: sliderVal });
+    this.setState({ loading: true, networkEmpty: false }, () => getNetworkJson());
   }
 
   render(){
-    let { loading, cySrv, activeMenu, invalidTokens, openToolBar, networkEmpty, sliderVal } = this.state;
+    let { loading, cySrv, networkEmpty, sources, error } = this.state;
+    let titleContent = [];
 
-    return h('div.enrichment', [
-      h('div.app-bar', [
-        h('div.app-bar-branding', [
-          h(PcLogoLink),
-          h('div.app-bar-title', 'Pathway Enrichment'),
-          h(TokenInput, { controller: this })
-        ]),
-        openToolBar ? h(EnrichmentToolbar, { cySrv, activeMenu, controller: this }) : null
+    let errorMessage;
+    if( networkEmpty ) {
+      errorMessage = h(ErrorMessage, { title: 'No results to display.', body: 'Try different genes in your search.' , footer: null, logo: true } );
+    } else if( error instanceof TimeoutError ) {
+      errorMessage = h( ErrorMessage, { title: 'This is taking longer that we expected', body: 'Try again later.', logo: true } );
+    } else if( error ) {
+      errorMessage = h( ErrorMessage, { logo: true } );
+    }
+
+    if( sources.length === 1 ){
+      titleContent.push(h('span', `Pathways enriched for ${sources[0]}`));
+    }
+    if( 1 < sources.length && sources.length <= 3 ){
+      titleContent.push(h('span', `Pathways enriched for ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`));
+    }
+    if( sources.length > 3 ){
+      titleContent.push(h('span', `Pathways enriched for ${ sources.slice(0, 2).join(', ')} and `));
+      titleContent.push(h(Popover, {
+        tippy: {
+          position: 'bottom',
+          html: h('div.enrichment-sources-popover', sources.slice(3).sort().map( s => h('div', s) ) )
+        },
+      }, [ h('a.plain-link.enrichment-popover-link', `${sources.length - 3} other gene(s)`) ]
+      ));
+    }
+
+    let appBar = h('div.app-bar.interactions-bar', [
+      h('div.app-bar-branding', [
+        h(PcLogoLink),
+        h('div.app-bar-title', titleContent)
       ]),
+      h(EnrichmentToolbar, { cySrv, sources: this.state.sources, controller: this })
+    ]);
+
+    return !errorMessage ? [ h('div.enrichment', [
       h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [
-        h(Sidebar, { controller: this, activeMenu }, [
-          h(EnrichmentMenu, { key: 'enrichmentMenu', cySrv, invalidTokens, controller: this, sliderVal: sliderVal }),
-          h(EnrichmentDownloadMenu, { key: 'enrichmentDownloadMenu', cySrv })
-        ])
+        appBar
        ]),
-      networkEmpty ? h(EmptyNetwork, { msg: 'No results to display', showPcLink: false} ) : null,
       h(CytoscapeNetwork, {
         cySrv,
-        className: classNames({
-        'network-loading': loading,
-        'network-sidebar-open': activeMenu !== 'closeMenu'
-        })
+        className: classNames({'network-loading': loading})
       })
-    ]);
+    ]) ]: [errorMessage];
   }
 }
 

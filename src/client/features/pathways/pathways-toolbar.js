@@ -27,7 +27,7 @@ class PathwaysToolbar extends React.Component {
   }
 
   render(){
-    let { cySrv, pathway } = this.props;
+    let { cySrv, pathway, downloadOpts } = this.props;
     let { searchValue } = this.state;
     let cy = cySrv.get();
 
@@ -46,7 +46,7 @@ class PathwaysToolbar extends React.Component {
       h(Popover, {
         tippy: {
           position: 'bottom',
-          html: h(FileDownloadMenu, { key: 'downloadMenu', cySrv, fileName: pathway.name(), uri: pathway.uri() })
+          html: h(FileDownloadMenu, { key: 'downloadMenu', cySrv, fileName: pathway.name(), uri: pathway.uri(), downloadOpts })
         }
       }, [
         h(IconButton, {

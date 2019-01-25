@@ -4,7 +4,8 @@ const enrichmentRouter = express.Router();
 const swaggerJSDoc = require('swagger-jsdoc');
 
 const { validatorGconvert, enrichment } = require('../../external-services/gprofiler');
-const { generateGraphInfo } = require('./visualization');
+const { generateEnrichmentNetworkJson } = require('./visualization');
+const { getPathwayInfoTable } = require('./visualization/pathway-table');
 
 // swagger definition
 let swaggerDefinition = {
@@ -126,19 +127,11 @@ enrichmentRouter.post('/validation', (req, res, next) => {
  *           "$ref": "#/definitions/error/analysisError"
 */
 // expose a rest endpoint for enrichment service
-enrichmentRouter.post('/analysis', (req, res) => {
-  const query = req.body.query.sort();
-  const tmpOptions = {
-    minSetSize: req.body.minSetSize,
-    maxSetSize: req.body.maxSetSize,
-    background: req.body.background
-  };
+enrichmentRouter.post('/analysis', (req, res, next) => {
+  let { query, minSetSize, maxSetSize, background } = req.body;
+  let opts = { minSetSize, maxSetSize, background };
 
-  enrichment(query, tmpOptions).then(enrichmentResult => {
-    res.json(enrichmentResult);
-  }).catch((err) => {
-    res.status(400).send(err.message);
-  });
+  enrichment(query, opts).then(enrichmentResult => res.json( enrichmentResult ) ).catch( next );
 });
 
 
@@ -173,15 +166,14 @@ enrichmentRouter.post('/analysis', (req, res) => {
  *           "$ref": "#/definitions/error/visualizationError"
 */
 // Expose a rest endpoint for visualization service
-enrichmentRouter.post('/visualization', (req, res) => {
-  const pathways = req.body.pathways;
-  const similarityCutoff = req.body.similarityCutoff;
-  const jaccardOverlapWeight = req.body.jaccardOverlapWeight;
-  try {
-    res.json(generateGraphInfo(pathways, similarityCutoff, jaccardOverlapWeight));
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
+enrichmentRouter.post('/visualization', (req, res, next) => {
+  let { pathways, similarityCutoff, jaccardOverlapWeight } = req.body;
+
+  Promise.resolve()
+  .then( () => getPathwayInfoTable() )
+  .then( pathwayInfoTable => generateEnrichmentNetworkJson( pathwayInfoTable, pathways, similarityCutoff, jaccardOverlapWeight ) )
+  .then( enrichmentNetwork => res.json( enrichmentNetwork ) )
+  .catch( next );
 });
 
 
@@ -261,13 +253,23 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *       - pathways
  *       properties:
  *         pathways:
- *           type: object
- *           description: pathway information keyed by pathway ID
- *           additionalProperties: object
- *           example:
- *             GO:0043525: {}
- *             GO:0043523:
- *               p_value: 0.05
+ *           type: array
+ *           description: pathway objects
+ *           items:
+ *             type: object
+ *             required:
+ *               - id
+ *             properties:
+ *               id:
+ *                 type: string
+ *                 description: The g:GOSt formatted node id
+ *                 example: GO:0006354
+ *               data:
+ *                 type: object
+ *                 description: Additional data forwarded to nodes
+ *                 example:
+ *                   name: DNA-templated transcription, elongation
+ *                   p_value: 1.29e-03
  *         similarityCutoff:
  *           type: number
  *           description: "cutoff point for filtering edge similarity rates
@@ -307,28 +309,30 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *     analysisSuccess:
  *       type: object
  *       required:
- *       - pathwayInfo
+ *       - pathways
  *       properties:
- *         pathwayInfo:
- *           type: object
- *           additionalProperties:
+ *         pathways:
+ *           type: array
+ *           items:
  *             type: object
- *             required:
- *             - p_value
- *             - description
- *             - intersection
  *             properties:
- *               p_value:
+ *               id:
  *                 type: string
- *                 example: 0.2
- *               description:
- *                 type: string
- *                 example: DNA-templated transcription, elongation
- *               intersection:
- *                 type: array
- *                 items:
- *                   type: string
- *                   example: AFF4
+ *                 example: GO:0006354
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   p_value:
+ *                     type: string
+ *                     example: 1.29e-03
+ *                   name:
+ *                     type: string
+ *                     example: DNA-templated transcription, elongation
+ *                   intersection:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                       example: PAF1
  *     visualizationSuccess:
  *       type: object
  *       required:
@@ -402,13 +406,18 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *           type: object
  *           required:
  *           - id
+ *           - name
+ *           - geneCount
+ *           - geneSet
+ *           - uri
+ *           - namespace
  *           properties:
  *             id:
  *               type: string
  *               example: GO:0043525
- *             p_value:
- *               type: number
- *               example: 0.2
+ *             name:
+ *               type: string
+ *               example: DNA-templated transcription, elongation
  *             geneCount:
  *               type: number
  *               example: 51
@@ -420,6 +429,12 @@ enrichmentRouter.post('/visualization', (req, res) => {
  *                 - TP53
  *                 - CASP9
  *                 - CDK5
+ *             uri:
+ *               type: string
+ *               example: http://identifiers.org/go/GO:0006354
+ *             namespace:
+ *               type: string
+ *               example: go
 */
 
 

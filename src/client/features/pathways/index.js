@@ -7,13 +7,14 @@ const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services/');
 
 const PathwaysToolbar = require('./pathways-toolbar');
-const PcLogoLink = require('../../common/components/pc-logo-link');
-const EmptyNetwork = require('../../common/components/empty-network');
-const CytoscapeNetwork = require('../../common/components/cytoscape-network');
+const { PcLogoLink, CytoscapeNetwork } = require('../../common/components/');
 
 const Pathway = require('../../../models/pathway/pathway-model');
 
 const { stylesheet, bindCyEvents, PATHWAYS_LAYOUT_OPTS } = require('./cy');
+
+const { TimeoutError } = require('../../../util');
+const { ErrorMessage } = require('../../common/components/error-message');
 
 class Pathways extends React.Component {
   constructor(props) {
@@ -64,11 +65,22 @@ class Pathways extends React.Component {
       }
       pathway.load( pathwayJSON );
       initializeCytoscape( pathway );
-    });
+    })
+    .catch( e => this.setState({ error: e }));
   }
 
   render() {
-    let { loading, pathway, cySrv, networkEmpty } = this.state;
+    let { loading, pathway, cySrv, networkEmpty, error } = this.state;
+    const { downloadOpts } = this.props;
+
+    let errorMessage;
+    if( networkEmpty ) {
+      errorMessage = h(ErrorMessage, { title: 'No pathway data available. Please view another result', footer: null } );
+    } else if( error instanceof TimeoutError ) {
+      errorMessage = h( ErrorMessage, { title: 'This is taking longer that we expected', body: 'Try again later.', logo: true } );
+    } else if( error ) {
+      errorMessage = h( ErrorMessage, { logo: true } );
+    }
 
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
@@ -78,10 +90,10 @@ class Pathways extends React.Component {
           h('a.plain-link', { href: pathway.datasourceUrl(), target: '_blank' }, ' ' + pathway.datasource())
         ])
       ]),
-      h(PathwaysToolbar, { cySrv, pathway })
+      h(PathwaysToolbar, { cySrv, pathway, downloadOpts })
     ]);
 
-    let content = !networkEmpty ? [
+    let content = !errorMessage ? [
       h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [ appBar ]),
       h(CytoscapeNetwork, {
         cySrv,
@@ -90,7 +102,7 @@ class Pathways extends React.Component {
         'network-loading': loading
         })
       })
-    ] : [ h(EmptyNetwork, { msg: 'No pathway data available. Please view another result' } ) ];
+    ] : [ errorMessage ];
 
     return h('div.pathways', content);
   }

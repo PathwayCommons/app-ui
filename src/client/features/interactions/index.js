@@ -10,11 +10,11 @@ const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services/');
 
 const InteractionsToolbar = require('./interactions-toolbar');
-const EmptyNetwork = require('../../common/components/empty-network');
-const PcLogoLink = require('../../common/components/pc-logo-link');
-const CytoscapeNetwork = require('../../common/components/cytoscape-network');
+const { Popover, PcLogoLink, CytoscapeNetwork } = require('../../common/components/');
 
 const { interactionsStylesheet, interactionsLayoutOpts, bindEvents } = require('./cy');
+const { TimeoutError } = require('../../../util');
+const { ErrorMessage } = require('../../common/components/error-message');
 
 const InteractionsMenu = require('./interactions-menu');
 
@@ -59,9 +59,12 @@ class Interactions extends React.Component {
       })).run();
     };
 
-    ServerAPI.getInteractionGraph({ sources: sources }).then( result => {
+    ServerAPI.getInteractionGraph({ sources: sources })
+    .then( result => {
       initializeCytoscape( _.get(result, 'network', { nodes: [], edges: [] } ));
-    });
+      return null; //http://bluebirdjs.com/docs/warning-explanations.html#warning-a-promise-was-created-in-a-handler-but-was-not-returned-from-it
+    })
+    .catch( e => this.setState({ error: e }));
   }
 
   componentWillUnmount(){
@@ -69,12 +72,38 @@ class Interactions extends React.Component {
   }
 
   render() {
-    let { loading, cySrv, activeMenu, sources, networkEmpty } = this.state;
+    let { loading, cySrv, activeMenu, sources, networkEmpty, error } = this.state;
+    let errorMessage;
+    if( networkEmpty ) {
+      errorMessage = h(ErrorMessage, { title: 'No interactions to display.', body: 'Try different genes in your search.' , footer: null, logo: true } );
+    } else if( error instanceof TimeoutError ) {
+      errorMessage = h( ErrorMessage, { title: 'This is taking longer that we expected', body: 'Try again later.', logo: true } );
+    } else if( error ) {
+      errorMessage = h( ErrorMessage, { logo: true } );
+    }
+
+    let titleContent = [];
+    if( sources.length === 1 ){
+      titleContent.push(h('span', `Interactions between ${sources[0]} and ${config.MAX_SIF_NODES} other genes`));
+    }
+    if( 1 < sources.length && sources.length <= 3 ){
+      titleContent.push(h('span', `Interactions between ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`));
+    }
+    if( sources.length > 3 ){
+      titleContent.push(h('span', `Interactions between ${ sources.slice(0, 2).join(', ')} and `));
+      titleContent.push(h(Popover, {
+        tippy: {
+          position: 'bottom',
+          html: h('div.enrichment-sources-popover', sources.slice(3).sort().map( s => h('div', s) ) )
+        },
+      }, [ h('a.plain-link.enrichment-popover-link', `${sources.length - 3} other gene(s)`) ]
+      ));
+    }
+
     let appBar = h('div.app-bar.interactions-bar', [
       h('div.app-bar-branding', [
         h(PcLogoLink),
-        sources.length === 1 ?  h('div.app-bar-title', `Interactions between ${sources[0]} and top ${config.MAX_SIF_NODES} genes`):
-        h('div.app-bar-title', `Interactions between ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`)
+        h('div.app-bar-title', titleContent)
       ]),
       h(InteractionsToolbar, { cySrv, activeMenu, sources: this.state.sources, controller: this })
     ]);
@@ -83,7 +112,7 @@ class Interactions extends React.Component {
       h(InteractionsMenu, { cySrv } )
     ]);
 
-    let content = !networkEmpty ? [
+    let content = !errorMessage ? [
       h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [
         appBar,
         interactionsLegend
@@ -95,7 +124,7 @@ class Interactions extends React.Component {
         'network-loading': loading
         })
       })
-    ] : [ h(EmptyNetwork, { msg: 'No interactions to display', showPcLink: true} ) ];
+    ] : [ errorMessage ];
 
 
     return h('div.interactions', content);

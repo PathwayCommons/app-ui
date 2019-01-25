@@ -2,18 +2,22 @@ const _ = require('lodash');
 
 let defaults = {
   PORT: 3000,
-  MASTER_PASSWORD: '',
+  METADATA_CRON_SCHEDULE: '0 0 * * Monday', // update file from gprofiler etc. (Monday at midnight)
   PC_URL: 'http://www.pathwaycommons.org/',
   GPROFILER_URL: "https://biit.cs.ut.ee/gprofiler/",
   IDENTIFIERS_URL: 'http://identifiers.org',
   NCBI_EUTILS_BASE_URL: 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils',
+  NCBI_API_KEY: 'b99e10ebe0f90d815a7a99f18403aab08008', // for dev testing only (baderlabsysmonitor ncbi key)
   HGNC_BASE_URL: 'https://rest.genenames.org',
   UNIPROT_API_BASE_URL: 'https://www.ebi.ac.uk/proteins/api',
   PC_IMAGE_CACHE_MAX_SIZE: 10000,
   PC_CACHE_MAX_SIZE: 1000,
   PUB_CACHE_MAX_SIZE: 1000000,
+  ENT_CACHE_MAX_SIZE: 1000000,
+  ENT_SUMMARY_CACHE_MAX_SIZE: 1000000,
   MAX_SIF_NODES: 25,
-  FETCH_TIMEOUT: 5000,
+  CLIENT_FETCH_TIMEOUT: 15000,
+  SERVER_FETCH_TIMEOUT: 5000,
   // DB config values
   DB_NAME:  'appui',
   DB_HOST:  '127.0.0.1',
@@ -23,10 +27,10 @@ let defaults = {
   DB_CERT: undefined,
   // factoid specific urls
   FACTOID_URL: 'http://unstable.factoid.baderlab.org/',
-  BIOPAX_CONVERTERS_URL: 'http://biopax.baderlab.org/',
   NS_CHEBI: 'chebi',
   NS_ENSEMBL: 'ensembl',
   NS_GENECARDS: 'genecards',
+  NS_GENE_ONTOLOGY: 'go',
   NS_HGNC: 'hgnc',
   NS_HGNC_SYMBOL: 'hgnc.symbol',
   NS_NCBI_GENE: 'ncbigene',

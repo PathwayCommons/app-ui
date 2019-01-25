@@ -3,12 +3,14 @@ const url = require('url');
 const QuickLRU = require('quick-lru');
 const _ = require('lodash');
 
+const InvalidParamError = require('../errors/invalid-param');
+const { cachePromise } = require('../cache');
 const { fetch } = require('../../util');
 const logger = require('../logger');
 const config = require('../../config');
-const { validatorGconvert } = require('./gprofiler');
 
-const pcCache = new QuickLRU({ maxSize: config.PC_CACHE_MAX_SIZE });
+const xrefCache = new QuickLRU({ maxSize: config.PC_CACHE_MAX_SIZE });
+const queryCache = new QuickLRU({ maxSize: config.PC_CACHE_MAX_SIZE });
 
 const fetchOptions = {
   method: 'GET',
@@ -25,85 +27,27 @@ let query = opts => {
 
   return fetch(url, fetchOptions)
     .then(res => ( cmd === 'pc2/get' || cmd === 'pc2/graph' ? res.text() : res.json() ) )
-    .catch((e) => {
+    .catch( e => {
       logger.error('query ' + queryOpts + ' failed - ' + e);
-      return null;
+      throw e;
     });
 };
 
-let sanitize = s => {
-  // Escape (with '\'), to treat them literally, symbols, such as '*', ':', or space,
-  // which otherwise play special roles in a Lucene query string.
-  return s.replace(/([!*+\-&|()[\]{}^~?:/\\"\s])/g, '\\$1');
-};
-
-
-// recognize biological entities from an input string
-let extractEntityIds = inputString => {
-  let tokens = inputString.split(' ');
-
-  return validatorGconvert( tokens ).then( result => {
-    let { unrecognized, alias  } = result;
-    let entities = _.keys( alias ).map( initialAlias => 'xrefid:' + sanitize( initialAlias.toUpperCase() ) );
-
-    let otherIds = unrecognized.map( id => {
-      id = id.toUpperCase();
-      let isChebiId = /^CHEBI:\d+$/.test( id );
-      let isSmpdbId = /^SMP\d{5}$/.test( id );
-      let recognized = isSmpdbId || isChebiId && ( id.length <= ("CHEBI:".length + 6) );
-      let sanitized = sanitize(id);
-
-      return recognized ? ( 'xrefid:' + sanitized ) : ( 'name:' + '*' + sanitized + '*' );
-    });
-
-    return entities.concat(otherIds);
-  })
-  .catch( e => {
-    logger.error('unable to get response from gconvert with the following inputstring: ' + inputString);
-    logger.error(e);
-    // luncene each token in place of recognized entities
-    return tokens.map( token => 'name:' + '*' + sanitize(token) + '*');
-  });
-};
-
-// generate three search query candidates: the first one is the fastest, the last - slowest
-let generateSearchQueries = async inputString => {
-  let phrase = sanitize( inputString );
-  let entities = await extractEntityIds( inputString );
-  return [
-    '(name:' + phrase + ') OR (' + 'name:*' + phrase + '*) OR (' + entities.join(' AND ') + ')',
-    '(' + entities.join(' OR ') + ')',
-    inputString //"as is" (won't additionally escape Lucene query syntax, spaces, etc.)
-  ];
-};
-
-// A fine-tuned PC search to improve relevance of full-text search and filter out unwanted hits.
+// A wrapper for PC web services search.
 // The argument (query object) has the following fields:
 //  - q: user input - search query string
 //  - type: BioPAX type to match/filter by
-//  - lt: max graph size result returned
-//  - gt: min graph size result returned
 let search = async opts => {
-  let { gt:minSize = 0, lt:maxSize = 250, q } = opts;
-  let queryStrings = await generateSearchQueries( q.trim() );
-
-  for( let queryString of queryStrings ) {
-    let queryOpts = _.assign( opts, { cmd: 'pc2/search', q: queryString } );
-    let searchResult = await query( queryOpts );
-    let searchResults = _.get( searchResult, 'searchHit', []).filter( result => { 
-      let size = _.get( result, 'numParticipants', 0);
-
-      return minSize < size && size < maxSize;
-    });
-
-    if ( searchResults.length > 0 ){
-      return searchResults;
-    }
-
-  }
-
-  return [];
+  let queryOpts = _.assign( opts, { cmd: 'pc2/search' } );
+  let searchResult = await query( queryOpts );
+  let searchResults = _.get( searchResult, 'searchHit', []).filter( result => {
+    let size = _.get( result, 'numParticipants', 0);
+    return size > 0;
+  });
+  return searchResults;
 };
+
+const cachedSearch = cachePromise(search, queryCache);
 
 const sifGraph = opts => {
   let hasMultipleSources = _.get(opts, 'source', []).length > 1;
@@ -152,22 +96,14 @@ const fetchEntityUriBase = ( name, localId ) => {
   const url = config.PC_URL + 'pc2/miriam/uri/' + constructQueryPath( name, localId ) ;
   return fetch( url , { method: 'GET', headers: { 'Accept': 'text/plain' } })
     .then( res => res.text() )
-    .then( handleEntityUriResponse );
+    .then( handleEntityUriResponse )
+    .catch( error => {
+      if( error instanceof TypeError ) throw new InvalidParamError('Unrecognized parameters');
+      throw error;
+    });
 };
 
-const getEntityUriParts = ( name, localId ) => {
-  if( pcCache.has( name ) ){
-    return pcCache.get( name );
-  } else {
-    let res = fetchEntityUriBase( name, localId );
-    pcCache.set( name, res );
-    res.catch( err => {
-      pcCache.delete( name );
-      logger.error(`Failed to fill cache with ${name} and ${localId} - ${err}`);
-    });
-    return res;
-  }
-};
+const getEntityUriParts = cachePromise(fetchEntityUriBase, xrefCache, name => name);
 
 /*
  * xref2Uri: Obtain the URI for an xref
@@ -183,5 +119,4 @@ const xref2Uri =  ( name, localId ) => {
     }) );
 };
 
-
-module.exports = { query, search: _.memoize( search, query => JSON.stringify( query ) ), sifGraph, xref2Uri };
+module.exports = { query, search: cachedSearch, sifGraph, xref2Uri };

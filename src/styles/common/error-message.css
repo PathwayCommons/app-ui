@@ -1,0 +1,27 @@
+.error-message-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+
+  & .pc-logo {
+    background-image: url("../image/pc_logo_dark.svg");
+    background-repeat: no-repeat;
+    height: 5em;
+    width: 5em;
+    padding: 0px 10px 0px 0px;
+  }
+}
+
+.error-message {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.error-message-body, .error-message-footer {
+  color: var(--light-base-colour-darker);
+  margin: 0;
+  font-size: 0.9em;
+}

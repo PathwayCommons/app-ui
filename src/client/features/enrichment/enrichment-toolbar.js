@@ -3,9 +3,10 @@ const React = require('react');
 const ReactDom = require('react-dom');
 const h = require('react-hyperscript');
 
-const IconButton = require('../../common/components/icon-button');
+const { Popover, IconButton } = require('../../common/components/');
+const EnrichmentDownloadMenu = require('./enrichment-download-menu');
 
-const { ENRICHMENT_MAP_LAYOUT, searchEnrichmentNodes } = require('./cy');
+const { enrichmentLayout, searchEnrichmentNodes } = require('./cy');
 
 class EnrichmentToolbar extends React.Component {
   constructor(props){
@@ -24,32 +25,36 @@ class EnrichmentToolbar extends React.Component {
   }
 
   render(){
-    let { cySrv, controller, activeMenu } = this.props;
+    let { cySrv } = this.props;
     let { searchValue } = this.state;
     let cy = cySrv.get();
 
     return h('div.app-toolbar', [
-      h(IconButton, {
-        description: 'View Legend',
-        onClick: () => controller.changeMenu('enrichmentMenu'),
-        isActive: activeMenu === 'enrichmentMenu',
-        icon: 'info'
-      }),
-      h(IconButton, {
-        description: 'Downloads',
-        onClick: () => controller.changeMenu('enrichmentDownloadMenu'),
-        isActive: activeMenu === 'enrichmentDownloadMenu',
-        icon: 'file_download'
-      }),
+      h(Popover, {
+        tippy: {
+          position: 'bottom',
+          html: h(EnrichmentDownloadMenu, { cySrv })
+        }
+      }, [
+        h(IconButton, {
+          description: 'Downloads',
+          icon: 'file_download'
+        })
+      ]),
       h(IconButton, {
         description: 'Fit to screen',
-        onClick: () => cy.fit(),
+        onClick: () => cy.animate({
+          fit: {
+            padding: 25
+          },
+          easing: 'ease-in-out'
+        }),
         isActive: false,
         icon: 'fullscreen'
       }),
       h(IconButton, {
         description: 'Reset arrangement',
-        onClick: () => cy.layout(ENRICHMENT_MAP_LAYOUT).run(),
+        onClick: () => enrichmentLayout( cy ),
         isActive: false,
         icon: 'replay'
       }),

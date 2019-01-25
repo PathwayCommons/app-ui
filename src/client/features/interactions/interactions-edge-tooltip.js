@@ -11,6 +11,7 @@ class InteractionsEdgeTooltip extends React.Component {
 
     this.state = {
       publications: [],
+      publicationsLoaded: false,
       parallelEdges: props.edge.parallelEdges()
     };
   }
@@ -18,8 +19,10 @@ class InteractionsEdgeTooltip extends React.Component {
   getPublications(edge){
     let pubmedIds = edge.data('pubmedIds');
 
-    ServerAPI.getPubmedPublications(pubmedIds).then( publications => {
-      this.setState({publications});
+    this.setState({ publicationsLoaded: false }, () => {
+      ServerAPI.getPubmedPublications(pubmedIds).then( publications => {
+        this.setState({publications, publicationsLoaded: true});
+      });
     });
   }
 
@@ -34,11 +37,25 @@ class InteractionsEdgeTooltip extends React.Component {
   }
 
   renderEdge(edge, publications = []){
-    let { parallelEdges } = this.state;
-
+    let { parallelEdges, publicationsLoaded } = this.state;
     let title = edge.data('id');
     let datasources = edge.data('datasources');
     let pcIds = edge.data('pcIds');
+
+    if( !publicationsLoaded ){
+      return h('div.cy-tooltip', [
+        h('div.cy-tooltip-content', [
+          h('div.cy-tooltip-header',[
+            h('h2.cy-tooltip-title', 'Loading...')
+          ]),
+          h('div.cy-tooltip-body', [
+            h('div.cy-tooltip-loading-section', [
+              h('i.icon.icon-spinner')
+            ])
+          ])
+        ])
+      ]);
+    }
 
     let providersList = datasources.map( ds => h('div', ds));
 
@@ -51,7 +68,7 @@ class InteractionsEdgeTooltip extends React.Component {
     });
 
     let detailedViewsList = pcIds.map( (pcId, index)  => {
-      return h('a.plain-link', { href: '/pathways?' + queryString.stringify({ uri: pcId }), target: '_blank' }, ` ${index + 1} `);
+      return h('a.plain-link.cy-tooltip-number-link', { href: '/pathways?' + queryString.stringify({ uri: pcId }), target: '_blank' }, ` ${index + 1} `);
     } );
 
     return h('div.cy-tooltip', [
@@ -114,6 +131,7 @@ class InteractionsEdgeTooltip extends React.Component {
       return this.renderEdge(selectedEdge, publications);
     } else {
       if( parallelEdges.length === 1 ){
+        this.selectEdge(parallelEdges[0]);
         return this.renderEdge(parallelEdges[0], []);
       } else {
         return this.renderEdgeChoice(parallelEdges);

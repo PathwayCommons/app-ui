@@ -15,6 +15,7 @@
   --box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
   --icon-size: 24px;
   --search-width: 740px;
+  --appImgHeight: 150px;
   --view-sidebar-width: 33%;
   --widgetBorderColor: var(--light-base-colour-dark);
   --widgetBorderRadius: 4px;
@@ -32,12 +33,6 @@
 /* Viewport scaling sizes */
 @custom-media --small-width-viewport (width <= 600px);
 @custom-media --small-portrait-viewport (width <= 736px) and (height <= 736px) and (height > 414px);
-
-%flex-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
 %no-select {
   cursor: default;

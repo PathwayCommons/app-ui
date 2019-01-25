@@ -34,25 +34,25 @@ const getEntitySummary = async ( accessions ) => {
 
     // Create external database links first
     const xrefLinks = [{
-      "namespace": NS_UNIPROT,
-      "uri": createUri( NS_UNIPROT, accession )
+      namespace: NS_UNIPROT,
+      uri: createUri( NS_UNIPROT, accession )
     }];
     doc.dbReferences.forEach( xrf => {
       switch ( xrf.type ){
         case 'HGNC':
           xrefLinks.push({
-            "namespace": NS_GENECARDS,
-            "uri": createUri( NS_GENECARDS, _.get( xrf, "properties['gene designation']" ) )
+            namespace: NS_GENECARDS,
+            uri: createUri( NS_GENECARDS, _.get( xrf, 'properties["gene designation"]' ) )
           });
           xrefLinks.push({
-            "namespace": NS_HGNC_SYMBOL,
-            "uri": createUri( NS_HGNC_SYMBOL, _.get( xrf, "properties['gene designation']" ) )
+            namespace: NS_HGNC_SYMBOL,
+            uri: createUri( NS_HGNC_SYMBOL, _.get( xrf, 'properties["gene designation"]' ) )
           });
           break;
         case 'GeneID':
           xrefLinks.push({
-            "namespace": NS_NCBI_GENE,
-            "uri": createUri( NS_NCBI_GENE, _.get( xrf, 'id', '') )
+            namespace: NS_NCBI_GENE,
+            uri: createUri( NS_NCBI_GENE, _.get( xrf, 'id', '') )
           });
           break;
       }

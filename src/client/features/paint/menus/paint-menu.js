@@ -158,24 +158,26 @@ class PaintMenu extends React.Component {
     ]);
 
 
-    return h(Tabs, { selectedIndex, onSelect: index => controller.handlePaintMenuTabChange(index) }, [
-      h(TabList, [
-        h(Tab, {
-          className: 'paint-drawer-tab',
-          selectedClassName: 'paint-drawer-tab-selected',
-         }, 'Expression Data'),
-        h(Tab, { className: 'paint-drawer-tab', selectedClassName: 'paint-drawer-tab-selected' }, 'Select Pathway')
-      ]),
-      h(TabPanel, [
-        h(ExpressionColourLegend, { min, max }),
-        h('div.paint-menu-controls', [
-          functionSelector,
-          classSelector
+    return h('div.paint-menu', [
+      h(Tabs, { selectedIndex, onSelect: index => controller.handlePaintMenuTabChange(index) }, [
+        h(TabList, [
+          h(Tab, {
+            className: 'paint-drawer-tab',
+            selectedClassName: 'paint-drawer-tab-selected',
+          }, 'Expression Data'),
+          h(Tab, { className: 'paint-drawer-tab', selectedClassName: 'paint-drawer-tab-selected' }, 'Select Pathway')
         ]),
-        h(ExpressionTableView, { cySrv, expressionTable, controller, paintMenuCtrls} ),
-      ]),
-      h(TabPanel, [
-        h(PathwayResultsListView, { controller, curPathway, expressionTable, pathways })
+        h(TabPanel, [
+          h(ExpressionColourLegend, { min, max }),
+          h('div.paint-menu-controls', [
+            functionSelector,
+            classSelector
+          ]),
+          h(ExpressionTableView, { cySrv, expressionTable, controller, paintMenuCtrls} ),
+        ]),
+        h(TabPanel, [
+          h(PathwayResultsListView, { controller, curPathway, expressionTable, pathways })
+        ])
       ])
     ]);
   }

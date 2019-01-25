@@ -6,12 +6,15 @@ const classNames = require('classnames');
 const queryString = require('query-string');
 
 const EnrichmentToolbar = require('./enrichment-toolbar');
-const { EmptyNetwork, PcLogoLink, CytoscapeNetwork, Popover } = require('../../common/components/');
+const { PcLogoLink, CytoscapeNetwork, Popover } = require('../../common/components/');
 
 const CytoscapeService = require('../../common/cy/');
 const { ServerAPI } = require('../../services');
 
 const { enrichmentLayout, enrichmentStylesheet, bindEvents } = require('./cy');
+const { TimeoutError } = require('../../../util');
+const { ErrorMessage } = require('../../common/components/error-message');
+
 class Enrichment extends React.Component {
   constructor(props){
     super(props);
@@ -19,7 +22,7 @@ class Enrichment extends React.Component {
     this.state = {
       cySrv: new CytoscapeService({ style: enrichmentStylesheet, onMount: bindEvents }),
       sources: _.uniq(queryString.parse(props.location.search).source.split(',')),
-      errored: false,
+      error: null,
       loading: true,
       networkEmpty: false
     };
@@ -57,7 +60,7 @@ class Enrichment extends React.Component {
         });
       } catch( e ){
         this.setState({
-          errored: true,
+          error: e,
           loading: false
         });
       }
@@ -67,8 +70,17 @@ class Enrichment extends React.Component {
   }
 
   render(){
-    let { loading, cySrv, networkEmpty, sources } = this.state;
+    let { loading, cySrv, networkEmpty, sources, error } = this.state;
     let titleContent = [];
+
+    let errorMessage;
+    if( networkEmpty ) {
+      errorMessage = h(ErrorMessage, { title: 'No results to display.', body: 'Try different genes in your search.' , footer: null, logo: true } );
+    } else if( error instanceof TimeoutError ) {
+      errorMessage = h( ErrorMessage, { title: 'This is taking longer that we expected', body: 'Try again later.', logo: true } );
+    } else if( error ) {
+      errorMessage = h( ErrorMessage, { logo: true } );
+    }
 
     if( sources.length === 1 ){
       titleContent.push(h('span', `Pathways enriched for ${sources[0]}`));
@@ -95,17 +107,15 @@ class Enrichment extends React.Component {
       h(EnrichmentToolbar, { cySrv, sources: this.state.sources, controller: this })
     ]);
 
-    return h('div.enrichment', [
-
+    return !errorMessage ? [ h('div.enrichment', [
       h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [
         appBar
        ]),
-      networkEmpty ? h(EmptyNetwork, { msg: 'No results to display', showPcLink: false} ) : null,
       h(CytoscapeNetwork, {
         cySrv,
         className: classNames({'network-loading': loading})
       })
-    ]);
+    ]) ]: [errorMessage];
   }
 }
 

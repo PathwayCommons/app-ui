@@ -4,6 +4,7 @@ const { Link } = require('react-router-dom');
 const queryString = require('query-string');
 const _ = require('lodash');
 
+const MIN_GENE_COUNT_ENRICHMENT = 5;
 const { NS_HGNC_SYMBOL, NS_GENECARDS, NS_NCBI_GENE, NS_UNIPROT } = require('../../../config');
 
 const SUPPORTED_COLLECTIONS = new Map([
@@ -37,24 +38,26 @@ class EntitySummaryBox extends React.Component {
 }
 
 class GeneResultsView extends React.Component {
-  getEnrichmentAppInfo(){
+  getEnrichmentAppInfo( geneResults ){
     let label = `View`;
     let linkPath = '/enrichment';
     let description = 'Explore a network of pathways that contain genes identified in your query.';
     let imageClass = 'enrichment-logo';
     let title = 'Enrichment';
+    let show = geneResults.length >= MIN_GENE_COUNT_ENRICHMENT;
 
-    return { label, title, linkPath, description, imageClass };
+    return { label, title, linkPath, description, imageClass, show };
   }
 
-  getInteractionsAppInfo(){
+  getInteractionsAppInfo( geneResults ){
     let label = `View`;
     let description = 'Visualize interactions between the genes identified in your query.';
     let linkPath = '/interactions';
     let imageClass = 'interactions-logo';
     let title = 'Interactions';
+    let show = geneResults.length > 0;
 
-    return { label, title, linkPath, description, imageClass };
+    return { label, title, linkPath, description, imageClass, show };
   }
 
   render(){
@@ -65,9 +68,6 @@ class GeneResultsView extends React.Component {
     }
 
     let sources = geneResults.map( geneInfo => geneInfo.geneSymbol );
-    let interactionsAppInfo = this.getInteractionsAppInfo( );
-    let enrichmentAppInfo = this.getEnrichmentAppInfo( );
-
     let AppLinkout = appInfo => {
       let { linkPath, imageClass, title, description } = appInfo;
 
@@ -88,6 +88,13 @@ class GeneResultsView extends React.Component {
       ]);
     };
 
+    const appsLinkouts = [
+      this.getInteractionsAppInfo( geneResults ),
+      this.getEnrichmentAppInfo( geneResults )
+    ].map( info => {
+      return info.show ? h( AppLinkout, info ) : null;
+    });
+
     return h('div.search-genes-results', [
       h('h3.search-genes-header', `Recognized genes (${geneResults.length})`),
         h('div.search-genes-list', [
@@ -97,10 +104,7 @@ class GeneResultsView extends React.Component {
             ]);
           })
         ]),
-        h('div.app-linkouts', [
-          h(AppLinkout, interactionsAppInfo),
-          h(AppLinkout, enrichmentAppInfo)
-        ])
+        h( 'div.app-linkouts', appsLinkouts )
     ]);
   }
 }

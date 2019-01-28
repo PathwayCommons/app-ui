@@ -3,60 +3,52 @@
 
 ## Required software
 
-- [Node.js](https://nodejs.org/en/) >=6.3.0
+- [Node.js](https://nodejs.org/en/) >=8.11.2
 - [RethinkDB](https://www.rethinkdb.com/) >=2.3.6
-- [Chromium](https://www.chromium.org/Home)
+
 ## Running the App Locally
-1.  Start rethinkdb by typing this command in your terminal
-```
-rethinkdb
-```
-2. Install the project dependencies by typing:
-```
-npm install
-```
 
-3.  Run the project using one of the defined package scripts:
+1. Install the project dependencies by typing:
+    ```
+    npm install
+    ```
 
-For development:
-```
-npm run watch
-```
+2.  Run the project using one of the defined package scripts:
 
-For a production build:
-```
-npm run build-prod
-npm run start
-```
+    For development:
+    ```
+    npm run watch
+    ```
+
+    For a production build:
+    ```
+    npm run build-prod
+    npm run start
+    ```
 
 ## Configuration
 
 The following environment variables can be used to configure the server:
 
-- `NODE_ENV` : the environment mode, either `production` or `development` (default)
-- `PC_URL` : root Pathway Commons URL (default: 'http://www.pathwaycommons.org/')
-- `FACTOID_URL` : the Factoid app URL (default: 'http://unstable.factoid.baderlab.org/')
-- `PORT` : the port on which the server runs (default 3000)
-
-### Configure RethinkDB
- 1. Download [RethinkDB](https://www.rethinkdb.com/docs/install/)
- 2. Start your RethinkDB server by following the steps [here](https://www.rethinkdb.com/docs/start-a-server/)
- 3. Go to `src/server/database/config.js`  and modify the ip field to match your server address
- 4. Start the project : `npm run start` or `npm run watch`, then the server will auto create all the required tables for you.
+- `NODE_ENV`: the environment mode, either `production` or `development` (default)
+- `PORT`: the port on which the server runs (default 3000)
+- `PC_URL`: root Pathway Commons URL (default: 'http://www.pathwaycommons.org/')
+- `NCBI_API_KEY`: NCBI E-Utilities API key ([read more](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/))
+- `FACTOID_URL`: the Factoid app URL (default: 'http://unstable.factoid.baderlab.org/')
 
 ### Switching Pathway Commons Versions (release/other)
 
 If Pathway Commons data and files have been updated since this app's last built and run,
 or you simply want to connect to a different PC2 instance (don't forget to set PC_URL),
 then the file `src/server/graph-generation/biopax-metadata/generic-physical-entity-map.json`
-needs to be updated. Also, purge the RethinkDb db tables or simply switch the database.
+needs to be updated.
 
-The following script downloads and processes physical_entities.json.gz file from Pathway Commons:
+Use the script
 ```sh
 cd src/scripts/generic-entity-mapping/
-PC_VERSION=v10 sh update.sh
+PC_VERSION=v11 sh update.sh
 ```
-(PC_VERSION should be set to the name of a sub-directory in `www.pathwaycommons.org/archives/PC2/`)
+to refresh `physical_entities.json.gz` from the path `www.pathwaycommons.org/archives/PC2/<PC_VERSION>/` in Pathway Commons.
 
 ## Run targets
 
@@ -69,6 +61,7 @@ PC_VERSION=v10 sh update.sh
 - `npm run watch` : watch mode (debug mode enabled, autorebuild, autoreload)
 - `npm test` : run tests
 - `npm run lint` : lint the project
+- `npm run ci` : run the tests and lint at once
 
 
 ## Running via Docker

@@ -72,13 +72,13 @@ Build the container.  Here, `app-ui` is used as the container name.
 
 ```
 cd app-ui
-docker build --build-arg "NODE_ENV=production" -t app-ui .
+docker build -t app-ui:local .
 ```
 
 Run the container:
 
 ```
-docker run -it -p 12345:3000 -u "node" -e "NODE_ENV=production" --name "app-ui" app-ui
+docker run -it --rm -p 12345:3000 -u "appuser" -e "NODE_ENV=production" --name "app-ui" app-ui:local
 ```
 
 Notes:
@@ -97,13 +97,13 @@ Notes:
 
 Pathway Commons maintains a [Docker Hub](https://hub.docker.com/) image for [app-ui](https://hub.docker.com/r/pathwaycommons/app-ui/) that is automatically built each time a commit is pushed to GitHub.
 
-To run the GitHub development branch:
+To run the GitHub master branch:
 
 ```sh
 docker-compose --file docker-compose.yml up --detach
 ```
 
-Access the app instance at port `9090`.The default configuration declared in `docker-compose.yml` also runs a [rethinkdb](https://hub.docker.com/_/rethinkdb/) image; access the UI at port `8020`.
+Access the app instance at port `9090`.
 
 Notes:
 - References:
@@ -112,12 +112,12 @@ Notes:
 
 ## Testing
 
-All files `/test` will be run by [Mocha](https://mochajs.org/).  You can `npm test` to run all tests, or you can run `mocha -g specific-test-name` (prerequisite: `npm install -g mocha`) to run specific tests.
+All files `/test` will be run by [Mocha](https://mochajs.org/).  You can `npm test` to run all tests, or you can run `npm run test ./test/path/to/test` to run specific tests.
 
 [Chai](http://chaijs.com/) is included to make the tests easier to read and write.
 
 
-## Devloping a feature and making a pull request
+## Developing a feature and making a pull request
 
 Students who work on the repo should follow these instructions for each feature that they work on:
 

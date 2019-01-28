@@ -21,7 +21,7 @@ RUN npm install
 
 # Build project
 RUN npm run clean
-RUN npm run build-prod
+RUN npm run build
 
 # Expose port
 EXPOSE 3000

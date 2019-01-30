@@ -72,7 +72,7 @@ Build the container.  Here, `app-ui` is used as the container name.
 
 ```
 cd app-ui
-docker build -t app-ui:local .
+docker build --build-arg NODE_ENV=production -t app-ui .
 ```
 
 Run the container:
@@ -121,7 +121,7 @@ All files `/test` will be run by [Mocha](https://mochajs.org/).  You can `npm te
 
 Students who work on the repo should follow these instructions for each feature that they work on:
 
-1. Initial prepartion (only needed once)
+1. Initial preparation (only needed once)
     1. [Make a fork on Github](https://github.com/PathwayCommons/app-ui#fork-destination-box) (if you haven't already) under your personal account
     1. Check out the fork repo: `git clone https://github.com/myusername/app-ui.git`
     1. Change the directory to the project: `cd app-ui`

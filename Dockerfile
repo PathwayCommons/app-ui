@@ -2,6 +2,12 @@
 # https://nodejs.org/en/docs/guides/nodejs-docker-webapp/
 # https://github.com/nodejs/docker-node
 
+# default NODE_ENV for building the app (clientside JS etc.)
+ARG NODE_ENV=production
+
+# default NODE_ENV for running the server
+ENV NODE_ENV=production
+
 # Node.js base image
 FROM node:8
 
@@ -15,10 +21,6 @@ WORKDIR /home/appuser/app
 
 # Bundle app
 COPY . /home/appuser/app
-
-# Set NODE_ENV; Allow override at build
-ARG NODE_ENV=development
-ENV NODE_ENV=$NODE_ENV
 
 # Install app dependencies
 RUN npm install

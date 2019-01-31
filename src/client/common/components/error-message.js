@@ -5,7 +5,17 @@ const { Link } = require('react-router-dom');
 
 class ErrorMessage extends React.Component {
   render(){
-    const logo = this.props.logo ? h(Link, { to: { pathname: `/`}, target: '_blank' }, [ h('div.pc-logo')]): null;
+    const logo = this.props.logo
+      ? h( Link, { to: { pathname: `/`}, target: '_blank' }, [
+          h('div.error-branding', [
+            h('div.pc-logo'),
+            h('div.error-branding-descriptor', [
+              h('h2.error-subtitle', 'Pathway Commons'),
+              h('h1.error-title', 'Search')
+            ])
+          ])
+      ])
+      : null;
 
     const title = h('h1.error-message-title',
       this.props.title !== undefined ? this.props.title : 'An error occurred' );
@@ -21,8 +31,8 @@ class ErrorMessage extends React.Component {
     ]);
 
     return  h('div.error-message-container', [
-      logo,
       h('div.error-message', [
+        logo,
         title,
         body,
         footer

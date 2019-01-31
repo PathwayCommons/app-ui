@@ -121,7 +121,7 @@ class Search extends React.Component {
     if( this.props.notFoundError ) {
       errorMessage = h( ErrorMessage, { title: 'We couldn\'t find the resource you are looking for', body: 'Check the location and try again.' } );
     } else if( this.state.error instanceof TimeoutError ) {
-      errorMessage = h( ErrorMessage, { title: 'This is taking longer that we expected', body: 'Try again later.' }  );
+      errorMessage = h( ErrorMessage, { title: 'This is taking longer than expected', body: 'Try again later.' }  );
     } else if( this.state.error ) {
       errorMessage = h( ErrorMessage );
     }

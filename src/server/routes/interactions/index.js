@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { getInteractionGraphFromPC } = require('./generate-interactions-json');
-const { generateInteractionsImg } = require('./generate-interactions-image');
+// const { generateInteractionsImg } = require('./generate-interactions-image');
 
 const logger = require('../../logger');
 
@@ -19,15 +19,18 @@ router.get('/', ( req, res ) => {
 });
 
 router.get('/image', ( req, res ) => {
-  let sources = req.query.sources;
+  logger.error( 'Not supported : interactions snapshot' );
+  res.status( 500 ).end( 'Server error' );
 
-  getInteractionGraphFromPC( sources )
-  .then( generateInteractionsImg )
-  .then( img => res.json( { img } ) )
-  .catch( e => {
-    logger.error( e );
-    res.status( 500 ).end( 'Server error' );
-  });
+  // let sources = req.query.sources;
+
+  // getInteractionGraphFromPC( sources )
+  // .then( generateInteractionsImg )
+  // .then( img => res.json( { img } ) )
+  // .catch( e => {
+  //   logger.error( e );
+  //   res.status( 500 ).end( 'Server error' );
+  // });
 });
 
 module.exports = router;

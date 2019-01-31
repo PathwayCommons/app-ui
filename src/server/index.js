@@ -22,13 +22,11 @@ cron.schedule(METADATA_CRON_SCHEDULE, () => {
 // make fetch() available as a global just like it is on the client side
 global.fetch = require('node-fetch');
 
-const db = require('./db');
+// const db = require('./db'); // for now disable db
 const logger = require('./logger');
 
 const app = express();
 const server = http.createServer(app);
-
-require('./io').set(server);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -134,21 +132,22 @@ function onListening() {
   debug('Listening on ' + bind);
 }
 
-let setUpDb = () => {
-  let log = (...msg) => function( val ){ logger.debug( ...msg ); return val; };
-  let access = name => db.accessTable( name );
-  let setup = name => {
-    return access( name )
-      .then( log('Accessed table "%s"', name) )
-      .then( log('Set up synching for "%s"', name) )
-    ;
-  };
+// for now disable db
+// let setUpDb = () => {
+//   let log = (...msg) => function( val ){ logger.debug( ...msg ); return val; };
+//   let access = name => db.accessTable( name );
+//   let setup = name => {
+//     return access( name )
+//       .then( log('Accessed table "%s"', name) )
+//       .then( log('Set up synching for "%s"', name) )
+//     ;
+//   };
 
-  return Promise.all( ['pathways'].map( setup ) );
-};
+//   return Promise.all( ['pathways'].map( setup ) );
+// };
 
 // for now disable db stuff...
-setUpDb = () => {};
+let setUpDb = () => {};
 
 // set up rethinkdb
 Promise.try( setUpDb ).then( () => {

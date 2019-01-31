@@ -1,14 +1,11 @@
 version: '3'
 services:
   webapp:
-    image: pathwaycommons/app-ui:development
+    image: pathwaycommons/app-ui:master
     container_name: appui_webapp
     ports:
-      - "9090:3000" 
+      - "9090:3000"
     environment:
-      host: "db"
-  db:
-    container_name: appui_db
-    image: rethinkdb:2.3.6
-    ports:
-      - "8020:8080" 
+      NODE_ENV: "production"
+      PC_URL: "http://www.pathwaycommons.org/"
+      FACTOID_URL: "http://factoid.baderlab.org/"

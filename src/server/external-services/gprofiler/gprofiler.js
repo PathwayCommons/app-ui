@@ -8,7 +8,7 @@ const { GPROFILER_URL } = require('../../../config');
 const logger = require('../../logger');
 const { cachePromise } = require('../../cache');
 
-
+const GPROFILER_GOST_URL = GPROFILER_URL + 'index.cgi';
 const GPROFILER_DEFAULT_OPTS = {
   output: 'mini',
   organism: 'hsapiens',
@@ -106,7 +106,7 @@ const rawEnrichment = (query, opts) => {
     } );
 
 
-    fetch(GPROFILER_URL, { method: 'post', body: qs.stringify(gProfilerOpts)})
+    fetch(GPROFILER_GOST_URL, { method: 'post', body: qs.stringify(gProfilerOpts)})
       .then( res => res.text() )
       .then( gprofilerRes =>  parseGProfilerResponse( gprofilerRes ) )
       .then( pathwayInfo => resolve( pathwayInfo ) )

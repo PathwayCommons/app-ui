@@ -3,14 +3,42 @@
   justify-content: center;
   align-items: center;
   flex-direction: row;
+  margin: 1.5em;
 
   & .pc-logo {
     background-image: url("../image/pc_logo_dark.svg");
     background-repeat: no-repeat;
-    height: 5em;
-    width: 5em;
-    padding: 0px 10px 0px 0px;
+    height: 3em;
+    width: 3em;
+    padding: 0;
   }
+}
+
+.error-branding {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding-right: 0.5em;
+  margin-bottom: 1em;
+}
+
+.error-branding-descriptor {
+  margin-left: 0.5em;
+}
+
+.error-title {
+  margin: 0;
+  line-height: 1em;
+  color: var(--dark-base-colour);
+  font-size: 2em;
+}
+
+.error-subtitle {
+  margin: 0;
+  line-height: 1em;
+  color: var(--dark-base-colour);
+  font-size: 0.75em;
 }
 
 .error-message {

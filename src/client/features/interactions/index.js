@@ -77,7 +77,7 @@ class Interactions extends React.Component {
     if( networkEmpty ) {
       errorMessage = h(ErrorMessage, { title: 'No interactions to display.', body: 'Try different genes in your search.' , footer: null, logo: true } );
     } else if( error instanceof TimeoutError ) {
-      errorMessage = h( ErrorMessage, { title: 'This is taking longer that we expected', body: 'Try again later.', logo: true } );
+      errorMessage = h( ErrorMessage, { title: 'This is taking longer than expected', body: 'Try again later.', logo: true } );
     } else if( error ) {
       errorMessage = h( ErrorMessage, { logo: true } );
     }

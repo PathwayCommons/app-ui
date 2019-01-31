@@ -2,14 +2,14 @@
 # https://nodejs.org/en/docs/guides/nodejs-docker-webapp/
 # https://github.com/nodejs/docker-node
 
+# Node.js base image
+FROM node:8
+
 # default NODE_ENV for building the app (clientside JS etc.)
 ARG NODE_ENV=production
 
 # default NODE_ENV for running the server
 ENV NODE_ENV=production
-
-# Node.js base image
-FROM node:8
 
 # Create an unprivileged user w/ home directory
 RUN groupadd appuser \
@@ -23,7 +23,8 @@ WORKDIR /home/appuser/app
 COPY . /home/appuser/app
 
 # Install app dependencies
-RUN npm install
+# Note: must be development so that dev deps are installed
+RUN NODE_ENV=development npm install
 
 # Build project
 RUN npm run clean

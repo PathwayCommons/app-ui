@@ -78,7 +78,7 @@ docker build --build-arg NODE_ENV=production -t app-ui .
 Run the container:
 
 ```
-docker run -it --rm -p 12345:3000 -u "appuser" -e "NODE_ENV=production" --name "app-ui" app-ui:local
+docker run -it --rm -p 12345:3000 -e "NODE_ENV=production" --name "app-ui" app-ui
 ```
 
 Notes:

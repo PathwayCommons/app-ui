@@ -16,8 +16,21 @@ const ENRICHMENT_NETWORK_JSON = require('./enrichment-network-json.json');
 describe('Test generateGraphInfo - Enrichment Vizualization Service', function () {
   it('parameters: all valid', async () => {
     const table = await getPathwayInfoTable();
+    const mockResponse =  {
+      values: [
+        {
+          "db": "name",
+          "id": "id",
+          "uri": "http://identifiers.org/name/id",
+          "dbOk": true,
+          "idOk": true,
+          "preferredDb": "name",
+          "namespace": "namespace"
+        }
+      ]
+    };
 
-    global.fetch = mockFetch( { text: () => 'http://identifiers.org/name/id' } );
+    global.fetch = mockFetch( { json: () => mockResponse } );
     const res = await generateEnrichmentNetworkJson(table, [
       {
         "id": "GO:0006354",

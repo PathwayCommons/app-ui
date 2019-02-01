@@ -10,8 +10,9 @@ router.get('/search', function (req, res) {
 });
 
 //for debugging
-router.get('/xref2Uri/:name/:localId', function (req, res, next) {
-  pc.xref2Uri( req.params.name, req.params.localId )
+router.post('/xref2Uri/', function (req, res, next) {
+  const { name, localId } = req.body.query[0];
+  pc.xref2Uri( name, localId )
     .then( r => res.json( r ))
     .catch( next );
 });

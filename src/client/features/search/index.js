@@ -29,7 +29,8 @@ class Search extends React.Component {
         datasource: []
       }, query),
       geneResults: null,
-      pathwayResults: null,
+      searchHits: null,
+      dataSources: [],
       loading: false,
       error: null
     };
@@ -44,10 +45,11 @@ class Search extends React.Component {
         loading: true,
       });
       ServerAPI.search( query ).then( res => {
-        let { genes, pathways } = res;
+        let { genes, searchHits, dataSources } = res;
         this.setState({
           geneResults: genes,
-          pathwayResults: pathways,
+          searchHits,
+          dataSources,
           loading: false
          });
       })
@@ -108,12 +110,12 @@ class Search extends React.Component {
   }
 
   render() {
-    let { geneResults, pathwayResults, query, loading } = this.state;
+    let { geneResults, searchHits, query, loading, dataSources } = this.state;
 
     const searchListing = h(Loader, { loaded: !loading, options: { left: '50%', color: '#16A085' } }, [
       h('div', [
         h(GeneResultsView, { geneResults } ),
-        h(PathwayResultsView, { pathwayResults, curDatasource: query.datasource, controller: this})
+        h(PathwayResultsView, { searchHits, query, controller: this, dataSources})
       ])
     ]);
 

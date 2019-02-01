@@ -105,9 +105,9 @@ const searchPathways = query => {
  * @param { String } query Raw input to search by
  */
 const search = async ( query ) => {
-  return Promise.all([ searchGenes( query.q ), searchPathways( query ) ])
-    .then( ([ genes, pathways ]) => {
-      return { genes, pathways };
+  return Promise.all([ searchGenes( query.q ), searchPathways( query ), pc.getDataSources() ])
+    .then( ([ genes, searchHits, dataSources ]) => {
+      return { genes, searchHits, dataSources };
     } );
 };
 

@@ -11,6 +11,7 @@ const config = require('../../config');
 
 const xrefCache = new QuickLRU({ maxSize: config.PC_CACHE_MAX_SIZE });
 const queryCache = new QuickLRU({ maxSize: config.PC_CACHE_MAX_SIZE });
+const traverseCache = new QuickLRU({ maxSize: config.PC_CACHE_MAX_SIZE });
 
 const fetchOptions = {
   method: 'GET',
@@ -33,6 +34,80 @@ let query = opts => {
     });
 };
 
+// Simple wrapper for traversal over object given URI
+const traverseRaw = ( uri, path ) => query({ cmd:'pc2/traverse', uri, path })
+    .then( data => _.get( data, [ 'traverseEntry', '0', 'value' ], null ) );
+const traverse = cachePromise( traverseRaw, traverseCache );
+
+let dataSourcesCache = null;
+const dataSourceFields = [
+  "identifier",
+  "name",
+  "description",
+  "urlToHomepage",
+  "iconUrl",
+  "pubmedId",
+  "numPathways",
+  "numInteractions",
+  "numPhysicalEntities",
+  "notPathwayData"
+];
+const sortByLength = arr => arr.sort( ( a, b ) => b.length - a.length );
+/**
+ * getDataSourcesMap
+ * Get a Map of info for datasources
+ * @returns { Map } Keys are lowercased names (Provenance standard / display)
+ * Values not guaranteed to be unique
+ */
+const getDataSourcesMap = async function() {
+  if( dataSourcesCache ) return dataSourcesCache;
+  // Initialize the dataSourcesCache
+  const sourceMap = new Map();
+  const datasources = await query({ cmd:'pc2/metadata/datasources' });
+  datasources.forEach( source => {
+    const name = _.head( sortByLength( source.name ) ); // Use longest name for display
+    const sourceInfo = _.assign( _.pick( source, dataSourceFields ), { name } );
+    source.name.forEach( variant => sourceMap.set( _.toLower( variant ), sourceInfo ) );
+  });
+  dataSourcesCache = sourceMap;
+  return sourceMap;
+};
+/**
+ * dataSources
+ * Get a list of info for each datasource, unique with respect to identifier
+ * @returns { Array } Each object is info for each source with dataSourceFields
+ */
+const getDataSources = () => getDataSourcesMap().then( dsMap => _.uniqBy( [ ...dsMap.values() ], o => o.identifier ) );
+
+/**
+ * getDataSourceInfo
+ * Find first instance of dataSource that matches any elements of an array of 'names'.
+ * Flexible enough to accomodate cases where 'name' varies in size.
+ * @param { Array } Strings of dataSource names
+ * @param { Map } The dataSource Map
+ * @returns { Object } Various dataSource fields (see dataSourceFields)
+ */
+const getDataSourceInfo = ( name, dataSources ) => {
+  for ( const variant of name ){
+    const dsInfo = dataSources.get( _.toLower( variant ) );
+    if( dsInfo ) return dsInfo;
+  }
+};
+
+// Fill the dataSource information
+const addSourceInfo = async function( searchHit, dataSources ) {
+  const uri = _.get( searchHit, [ 'dataSource', '0' ] );
+  const name = await traverse( uri, 'Named/name' );
+  const sourceInfo = getDataSourceInfo( name, dataSources );
+  if ( sourceInfo ) _.assign( searchHit, { sourceInfo } );
+  return searchHit;
+};
+
+const augmentSearchHits = async function( searchHits ) {
+  const dataSources = await getDataSourcesMap();
+  return Promise.all( searchHits.map( searchHit => addSourceInfo( searchHit, dataSources ) ) );
+};
+
 // A wrapper for PC web services search.
 // The argument (query object) has the following fields:
 //  - q: user input - search query string
@@ -44,7 +119,7 @@ let search = async opts => {
     let size = _.get( result, 'numParticipants', 0);
     return size > 0;
   });
-  return searchResults;
+  return augmentSearchHits( searchResults );
 };
 
 const cachedSearch = cachePromise(search, queryCache);
@@ -119,4 +194,4 @@ const xref2Uri =  ( name, localId ) => {
     }) );
 };
 
-module.exports = { query, search: cachedSearch, sifGraph, xref2Uri };
+module.exports = { query, search: cachedSearch, sifGraph, xref2Uri, getDataSources };

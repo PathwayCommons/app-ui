@@ -24,21 +24,25 @@ class EnrichmentTooltip extends React.Component {
     const descriptionOnFail = 'No description available';
 
     if( namespace === NS_GENE_ONTOLOGY ){
-      ServerAPI.getGoInformation( id.replace('GO:', '') ).then( res => {
+      ServerAPI.getGoInformation( id.replace('GO:', '') )
+      .then( res => {
         let description = _.get(res, 'results[0].definition.text', descriptionOnFail);
         let update = () => this.setState({ name: NS_GENE_ONTOLOGY.toUpperCase(), description, descriptionLoaded: true });
 
         update();
-      });
+      })
+      .catch( () => this.setState({ name: NS_GENE_ONTOLOGY.toUpperCase(), descriptionLoaded: true }) );
     }
 
     if( namespace === NS_REACTOME ){
-      ServerAPI.getReactomeInformation( id.replace('REAC:', '') ).then( res => {
+      ServerAPI.getReactomeInformation( id.replace('REAC:', '') )
+      .then( res => {
         let description = _.get(res, 'summation[0].text', descriptionOnFail);
         let update = () => this.setState({ name: NS_REACTOME.toUpperCase(), description, descriptionLoaded: true });
 
         update();
-      });
+      })
+      .catch( () => this.setState({ name: NS_REACTOME.toUpperCase(), descriptionLoaded: true }) );
     }
   }
   render(){
@@ -64,6 +68,11 @@ class EnrichmentTooltip extends React.Component {
       ]);
     }
 
+    const descriptionSection = description ? h('div.cy-tooltip-section', [
+      h('div.cy-tooltip-field-name', 'Description'),
+      h('div.cy-tooltip-field-value', description)
+    ]) : null;
+
     return h('div.cy-tooltip', [
       h('div.cy-tooltip-content', [
         h('div.cy-tooltip-header',[
@@ -73,10 +82,7 @@ class EnrichmentTooltip extends React.Component {
           ])
         ]),
         h('div.cy-tooltip-body', [
-          h('div.cy-tooltip-section', [
-            h('div.cy-tooltip-field-name', 'Description'),
-            h('div.cy-tooltip-field-value', description)
-          ]),
+          descriptionSection,
           h('div.cy-tooltip-section', [
             h('div.cy-tooltip-field-name', 'Genes Shared with Entered List (' + sharedGeneCount + ')'),
             h('div.cy-tooltip-field-value', sharedGeneList.join(', ')),

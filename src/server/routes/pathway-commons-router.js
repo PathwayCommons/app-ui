@@ -11,7 +11,7 @@ router.get('/search', function (req, res) {
 
 //for debugging
 router.post('/xref2Uri/', function (req, res, next) {
-  const { name, localId } = req.body.query[0];
+  const { name, localId } = req.body.query;
   pc.xref2Uri( name, localId )
     .then( r => res.json( r ))
     .catch( next );

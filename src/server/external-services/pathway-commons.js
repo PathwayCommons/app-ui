@@ -20,6 +20,8 @@ const fetchOptions = {
   }
 };
 
+const toJSON = res => res.json();
+
 //Pathway Commons HTTP GET request; options.cmd = 'pc2/get', 'pc2/search', 'pc2/traverse', 'pc2/graph', etc.
 let query = opts => {
   let queryOpts = _.assign( { user: 'app-ui', cmd: 'pc2/get' }, opts);
@@ -143,8 +145,10 @@ const sifGraph = opts => {
   });
 };
 
-const handleEntityUriResponse = text => {
-  const uri = new url.URL( text ); // Throws TypeError
+const handleXrefServiceResponse = res => {
+  const { values } = res;
+  const xrefInfo = _.head( values );
+  const uri = new url.URL( xrefInfo.uri ); // Throws TypeError
   const pathParts = _.compact( uri.pathname.split('/') );
   if( _.isEmpty( pathParts ) || pathParts.length !== 2 ) throw new Error( 'Unrecognized URI' );
   const namespace = _.head( pathParts );
@@ -154,24 +158,26 @@ const handleEntityUriResponse = text => {
   };
 };
 
-const constructQueryPath = ( name, localId ) => {
-  // Edge case - localId has periods e.g. 'enzyme nomenclature/6.1.1.5' gotta add a trailing slash
-  const suffix = /\./.test( localId ) ? '/' : '';
-  return name + '/' + localId + suffix;
-};
+const formatXrefQuery = ( name, localId ) => _.concat( [], { db: name, id: localId } );
 
 /* fetchEntityUriBase
- * Light wrapper around the pc2 service to get the uri given a collection name and local ID for entity
- * http://www.pathwaycommons.org/pc2/swagger-ui.html#!/metadata45controller/identifierOrgUriUsingGET
- * NB: pc2 service returns 200 and empty body if collection name and/or local ID are unrecognized.
- *   If the local ID is empty, throws a 404
+ * Light wrapper around the BioPAX service to fetch URI given a collection name and local ID for entity
+ * http://biopax.baderlab.org/docs/index.html#_introduction
  * @return { object } the URL origin and namespace
  */
 const fetchEntityUriBase = ( name, localId ) => {
-  const url = config.PC_URL + 'pc2/miriam/uri/' + constructQueryPath( name, localId ) ;
-  return fetch( url , { method: 'GET', headers: { 'Accept': 'text/plain' } })
-    .then( res => res.text() )
-    .then( handleEntityUriResponse )
+  const url = config.XREF_SERVICE_URL + 'xref/';
+  const fetchOpts = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body:  JSON.stringify( formatXrefQuery( name, localId ) )
+  };
+  return fetch( url , fetchOpts )
+    .then( toJSON )
+    .then( handleXrefServiceResponse )
     .catch( error => {
       if( error instanceof TypeError ) throw new InvalidParamError('Unrecognized parameters');
       throw error;
@@ -181,10 +187,13 @@ const fetchEntityUriBase = ( name, localId ) => {
 const getEntityUriParts = cachePromise(fetchEntityUriBase, xrefCache, name => name);
 
 /*
- * xref2Uri: Obtain the URI for an xref
+ * xref2Uri
+ * Obtain the URI for an xref
  * @param {string} name -  MIRIAM 'name', 'synonym' ?OR MI CV database citation (MI:0444) 'label'
  * @param {string} localId - Entity local entity identifier, should be valid
  * @return {Object} return the origin and 'namespace' in path
+ *
+ * This could be updated to accept array of { name, localId } fields now....
  */
 const xref2Uri =  ( name, localId ) => {
   return getEntityUriParts( name, localId )

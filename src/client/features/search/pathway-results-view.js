@@ -43,7 +43,7 @@ class PathwayResultsView extends React.Component {
         onChange: e => controller.setAndSubmitSearchQuery({ datasource: e.target.value })
       }, [
         h('option', { value: [] }, 'Any datasource')].concat(
-          sources.map( ds => h('option', { value: [ds.id ] }, ds.name ))
+          sources.map( ds => h('option', { value: [ds.identifier ] }, ds.name ))
           )),
     ]);
 

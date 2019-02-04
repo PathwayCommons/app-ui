@@ -50,6 +50,11 @@
   max-height: 80vh;
 }
 
+.file-download-error {
+  padding: 0.5em 1em;
+  color: var(--invalidColor);
+}
+
 .toggle-extra-downloads-container {
   @extend %no-select;
 

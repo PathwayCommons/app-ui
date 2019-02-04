@@ -22,7 +22,8 @@ class InteractionsEdgeTooltip extends React.Component {
     this.setState({ publicationsLoaded: false }, () => {
       ServerAPI.getPubmedPublications(pubmedIds).then( publications => {
         this.setState({publications, publicationsLoaded: true});
-      });
+      })
+      .catch( () => this.setState({ publicationsLoaded: true }) ); // swallow;
     });
   }
 

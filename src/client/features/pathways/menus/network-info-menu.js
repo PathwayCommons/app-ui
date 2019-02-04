@@ -11,7 +11,7 @@ class NetworkInfoMenu extends React.Component {
       h('p', 'Additional information about the network is normally found here, but we couldn\'t find any for this one.')
     ];
 
-    const comments = infoList.map(comment => h('p', comment.replace(/<p>/g, ' ')));
+    const comments = infoList.map( ( comment, key ) => h('p', { key }, comment.replace(/<p>/g, ' ')));
 
     return (
       h('div.info-menu', [

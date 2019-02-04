@@ -107,7 +107,7 @@ class Enrichment extends React.Component {
       h(EnrichmentToolbar, { cySrv, sources: this.state.sources, controller: this })
     ]);
 
-    return !errorMessage ? [ h('div.enrichment', [
+    return !errorMessage ? h('div.enrichment', [
       h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [
         appBar
        ]),
@@ -115,7 +115,7 @@ class Enrichment extends React.Component {
         cySrv,
         className: classNames({'network-loading': loading})
       })
-    ]) ]: [errorMessage];
+    ]) : errorMessage;
   }
 }
 

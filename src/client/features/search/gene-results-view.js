@@ -4,7 +4,9 @@ const { Link } = require('react-router-dom');
 const queryString = require('query-string');
 const _ = require('lodash');
 
+const { ServerAPI } = require('../../services');
 const MIN_GENE_COUNT_ENRICHMENT = 5;
+const MINIMUM_CONTENT_LENGTH = 35;
 const { NS_HGNC_SYMBOL, NS_GENECARDS, NS_NCBI_GENE, NS_UNIPROT } = require('../../../config');
 
 const SUPPORTED_COLLECTIONS = new Map([
@@ -38,6 +40,36 @@ class EntitySummaryBox extends React.Component {
 }
 
 class GeneResultsView extends React.Component {
+
+  constructor( props ) {
+    super( props );
+
+    this.state = {
+      hasInteractions: false,
+      error: null
+    };
+  }
+
+  peekData() {
+    const { geneResults } = this.props;
+    if ( _.isEmpty( geneResults ) ) return;
+
+    const sources = geneResults.map( geneInfo => geneInfo.geneSymbol );
+    ServerAPI.getInteractionGraph( { sources }, true )
+      .then( res => {
+        const contentLength = parseInt( res.headers.get('Content-Length') );
+        if( contentLength > MINIMUM_CONTENT_LENGTH ){
+          this.setState({ hasInteractions: true });
+        }
+        return null;
+      })
+      .catch( () => {} ); //swallow
+  }
+
+  componentDidMount() {
+    this.peekData();
+  }
+
   getEnrichmentAppInfo( geneResults ){
     let label = `View`;
     let linkPath = '/enrichment';
@@ -49,13 +81,13 @@ class GeneResultsView extends React.Component {
     return { label, title, linkPath, description, imageClass, show };
   }
 
-  getInteractionsAppInfo( geneResults ){
+  getInteractionsAppInfo(){
     let label = `View`;
     let description = 'Visualize interactions between the genes identified in your query.';
     let linkPath = '/interactions';
     let imageClass = 'interactions-logo';
     let title = 'Interactions';
-    let show = geneResults.length > 0;
+    let show = this.state.hasInteractions;
 
     return { label, title, linkPath, description, imageClass, show };
   }
@@ -89,7 +121,7 @@ class GeneResultsView extends React.Component {
     };
 
     const appsLinkouts = [
-      this.getInteractionsAppInfo( geneResults ),
+      this.getInteractionsAppInfo( ),
       this.getEnrichmentAppInfo( geneResults )
     ].map( info => {
       return info.show ? h( AppLinkout, info ) : null;

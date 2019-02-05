@@ -12,8 +12,15 @@ class InteractionsEdgeTooltip extends React.Component {
     this.state = {
       publications: [],
       publicationsLoaded: false,
-      parallelEdges: props.edge.parallelEdges()
+      parallelEdges: props.edge.parallelEdges(),
+      selectedEdge: props.edge.parallelEdges().length === 1 ? props.edge.parallelEdges()[0]: null
     };
+  }
+
+  componentDidMount() {
+    if( this.state.selectedEdge ){
+      this.getPublications( this.state.selectedEdge );
+    }
   }
 
   getPublications(edge){
@@ -37,8 +44,9 @@ class InteractionsEdgeTooltip extends React.Component {
     this.setState({ selectedEdge: null });
   }
 
-  renderEdge(edge, publications = []){
-    let { parallelEdges, publicationsLoaded } = this.state;
+  renderEdge(){
+    let { selectedEdge: edge, parallelEdges, publicationsLoaded, publications } = this.state;
+
     let title = edge.data('id');
     let datasources = edge.data('datasources');
     let pcIds = edge.data('pcIds');
@@ -103,7 +111,8 @@ class InteractionsEdgeTooltip extends React.Component {
     ]);
   }
 
-  renderEdgeChoice(edges){
+  renderEdgeChoice(){
+    const { parallelEdges: edges } = this.state;
     let interactionTypeValues = Object.keys(INTERACTION_TYPES).map(k => INTERACTION_TYPES[k]);
 
     return h('div.cy-tooltip', [
@@ -126,17 +135,12 @@ class InteractionsEdgeTooltip extends React.Component {
   }
 
   render(){
-    let { publications, selectedEdge, parallelEdges } = this.state;
+    let { selectedEdge } = this.state;
 
     if( selectedEdge ){
-      return this.renderEdge(selectedEdge, publications);
+      return this.renderEdge();
     } else {
-      if( parallelEdges.length === 1 ){
-        this.selectEdge(parallelEdges[0]);
-        return this.renderEdge(parallelEdges[0], []);
-      } else {
-        return this.renderEdgeChoice(parallelEdges);
-      }
+      return this.renderEdgeChoice();
     }
   }
 }

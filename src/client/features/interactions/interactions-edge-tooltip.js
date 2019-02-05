@@ -9,11 +9,13 @@ class InteractionsEdgeTooltip extends React.Component {
   constructor(props){
     super(props);
 
+    const edges = props.edge.parallelEdges();
+
     this.state = {
       publications: [],
       publicationsLoaded: false,
-      parallelEdges: props.edge.parallelEdges(),
-      selectedEdge: props.edge.parallelEdges().length === 1 ? props.edge.parallelEdges()[0]: null
+      parallelEdges: edges,
+      selectedEdge: edges.length === 1 ? edges[0]: null
     };
   }
 

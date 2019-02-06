@@ -18,16 +18,30 @@ const { ErrorMessage } = require('../../common/components/error-message');
 
 const InteractionsMenu = require('./interactions-menu');
 
+const DEFAULT_STATE = {
+  cySrv: new CytoscapeService({ style: interactionsStylesheet, onMount: bindEvents }),
+  loading: true,
+  sources: [],
+  networkEmpty: null,
+  error: null
+};
+
+const initState = props => {
+  const state = DEFAULT_STATE;
+  const params = queryString.parse( props.location.search );
+  if ( _.has( params, ['source'] ) ){
+    _.assign( state, { sources: _.get( params, ['source'], '' ).split(',') } );
+  } else {
+    _.assign( state, { error: new Error('Invalid parameters') } );
+  }
+  return state;
+};
+
 class Interactions extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      cySrv: new CytoscapeService({ style: interactionsStylesheet, onMount: bindEvents }),
-      loading: true,
-      sources: _.uniq(queryString.parse(props.location.search).source.split(',')),
-      networkEmpty: false
-    };
+    this.state = initState( props );
 
     if( process.env.NODE_ENV !== 'production' ){
       this.state.cySrv.getPromise().then(cy => window.cy = cy);

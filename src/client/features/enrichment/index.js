@@ -15,17 +15,30 @@ const { enrichmentLayout, enrichmentStylesheet, bindEvents } = require('./cy');
 const { TimeoutError } = require('../../../util');
 const { ErrorMessage } = require('../../common/components/error-message');
 
+const DEFAULT_STATE = {
+  cySrv: new CytoscapeService({ style: enrichmentStylesheet, onMount: bindEvents }),
+  loading: true,
+  sources: [],
+  networkEmpty: null,
+  error: null
+};
+
+const initState = props => {
+  const state = DEFAULT_STATE;
+  const params = queryString.parse( props.location.search );
+  if ( _.has( params, ['source'] ) ){
+    _.assign( state, { sources: _.get( params, ['source'], '' ).split(',') } );
+  } else {
+    _.assign( state, { error: new Error('Invalid parameters') } );
+  }
+  return state;
+};
+
 class Enrichment extends React.Component {
   constructor(props){
     super(props);
 
-    this.state = {
-      cySrv: new CytoscapeService({ style: enrichmentStylesheet, onMount: bindEvents }),
-      sources: _.uniq(queryString.parse(props.location.search).source.split(',')),
-      error: null,
-      loading: true,
-      networkEmpty: false
-    };
+    this.state = initState( props );
 
     if( process.env.NODE_ENV !== 'production' ){
       this.state.cySrv.getPromise().then(cy => window.cy = cy);

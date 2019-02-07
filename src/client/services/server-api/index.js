@@ -66,12 +66,10 @@ const ServerAPI = {
     );
   },
 
-  getInteractionGraph( sources, peek = false ) {
-    const fetchOpts = _.assign( {}, defaultFetchOpts, { method: peek ? 'HEAD': 'GET' } );
-    const handleResponse = res => peek ? res: res.json();
+  getInteractionGraph(sources) {
     return (
-      fetch( `/api/interactions?${qs.stringify( sources )}`, fetchOpts )
-       .then( handleResponse )
+      fetch(`/api/interactions?${qs.stringify(sources)}`, defaultFetchOpts)
+       .then( res => res.json())
     );
   },
 

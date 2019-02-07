@@ -52,6 +52,7 @@ class Search extends React.Component {
           dataSources,
           loading: false
          });
+        return null; // Bluebird warning
       })
       .catch( e => this.setState({ error: e, loading: false }));
     }

@@ -76,12 +76,12 @@ class GeneResultsView extends React.Component {
 
       let img = h( `div.app-image.${imageClass}` );
       let appImage = h( Link,{ to: { pathname: linkPath, search: queryString.stringify({ source: sources.join(',') }) }, target: '_blank' }, [ img ]);
-      let appTitle = h( 'div', [ h( 'h4.app-title', title ) ] );
+      let appHeader = h( 'div.app-header', [ h( 'h4.app-title', title ) ] );
       let appDescription = h( 'div.app-description', description );
 
       if( !enabled ){
         appImage = img;
-        appTitle = h( 'div.app-header', [
+        appHeader = h( 'div.app-header', [
           h( 'h4.app-title', title ),
           h( 'span.app-hint', hint )
         ]);
@@ -94,7 +94,7 @@ class GeneResultsView extends React.Component {
         }, [
         appImage,
         h('div.app-linkout-content', [
-          appTitle,
+          appHeader,
           appDescription
         ])
       ]);

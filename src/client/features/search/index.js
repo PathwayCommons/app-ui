@@ -100,8 +100,6 @@ class Search extends React.Component {
       this.setState({
         query: _.assign({
           q: '',
-          gt: 0,
-          lt: 250,
           type: 'Pathway',
           datasource: []
           }, queryString.parse(nextSearch))} , ()=>{

@@ -1,20 +1,25 @@
 const fs = require('fs');
 const path = require('path');
 const Promise = require('bluebird');
+const MultiStream = require('multistream');
 
 const { GPROFILER_URL } = require('../../../../config');
-const GMT_ARCHIVE_URL = GPROFILER_URL + 'gmt/gprofiler_hsapiens.NAME.gmt.zip';
-const GMT_FILENAME = 'hsapiens.pathways.NAME.gmt';
+const GMT_ARCHIVE_URL = GPROFILER_URL + 'static/gprofiler_hsapiens.name.zip';
+const GMT_ARCHIVE_FILENAMES = [
+  'hsapiens.GO/BP.name.gmt',
+  'hsapiens.REAC.name.gmt'
+];
+const GMT_SOURCE_FILENAME = 'pathways.gmt';
 
 const readFile = Promise.promisify(fs.readFile);
 const stat = Promise.promisify(fs.stat);
-const filePath = path.resolve(__dirname, 'hsapiens.pathways.NAME.gmt');
+const FILEPATH = path.resolve(__dirname, GMT_SOURCE_FILENAME);
 
 let lastModTime = null;
 let pathwayInfoTableCache = null;
 
 const getPathwayInfoTable = async function(){
-  const fileStats = await stat(filePath);
+  const fileStats = await stat(FILEPATH);
   const thisModTime = fileStats.mtimeMs;
 
   if( thisModTime === lastModTime ){
@@ -25,7 +30,7 @@ const getPathwayInfoTable = async function(){
     // allow the function to continue to update the table...
   }
 
-  const gmtPathwayData = await readFile(filePath, { encoding: 'utf8' });
+  const gmtPathwayData = await readFile(FILEPATH, { encoding: 'utf8' });
 
   // pathwayInfoTable is map where the keys are GO/REACTOME pathway identifiers
   // and values are description and geneset
@@ -58,9 +63,9 @@ const getPathwayInfoTable = async function(){
 /**
  * handleFileUpdate
  * When a cron job to update the file is triggered, this function is called with the fresh file.
- * @external file
+ * @external files list of file
  * @see {@link https://www.npmjs.com/package/unzipper}
  */
-const handleFileUpdate = file => file.stream().pipe( fs.createWriteStream( path.resolve( __dirname, file.path ) ) );
+const handleFileUpdate = files =>  MultiStream( files.map( f => f.stream() ) ).pipe( fs.createWriteStream( FILEPATH ) );
 
-module.exports = { getPathwayInfoTable, handleFileUpdate, GMT_ARCHIVE_URL, GMT_FILENAME };
+module.exports = { getPathwayInfoTable, handleFileUpdate, GMT_ARCHIVE_URL, GMT_ARCHIVE_FILENAMES };

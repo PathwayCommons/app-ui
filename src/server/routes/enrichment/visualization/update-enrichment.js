@@ -1,26 +1,25 @@
-const _ = require('lodash');
 const request = require('request');
 const unzipper = require('unzipper');
-
+const sanitize = require("sanitize-filename");
 const logger = require('../../../logger');
 
 const { handleFileUpdate
-  , GMT_ARCHIVE_URL, GMT_FILENAME
+  , GMT_ARCHIVE_URL, GMT_ARCHIVE_FILENAMES
  } = require('./pathway-table');
 
+const SANITIZED_GMT_ARCHIVE_FILENAMES = GMT_ARCHIVE_FILENAMES.map( sanitize );
 const fetchZipCDFiles = url => unzipper.Open.url( request, url ).then( cd => cd.files );
-const pickFile = ( files, fileName  ) => _.head( files.filter( d => d.path === fileName ) );
-
-const updateGmt = ( url, fileName ) => {
+const pickFiles = files => files.filter( d => SANITIZED_GMT_ARCHIVE_FILENAMES.indexOf( sanitize( d.path ) ) > -1 );
+const updateGmt = url => {
   fetchZipCDFiles( url )
-    .then( files => pickFile( files, fileName ) )
+    .then( pickFiles )
     .then( handleFileUpdate )
-    .then( () => logger.info(`Enrichment: Updated ${fileName} from ${url}`) )
-    .catch( error => logger.error(`Enrichment: Failed to update ${fileName} from ${url} - ${error}`) );
+    .then( () => logger.info(`Enrichment: Updated GMT from ${url}`) )
+    .catch( error => logger.error(`Enrichment: Failed to update GMT from ${url} - ${error}`) );
 };
 
 const updateEnrichment = () => {
-  updateGmt( GMT_ARCHIVE_URL, GMT_FILENAME );
+  updateGmt( GMT_ARCHIVE_URL );
 };
 
 module.exports = { updateEnrichment };

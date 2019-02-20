@@ -20,6 +20,8 @@ const ENRICHMENT_LAYOUT_OPTS = {
   padding: 50
 };
 
+let addedParents = false;
+
 let enrichmentLayout = cy => {
   let nodesWithNoEdges = cy.nodes().filter( node => node.connectedEdges().size() === 0 );
   let nodesWithEdges = cy.elements().difference( nodesWithNoEdges );
@@ -32,25 +34,28 @@ let enrichmentLayout = cy => {
 
   return firstLayoutPromise.then( () => {
 
-    // add parent nodes for each component with size > 2
-    cy.elements().components().filter( component => component.size() > 2 ).forEach( (component, index) => {
-      let labelInput = component.nodes().map(node => node.data('name')).join('. ');
-      let tags = generateClusterLabels(labelInput);
+    if( !addedParents ){
+      // add parent nodes for each component with size > 2
+      cy.elements().components().filter( component => component.size() > 2 ).forEach( (component, index) => {
+        let labelInput = component.nodes().map(node => node.data('name')).join('. ');
+        let tags = generateClusterLabels(labelInput);
 
-      let componentParentId = 'component-' + index;
-      cy.add({
-        group: 'nodes',
-        label: '',
-        data: {
-          tags: tags.join(' '),
-          id: componentParentId
-        },
-      });
+        let componentParentId = 'component-' + index;
+        cy.add({
+          group: 'nodes',
+          label: '',
+          data: {
+            tags: tags.join(' '),
+            id: componentParentId
+          },
+        });
 
-      component.move({
-        parent: componentParentId
+        component.move({
+          parent: componentParentId
+        });
       });
-    });
+      addedParents = true;
+    }
 
 
     let firstLayoutBB = nodesWithEdges.boundingBox();

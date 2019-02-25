@@ -19,9 +19,9 @@ describe('Test generateGraphInfo - Enrichment Vizualization Service', function (
     const mockResponse =  {
       values: [
         {
-          "db": "name",
+          "db": "go",
           "id": "id",
-          "uri": "http://identifiers.org/name/id",
+          "uri": "http://identifiers.org/go/id",
           "dbOk": true,
           "idOk": true,
           "preferredDb": "name",

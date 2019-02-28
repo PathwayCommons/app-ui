@@ -1,5 +1,7 @@
 # Pathway Commons App(s)
 
+[![DOI](https://zenodo.org/badge/104936681.svg)](https://zenodo.org/badge/latestdoi/104936681)
+
 
 ## Required software
 
@@ -167,6 +169,8 @@ Students who work on the repo should follow these instructions for each feature 
 
 ## Publishing a release
 
+1. Create a release branch off of master, e.g. `release/1.2.3`
+1. Merge the latest dev into the release branch.
 1. Make sure the tests are passing: `npm test`
 1. Make sure the linting is passing: `npm run lint`
 1. Bump the version number with `npm version`, in accordance with [semver](http://semver.org/).  The `version` command in `npm` updates both `package.json` and git tags, but note that it uses a `v` prefix on the tags (e.g. `v1.2.3`).
@@ -174,4 +178,6 @@ Students who work on the repo should follow these instructions for each feature 
   1. For a new feature release, run `npm version minor`.
   1. For a breaking API change, run `npm version major.`
   1. For a specific version number (e.g. 1.2.3), run `npm version 1.2.3`.
+1. Make a PR for the release branch onto master.
 1. Push the release: `git push origin --tags`
+1. Publish a [release](https://github.com/PathwayCommons/app-ui/releases) for Zenodo.

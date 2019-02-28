@@ -14,7 +14,8 @@ class FileDownloadMenu extends React.Component {
     super(props);
     this.state = {
       downloadTypes: pcDownloadTypes,
-      loading: false
+      loading: false,
+      error: null
     };
   }
 
@@ -47,15 +48,15 @@ class FileDownloadMenu extends React.Component {
     let { fileName, uri }  =  this.props;
     fileName = fileName.substr(0, fileName.length < FILENAME_CUTOFF ? fileName.length : FILENAME_CUTOFF).replace(/ /g, '_');
 
-    let downloadFetch = ServerAPI.downloadFileFromPathwayCommons(uri, format).then(res => res.text());
-    this.setState({loading: true}, () => {
-      downloadFetch.then(content => {
-        content = typeof content === 'object' ? JSON.stringify(content) : content;
-        let fileContent = new File([content], `${fileName}.${fileExt}`, { type:'text/plain;charset=utf-8' });
-
-        saveAs(fileContent);
-        this.setState({ loading: false});
-      });
+    this.setState({ loading: true }, () => {
+      ServerAPI.downloadFileFromPathwayCommons(uri, format).then(res => res.text())
+        .then(content => {
+          content = typeof content === 'object' ? JSON.stringify(content) : content;
+          let fileContent = new File([content], `${fileName}.${fileExt}`, { type:'text/plain;charset=utf-8' });
+          saveAs( fileContent );
+          this.setState({ loading: false });
+        })
+        .catch( e => this.setState({ error: e, loading: false }) );
     });
   }
 
@@ -74,13 +75,15 @@ class FileDownloadMenu extends React.Component {
 
         return dlOption;
       } );
+    let errorMessage = this.state.error ? h('div.file-download-error', 'An error occurred - Please try again later.'): null;
 
     return h('div.file-download-menu', [
       h('h2', 'Download As...'),
       h('div.file-download-content', [
         ...menuContents,
         h(Loader, { loaded: !this.state.loading })
-      ])
+      ]),
+      errorMessage
     ]);
   }
 }

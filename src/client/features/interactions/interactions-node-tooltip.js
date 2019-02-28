@@ -14,10 +14,27 @@ class InteractionsNodeTooltip extends React.Component {
     let title = node.data('id');
     let links = [];
 
-    links.push({ name: 'HGNC', url: xrefLinks.find( link => link.namespace === NS_HGNC_SYMBOL ).uri });
-    links.push({ name: 'UniProt', url: xrefLinks.find( link => link.namespace === NS_UNIPROT ).uri });
-    links.push({ name: 'NCBI Gene', url: xrefLinks.find( link => link.namespace === NS_NCBI_GENE ).uri });
-    links.push({ name: 'Gene Cards', url: xrefLinks.find( link => link.namespace === NS_GENECARDS ).uri });
+    xrefLinks.forEach( link => {
+      let name;
+      const url = link.uri;
+      switch ( link.namespace ) {
+        case NS_HGNC_SYMBOL:
+          name = 'HGNC';
+          break;
+        case NS_UNIPROT:
+          name = 'UniProt';
+          break;
+        case NS_NCBI_GENE:
+          name = 'NCBI Gene';
+          break;
+        case NS_GENECARDS:
+          name = 'NCBI Gene';
+          break;
+        default:
+          name = null;
+      }
+      links.push({ name, url });
+    });
 
     return h('div.cy-tooltip', [
       h('div.cy-tooltip-header', [

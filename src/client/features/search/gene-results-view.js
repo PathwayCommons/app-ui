@@ -3,6 +3,7 @@ const h = require('react-hyperscript');
 const { Link } = require('react-router-dom');
 const queryString = require('query-string');
 const _ = require('lodash');
+const classNames = require('classnames');
 
 const MIN_GENE_COUNT_ENRICHMENT = 5;
 const { NS_HGNC_SYMBOL, NS_GENECARDS, NS_NCBI_GENE, NS_UNIPROT } = require('../../../config');
@@ -42,22 +43,24 @@ class GeneResultsView extends React.Component {
     let label = `View`;
     let linkPath = '/enrichment';
     let description = 'Explore a network of pathways that contain genes identified in your query.';
+    let hint = `Requires at least ${MIN_GENE_COUNT_ENRICHMENT} genes.`;
     let imageClass = 'enrichment-logo';
     let title = 'Enrichment';
-    let show = geneResults.length >= MIN_GENE_COUNT_ENRICHMENT;
+    let enabled = geneResults.length >= MIN_GENE_COUNT_ENRICHMENT;
 
-    return { label, title, linkPath, description, imageClass, show };
+    return { label, title, linkPath, description, hint, imageClass, enabled };
   }
 
   getInteractionsAppInfo( geneResults ){
     let label = `View`;
     let description = 'Visualize interactions between the genes identified in your query.';
+    let hint = `Requires one recognized gene.`;
     let linkPath = '/interactions';
     let imageClass = 'interactions-logo';
     let title = 'Interactions';
-    let show = geneResults.length > 0;
+    let enabled = geneResults.length > 0;
 
-    return { label, title, linkPath, description, imageClass, show };
+    return { label, title, linkPath, description, hint, imageClass, enabled };
   }
 
   render(){
@@ -69,21 +72,30 @@ class GeneResultsView extends React.Component {
 
     let sources = geneResults.map( geneInfo => geneInfo.geneSymbol );
     let AppLinkout = appInfo => {
-      let { linkPath, imageClass, title, description } = appInfo;
+      let { linkPath, imageClass, title, description, enabled, hint } = appInfo;
 
-      let appLink = h(Link, {
-        to: {
-          pathname: linkPath,
-          search: queryString.stringify({ source: sources.join(',') })
-        },
-        target: '_blank'
-      }, [ h(`div.app-image.${imageClass}`) ] );
+      let img = h( `div.app-image.${imageClass}` );
+      let appImage = h( Link,{ to: { pathname: linkPath, search: queryString.stringify({ source: sources.join(',') }) }, target: '_blank' }, [ img ]);
+      let appHeader = h( 'div.app-header', [ h( 'h4.app-title', title ) ] );
+      let appDescription = h( 'div.app-description', description );
 
-      return h('div.app-linkout', [
-        appLink,
+      if( !enabled ){
+        appImage = img;
+        appHeader = h( 'div.app-header', [
+          h( 'h4.app-title', title ),
+          h( 'span.app-hint', hint )
+        ]);
+      }
+
+      return h('.app-linkout', {
+          className: classNames({
+            'app-linkout-disabled': !enabled
+          })
+        }, [
+        appImage,
         h('div.app-linkout-content', [
-          h('h4.app-title', title),
-          h('div.app-description', description)
+          appHeader,
+          appDescription
         ])
       ]);
     };
@@ -91,9 +103,7 @@ class GeneResultsView extends React.Component {
     const appsLinkouts = [
       this.getInteractionsAppInfo( geneResults ),
       this.getEnrichmentAppInfo( geneResults )
-    ].map( info => {
-      return info.show ? h( AppLinkout, info ) : null;
-    });
+    ].map( info => h( AppLinkout, info ) );
 
     return h('div.search-genes-results', [
       h('h3.search-genes-header', `Recognized genes (${geneResults.length})`),

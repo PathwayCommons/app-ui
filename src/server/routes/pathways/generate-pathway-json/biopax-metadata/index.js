@@ -67,9 +67,8 @@ let biopaxText2ElementMap = async biopaxJsonText => {
       if( rawMap.has( xrefId ) ){
         let { db, id } = rawMap.get( xrefId );
 
-        if( db != null && id != null ){
-          xRefMap.set(xrefId, { k: db, v: id });
-        }
+        if( !db || !id ) return;
+        xRefMap.set(xrefId, { k: db, v: id });
       }
     });
   });
@@ -88,16 +87,18 @@ let biopaxText2ElementMap = async biopaxJsonText => {
 
     const filtXrefIds = xrefIds.filter( xrefId => xrefId != null );
     for ( const xrefId of filtXrefIds ) {
-      let { k, v } = xRefMap.get( xrefId );
-      try {
-        const { uri, namespace } = await xref2Uri( k, v );
-        if( xrefLinks[ namespace ] != null ){
-          xrefLinks[ namespace ] = xrefLinks[ namespace ].concat( uri );
-        } else {
-          xrefLinks[ namespace ] = [ uri ];
+      if( xRefMap.has( xrefId ) ){
+        const { k, v } = xRefMap.get( xrefId );
+        try {
+          const { uri, namespace } = await xref2Uri( k, v );
+          if( xrefLinks[ namespace ] != null ){
+            xrefLinks[ namespace ] = xrefLinks[ namespace ].concat( uri );
+          } else {
+            xrefLinks[ namespace ] = [ uri ];
+          }
+        } catch( err ) {
+          //swallow
         }
-      } catch( err ) {
-        //swallow
       }
     }
 

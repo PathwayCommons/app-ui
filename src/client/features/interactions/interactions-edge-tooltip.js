@@ -9,11 +9,20 @@ class InteractionsEdgeTooltip extends React.Component {
   constructor(props){
     super(props);
 
+    const edges = props.edge.parallelEdges();
+
     this.state = {
       publications: [],
       publicationsLoaded: false,
-      parallelEdges: props.edge.parallelEdges()
+      parallelEdges: edges,
+      selectedEdge: edges.length === 1 ? edges[0]: null
     };
+  }
+
+  componentDidMount() {
+    if( this.state.selectedEdge ){
+      this.getPublications( this.state.selectedEdge );
+    }
   }
 
   getPublications(edge){
@@ -22,7 +31,8 @@ class InteractionsEdgeTooltip extends React.Component {
     this.setState({ publicationsLoaded: false }, () => {
       ServerAPI.getPubmedPublications(pubmedIds).then( publications => {
         this.setState({publications, publicationsLoaded: true});
-      });
+      })
+      .catch( () => this.setState({ publicationsLoaded: true }) ); // swallow;
     });
   }
 
@@ -36,8 +46,9 @@ class InteractionsEdgeTooltip extends React.Component {
     this.setState({ selectedEdge: null });
   }
 
-  renderEdge(edge, publications = []){
-    let { parallelEdges, publicationsLoaded } = this.state;
+  renderEdge(){
+    let { selectedEdge: edge, parallelEdges, publicationsLoaded, publications } = this.state;
+
     let title = edge.data('id');
     let datasources = edge.data('datasources');
     let pcIds = edge.data('pcIds');
@@ -102,7 +113,8 @@ class InteractionsEdgeTooltip extends React.Component {
     ]);
   }
 
-  renderEdgeChoice(edges){
+  renderEdgeChoice(){
+    const { parallelEdges: edges } = this.state;
     let interactionTypeValues = Object.keys(INTERACTION_TYPES).map(k => INTERACTION_TYPES[k]);
 
     return h('div.cy-tooltip', [
@@ -125,17 +137,12 @@ class InteractionsEdgeTooltip extends React.Component {
   }
 
   render(){
-    let { publications, selectedEdge, parallelEdges } = this.state;
+    let { selectedEdge } = this.state;
 
     if( selectedEdge ){
-      return this.renderEdge(selectedEdge, publications);
+      return this.renderEdge();
     } else {
-      if( parallelEdges.length === 1 ){
-        this.selectEdge(parallelEdges[0]);
-        return this.renderEdge(parallelEdges[0], []);
-      } else {
-        return this.renderEdgeChoice(parallelEdges);
-      }
+      return this.renderEdgeChoice();
     }
   }
 }

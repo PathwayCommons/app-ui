@@ -43,7 +43,9 @@ let bindEvents = ( cy ) => {
   // on initial interactions data load, popualate gene metadata
   cy.one('add', () => {
     let geneQuery = cy.nodes().map( node => node.data('id') ).join(' ');
-    ServerAPI.searchGenes( geneQuery ).then( res => geneData = res );
+    ServerAPI.searchGenes( geneQuery )
+      .then( res => geneData = res )
+      .catch( () => {} ); // swallow
   });
 
   let hideTooltips = () => {

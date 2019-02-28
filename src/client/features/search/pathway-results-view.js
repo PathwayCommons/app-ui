@@ -4,12 +4,15 @@ const Link = require('react-router-dom').Link;
 const queryString = require('query-string');
 const _ = require('lodash');
 
-const Datasources = require('../../../models/datasources');
 const { ErrorMessage } = require('../../common/components/error-message');
 
 class PathwayResultsView extends React.Component {
   render(){
-    let { pathwayResults, controller, curDatasource } = this.props;
+    let { searchHits: pathwayResults, controller, query , dataSources } = this.props;
+    const curDatasource = query.datasource;
+    const sources = dataSources.filter( source => query.type === 'Pathway' ?
+      !source.notPathwayData && source.numPathways :
+      !source.notPathwayData && source.numInteractions );
     const noPathwaysMsg = h( ErrorMessage, { title: 'Your search didn\'t match any pathways', footer: 'Try different keywords or gene names.'} );
 
     if( pathwayResults === null ){
@@ -17,8 +20,7 @@ class PathwayResultsView extends React.Component {
     }
 
     const searchList = pathwayResults.map(result => {
-      let datasourceUri = _.get(result, 'dataSource.0', '');
-      let dsInfo = Datasources.findByUri(datasourceUri);
+      let dsInfo = _.get( result, 'sourceInfo', '' );
       let iconUrl = dsInfo.iconUrl || '';
       let name = dsInfo.name || '';
 
@@ -41,7 +43,7 @@ class PathwayResultsView extends React.Component {
         onChange: e => controller.setAndSubmitSearchQuery({ datasource: e.target.value })
       }, [
         h('option', { value: [] }, 'Any datasource')].concat(
-          Datasources.pathwayDatasources().map( ds => h('option', { value: [ds.id ] }, ds.name ))
+          sources.map( ds => h('option', { value: [ds.identifier ] }, ds.name ))
           )),
     ]);
 

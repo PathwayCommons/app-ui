@@ -94,9 +94,9 @@ class Interactions extends React.Component {
       titleContent.push(h(Popover, {
         tippy: {
           position: 'bottom',
-          html: h('div.enrichment-sources-popover', sources.slice(3).sort().map( s => h('div', s) ) )
+          html: h('div.enrichment-sources-popover', sources.slice(2).sort().map( s => h('div', s) ) )
         },
-      }, [ h('a.plain-link.enrichment-popover-link', `${sources.length - 3} other gene(s)`) ]
+      }, [ h('a.plain-link.enrichment-popover-link', `${sources.length - 2} other gene(s)`) ]
       ));
     }
 

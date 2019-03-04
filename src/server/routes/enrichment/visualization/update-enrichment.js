@@ -2,9 +2,10 @@ const request = require('request');
 const unzipper = require('unzipper');
 const sanitize = require("sanitize-filename");
 const logger = require('../../../logger');
+const { GMT_ARCHIVE_URL } = require('../../../../config.js');
 
 const { handleFileUpdate
-  , GMT_ARCHIVE_URL, GMT_ARCHIVE_FILENAMES
+  , GMT_ARCHIVE_FILENAMES
  } = require('./pathway-table');
 
 const SANITIZED_GMT_ARCHIVE_FILENAMES = GMT_ARCHIVE_FILENAMES.map( sanitize );

@@ -82,6 +82,8 @@
     "sanitize-filename": "^1.6.1",
     "sbgnml-to-cytoscape": "^4.0.4",
     "serve-favicon": "^2.4.5",
+    "swagger-jsdoc": "^1.9.7",
+    "swagger-ui-express": "^3.0.10",
     "tippy.js": "^2.6.0",
     "unique-concat": "^0.2.2",
     "unzipper": "^0.9.4",
@@ -120,8 +122,6 @@
     "rimraf": "^2.6.2",
     "stylelint": "^8.2.0",
     "stylelint-config-standard": "^17.0.0",
-    "swagger-jsdoc": "^1.9.7",
-    "swagger-ui-express": "^3.0.8",
     "uglifyjs-webpack-plugin": "^0.4.6",
     "webpack": "^3.12.0",
     "webpack-bundle-analyzer": "^2.9.0"

@@ -127,8 +127,7 @@
     "webpack-bundle-analyzer": "^2.9.0"
   },
   "engines": {
-    "node": "^8.12.0",
-    "npm": "^6.8.0"
+    "node": "^8.12.0"
   },
   "browserslist": "last 3 versions, >1%",
   "contributors": [

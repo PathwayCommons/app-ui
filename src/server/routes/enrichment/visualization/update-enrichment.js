@@ -4,9 +4,12 @@ const sanitize = require("sanitize-filename");
 const logger = require('../../../logger');
 const { GMT_ARCHIVE_URL } = require('../../../../config.js');
 
-const { handleFileUpdate
-  , GMT_ARCHIVE_FILENAMES
- } = require('./pathway-table');
+const { handleFileUpdate } = require('./pathway-table');
+
+ const GMT_ARCHIVE_FILENAMES = [
+  'hsapiens.GO/BP.name.gmt',
+  'hsapiens.REAC.name.gmt'
+];
 
 const SANITIZED_GMT_ARCHIVE_FILENAMES = GMT_ARCHIVE_FILENAMES.map( sanitize );
 const fetchZipCDFiles = url => unzipper.Open.url( request, url ).then( cd => cd.files );

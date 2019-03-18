@@ -3,12 +3,6 @@ const path = require('path');
 const Promise = require('bluebird');
 const MultiStream = require('multistream');
 
-const { GPROFILER_URL } = require('../../../../config');
-const GMT_ARCHIVE_URL = GPROFILER_URL + 'static/gprofiler_hsapiens.name.zip';
-const GMT_ARCHIVE_FILENAMES = [
-  'hsapiens.GO/BP.name.gmt',
-  'hsapiens.REAC.name.gmt'
-];
 const GMT_SOURCE_FILENAME = 'pathways.gmt';
 
 const readFile = Promise.promisify(fs.readFile);
@@ -68,4 +62,4 @@ const getPathwayInfoTable = async function(){
  */
 const handleFileUpdate = files =>  MultiStream( files.map( f => f.stream() ) ).pipe( fs.createWriteStream( FILEPATH ) );
 
-module.exports = { getPathwayInfoTable, handleFileUpdate, GMT_ARCHIVE_URL, GMT_ARCHIVE_FILENAMES };
+module.exports = { getPathwayInfoTable, handleFileUpdate };

@@ -15,6 +15,9 @@ const { enrichmentLayout, enrichmentStylesheet, bindEvents } = require('./cy');
 const { TimeoutError } = require('../../../util');
 const { ErrorMessage } = require('../../common/components/error-message');
 
+const MAX_ELEMENTS_CUTOFF = 3;
+const LIST_ELEMENTS_SHOWN = MAX_ELEMENTS_CUTOFF - 1;
+
 class Enrichment extends React.Component {
   constructor(props){
     super(props);
@@ -85,17 +88,17 @@ class Enrichment extends React.Component {
     if( sources.length === 1 ){
       titleContent.push(h('span', `Pathways enriched for ${sources[0]}`));
     }
-    if( 1 < sources.length && sources.length <= 3 ){
+    if( 1 < sources.length && sources.length <= MAX_ELEMENTS_CUTOFF ){
       titleContent.push(h('span', `Pathways enriched for ${ sources.slice(0, sources.length - 1).join(', ')} and ${sources.slice(-1)}`));
     }
-    if( sources.length > 3 ){
-      titleContent.push(h('span', `Pathways enriched for ${ sources.slice(0, 2).join(', ')} and `));
+    if( sources.length > MAX_ELEMENTS_CUTOFF ){
+      titleContent.push(h('span', `Pathways enriched for ${ sources.slice(0, LIST_ELEMENTS_SHOWN).join(', ')} and `));
       titleContent.push(h(Popover, {
         tippy: {
           position: 'bottom',
-          html: h('div.enrichment-sources-popover', sources.slice(3).sort().map( s => h('div', s) ) )
+          html: h('div.enrichment-sources-popover', sources.slice(LIST_ELEMENTS_SHOWN).sort().map( s => h('div', s) ) )
         },
-      }, [ h('a.plain-link.enrichment-popover-link', `${sources.length - 3} other gene(s)`) ]
+      }, [ h('a.plain-link.enrichment-popover-link', `${sources.length - LIST_ELEMENTS_SHOWN} other gene(s)`) ]
       ));
     }
 

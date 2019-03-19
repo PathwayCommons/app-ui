@@ -8,7 +8,7 @@ const RESPONSE_DATA_7157 = require('./response-data-7157.json');
 const SUMMARY_7157 = require('./entity-summary-7157.json');
 
 
-describe ('External service: NCBI', function () {
+describe ('Summary service: NCBI', function () {
 
   describe ('entityFetch', function () {
 

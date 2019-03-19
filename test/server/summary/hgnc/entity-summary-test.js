@@ -8,7 +8,7 @@ const RESPONSE_DATA_TP53 = require('./response-data-TP53.json');
 const SUMMARY_TP53 = require('./entity-summary-TP53.json');
 
 
-describe ('External service: HGNC', function () {
+describe ('Summary service: HGNC', function () {
 
   describe ('entityFetch', function () {
 

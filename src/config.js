@@ -3,10 +3,11 @@ const _ = require('lodash');
 let defaults = {
   PORT: 3000,
   METADATA_CRON_SCHEDULE: '0 0 * * Monday', // update file from gprofiler etc. (Monday at midnight)
-  PC_URL: 'http://www.pathwaycommons.org/',
-  XREF_SERVICE_URL: 'http://biopax.baderlab.org/',
+  PC_URL: 'https://www.pathwaycommons.org/',
+  XREF_SERVICE_URL: 'https://biopax.baderlab.org/',
   GPROFILER_URL: "https://biit.cs.ut.ee/gprofiler/",
-  IDENTIFIERS_URL: 'http://identifiers.org',
+  GMT_ARCHIVE_URL: 'https://biit.cs.ut.ee/gprofiler/static/gprofiler_hsapiens.name.zip',
+  IDENTIFIERS_URL: 'https://identifiers.org',
   NCBI_EUTILS_BASE_URL: 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils',
   NCBI_API_KEY: 'b99e10ebe0f90d815a7a99f18403aab08008', // for dev testing only (baderlabsysmonitor ncbi key)
   HGNC_BASE_URL: 'https://rest.genenames.org',

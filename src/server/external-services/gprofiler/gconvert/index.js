@@ -1,14 +1,12 @@
 const _ = require('lodash');
-const qs = require('query-string');
 const QuickLRU = require('quick-lru');
 const logger = require('../../../logger');
 
 const { fetch } = require('../../../../util');
-const cleanUpEntrez = require('../clean-up-entrez');
 const InvalidParamError = require('../../../../server/errors/invalid-param');
 const { GPROFILER_URL, PC_CACHE_MAX_SIZE, NS_HGNC, NS_HGNC_SYMBOL, NS_UNIPROT, NS_NCBI_GENE, NS_ENSEMBL } = require('../../../../config');
 const { cachePromise } = require('../../../cache');
-const GCONVERT_URL = GPROFILER_URL + 'gconvert.cgi';
+const GCONVERT_URL = GPROFILER_URL + 'api/convert/convert/';
 
 const GPROFILER_NS_MAP = new Map([
   [NS_HGNC, 'HGNC_ACC'],
@@ -21,11 +19,11 @@ const GPROFILER_NS_MAP = new Map([
 // create gconvert opts for a gconvert request
 // validates params
 const createGConvertOpts = opts => {
+  // see https://biit.cs.ut.ee/gprofiler/page/apis
   const defaults = {
-    output: 'mini',
     organism: 'hsapiens',
     target: NS_HGNC,
-    prefix: 'ENTREZGENE_ACC'
+    numeric_ns: 'ENTREZGENE_ACC'
   };
 
   let gConvertOpts = _.assign({}, defaults, opts);
@@ -34,34 +32,30 @@ const createGConvertOpts = opts => {
   if( !Array.isArray( query ) ){
     throw new InvalidParamError( `Error creating gconvert request - expected an array of strings for "query", got ${query}`);
   }
-  let gconvertQuery = query.join(' ');
   let gconvertTarget = GPROFILER_NS_MAP.get( target );
 
   if( gconvertTarget == null ){
     throw new InvalidParamError( `Error creating gconvert request - expected a valid "targetDb", got ${target}`);
   }
 
-  gConvertOpts.query = gconvertQuery;
   gConvertOpts.target = gconvertTarget;
 
   return gConvertOpts;
 };
 
 const gConvertResponseHandler = body =>  {
-  let entityInfoList = body.split('\n').map( ele => ele.split('\t') ).filter( ele => ele != '');
+  let entityInfoList = _.get( JSON.parse( body ), ['result'] );
   let unrecognized = new Set();
   let duplicate = {};
   let entityMap = new Map();
   let alias = {};
-  const INITIAL_ALIAS_INDEX = 1;
-  const CONVERTED_ALIAS_INDEX = 3;
 
   entityInfoList.forEach( entityInfo => {
-    let convertedAlias = entityInfo[CONVERTED_ALIAS_INDEX];
-    let initialAlias = cleanUpEntrez(entityInfo[INITIAL_ALIAS_INDEX]);
+    let convertedAlias = entityInfo.converted === 'None' ? null : entityInfo.converted;
+    let initialAlias = entityInfo.incoming;
 
-    if( convertedAlias === 'N/A' ){
-      unrecognized.add(initialAlias);
+    if( _.isNull( convertedAlias ) ){
+      unrecognized.add( initialAlias );
       return;
     }
 
@@ -100,7 +94,8 @@ const rawValidatorGconvert = ( query, opts = {} ) => {
     .then( () => createGConvertOpts( _.assign(opts, { query }) ) )
     .then( gconvertOpts => fetch( GCONVERT_URL, {
       method: 'post',
-      body: qs.stringify( gconvertOpts )
+      body: JSON.stringify( gconvertOpts ),
+      headers: { 'Content-Type': 'application/json' }
     }))
     .then( response => response.text() )
     .then( gConvertResponseHandler )

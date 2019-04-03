@@ -8,8 +8,8 @@ const PARSED_GPROFILER = require('./parsed-gprofiler.json');
 describe ('Enrichment service: analysis', function () {
   describe ('Test parseGProfilerResponse()', () => {
     it ('should return to a correct object', () => {
-      const gGostbodytxt = fs.readFileSync( path.resolve( __dirname, 'ggost-body.txt' ), 'utf-8' );
-      const result = parseGProfilerResponse( gGostbodytxt );
+      const gGostbodyJSON = require('./ggost-body.json');
+      const result = parseGProfilerResponse( gGostbodyJSON, {} );
       expect ( result ).to.deep.equal ( PARSED_GPROFILER );
     });
   });

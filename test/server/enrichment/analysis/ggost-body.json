@@ -1,0 +1,3615 @@
+{
+  "result": [
+    {
+      "goshv": 18046,
+      "p_value": 2.5950225067712027e-32,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 31,
+      "term_size": 355,
+      "query_size": 59,
+      "precision": 0.5254237288135594,
+      "recall": 0.08732394366197183,
+      "description": "\"The alteration of DNA or protein in chromatin by the covalent addition or removal of chemical groups.\" [GOC:mah, GOC:vw]",
+      "name": "covalent chromatin modification",
+      "native": "GO:0016569",
+      "parents": [
+        "GO:0006325",
+        "GO:0043412"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 5916
+    },
+    {
+      "goshv": 14503,
+      "p_value": 4.070881957646537e-31,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 35,
+      "term_size": 606,
+      "query_size": 59,
+      "precision": 0.5932203389830508,
+      "recall": 0.057755775577557754,
+      "description": "\"Any process that results in the specification, formation or maintenance of the physical structure of eukaryotic chromatin.\" [GOC:mah, GOC:vw, PMID:20404130]",
+      "name": "chromatin organization",
+      "native": "GO:0006325",
+      "parents": [
+        "GO:0051276",
+        "GO:0016043"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2373
+    },
+    {
+      "goshv": 18047,
+      "p_value": 1.6483380595176753e-29,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 29,
+      "term_size": 340,
+      "query_size": 59,
+      "precision": 0.4915254237288136,
+      "recall": 0.08529411764705883,
+      "description": "\"The covalent alteration of one or more amino acid residues within a histone protein.\" [GOC:krc]",
+      "name": "histone modification",
+      "native": "GO:0016570",
+      "parents": [
+        "GO:0016569",
+        "GO:0006464"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 5917
+    },
+    {
+      "goshv": 28225,
+      "p_value": 5.6172990353574564e-27,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 37,
+      "term_size": 960,
+      "query_size": 59,
+      "precision": 0.6271186440677966,
+      "recall": 0.03854166666666667,
+      "description": "\"A process that is carried out at the cellular level that results in the assembly, arrangement of constituent parts, or disassembly of chromosomes, structures composed of a very long molecule of DNA and associated proteins that carries hereditary information. This term covers covalent modifications at the molecular level as well as spatial relationships among the major components of a chromosome.\" [GOC:ai, GOC:dph, GOC:jl, GOC:mah]",
+      "name": "chromosome organization",
+      "native": "GO:0051276",
+      "parents": [
+        "GO:0006996"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 16095
+    },
+    {
+      "goshv": 48177,
+      "p_value": 2.4448938050636754e-23,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 24,
+      "term_size": 275,
+      "query_size": 48,
+      "precision": 0.5,
+      "recall": 0.08727272727272728,
+      "description": "Chromatin modifying enzymes",
+      "name": "Chromatin modifying enzymes",
+      "native": "REAC:R-HSA-3247509",
+      "parents": [
+        "REAC:R-HSA-4839726"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 310
+    },
+    {
+      "goshv": 48178,
+      "p_value": 2.4448938050636754e-23,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 24,
+      "term_size": 275,
+      "query_size": 48,
+      "precision": 0.5,
+      "recall": 0.08727272727272728,
+      "description": "Chromatin organization",
+      "name": "Chromatin organization",
+      "native": "REAC:R-HSA-4839726",
+      "parents": [
+        "REAC:0000000"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 311
+    },
+    {
+      "goshv": 14524,
+      "p_value": 2.8804186364801403e-18,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 43,
+      "term_size": 2562,
+      "query_size": 59,
+      "precision": 0.7288135593220338,
+      "recall": 0.01678376268540203,
+      "description": "\"The cellular synthesis of RNA on a template of DNA.\" [GOC:jl, GOC:txnOH]",
+      "name": "transcription, DNA-templated",
+      "native": "GO:0006351",
+      "parents": [
+        "GO:0010467",
+        "GO:0097659",
+        "GO:0034645"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2394
+    },
+    {
+      "goshv": 34651,
+      "p_value": 3.1647564147202785e-18,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 43,
+      "term_size": 2568,
+      "query_size": 59,
+      "precision": 0.7288135593220338,
+      "recall": 0.01674454828660436,
+      "description": "\"The cellular synthesis of RNA on a template of nucleic acid (DNA or RNA).\" [GOC:pr, GOC:txnOH, GOC:vw]",
+      "name": "nucleic acid-templated transcription",
+      "native": "GO:0097659",
+      "parents": [
+        "GO:0032774"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 22521
+    },
+    {
+      "goshv": 21241,
+      "p_value": 3.64309475237019e-18,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 43,
+      "term_size": 2577,
+      "query_size": 59,
+      "precision": 0.7288135593220338,
+      "recall": 0.016686069072564997,
+      "description": "\"The chemical reactions and pathways resulting in the formation of RNA, ribonucleic acid, one of the two main type of nucleic acid, consisting of a long, unbranched macromolecule formed from ribonucleotides joined in 3',5'-phosphodiester linkage. Includes polymerization of ribonucleotide monomers. Refers not only to transcription but also to e.g. viral RNA replication.\" [GOC:mah, GOC:txnOH]",
+      "name": "RNA biosynthetic process",
+      "native": "GO:0032774",
+      "parents": [
+        "GO:0009059",
+        "GO:0016070",
+        "GO:0034654"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 9111
+    },
+    {
+      "goshv": 22236,
+      "p_value": 7.728506396166828e-18,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 45,
+      "term_size": 2977,
+      "query_size": 59,
+      "precision": 0.7627118644067796,
+      "recall": 0.015115888478333893,
+      "description": "\"The chemical reactions and pathways resulting in the formation of nucleobases, nucleosides, nucleotides and nucleic acids.\" [GOC:mah]",
+      "name": "nucleobase-containing compound biosynthetic process",
+      "native": "GO:0034654",
+      "parents": [
+        "GO:0019438",
+        "GO:0006139",
+        "GO:1901362",
+        "GO:0018130",
+        "GO:0044271"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 10106
+    },
+    {
+      "goshv": 18880,
+      "p_value": 1.5350620741464125e-17,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 45,
+      "term_size": 3026,
+      "query_size": 59,
+      "precision": 0.7627118644067796,
+      "recall": 0.014871116986120292,
+      "description": "\"The chemical reactions and pathways resulting in the formation of aromatic compounds, any substance containing an aromatic carbon ring.\" [GOC:ai]",
+      "name": "aromatic compound biosynthetic process",
+      "native": "GO:0019438",
+      "parents": [
+        "GO:0006725",
+        "GO:0044249"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 6750
+    },
+    {
+      "goshv": 18216,
+      "p_value": 1.5565122292811636e-17,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 45,
+      "term_size": 3027,
+      "query_size": 59,
+      "precision": 0.7627118644067796,
+      "recall": 0.014866204162537165,
+      "description": "\"The chemical reactions and pathways resulting in the formation of heterocyclic compounds, those with a cyclic molecular structure and at least two different atoms in the ring (or rings).\" [ISBN:0198547684]",
+      "name": "heterocycle biosynthetic process",
+      "native": "GO:0018130",
+      "parents": [
+        "GO:0044249",
+        "GO:0046483"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 6086
+    },
+    {
+      "goshv": 37032,
+      "p_value": 8.045107183226027e-17,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 45,
+      "term_size": 3148,
+      "query_size": 59,
+      "precision": 0.7627118644067796,
+      "recall": 0.014294790343074968,
+      "description": "\"The chemical reactions and pathways resulting in the formation of organic cyclic compound.\" [GOC:TermGenie]",
+      "name": "organic cyclic compound biosynthetic process",
+      "native": "GO:1901362",
+      "parents": [
+        "GO:1901360",
+        "GO:1901576"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 24902
+    },
+    {
+      "goshv": 34054,
+      "p_value": 4.891761220519371e-15,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 47,
+      "term_size": 3895,
+      "query_size": 59,
+      "precision": 0.7966101694915254,
+      "recall": 0.012066752246469832,
+      "description": "\"Any cellular metabolic process involving nucleic acids.\" [GOC:dph, GOC:tb]",
+      "name": "nucleic acid metabolic process",
+      "native": "GO:0090304",
+      "parents": [
+        "GO:0043170",
+        "GO:0006139"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 21924
+    },
+    {
+      "goshv": 25025,
+      "p_value": 2.826112462005935e-14,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 45,
+      "term_size": 3626,
+      "query_size": 59,
+      "precision": 0.7627118644067796,
+      "recall": 0.012410369553226696,
+      "description": "\"The chemical reactions and pathways resulting in the formation of organic and inorganic nitrogenous compounds.\" [GOC:jl, ISBN:0198506732]",
+      "name": "cellular nitrogen compound biosynthetic process",
+      "native": "GO:0044271",
+      "parents": [
+        "GO:0034641",
+        "GO:0044249"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 12895
+    },
+    {
+      "goshv": 18287,
+      "p_value": 1.1267905855399184e-13,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 17,
+      "term_size": 260,
+      "query_size": 59,
+      "precision": 0.288135593220339,
+      "recall": 0.06538461538461539,
+      "description": "\"The modification of peptidyl-lysine.\" [GOC:go_curators]",
+      "name": "peptidyl-lysine modification",
+      "native": "GO:0018205",
+      "parents": [
+        "GO:0018193"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 6157
+    },
+    {
+      "goshv": 14537,
+      "p_value": 2.0919293044873766e-13,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 33,
+      "term_size": 1757,
+      "query_size": 59,
+      "precision": 0.559322033898305,
+      "recall": 0.018782014797951052,
+      "description": "\"The synthesis of RNA from a DNA template by RNA polymerase II, originating at an RNA polymerase II promoter. Includes transcription of messenger RNA (mRNA) and certain small nuclear RNAs (snRNAs).\" [GOC:jl, GOC:txnOH, ISBN:0321000382]",
+      "name": "transcription by RNA polymerase II",
+      "native": "GO:0006366",
+      "parents": [
+        "GO:0006351"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2407
+    },
+    {
+      "goshv": 17867,
+      "p_value": 2.949753353091901e-13,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 43,
+      "term_size": 3429,
+      "query_size": 59,
+      "precision": 0.7288135593220338,
+      "recall": 0.012540099154272382,
+      "description": "\"The cellular chemical reactions and pathways involving RNA, ribonucleic acid, one of the two main type of nucleic acid, consisting of a long, unbranched macromolecule formed from ribonucleotides joined in 3',5'-phosphodiester linkage.\" [ISBN:0198506732]",
+      "name": "RNA metabolic process",
+      "native": "GO:0016070",
+      "parents": [
+        "GO:0090304"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 5737
+    },
+    {
+      "goshv": 22231,
+      "p_value": 3.688165594193076e-13,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 44,
+      "term_size": 3651,
+      "query_size": 59,
+      "precision": 0.7457627118644068,
+      "recall": 0.012051492741714598,
+      "description": "\"The chemical reactions and pathways resulting in the formation of a macromolecule, any molecule of high relative molecular mass, the structure of which essentially comprises the multiple repetition of units derived, actually or conceptually, from molecules of low relative molecular mass, carried out by individual cells.\" [CHEBI:33694, GOC:mah]",
+      "name": "cellular macromolecule biosynthetic process",
+      "native": "GO:0034645",
+      "parents": [
+        "GO:0009059",
+        "GO:0044260",
+        "GO:0044249"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 10101
+    },
+    {
+      "goshv": 48572,
+      "p_value": 5.659726374584187e-13,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 14,
+      "term_size": 146,
+      "query_size": 48,
+      "precision": 0.2916666666666667,
+      "recall": 0.0958904109589041,
+      "description": "Epigenetic regulation of gene expression",
+      "name": "Epigenetic regulation of gene expression",
+      "native": "REAC:R-HSA-212165",
+      "parents": [
+        "REAC:R-HSA-74160"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 705
+    },
+    {
+      "goshv": 14331,
+      "p_value": 1.0758099945767085e-12,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 47,
+      "term_size": 4416,
+      "query_size": 59,
+      "precision": 0.7966101694915254,
+      "recall": 0.010643115942028986,
+      "description": "\"Any cellular metabolic process involving nucleobases, nucleosides, nucleotides and nucleic acids.\" [GOC:ai]",
+      "name": "nucleobase-containing compound metabolic process",
+      "native": "GO:0006139",
+      "parents": [
+        "GO:0044238",
+        "GO:0046483",
+        "GO:1901360",
+        "GO:0034641",
+        "GO:0006725"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2201
+    },
+    {
+      "goshv": 15841,
+      "p_value": 1.111485429096307e-12,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 44,
+      "term_size": 3754,
+      "query_size": 59,
+      "precision": 0.7457627118644068,
+      "recall": 0.011720831113478956,
+      "description": "\"The chemical reactions and pathways resulting in the formation of a macromolecule, any molecule of high relative molecular mass, the structure of which essentially comprises the multiple repetition of units derived, actually or conceptually, from molecules of low relative molecular mass.\" [CHEBI:33694, GOC:mah]",
+      "name": "macromolecule biosynthetic process",
+      "native": "GO:0009059",
+      "parents": [
+        "GO:0043170",
+        "GO:1901576"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 3711
+    },
+    {
+      "goshv": 16835,
+      "p_value": 1.618306892242544e-12,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 46,
+      "term_size": 4227,
+      "query_size": 59,
+      "precision": 0.7796610169491526,
+      "recall": 0.010882422521883131,
+      "description": "\"The process in which a gene's sequence is converted into a mature gene product or products (proteins or RNA). This includes the production of an RNA transcript as well as any processing to produce a mature RNA product or an mRNA or circRNA (for protein-coding genes) and the translation of that mRNA or circRNA into protein. Protein maturation is included when required to form an active form of a product from an inactive precursor form.\" [GOC:dph, GOC:tb]",
+      "name": "gene expression",
+      "native": "GO:0010467",
+      "parents": [
+        "GO:0043170"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 4705
+    },
+    {
+      "goshv": 14528,
+      "p_value": 2.7100934827580113e-12,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 36,
+      "term_size": 2366,
+      "query_size": 59,
+      "precision": 0.6101694915254238,
+      "recall": 0.015215553677092139,
+      "description": "\"Any process that modulates the frequency, rate or extent of cellular DNA-templated transcription.\" [GOC:go_curators, GOC:txnOH]",
+      "name": "regulation of transcription, DNA-templated",
+      "native": "GO:0006355",
+      "parents": [
+        "GO:0010468",
+        "GO:2000112",
+        "GO:0006351",
+        "GO:1903506"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2398
+    },
+    {
+      "goshv": 38951,
+      "p_value": 2.940566713880058e-12,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 36,
+      "term_size": 2372,
+      "query_size": 59,
+      "precision": 0.6101694915254238,
+      "recall": 0.01517706576728499,
+      "description": "\"Any process that modulates the frequency, rate or extent of nucleic acid-templated transcription.\" [GO_REF:0000058, GOC:pr, GOC:TermGenie, GOC:txnOH, GOC:vw]",
+      "name": "regulation of nucleic acid-templated transcription",
+      "native": "GO:1903506",
+      "parents": [
+        "GO:2001141",
+        "GO:0097659"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 26821
+    },
+    {
+      "goshv": 42761,
+      "p_value": 3.2774233032655983e-12,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 36,
+      "term_size": 2380,
+      "query_size": 59,
+      "precision": 0.6101694915254238,
+      "recall": 0.015126050420168067,
+      "description": "\"Any process that modulates the frequency, rate or extent of RNA biosynthetic process.\" [GOC:dph]",
+      "name": "regulation of RNA biosynthetic process",
+      "native": "GO:2001141",
+      "parents": [
+        "GO:0010556",
+        "GO:0031326",
+        "GO:0032774",
+        "GO:0051252"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 30631
+    },
+    {
+      "goshv": 26611,
+      "p_value": 4.123917577774155e-12,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 47,
+      "term_size": 4558,
+      "query_size": 59,
+      "precision": 0.7966101694915254,
+      "recall": 0.010311540149188241,
+      "description": "\"The chemical reactions and pathways involving heterocyclic compounds, those with a cyclic molecular structure and at least two different atoms in the ring (or rings).\" [CHEBI:5686, ISBN:0198506732]",
+      "name": "heterocycle metabolic process",
+      "native": "GO:0046483",
+      "parents": [
+        "GO:0044237"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 14481
+    },
+    {
+      "goshv": 14867,
+      "p_value": 5.0562222616678754e-12,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 47,
+      "term_size": 4580,
+      "query_size": 59,
+      "precision": 0.7966101694915254,
+      "recall": 0.010262008733624454,
+      "description": "\"The chemical reactions and pathways involving aromatic compounds, any organic compound characterized by one or more planar rings, each of which contains conjugated double bonds and delocalized pi electrons, as carried out by individual cells.\" [GOC:ai, ISBN:0198506732]",
+      "name": "cellular aromatic compound metabolic process",
+      "native": "GO:0006725",
+      "parents": [
+        "GO:0044237"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2737
+    },
+    {
+      "goshv": 25018,
+      "p_value": 5.506503534422943e-12,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 54,
+      "term_size": 6565,
+      "query_size": 59,
+      "precision": 0.9152542372881356,
+      "recall": 0.008225437928408226,
+      "description": "\"The chemical reactions and pathways involving macromolecules, any molecule of high relative molecular mass, the structure of which essentially comprises the multiple repetition of units derived, actually or conceptually, from molecules of low relative molecular mass, as carried out by individual cells.\" [CHEBI:33694, GOC:mah]",
+      "name": "cellular macromolecule metabolic process",
+      "native": "GO:0044260",
+      "parents": [
+        "GO:0043170",
+        "GO:0044237"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 12888
+    },
+    {
+      "goshv": 16836,
+      "p_value": 9.776442379139106e-12,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 41,
+      "term_size": 3353,
+      "query_size": 59,
+      "precision": 0.6949152542372882,
+      "recall": 0.012227855651655234,
+      "description": "\"Any process that modulates the frequency, rate or extent of gene expression. Gene expression is the process in which a gene's coding sequence is converted into a mature gene product or products (proteins or RNA). This includes the production of an RNA transcript as well as any processing to produce a mature RNA product or an mRNA or circRNA (for protein-coding genes) and the translation of that mRNA or circRNA into protein. Protein maturation is included when required to form an active form of a product from an inactive precursor form.\" [GOC:dph, GOC:tb]",
+      "name": "regulation of gene expression",
+      "native": "GO:0010468",
+      "parents": [
+        "GO:0010467",
+        "GO:0060255"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 4706
+    },
+    {
+      "goshv": 24482,
+      "p_value": 2.3368809568495812e-11,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 56,
+      "term_size": 7494,
+      "query_size": 59,
+      "precision": 0.9491525423728814,
+      "recall": 0.007472644782492661,
+      "description": "\"The chemical reactions and pathways involving macromolecules, any molecule of high relative molecular mass, the structure of which essentially comprises the multiple repetition of units derived, actually or conceptually, from molecules of low relative molecular mass.\" [CHEBI:33694, GOC:mah]",
+      "name": "macromolecule metabolic process",
+      "native": "GO:0043170",
+      "parents": [
+        "GO:0071704"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 12352
+    },
+    {
+      "goshv": 37030,
+      "p_value": 2.5693344383997902e-11,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 47,
+      "term_size": 4760,
+      "query_size": 59,
+      "precision": 0.7966101694915254,
+      "recall": 0.009873949579831932,
+      "description": "\"The chemical reactions and pathways involving organic cyclic compound.\" [GOC:TermGenie]",
+      "name": "organic cyclic compound metabolic process",
+      "native": "GO:1901360",
+      "parents": [
+        "GO:0071704"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 24900
+    },
+    {
+      "goshv": 28207,
+      "p_value": 6.328471116572065e-11,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 36,
+      "term_size": 2611,
+      "query_size": 59,
+      "precision": 0.6101694915254238,
+      "recall": 0.013787820758330141,
+      "description": "\"Any process that modulates the frequency, rate or extent of the chemical reactions and pathways involving RNA.\" [GOC:ai]",
+      "name": "regulation of RNA metabolic process",
+      "native": "GO:0051252",
+      "parents": [
+        "GO:0016070",
+        "GO:0060255",
+        "GO:0019219"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 16077
+    },
+    {
+      "goshv": 18677,
+      "p_value": 1.3293746152416645e-10,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 37,
+      "term_size": 2847,
+      "query_size": 59,
+      "precision": 0.6271186440677966,
+      "recall": 0.012996136283807516,
+      "description": "\"Any cellular process that modulates the frequency, rate or extent of the chemical reactions and pathways involving nucleobases, nucleosides, nucleotides and nucleic acids.\" [GOC:go_curators]",
+      "name": "regulation of nucleobase-containing compound metabolic process",
+      "native": "GO:0019219",
+      "parents": [
+        "GO:0031323",
+        "GO:0080090",
+        "GO:0051171",
+        "GO:0006139"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 6547
+    },
+    {
+      "goshv": 22227,
+      "p_value": 3.6145228248098866e-10,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 47,
+      "term_size": 5071,
+      "query_size": 59,
+      "precision": 0.7966101694915254,
+      "recall": 0.009268388877933346,
+      "description": "\"The chemical reactions and pathways involving various organic and inorganic nitrogenous compounds, as carried out by individual cells.\" [GOC:mah]",
+      "name": "cellular nitrogen compound metabolic process",
+      "native": "GO:0034641",
+      "parents": [
+        "GO:0006807",
+        "GO:0044237"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 10097
+    },
+    {
+      "goshv": 41771,
+      "p_value": 4.223742915479978e-10,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 36,
+      "term_size": 2773,
+      "query_size": 59,
+      "precision": 0.6101694915254238,
+      "recall": 0.01298232960692391,
+      "description": "\"Any process that modulates the frequency, rate or extent of cellular macromolecule biosynthetic process.\" [GOC:obol]",
+      "name": "regulation of cellular macromolecule biosynthetic process",
+      "native": "GO:2000112",
+      "parents": [
+        "GO:0010556",
+        "GO:0031326",
+        "GO:0034645"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 29641
+    },
+    {
+      "goshv": 25011,
+      "p_value": 4.874495153494824e-10,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 45,
+      "term_size": 4619,
+      "query_size": 59,
+      "precision": 0.7627118644067796,
+      "recall": 0.009742368478025547,
+      "description": "\"The chemical reactions and pathways resulting in the formation of substances, carried out by individual cells.\" [GOC:jl]",
+      "name": "cellular biosynthetic process",
+      "native": "GO:0044249",
+      "parents": [
+        "GO:0009058",
+        "GO:0044237"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 12881
+    },
+    {
+      "goshv": 48725,
+      "p_value": 5.018856792505335e-10,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 27,
+      "term_size": 1371,
+      "query_size": 48,
+      "precision": 0.5625,
+      "recall": 0.019693654266958426,
+      "description": "Gene expression (Transcription)",
+      "name": "Gene expression (Transcription)",
+      "native": "REAC:R-HSA-74160",
+      "parents": [
+        "REAC:0000000"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 858
+    },
+    {
+      "goshv": 14539,
+      "p_value": 6.264074816701776e-10,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 10,
+      "term_size": 79,
+      "query_size": 59,
+      "precision": 0.1694915254237288,
+      "recall": 0.12658227848101267,
+      "description": "\"The extension of an RNA molecule after transcription initiation and promoter clearance at an RNA polymerase II promoter by the addition of ribonucleotides catalyzed by RNA polymerase II.\" [GOC:mah, GOC:txnOH]",
+      "name": "transcription elongation from RNA polymerase II promoter",
+      "native": "GO:0006368",
+      "parents": [
+        "GO:0006366",
+        "GO:0006354"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2409
+    },
+    {
+      "goshv": 37229,
+      "p_value": 8.307542963942964e-10,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 45,
+      "term_size": 4682,
+      "query_size": 59,
+      "precision": 0.7627118644067796,
+      "recall": 0.009611277231952157,
+      "description": "\"The chemical reactions and pathways resulting in the formation of an organic substance, any molecular entity containing carbon.\" [GOC:pr, GOC:TermGenie]",
+      "name": "organic substance biosynthetic process",
+      "native": "GO:1901576",
+      "parents": [
+        "GO:0009058",
+        "GO:0071704"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 25099
+    },
+    {
+      "goshv": 16894,
+      "p_value": 8.529689368246883e-10,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 36,
+      "term_size": 2836,
+      "query_size": 59,
+      "precision": 0.6101694915254238,
+      "recall": 0.012693935119887164,
+      "description": "\"Any process that modulates the rate, frequency or extent of the chemical reactions and pathways resulting in the formation of a macromolecule, any molecule of high relative molecular mass, the structure of which essentially comprises the multiple repetition of units derived, actually or conceptually, from molecules of low relative molecular mass.\" [GOC:dph, GOC:tb]",
+      "name": "regulation of macromolecule biosynthetic process",
+      "native": "GO:0010556",
+      "parents": [
+        "GO:0009059",
+        "GO:0009889",
+        "GO:0060255"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 4764
+    },
+    {
+      "goshv": 15096,
+      "p_value": 1.1488445065480963e-09,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 38,
+      "term_size": 3231,
+      "query_size": 59,
+      "precision": 0.6440677966101694,
+      "recall": 0.011761064685855771,
+      "description": "\"A process that is carried out at the cellular level which results in the assembly, arrangement of constituent parts, or disassembly of an organelle within a cell. An organelle is an organized structure of distinctive morphology and function. Includes the nucleus, mitochondria, plastids, vacuoles, vesicles, ribosomes and the cytoskeleton. Excludes the plasma membrane.\" [GOC:mah]",
+      "name": "organelle organization",
+      "native": "GO:0006996",
+      "parents": [
+        "GO:0016043"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2966
+    },
+    {
+      "goshv": 15840,
+      "p_value": 1.302978049618414e-09,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 45,
+      "term_size": 4736,
+      "query_size": 59,
+      "precision": 0.7627118644067796,
+      "recall": 0.00950168918918919,
+      "description": "\"The chemical reactions and pathways resulting in the formation of substances; typically the energy-requiring part of metabolism in which simpler substances are transformed into more complex ones.\" [GOC:curators, ISBN:0198547684]",
+      "name": "biosynthetic process",
+      "native": "GO:0009058",
+      "parents": [
+        "GO:0008152"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 3710
+    },
+    {
+      "goshv": 14527,
+      "p_value": 2.4089926919688302e-09,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 10,
+      "term_size": 90,
+      "query_size": 59,
+      "precision": 0.1694915254237288,
+      "recall": 0.1111111111111111,
+      "description": "\"The extension of an RNA molecule after transcription initiation and promoter clearance at a DNA-dependent RNA polymerase promoter by the addition of ribonucleotides catalyzed by an RNA polymerase.\" [GOC:mah, GOC:txnOH, PMID:15020047, PMID:18280161]",
+      "name": "DNA-templated transcription, elongation",
+      "native": "GO:0006354",
+      "parents": [
+        "GO:0006351",
+        "GO:0032774"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2397
+    },
+    {
+      "goshv": 20478,
+      "p_value": 2.559913865876992e-09,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 36,
+      "term_size": 2938,
+      "query_size": 59,
+      "precision": 0.6101694915254238,
+      "recall": 0.012253233492171545,
+      "description": "\"Any process that modulates the frequency, rate or extent of the chemical reactions and pathways resulting in the formation of substances, carried out by individual cells.\" [GOC:mah]",
+      "name": "regulation of cellular biosynthetic process",
+      "native": "GO:0031326",
+      "parents": [
+        "GO:0031323",
+        "GO:0009889",
+        "GO:0044249"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 8348
+    },
+    {
+      "goshv": 24601,
+      "p_value": 2.6478052755366917e-09,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 39,
+      "term_size": 3510,
+      "query_size": 59,
+      "precision": 0.6610169491525424,
+      "recall": 0.011111111111111112,
+      "description": "\"The covalent alteration of one or more monomeric units in a polypeptide, polynucleotide, polysaccharide, or other biological macromolecule, resulting in a change in its properties.\" [GOC:go_curators]",
+      "name": "macromolecule modification",
+      "native": "GO:0043412",
+      "parents": [
+        "GO:0043170"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 12471
+    },
+    {
+      "goshv": 16395,
+      "p_value": 4.590011175053012e-09,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 36,
+      "term_size": 2994,
+      "query_size": 59,
+      "precision": 0.6101694915254238,
+      "recall": 0.012024048096192385,
+      "description": "\"Any process that modulates the frequency, rate or extent of the chemical reactions and pathways resulting in the formation of substances.\" [GOC:go_curators]",
+      "name": "regulation of biosynthetic process",
+      "native": "GO:0009889",
+      "parents": [
+        "GO:0009058",
+        "GO:0019222"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 4265
+    },
+    {
+      "goshv": 14530,
+      "p_value": 4.912390052372665e-09,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 27,
+      "term_size": 1575,
+      "query_size": 59,
+      "precision": 0.4576271186440678,
+      "recall": 0.017142857142857144,
+      "description": "\"Any process that modulates the frequency, rate or extent of transcription mediated by RNA polymerase II.\" [GOC:go_curators, GOC:txnOH]",
+      "name": "regulation of transcription by RNA polymerase II",
+      "native": "GO:0006357",
+      "parents": [
+        "GO:0006366",
+        "GO:0006355"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2400
+    },
+    {
+      "goshv": 49528,
+      "p_value": 1.606623974775652e-08,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 7,
+      "term_size": 30,
+      "query_size": 48,
+      "precision": 0.14583333333333334,
+      "recall": 0.23333333333333334,
+      "description": "Regulation of TP53 Activity through Acetylation",
+      "name": "Regulation of TP53 Activity through Acetylation",
+      "native": "REAC:R-HSA-6804758",
+      "parents": [
+        "REAC:R-HSA-5633007"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 1661
+    },
+    {
+      "goshv": 14631,
+      "p_value": 3.782614933259162e-08,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 10,
+      "term_size": 118,
+      "query_size": 59,
+      "precision": 0.1694915254237288,
+      "recall": 0.0847457627118644,
+      "description": "\"The addition of a methyl group to a protein amino acid. A methyl group is derived from methane by the removal of a hydrogen atom.\" [GOC:ai]",
+      "name": "protein methylation",
+      "native": "GO:0006479",
+      "parents": [
+        "GO:0008213",
+        "GO:0043414"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2501
+    },
+    {
+      "goshv": 15733,
+      "p_value": 3.782614933259162e-08,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 10,
+      "term_size": 118,
+      "query_size": 59,
+      "precision": 0.1694915254237288,
+      "recall": 0.0847457627118644,
+      "description": "\"The addition of an alkyl group to a protein amino acid. An alkyl group is any group derived from an alkane by removal of one hydrogen atom.\" [GOC:ma]",
+      "name": "protein alkylation",
+      "native": "GO:0008213",
+      "parents": [
+        "GO:0006464"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 3603
+    },
+    {
+      "goshv": 18048,
+      "p_value": 8.211248493889989e-08,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 9,
+      "term_size": 89,
+      "query_size": 59,
+      "precision": 0.15254237288135594,
+      "recall": 0.10112359550561797,
+      "description": "\"The modification of histones by addition of methyl groups.\" [GOC:ai]",
+      "name": "histone methylation",
+      "native": "GO:0016571",
+      "parents": [
+        "GO:0016570",
+        "GO:0006479"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 5918
+    },
+    {
+      "goshv": 23182,
+      "p_value": 1.1747069950188682e-07,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 36,
+      "term_size": 3330,
+      "query_size": 59,
+      "precision": 0.6101694915254238,
+      "recall": 0.010810810810810811,
+      "description": "\"The covalent alteration of one or more amino acids occurring in proteins, peptides and nascent polypeptides (co-translational, post-translational modifications). Includes the modification of charged tRNAs that are destined to occur in a protein (pre-translation modification).\" [GOC:bf, GOC:jl]",
+      "name": "protein modification process",
+      "native": "GO:0036211",
+      "parents": [
+        "GO:0019538",
+        "GO:0043412"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 11052
+    },
+    {
+      "goshv": 14618,
+      "p_value": 1.1747069950188682e-07,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 36,
+      "term_size": 3330,
+      "query_size": 59,
+      "precision": 0.6101694915254238,
+      "recall": 0.010810810810810811,
+      "description": "\"The covalent alteration of one or more amino acids occurring in proteins, peptides and nascent polypeptides (co-translational, post-translational modifications) occurring at the level of an individual cell. Includes the modification of charged tRNAs that are destined to occur in a protein (pre-translation modification).\" [GOC:go_curators]",
+      "name": "cellular protein modification process",
+      "native": "GO:0006464",
+      "parents": [
+        "GO:0044267",
+        "GO:0036211"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2488
+    },
+    {
+      "goshv": 14938,
+      "p_value": 1.8306318140480162e-07,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 54,
+      "term_size": 8091,
+      "query_size": 59,
+      "precision": 0.9152542372881356,
+      "recall": 0.006674082313681869,
+      "description": "\"The chemical reactions and pathways involving organic or inorganic compounds that contain nitrogen.\" [CHEBI:51143, GOC:go_curators, GOC:jl, ISBN:0198506732]",
+      "name": "nitrogen compound metabolic process",
+      "native": "GO:0006807",
+      "parents": [
+        "GO:0008152"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2808
+    },
+    {
+      "goshv": 48763,
+      "p_value": 2.0399516251606933e-07,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 10,
+      "term_size": 142,
+      "query_size": 48,
+      "precision": 0.20833333333333334,
+      "recall": 0.07042253521126761,
+      "description": "HATs acetylate histones",
+      "name": "HATs acetylate histones",
+      "native": "REAC:R-HSA-3214847",
+      "parents": [
+        "REAC:R-HSA-3247509"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 896
+    },
+    {
+      "goshv": 22286,
+      "p_value": 3.0491768781139624e-07,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 8,
+      "term_size": 68,
+      "query_size": 59,
+      "precision": 0.13559322033898305,
+      "recall": 0.11764705882352941,
+      "description": "\"The modification of a histone by addition of one or more methyl groups to a lysine residue.\" [GOC:mah, GOC:pr]",
+      "name": "histone lysine methylation",
+      "native": "GO:0034968",
+      "parents": [
+        "GO:0018022",
+        "GO:0016571"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 10156
+    },
+    {
+      "goshv": 32308,
+      "p_value": 3.625025580223211e-07,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 56,
+      "term_size": 8995,
+      "query_size": 59,
+      "precision": 0.9491525423728814,
+      "recall": 0.0062256809338521405,
+      "description": "\"The chemical reactions and pathways involving an organic substance, any molecular entity containing carbon.\" [CHEBI:50860, GOC:mah]",
+      "name": "organic substance metabolic process",
+      "native": "GO:0071704",
+      "parents": [
+        "GO:0008152"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 20178
+    },
+    {
+      "goshv": 49429,
+      "p_value": 3.9981911991147005e-07,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 7,
+      "term_size": 46,
+      "query_size": 48,
+      "precision": 0.14583333333333334,
+      "recall": 0.15217391304347827,
+      "description": "RNA Polymerase I Transcription Initiation",
+      "name": "RNA Polymerase I Transcription Initiation",
+      "native": "REAC:R-HSA-73762",
+      "parents": [
+        "REAC:R-HSA-73854"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 1562
+    },
+    {
+      "goshv": 18050,
+      "p_value": 5.193238571543201e-07,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 9,
+      "term_size": 109,
+      "query_size": 59,
+      "precision": 0.15254237288135594,
+      "recall": 0.08256880733944955,
+      "description": "\"The modification of a histone by the addition of an acetyl group.\" [GOC:ai]",
+      "name": "histone acetylation",
+      "native": "GO:0016573",
+      "parents": [
+        "GO:0016570",
+        "GO:0018393"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 5920
+    },
+    {
+      "goshv": 49527,
+      "p_value": 6.577305404502793e-07,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 10,
+      "term_size": 160,
+      "query_size": 48,
+      "precision": 0.20833333333333334,
+      "recall": 0.0625,
+      "description": "Regulation of TP53 Activity",
+      "name": "Regulation of TP53 Activity",
+      "native": "REAC:R-HSA-5633007",
+      "parents": [
+        "REAC:R-HSA-3700989"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 1660
+    },
+    {
+      "goshv": 18445,
+      "p_value": 6.634114472512338e-07,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 9,
+      "term_size": 112,
+      "query_size": 59,
+      "precision": 0.15254237288135594,
+      "recall": 0.08035714285714286,
+      "description": "\"The addition of an acetyl group to a non-terminal lysine residue in a protein.\" [GOC:mah]",
+      "name": "internal peptidyl-lysine acetylation",
+      "native": "GO:0018393",
+      "parents": [
+        "GO:0018394",
+        "GO:0006475"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 6315
+    },
+    {
+      "goshv": 24603,
+      "p_value": 8.251411182170999e-07,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 11,
+      "term_size": 215,
+      "query_size": 59,
+      "precision": 0.1864406779661017,
+      "recall": 0.05116279069767442,
+      "description": "\"The covalent attachment of a methyl residue to one or more monomeric units in a polypeptide, polynucleotide, polysaccharide, or other biological macromolecule.\" [GOC:go_curators]",
+      "name": "macromolecule methylation",
+      "native": "GO:0043414",
+      "parents": [
+        "GO:0032259",
+        "GO:0044260",
+        "GO:0043412"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 12473
+    },
+    {
+      "goshv": 25983,
+      "p_value": 9.097086738420277e-07,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 9,
+      "term_size": 116,
+      "query_size": 59,
+      "precision": 0.15254237288135594,
+      "recall": 0.07758620689655173,
+      "description": "\"Any epigenetic process that stops, prevents or reduces the rate of gene expression.\" [GOC:go_curators]",
+      "name": "negative regulation of gene expression, epigenetic",
+      "native": "GO:0045814",
+      "parents": [
+        "GO:0040029",
+        "GO:0010629"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 13853
+    },
+    {
+      "goshv": 14627,
+      "p_value": 9.826242692620404e-07,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 9,
+      "term_size": 117,
+      "query_size": 59,
+      "precision": 0.15254237288135594,
+      "recall": 0.07692307692307693,
+      "description": "\"The addition of an acetyl group to a non-terminal amino acid in a protein.\" [GOC:mah]",
+      "name": "internal protein amino acid acetylation",
+      "native": "GO:0006475",
+      "parents": [
+        "GO:0006473"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2497
+    },
+    {
+      "goshv": 18446,
+      "p_value": 1.0606351232011728e-06,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 9,
+      "term_size": 118,
+      "query_size": 59,
+      "precision": 0.15254237288135594,
+      "recall": 0.07627118644067797,
+      "description": "\"The acetylation of peptidyl-lysine.\" [GOC:mah]",
+      "name": "peptidyl-lysine acetylation",
+      "native": "GO:0018394",
+      "parents": [
+        "GO:0006473",
+        "GO:0018205"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 6316
+    },
+    {
+      "goshv": 29693,
+      "p_value": 1.2291978760732757e-06,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 41,
+      "term_size": 4684,
+      "query_size": 59,
+      "precision": 0.6949152542372882,
+      "recall": 0.008753202391118702,
+      "description": "\"Any process that modulates the frequency, rate or extent of the chemical reactions and pathways involving macromolecules, any molecule of high relative molecular mass, the structure of which essentially comprises the multiple repetition of units derived, actually or conceptually, from molecules of low relative molecular mass.\" [GOC:dph, GOC:tb]",
+      "name": "regulation of macromolecule metabolic process",
+      "native": "GO:0060255",
+      "parents": [
+        "GO:0043170",
+        "GO:0019222"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 17563
+    },
+    {
+      "goshv": 18135,
+      "p_value": 1.4105777792013046e-06,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 8,
+      "term_size": 82,
+      "query_size": 59,
+      "precision": 0.13559322033898305,
+      "recall": 0.0975609756097561,
+      "description": "\"The methylation of peptidyl-lysine to form either the mono-, di- or trimethylated derivative.\" [GOC:ai]",
+      "name": "peptidyl-lysine methylation",
+      "native": "GO:0018022",
+      "parents": [
+        "GO:0006479",
+        "GO:0018205"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 6005
+    },
+    {
+      "goshv": 20856,
+      "p_value": 1.5389128160530487e-06,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 11,
+      "term_size": 228,
+      "query_size": 59,
+      "precision": 0.1864406779661017,
+      "recall": 0.04824561403508772,
+      "description": "\"The process in which a methyl group is covalently attached to a molecule.\" [GOC:mah]",
+      "name": "methylation",
+      "native": "GO:0032259",
+      "parents": [
+        "GO:0008152"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 8726
+    },
+    {
+      "goshv": 25004,
+      "p_value": 2.007566387099024e-06,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 54,
+      "term_size": 8500,
+      "query_size": 59,
+      "precision": 0.9152542372881356,
+      "recall": 0.006352941176470588,
+      "description": "\"The chemical reactions and pathways involving those compounds which are formed as a part of the normal anabolic and catabolic processes. These processes take place in most, if not all, cells of the organism.\" [GOC:go_curators, http://www.metacyc.org]",
+      "name": "primary metabolic process",
+      "native": "GO:0044238",
+      "parents": [
+        "GO:0008152"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 12874
+    },
+    {
+      "goshv": 15710,
+      "p_value": 2.8756348169554427e-06,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 56,
+      "term_size": 9361,
+      "query_size": 59,
+      "precision": 0.9491525423728814,
+      "recall": 0.005982266851832069,
+      "description": "\"The chemical reactions and pathways, including anabolism and catabolism, by which living organisms transform chemical substances. Metabolic processes typically transform small molecules, but also include macromolecular processes such as DNA repair and replication, and protein synthesis and degradation.\" [GOC:go_curators, ISBN:0198547684]",
+      "name": "metabolic process",
+      "native": "GO:0008152",
+      "parents": [
+        "GO:0008150"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 3580
+    },
+    {
+      "goshv": 18052,
+      "p_value": 2.9208234822020986e-06,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 7,
+      "term_size": 56,
+      "query_size": 59,
+      "precision": 0.11864406779661017,
+      "recall": 0.125,
+      "description": "\"The modification of histones by removal of acetyl groups.\" [GOC:ai]",
+      "name": "histone deacetylation",
+      "native": "GO:0016575",
+      "parents": [
+        "GO:0016570",
+        "GO:0006476"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 5922
+    },
+    {
+      "goshv": 23728,
+      "p_value": 3.140756640720914e-06,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 14,
+      "term_size": 468,
+      "query_size": 59,
+      "precision": 0.23728813559322035,
+      "recall": 0.029914529914529916,
+      "description": "\"Any process that modulates the frequency, rate or extent of gene expression; the process is mitotically or meiotically heritable, or is stably self-propagated in the cytoplasm of a resting cell, and does not entail a change in DNA sequence.\" [PMID:10521337, PMID:11498582]",
+      "name": "regulation of gene expression, epigenetic",
+      "native": "GO:0040029",
+      "parents": [
+        "GO:0010468"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 11598
+    },
+    {
+      "goshv": 14514,
+      "p_value": 4.869318347257595e-06,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 9,
+      "term_size": 140,
+      "query_size": 59,
+      "precision": 0.15254237288135594,
+      "recall": 0.06428571428571428,
+      "description": "\"Dynamic structural changes to eukaryotic chromatin occurring throughout the cell division cycle. These changes range from the local changes necessary for transcriptional regulation to global changes necessary for chromosome segregation.\" [GOC:jid, GOC:vw, PMID:12697820]",
+      "name": "chromatin remodeling",
+      "native": "GO:0006338",
+      "parents": [
+        "GO:0006325"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2384
+    },
+    {
+      "goshv": 34623,
+      "p_value": 6.443316066779765e-06,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 8,
+      "term_size": 99,
+      "query_size": 59,
+      "precision": 0.13559322033898305,
+      "recall": 0.08080808080808081,
+      "description": "\"Any process that stops, prevents, or reduces the frequency, rate or extent of transcription by chromatin organization.\" [GOC:di, PMID:23123093]",
+      "name": "chromatin organization involved in negative regulation of transcription",
+      "native": "GO:0097549",
+      "parents": [
+        "GO:0045892",
+        "GO:0034401"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 22493
+    },
+    {
+      "goshv": 14518,
+      "p_value": 6.443316066779765e-06,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 8,
+      "term_size": 99,
+      "query_size": 59,
+      "precision": 0.13559322033898305,
+      "recall": 0.08080808080808081,
+      "description": "\"Repression of transcription by altering the structure of chromatin, e.g. by conversion of large regions of DNA into an inaccessible state often called heterochromatin.\" [GOC:mah, PMID:10219245]",
+      "name": "chromatin silencing",
+      "native": "GO:0006342",
+      "parents": [
+        "GO:0045892",
+        "GO:0016458",
+        "GO:0097549",
+        "GO:0045814"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2388
+    },
+    {
+      "goshv": 14625,
+      "p_value": 9.495500571201929e-06,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 9,
+      "term_size": 151,
+      "query_size": 59,
+      "precision": 0.15254237288135594,
+      "recall": 0.059602649006622516,
+      "description": "\"The addition of an acetyl group to a protein amino acid. An acetyl group is CH3CO-, derived from acetic [ethanoic] acid.\" [GOC:ai]",
+      "name": "protein acetylation",
+      "native": "GO:0006473",
+      "parents": [
+        "GO:0043543"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2495
+    },
+    {
+      "goshv": 25003,
+      "p_value": 1.0735147844651504e-05,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 54,
+      "term_size": 8802,
+      "query_size": 59,
+      "precision": 0.9152542372881356,
+      "recall": 0.006134969325153374,
+      "description": "\"The chemical reactions and pathways by which individual cells transform chemical substances.\" [GOC:go_curators]",
+      "name": "cellular metabolic process",
+      "native": "GO:0044237",
+      "parents": [
+        "GO:0008152",
+        "GO:0009987"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 12873
+    },
+    {
+      "goshv": 22121,
+      "p_value": 1.1117604749624793e-05,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 8,
+      "term_size": 106,
+      "query_size": 59,
+      "precision": 0.13559322033898305,
+      "recall": 0.07547169811320754,
+      "description": "\"Any cellular process that results in the specification, formation or maintenance of the physical structure of eukaryotic chromatin that modulates the rate, frequency or extent of DNA-dependent transcription.\" [GOC:curators, PMID:21102443]",
+      "name": "chromatin organization involved in regulation of transcription",
+      "native": "GO:0034401",
+      "parents": [
+        "GO:0006325",
+        "GO:0006355"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 9991
+    },
+    {
+      "goshv": 14521,
+      "p_value": 1.3429039722314943e-05,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 5,
+      "term_size": 19,
+      "query_size": 59,
+      "precision": 0.0847457627118644,
+      "recall": 0.2631578947368421,
+      "description": "\"Repression of transcription by methylation of DNA, leading to the formation of heterochromatin.\" [GOC:mah]",
+      "name": "methylation-dependent chromatin silencing",
+      "native": "GO:0006346",
+      "parents": [
+        "GO:0016569",
+        "GO:0006342",
+        "GO:0006259"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2391
+    },
+    {
+      "goshv": 14628,
+      "p_value": 1.4483750584845996e-05,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 7,
+      "term_size": 70,
+      "query_size": 59,
+      "precision": 0.11864406779661017,
+      "recall": 0.1,
+      "description": "\"The removal of an acetyl group from a protein amino acid. An acetyl group is CH3CO-, derived from acetic [ethanoic] acid.\" [GOC:ai]",
+      "name": "protein deacetylation",
+      "native": "GO:0006476",
+      "parents": [
+        "GO:0035601"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2498
+    },
+    {
+      "goshv": 49953,
+      "p_value": 1.540110997515385e-05,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 12,
+      "term_size": 358,
+      "query_size": 48,
+      "precision": 0.25,
+      "recall": 0.0335195530726257,
+      "description": "Transcriptional Regulation by TP53",
+      "name": "Transcriptional Regulation by TP53",
+      "native": "REAC:R-HSA-3700989",
+      "parents": [
+        "REAC:R-HSA-212436"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 2086
+    },
+    {
+      "goshv": 34807,
+      "p_value": 2.3628026712808118e-05,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 7,
+      "term_size": 75,
+      "query_size": 59,
+      "precision": 0.11864406779661017,
+      "recall": 0.09333333333333334,
+      "description": "\"The removal of an acyl group, any group or radical of the form RCO- where R is an organic group, from a macromolecule.\" [GOC:dos]",
+      "name": "macromolecule deacylation",
+      "native": "GO:0098732",
+      "parents": [
+        "GO:0043412"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 22677
+    },
+    {
+      "goshv": 22736,
+      "p_value": 2.3628026712808118e-05,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 7,
+      "term_size": 75,
+      "query_size": 59,
+      "precision": 0.11864406779661017,
+      "recall": 0.09333333333333334,
+      "description": "\"The removal of an acyl group, any group or radical of the form RCO- where R is an organic group, from a protein amino acid.\" [GOC:se, PMID:12080046]",
+      "name": "protein deacylation",
+      "native": "GO:0035601",
+      "parents": [
+        "GO:0006464",
+        "GO:0098732"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 10606
+    },
+    {
+      "goshv": 18680,
+      "p_value": 2.621578361325342e-05,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 41,
+      "term_size": 5138,
+      "query_size": 59,
+      "precision": 0.6949152542372882,
+      "recall": 0.007979758660957572,
+      "description": "\"Any process that modulates the frequency, rate or extent of the chemical reactions and pathways within a cell or an organism.\" [GOC:go_curators]",
+      "name": "regulation of metabolic process",
+      "native": "GO:0019222",
+      "parents": [
+        "GO:0050789",
+        "GO:0008152"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 6550
+    },
+    {
+      "goshv": 26093,
+      "p_value": 3.8531810270807285e-05,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 19,
+      "term_size": 1137,
+      "query_size": 59,
+      "precision": 0.3220338983050847,
+      "recall": 0.016710642040457344,
+      "description": "\"Any cellular process that stops, prevents, or reduces the frequency, rate or extent of the chemical reactions and pathways involving nucleobases, nucleosides, nucleotides and nucleic acids.\" [GOC:go_curators]",
+      "name": "negative regulation of nucleobase-containing compound metabolic process",
+      "native": "GO:0045934",
+      "parents": [
+        "GO:0051172",
+        "GO:0031324",
+        "GO:0019219",
+        "GO:0006139"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 13963
+    },
+    {
+      "goshv": 18275,
+      "p_value": 4.344754196857287e-05,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 17,
+      "term_size": 899,
+      "query_size": 59,
+      "precision": 0.288135593220339,
+      "recall": 0.018909899888765295,
+      "description": "\"The alteration of an amino acid residue in a peptide.\" [GOC:mah]",
+      "name": "peptidyl-amino acid modification",
+      "native": "GO:0018193",
+      "parents": [
+        "GO:0006464"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 6145
+    },
+    {
+      "goshv": 28140,
+      "p_value": 4.850115685381142e-05,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 37,
+      "term_size": 4311,
+      "query_size": 59,
+      "precision": 0.6271186440677966,
+      "recall": 0.008582695430294595,
+      "description": "\"Any process that modulates the frequency, rate or extent of the chemical reactions and pathways involving nitrogen or nitrogenous compounds.\" [GOC:ai, GOC:tb]",
+      "name": "regulation of nitrogen compound metabolic process",
+      "native": "GO:0051171",
+      "parents": [
+        "GO:0006807",
+        "GO:0019222"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 16010
+    },
+    {
+      "goshv": 28208,
+      "p_value": 5.025532194783846e-05,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 18,
+      "term_size": 1029,
+      "query_size": 59,
+      "precision": 0.3050847457627119,
+      "recall": 0.01749271137026239,
+      "description": "\"Any process that stops, prevents, or reduces the frequency, rate or extent of the chemical reactions and pathways involving RNA.\" [GOC:ai]",
+      "name": "negative regulation of RNA metabolic process",
+      "native": "GO:0051253",
+      "parents": [
+        "GO:0016070",
+        "GO:0010605",
+        "GO:0045934",
+        "GO:0051252"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 16078
+    },
+    {
+      "goshv": 24842,
+      "p_value": 7.507490647556103e-05,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 6,
+      "term_size": 52,
+      "query_size": 59,
+      "precision": 0.1016949152542373,
+      "recall": 0.11538461538461539,
+      "description": "\"The modification of histone H3 by the addition of an acetyl group.\" [GOC:jl]",
+      "name": "histone H3 acetylation",
+      "native": "GO:0043966",
+      "parents": [
+        "GO:0016573"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 12712
+    },
+    {
+      "goshv": 24693,
+      "p_value": 7.706966934957791e-05,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 9,
+      "term_size": 192,
+      "query_size": 59,
+      "precision": 0.15254237288135594,
+      "recall": 0.046875,
+      "description": "\"The addition of an acyl group, any group or radical of the form RCO- where R is an organic group, to a protein amino acid.\" [GOC:jl]",
+      "name": "protein acylation",
+      "native": "GO:0043543",
+      "parents": [
+        "GO:0006464"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 12563
+    },
+    {
+      "goshv": 49435,
+      "p_value": 8.851028678399017e-05,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 6,
+      "term_size": 60,
+      "query_size": 48,
+      "precision": 0.125,
+      "recall": 0.1,
+      "description": "RNA Polymerase II Transcription Elongation",
+      "name": "RNA Polymerase II Transcription Elongation",
+      "native": "REAC:R-HSA-75955",
+      "parents": [
+        "REAC:R-HSA-73857"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 1568
+    },
+    {
+      "goshv": 48644,
+      "p_value": 8.851028678399017e-05,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 6,
+      "term_size": 60,
+      "query_size": 48,
+      "precision": 0.125,
+      "recall": 0.1,
+      "description": "Formation of RNA Pol II elongation complex ",
+      "name": "Formation of RNA Pol II elongation complex ",
+      "native": "REAC:R-HSA-112382",
+      "parents": [
+        "REAC:R-HSA-75955"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 777
+    },
+    {
+      "goshv": 14446,
+      "p_value": 9.814648197967993e-05,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 16,
+      "term_size": 832,
+      "query_size": 59,
+      "precision": 0.2711864406779661,
+      "recall": 0.019230769230769232,
+      "description": "\"Any cellular metabolic process involving deoxyribonucleic acid. This is one of the two main types of nucleic acid, consisting of a long, unbranched macromolecule formed from one, or more commonly, two, strands of linked deoxyribonucleotides.\" [ISBN:0198506732]",
+      "name": "DNA metabolic process",
+      "native": "GO:0006259",
+      "parents": [
+        "GO:0090304",
+        "GO:0044260"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2316
+    },
+    {
+      "goshv": 26053,
+      "p_value": 0.0001051995369542259,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 17,
+      "term_size": 955,
+      "query_size": 59,
+      "precision": 0.288135593220339,
+      "recall": 0.01780104712041885,
+      "description": "\"Any process that stops, prevents, or reduces the frequency, rate or extent of cellular DNA-templated transcription.\" [GOC:go_curators, GOC:txnOH]",
+      "name": "negative regulation of transcription, DNA-templated",
+      "native": "GO:0045892",
+      "parents": [
+        "GO:2000113",
+        "GO:1903507",
+        "GO:0010629",
+        "GO:0006355",
+        "GO:0006351"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 13923
+    },
+    {
+      "goshv": 38952,
+      "p_value": 0.00011010961887386071,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 17,
+      "term_size": 958,
+      "query_size": 59,
+      "precision": 0.288135593220339,
+      "recall": 0.017745302713987474,
+      "description": "\"Any process that stops, prevents or reduces the frequency, rate or extent of nucleic acid-templated transcription.\" [GO_REF:0000058, GOC:pr, GOC:TermGenie, GOC:txnOH, GOC:vw]",
+      "name": "negative regulation of nucleic acid-templated transcription",
+      "native": "GO:1903507",
+      "parents": [
+        "GO:1902679",
+        "GO:0097659",
+        "GO:1903506"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 26822
+    },
+    {
+      "goshv": 38212,
+      "p_value": 0.0001117924720530311,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 17,
+      "term_size": 959,
+      "query_size": 59,
+      "precision": 0.288135593220339,
+      "recall": 0.017726798748696558,
+      "description": "\"Any process that stops, prevents or reduces the frequency, rate or extent of RNA biosynthetic process.\" [GO:jl, GO_REF:0000058, GOC:TermGenie]",
+      "name": "negative regulation of RNA biosynthetic process",
+      "native": "GO:1902679",
+      "parents": [
+        "GO:0032774",
+        "GO:0051253",
+        "GO:0010558",
+        "GO:0031327",
+        "GO:2001141"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 26082
+    },
+    {
+      "goshv": 33584,
+      "p_value": 0.00011632883411398107,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 37,
+      "term_size": 4444,
+      "query_size": 59,
+      "precision": 0.6271186440677966,
+      "recall": 0.008325832583258325,
+      "description": "\"Any process that modulates the frequency, rate or extent of the chemical reactions and pathways within a cell or an organism involving those compounds formed as a part of the normal anabolic and catabolic processes. These processes take place in most, if not all, cells of the organism.\" [PMID:19211694]",
+      "name": "regulation of primary metabolic process",
+      "native": "GO:0080090",
+      "parents": [
+        "GO:0019222",
+        "GO:0044238"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 21454
+    },
+    {
+      "goshv": 49345,
+      "p_value": 0.00012999155692630372,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 7,
+      "term_size": 104,
+      "query_size": 48,
+      "precision": 0.14583333333333334,
+      "recall": 0.0673076923076923,
+      "description": "Positive epigenetic regulation of rRNA expression",
+      "name": "Positive epigenetic regulation of rRNA expression",
+      "native": "REAC:R-HSA-5250913",
+      "parents": [
+        "REAC:R-HSA-212165"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 1478
+    },
+    {
+      "goshv": 26054,
+      "p_value": 0.00014111635665666912,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 19,
+      "term_size": 1233,
+      "query_size": 59,
+      "precision": 0.3220338983050847,
+      "recall": 0.015409570154095702,
+      "description": "\"Any process that activates or increases the frequency, rate or extent of cellular DNA-templated transcription.\" [GOC:go_curators, GOC:txnOH]",
+      "name": "positive regulation of transcription, DNA-templated",
+      "native": "GO:0045893",
+      "parents": [
+        "GO:0010628",
+        "GO:1903508",
+        "GO:0006351",
+        "GO:0006355"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 13924
+    },
+    {
+      "goshv": 38953,
+      "p_value": 0.00014479275282048036,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 19,
+      "term_size": 1235,
+      "query_size": 59,
+      "precision": 0.3220338983050847,
+      "recall": 0.015384615384615385,
+      "description": "\"Any process that activates or increases the frequency, rate or extent of nucleic acid-templated transcription.\" [GO_REF:0000058, GOC:pr, GOC:TermGenie, GOC:txnOH, GOC:vw]",
+      "name": "positive regulation of nucleic acid-templated transcription",
+      "native": "GO:1903508",
+      "parents": [
+        "GO:0097659",
+        "GO:1902680",
+        "GO:1903506"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 26823
+    },
+    {
+      "goshv": 38213,
+      "p_value": 0.00014666389799415611,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 19,
+      "term_size": 1236,
+      "query_size": 59,
+      "precision": 0.3220338983050847,
+      "recall": 0.015372168284789644,
+      "description": "\"Any process that activates or increases the frequency, rate or extent of RNA biosynthetic process.\" [GO:jl, GO_REF:0000058, GOC:TermGenie]",
+      "name": "positive regulation of RNA biosynthetic process",
+      "native": "GO:1902680",
+      "parents": [
+        "GO:0032774",
+        "GO:0010557",
+        "GO:0051254",
+        "GO:2001141",
+        "GO:0031328"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 26083
+    },
+    {
+      "goshv": 17844,
+      "p_value": 0.0001631732760249705,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 40,
+      "term_size": 5195,
+      "query_size": 59,
+      "precision": 0.6779661016949152,
+      "recall": 0.007699711260827719,
+      "description": "\"A process that results in the assembly, arrangement of constituent parts, or disassembly of a cellular component.\" [GOC:ai, GOC:jl, GOC:mah]",
+      "name": "cellular component organization",
+      "native": "GO:0016043",
+      "parents": [
+        "GO:0071840",
+        "GO:0009987"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 5714
+    },
+    {
+      "goshv": 49425,
+      "p_value": 0.00016828935303684923,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 7,
+      "term_size": 108,
+      "query_size": 48,
+      "precision": 0.14583333333333334,
+      "recall": 0.06481481481481481,
+      "description": "RNA Polymerase I Promoter Clearance",
+      "name": "RNA Polymerase I Promoter Clearance",
+      "native": "REAC:R-HSA-73854",
+      "parents": [
+        "REAC:R-HSA-73864"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 1558
+    },
+    {
+      "goshv": 49158,
+      "p_value": 0.00016828935303684923,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 7,
+      "term_size": 108,
+      "query_size": 48,
+      "precision": 0.14583333333333334,
+      "recall": 0.06481481481481481,
+      "description": "Negative epigenetic regulation of rRNA expression",
+      "name": "Negative epigenetic regulation of rRNA expression",
+      "native": "REAC:R-HSA-5250941",
+      "parents": [
+        "REAC:R-HSA-212165"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 1291
+    },
+    {
+      "goshv": 25022,
+      "p_value": 0.00017531073137497724,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 36,
+      "term_size": 4286,
+      "query_size": 59,
+      "precision": 0.6101694915254238,
+      "recall": 0.008399440037330844,
+      "description": "\"The chemical reactions and pathways involving a specific protein, rather than of proteins in general, occurring at the level of an individual cell. Includes cellular protein modification.\" [GOC:jl]",
+      "name": "cellular protein metabolic process",
+      "native": "GO:0044267",
+      "parents": [
+        "GO:0044260",
+        "GO:0019538"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 12892
+    },
+    {
+      "goshv": 49428,
+      "p_value": 0.00019074313555982338,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 7,
+      "term_size": 110,
+      "query_size": 48,
+      "precision": 0.14583333333333334,
+      "recall": 0.06363636363636363,
+      "description": "RNA Polymerase I Transcription",
+      "name": "RNA Polymerase I Transcription",
+      "native": "REAC:R-HSA-73864",
+      "parents": [
+        "REAC:R-HSA-74160"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 1561
+    },
+    {
+      "goshv": 49271,
+      "p_value": 0.0002437863445234587,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 6,
+      "term_size": 71,
+      "query_size": 48,
+      "precision": 0.125,
+      "recall": 0.08450704225352113,
+      "description": "PKMTs methylate histone lysines",
+      "name": "PKMTs methylate histone lysines",
+      "native": "REAC:R-HSA-3214841",
+      "parents": [
+        "REAC:R-HSA-3247509"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 1404
+    },
+    {
+      "goshv": 49434,
+      "p_value": 0.00025751789216206067,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 19,
+      "term_size": 1237,
+      "query_size": 48,
+      "precision": 0.3958333333333333,
+      "recall": 0.015359741309620048,
+      "description": "RNA Polymerase II Transcription",
+      "name": "RNA Polymerase II Transcription",
+      "native": "REAC:R-HSA-73857",
+      "parents": [
+        "REAC:R-HSA-74160"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 1567
+    },
+    {
+      "goshv": 20475,
+      "p_value": 0.0002741015940360539,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 37,
+      "term_size": 4580,
+      "query_size": 59,
+      "precision": 0.6271186440677966,
+      "recall": 0.008078602620087336,
+      "description": "\"Any process that modulates the frequency, rate or extent of the chemical reactions and pathways by which individual cells transform chemical substances.\" [GOC:mah]",
+      "name": "regulation of cellular metabolic process",
+      "native": "GO:0031323",
+      "parents": [
+        "GO:0050794",
+        "GO:0044237",
+        "GO:0019222"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 8345
+    },
+    {
+      "goshv": 16960,
+      "p_value": 0.0003343136590395363,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 21,
+      "term_size": 1592,
+      "query_size": 59,
+      "precision": 0.3559322033898305,
+      "recall": 0.013190954773869347,
+      "description": "\"Any process that increases the frequency, rate or extent of gene expression. Gene expression is the process in which a gene's coding sequence is converted into a mature gene product or products (proteins or RNA). This includes the production of an RNA transcript as well as any processing to produce a mature RNA product or an mRNA or circRNA (for protein-coding genes) and the translation of that mRNA or circRNA into protein. Protein maturation is included when required to form an active form of a product from an inactive precursor form.\" [GOC:dph, GOC:tb]",
+      "name": "positive regulation of gene expression",
+      "native": "GO:0010628",
+      "parents": [
+        "GO:0010468",
+        "GO:0010604",
+        "GO:0010467"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 4830
+    },
+    {
+      "goshv": 28209,
+      "p_value": 0.00035365771063188055,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 19,
+      "term_size": 1307,
+      "query_size": 59,
+      "precision": 0.3220338983050847,
+      "recall": 0.014537107880642693,
+      "description": "\"Any process that activates or increases the frequency, rate or extent of the chemical reactions and pathways involving RNA.\" [GOC:ai]",
+      "name": "positive regulation of RNA metabolic process",
+      "native": "GO:0051254",
+      "parents": [
+        "GO:0016070",
+        "GO:0010604",
+        "GO:0045935",
+        "GO:0051252"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 16079
+    },
+    {
+      "goshv": 26094,
+      "p_value": 0.0003935316671514578,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 20,
+      "term_size": 1459,
+      "query_size": 59,
+      "precision": 0.3389830508474576,
+      "recall": 0.013708019191226868,
+      "description": "\"Any cellular process that activates or increases the frequency, rate or extent of the chemical reactions and pathways involving nucleobases, nucleosides, nucleotides and nucleic acids.\" [GOC:go_curators]",
+      "name": "positive regulation of nucleobase-containing compound metabolic process",
+      "native": "GO:0045935",
+      "parents": [
+        "GO:0019219",
+        "GO:0031325",
+        "GO:0051173",
+        "GO:0006139"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 13964
+    },
+    {
+      "goshv": 32386,
+      "p_value": 0.00041151326444309575,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 40,
+      "term_size": 5354,
+      "query_size": 59,
+      "precision": 0.6779661016949152,
+      "recall": 0.007471049682480389,
+      "description": "\"A process that results in the biosynthesis of constituent macromolecules, assembly, arrangement of constituent parts, or disassembly of a cellular component.\" [GOC:mah]",
+      "name": "cellular component organization or biogenesis",
+      "native": "GO:0071840",
+      "parents": [
+        "GO:0008150"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 20256
+    },
+    {
+      "goshv": 32371,
+      "p_value": 0.0005180223539037173,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 9,
+      "term_size": 240,
+      "query_size": 59,
+      "precision": 0.15254237288135594,
+      "recall": 0.0375,
+      "description": "\"Any process in which macromolecules aggregate, disaggregate, or are modified, resulting in the formation, disassembly, or alteration of a protein-DNA complex.\" [GOC:mah]",
+      "name": "protein-DNA complex subunit organization",
+      "native": "GO:0071824",
+      "parents": [
+        "GO:0043933"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 20241
+    },
+    {
+      "goshv": 12194,
+      "p_value": 0.0006015132260351052,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 13,
+      "term_size": 603,
+      "query_size": 59,
+      "precision": 0.22033898305084745,
+      "recall": 0.02155887230514096,
+      "description": "\"Any process that stops, prevents, or reduces the frequency, rate or extent of transcription mediated by RNA polymerase II.\" [GOC:go_curators, GOC:txnOH]",
+      "name": "negative regulation of transcription by RNA polymerase II",
+      "native": "GO:0000122",
+      "parents": [
+        "GO:0045892",
+        "GO:0006366",
+        "GO:0006357"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 64
+    },
+    {
+      "goshv": 49432,
+      "p_value": 0.0006164619306742497,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 6,
+      "term_size": 83,
+      "query_size": 48,
+      "precision": 0.125,
+      "recall": 0.07228915662650602,
+      "description": "RNA Polymerase II Pre-transcription Events",
+      "name": "RNA Polymerase II Pre-transcription Events",
+      "native": "REAC:R-HSA-674695",
+      "parents": [
+        "REAC:R-HSA-73857"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 1565
+    },
+    {
+      "goshv": 48765,
+      "p_value": 0.0012803444670058902,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 6,
+      "term_size": 94,
+      "query_size": 48,
+      "precision": 0.125,
+      "recall": 0.06382978723404255,
+      "description": "HDACs deacetylate histones",
+      "name": "HDACs deacetylate histones",
+      "native": "REAC:R-HSA-3214815",
+      "parents": [
+        "REAC:R-HSA-3247509"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 898
+    },
+    {
+      "goshv": 48727,
+      "p_value": 0.0014077735065556429,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 17,
+      "term_size": 1116,
+      "query_size": 48,
+      "precision": 0.3541666666666667,
+      "recall": 0.015232974910394265,
+      "description": "Generic Transcription Pathway",
+      "name": "Generic Transcription Pathway",
+      "native": "REAC:R-HSA-212436",
+      "parents": [
+        "REAC:R-HSA-73857"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 860
+    },
+    {
+      "goshv": 16895,
+      "p_value": 0.001615801248222305,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 19,
+      "term_size": 1442,
+      "query_size": 59,
+      "precision": 0.3220338983050847,
+      "recall": 0.013176144244105409,
+      "description": "\"Any process that increases the rate, frequency or extent of the chemical reactions and pathways resulting in the formation of a macromolecule, any molecule of high relative molecular mass, the structure of which essentially comprises the multiple repetition of units derived, actually or conceptually, from molecules of low relative molecular mass.\" [GOC:dph, GOC:tb]",
+      "name": "positive regulation of macromolecule biosynthetic process",
+      "native": "GO:0010557",
+      "parents": [
+        "GO:0010556",
+        "GO:0010604",
+        "GO:0009059",
+        "GO:0009891"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 4765
+    },
+    {
+      "goshv": 18975,
+      "p_value": 0.001821445304033816,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 36,
+      "term_size": 4672,
+      "query_size": 59,
+      "precision": 0.6101694915254238,
+      "recall": 0.007705479452054794,
+      "description": "\"The chemical reactions and pathways involving a protein. Includes protein modification.\" [GOC:ma]",
+      "name": "protein metabolic process",
+      "native": "GO:0019538",
+      "parents": [
+        "GO:1901564",
+        "GO:0043170",
+        "GO:0044238"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 6845
+    },
+    {
+      "goshv": 49517,
+      "p_value": 0.0021579409380258012,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 5,
+      "term_size": 59,
+      "query_size": 48,
+      "precision": 0.10416666666666667,
+      "recall": 0.0847457627118644,
+      "description": "Regulation of PTEN gene transcription",
+      "name": "Regulation of PTEN gene transcription",
+      "native": "REAC:R-HSA-8943724",
+      "parents": [
+        "REAC:R-HSA-6807070"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 1650
+    },
+    {
+      "goshv": 41772,
+      "p_value": 0.002368535200161506,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 17,
+      "term_size": 1189,
+      "query_size": 59,
+      "precision": 0.288135593220339,
+      "recall": 0.014297729184188394,
+      "description": "\"Any process that stops, prevents, or reduces the frequency, rate or extent of cellular macromolecule biosynthetic process.\" [GOC:obol]",
+      "name": "negative regulation of cellular macromolecule biosynthetic process",
+      "native": "GO:2000113",
+      "parents": [
+        "GO:0010558",
+        "GO:2000112",
+        "GO:0031327",
+        "GO:0034645"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 29642
+    },
+    {
+      "goshv": 49190,
+      "p_value": 0.002436527517796528,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 6,
+      "term_size": 105,
+      "query_size": 48,
+      "precision": 0.125,
+      "recall": 0.05714285714285714,
+      "description": "NoRC negatively regulates rRNA expression",
+      "name": "NoRC negatively regulates rRNA expression",
+      "native": "REAC:R-HSA-427413",
+      "parents": [
+        "REAC:R-HSA-5250941"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 1323
+    },
+    {
+      "goshv": 22019,
+      "p_value": 0.0028215045004605296,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 4,
+      "term_size": 23,
+      "query_size": 59,
+      "precision": 0.06779661016949153,
+      "recall": 0.17391304347826086,
+      "description": "\"Any process that modulates the frequency, rate or extent of transcription elongation, the extension of an RNA molecule after transcription initiation and promoter clearance by the addition of ribonucleotides, catalyzed by RNA polymerase II.\" [GOC:mah, GOC:txnOH]",
+      "name": "regulation of transcription elongation from RNA polymerase II promoter",
+      "native": "GO:0034243",
+      "parents": [
+        "GO:0006368",
+        "GO:0006357",
+        "GO:0032784"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 9889
+    },
+    {
+      "goshv": 16896,
+      "p_value": 0.0031212022059581503,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 17,
+      "term_size": 1213,
+      "query_size": 59,
+      "precision": 0.288135593220339,
+      "recall": 0.014014839241549877,
+      "description": "\"Any process that decreases the rate, frequency or extent of the chemical reactions and pathways resulting in the formation of a macromolecule, any molecule of high relative molecular mass, the structure of which essentially comprises the multiple repetition of units derived, actually or conceptually, from molecules of low relative molecular mass.\" [GOC:dph, GOC:tb]",
+      "name": "negative regulation of macromolecule biosynthetic process",
+      "native": "GO:0010558",
+      "parents": [
+        "GO:0010556",
+        "GO:0010605",
+        "GO:0009890",
+        "GO:0009059"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 4766
+    },
+    {
+      "goshv": 16961,
+      "p_value": 0.0031646976540802203,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 20,
+      "term_size": 1662,
+      "query_size": 59,
+      "precision": 0.3389830508474576,
+      "recall": 0.012033694344163659,
+      "description": "\"Any process that decreases the frequency, rate or extent of gene expression. Gene expression is the process in which a gene's coding sequence is converted into a mature gene product or products (proteins or RNA). This includes the production of an RNA transcript as well as any processing to produce a mature RNA product or an mRNA or circRNA (for protein-coding genes) and the translation of that mRNA or circRNA into protein. Protein maturation is included when required to form an active form of a product from an inactive precursor form.\" [GOC:dph, GOC:tb]",
+      "name": "negative regulation of gene expression",
+      "native": "GO:0010629",
+      "parents": [
+        "GO:0010468",
+        "GO:0010605",
+        "GO:0010467"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 4831
+    },
+    {
+      "goshv": 20480,
+      "p_value": 0.003183631874147656,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 19,
+      "term_size": 1508,
+      "query_size": 59,
+      "precision": 0.3220338983050847,
+      "recall": 0.012599469496021221,
+      "description": "\"Any process that activates or increases the frequency, rate or extent of the chemical reactions and pathways resulting in the formation of substances, carried out by individual cells.\" [GOC:mah]",
+      "name": "positive regulation of cellular biosynthetic process",
+      "native": "GO:0031328",
+      "parents": [
+        "GO:0031326",
+        "GO:0031325",
+        "GO:0044249",
+        "GO:0009891"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 8350
+    },
+    {
+      "goshv": 49633,
+      "p_value": 0.0033695562047417363,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 7,
+      "term_size": 169,
+      "query_size": 48,
+      "precision": 0.14583333333333334,
+      "recall": 0.04142011834319527,
+      "description": "SUMO E3 ligases SUMOylate target proteins",
+      "name": "SUMO E3 ligases SUMOylate target proteins",
+      "native": "REAC:R-HSA-3108232",
+      "parents": [
+        "REAC:R-HSA-2990846"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 1766
+    },
+    {
+      "goshv": 16397,
+      "p_value": 0.004115287385176925,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 19,
+      "term_size": 1534,
+      "query_size": 59,
+      "precision": 0.3220338983050847,
+      "recall": 0.012385919165580182,
+      "description": "\"Any process that activates or increases the frequency, rate or extent of the chemical reactions and pathways resulting in the formation of substances.\" [GOC:go_curators]",
+      "name": "positive regulation of biosynthetic process",
+      "native": "GO:0009891",
+      "parents": [
+        "GO:0009893",
+        "GO:0009889",
+        "GO:0009058"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 4267
+    },
+    {
+      "goshv": 49637,
+      "p_value": 0.004232024732680124,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 7,
+      "term_size": 175,
+      "query_size": 48,
+      "precision": 0.14583333333333334,
+      "recall": 0.04,
+      "description": "SUMOylation",
+      "name": "SUMOylation",
+      "native": "REAC:R-HSA-2990846",
+      "parents": [
+        "REAC:R-HSA-597592"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 1770
+    },
+    {
+      "goshv": 20479,
+      "p_value": 0.004923278737713238,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 17,
+      "term_size": 1254,
+      "query_size": 59,
+      "precision": 0.288135593220339,
+      "recall": 0.013556618819776715,
+      "description": "\"Any process that stops, prevents, or reduces the frequency, rate or extent of the chemical reactions and pathways resulting in the formation of substances, carried out by individual cells.\" [GOC:mah]",
+      "name": "negative regulation of cellular biosynthetic process",
+      "native": "GO:0031327",
+      "parents": [
+        "GO:0031324",
+        "GO:0031326",
+        "GO:0044249",
+        "GO:0009890"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 8349
+    },
+    {
+      "goshv": 14509,
+      "p_value": 0.005733615692020378,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 7,
+      "term_size": 167,
+      "query_size": 59,
+      "precision": 0.11864406779661017,
+      "recall": 0.041916167664670656,
+      "description": "\"The formation or destruction of chromatin structures.\" [GOC:mah]",
+      "name": "chromatin assembly or disassembly",
+      "native": "GO:0006333",
+      "parents": [
+        "GO:0006325"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2379
+    },
+    {
+      "goshv": 16396,
+      "p_value": 0.00578917395611825,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 17,
+      "term_size": 1269,
+      "query_size": 59,
+      "precision": 0.288135593220339,
+      "recall": 0.013396375098502758,
+      "description": "\"Any process that stops, prevents, or reduces the rate of the chemical reactions and pathways resulting in the formation of substances.\" [GOC:go_curators]",
+      "name": "negative regulation of biosynthetic process",
+      "native": "GO:0009890",
+      "parents": [
+        "GO:0009058",
+        "GO:0009889",
+        "GO:0009892"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 4266
+    },
+    {
+      "goshv": 20351,
+      "p_value": 0.006431365614225013,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 4,
+      "term_size": 28,
+      "query_size": 59,
+      "precision": 0.06779661016949153,
+      "recall": 0.14285714285714285,
+      "description": "\"Any process that activates or increases the frequency, rate or extent of the covalent addition of methyl groups to histones.\" [GOC:mah]",
+      "name": "positive regulation of histone methylation",
+      "native": "GO:0031062",
+      "parents": [
+        "GO:0031060",
+        "GO:0031058",
+        "GO:0016571"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 8221
+    },
+    {
+      "goshv": 20347,
+      "p_value": 0.007136462494946393,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 5,
+      "term_size": 63,
+      "query_size": 59,
+      "precision": 0.0847457627118644,
+      "recall": 0.07936507936507936,
+      "description": "\"Any process that activates or increases the frequency, rate or extent of the covalent alteration of a histone.\" [GOC:mah]",
+      "name": "positive regulation of histone modification",
+      "native": "GO:0031058",
+      "parents": [
+        "GO:0016570",
+        "GO:0031401",
+        "GO:0031056",
+        "GO:1905269"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 8217
+    },
+    {
+      "goshv": 48552,
+      "p_value": 0.007513149054178799,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 5,
+      "term_size": 76,
+      "query_size": 48,
+      "precision": 0.10416666666666667,
+      "recall": 0.06578947368421052,
+      "description": "ERCC6 (CSB) and EHMT2 (G9a) positively regulate rRNA expression",
+      "name": "ERCC6 (CSB) and EHMT2 (G9a) positively regulate rRNA expression",
+      "native": "REAC:R-HSA-427389",
+      "parents": [
+        "REAC:R-HSA-5250913"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 685
+    },
+    {
+      "goshv": 16822,
+      "p_value": 0.010878267834338437,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 3,
+      "term_size": 10,
+      "query_size": 59,
+      "precision": 0.05084745762711865,
+      "recall": 0.3,
+      "description": "\"The modification of histone H3 by addition of one or more methyl groups to lysine at position 36 of the histone.\" [GOC:pr, GOC:tb]",
+      "name": "histone H3-K36 methylation",
+      "native": "GO:0010452",
+      "parents": [
+        "GO:0034968"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 4692
+    },
+    {
+      "goshv": 40588,
+      "p_value": 0.012039260853854206,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 5,
+      "term_size": 70,
+      "query_size": 59,
+      "precision": 0.0847457627118644,
+      "recall": 0.07142857142857142,
+      "description": "\"Any process that activates or increases the frequency, rate or extent of chromatin organization.\" [GO_REF:0000058, GOC:pr, GOC:TermGenie, GOC:vw, PMID:654321]",
+      "name": "positive regulation of chromatin organization",
+      "native": "GO:1905269",
+      "parents": [
+        "GO:0006325",
+        "GO:2001252",
+        "GO:1902275"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 28458
+    },
+    {
+      "goshv": 28141,
+      "p_value": 0.014719981343680067,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 20,
+      "term_size": 1836,
+      "query_size": 59,
+      "precision": 0.3389830508474576,
+      "recall": 0.010893246187363835,
+      "description": "\"Any process that stops, prevents, or reduces the frequency, rate or extent of the chemical reactions and pathways involving nitrogen or nitrogenous compounds.\" [GOC:ai, GOC:tb]",
+      "name": "negative regulation of nitrogen compound metabolic process",
+      "native": "GO:0051172",
+      "parents": [
+        "GO:0006807",
+        "GO:0009892",
+        "GO:0051171"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 16011
+    },
+    {
+      "goshv": 48777,
+      "p_value": 0.016025828025109722,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 4,
+      "term_size": 45,
+      "query_size": 48,
+      "precision": 0.08333333333333333,
+      "recall": 0.08888888888888889,
+      "description": "HIV Transcription Elongation",
+      "name": "HIV Transcription Elongation",
+      "native": "REAC:R-HSA-167169",
+      "parents": [
+        "REAC:R-HSA-167172"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 910
+    },
+    {
+      "goshv": 48642,
+      "p_value": 0.016025828025109722,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 4,
+      "term_size": 45,
+      "query_size": 48,
+      "precision": 0.08333333333333333,
+      "recall": 0.08888888888888889,
+      "description": "Formation of HIV-1 elongation complex containing HIV-1 Tat",
+      "name": "Formation of HIV-1 elongation complex containing HIV-1 Tat",
+      "native": "REAC:R-HSA-167200",
+      "parents": [
+        "REAC:R-HSA-167246"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 775
+    },
+    {
+      "goshv": 49893,
+      "p_value": 0.016025828025109722,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 4,
+      "term_size": 45,
+      "query_size": 48,
+      "precision": 0.08333333333333333,
+      "recall": 0.08888888888888889,
+      "description": "Tat-mediated elongation of the HIV-1 transcript",
+      "name": "Tat-mediated elongation of the HIV-1 transcript",
+      "native": "REAC:R-HSA-167246",
+      "parents": [
+        "REAC:R-HSA-167169"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 2026
+    },
+    {
+      "goshv": 48641,
+      "p_value": 0.019056459421908454,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 4,
+      "term_size": 47,
+      "query_size": 48,
+      "precision": 0.08333333333333333,
+      "recall": 0.0851063829787234,
+      "description": "Formation of HIV elongation complex in the absence of HIV Tat",
+      "name": "Formation of HIV elongation complex in the absence of HIV Tat",
+      "native": "REAC:R-HSA-167152",
+      "parents": [
+        "REAC:R-HSA-167172"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 774
+    },
+    {
+      "goshv": 16938,
+      "p_value": 0.02178246626497578,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 22,
+      "term_size": 2231,
+      "query_size": 59,
+      "precision": 0.3728813559322034,
+      "recall": 0.009861048857014791,
+      "description": "\"Any process that decreases the frequency, rate or extent of the chemical reactions and pathways involving macromolecules, any molecule of high relative molecular mass, the structure of which essentially comprises the multiple repetition of units derived, actually or conceptually, from molecules of low relative molecular mass.\" [GOC:dph, GOC:tb]",
+      "name": "negative regulation of macromolecule metabolic process",
+      "native": "GO:0010605",
+      "parents": [
+        "GO:0009892",
+        "GO:0060255",
+        "GO:0043170"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 4808
+    },
+    {
+      "goshv": 21247,
+      "p_value": 0.022532245456528176,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 4,
+      "term_size": 38,
+      "query_size": 59,
+      "precision": 0.06779661016949153,
+      "recall": 0.10526315789473684,
+      "description": "\"Any process that modulates the frequency, rate or extent of transcription elongation, the extension of an RNA molecule after transcription initiation and promoter clearance by the addition of ribonucleotides catalyzed by a DNA-dependent RNA polymerase.\" [GOC:mah, GOC:txnOH]",
+      "name": "regulation of DNA-templated transcription, elongation",
+      "native": "GO:0032784",
+      "parents": [
+        "GO:0006354",
+        "GO:0006355"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 9117
+    },
+    {
+      "goshv": 48258,
+      "p_value": 0.02349919329519254,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 8,
+      "term_size": 311,
+      "query_size": 48,
+      "precision": 0.16666666666666666,
+      "recall": 0.02572347266881029,
+      "description": "DNA Repair",
+      "name": "DNA Repair",
+      "native": "REAC:R-HSA-73894",
+      "parents": [
+        "REAC:0000000"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 391
+    },
+    {
+      "goshv": 20349,
+      "p_value": 0.02503568977870343,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 4,
+      "term_size": 39,
+      "query_size": 59,
+      "precision": 0.06779661016949153,
+      "recall": 0.10256410256410256,
+      "description": "\"Any process that modulates the frequency, rate or extent of the covalent addition of methyl groups to histones.\" [GOC:mah]",
+      "name": "regulation of histone methylation",
+      "native": "GO:0031060",
+      "parents": [
+        "GO:0031056",
+        "GO:0016571"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 8219
+    },
+    {
+      "goshv": 15079,
+      "p_value": 0.029823889004163853,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 12,
+      "term_size": 731,
+      "query_size": 59,
+      "precision": 0.2033898305084746,
+      "recall": 0.016415868673050615,
+      "description": "\"Any process that results in a change in state or activity of a cell (in terms of movement, secretion, enzyme production, gene expression, etc.) as a result of a stimulus indicating damage to its DNA from environmental insults or errors during metabolism.\" [GOC:go_curators]",
+      "name": "cellular response to DNA damage stimulus",
+      "native": "GO:0006974",
+      "parents": [
+        "GO:0033554"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 2949
+    },
+    {
+      "goshv": 18138,
+      "p_value": 0.032638844891774585,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 3,
+      "term_size": 14,
+      "query_size": 59,
+      "precision": 0.05084745762711865,
+      "recall": 0.21428571428571427,
+      "description": "\"The methylation of peptidyl-lysine to form peptidyl-N6,N6-dimethyl-L-lysine.\" [RESID:AA0075]",
+      "name": "peptidyl-lysine dimethylation",
+      "native": "GO:0018027",
+      "parents": [
+        "GO:0018022"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 6008
+    },
+    {
+      "goshv": 18014,
+      "p_value": 0.03683902070922951,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 9,
+      "term_size": 404,
+      "query_size": 59,
+      "precision": 0.15254237288135594,
+      "recall": 0.022277227722772276,
+      "description": "\"Any process carried out at the cellular level that results in either long-term transcriptional repression via action on chromatin structure or RNA mediated, post-transcriptional repression of gene expression.\" [GOC:dos, GOC:dph, GOC:jid, GOC:tb]",
+      "name": "gene silencing",
+      "native": "GO:0016458",
+      "parents": [
+        "GO:0010629",
+        "GO:0009987"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 5884
+    },
+    {
+      "goshv": 18051,
+      "p_value": 0.040733837647050415,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 4,
+      "term_size": 44,
+      "query_size": 59,
+      "precision": 0.06779661016949153,
+      "recall": 0.09090909090909091,
+      "description": "\"The modification of histones by addition of ubiquitin groups.\" [GOC:ai]",
+      "name": "histone ubiquitination",
+      "native": "GO:0016574",
+      "parents": [
+        "GO:0016570",
+        "GO:0016567"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 5921
+    },
+    {
+      "goshv": 20476,
+      "p_value": 0.042896628453580055,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 20,
+      "term_size": 1972,
+      "query_size": 59,
+      "precision": 0.3389830508474576,
+      "recall": 0.010141987829614604,
+      "description": "\"Any process that stops, prevents, or reduces the frequency, rate or extent of the chemical reactions and pathways by which individual cells transform chemical substances.\" [GOC:mah]",
+      "name": "negative regulation of cellular metabolic process",
+      "native": "GO:0031324",
+      "parents": [
+        "GO:0031323",
+        "GO:0048523",
+        "GO:0009892",
+        "GO:0044237"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 8346
+    },
+    {
+      "goshv": 48538,
+      "p_value": 0.04368605718472918,
+      "significant": true,
+      "effective_domain_size": 10478,
+      "intersection_size": 4,
+      "term_size": 58,
+      "query_size": 48,
+      "precision": 0.08333333333333333,
+      "recall": 0.06896551724137931,
+      "description": "E3 ubiquitin ligases ubiquitinate target proteins",
+      "name": "E3 ubiquitin ligases ubiquitinate target proteins",
+      "native": "REAC:R-HSA-8866654",
+      "parents": [
+        "REAC:R-HSA-8852135"
+      ],
+      "source": "REAC",
+      "query": "query_1",
+      "source_order": 671
+    },
+    {
+      "goshv": 20345,
+      "p_value": 0.04833543646007075,
+      "significant": true,
+      "effective_domain_size": 15383,
+      "intersection_size": 5,
+      "term_size": 93,
+      "query_size": 59,
+      "precision": 0.0847457627118644,
+      "recall": 0.053763440860215055,
+      "description": "\"Any process that modulates the frequency, rate or extent of the covalent alteration of a histone.\" [GOC:mah]",
+      "name": "regulation of histone modification",
+      "native": "GO:0031056",
+      "parents": [
+        "GO:0016570",
+        "GO:0031399",
+        "GO:1902275"
+      ],
+      "source": "GO:BP",
+      "query": "query_1",
+      "source_order": 8215
+    }
+  ],
+  "meta": {
+    "query_metadata": {
+      "queries": {
+        "query_1": [
+          "DOT1L",
+          "AFF4",
+          "NAP1L3",
+          "BRPF1",
+          "TCF20",
+          "HLTF",
+          "SIRT1",
+          "TDG",
+          "SUV39H2",
+          "CBX7",
+          "DNMT1",
+          "DPY30",
+          "ING5",
+          "MLLT6",
+          "CHD1L",
+          "USP27X",
+          "BRPF3",
+          "ELP4",
+          "HCFC1",
+          "MARCH5",
+          "SCML2",
+          "PRDM10",
+          "SUPT16H",
+          "TRIM24",
+          "GTF2H1",
+          "KDM3A",
+          "PAF1",
+          "PCGF5",
+          "BAZ1B",
+          "NCOA1",
+          "UBE2B",
+          "SGF29",
+          "KDM5B",
+          "MTA3",
+          "PCMT1",
+          "GTF3C4",
+          "MTA2",
+          "RBBP4",
+          "RNF20",
+          "SETD2",
+          "SSRP1",
+          "MBD1",
+          "POLR2B",
+          "TP53BP1",
+          "UBR7",
+          "ARID4B",
+          "ASH1L",
+          "BRD4",
+          "HAT1",
+          "HDAC1",
+          "KAT2A",
+          "MBD3",
+          "MSL3",
+          "RPA3",
+          "BAZ2A",
+          "JMJD6",
+          "PHF7",
+          "SIN3B",
+          "SP100",
+          "ZMYND11"
+        ]
+      },
+      "organism": "hsapiens",
+      "all_results": false,
+      "ordered": false,
+      "no_iea": true,
+      "sources": [
+        "GO:BP",
+        "REAC"
+      ],
+      "combined": false,
+      "aresolve": {},
+      "numeric_ns": "ENTREZGENE_ACC",
+      "domain_scope": "annotated",
+      "measure_underrepresentation": false,
+      "significance_threshold_method": "g_SCS",
+      "user_threshold": 0.05,
+      "no_evidences": true
+    },
+    "result_metadata": {
+      "timestamp": "2019-04-03T18:59:47.001147+00:00",
+      "GO:BP": {
+        "domain_size": 17622,
+        "number_of_terms": 30804,
+        "threshold": 2.9e-05
+      },
+      "REAC": {
+        "domain_size": 10478,
+        "number_of_terms": 2257,
+        "threshold": 0.000157
+      }
+    },
+    "genes_metadata": {
+      "failed": [],
+      "ambiguous": {},
+      "duplicates": [],
+      "query": {
+        "query_1": {
+          "mapping": {
+            "DOT1L": [
+              "ENSG00000104885"
+            ],
+            "AFF4": [
+              "ENSG00000072364"
+            ],
+            "NAP1L3": [
+              "ENSG00000186310"
+            ],
+            "BRPF1": [
+              "ENSG00000156983"
+            ],
+            "TCF20": [
+              "ENSG00000100207"
+            ],
+            "HLTF": [
+              "ENSG00000071794"
+            ],
+            "SIRT1": [
+              "ENSG00000096717"
+            ],
+            "TDG": [
+              "ENSG00000139372"
+            ],
+            "SUV39H2": [
+              "ENSG00000152455"
+            ],
+            "CBX7": [
+              "ENSG00000100307"
+            ],
+            "DNMT1": [
+              "ENSG00000130816"
+            ],
+            "DPY30": [
+              "ENSG00000162961"
+            ],
+            "ING5": [
+              "ENSG00000168395"
+            ],
+            "MLLT6": [
+              "ENSG00000275023"
+            ],
+            "CHD1L": [
+              "ENSG00000131778"
+            ],
+            "USP27X": [
+              "ENSG00000273820"
+            ],
+            "BRPF3": [
+              "ENSG00000096070"
+            ],
+            "ELP4": [
+              "ENSG00000109911"
+            ],
+            "HCFC1": [
+              "ENSG00000172534"
+            ],
+            "MARCH5": [
+              "ENSG00000198060"
+            ],
+            "SCML2": [
+              "ENSG00000102098"
+            ],
+            "PRDM10": [
+              "ENSG00000170325"
+            ],
+            "SUPT16H": [
+              "ENSG00000092201"
+            ],
+            "TRIM24": [
+              "ENSG00000122779"
+            ],
+            "GTF2H1": [
+              "ENSG00000110768"
+            ],
+            "KDM3A": [
+              "ENSG00000115548"
+            ],
+            "PAF1": [
+              "ENSG00000006712"
+            ],
+            "PCGF5": [
+              "ENSG00000180628"
+            ],
+            "BAZ1B": [
+              "ENSG00000009954"
+            ],
+            "NCOA1": [
+              "ENSG00000084676"
+            ],
+            "UBE2B": [
+              "ENSG00000119048"
+            ],
+            "SGF29": [
+              "ENSG00000176476"
+            ],
+            "KDM5B": [
+              "ENSG00000117139"
+            ],
+            "MTA3": [
+              "ENSG00000057935"
+            ],
+            "PCMT1": [
+              "ENSG00000120265"
+            ],
+            "GTF3C4": [
+              "ENSG00000125484"
+            ],
+            "MTA2": [
+              "ENSG00000149480"
+            ],
+            "RBBP4": [
+              "ENSG00000162521"
+            ],
+            "RNF20": [
+              "ENSG00000155827"
+            ],
+            "SETD2": [
+              "ENSG00000181555"
+            ],
+            "SSRP1": [
+              "ENSG00000149136"
+            ],
+            "MBD1": [
+              "ENSG00000141644"
+            ],
+            "POLR2B": [
+              "ENSG00000047315"
+            ],
+            "TP53BP1": [
+              "ENSG00000067369"
+            ],
+            "UBR7": [
+              "ENSG00000012963"
+            ],
+            "ARID4B": [
+              "ENSG00000054267"
+            ],
+            "ASH1L": [
+              "ENSG00000116539"
+            ],
+            "BRD4": [
+              "ENSG00000141867"
+            ],
+            "HAT1": [
+              "ENSG00000128708"
+            ],
+            "HDAC1": [
+              "ENSG00000116478"
+            ],
+            "KAT2A": [
+              "ENSG00000108773"
+            ],
+            "MBD3": [
+              "ENSG00000071655"
+            ],
+            "MSL3": [
+              "ENSG00000005302"
+            ],
+            "RPA3": [
+              "ENSG00000106399"
+            ],
+            "BAZ2A": [
+              "ENSG00000076108"
+            ],
+            "JMJD6": [
+              "ENSG00000070495"
+            ],
+            "PHF7": [
+              "ENSG00000010318"
+            ],
+            "SIN3B": [
+              "ENSG00000127511"
+            ],
+            "SP100": [
+              "ENSG00000067066"
+            ],
+            "ZMYND11": [
+              "ENSG00000015171"
+            ]
+          },
+          "ensgs": [
+            "ENSG00000104885",
+            "ENSG00000072364",
+            "ENSG00000186310",
+            "ENSG00000156983",
+            "ENSG00000100207",
+            "ENSG00000071794",
+            "ENSG00000096717",
+            "ENSG00000139372",
+            "ENSG00000152455",
+            "ENSG00000100307",
+            "ENSG00000130816",
+            "ENSG00000162961",
+            "ENSG00000168395",
+            "ENSG00000275023",
+            "ENSG00000131778",
+            "ENSG00000273820",
+            "ENSG00000096070",
+            "ENSG00000109911",
+            "ENSG00000172534",
+            "ENSG00000198060",
+            "ENSG00000102098",
+            "ENSG00000170325",
+            "ENSG00000092201",
+            "ENSG00000122779",
+            "ENSG00000110768",
+            "ENSG00000115548",
+            "ENSG00000006712",
+            "ENSG00000180628",
+            "ENSG00000009954",
+            "ENSG00000084676",
+            "ENSG00000119048",
+            "ENSG00000176476",
+            "ENSG00000117139",
+            "ENSG00000057935",
+            "ENSG00000120265",
+            "ENSG00000125484",
+            "ENSG00000149480",
+            "ENSG00000162521",
+            "ENSG00000155827",
+            "ENSG00000181555",
+            "ENSG00000149136",
+            "ENSG00000141644",
+            "ENSG00000047315",
+            "ENSG00000067369",
+            "ENSG00000012963",
+            "ENSG00000054267",
+            "ENSG00000116539",
+            "ENSG00000141867",
+            "ENSG00000128708",
+            "ENSG00000116478",
+            "ENSG00000108773",
+            "ENSG00000071655",
+            "ENSG00000005302",
+            "ENSG00000106399",
+            "ENSG00000076108",
+            "ENSG00000070495",
+            "ENSG00000010318",
+            "ENSG00000127511",
+            "ENSG00000067066",
+            "ENSG00000015171"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -49,8 +49,9 @@ class EnrichmentTooltip extends React.Component {
     let {node} = this.props;
     let { description, name } = this.state;
     let title = node.data('name');
-    let sharedGeneList = node.data('intersection').sort();
-    let sharedGeneCount = sharedGeneList.length;
+    // See #1348 https://github.com/PathwayCommons/app-ui/issues/1348
+    // let sharedGeneList = node.data('intersection').sort();
+    // let sharedGeneCount = sharedGeneList.length;
     let url = node.data('uri');
 
     if( !this.state.descriptionLoaded ){
@@ -83,10 +84,11 @@ class EnrichmentTooltip extends React.Component {
         ]),
         h('div.cy-tooltip-body', [
           descriptionSection,
-          h('div.cy-tooltip-section', [
-            h('div.cy-tooltip-field-name', 'Genes Shared with Entered List (' + sharedGeneCount + ')'),
-            h('div.cy-tooltip-field-value', sharedGeneList.join(', ')),
-          ])
+          // See #1348 https://github.com/PathwayCommons/app-ui/issues/1348
+          // h('div.cy-tooltip-section', [
+          //   h('div.cy-tooltip-field-name', 'Genes Shared with Entered List (' + sharedGeneCount + ')'),
+          //   h('div.cy-tooltip-field-value', sharedGeneList.join(', ')),
+          // ])
         ]),
         h('div.cy-tooltip-call-to-action', [
           h('a', {

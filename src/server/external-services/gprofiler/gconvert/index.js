@@ -16,6 +16,8 @@ const GPROFILER_NS_MAP = new Map([
   [NS_ENSEMBL, 'ENSG']
 ]);
 
+const toJSON = res => res.json();
+
 // create gconvert opts for a gconvert request
 // validates params
 const createGConvertOpts = opts => {
@@ -43,8 +45,8 @@ const createGConvertOpts = opts => {
   return gConvertOpts;
 };
 
-const gConvertResponseHandler = body =>  {
-  let entityInfoList = _.get( JSON.parse( body ), ['result'] );
+const gConvertResponseHandler = json =>  {
+  let entityInfoList = _.get( json, ['result'] );
   let unrecognized = new Set();
   let duplicate = {};
   let entityMap = new Map();
@@ -97,7 +99,7 @@ const rawValidatorGconvert = ( query, opts = {} ) => {
       body: JSON.stringify( gconvertOpts ),
       headers: { 'Content-Type': 'application/json' }
     }))
-    .then( response => response.text() )
+    .then( toJSON )
     .then( gConvertResponseHandler )
     .catch( err => {
       logger.error(`Error in validatorGconvert - ${err.message}`);

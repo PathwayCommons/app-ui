@@ -1,0 +1,65 @@
+{
+  "result": [
+    {
+      "converted": "TP53",
+      "description": "tumor protein p53 [Source:HGNC Symbol;Acc:HGNC:11998]",
+      "incoming": "TP53",
+      "n_converted": 1,
+      "n_incoming": 1,
+      "name": "TP53",
+      "namespaces": "DBASS3,DBASS5,ENTREZGENE,HGNC,UNIPROT_GN,WIKIGENE",
+      "query": "query_1"
+    },
+    {
+      "converted": "TP53",
+      "description": "tumor protein p53 [Source:HGNC Symbol;Acc:HGNC:11998]",
+      "incoming": "P04637",
+      "n_converted": 1,
+      "n_incoming": 2,
+      "name": "TP53",
+      "namespaces": "UNIPROTSWISSPROT,UNIPROT_GN_ACC",
+      "query": "query_1"
+    },
+    {
+      "converted": "TP53",
+      "description": "tumor protein p53 [Source:HGNC Symbol;Acc:HGNC:11998]",
+      "incoming": "ENSG00000141510",
+      "n_converted": 1,
+      "n_incoming": 3,
+      "name": "TP53",
+      "namespaces": "ARRAYEXPRESS,ENSG",
+      "query": "query_1"
+    },
+    {
+      "converted": "GDF15",
+      "description": "growth differentiation factor 15 [Source:HGNC Symbol;Acc:HGNC:30142]",
+      "incoming": "9518",
+      "n_converted": 1,
+      "n_incoming": 4,
+      "name": "GDF15",
+      "namespaces": "ENTREZGENE_ACC",
+      "query": "query_1"
+    },
+    {
+      "converted": "E2F1",
+      "description": "E2F transcription factor 1 [Source:HGNC Symbol;Acc:HGNC:3113]",
+      "incoming": "E2F1",
+      "n_converted": 1,
+      "n_incoming": 5,
+      "name": "E2F1",
+      "namespaces": "ENTREZGENE,HGNC,UNIPROT_GN,WIKIGENE",
+      "query": "query_1"
+    },
+    {
+      "converted": "None",
+      "description": "None",
+      "incoming": "ATP",
+      "n_converted": 1,
+      "n_incoming": 6,
+      "name": "None",
+      "namespaces": "",
+      "query": "query_1"
+    }
+  ],
+  "meta": {}
+}

@@ -48,6 +48,10 @@ class Enrichment extends React.Component {
         let { pathways } = await ServerAPI.enrichmentAPI({ query: sources}, 'analysis');
         let enrichmentNetwork = await ServerAPI.enrichmentAPI({ pathways }, 'visualization');
         let networkHasZeroNodes = enrichmentNetwork.graph.elements.nodes.length === 0;
+        enrichmentNetwork.graph.elements.nodes.forEach( node => {
+          const intersection = _.intersection( node.data.geneSet, sources );
+          _.assign( node.data, { intersection } );
+        });
 
         cy.remove('*');
         cy.add({

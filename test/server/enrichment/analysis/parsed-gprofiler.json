@@ -1,41 +1,416 @@
 {
   "pathways": [
     {
-      "id": "GO:0006354",
+      "id": "REAC:R-HSA-212165",
       "data": {
-        "p_value": "2.77e-02",
-        "name": "DNA-templated transcription, elongation",
-        "intersection": [
-          "PAF1",
-          "ZMYND11",
-          "POLR2B",
-          "AFF4",
-          "SUPT16H",
-          "ELP4",
-          "GTF2H1",
-          "BRD4",
-          "SSRP1",
-          "SETD2"
-        ]
+        "name": "Epigenetic regulation of gene expression",
+        "p_value": 5.659726374584187e-13
       }
     },
     {
       "id": "GO:0006368",
       "data": {
-        "p_value": "2.77e-02",
         "name": "transcription elongation from RNA polymerase II promoter",
-        "intersection": [
-          "PAF1",
-          "ZMYND11",
-          "POLR2B",
-          "AFF4",
-          "SUPT16H",
-          "ELP4",
-          "GTF2H1",
-          "BRD4",
-          "SSRP1",
-          "SETD2"
-        ]
+        "p_value": 6.264074816701776e-10
+      }
+    },
+    {
+      "id": "GO:0006354",
+      "data": {
+        "name": "DNA-templated transcription, elongation",
+        "p_value": 2.4089926919688302e-9
+      }
+    },
+    {
+      "id": "REAC:R-HSA-6804758",
+      "data": {
+        "name": "Regulation of TP53 Activity through Acetylation",
+        "p_value": 1.606623974775652e-8
+      }
+    },
+    {
+      "id": "GO:0006479",
+      "data": {
+        "name": "protein methylation",
+        "p_value": 3.782614933259162e-8
+      }
+    },
+    {
+      "id": "GO:0008213",
+      "data": {
+        "name": "protein alkylation",
+        "p_value": 3.782614933259162e-8
+      }
+    },
+    {
+      "id": "GO:0016571",
+      "data": {
+        "name": "histone methylation",
+        "p_value": 8.211248493889989e-8
+      }
+    },
+    {
+      "id": "REAC:R-HSA-3214847",
+      "data": {
+        "name": "HATs acetylate histones",
+        "p_value": 2.0399516251606933e-7
+      }
+    },
+    {
+      "id": "GO:0034968",
+      "data": {
+        "name": "histone lysine methylation",
+        "p_value": 3.0491768781139624e-7
+      }
+    },
+    {
+      "id": "REAC:R-HSA-73762",
+      "data": {
+        "name": "RNA Polymerase I Transcription Initiation",
+        "p_value": 3.9981911991147005e-7
+      }
+    },
+    {
+      "id": "GO:0016573",
+      "data": {
+        "name": "histone acetylation",
+        "p_value": 5.193238571543201e-7
+      }
+    },
+    {
+      "id": "REAC:R-HSA-5633007",
+      "data": {
+        "name": "Regulation of TP53 Activity",
+        "p_value": 6.577305404502793e-7
+      }
+    },
+    {
+      "id": "GO:0018393",
+      "data": {
+        "name": "internal peptidyl-lysine acetylation",
+        "p_value": 6.634114472512338e-7
+      }
+    },
+    {
+      "id": "GO:0045814",
+      "data": {
+        "name": "negative regulation of gene expression, epigenetic",
+        "p_value": 9.097086738420277e-7
+      }
+    },
+    {
+      "id": "GO:0006475",
+      "data": {
+        "name": "internal protein amino acid acetylation",
+        "p_value": 9.826242692620404e-7
+      }
+    },
+    {
+      "id": "GO:0018394",
+      "data": {
+        "name": "peptidyl-lysine acetylation",
+        "p_value": 0.0000010606351232011728
+      }
+    },
+    {
+      "id": "GO:0018022",
+      "data": {
+        "name": "peptidyl-lysine methylation",
+        "p_value": 0.0000014105777792013046
+      }
+    },
+    {
+      "id": "GO:0016575",
+      "data": {
+        "name": "histone deacetylation",
+        "p_value": 0.0000029208234822020986
+      }
+    },
+    {
+      "id": "GO:0006338",
+      "data": {
+        "name": "chromatin remodeling",
+        "p_value": 0.000004869318347257595
+      }
+    },
+    {
+      "id": "GO:0097549",
+      "data": {
+        "name": "chromatin organization involved in negative regulation of transcription",
+        "p_value": 0.000006443316066779765
+      }
+    },
+    {
+      "id": "GO:0006342",
+      "data": {
+        "name": "chromatin silencing",
+        "p_value": 0.000006443316066779765
+      }
+    },
+    {
+      "id": "GO:0006473",
+      "data": {
+        "name": "protein acetylation",
+        "p_value": 0.000009495500571201929
+      }
+    },
+    {
+      "id": "GO:0034401",
+      "data": {
+        "name": "chromatin organization involved in regulation of transcription",
+        "p_value": 0.000011117604749624793
+      }
+    },
+    {
+      "id": "GO:0006346",
+      "data": {
+        "name": "methylation-dependent chromatin silencing",
+        "p_value": 0.000013429039722314943
+      }
+    },
+    {
+      "id": "GO:0006476",
+      "data": {
+        "name": "protein deacetylation",
+        "p_value": 0.000014483750584845996
+      }
+    },
+    {
+      "id": "GO:0098732",
+      "data": {
+        "name": "macromolecule deacylation",
+        "p_value": 0.000023628026712808118
+      }
+    },
+    {
+      "id": "GO:0035601",
+      "data": {
+        "name": "protein deacylation",
+        "p_value": 0.000023628026712808118
+      }
+    },
+    {
+      "id": "GO:0043966",
+      "data": {
+        "name": "histone H3 acetylation",
+        "p_value": 0.00007507490647556103
+      }
+    },
+    {
+      "id": "GO:0043543",
+      "data": {
+        "name": "protein acylation",
+        "p_value": 0.00007706966934957791
+      }
+    },
+    {
+      "id": "REAC:R-HSA-75955",
+      "data": {
+        "name": "RNA Polymerase II Transcription Elongation",
+        "p_value": 0.00008851028678399017
+      }
+    },
+    {
+      "id": "REAC:R-HSA-112382",
+      "data": {
+        "name": "Formation of RNA Pol II elongation complex ",
+        "p_value": 0.00008851028678399017
+      }
+    },
+    {
+      "id": "REAC:R-HSA-5250913",
+      "data": {
+        "name": "Positive epigenetic regulation of rRNA expression",
+        "p_value": 0.00012999155692630372
+      }
+    },
+    {
+      "id": "REAC:R-HSA-73854",
+      "data": {
+        "name": "RNA Polymerase I Promoter Clearance",
+        "p_value": 0.00016828935303684923
+      }
+    },
+    {
+      "id": "REAC:R-HSA-5250941",
+      "data": {
+        "name": "Negative epigenetic regulation of rRNA expression",
+        "p_value": 0.00016828935303684923
+      }
+    },
+    {
+      "id": "REAC:R-HSA-73864",
+      "data": {
+        "name": "RNA Polymerase I Transcription",
+        "p_value": 0.00019074313555982338
+      }
+    },
+    {
+      "id": "REAC:R-HSA-3214841",
+      "data": {
+        "name": "PKMTs methylate histone lysines",
+        "p_value": 0.0002437863445234587
+      }
+    },
+    {
+      "id": "REAC:R-HSA-674695",
+      "data": {
+        "name": "RNA Polymerase II Pre-transcription Events",
+        "p_value": 0.0006164619306742497
+      }
+    },
+    {
+      "id": "REAC:R-HSA-3214815",
+      "data": {
+        "name": "HDACs deacetylate histones",
+        "p_value": 0.0012803444670058902
+      }
+    },
+    {
+      "id": "REAC:R-HSA-8943724",
+      "data": {
+        "name": "Regulation of PTEN gene transcription",
+        "p_value": 0.0021579409380258012
+      }
+    },
+    {
+      "id": "REAC:R-HSA-427413",
+      "data": {
+        "name": "NoRC negatively regulates rRNA expression",
+        "p_value": 0.002436527517796528
+      }
+    },
+    {
+      "id": "GO:0034243",
+      "data": {
+        "name": "regulation of transcription elongation from RNA polymerase II promoter",
+        "p_value": 0.0028215045004605296
+      }
+    },
+    {
+      "id": "REAC:R-HSA-3108232",
+      "data": {
+        "name": "SUMO E3 ligases SUMOylate target proteins",
+        "p_value": 0.0033695562047417363
+      }
+    },
+    {
+      "id": "REAC:R-HSA-2990846",
+      "data": {
+        "name": "SUMOylation",
+        "p_value": 0.004232024732680124
+      }
+    },
+    {
+      "id": "GO:0006333",
+      "data": {
+        "name": "chromatin assembly or disassembly",
+        "p_value": 0.005733615692020378
+      }
+    },
+    {
+      "id": "GO:0031062",
+      "data": {
+        "name": "positive regulation of histone methylation",
+        "p_value": 0.006431365614225013
+      }
+    },
+    {
+      "id": "GO:0031058",
+      "data": {
+        "name": "positive regulation of histone modification",
+        "p_value": 0.007136462494946393
+      }
+    },
+    {
+      "id": "REAC:R-HSA-427389",
+      "data": {
+        "name": "ERCC6 (CSB) and EHMT2 (G9a) positively regulate rRNA expression",
+        "p_value": 0.007513149054178799
+      }
+    },
+    {
+      "id": "GO:0010452",
+      "data": {
+        "name": "histone H3-K36 methylation",
+        "p_value": 0.010878267834338437
+      }
+    },
+    {
+      "id": "GO:1905269",
+      "data": {
+        "name": "positive regulation of chromatin organization",
+        "p_value": 0.012039260853854206
+      }
+    },
+    {
+      "id": "REAC:R-HSA-167169",
+      "data": {
+        "name": "HIV Transcription Elongation",
+        "p_value": 0.016025828025109722
+      }
+    },
+    {
+      "id": "REAC:R-HSA-167200",
+      "data": {
+        "name": "Formation of HIV-1 elongation complex containing HIV-1 Tat",
+        "p_value": 0.016025828025109722
+      }
+    },
+    {
+      "id": "REAC:R-HSA-167246",
+      "data": {
+        "name": "Tat-mediated elongation of the HIV-1 transcript",
+        "p_value": 0.016025828025109722
+      }
+    },
+    {
+      "id": "REAC:R-HSA-167152",
+      "data": {
+        "name": "Formation of HIV elongation complex in the absence of HIV Tat",
+        "p_value": 0.019056459421908454
+      }
+    },
+    {
+      "id": "GO:0032784",
+      "data": {
+        "name": "regulation of DNA-templated transcription, elongation",
+        "p_value": 0.022532245456528176
+      }
+    },
+    {
+      "id": "GO:0031060",
+      "data": {
+        "name": "regulation of histone methylation",
+        "p_value": 0.02503568977870343
+      }
+    },
+    {
+      "id": "GO:0018027",
+      "data": {
+        "name": "peptidyl-lysine dimethylation",
+        "p_value": 0.032638844891774585
+      }
+    },
+    {
+      "id": "GO:0016574",
+      "data": {
+        "name": "histone ubiquitination",
+        "p_value": 0.040733837647050415
+      }
+    },
+    {
+      "id": "REAC:R-HSA-8866654",
+      "data": {
+        "name": "E3 ubiquitin ligases ubiquitinate target proteins",
+        "p_value": 0.04368605718472918
+      }
+    },
+    {
+      "id": "GO:0031056",
+      "data": {
+        "name": "regulation of histone modification",
+        "p_value": 0.04833543646007075
       }
     }
   ]

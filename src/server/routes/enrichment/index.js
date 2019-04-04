@@ -122,9 +122,10 @@ enrichmentRouter.post('/validation', (req, res, next) => {
  *         schema:
  *           "$ref": "#/definitions/success/analysisSuccess"
  *       '400':
- *         description: Invalid input (minSetSize, maxSetSize, backgroundGenes or JSON format)
+ *         description: Invalid input (minSetSize, maxSetSize, or JSON format)
  *         schema:
  *           "$ref": "#/definitions/error/analysisError"
+ * 
 */
 // expose a rest endpoint for enrichment service
 enrichmentRouter.post('/analysis', (req, res, next) => {
@@ -222,7 +223,7 @@ enrichmentRouter.post('/visualization', (req, res, next) => {
  *     analysisObj:
  *       type: object
  *       required:
- *       - genes
+ *       - query
  *       properties:
  *         query:
  *           type: array
@@ -239,14 +240,7 @@ enrichmentRouter.post('/visualization', (req, res, next) => {
  *           type: number
  *           description: "maximum size of functional category, larger categories are
  *             excluded \n default: 200"
- *           example: 400
- *         background:
- *           type: array
- *           description: "Biological identifiers used
- *             as a custom statistical background \n default: []"
- *           example: []
- *           items:
- *             type: string
+ *           example: 400        
  *     visualizationObj:
  *       type: object
  *       required:
@@ -328,11 +322,6 @@ enrichmentRouter.post('/visualization', (req, res, next) => {
  *                   name:
  *                     type: string
  *                     example: DNA-templated transcription, elongation
- *                   intersection:
- *                     type: array
- *                     items:
- *                       type: string
- *                       example: PAF1
  *     visualizationSuccess:
  *       type: object
  *       required:

@@ -1,65 +1,49 @@
 const { fetch } = require('../../../util');
 const _ = require('lodash');
-const qs = require('query-string');
 const QuickLRU = require('quick-lru');
 
-const cleanUpEntrez = require('./clean-up-entrez');
 const { GPROFILER_URL } = require('../../../config');
 const logger = require('../../logger');
 const { cachePromise } = require('../../cache');
 
-const GPROFILER_GOST_URL = GPROFILER_URL + 'index.cgi';
+const toJSON = res => res.json();
+
+// See https://biit.cs.ut.ee/gprofiler/page/apis
+const GPROFILER_GOST_URL = GPROFILER_URL + 'api/gost/profile/';
 const GPROFILER_DEFAULT_OPTS = {
-  output: 'mini',
   organism: 'hsapiens',
-  significant: 0,
-  sort_by_structure: 1,
-  ordered_query: 0,
-  as_ranges: 0,
-  no_iea: 1,
-  underrep: 0,
-  hierfiltering: 'none',
-  user_thr: 0.05,
-  min_set_size: 5,
-  max_set_size: 200,
-  threshold_algo: 'analytical',
-  domain_size_type: 'annotated',
-  custbg: [],
-  'sf_GO:BP': 1,
-  sf_REAC: 1,
-  prefix: 'ENTREZGENE_ACC'
+	sources: ['GO:BP', 'REAC'],
+	user_threshold: 0.05,
+	all_results: false,
+	ordered: false,
+	combined: false,
+	measure_underrepresentation: false,
+	no_iea: true,
+	domain_scope: 'annotated',
+	numeric_ns: 'ENTREZGENE_ACC',
+	significance_threshold_method: 'g_SCS',
+  background: [],
+  no_evidences: true
 };
 
-// parseGProfilerResponse(gProfilerResponse) takes the text response
-// from gProfiler gProfilerResponse and parses it into JSON format
-const parseGProfilerResponse = gProfilerResponse => {
-  let lines = gProfilerResponse.split('\n').map( line => {
-    if( line.substring(0, 1) === '#' ){ return ''; }
-    return line;
-  });
+const DEFAULT_FILTER_OPTS = {
+  minSetSize: 5,
+  maxSetSize: 200
+};
 
-  let elements = _.compact(lines).map( line => line.split('\t') );
-
+const parseGProfilerResponse = ( json, opts ) => {
   let pathways = [];
-  let P_VALUE_INDEX = 2;
-  let PATHWAY_ID_INDEX = 8;
-  let DESCRIPTION_INDEX = 11;
-  let GENE_INTERSECTION_LIST_INDEX = 13;
-
-
-  elements.forEach( ele => {
-    let pathwayId = ele[PATHWAY_ID_INDEX];
-    let pValue = ele[P_VALUE_INDEX];
-    let description = ele[DESCRIPTION_INDEX].trim();
-    let geneIntersectionList = ele[GENE_INTERSECTION_LIST_INDEX].split(',').map( gene => cleanUpEntrez( gene ) );
-
+  const { 
+    minSetSize = DEFAULT_FILTER_OPTS.minSetSize, 
+    maxSetSize = DEFAULT_FILTER_OPTS.maxSetSize
+  } = opts;
+  const pathwayInfoList = _.get( json, ['result'] );  
+  pathwayInfoList.forEach( pathwayInfo => {
+    let { native: id, name, p_value, term_size } = pathwayInfo;
+    if( term_size < minSetSize || term_size > maxSetSize ) return;
     pathways.push({
-      id: pathwayId,
-      data: {
-        name: description,
-        p_value: pValue,
-        intersection: geneIntersectionList
-      }
+      id, 
+      data: { name, p_value }
     });
   });
 
@@ -67,60 +51,52 @@ const parseGProfilerResponse = gProfilerResponse => {
 };
 
 
+const validateParams = ( query, opts ) => {
+  let error = null,
+  message = '';
+  const { minSetSize, maxSetSize } = opts;
+
+  if( !Array.isArray( query ) ) message = 'ERROR: query must be an array'; 
+  if( minSetSize && (typeof( minSetSize ) != 'number' || minSetSize < 0) ) message = 'ERROR: minSetSize must be a positive number';
+  if( maxSetSize && (typeof( maxSetSize ) != 'number' || maxSetSize < 0) ) message = 'ERROR: maxSetSize must be a positive number';
+  if( (minSetSize && maxSetSize) && (maxSetSize < minSetSize) ) message = 'ERROR: minSetSize must be less than maxSetSize';
+  
+  if ( !_.isEmpty( message ) ) error = new Error( message );
+  return error;
+};
+
+const getGProfilerOpts = query => _.assign( {}, GPROFILER_DEFAULT_OPTS, { query } );
+
 // enrichmemt(query, opts) takes a list of gene identifiers query
 // and an object of user settings opts
 // and extracts enrichment information
 // from g:Profiler for the query list based on userSetting
-const rawEnrichment = (query, opts) => {
-  return new Promise((resolve, reject) => {
-    let {
-      minSetSize = GPROFILER_DEFAULT_OPTS.min_set_size,
-      maxSetSize = GPROFILER_DEFAULT_OPTS.max_set_size,
-      background = []
-    } = opts;
+const rawEnrichment = ( query, opts ) => {
+  const gProfilerOpts = getGProfilerOpts( query, opts );
 
-    if (!Array.isArray(query)) {
-      reject(new Error('ERROR: genes should be an array'));
-    }
-    if( typeof(minSetSize) != 'number' ) {
-      reject(new Error('ERROR: minSetSize should be a number'));
-    }
-    if( minSetSize < 0 ){
-      reject(new Error('ERROR: minSetSize should be >= 0'));
-    }
-    if( typeof(maxSetSize) != 'number' ){
-      reject(new Error('ERROR: maxSetSize should be a number'));
-    }
-    if( maxSetSize < minSetSize ){
-      reject(new Error('ERROR: maxSetSize should be >= minSetSize'));
-    }
-    if( !Array.isArray(background) ){
-      reject(new Error('ERROR: backgroundGenes should be an array'));
-    }
-
-    let gProfilerOpts = _.assign( {}, GPROFILER_DEFAULT_OPTS, {
-      query: query.sort().join(' '),
-      min_set_size: minSetSize,
-      max_set_size: maxSetSize,
-      custbg: background.join(' ')
-    } );
-
-
-    fetch(GPROFILER_GOST_URL, { method: 'post', body: qs.stringify(gProfilerOpts)})
-      .then( res => res.text() )
-      .then( gprofilerRes =>  parseGProfilerResponse( gprofilerRes ) )
-      .then( pathwayInfo => resolve( pathwayInfo ) )
-      .catch( err =>{
-        logger.error(`Error in rawEnrichment - ${err.message}`);
-        throw err;
-      });
-  });
+  return fetch( GPROFILER_GOST_URL, { 
+    method: 'post',
+    body: JSON.stringify( gProfilerOpts ),
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then( toJSON )
+  .then( gprofilerRes => parseGProfilerResponse( gprofilerRes, opts ) )
+  .catch( err =>{
+    logger.error(`Error in rawEnrichment - ${err.message}`);
+    throw err;
+  });  
 };
+
 
 const lruCache = new QuickLRU({ maxSize: 100 });
 
-const enrichment = cachePromise(rawEnrichment, lruCache);
+const enrichmentWrapper = cachePromise( rawEnrichment, lruCache );
 
+const enrichment = async ( query, opts ) => {
+  const paramError = validateParams( query, opts );
+  if( paramError ) throw paramError;
 
+  return enrichmentWrapper( query.sort(), opts );
+};
 
 module.exports = { enrichment, parseGProfilerResponse };

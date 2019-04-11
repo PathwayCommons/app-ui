@@ -18,10 +18,9 @@ const query1 = [
 ];
 
 const defaultOptions = {
-  'output': 'mini',
   'organism': 'hsapiens',
   'target': NS_HGNC,
-  'prefix': 'ENTREZGENE_ACC'
+  'numeric_ns': 'ENTREZGENE_ACC'
 };
 
 const userOptions = {
@@ -57,11 +56,6 @@ describe ('Enrichment service: validation', function () {
       'organism': 'hsapiens'
     };
 
-    it ('should map query array to string', function () {
-      const result = createGConvertOpts( baseParams );
-      expect( result.query ).to.equal( query1.join(" ") );
-    });
-
     it ('should map name for HGNC Symbol', function () {
       const params = _.assign( {}, baseParams, { 'target': NS_HGNC_SYMBOL } );
       const result = createGConvertOpts( params );
@@ -95,7 +89,7 @@ describe ('Enrichment service: validation', function () {
     it ('should return to correct object with default options', function () {
       const result = createGConvertOpts( _.assign( {}, defaultOptions, {query: query1}) );
       const expected = _.assign( {}, defaultOptions, {
-        query: query1.join (" "),
+        query: query1,
         target: GPROFILER_NS_MAP.get(NS_HGNC)
       });
       expect( result ).to.deep.equal( expected );
@@ -104,7 +98,7 @@ describe ('Enrichment service: validation', function () {
     it ('should return to correct object with user options', function () {
       const result = createGConvertOpts( _.assign( {}, defaultOptions, {query: query1}, userOptions) );
       const expected = _.assign( {}, defaultOptions, {
-        query: query1.join (" "),
+        query: query1,
         target: GPROFILER_NS_MAP.get(NS_HGNC_SYMBOL)
       });
       expect( result ).to.deep.equal( expected );
@@ -118,8 +112,8 @@ describe ('Enrichment service: validation', function () {
 
   describe ('Test gConvertResponseHandler', function () {
     it ('should return to a correct object', function () {
-      const gConvertbodytxt = fs.readFileSync( path.resolve( __dirname, 'gconvert-body.txt' ), 'utf-8' );
-      const result = gConvertResponseHandler( gConvertbodytxt );
+      const gConvertbodyJson = require( './gconvert-body.json' );
+      const result = gConvertResponseHandler( gConvertbodyJson );
       expect ( result ).to.deep.equal( validResult1 );
     });
   });

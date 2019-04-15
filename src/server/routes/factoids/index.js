@@ -48,7 +48,7 @@ let getFactoidSbgnJson = id => {
 
 router.get('/', ( req, res ) => getFactoidIdsJson().then( j => res.json( j ) ) );
 
-router.get('/:factoidDocId', ( req, res ) => {
+router.get('/:factoidDocId', ( req, res, next ) => {
   let { factoidDocId }  = req.params;
 
   Promise.all([getFactoidJson( factoidDocId ), getFactoidSbgnJson( factoidDocId )])
@@ -74,7 +74,8 @@ router.get('/:factoidDocId', ( req, res ) => {
         ]
       }});
     } )
-    .then( j => res.json( j ) );
+    .then( j => res.json( j ) )
+    .catch( next );
 });
 
 module.exports = router;

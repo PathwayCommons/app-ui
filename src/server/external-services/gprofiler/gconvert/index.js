@@ -27,21 +27,18 @@ const createGConvertOpts = opts => {
     target: NS_HGNC,
     numeric_ns: 'ENTREZGENE_ACC'
   };
-
-  let gConvertOpts = _.assign({}, defaults, opts);
-  let { query, target } = gConvertOpts;
-
+  const target = GPROFILER_NS_MAP.get(  _.get( opts, ['targetDb'], defaults.target ) );
+  const query = _.get( opts, ['query'] );
+  let gConvertOpts = _.assign( {}, defaults, { query, target } );
+  
   if( !Array.isArray( query ) ){
     throw new InvalidParamError( `Error creating gconvert request - expected an array of strings for "query", got ${query}`);
   }
-  let gconvertTarget = GPROFILER_NS_MAP.get( target );
 
-  if( gconvertTarget == null ){
+  if( target == null ){
     throw new InvalidParamError( `Error creating gconvert request - expected a valid "targetDb", got ${target}`);
   }
-
-  gConvertOpts.target = gconvertTarget;
-
+  
   return gConvertOpts;
 };
 

@@ -86,11 +86,8 @@ enrichmentRouter.get('/docs', ( req, res ) => {
 */
 // expose a rest endpoint for validation service
 enrichmentRouter.post('/validation', (req, res, next) => {
-  const query = req.body.query;
-  const tmpOptions = {
-    target: req.body.targetDb
-  };
-  validatorGconvert(query, tmpOptions)
+  const { query, targetDb } = req.body;
+  validatorGconvert( query, { targetDb } )
     .then( result => res.json( result ))
     .catch( next );
 });

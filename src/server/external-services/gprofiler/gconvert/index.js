@@ -27,7 +27,7 @@ const createGConvertOpts = opts => {
     target: NS_HGNC,
     numeric_ns: 'ENTREZGENE_ACC'
   };
-  const target = GPROFILER_NS_MAP.get(  _.get( opts, ['targetDb'], defaults.target ) );
+  const target = GPROFILER_NS_MAP.get(  _.get( opts, ['namespace'], defaults.target ) );
   const query = _.get( opts, ['query'] );
   let gConvertOpts = _.assign( {}, defaults, { query, target } );
   
@@ -36,7 +36,7 @@ const createGConvertOpts = opts => {
   }
 
   if( target == null ){
-    throw new InvalidParamError( `Error creating gconvert request - expected a valid "targetDb", got ${target}`);
+    throw new InvalidParamError( `Error creating gconvert request - expected a valid "namespace", got ${target}`);
   }
   
   return gConvertOpts;

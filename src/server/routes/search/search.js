@@ -80,8 +80,8 @@ const searchGenes = query => {
 
   return Promise.all([
     uniqueTokens,
-    validatorGconvert( uniqueTokens, { target: NS_NCBI_GENE } ),
-    validatorGconvert( uniqueTokens, { target: NS_UNIPROT } )
+    validatorGconvert( uniqueTokens, { namespace: NS_NCBI_GENE } ),
+    validatorGconvert( uniqueTokens, { namespace: NS_UNIPROT } )
   ])
   .then( ([ uniqueTokens, ncbiValidation, uniprotValidation ]) => {
     const { alias: ncbiAlias } = ncbiValidation;

@@ -80,17 +80,14 @@ enrichmentRouter.get('/docs', ( req, res ) => {
  *         schema:
  *           "$ref": "#/definitions/success/validationSuccess"
  *       '400':
- *         description: Invalid input (organism, targetDb, or JSON format)
+ *         description: Invalid input (organism, namespace, or JSON format)
  *         schema:
  *           "$ref": "#/definitions/error/validationError"
 */
 // expose a rest endpoint for validation service
 enrichmentRouter.post('/validation', (req, res, next) => {
-  const query = req.body.query;
-  const tmpOptions = {
-    target: req.body.targetDb
-  };
-  validatorGconvert(query, tmpOptions)
+  const { query, namespace } = req.body;
+  validatorGconvert( query, { namespace } )
     .then( result => res.json( result ))
     .catch( next );
 });
@@ -185,7 +182,7 @@ enrichmentRouter.post('/visualization', (req, res, next) => {
  *     validationError:
  *       type: object
  *       properties:
- *         invalidTargetDb:
+ *         invalidNamespace:
  *           type: string
  *           example: ENSGGGGG
  *         invalidOrganism:
@@ -210,7 +207,7 @@ enrichmentRouter.post('/visualization', (req, res, next) => {
  *           example: ["TP53", "111", "AFF4", "111", "11998"]
  *           items:
  *             type: string
- *         targetDb:
+ *         namespace:
  *           type: string
  *           description: "MIRIAM collection namespace to map to (see http://identifiers.org/) \n Default: hgnc"
  *           example: "ensembl"

@@ -28,7 +28,7 @@ class InteractionsNodeTooltip extends React.Component {
           name = 'NCBI Gene';
           break;
         case NS_GENECARDS:
-          name = 'NCBI Gene';
+          name = 'GeneCards';
           break;
         default:
           name = null;

@@ -19,12 +19,12 @@ const query1 = [
 
 const defaultOptions = {
   'organism': 'hsapiens',
-  'target': NS_HGNC,
+  'target': GPROFILER_NS_MAP.get( NS_HGNC ),
   'numeric_ns': 'ENTREZGENE_ACC'
 };
 
 const userOptions = {
-  'target': NS_HGNC_SYMBOL
+  'namespace': NS_HGNC_SYMBOL
 };
 
 const validResult1 = {
@@ -52,51 +52,49 @@ describe ('Enrichment service: validation', function () {
   describe ('Test creation of gconvert options', function () {
     const baseParams = {
       'query': query1,
-      'target': NS_HGNC,
-      'organism': 'hsapiens'
+      'namespace': NS_HGNC
     };
 
     it ('should map name for HGNC Symbol', function () {
-      const params = _.assign( {}, baseParams, { 'target': NS_HGNC_SYMBOL } );
+      const params = _.assign( {}, baseParams, { 'namespace': NS_HGNC_SYMBOL } );
       const result = createGConvertOpts( params );
       expect( result.target ).to.equal( GPROFILER_NS_MAP.get(NS_HGNC_SYMBOL) );
     });
 
     it ('should map name for HGNC', function () {
-      const params = _.assign( {}, baseParams, { 'target': NS_HGNC } );
+      const params = _.assign( {}, baseParams, { 'namespace': NS_HGNC } );
       const result = createGConvertOpts( params );
       expect( result.target ).to.equal( GPROFILER_NS_MAP.get(NS_HGNC) );
     });
 
     it ('should map name for UniProt', function () {
-      const params = _.assign( {}, baseParams, { 'target': NS_UNIPROT } );
+      const params = _.assign( {}, baseParams, { 'namespace': NS_UNIPROT } );
       const result = createGConvertOpts( params );
       expect( result.target ).to.equal( GPROFILER_NS_MAP.get(NS_UNIPROT) );
     });
 
     it ('should map name for NCBI Gene', function () {
-      const params = _.assign( {}, baseParams, { 'target': NS_NCBI_GENE } );
+      const params = _.assign( {}, baseParams, { 'namespace': NS_NCBI_GENE } );
       const result = createGConvertOpts( params );
       expect( result.target ).to.equal( GPROFILER_NS_MAP.get(NS_NCBI_GENE) );
     });
 
     it ('should map name for Ensembl Gene', function () {
-      const params = _.assign( {}, baseParams, { 'target': NS_ENSEMBL } );
+      const params = _.assign( {}, baseParams, { 'namespace': NS_ENSEMBL } );
       const result = createGConvertOpts( params );
       expect( result.target ).to.equal( GPROFILER_NS_MAP.get(NS_ENSEMBL) );
     });
 
     it ('should return to correct object with default options', function () {
-      const result = createGConvertOpts( _.assign( {}, defaultOptions, {query: query1}) );
+      const result = createGConvertOpts( { query: query1 } );
       const expected = _.assign( {}, defaultOptions, {
-        query: query1,
-        target: GPROFILER_NS_MAP.get(NS_HGNC)
+        query: query1
       });
       expect( result ).to.deep.equal( expected );
     });
 
     it ('should return to correct object with user options', function () {
-      const result = createGConvertOpts( _.assign( {}, defaultOptions, {query: query1}, userOptions) );
+      const result = createGConvertOpts( _.assign( { query: query1 }, userOptions ) );
       const expected = _.assign( {}, defaultOptions, {
         query: query1,
         target: GPROFILER_NS_MAP.get(NS_HGNC_SYMBOL)
@@ -105,8 +103,8 @@ describe ('Enrichment service: validation', function () {
     });
 
     it ('should throw error with invalid user options', function () {
-      expect( () => createGConvertOpts( _.assign( {}, defaultOptions, { query: query1 }, { target: 'bloat' } ) ) ).to.throw ( InvalidParamError );
-      expect( () => createGConvertOpts( _.assign( {}, defaultOptions,  { query: '' } ) ) ).to.throw ( InvalidParamError );
+      expect( () => createGConvertOpts( _.assign( {}, { query: query1 }, { namespace: 'bloat' } ) ) ).to.throw ( InvalidParamError );
+      expect( () => createGConvertOpts( _.assign( {}, { query: '' } ) ) ).to.throw ( InvalidParamError );
     });
   });
 

@@ -46,21 +46,25 @@ class PathwayNodeMetadataView extends React.Component {
   render(){
     let { node } = this.props;
     let { publications } = this.state;
-    let md = node.data('metadata');
+    const nodeData = node.data();
+    const nodeClass = _.get( nodeData, ['class'] );
+    const nodeLabel = _.get( nodeData, ['label'] );
+
+    const defaultNodeMeta = {
+      synonyms: [],
+      datasource:'',
+      type: nodeClass,
+      standardName: '',
+      displayName: nodeLabel,
+      xrefLinks: []    
+    }; 
+    const nodeMeta = _.get( nodeData, ['metadata'], {} );
+    const md = _.assign( {}, defaultNodeMeta, nodeMeta );
+    
     let { synonyms, type, standardName, displayName, xrefLinks } = md;
-    let searchLinkQuery = node.data('class') === 'process' ? displayName : node.data('label');
-    let label = node.data('label');
-
-    if( _.isEmpty( md ) ){
-      return h('div.cy-tooltip', [
-        h('div.cy-tooltip-content', [
-          h('div.cy-tooltip-header', [
-            h('h2.cy-tooltip-title',  node.data('class'))
-          ])
-        ])
-      ]);
-    }
-
+    let title = nodeLabel || displayName; 
+    let searchLinkQuery = displayName;
+  
     let dbLinks = _.keys( xrefLinks ).map( collection => {
       let link = null;
       const displayName = SUPPORTED_COLLECTIONS.get( collection );
@@ -77,23 +81,25 @@ class PathwayNodeMetadataView extends React.Component {
       ]);
     });
 
+    let showTitle = title !== '';
     let showType = type !== '';
-
     let showStdName = standardName !== '';
-    let showDispName = displayName !== '' && displayName !== label;
+    let showDispName = displayName !== '' && displayName !== ( nodeLabel || title );
     let showSynonyms = synonyms.length > 0;
     let showPubs = publicationEles.length > 0;
-
-    let showBody = showStdName || showDispName || showSynonyms || showPubs;
     let showLinks = dbLinks.length > 0;
-    let showPcSearchLink = label || displayName;
-
+    
+    let showHeader = showTitle || showType;
+    let showBody = showStdName || showDispName || showSynonyms || showPubs;
+    let showFooter = showLinks;
+    let showPcSearchLink = searchLinkQuery !== '';
+    
     return h('div.cy-tooltip', [
       h('div.cy-tooltip-content', [
-        h('div.cy-tooltip-header', [
-          h('h2.cy-tooltip-title',  `${label || displayName || ''}`),
+        showHeader ? h('div.cy-tooltip-header', [
+          showTitle? h('h2.cy-tooltip-title',  title): null,
           showType ? h('div.cy-tooltip-type-chip', type) : null,
-        ]),
+        ]): null,
         showBody ? h('div.cy-tooltip-body', [
           showStdName ? h('div.cy-tooltip-section', [
             h('div.cy-tooltip-field-name', 'Name'),
@@ -116,14 +122,14 @@ class PathwayNodeMetadataView extends React.Component {
             h('div', publicationEles)
           ]) : null
         ]): null,
-        h('div.cy-tooltip-footer', [
+        showFooter ? h('div.cy-tooltip-footer', [
           showLinks ? h('div.cy-tooltip-section', [
             h('div.cy-tooltip-field-name', [
               'Links',
             ]),
             h('div.cy-tooltip-links', dbLinks)
           ]) : null
-        ]),
+        ]): null,
         showPcSearchLink ? h('div.cy-tooltip-call-to-action', [
           h('a', {
             target: '_blank',

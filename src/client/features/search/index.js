@@ -50,7 +50,8 @@ class Search extends React.Component {
           geneResults: genes,
           searchHits,
           dataSources,
-          loading: false
+          loading: false,
+          error: null
          });
         return null; // Bluebird warning
       })

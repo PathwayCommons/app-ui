@@ -58,6 +58,7 @@ class Interactions extends React.Component {
         stop: () => {
           this.setState({
             loading: false,
+            error: null
           });
         }
       })).run();

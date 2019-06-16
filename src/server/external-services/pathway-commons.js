@@ -140,7 +140,7 @@ const sifGraph = opts => {
   return fetch( url, { method: 'GET', headers: { 'Accept': 'text/plain' } } )
   .then( res => res.text() )
   .catch( e => {
-    logger.error( 'sifGraph ' + opts + ' failed - ' + e );
+    logger.error(url + ' failed - ' + e );
     throw e;
   });
 };

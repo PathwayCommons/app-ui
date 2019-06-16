@@ -1,0 +1,15 @@
+"Term","Hits","Is Target ?"
+"pcna xrcc2 xrcc3","0","TEST"
+"DMRT1",88,"TRUE"
+"???",42,"FALSE"
+"P12883",40,"TRUE"
+"Immunoregulatory interactions between a Lymphoid and a non-Lymphoid cell",43,"FALSE"
+"Crb2",58,"TRUE"
+"R-MMU-975956","0","TEST"
+
+a, inconsistent no. columns
+# whatever here
+"photosynthesis",28,"FALSE"^M^M
+"2.3.1.186",1,"FALSE"
+"2.3.1.188",1,"FALSE"
+

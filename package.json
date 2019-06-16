@@ -42,6 +42,7 @@
     "chai-as-promised": "^7.1.1",
     "classnames": "^2.2.5",
     "cookie-parser": "^1.4.3",
+    "csv": "^5.1.1",
     "cytoscape": "^3.2.22",
     "cytoscape-cola": "^2.3.0",
     "cytoscape-cose-bilkent": "^3.0.2",

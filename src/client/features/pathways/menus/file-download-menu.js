@@ -54,7 +54,7 @@ class FileDownloadMenu extends React.Component {
           content = typeof content === 'object' ? JSON.stringify(content) : content;
           let fileContent = new File([content], `${fileName}.${fileExt}`, { type:'text/plain;charset=utf-8' });
           saveAs( fileContent );
-          this.setState({ loading: false });
+          this.setState({ error: null, loading: false });
         })
         .catch( e => this.setState({ error: e, loading: false }) );
     });

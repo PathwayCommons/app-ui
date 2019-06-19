@@ -103,7 +103,8 @@ const searchPathways = query => {
 /**
  * search
  * App search entrypoint which coordinates queries for pathways and other info (interactions).
- * @param { String } query Raw input to search by
+ * @param query Search query body
+ * @param { String } query.q Raw input to search by
  */
 const search = async ( query ) => {
   return Promise.all([ searchGenes( query.q ), searchPathways( query ), pc.getDataSources() ])

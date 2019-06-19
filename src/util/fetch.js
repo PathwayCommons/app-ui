@@ -1,6 +1,5 @@
 const { promiseTimeout, TimeoutError } = require('./promise');
 const _ = require('lodash');
-const fetch = require('node-fetch');
 
 const { CLIENT_FETCH_TIMEOUT, SERVER_FETCH_TIMEOUT } = require('../config');
 

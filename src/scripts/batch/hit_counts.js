@@ -12,12 +12,12 @@
  * @author Igor Rodchenkov
  */
 
+global.fetch = require('node-fetch');
 const {getInteractionGraphFromPC} = require('../../server/routes/interactions/generate-interactions-json');
 const {search} = require('../../server/routes/search/search');
 const csv = require('csv');
 const {pipeline} = require('stream');
 const logger = require('../../server/logger');
-
 
 const transform = csv.transform((data, callback) => {
   let out = [];

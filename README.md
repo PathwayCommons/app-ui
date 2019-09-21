@@ -42,13 +42,13 @@ The following environment variables can be used to configure the server:
 
 If Pathway Commons data and files have been updated since this app's last built and run,
 or you simply want to connect to a different PC2 instance (don't forget to set PC_URL),
-then the file `src/server/graph-generation/biopax-metadata/generic-physical-entity-map.json`
+then the file `src/server/routes/pathways/generate-pathway-json/biopax-metadata/generic-physical-entity-map.json`
 needs to be updated.
 
 Use the script
 ```sh
 cd src/scripts/generic-entity-mapping/
-PC_VERSION=v11 sh update.sh
+PC_VERSION=v12 sh update.sh
 ```
 to refresh `physical_entities.json.gz` from the path `www.pathwaycommons.org/archives/PC2/<PC_VERSION>/` in Pathway Commons.
 

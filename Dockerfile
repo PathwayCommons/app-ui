@@ -2,18 +2,14 @@
 # https://nodejs.org/en/docs/guides/nodejs-docker-webapp/
 # https://github.com/nodejs/docker-node
 
-# Node.js base image
+# Node.js base image (based on Alpine Linux)
 FROM node:8
 
-# default NODE_ENV for building the app (clientside JS etc.)
-ARG NODE_ENV=production
-
-# default NODE_ENV for running the server
-ENV NODE_ENV=production
+# install some tools
+RUN apt-get update && apt-get install curl unzip jq
 
 # Create an unprivileged user w/ home directory
-RUN groupadd appuser \
-  && useradd --gid appuser --shell /bin/bash --create-home appuser
+RUN groupadd appuser && useradd --gid appuser --shell /bin/bash --create-home appuser
 
 # Create app directory
 RUN mkdir -p /home/appuser/app
@@ -23,10 +19,14 @@ WORKDIR /home/appuser/app
 COPY . /home/appuser/app
 
 # Install app dependencies
-# Note: must be development so that dev deps are installed
+# Note: here NODE_ENV env must be 'development' so that dev dependencies are installed
 RUN NODE_ENV=development npm install
 
-# Build project
+
+# NODE_ENV arg with the default value for buildng and running the client-server node web app
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
+
 RUN npm run clean
 RUN npm run build
 
@@ -37,5 +37,12 @@ EXPOSE 3000
 RUN chown appuser:appuser -R /home/appuser/app
 USER appuser
 
-# Run the command that starts the app
+# required PC_VERSION (e.g. 'v12') arg for updating the generic entities map (json) - converting
+# the physical_entities.json.gz from the corresponding subdirectory of www.pathwaycommons.org/archives/PC2/
+ARG PC_VERSION
+ENV PC_VERSION=${PC_VERSION}
+# update the generic physical entities metadata (PC_VERSION is required by the script)
+RUN cd /home/appuser/app/src/scripts/generic-entity-mapping && sh update.sh
+
+# Start the application
 CMD npm start

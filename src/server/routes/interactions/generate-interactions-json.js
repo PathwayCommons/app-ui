@@ -6,9 +6,6 @@ const { cachePromise } = require('../../cache');
 // const ncbi = require('../../external-services/ncbi');
 
 const { PC_CACHE_MAX_SIZE, MAX_SIF_NODES } = require('../../../config');
-const Datasources = require('../../../models/datasources');
-
-
 
 let interactionType2Label = type => {
   switch( type ){

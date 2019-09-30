@@ -37,17 +37,27 @@ const fillInBiopaxMetadataInThread = (nodes, biopaxJson) => {
 //Requires a valid pathway uri
 function getPathwayMetadata(uri) {
 
-  let title, dataSource, comments, organism;
+  // let title, dataSource, comments, organism, supportedProviders;
   let get = path => pcServices.query({cmd:'pc2/traverse', uri, path})
     .then(data => _.get(data, 'traverseEntry.0.value', null));
 
   return Promise.all([
-    get('Entity/displayName').then(value => title = value),
-    get('Entity/dataSource/displayName').then(value => dataSource = value),
-    get('Entity/comment').then(value => comments = value),
-    get('Pathway/organism/displayName').then(value => organism = value)
-  ]).then(() => ({ comments, dataSource, title, organism }));
-
+    get('Entity/displayName'),
+    get('Entity/dataSource/displayName'),
+    get('Entity/comment'),
+    get('Pathway/organism/displayName'),
+    pcServices.getDataSources() 
+  ])
+  .then( ([ title, dataSource, comments, organism, supportedProviders ]) => {
+    const supportedProvider = supportedProviders.find( supportedProvider => supportedProvider.alias.some( alias => alias === _.head( dataSource ) ) );
+    return { 
+      title, 
+      dataSource: _.get( supportedProvider, 'name' ), 
+      comments, 
+      organism,
+      urlToHomepage: _.get( supportedProvider, 'urlToHomepage' ) 
+    };
+  });
 }
 
 /**

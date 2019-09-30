@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const datasources = require('../datasources');
 
 // basic pathway model to serve the needs of the pathways view
 // TODO:
@@ -33,15 +32,11 @@ class Pathway {
   }
 
   datasource(){
-    return _.get(this.raw, 'graph.pathwayMetadata.dataSource.0', 'Unknown datasource');
+    return _.get(this.raw, 'graph.pathwayMetadata.dataSource', 'Unknown datasource');
   }
 
   datasourceUrl(){
-    let datasourceURL = '';
-    const datasource = this.datasource();
-    const databaseInfo = datasources.findByKey(datasource);
-    if ( databaseInfo ) datasourceURL = databaseInfo.homepage;
-    return datasourceURL;
+    return _.get(this.raw, 'graph.pathwayMetadata.urlToHomepage' );
   }
 
   comments(){

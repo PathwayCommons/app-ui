@@ -68,7 +68,7 @@ const getDataSourcesMap = async function() {
   const datasources = await query({ cmd:'pc2/metadata/datasources' });
   datasources.forEach( source => {
     const name = _.head( sortByLength( source.name ) ); // Use longest name for display
-    const sourceInfo = _.assign( _.pick( source, dataSourceFields ), { name } );
+    const sourceInfo = _.assign( _.pick( source, dataSourceFields ), { name }, { alias: source.name } );
     source.name.forEach( variant => sourceMap.set( _.toLower( variant ), sourceInfo ) );
   });
   dataSourcesCache = sourceMap;

@@ -1,31 +1,18 @@
-const fs = require('fs');
 const path = require('path');
+const fs = require('fs');
 const Promise = require('bluebird');
-const MultiStream = require('multistream');
 
-const GMT_SOURCE_FILENAME = 'pathways.gmt';
+const { GMT_SOURCE_FILENAME } = require('../../../../config');
+const { updateEnrichment } = require('./update-enrichment');
 
+const GMT_SOURCE_PATH = path.resolve(__dirname, GMT_SOURCE_FILENAME);
 const readFile = Promise.promisify(fs.readFile);
 const stat = Promise.promisify(fs.stat);
-const FILEPATH = path.resolve(__dirname, GMT_SOURCE_FILENAME);
 
 let lastModTime = null;
 let pathwayInfoTableCache = null;
 
-const getPathwayInfoTable = async function(){
-  const fileStats = await stat(FILEPATH);
-  const thisModTime = fileStats.mtimeMs;
-
-  if( thisModTime === lastModTime ){
-    return pathwayInfoTableCache;
-  } else {
-    lastModTime = thisModTime;
-
-    // allow the function to continue to update the table...
-  }
-
-  const gmtPathwayData = await readFile(FILEPATH, { encoding: 'utf8' });
-
+const formatPathwayInfoTable = gmtPathwayData => {
   // pathwayInfoTable is map where the keys are GO/REACTOME pathway identifiers
   // and values are description and geneset
   const pathwayInfoTable = new Map();
@@ -54,12 +41,34 @@ const getPathwayInfoTable = async function(){
   return pathwayInfoTable;
 };
 
-/**
- * handleFileUpdate
- * When a cron job to update the file is triggered, this function is called with the fresh file.
- * @external files list of file
- * @see {@link https://www.npmjs.com/package/unzipper}
- */
-const handleFileUpdate = files =>  MultiStream( files.map( f => f.stream() ) ).pipe( fs.createWriteStream( FILEPATH ) );
+const createPathwayInfoTable = async () => {
+  const gmtPathwayData = await readFile(GMT_SOURCE_PATH, { encoding: 'utf8' });
+  return formatPathwayInfoTable( gmtPathwayData );
+};
 
-module.exports = { getPathwayInfoTable, handleFileUpdate };
+const getPathwayInfoTable = async function(){
+  
+  try {
+    const fileStats = await stat(GMT_SOURCE_PATH);
+    const thisModTime = fileStats.mtimeMs;
+
+    if( thisModTime === lastModTime ){
+      return pathwayInfoTableCache;
+    } else {
+      lastModTime = thisModTime;
+      return createPathwayInfoTable();
+    }
+
+  } catch ( e ) {
+    
+    const updated = await updateEnrichment();
+    if( !updated ) throw e;
+
+    const fileStats = await stat(GMT_SOURCE_PATH);
+    lastModTime = fileStats.mtimeMs;
+   
+    return createPathwayInfoTable();
+  }
+};
+
+module.exports = { getPathwayInfoTable };

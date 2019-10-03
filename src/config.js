@@ -7,6 +7,7 @@ let defaults = {
   XREF_SERVICE_URL: 'https://biopax.baderlab.org/',
   GPROFILER_URL: "https://biit.cs.ut.ee/gprofiler/",
   GMT_ARCHIVE_URL: 'https://biit.cs.ut.ee/gprofiler/static/gprofiler_hsapiens.name.zip',
+  GMT_SOURCE_FILENAME: 'pathways.gmt',
   IDENTIFIERS_URL: 'https://identifiers.org',
   NCBI_EUTILS_BASE_URL: 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils',
   NCBI_API_KEY: 'b99e10ebe0f90d815a7a99f18403aab08008', // for dev testing only (baderlabsysmonitor ncbi key)

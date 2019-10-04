@@ -1,93 +1,87 @@
+const fs = require('fs');
+const path = require('path');
+const _ = require('lodash');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 chai.should();
 
-const { mockFetch } = require('../../../util');
-// const { generateEnrichmentNetworkJson } = require('../../../../src/server/routes/enrichment/visualization');
+const { formatPathwayInfoTable } = require('../../../../src/server/routes/enrichment/visualization/pathway-table');
+const { GMT_SOURCE_FILENAME } = require('../../../../src/config');
 const { generateEnrichmentNetworkJson } = require('../../../../src/server/routes/enrichment/visualization');
-const { getPathwayInfoTable } = require('../../../../src/server/routes/enrichment/visualization/pathway-table');
 
-const ENRICHMENT_NETWORK_JSON = require('./enrichment-network-json.json');
+describe('Enrichment visualization', () =>  {
+  let pathwayInfoTable, firstPathwayKey, firstPathway,
+  mockPathways = [{ "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}];
 
-//generateGraphInfo( pathways, similarityCutoff, jaccardOverlapWeight);
-
-describe('Test generateGraphInfo - Enrichment Vizualization Service', function () {
-  it('parameters: all valid', async () => {
-    const table = await getPathwayInfoTable();
-    const mockResponse =  {
-      values: [
-        {
-          "db": "go",
-          "id": "id",
-          "uri": "http://identifiers.org/go/id",
-          "dbOk": true,
-          "idOk": true,
-          "preferredDb": "name",
-          "namespace": "namespace"
-        }
-      ]
-    };
-
-    global.fetch = mockFetch( { json: () => mockResponse } );
-    const res = await generateEnrichmentNetworkJson(table, [
-      {
-        "id": "GO:0006354",
-        "data": {
-          "name": "DNA-templated transcription, elongation",
-          "p_value": "1.29e-03",
-          "intersection": [
-            "PAF1",
-            "ZMYND11",
-            "POLR2B",
-            "AFF4",
-            "SUPT16H",
-            "ELP4",
-            "GTF2H1",
-            "BRD4",
-            "SSRP1",
-            "SETD2"
-          ]
-        }
-      },
-      {
-        "id": "GO:0006368",
-        "data": {
-          "name": "transcription elongation from RNA polymerase II promoter",
-          "p_value": "1.29e-03",
-          "intersection": [
-            "PAF1",
-            "ZMYND11",
-            "POLR2B",
-            "AFF4",
-            "SUPT16H",
-            "ELP4",
-            "GTF2H1",
-            "BRD4",
-            "SSRP1",
-            "SETD2"
-          ]
-        }
-      }
-    ], 0.3, 0.55 );
-    expect( res ).to.deep.equal( ENRICHMENT_NETWORK_JSON );
+  before( () => {
+    const sampleGmtPathwayData = fs.readFileSync( path.resolve( __dirname, GMT_SOURCE_FILENAME ), { encoding: 'utf8' } );
+    pathwayInfoTable = formatPathwayInfoTable( sampleGmtPathwayData );
+    firstPathwayKey = pathwayInfoTable.keys().next(); 
+    firstPathway = pathwayInfoTable.values().next();
   });
 
-  it('parameters: invalid similarityCutoff', async function(){
-    const table = await getPathwayInfoTable();
+  describe('Format pathway info table', function () {
+    
+    it('Should return a result', () => {
+      expect( pathwayInfoTable ).to.exist;
+    });
+  
+    it('Should return at least one entry', () => {
+      expect( firstPathwayKey.value ).to.exist;
+      expect( firstPathway.value ).to.exist;
+    });
+  
+    it('Should have the correct value', () => {
+      expect( firstPathway.value['id'] ).to.equal( firstPathwayKey.value );
+      expect( firstPathway.value ).to.have.property('name');
+      expect( firstPathway.value ).to.have.property('geneSet');
+      expect( firstPathway.value['geneSet'] ).to.not.have.lengthOf( 0 );
+    });
 
-    const result = generateEnrichmentNetworkJson(table, { "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}, 3.55 );
+  }); // Format pathway info table
 
-    return result.should.be.rejectedWith(Error);
-  });
 
-  it('parameters: invalid jaccardOverlapWeight', async function () {
-    const table = await getPathwayInfoTable();
+  describe('Generating network JSON', () => {
+    
 
-    const result =  generateEnrichmentNetworkJson(table, { "GO:0006354": { "p_value": 1 }, "GO:0006368": { "intersection": ["AFF4"] }}, .55, 75 );
+    describe('Valid network JSON', () => {
+      let result;
 
-    return result.should.be.rejectedWith(Error);
-  });
+      before( async () => {
+        result = await generateEnrichmentNetworkJson( pathwayInfoTable, mockPathways, 0.3, 0.55 );
+        console.log(result);
+      });
 
-});
+      it('Should return correct network', () => {  
+        expect( result ).to.have.all.keys('unrecognized', 'graph');
+        expect( result ).to.have.nested.property( 'graph.elements' );
+      }); 
+    
+      describe('Nodes and edges', () => {
+        let elements;
+        before( async () => {
+          elements = _.get( result, ['graph', 'elements'] );
+        });
+
+        it('Should contain nodes and edges', () => {  
+          expect( elements ).to.have.all.keys('nodes', 'edges');
+        });
+      });
+    });
+
+    it('Should not accept an invalid similarityCutoff', () => {
+      const result = generateEnrichmentNetworkJson( pathwayInfoTable, mockPathways, 3.55 );
+      return result.should.be.rejectedWith( Error ); 
+    });
+
+    it('Should not accept an invalid jaccardOverlapWeight', () => {
+      const result = generateEnrichmentNetworkJson( pathwayInfoTable, mockPathways, 0.55, 75 );
+      return result.should.be.rejectedWith( Error );
+    });
+
+
+  });// Generating network JSON
+
+})

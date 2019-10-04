@@ -71,4 +71,4 @@ const getPathwayInfoTable = async function(){
   }
 };
 
-module.exports = { getPathwayInfoTable };
+module.exports = { getPathwayInfoTable, formatPathwayInfoTable };

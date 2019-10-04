@@ -4,7 +4,7 @@ const concat = require('concat');
 const Promise = require('bluebird');
 
 const writeFile = Promise.promisify( fs.writeFile );
-const { writeArchiveFiles, sanitize } = require('../../../source-files');
+const { writeArchiveFiles } = require('../../../source-files');
 const { GMT_ARCHIVE_URL } = require('../../../../config.js');
 const { GMT_SOURCE_FILENAME } = require('../../../../config');
 
@@ -20,6 +20,6 @@ const updateEnrichment = () => {
     .then( concat )
     .then( data => writeFile( path.resolve( GMT_SOURCE_PATH, GMT_SOURCE_FILENAME ), data ) )
     .then( () => true );
-}
+};
 
 module.exports = { updateEnrichment };

@@ -47,4 +47,4 @@ const writeArchiveFiles = ( url, filenames, directory ) => {
     });
 };
 
-module.exports = { writeArchiveFiles, sanitize };
+module.exports = { writeArchiveFiles };

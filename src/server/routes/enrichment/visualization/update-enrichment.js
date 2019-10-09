@@ -1,29 +1,25 @@
-const request = require('request');
-const unzipper = require('unzipper');
-const sanitize = require("sanitize-filename");
-const logger = require('../../../logger');
+const fs = require('fs');
+const path = require('path');
+const concat = require('concat');
+const Promise = require('bluebird');
+
+const writeFile = Promise.promisify( fs.writeFile );
+const { writeArchiveFiles } = require('../../../source-files');
 const { GMT_ARCHIVE_URL } = require('../../../../config.js');
+const { GMT_SOURCE_FILENAME } = require('../../../../config');
 
-const { handleFileUpdate } = require('./pathway-table');
+const GMT_SOURCE_PATH = path.resolve(__dirname);
 
- const GMT_ARCHIVE_FILENAMES = [
+const GMT_ARCHIVE_FILENAMES = [
   'hsapiens.GO/BP.name.gmt',
   'hsapiens.REAC.name.gmt'
 ];
 
-const SANITIZED_GMT_ARCHIVE_FILENAMES = GMT_ARCHIVE_FILENAMES.map( sanitize );
-const fetchZipCDFiles = url => unzipper.Open.url( request, url ).then( cd => cd.files );
-const pickFiles = files => files.filter( d => SANITIZED_GMT_ARCHIVE_FILENAMES.indexOf( sanitize( d.path ) ) > -1 );
-const updateGmt = url => {
-  fetchZipCDFiles( url )
-    .then( pickFiles )
-    .then( handleFileUpdate )
-    .then( () => logger.info(`Enrichment: Updated GMT from ${url}`) )
-    .catch( error => logger.error(`Enrichment: Failed to update GMT from ${url} - ${error}`) );
-};
-
 const updateEnrichment = () => {
-  updateGmt( GMT_ARCHIVE_URL );
+  return writeArchiveFiles( GMT_ARCHIVE_URL, GMT_ARCHIVE_FILENAMES, GMT_SOURCE_PATH )
+    .then( concat )
+    .then( data => writeFile( path.resolve( GMT_SOURCE_PATH, GMT_SOURCE_FILENAME ), data ) )
+    .then( () => true );
 };
 
 module.exports = { updateEnrichment };

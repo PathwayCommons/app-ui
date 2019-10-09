@@ -41,6 +41,7 @@
     "body-parser": "^1.18.2",
     "chai-as-promised": "^7.1.1",
     "classnames": "^2.2.5",
+    "concat": "^1.0.3",
     "cookie-parser": "^1.4.3",
     "csv": "^5.1.1",
     "cytoscape": "^3.2.22",

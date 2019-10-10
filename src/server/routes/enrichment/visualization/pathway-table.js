@@ -26,15 +26,18 @@ const initializeParser = ( opts, cb ) => {
   return parser;
 };
 
-const addPathwayInfoLine = pathwayInfoTokens => {
-  let PATHWAY_ID_INDEX = 0;
-  let PATHWAY_NAME_INDEX = 1;
-  let GENE_LIST_START_INDEX = 2;
-
-  let id = pathwayInfoTokens[PATHWAY_ID_INDEX];
-  let name = pathwayInfoTokens[PATHWAY_NAME_INDEX];
-  let geneSet = pathwayInfoTokens.slice( GENE_LIST_START_INDEX );
-  pathwayInfoTable.set(id, { id, name, geneSet } );
+const handleTokens = tokens => {
+  const PATHWAY_ID_INDEX = 0;
+  const PATHWAY_NAME_INDEX = 1;
+  const GENE_LIST_START_INDEX = 2;
+  const id = tokens[PATHWAY_ID_INDEX];
+  const data = {
+    id,
+    name:tokens[PATHWAY_NAME_INDEX],
+    geneSet: tokens.slice( GENE_LIST_START_INDEX )
+  };
+  pathwayInfoTable.set( id, data );
+  return data;
 };
 
 const getPathwayInfoTable = async function(){
@@ -43,14 +46,14 @@ const getPathwayInfoTable = async function(){
     if( mtime && mtime === lastModTime() ) return pathwayInfoTable;
 
     // Initialization
-    if( _.isNull( mtime ) && _.isNull( lastModTime() ) ){
+    if( _.isNull( mtime ) ){
       await updateEnrichment();
       mtime = lastModTime();
       parser = initializeParser({
         delimiter: '\t',
         skip_empty_lines: true,
         relax_column_count: true
-      }, addPathwayInfoLine );
+      }, handleTokens );
     // Update
     } else {
       mtime = lastModTime();
@@ -65,4 +68,4 @@ const getPathwayInfoTable = async function(){
   }
 };
 
-module.exports = { getPathwayInfoTable,  };
+module.exports = { getPathwayInfoTable, handleTokens };

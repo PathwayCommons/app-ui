@@ -12,7 +12,7 @@ const { handleTokens } = require('../../../../src/server/routes/enrichment/visua
 const { generateEnrichmentNetworkJson } = require('../../../../src/server/routes/enrichment/visualization');
 
 describe('Enrichment visualization', () =>  {
-  let processedTokens, firstPathwayKey, firstPathway,
+  let
   mockResponse = {
     values: [
       {
@@ -72,7 +72,6 @@ describe('Enrichment visualization', () =>  {
 
   before( () => {
     global.fetch = mockFetch( { json: () => mockResponse } );
-    processedTokens = handleTokens( pathwayTokens1 );
   });
 
   after( () => {
@@ -80,6 +79,11 @@ describe('Enrichment visualization', () =>  {
   });
 
   describe('Parsing tokens from a GMT file', function () {
+    let processedTokens;
+
+    before( () => {
+      processedTokens = handleTokens( pathwayTokens1 );
+    });
 
     it('Should return a result', () => {
       expect( processedTokens ).to.exist;
@@ -99,10 +103,11 @@ describe('Enrichment visualization', () =>  {
     const pathwayInfoTable = new Map();
 
     before( () => {
-      processedTokens = handleTokens( tokens );
+      const processedTokens1 = handleTokens( pathwayTokens1 );
+      const processedTokens2 = handleTokens( pathwayTokens2 );
+      pathwayInfoTable.set(processedTokens1.id, processedTokens1);
+      pathwayInfoTable.set(processedTokens2.id, processedTokens2);
     });
-
-
 
     describe('Valid network JSON', () => {
       let result;

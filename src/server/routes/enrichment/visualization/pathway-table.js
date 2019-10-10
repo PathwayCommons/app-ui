@@ -1,15 +1,9 @@
-const path = require('path');
-const fs = require('fs');
-const Promise = require('bluebird');
+const _ = require('lodash');
+const parse = require('csv').parse;
 
-const { GMT_SOURCE_FILENAME } = require('../../../../config');
-const { updateEnrichment } = require('./update-enrichment');
+const logger = require('../../../logger');
+const { updateEnrichment, lastModTime } = require('./update-enrichment');
 
-const GMT_SOURCE_PATH = path.resolve(__dirname, GMT_SOURCE_FILENAME);
-const readFile = Promise.promisify(fs.readFile);
-const stat = Promise.promisify(fs.stat);
-
-let lastModTime = null;
 let pathwayInfoTableCache = null;
 
 const formatPathwayInfoTable = gmtPathwayData => {
@@ -41,15 +35,23 @@ const formatPathwayInfoTable = gmtPathwayData => {
   return pathwayInfoTable;
 };
 
+const parser = parse({ delimiter: '\t' });
+parser.on( 'readable', () => {
+  let record;
+  while ( record = parser.read() ) {
+    output.push(record)
+  }
+})
+
 const createPathwayInfoTable = async () => {
-  const gmtPathwayData = await readFile(GMT_SOURCE_PATH, { encoding: 'utf8' });
   return formatPathwayInfoTable( gmtPathwayData );
 };
 
 const getPathwayInfoTable = async function(){
-  
   try {
-    const fileStats = await stat(GMT_SOURCE_PATH);
+    if( _.isNull( sourceFilePaths ) ) sourceFilePaths = await updateEnrichment();
+
+    const fileStats = await stat( _.head( sourceFilePaths ) );
     const thisModTime = fileStats.mtimeMs;
 
     if( thisModTime === lastModTime ){
@@ -60,14 +62,8 @@ const getPathwayInfoTable = async function(){
     }
 
   } catch ( e ) {
-    
-    const updated = await updateEnrichment();
-    if( !updated ) throw e;
-
-    const fileStats = await stat(GMT_SOURCE_PATH);
-    lastModTime = fileStats.mtimeMs;
-   
-    return createPathwayInfoTable();
+    logger.error( `A problem was encountered: ${e}` );
+    throw e;
   }
 };
 

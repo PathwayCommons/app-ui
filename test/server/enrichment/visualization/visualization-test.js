@@ -1,5 +1,3 @@
-const fs = require('fs');
-const path = require('path');
 const _ = require('lodash');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');

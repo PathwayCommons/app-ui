@@ -12,27 +12,34 @@ const GMT_ARCHIVE_FILENAMES = [
   'hsapiens.REAC.name.gmt'
 ];
 
-let sourceFilePaths = null;
-let lastModTime = null;
+let fpaths = null;
+let mtime = null;
 
 const lastModTime = t => {
-  if( !t ){ 
-    return lastModTime 
+  if( !t ){
+    return mtime;
   } else {
-    lastModTime = t;
+    mtime = t;
   }
 };
 
-const updateEnrichment = async () => { 
+const sourceFilePaths = p => {
+  if( !p ){
+    return fpaths;
+  } else {
+    fpaths = p;
+  }
+};
+
+const updateEnrichment = async () => {
   try {
-    sourceFilePaths = await writeArchiveFiles( GMT_ARCHIVE_URL, GMT_ARCHIVE_FILENAMES );
-    const fileStats = await stat( _.head( sourceFilePaths ) );
+    fpaths = await writeArchiveFiles( GMT_ARCHIVE_URL, GMT_ARCHIVE_FILENAMES );
+    const fileStats = await stat( _.head( fpaths ) );
     lastModTime( fileStats.mtimeMs );
-    return sourceFilePaths;
-  } catch (e) { 
+  } catch (e) {
     logger.error( `A problem was encountered: ${e}` );
     throw e;
   }
 };
 
-module.exports = { updateEnrichment, lastModTime };
+module.exports = { updateEnrichment, lastModTime, sourceFilePaths };

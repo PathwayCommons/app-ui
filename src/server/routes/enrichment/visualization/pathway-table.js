@@ -1,70 +1,68 @@
 const _ = require('lodash');
-const parse = require('csv').parse;
+const fs = require('fs');
+const csv = require('csv');
+const MultiStream = require('multistream');
 
 const logger = require('../../../logger');
-const { updateEnrichment, lastModTime } = require('./update-enrichment');
+const { updateEnrichment, lastModTime, sourceFilePaths } = require('./update-enrichment');
+const getReadStream = files => new MultiStream( files.map( f => fs.createReadStream( f ) ) );
 
-let pathwayInfoTableCache = null;
+let mtime = null;
+let pathwayInfoTable = new Map();
+let parser = null;
 
-const formatPathwayInfoTable = gmtPathwayData => {
-  // pathwayInfoTable is map where the keys are GO/REACTOME pathway identifiers
-  // and values are description and geneset
-  const pathwayInfoTable = new Map();
+const initializeParser = ( opts, cb ) => {
+  const parser = csv.parse( opts );
 
-  gmtPathwayData.split('\n').forEach( pathwayInfoLine => {
-    let pathwayInfoTokens = pathwayInfoLine.split('\t');
-    let PATHWAY_ID_INDEX = 0;
-    let PATHWAY_NAME_INDEX = 1;
-    let GENE_LIST_START_INDEX = 2;
+  parser.on( 'readable', () => {
+    let line;
+    while ( line = parser.read() ) cb( line ); // eslint-disable-line no-cond-assign
+  });
 
-    let id = pathwayInfoTokens[PATHWAY_ID_INDEX];
-    let name = pathwayInfoTokens[PATHWAY_NAME_INDEX];
-    let geneSet = [];
+  parser.on( 'error', err => {
+    logger.error( `An problem was encoutered parsing ${err.message}` );
+  });
 
-    for( let i = GENE_LIST_START_INDEX; i < pathwayInfoTokens.length; ++i ){
-      geneSet.push(pathwayInfoTokens[i]);
-    }
-
-    pathwayInfoTable.set(id, { id, name, geneSet } );
-  } );
-
-  pathwayInfoTable.delete('');
-
-  pathwayInfoTableCache = pathwayInfoTable;
-
-  return pathwayInfoTable;
+  return parser;
 };
 
-const parser = parse({ delimiter: '\t' });
-parser.on( 'readable', () => {
-  let record;
-  while ( record = parser.read() ) {
-    output.push(record)
-  }
-})
+const addPathwayInfoLine = pathwayInfoTokens => {
+  let PATHWAY_ID_INDEX = 0;
+  let PATHWAY_NAME_INDEX = 1;
+  let GENE_LIST_START_INDEX = 2;
 
-const createPathwayInfoTable = async () => {
-  return formatPathwayInfoTable( gmtPathwayData );
+  let id = pathwayInfoTokens[PATHWAY_ID_INDEX];
+  let name = pathwayInfoTokens[PATHWAY_NAME_INDEX];
+  let geneSet = pathwayInfoTokens.slice( GENE_LIST_START_INDEX );
+  pathwayInfoTable.set(id, { id, name, geneSet } );
 };
 
 const getPathwayInfoTable = async function(){
   try {
-    if( _.isNull( sourceFilePaths ) ) sourceFilePaths = await updateEnrichment();
+    // Intialized and up to date
+    if( mtime && mtime === lastModTime() ) return pathwayInfoTable;
 
-    const fileStats = await stat( _.head( sourceFilePaths ) );
-    const thisModTime = fileStats.mtimeMs;
-
-    if( thisModTime === lastModTime ){
-      return pathwayInfoTableCache;
+    // Initialization
+    if( _.isNull( mtime ) && _.isNull( lastModTime() ) ){
+      await updateEnrichment();
+      mtime = lastModTime();
+      parser = initializeParser({
+        delimiter: '\t',
+        skip_empty_lines: true,
+        relax_column_count: true
+      }, addPathwayInfoLine );
+    // Update
     } else {
-      lastModTime = thisModTime;
-      return createPathwayInfoTable();
+      mtime = lastModTime();
     }
 
+    pathwayInfoTable.clear();
+    getReadStream( sourceFilePaths() ).pipe( parser );
+    return new Promise( resolve => parser.on( 'end', () => resolve( pathwayInfoTable ) ) );
   } catch ( e ) {
     logger.error( `A problem was encountered: ${e}` );
     throw e;
   }
 };
 
-module.exports = { getPathwayInfoTable, formatPathwayInfoTable };
+module.exports = { getPathwayInfoTable,  };

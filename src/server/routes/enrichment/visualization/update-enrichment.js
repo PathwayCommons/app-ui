@@ -36,8 +36,9 @@ const updateEnrichment = async () => {
     fpaths = await writeArchiveFiles( GMT_ARCHIVE_URL, GMT_ARCHIVE_FILENAMES );
     const fileStats = await stat( _.head( fpaths ) );
     lastModTime( fileStats.mtimeMs );
+    logger.info( `Enrichment sources updated` );
   } catch (e) {
-    logger.error( `A problem was encountered: ${e}` );
+    logger.error( `A problem was encountered in updateEnrichment: ${e}` );
     throw e;
   }
 };

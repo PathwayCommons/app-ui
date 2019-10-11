@@ -9,7 +9,6 @@ const getReadStream = files => new MultiStream( files.map( f => fs.createReadStr
 
 let mtime = null;
 let pathwayInfoTable = new Map();
-let parser = null;
 
 const initializeParser = ( opts, cb ) => {
   const parser = csv.parse( opts );
@@ -20,7 +19,7 @@ const initializeParser = ( opts, cb ) => {
   });
 
   parser.on( 'error', err => {
-    logger.error( `An problem was encoutered parsing ${err.message}` );
+    logger.error( `A problem was encountered in parser: ${err.message}` );
   });
 
   return parser;
@@ -47,23 +46,23 @@ const getPathwayInfoTable = async function(){
 
     // Initialization
     if( _.isNull( mtime ) ){
-      await updateEnrichment();
-      mtime = lastModTime();
-      parser = initializeParser({
-        delimiter: '\t',
-        skip_empty_lines: true,
-        relax_column_count: true
-      }, handleTokens );
+      if( _.isNull( lastModTime() ) ) await updateEnrichment();
+      mtime = lastModTime();      
     // Update
     } else {
       mtime = lastModTime();
     }
 
     pathwayInfoTable.clear();
+    const parser = initializeParser({
+      delimiter: '\t',
+      skip_empty_lines: true,
+      relax_column_count: true
+    }, handleTokens );
     getReadStream( sourceFilePaths() ).pipe( parser );
     return new Promise( resolve => parser.on( 'end', () => resolve( pathwayInfoTable ) ) );
   } catch ( e ) {
-    logger.error( `A problem was encountered: ${e}` );
+    logger.error( `A problem was encountered in getPathwayInfoTable: ${e}` );
     throw e;
   }
 };

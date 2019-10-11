@@ -11,4 +11,5 @@ src/scripts/jsonld/*
 .vscode/*
 /.idea/
 /nohup.out
-*.gmt
+src/*.gmt
+downloads/*

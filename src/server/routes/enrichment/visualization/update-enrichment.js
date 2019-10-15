@@ -1,25 +1,46 @@
+const _ = require('lodash');
 const fs = require('fs');
-const path = require('path');
-const concat = require('concat');
 const Promise = require('bluebird');
 
-const writeFile = Promise.promisify( fs.writeFile );
+const logger = require('../../../logger');
+const stat = Promise.promisify(fs.stat);
 const { writeArchiveFiles } = require('../../../source-files');
 const { GMT_ARCHIVE_URL } = require('../../../../config.js');
-const { GMT_SOURCE_FILENAME } = require('../../../../config');
-
-const GMT_SOURCE_PATH = path.resolve(__dirname);
 
 const GMT_ARCHIVE_FILENAMES = [
   'hsapiens.GO/BP.name.gmt',
   'hsapiens.REAC.name.gmt'
 ];
 
-const updateEnrichment = () => {
-  return writeArchiveFiles( GMT_ARCHIVE_URL, GMT_ARCHIVE_FILENAMES, GMT_SOURCE_PATH )
-    .then( concat )
-    .then( data => writeFile( path.resolve( GMT_SOURCE_PATH, GMT_SOURCE_FILENAME ), data ) )
-    .then( () => true );
+let fpaths = null;
+let mtime = null;
+
+const lastModTime = t => {
+  if( !t ){
+    return mtime;
+  } else {
+    mtime = t;
+  }
 };
 
-module.exports = { updateEnrichment };
+const sourceFilePaths = p => {
+  if( !p ){
+    return fpaths;
+  } else {
+    fpaths = p;
+  }
+};
+
+const updateEnrichment = async () => {
+  try {
+    fpaths = await writeArchiveFiles( GMT_ARCHIVE_URL, GMT_ARCHIVE_FILENAMES );
+    const fileStats = await stat( _.head( fpaths ) );
+    lastModTime( fileStats.mtimeMs );
+    logger.info( `Enrichment sources updated` );
+  } catch (e) {
+    logger.error( `A problem was encountered in updateEnrichment: ${e}` );
+    throw e;
+  }
+};
+
+module.exports = { updateEnrichment, lastModTime, sourceFilePaths };

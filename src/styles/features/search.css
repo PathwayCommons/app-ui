@@ -262,7 +262,8 @@
 }
 
 .search-item-content {
-  padding-left: 0.5em;
+  box-sizing: border-box;
+  padding-right: 0.5em;
 }
 
 .search-item-content-datasource {

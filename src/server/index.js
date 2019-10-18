@@ -132,25 +132,17 @@ function onListening() {
   debug('Listening on ' + bind);
 }
 
-// for now disable db
-// let setUpDb = () => {
-//   let log = (...msg) => function( val ){ logger.debug( ...msg ); return val; };
-//   let access = name => db.accessTable( name );
-//   let setup = name => {
-//     return access( name )
-//       .then( log('Accessed table "%s"', name) )
-//       .then( log('Set up synching for "%s"', name) )
-//     ;
-//   };
+const { getPathwayInfoTable } = require('./routes/enrichment/visualization/pathway-table');
+let initEnrichment = async () => {
+  await getPathwayInfoTable();
+};
 
-//   return Promise.all( ['pathways'].map( setup ) );
-// };
+let initRoutes = async () => Promise.all([
+    initEnrichment()
+  ]); 
 
-// for now disable db stuff...
-let setUpDb = () => {};
-
-// set up rethinkdb
-Promise.try( setUpDb ).then( () => {
+// set up routes 
+Promise.try( initRoutes ).then( () => {
   server.listen(port);
 } );
 

@@ -41,7 +41,7 @@ let extractBiopaxMetadata = ( biopaxJsonEntry, physicalEntityData ) => {
 };
 
 // transform biopaxJsonText into a consolidated js object
-let biopaxText2ElementMap = async biopaxJsonText => {
+let biopaxText2ElementMap = async ( biopaxJsonText, xrefSuggester ) => {
   let rawMap = new Map();
   let elementMap = new Map();
   let xRefMap = new Map();
@@ -90,7 +90,7 @@ let biopaxText2ElementMap = async biopaxJsonText => {
       if( xRefMap.has( xrefId ) ){
         const { k, v } = xRefMap.get( xrefId );
         try {
-          const { uri, namespace } = await xref2Uri( k, v );
+          const { uri, namespace } = await xrefSuggester( k, v );
           if( xrefLinks[ namespace ] != null ){
             xrefLinks[ namespace ] = xrefLinks[ namespace ].concat( uri );
           } else {
@@ -115,7 +115,7 @@ let biopaxText2ElementMap = async biopaxJsonText => {
 let fillInBiopaxMetadata = async ( cyJsonEles, biopaxJsonText ) => {
   let nodes = cyJsonEles.nodes;
 
-  let bm = await biopaxText2ElementMap( biopaxJsonText );
+  let bm = await biopaxText2ElementMap( biopaxJsonText, xref2Uri );
   let physicalEntityData = getGenericPhyiscalEntityData( nodes );
 
   nodes.forEach( node => {
@@ -156,4 +156,4 @@ let getGenericPhyiscalEntityData = nodes => {
 };
 
 
-module.exports = { fillInBiopaxMetadata, getGenericPhyiscalEntityData };
+module.exports = { fillInBiopaxMetadata, getGenericPhyiscalEntityData, biopaxText2ElementMap, extractBiopaxMetadata };

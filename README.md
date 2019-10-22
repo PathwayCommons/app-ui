@@ -38,18 +38,6 @@ The following environment variables can be used to configure the server (also do
 - `NCBI_API_KEY`: NCBI E-Utilities API key ([read more](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/))
 - `FACTOID_URL`: the Factoid app URL (default: 'http://unstable.factoid.baderlab.org/')
 
-### Switching Pathway Commons Versions (release/other)
-
-If you're not using Docker, and Pathway Commons have been updated since this app's last built,
-or you want to connect to a different PC web service instance (at ${PC_URL}/pc2/),
-then `src/server/routes/pathways/generate-pathway-json/biopax-metadata/generic-physical-entity-map.json`
-needs to be updated as follows:
-```sh
-cd src/scripts/generic-entity-mapping/
-PC_VERSION=v12 sh update.sh
-```
-to auto-refresh `physical_entities.json.gz` from the path `www.pathwaycommons.org/archives/PC2/${PC_VERSION}/` in Pathway Commons.
-
 ## Run targets
 
 - `npm start` : start the server
@@ -68,12 +56,12 @@ to auto-refresh `physical_entities.json.gz` from the path `www.pathwaycommons.or
 
 ### Build image and run locally
 
-Build the image ("production" web app to consume PC2 v12 web service at the default URL).  
+Build the image.
 Here, `app-ui` is used as the image name.
 
 ```
 cd app-ui
-docker build --build-arg NODE_ENV=production --build-arg PC_VERSION=v12 -t app-ui .
+docker build --build-arg NODE_ENV=production -t app-ui .
 ```
 
 Run the container:
@@ -96,12 +84,11 @@ Notes:
 
 ### Run the image from Docker Hub using Docker Compose
 
-NOTE: existing images and containers must be updated shortly after every new official PC release; otherwise, 
-the web app will be still using some old metadata while getting new pathway data from the web service at http://www.pathwaycommons.org/
+NOTE: existing images and containers must be restarted shortly after every new official PC release; otherwise, the web app will be still using some old cached data while getting new pathway data from the web service at http://www.pathwaycommons.org/
 
-Pathway Commons maintains a stable [Docker Hub](https://hub.docker.com/) image for 
-[app-ui](https://hub.docker.com/r/pathwaycommons/app-ui/) that is automatically built each time a commit is pushed 
-to the master branch on GitHub (other versions can be also built automatically or on-demand and pushed to that 
+Pathway Commons maintains a stable [Docker Hub](https://hub.docker.com/) image for
+[app-ui](https://hub.docker.com/r/pathwaycommons/app-ui/) that is automatically built each time a commit is pushed
+to the master branch on GitHub (other versions can be also built automatically or on-demand and pushed to that
 PC repository on Docker Hub).
 
 To run the app using the pathwaycommons/app-ui:master image, execute:
@@ -118,7 +105,7 @@ Notes:
 
 ### Custom build/rebuild/run with Docker Compose
 
-Create .env file in this directory and define there yours: PC_VERSION, NODE_ENV, PC_URL, FACTOID_URL, PORT options; 
+Create .env file in this directory and define there yours: NODE_ENV, PC_URL, FACTOID_URL, PORT options;
 execute:
 
 ```sh
@@ -129,7 +116,7 @@ docker-compose -f dev-compose.yml up -d
 
 ## Testing
 
-All files `/test` will be run by [Mocha](https://mochajs.org/).  You can `npm test` to run all tests, or you 
+All files `/test` will be run by [Mocha](https://mochajs.org/).  You can `npm test` to run all tests, or you
 can run `npm run test ./test/path/to/test` to run specific tests.
 
 [Chai](http://chaijs.com/) is included to make the tests easier to read and write.
@@ -140,7 +127,7 @@ can run `npm run test ./test/path/to/test` to run specific tests.
 Students who work on the repo should follow these instructions for each feature that they work on:
 
 1. Initial preparation (only needed once)
-    1. [Make a fork on Github](https://github.com/PathwayCommons/app-ui#fork-destination-box) (if you haven't already) 
+    1. [Make a fork on Github](https://github.com/PathwayCommons/app-ui#fork-destination-box) (if you haven't already)
     under your personal account
     1. Check out the fork repo: `git clone https://github.com/myusername/app-ui.git`
     1. Change the directory to the project: `cd app-ui`
@@ -156,7 +143,7 @@ Students who work on the repo should follow these instructions for each feature 
         1. Select `Merge into Current Branch`
   1. Make a feature branch for the new feature or change you are working on.  Make sure to give your branch a clear, meaningful name.
       1. Using the console: `git checkout -b name-of-feature`
-      1. Using GitUp: Right click the `HEAD` commit (which should be the top commit of your local `development` branch), 
+      1. Using GitUp: Right click the `HEAD` commit (which should be the top commit of your local `development` branch),
       then select `Create Branch...`
 1. Make commits as you're working on your feature:
     1. Using the console: `git commit -am "My descriptive commit message"`
@@ -164,7 +151,7 @@ Students who work on the repo should follow these instructions for each feature 
         1. Stage the files
         1. Add a descriptive commit message
         1. Press the `Commit` button
-1. Periodically (at least once just before making a pull request) make sure your feature branch takes into account 
+1. Periodically (at least once just before making a pull request) make sure your feature branch takes into account
 the latest changes other people have made:
     1. Make sure your `development` branch is up-to-date:
         1. Using the console: `git checkout development && git merge pc/development`
@@ -174,11 +161,11 @@ the latest changes other people have made:
     1. Make sure your feature branch is up-to-date:
         1. Using the console: `git checkout name-of-feature`, `git merge development`
         1. Using GitUp:
-            1. Make sure your `HEAD` is the newest commit of your feature branch: Right-click the latest commit 
+            1. Make sure your `HEAD` is the newest commit of your feature branch: Right-click the latest commit
             on `name-of-feature` branch and select `Checkout "name-of-feature" Branch`
             1. Right-click the latest commit of the `development` branch and select `Merge into Current Branch`
 1. Push your commits to GitHub:
-    1. Note: You can push as often as you'd like so that your code is backed up on GitHub.  You *must* push everything 
+    1. Note: You can push as often as you'd like so that your code is backed up on GitHub.  You *must* push everything
     before you make a pull request.
     1. Using the console: `git push`
     1. Using GitUp: `Remotes > Push Current Branch`
@@ -194,7 +181,7 @@ the latest changes other people have made:
 1. Merge the latest dev into the release branch.
 1. Make sure the tests are passing: `npm test`
 1. Make sure the linting is passing: `npm run lint`
-1. Bump the version number with `npm version`, in accordance with [semver](http://semver.org/).  The `version` command 
+1. Bump the version number with `npm version`, in accordance with [semver](http://semver.org/).  The `version` command
 in `npm` updates both `package.json` and git tags, but note that it uses a `v` prefix on the tags (e.g. `v1.2.3`).
   1. For a bug fix / patch release, run `npm version patch`.
   1. For a new feature release, run `npm version minor`.

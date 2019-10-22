@@ -5,9 +5,6 @@
 # Node.js base image (based on Alpine Linux)
 FROM node:8
 
-# install some tools
-RUN apt-get update && apt-get install curl unzip jq
-
 # Create an unprivileged user w/ home directory
 RUN groupadd appuser && useradd --gid appuser --shell /bin/bash --create-home appuser
 
@@ -36,13 +33,6 @@ EXPOSE 3000
 # Change ownership of the app to the unprivileged user
 RUN chown appuser:appuser -R /home/appuser/app
 USER appuser
-
-# required PC_VERSION (e.g. 'v12') arg for updating the generic entities map (json) - converting
-# the physical_entities.json.gz from the corresponding subdirectory of www.pathwaycommons.org/archives/PC2/
-ARG PC_VERSION
-ENV PC_VERSION=${PC_VERSION}
-# update the generic physical entities metadata (PC_VERSION is required by the script)
-RUN cd /home/appuser/app/src/scripts/generic-entity-mapping && sh update.sh
 
 # Start the application
 CMD npm start

@@ -1,6 +1,10 @@
 const fs = require('fs');
 const _ = require('lodash');
+
+const { fetch } = require('../../../../../util');
 const { xref2Uri } = require('../../../../external-services/pathway-commons');
+const { PC_URL } = require('../../../../../config');
+const GENERIC_PHYSICAL_ENTITY_URL = PC_URL + 'downloads/generic-physical-entity-map.json';
 
 let extractBiopaxMetadata = ( biopaxJsonEntry, physicalEntityData ) => {
   let xrefLinks = _.get(biopaxJsonEntry, 'xrefLinks', {});
@@ -116,7 +120,7 @@ let fillInBiopaxMetadata = async ( cyJsonEles, biopaxJsonText ) => {
   let nodes = cyJsonEles.nodes;
 
   let bm = await biopaxText2ElementMap( biopaxJsonText, xref2Uri );
-  let physicalEntityData = getGenericPhyiscalEntityData( nodes );
+  let physicalEntityData = await getGenericPhyiscalEntityData( nodes );
 
   nodes.forEach( node => {
     let nodeId = node.data.id;
@@ -136,14 +140,24 @@ let fillInBiopaxMetadata = async ( cyJsonEles, biopaxJsonText ) => {
   return cyJsonEles;
 };
 
+let genericPhysicalEntityMapCache = null;
+const toJSON = res => res.json();
+const asMap = json => new Map( _.toPairs( json ) );
+const updateGenericPhysicalEntityMapCache = async () => {
+  return fetch( GENERIC_PHYSICAL_ENTITY_URL )
+    .then( toJSON )
+    .then( asMap )
+    .then( m =>  genericPhysicalEntityMapCache = m );
+};
 
-let getGenericPhysicalEntityMap = _.memoize(() => JSON.parse(
-  fs.readFileSync(__dirname + '/generic-physical-entity-map.json', 'utf-8')
-));
+const getGenericPhysicalEntityMap = async () => {
+  if ( _.isNull( genericPhysicalEntityMapCache ) ) await updateGenericPhysicalEntityMapCache();
+  return genericPhysicalEntityMapCache;
+};
 
-let getGenericPhyiscalEntityData = nodes => {
+let getGenericPhyiscalEntityData = async nodes => {
   let nodeGeneSynonyms = {};
-  let genericPhysicalEntityMap = getGenericPhysicalEntityMap();
+  let genericPhysicalEntityMap = await getGenericPhysicalEntityMap();
 
   nodes.forEach(node => {
     let genericPE = genericPhysicalEntityMap[node.data.id];
@@ -156,4 +170,4 @@ let getGenericPhyiscalEntityData = nodes => {
 };
 
 
-module.exports = { fillInBiopaxMetadata, getGenericPhyiscalEntityData, biopaxText2ElementMap, extractBiopaxMetadata };
+module.exports = { fillInBiopaxMetadata, biopaxText2ElementMap, extractBiopaxMetadata };

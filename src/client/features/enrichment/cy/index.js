@@ -19,6 +19,8 @@ const ENRICHMENT_LAYOUT_OPTS = {
   convergenceThreshold: 50,
   padding: 50
 };
+const PARENT_SEL_PREFIX = 'component-';
+const noParent = component => !component.isChild();
 
 let enrichmentLayout = cy => {
   let nodesWithNoEdges = cy.nodes().filter( node => node.connectedEdges().size() === 0 );
@@ -33,24 +35,28 @@ let enrichmentLayout = cy => {
   return firstLayoutPromise.then( () => {
 
     // add parent nodes for each component with size > 2
-    cy.elements().components().filter( component => component.size() > 2 ).forEach( (component, index) => {
-      let labelInput = component.nodes().map(node => node.data('name')).join('. ');
-      let tags = generateClusterLabels(labelInput);
+    cy.elements()
+      .components()
+      .filter( component => component.size() > 2 )
+      .filter( noParent )
+      .forEach( (component, index) => {
+        let labelInput = component.nodes().map(node => node.data('name')).join('. ');
+        let tags = generateClusterLabels(labelInput);
 
-      let componentParentId = 'component-' + index;
-      cy.add({
-        group: 'nodes',
-        label: '',
-        data: {
-          tags: tags.join(' '),
-          id: componentParentId
-        },
-      });
+        let componentParentId = PARENT_SEL_PREFIX + index;
+        cy.add({
+          group: 'nodes',
+          label: '',
+          data: {
+            tags: tags.join(' '),
+            id: componentParentId
+          },
+        });
 
-      component.move({
-        parent: componentParentId
+        component.move({
+          parent: componentParentId
+        });
       });
-    });
 
 
     let firstLayoutBB = nodesWithEdges.boundingBox();

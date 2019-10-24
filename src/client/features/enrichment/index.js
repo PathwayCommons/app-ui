@@ -62,7 +62,8 @@ class Enrichment extends React.Component {
         enrichmentLayout( cy ).then ( () => {
           this.setState({
             loading: false,
-            networkEmpty: networkHasZeroNodes
+            networkEmpty: networkHasZeroNodes,
+            error: null
           });
         });
       } catch( e ){

@@ -1,6 +1,6 @@
 {
   "name": "app-ui",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "description": "App UI",
   "repository": {
     "type": "git",
@@ -41,7 +41,9 @@
     "body-parser": "^1.18.2",
     "chai-as-promised": "^7.1.1",
     "classnames": "^2.2.5",
+    "concat": "^1.0.3",
     "cookie-parser": "^1.4.3",
+    "csv": "^5.1.1",
     "cytoscape": "^3.2.22",
     "cytoscape-cola": "^2.3.0",
     "cytoscape-cose-bilkent": "^3.0.2",
@@ -120,6 +122,7 @@
     "postcss-import": "^10.0.0",
     "postcss-url": "^7.1.2",
     "rimraf": "^2.6.2",
+    "sinon": "^7.5.0",
     "stylelint": "^8.2.0",
     "stylelint-config-standard": "^17.0.0",
     "uglifyjs-webpack-plugin": "^0.4.6",

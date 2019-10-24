@@ -48,7 +48,8 @@ class Interactions extends React.Component {
       if( network.nodes.length === 0 ){
         this.setState({
           networkEmpty: true,
-          loading: false
+          loading: false,
+          error: null
         });
         return;
       }
@@ -57,6 +58,7 @@ class Interactions extends React.Component {
         stop: () => {
           this.setState({
             loading: false,
+            error: null
           });
         }
       })).run();

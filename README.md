@@ -6,7 +6,6 @@
 ## Required software
 
 - [Node.js](https://nodejs.org/en/) >=8.11.2
-- [RethinkDB](https://www.rethinkdb.com/) >=2.3.6
 
 ## Running the App Locally
 
@@ -30,27 +29,14 @@
 
 ## Configuration
 
-The following environment variables can be used to configure the server:
+The following environment variables can be used to configure the server (also docker image):
 
 - `NODE_ENV`: the environment mode, either `production` or `development` (default)
 - `PORT`: the port on which the server runs (default 3000)
-- `PC_URL`: root Pathway Commons URL (default: 'http://www.pathwaycommons.org/')
+- `PC_URL`: Pathway Commons homepage URL (default: 'http://www.pathwaycommons.org/'; cPath2 service should be there available at /pc2/ path)
+- `PC_VERSION`: PC data archive (PC2 downloads) version, e.g.: 'v11' or 'v12' (only for building the docker image)
 - `NCBI_API_KEY`: NCBI E-Utilities API key ([read more](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/))
 - `FACTOID_URL`: the Factoid app URL (default: 'http://unstable.factoid.baderlab.org/')
-
-### Switching Pathway Commons Versions (release/other)
-
-If Pathway Commons data and files have been updated since this app's last built and run,
-or you simply want to connect to a different PC2 instance (don't forget to set PC_URL),
-then the file `src/server/routes/pathways/generate-pathway-json/biopax-metadata/generic-physical-entity-map.json`
-needs to be updated.
-
-Use the script
-```sh
-cd src/scripts/generic-entity-mapping/
-PC_VERSION=v12 sh update.sh
-```
-to refresh `physical_entities.json.gz` from the path `www.pathwaycommons.org/archives/PC2/<PC_VERSION>/` in Pathway Commons.
 
 ## Run targets
 
@@ -66,11 +52,12 @@ to refresh `physical_entities.json.gz` from the path `www.pathwaycommons.org/arc
 - `npm run ci` : run the tests and lint at once
 
 
-## Running via Docker
+## Using Docker and Dockerfile
 
-### Build and run directly
+### Build image and run locally
 
-Build the container.  Here, `app-ui` is used as the container name.
+Build the image.
+Here, `app-ui` is used as the image name.
 
 ```
 cd app-ui
@@ -95,26 +82,42 @@ Notes:
   - [Docker CLI docs](https://docs.docker.com/engine/reference/commandline/cli/)
 
 
-### Run image hosted on Docker Hub using Docker Compose
+### Run the image from Docker Hub using Docker Compose
 
-Pathway Commons maintains a [Docker Hub](https://hub.docker.com/) image for [app-ui](https://hub.docker.com/r/pathwaycommons/app-ui/) that is automatically built each time a commit is pushed to GitHub.
+NOTE: existing images and containers must be restarted shortly after every new official PC release; otherwise, the web app will be still using some old cached data while getting new pathway data from the web service at http://www.pathwaycommons.org/
 
-To run the GitHub master branch:
+Pathway Commons maintains a stable [Docker Hub](https://hub.docker.com/) image for
+[app-ui](https://hub.docker.com/r/pathwaycommons/app-ui/) that is automatically built each time a commit is pushed
+to the master branch on GitHub (other versions can be also built automatically or on-demand and pushed to that
+PC repository on Docker Hub).
+
+To run the app using the pathwaycommons/app-ui:master image, execute:
 
 ```sh
-docker-compose --file docker-compose.yml up --detach
+docker-compose up -d
 ```
 
-Access the app instance at port `9090`.
+Access the app instance at port `9090` (can be specified in the docker-compose.yml).
 
 Notes:
 - References:
   - [Getting started with Docker Compose](https://docs.docker.com/compose/gettingstarted/)
 
+### Custom build/rebuild/run with Docker Compose
+
+Create .env file in this directory and define there yours: NODE_ENV, PC_URL, FACTOID_URL, PORT options;
+execute:
+
+```sh
+docker-compose -f dev-compose.yml build
+docker-compose -f dev-compose.yml up -d
+```
+
 
 ## Testing
 
-All files `/test` will be run by [Mocha](https://mochajs.org/).  You can `npm test` to run all tests, or you can run `npm run test ./test/path/to/test` to run specific tests.
+All files `/test` will be run by [Mocha](https://mochajs.org/).  You can `npm test` to run all tests, or you
+can run `npm run test ./test/path/to/test` to run specific tests.
 
 [Chai](http://chaijs.com/) is included to make the tests easier to read and write.
 
@@ -124,7 +127,8 @@ All files `/test` will be run by [Mocha](https://mochajs.org/).  You can `npm te
 Students who work on the repo should follow these instructions for each feature that they work on:
 
 1. Initial preparation (only needed once)
-    1. [Make a fork on Github](https://github.com/PathwayCommons/app-ui#fork-destination-box) (if you haven't already) under your personal account
+    1. [Make a fork on Github](https://github.com/PathwayCommons/app-ui#fork-destination-box) (if you haven't already)
+    under your personal account
     1. Check out the fork repo: `git clone https://github.com/myusername/app-ui.git`
     1. Change the directory to the project: `cd app-ui`
     1. Check out the `development` branch: `git checkout -b development origin/development`
@@ -139,14 +143,16 @@ Students who work on the repo should follow these instructions for each feature 
         1. Select `Merge into Current Branch`
   1. Make a feature branch for the new feature or change you are working on.  Make sure to give your branch a clear, meaningful name.
       1. Using the console: `git checkout -b name-of-feature`
-      1. Using GitUp: Right click the `HEAD` commit (which should be the top commit of your local `development` branch), then select `Create Branch...`
+      1. Using GitUp: Right click the `HEAD` commit (which should be the top commit of your local `development` branch),
+      then select `Create Branch...`
 1. Make commits as you're working on your feature:
     1. Using the console: `git commit -am "My descriptive commit message"`
     1. Using GitUp: Use the `Select View` tab (`View > Commit`)
         1. Stage the files
         1. Add a descriptive commit message
         1. Press the `Commit` button
-1. Periodically (at least once just before making a pull request) make sure your feature branch takes into account the latest changes other people have made:
+1. Periodically (at least once just before making a pull request) make sure your feature branch takes into account
+the latest changes other people have made:
     1. Make sure your `development` branch is up-to-date:
         1. Using the console: `git checkout development && git merge pc/development`
         1. Using GitUp:
@@ -155,10 +161,12 @@ Students who work on the repo should follow these instructions for each feature 
     1. Make sure your feature branch is up-to-date:
         1. Using the console: `git checkout name-of-feature`, `git merge development`
         1. Using GitUp:
-            1. Make sure your `HEAD` is the newest commit of your feature branch: Right-click the latest commit on `name-of-feature` branch and select `Checkout "name-of-feature" Branch`
+            1. Make sure your `HEAD` is the newest commit of your feature branch: Right-click the latest commit
+            on `name-of-feature` branch and select `Checkout "name-of-feature" Branch`
             1. Right-click the latest commit of the `development` branch and select `Merge into Current Branch`
 1. Push your commits to GitHub:
-    1. Note: You can push as often as you'd like so that your code is backed up on GitHub.  You *must* push everything before you make a pull request.
+    1. Note: You can push as often as you'd like so that your code is backed up on GitHub.  You *must* push everything
+    before you make a pull request.
     1. Using the console: `git push`
     1. Using GitUp: `Remotes > Push Current Branch`
 1. When your feature is done and ready to be reviewed, make a pull request:
@@ -173,7 +181,8 @@ Students who work on the repo should follow these instructions for each feature 
 1. Merge the latest dev into the release branch.
 1. Make sure the tests are passing: `npm test`
 1. Make sure the linting is passing: `npm run lint`
-1. Bump the version number with `npm version`, in accordance with [semver](http://semver.org/).  The `version` command in `npm` updates both `package.json` and git tags, but note that it uses a `v` prefix on the tags (e.g. `v1.2.3`).
+1. Bump the version number with `npm version`, in accordance with [semver](http://semver.org/).  The `version` command
+in `npm` updates both `package.json` and git tags, but note that it uses a `v` prefix on the tags (e.g. `v1.2.3`).
   1. For a bug fix / patch release, run `npm version patch`.
   1. For a new feature release, run `npm version minor`.
   1. For a breaking API change, run `npm version major.`

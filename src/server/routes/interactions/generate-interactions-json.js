@@ -6,9 +6,6 @@ const { cachePromise } = require('../../cache');
 // const ncbi = require('../../external-services/ncbi');
 
 const { PC_CACHE_MAX_SIZE, MAX_SIF_NODES } = require('../../../config');
-const Datasources = require('../../../models/datasources');
-
-
 
 let interactionType2Label = type => {
   switch( type ){
@@ -40,11 +37,14 @@ let participantTxt2CyJson = ( id, sourceIds ) => {
   };
 };
 
-let interactionTxt2CyJson = (srcId, tgtId, type, providersString, pubmedIdsString, pathwayNamesString, mediatorIdsString ) => {
+let interactionTxt2CyJson = async (srcId, tgtId, type, providersString, pubmedIdsString, pathwayNamesString, mediatorIdsString ) => {
   let summary = type === 'catalysis-precedes' ? `${srcId} and ${tgtId} in catalysis` : `${srcId} ${type.split('-').join(' ')} ${tgtId}`;
   let readableType = interactionType2Label(type);
   let splitBySemi = (input) => (input || '').split(';').filter(entry => !_.isEmpty(entry));
-  let datasources = splitBySemi( providersString ).map( datasource => Datasources.findByKey( datasource ).name ).filter( name => name != null );
+  let supportedProviders = await pc.getDataSources();
+  let datasources = splitBySemi( providersString )
+    .map( provider =>  supportedProviders.find( supportedProvider => supportedProvider.alias.some( alias => alias === provider ) ) )
+    .map( supportedProvider => _.get( supportedProvider, 'name' ) );
   let pubmedIds = splitBySemi( pubmedIdsString );
   let pathwayNames = splitBySemi( pathwayNamesString );
   let mediatorIds = splitBySemi( mediatorIdsString );
@@ -65,13 +65,13 @@ let interactionTxt2CyJson = (srcId, tgtId, type, providersString, pubmedIdsStrin
   };
 };
 
-let sifText2CyJson = (sifText, sourceIds) => {
+let sifText2CyJson = async (sifText, sourceIds) => {
   let interactionsData = sifText.split('\n');
 
   let nodeId2Json = {};
   let edges = [];
 
-  interactionsData.forEach( interactionTxtLine => {
+  const interactionsDataPromises = interactionsData.map( async interactionTxtLine => {
     let parsedInteractionParts = interactionTxtLine.split('\t');
     let [srcId, type, tgtId, providersString, pubMedIdsString, pathwayNamesString, mediatorIdsString] = parsedInteractionParts;
 
@@ -87,12 +87,14 @@ let sifText2CyJson = (sifText, sourceIds) => {
       tgtJson = nodeId2Json[ tgtId ] = participantTxt2CyJson( tgtId, sourceIds );
     }
 
-    let interactionJson = interactionTxt2CyJson( srcId, tgtId, type, providersString, pubMedIdsString, pathwayNamesString, mediatorIdsString );
+    let interactionJson = await interactionTxt2CyJson( srcId, tgtId, type, providersString, pubMedIdsString, pathwayNamesString, mediatorIdsString );
     srcJson.data.metric += 1;
     tgtJson.data.metric += 1;
 
     edges.push(interactionJson);
-  } );
+  });
+
+  await Promise.all( interactionsDataPromises );
 
   return {
     nodes: Object.values(nodeId2Json),
@@ -123,46 +125,11 @@ let filterByDegree = (nodes, edges) => {
   return { nodes: filteredNodes, edges: filteredEdges };
 };
 
-let getInteractionsCyJson = (sifText, geneIds) => {
-  let { nodes, edges } = sifText2CyJson( sifText, geneIds );
+let getInteractionsCyJson = async (sifText, geneIds) => {
+  let { nodes, edges } = await sifText2CyJson( sifText, geneIds );
   let filteredCyJson = filterByDegree( nodes, edges );
   return filteredCyJson;
 };
-
-// let addNetworkPublications = network => {
-//   let pubmedIds = _.uniq((() => {
-//     let ids = [];
-
-//     network.edges.forEach(edge => {
-//       edge.data.pubmedIds.forEach(id => ids.push(id));
-//     });
-
-//     return ids;
-//   })());
-
-//   let getPubs = () => ncbi.getPublications(pubmedIds);
-//   console.log('here');
-
-//   let pubMap = new Map();
-
-//   let putPubsInMap = pubs => pubs.forEach(pub => pubMap.set(pub.id, pub));
-
-//   let putFromMapToEdges = () => {
-//     network.edges.forEach(edge => {
-//       let { data } = edge;
-
-//       data.pubmedEntries = data.pubmedIds.map(id => pubMap.get(id)).filter();
-//     });
-//   };
-
-//   return (
-//     Promise.resolve()
-//     .then(getPubs)
-//     .then(putPubsInMap)
-//     .then(putFromMapToEdges)
-//     .then(() => network)
-//   );
-// };
 
 let getInteractionsNetwork = sources => {
   let uniqueGeneIds  = _.uniq([].concat(sources).map( source => source.toUpperCase() ) );
@@ -171,11 +138,7 @@ let getInteractionsNetwork = sources => {
     source: uniqueGeneIds
   };
 
-  return pc.sifGraph( params ).then( res => {
-    return getInteractionsCyJson(res, uniqueGeneIds);
-  // }).then(network => {
-  //   // return addNetworkPublications(network);
-  });
+  return pc.sifGraph( params ).then( res => getInteractionsCyJson(res, uniqueGeneIds) );
 };
 
 let pcCache = new QuickLRU({ maxSize: PC_CACHE_MAX_SIZE });

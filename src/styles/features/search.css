@@ -112,6 +112,18 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  margin: 1em 0;
+}
+
+@media (max-width: 700px) {
+  .search-tools {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.search-pathways-header {
+  margin: 0;
 }
 
 .search-result-hit-count {
@@ -190,6 +202,7 @@
   flex-flow: row wrap;
   justify-content: space-between;
   padding-bottom: 0.5em;
+  padding-right: 0.25em;
 }
 
 .app-link-action {
@@ -216,9 +229,6 @@
 
 .search-filters {
   font-size: 12px;
-  height: 13px;
-  display: flex;
-  flex-direction: row;
 }
 
 .search-datasource-filter {
@@ -253,7 +263,8 @@
 }
 
 .search-item-content {
-  padding-left: 0.5em;
+  box-sizing: border-box;
+  padding-right: 0.5em;
 }
 
 .search-item-content-datasource {

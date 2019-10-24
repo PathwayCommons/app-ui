@@ -68,7 +68,7 @@ const getDataSourcesMap = async function() {
   const datasources = await query({ cmd:'pc2/metadata/datasources' });
   datasources.forEach( source => {
     const name = _.head( sortByLength( source.name ) ); // Use longest name for display
-    const sourceInfo = _.assign( _.pick( source, dataSourceFields ), { name } );
+    const sourceInfo = _.assign( _.pick( source, dataSourceFields ), { name }, { alias: source.name } );
     source.name.forEach( variant => sourceMap.set( _.toLower( variant ), sourceInfo ) );
   });
   dataSourcesCache = sourceMap;
@@ -140,7 +140,7 @@ const sifGraph = opts => {
   return fetch( url, { method: 'GET', headers: { 'Accept': 'text/plain' } } )
   .then( res => res.text() )
   .catch( e => {
-    logger.error( 'sifGraph ' + opts + ' failed - ' + e );
+    logger.error(url + ' failed - ' + e );
     throw e;
   });
 };

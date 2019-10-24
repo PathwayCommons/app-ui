@@ -1,65 +1,70 @@
+const _ = require('lodash');
 const fs = require('fs');
-const path = require('path');
-const Promise = require('bluebird');
+const csv = require('csv');
 const MultiStream = require('multistream');
 
-const GMT_SOURCE_FILENAME = 'pathways.gmt';
+const logger = require('../../../logger');
+const { updateEnrichment, lastModTime, sourceFilePaths } = require('./update-enrichment');
+const getReadStream = files => new MultiStream( files.map( f => fs.createReadStream( f ) ) );
 
-const readFile = Promise.promisify(fs.readFile);
-const stat = Promise.promisify(fs.stat);
-const FILEPATH = path.resolve(__dirname, GMT_SOURCE_FILENAME);
+let mtime = null;
+let pathwayInfoTable = new Map();
 
-let lastModTime = null;
-let pathwayInfoTableCache = null;
+const initializeParser = ( opts, cb ) => {
+  const parser = csv.parse( opts );
 
-const getPathwayInfoTable = async function(){
-  const fileStats = await stat(FILEPATH);
-  const thisModTime = fileStats.mtimeMs;
+  parser.on( 'readable', () => {
+    let line;
+    while ( line = parser.read() ) cb( line ); // eslint-disable-line no-cond-assign
+  });
 
-  if( thisModTime === lastModTime ){
-    return pathwayInfoTableCache;
-  } else {
-    lastModTime = thisModTime;
+  parser.on( 'error', err => {
+    logger.error( `A problem was encountered in parser: ${err.message}` );
+  });
 
-    // allow the function to continue to update the table...
-  }
-
-  const gmtPathwayData = await readFile(FILEPATH, { encoding: 'utf8' });
-
-  // pathwayInfoTable is map where the keys are GO/REACTOME pathway identifiers
-  // and values are description and geneset
-  const pathwayInfoTable = new Map();
-
-  gmtPathwayData.split('\n').forEach( pathwayInfoLine => {
-    let pathwayInfoTokens = pathwayInfoLine.split('\t');
-    let PATHWAY_ID_INDEX = 0;
-    let PATHWAY_NAME_INDEX = 1;
-    let GENE_LIST_START_INDEX = 2;
-
-    let id = pathwayInfoTokens[PATHWAY_ID_INDEX];
-    let name = pathwayInfoTokens[PATHWAY_NAME_INDEX];
-    let geneSet = [];
-
-    for( let i = GENE_LIST_START_INDEX; i < pathwayInfoTokens.length; ++i ){
-      geneSet.push(pathwayInfoTokens[i]);
-    }
-
-    pathwayInfoTable.set(id, { id, name, geneSet } );
-  } );
-
-  pathwayInfoTable.delete('');
-
-  pathwayInfoTableCache = pathwayInfoTable;
-
-  return pathwayInfoTable;
+  return parser;
 };
 
-/**
- * handleFileUpdate
- * When a cron job to update the file is triggered, this function is called with the fresh file.
- * @external files list of file
- * @see {@link https://www.npmjs.com/package/unzipper}
- */
-const handleFileUpdate = files =>  MultiStream( files.map( f => f.stream() ) ).pipe( fs.createWriteStream( FILEPATH ) );
+const handleTokens = tokens => {
+  const PATHWAY_ID_INDEX = 0;
+  const PATHWAY_NAME_INDEX = 1;
+  const GENE_LIST_START_INDEX = 2;
+  const id = tokens[PATHWAY_ID_INDEX];
+  const data = {
+    id,
+    name:tokens[PATHWAY_NAME_INDEX],
+    geneSet: tokens.slice( GENE_LIST_START_INDEX )
+  };
+  pathwayInfoTable.set( id, data );
+  return data;
+};
 
-module.exports = { getPathwayInfoTable, handleFileUpdate };
+const getPathwayInfoTable = async function(){
+  try {
+    // Intialized and up to date
+    if( mtime && mtime === lastModTime() ) return pathwayInfoTable;
+
+    // Initialization
+    if( _.isNull( mtime ) ){
+      if( _.isNull( lastModTime() ) ) await updateEnrichment();
+      mtime = lastModTime();      
+    // Update
+    } else {
+      mtime = lastModTime();
+    }
+
+    pathwayInfoTable.clear();
+    const parser = initializeParser({
+      delimiter: '\t',
+      skip_empty_lines: true,
+      relax_column_count: true
+    }, handleTokens );
+    getReadStream( sourceFilePaths() ).pipe( parser );
+    return new Promise( resolve => parser.on( 'end', () => resolve( pathwayInfoTable ) ) );
+  } catch ( e ) {
+    logger.error( `A problem was encountered in getPathwayInfoTable: ${e}` );
+    throw e;
+  }
+};
+
+module.exports = { getPathwayInfoTable, handleTokens };

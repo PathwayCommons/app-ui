@@ -1,29 +1,57 @@
-const request = require('request');
-const unzipper = require('unzipper');
+const _ = require('lodash');
+const fs = require('fs');
+const path = require('path');
+const Promise = require('bluebird');
 const sanitize = require("sanitize-filename");
+
 const logger = require('../../../logger');
-const { GMT_ARCHIVE_URL } = require('../../../../config.js');
+const stat = Promise.promisify(fs.stat);
+const { writeArchiveFiles } = require('../../../source-files');
+const { GMT_ARCHIVE_URL, DOWNLOADS_FOLDER_NAME } = require('../../../../config.js');
+const ROOT_FOLDER_PATH = path.resolve( __dirname, '../../../../../' );
+const DOWNLOADS_FOLDER_PATH = path.resolve( ROOT_FOLDER_PATH, DOWNLOADS_FOLDER_NAME );
 
-const { handleFileUpdate } = require('./pathway-table');
-
- const GMT_ARCHIVE_FILENAMES = [
+const GMT_ARCHIVE_FILENAMES = [
   'hsapiens.GO/BP.name.gmt',
   'hsapiens.REAC.name.gmt'
 ];
 
-const SANITIZED_GMT_ARCHIVE_FILENAMES = GMT_ARCHIVE_FILENAMES.map( sanitize );
-const fetchZipCDFiles = url => unzipper.Open.url( request, url ).then( cd => cd.files );
-const pickFiles = files => files.filter( d => SANITIZED_GMT_ARCHIVE_FILENAMES.indexOf( sanitize( d.path ) ) > -1 );
-const updateGmt = url => {
-  fetchZipCDFiles( url )
-    .then( pickFiles )
-    .then( handleFileUpdate )
-    .then( () => logger.info(`Enrichment: Updated GMT from ${url}`) )
-    .catch( error => logger.error(`Enrichment: Failed to update GMT from ${url} - ${error}`) );
+let fpaths = null;
+let mtime = null;
+
+const lastModTime = t => {
+  if( !t ){
+    return mtime;
+  } else {
+    mtime = t;
+  }
 };
 
-const updateEnrichment = () => {
-  updateGmt( GMT_ARCHIVE_URL );
+const sourceFilePaths = p => {
+  if( !p ){
+    return fpaths;
+  } else {
+    fpaths = p;
+  }
 };
 
-module.exports = { updateEnrichment };
+const updateEnrichment = async () => {
+  try {
+    // If exists in DOWNLOADS_FOLDER_PATH
+    const sanitized_filenames = GMT_ARCHIVE_FILENAMES.map( sanitize );
+    const fileStats = await stat( path.resolve( DOWNLOADS_FOLDER_PATH, _.head( sanitized_filenames ) ) );
+    sourceFilePaths( sanitized_filenames.map( fname => path.resolve( DOWNLOADS_FOLDER_PATH, fname ) ) );
+    lastModTime( fileStats.mtimeMs );
+
+  } catch (e) {
+    // Populate source files
+    sourceFilePaths( await writeArchiveFiles( GMT_ARCHIVE_URL, GMT_ARCHIVE_FILENAMES ) );
+    const fileStats = await stat( _.head( sourceFilePaths() ) );
+    lastModTime( fileStats.mtimeMs );
+
+  } finally {
+    logger.info(`Enrichment data updated`);
+  }
+};
+
+module.exports = { updateEnrichment, lastModTime, sourceFilePaths };

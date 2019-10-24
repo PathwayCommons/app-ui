@@ -49,7 +49,8 @@ class Pathways extends React.Component {
       layout.on('layoutstop', () => {
         this.setState({
           loading: false,
-          pathway: pathway
+          pathway: pathway,
+          error: null
         });
       });
       layout.run();

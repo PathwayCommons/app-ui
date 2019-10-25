@@ -34,7 +34,6 @@ The following environment variables can be used to configure the server (also do
 - `NODE_ENV`: the environment mode, either `production` or `development` (default)
 - `PORT`: the port on which the server runs (default 3000)
 - `PC_URL`: Pathway Commons homepage URL (default: 'http://www.pathwaycommons.org/'; cPath2 service should be there available at /pc2/ path)
-- `PC_VERSION`: PC data archive (PC2 downloads) version, e.g.: 'v11' or 'v12' (only for building the docker image)
 - `NCBI_API_KEY`: NCBI E-Utilities API key ([read more](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/))
 - `FACTOID_URL`: the Factoid app URL (default: 'http://unstable.factoid.baderlab.org/')
 

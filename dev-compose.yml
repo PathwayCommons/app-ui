@@ -5,7 +5,6 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        PC_VERSION: "${PC_VERSION}"
         NODE_ENV: "${NODE_ENV}"
     container_name: pc_apps_dev
     ports:

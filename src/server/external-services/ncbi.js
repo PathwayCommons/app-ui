@@ -86,9 +86,10 @@ const getPublications = (pubmedIds) => {
   body.append('db', 'pubmed');
   body.append('retmode', 'json');
   body.append('id', uncachedIds.join(','));
+  const userAgent = `${process.env.npm_package_name}/${process.env.npm_package_version}`;
 
   return (
-    ncbiRequest(`${NCBI_EUTILS_BASE_URL}/esummary.fcgi`, { method: 'POST', body })
+    ncbiRequest(`${NCBI_EUTILS_BASE_URL}/esummary.fcgi`, { method: 'POST', body, headers: { 'User-Agent': userAgent } })
       .then(res => res.json())
       .then(processPublications)
       .then(storePublicationsInCache)
@@ -116,6 +117,7 @@ const fetchByGeneIds = ( geneIds ) => {
 
   let getMergedResult = fetchedEnts => sortEnts(cachedEnts.concat(fetchedEnts));
 
+  const userAgent = `${process.env.npm_package_name}/${process.env.npm_package_version}`;
   let fetchUncachedEnts = () => (
     ncbiRequest(`${NCBI_EUTILS_BASE_URL}/esummary.fcgi`,
     {
@@ -126,7 +128,8 @@ const fetchByGeneIds = ( geneIds ) => {
       },
       method: 'GET',
       headers: {
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'User-Agent': userAgent
       }
     })
     .then(res => res.json())

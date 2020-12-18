@@ -1,0 +1,1139 @@
+{
+  "elements": {
+    "nodes": [
+      {
+        "data": {
+          "class": "ball",
+          "id": "ACSS1",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 368.3364472117819,
+          "y": 359.5132381252479
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "ACSS2",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 487.18326045703225,
+          "y": 444.080601199144
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "SIRT3",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 493.5411553201061,
+          "y": 314.7421328771791
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "IDH2",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 612.9302330379574,
+          "y": 403.99273052844114
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "MEF2C",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 533.6610732932352,
+          "y": 70.11053745371964
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "PPARGC1A",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 450.5216623150354,
+          "y": 185.97056742082475
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "MEF2D",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 414.7781295184386,
+          "y": 53.5
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "SUMO1",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 304.1769544710223,
+          "y": 197.91564440357206
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "SOD2",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 599.6103898169304,
+          "y": 201.39236262701263
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "SENP1",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 185.24054297232215,
+          "y": 284.24341663328323
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "SUMO2",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 176.08074064690618,
+          "y": 154.28087186509777
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "ACADL",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 361.25367831189897,
+          "y": 487.7910917016104
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "SUMO3",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 55.5,
+          "y": 285.31129043587566
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      }
+    ],
+    "edges": [
+      {
+        "data": {
+          "id": "ACSS1 and ACSS2 in catalysis",
+          "type": "catalysis-precedes",
+          "source": "ACSS1",
+          "target": "ACSS2",
+          "datasources": [
+            "Pathbank"
+          ],
+          "pubmedIds": [],
+          "pathwayNames": [
+            "Leigh Syndrome",
+            "Malonic Aciduria",
+            "Malonyl-CoA Decarboxylase Deficiency",
+            "Methylmalonic Aciduria Due to Cobalamin-Related Disorders",
+            "Primary Hyperoxaluria II, PH2",
+            "Propanoate Metabolism",
+            "Pyruvate Decarboxylase E1 Component Deficiency (PDHE1 Deficiency)",
+            "Pyruvate Dehydrogenase Complex Deficiency",
+            "Pyruvate Kinase Deficiency",
+            "Pyruvate Metabolism"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_33941fb3864c2f325a73432430660006",
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_c120c0de1c82da72b25692fa0c332d2d",
+            "http://pathwaycommons.org/pc12/Catalysis_aa654860d6e83844b8d26297ad512061",
+            "http://pathwaycommons.org/pc12/Catalysis_c6dd00a5aa693f7c874474ec4a749a4e",
+            "http://pathwaycommons.org/pc12/Catalysis_3f380aa7ed61fc532cd6a309066cca97",
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_c674c0ebd9cb1d5f1eb0b2b190788bc6"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Other"
+      },
+      {
+        "data": {
+          "id": "ACSS2 and ACSS1 in catalysis",
+          "type": "catalysis-precedes",
+          "source": "ACSS2",
+          "target": "ACSS1",
+          "datasources": [
+            "Pathbank"
+          ],
+          "pubmedIds": [],
+          "pathwayNames": [
+            "Disulfiram Action Pathway",
+            "Ethanol Degradation",
+            "Leigh Syndrome",
+            "Primary Hyperoxaluria II, PH2",
+            "Pyruvate Decarboxylase E1 Component Deficiency (PDHE1 Deficiency)",
+            "Pyruvate Dehydrogenase Complex Deficiency",
+            "Pyruvate Kinase Deficiency",
+            "Pyruvate Metabolism"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_6dd1a7c8f2063ad24643bd5e0dda3157",
+            "http://pathwaycommons.org/pc12/Catalysis_35f9493898e16e4a5e84fc8f9c945661",
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_a2e93eb435a833615245cb276fff3b6e",
+            "http://pathwaycommons.org/pc12/Catalysis_86657dced7597f6eb7e467919f2b65b2"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Other"
+      },
+      {
+        "data": {
+          "id": "SIRT3 controls state change of IDH2",
+          "type": "controls-state-change-of",
+          "source": "SIRT3",
+          "target": "IDH2",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "16788062",
+            "17923681",
+            "18680753",
+            "21172655"
+          ],
+          "pathwayNames": [
+            "Transcriptional activation of mitochondrial biogenesis"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Catalysis_1f8058020f8f8f193ecaec3bff57f514"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      },
+      {
+        "data": {
+          "id": "MEF2C controls expression of PPARGC1A",
+          "type": "controls-expression-of",
+          "source": "MEF2C",
+          "target": "PPARGC1A",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "10643692",
+            "10713165",
+            "12563009",
+            "12764228"
+          ],
+          "pathwayNames": [
+            "Circadian Clock",
+            "Transcriptional activation of mitochondrial biogenesis"
+          ],
+          "pcIds": []
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Expression"
+      },
+      {
+        "data": {
+          "id": "PPARGC1A in complex with MEF2C",
+          "type": "in-complex-with",
+          "source": "PPARGC1A",
+          "target": "MEF2C",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [],
+          "pathwayNames": [
+            "Circadian Clock"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Complex_9c0d0eae720d1e1026144177689b5802"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "id": "MEF2D in complex with PPARGC1A",
+          "type": "in-complex-with",
+          "source": "MEF2D",
+          "target": "PPARGC1A",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [],
+          "pathwayNames": [
+            "Circadian Clock"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Complex_9c0d0eae720d1e1026144177689b5802"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "id": "PPARGC1A controls expression of SOD2",
+          "type": "controls-expression-of",
+          "source": "PPARGC1A",
+          "target": "SOD2",
+          "datasources": [
+            "Comparative Toxicogenomics Database"
+          ],
+          "pubmedIds": [
+            "26781513"
+          ],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Control_25f9f3af7bcc57b7742e9a461d9e536a",
+            "http://pathwaycommons.org/pc12/TemplateReaction_fb3a56167e79b8a0fc5f3452ad47d161",
+            "http://pathwaycommons.org/pc12/Control_787e4583adf2b1a07165bd1e65e40ee6"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Expression"
+      },
+      {
+        "data": {
+          "id": "SIRT3 in complex with SOD2",
+          "type": "in-complex-with",
+          "source": "SIRT3",
+          "target": "SOD2",
+          "datasources": [
+            "Comparative Toxicogenomics Database"
+          ],
+          "pubmedIds": [],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Complex_b0c4c2de3015625390689da299c2951b"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "id": "SENP1 controls state change of SUMO1",
+          "type": "controls-state-change-of",
+          "source": "SENP1",
+          "target": "SUMO1",
+          "datasources": [
+            "Comparative Toxicogenomics Database",
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "11896061",
+            "12192048",
+            "14563852",
+            "15487983",
+            "16253240",
+            "16738331",
+            "17591783",
+            "26060329"
+          ],
+          "pathwayNames": [
+            "SUMO is proteolytically processed"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Catalysis_70dddcc71641c3e83147a7003d4c8a11",
+            "http://pathwaycommons.org/pc12/ComplexAssembly_03705bed5040a0f9c6c8dffbc90da2ba",
+            "http://pathwaycommons.org/pc12/Control_6645437b3e189f584d448a39b1027096"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      },
+      {
+        "data": {
+          "id": "MEF2D controls expression of PPARGC1A",
+          "type": "controls-expression-of",
+          "source": "MEF2D",
+          "target": "PPARGC1A",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "10643692",
+            "10713165",
+            "12563009",
+            "12764228"
+          ],
+          "pathwayNames": [
+            "Circadian Clock",
+            "Transcriptional activation of mitochondrial biogenesis"
+          ],
+          "pcIds": []
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Expression"
+      },
+      {
+        "data": {
+          "id": "SENP1 controls state change of SUMO2",
+          "type": "controls-state-change-of",
+          "source": "SENP1",
+          "target": "SUMO2",
+          "datasources": [
+            "Comparative Toxicogenomics Database",
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "11896061",
+            "12192048",
+            "14563852",
+            "15487983",
+            "16253240",
+            "16608850",
+            "16738315",
+            "16738331",
+            "17591783",
+            "26060329"
+          ],
+          "pathwayNames": [
+            "SUMO is proteolytically processed"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Control_ca8e1859f879d894873736d6dbbe2e17",
+            "http://pathwaycommons.org/pc12/ComplexAssembly_4b9e936b757e8b084d4759935838651a",
+            "http://pathwaycommons.org/pc12/Catalysis_060a0852bec2778eeb9bdb2b485671e5"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      },
+      {
+        "data": {
+          "id": "ACSS1 and ACADL in catalysis",
+          "type": "catalysis-precedes",
+          "source": "ACSS1",
+          "target": "ACADL",
+          "datasources": [
+            "Recon X"
+          ],
+          "pubmedIds": [
+            "11768308",
+            "16906315",
+            "7061426",
+            "7150652",
+            "8717435"
+          ],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Control_58d4a28c40e576a34e838ce0505b4cad",
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_53d82010883aa71e802003c583471a64",
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_f24a79e215ae2b3d42d29050ea42fb64",
+            "http://pathwaycommons.org/pc12/Control_fb065201d2bc942b1b8faed9ee8f7de3"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Other"
+      },
+      {
+        "data": {
+          "id": "SENP1 controls state change of SUMO3",
+          "type": "controls-state-change-of",
+          "source": "SENP1",
+          "target": "SUMO3",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "11896061",
+            "12192048",
+            "14563852",
+            "15487983",
+            "16253240",
+            "16608850",
+            "16738315",
+            "16738331",
+            "17591783"
+          ],
+          "pathwayNames": [
+            "SUMO is proteolytically processed"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Catalysis_f11ed42752c39876e7b4b492fa931f99"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      },
+      {
+        "data": {
+          "id": "ACSS2 and ACADL in catalysis",
+          "type": "catalysis-precedes",
+          "source": "ACSS2",
+          "target": "ACADL",
+          "datasources": [
+            "Recon X"
+          ],
+          "pubmedIds": [
+            "11768308",
+            "16906315",
+            "7061426",
+            "7150652",
+            "8717435"
+          ],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_53d82010883aa71e802003c583471a64",
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_f24a79e215ae2b3d42d29050ea42fb64",
+            "http://pathwaycommons.org/pc12/Control_fb065201d2bc942b1b8faed9ee8f7de3",
+            "http://pathwaycommons.org/pc12/Control_c4ea3895fa86b7f096c716c0aa64362b"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Other"
+      },
+      {
+        "data": {
+          "id": "IDH2 and ACSS2 in catalysis",
+          "type": "catalysis-precedes",
+          "source": "IDH2",
+          "target": "ACSS2",
+          "datasources": [
+            "Recon X"
+          ],
+          "pubmedIds": [
+            "10843999",
+            "12623130",
+            "1735445",
+            "1988962",
+            "2355017",
+            "6361812",
+            "7892212"
+          ],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_559574a23c32ea3b9ab2fc1b6fddc466",
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_1262b5779db281cb5b96845d26ef7864",
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_6bcbe1b55b5997e71224c215af4c22e1",
+            "http://pathwaycommons.org/pc12/Control_ce469e791594f7846be7945791d135fd",
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_43b562953ee3b814d1eaeb2cef506120",
+            "http://pathwaycommons.org/pc12/Control_c4ea3895fa86b7f096c716c0aa64362b",
+            "http://pathwaycommons.org/pc12/Control_59c2f41139ea97263e16c95cd10d6ae0"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Other"
+      },
+      {
+        "data": {
+          "id": "SUMO2 in complex with SENP1",
+          "type": "in-complex-with",
+          "source": "SUMO2",
+          "target": "SENP1",
+          "datasources": [
+            "Comparative Toxicogenomics Database"
+          ],
+          "pubmedIds": [],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Complex_e591bca0161043c5e8fc2d54e1cca4c6"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "id": "SIRT3 controls expression of SOD2",
+          "type": "controls-expression-of",
+          "source": "SIRT3",
+          "target": "SOD2",
+          "datasources": [
+            "Comparative Toxicogenomics Database"
+          ],
+          "pubmedIds": [
+            "23494737"
+          ],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Control_6e3ca700ce68ff1a62c2ea59822046aa",
+            "http://pathwaycommons.org/pc12/TemplateReaction_fb3a56167e79b8a0fc5f3452ad47d161"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Expression"
+      },
+      {
+        "data": {
+          "id": "SIRT3 controls state change of SOD2",
+          "type": "controls-state-change-of",
+          "source": "SIRT3",
+          "target": "SOD2",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "12239572",
+            "16788062",
+            "17923681",
+            "18680753",
+            "19652361",
+            "21172655",
+            "26523980",
+            "27064125"
+          ],
+          "pathwayNames": [
+            "FOXO-mediated transcription of oxidative stress, metabolic and neuronal genes",
+            "Transcriptional activation of mitochondrial biogenesis"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Control_307f32a0127a33a88f2f5051d1b9cd89",
+            "http://pathwaycommons.org/pc12/Catalysis_1f8058020f8f8f193ecaec3bff57f514"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      },
+      {
+        "data": {
+          "id": "SUMO2 controls state change of SUMO1",
+          "type": "controls-state-change-of",
+          "source": "SUMO2",
+          "target": "SUMO1",
+          "datasources": [
+            "Comparative Toxicogenomics Database"
+          ],
+          "pubmedIds": [
+            "26060329"
+          ],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/ComplexAssembly_5e7afe99f074d8550097ec7b69993c87",
+            "http://pathwaycommons.org/pc12/Catalysis_2a8044247405a6b3d28941ff5927fa3d",
+            "http://pathwaycommons.org/pc12/Control_dc84b6fad88941da0832d0d7c32ef06c",
+            "http://pathwaycommons.org/pc12/ComplexAssembly_5cc735b9807592da82c78aad6ba11dbe"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      },
+      {
+        "data": {
+          "id": "SUMO1 controls state change of SUMO2",
+          "type": "controls-state-change-of",
+          "source": "SUMO1",
+          "target": "SUMO2",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "22635276",
+            "22661230"
+          ],
+          "pathwayNames": [
+            "Processing of DNA double-strand break ends"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Catalysis_1162793077eb939a200981566a488300"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      },
+      {
+        "data": {
+          "id": "SUMO2 in complex with SUMO1",
+          "type": "in-complex-with",
+          "source": "SUMO2",
+          "target": "SUMO1",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [],
+          "pathwayNames": [
+            "Processing of DNA double-strand break ends"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Complex_38a86df916e06639c65a5f345f8d875e"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "id": "SIRT3 controls state change of ACSS1",
+          "type": "controls-state-change-of",
+          "source": "SIRT3",
+          "target": "ACSS1",
+          "datasources": [
+            "NCI Pathway Interaction Database: Pathway"
+          ],
+          "pubmedIds": [
+            "16788062"
+          ],
+          "pathwayNames": [
+            "Signaling events mediated by HDAC Class III"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Catalysis_093097c87a5e14090dcbb39829b483c0",
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_fce4e294a5f60f670dc6cc9801105f26"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      },
+      {
+        "data": {
+          "id": "SIRT3 controls state change of ACSS2",
+          "type": "controls-state-change-of",
+          "source": "SIRT3",
+          "target": "ACSS2",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "16788062",
+            "17923681",
+            "18680753",
+            "21172655"
+          ],
+          "pathwayNames": [
+            "Transcriptional activation of mitochondrial biogenesis"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Catalysis_1f8058020f8f8f193ecaec3bff57f514"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      },
+      {
+        "data": {
+          "id": "PPARGC1A controls expression of SIRT3",
+          "type": "controls-expression-of",
+          "source": "PPARGC1A",
+          "target": "SIRT3",
+          "datasources": [
+            "Comparative Toxicogenomics Database",
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "12374852",
+            "16079181",
+            "17437997",
+            "18215119",
+            "20661474",
+            "25522270"
+          ],
+          "pathwayNames": [
+            "Transcriptional activation of mitochondrial biogenesis"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Control_ac8053bf4cd5918dcb0c78e477ac84e1",
+            "http://pathwaycommons.org/pc12/TemplateReaction_6d94bd3a1d023569aea2ed49f2a12d48",
+            "http://pathwaycommons.org/pc12/Control_b34e5dcbe3db828d62dd3d3cd3f8df2e"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Expression"
+      }
+    ]
+  },
+  "style": [
+    {
+      "selector": "edge",
+      "style": {
+        "opacity": "0.4",
+        "width": "4px",
+        "line-color": "#555",
+        "curve-style": "haystack",
+        "haystack-radius": "0.25"
+      }
+    },
+    {
+      "selector": ".Modification",
+      "style": {
+        "line-color": "#ffc28b"
+      }
+    },
+    {
+      "selector": ".Binding",
+      "style": {
+        "line-color": "#8bd8dd"
+      }
+    },
+    {
+      "selector": ".Expression",
+      "style": {
+        "line-color": "#f4a2a3"
+      }
+    },
+    {
+      "selector": ".Other",
+      "style": {
+        "line-color": "#949494"
+      }
+    },
+    {
+      "selector": "node[class @= \"ball\"]",
+      "style": {
+        "label": "data(id)",
+        "text-valign": "center",
+        "text-halign": "center",
+        "color": "#fff",
+        "text-outline-color": "#555",
+        "text-outline-width": "4px",
+        "font-size": "20px",
+        "height": "50px",
+        "width": "50px",
+        "background-color": "#555"
+      }
+    },
+    {
+      "selector": ".highlighted",
+      "style": {
+        "opacity": "1"
+      }
+    },
+    {
+      "selector": ".unhighlighted",
+      "style": {
+        "opacity": "0.2"
+      }
+    },
+    {
+      "selector": ".metric-hidden",
+      "style": {
+        "display": "none"
+      }
+    },
+    {
+      "selector": ".type-hidden",
+      "style": {
+        "display": "none"
+      }
+    },
+    {
+      "selector": ".matched",
+      "style": {
+        "text-outline-color": "#606000",
+        "background-color": "#606000",
+        "border-color": "yellow",
+        "border-width": "10px"
+      }
+    },
+    {
+      "selector": "node[[degree = 0]]",
+      "style": {
+        "display": "none"
+      }
+    },
+    {
+      "selector": "node[?queried]",
+      "style": {
+        "display": "element",
+        "height": "75px",
+        "width": "75px"
+      }
+    },
+    {
+      "selector": "node:selected",
+      "style": {
+        "text-outline-color": "#0169d9",
+        "background-color": "#0169d9"
+      }
+    },
+    {
+      "selector": "edge:selected",
+      "style": {
+        "opacity": "1",
+        "z-index": "999"
+      }
+    }
+  ],
+  "zoomingEnabled": true,
+  "userZoomingEnabled": true,
+  "zoom": 1.9593663771243683,
+  "minZoom": 0.08,
+  "maxZoom": 4,
+  "panningEnabled": true,
+  "userPanningEnabled": true,
+  "pan": {
+    "x": 45.60950434313452,
+    "y": 54.20621734146073
+  },
+  "boxSelectionEnabled": true,
+  "renderer": {
+    "name": "canvas"
+  }
+}

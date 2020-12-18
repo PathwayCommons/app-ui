@@ -39,6 +39,8 @@ class Interactions extends React.Component {
 
   loadInteractionsNetwork(){
     let { cySrv, sources } = this.state;
+    let source = sources[0];
+    let isFile = /.+\.json$/.test(source);
     let initializeCytoscape = network => {
 
       let cy = cySrv.get();
@@ -64,13 +66,74 @@ class Interactions extends React.Component {
       })).run();
     };
 
-    ServerAPI.getInteractionGraph({ sources: sources })
-    .then( result => {
-      initializeCytoscape( _.get(result, 'network', { nodes: [], edges: [] } ));
-      return null; //http://bluebirdjs.com/docs/warning-explanations.html#warning-a-promise-was-created-in-a-handler-but-was-not-returned-from-it
-    })
-    .catch( e => this.setState({ error: e }));
+    if(!isFile){
+      return ServerAPI.getInteractionGraph({ sources: sources })
+        .then( result => {
+          initializeCytoscape( _.get(result, 'network', { nodes: [], edges: [] } ));
+          return null; //http://bluebirdjs.com/docs/warning-explanations.html#warning-a-promise-was-created-in-a-handler-but-was-not-returned-from-it
+        })
+        .catch( e => this.setState({ error: e }));
+    } else {
+      return Promise.resolve( require(`./${source}`) )
+        .then( data => {
+          let cy = cySrv.get();
+          cy.remove('*');
+          cy.json( data );
+        })
+        .finally( () => {
+          this.setState({
+            loading: false,
+            error: null
+          });
+        });
+    }
+
   }
+
+  // loadInteractionsNetwork(){
+  //   let { cySrv, sources } = this.state;
+  //   let source = sources[0];
+  //   let isFile = /.+\.json$/.test(source);
+
+  //   let initializeCytoscape = network => {
+
+  //     let cy = cySrv.get();
+  //     cy.remove('*');
+  //     cy.add( network );
+
+  //     if( network.nodes.length === 0 ){
+  //       this.setState({
+  //         networkEmpty: true,
+  //         loading: false,
+  //         error: null
+  //       });
+  //       return;
+  //     }
+
+  //     cy.layout(_.assign({}, interactionsLayoutOpts( cy ), {
+  //       stop: () => {
+  //         this.setState({
+  //           loading: false,
+  //           error: null
+  //         });
+  //       }
+  //     })).run();
+  //   };
+
+  //   if( isFile ){
+  //     // return new Promise.resolve( require(`./${source}`) )
+  //     //   .then( data => {
+
+  //     //   });
+  //   } else {
+  //     return ServerAPI.getInteractionGraph({ sources: sources })
+  //       .then( result => {
+  //         initializeCytoscape( _.get(result, 'network', { nodes: [], edges: [] } ));
+  //         return null; //http://bluebirdjs.com/docs/warning-explanations.html#warning-a-promise-was-created-in-a-handler-but-was-not-returned-from-it
+  //       })
+  //       .catch( e => this.setState({ error: e }));
+  //   }
+  // }
 
   componentWillUnmount(){
     this.state.cySrv.destroy();

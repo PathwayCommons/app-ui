@@ -37,7 +37,7 @@
         "selectable": true,
         "locked": false,
         "grabbable": true,
-        "classes": "highlighted"
+        "classes": ""
       },
       {
         "data": {
@@ -56,7 +56,7 @@
         "selectable": true,
         "locked": false,
         "grabbable": true,
-        "classes": "highlighted"
+        "classes": ""
       },
       {
         "data": {
@@ -208,7 +208,7 @@
         "selectable": true,
         "locked": false,
         "grabbable": true,
-        "classes": "highlighted"
+        "classes": ""
       },
       {
         "data": {
@@ -218,8 +218,8 @@
           "metric": 9007199254740992
         },
         "position": {
-          "x": -275.0873842930673,
-          "y": 411.35090556863213
+          "x": -393.9174279138107,
+          "y": 398.0337455076867
         },
         "group": "nodes",
         "removed": false,
@@ -227,7 +227,7 @@
         "selectable": true,
         "locked": false,
         "grabbable": true,
-        "classes": "highlighted"
+        "classes": ""
       },
       {
         "data": {
@@ -296,25 +296,6 @@
         "position": {
           "x": -56.933992604275275,
           "y": 478.7992860776278
-        },
-        "group": "nodes",
-        "removed": false,
-        "selected": false,
-        "selectable": true,
-        "locked": false,
-        "grabbable": true,
-        "classes": ""
-      },
-      {
-        "data": {
-          "class": "ball",
-          "id": "CYCS",
-          "queried": true,
-          "metric": 9007199254740992
-        },
-        "position": {
-          "x": -274.84036084665485,
-          "y": 534.7877010860722
         },
         "group": "nodes",
         "removed": false,
@@ -898,35 +879,6 @@
         "locked": false,
         "grabbable": true,
         "classes": "Expression"
-      },
-      {
-        "data": {
-          "id": "SIRT5 controls state change of CYCS",
-          "type": "controls-state-change-of",
-          "source": "SIRT5",
-          "target": "CYCS",
-          "datasources": [
-            "Reactome"
-          ],
-          "pubmedIds": [
-            "18680753",
-            "20680393"
-          ],
-          "pathwayNames": [
-            "Transcriptional activation of mitochondrial biogenesis"
-          ],
-          "pcIds": [
-            "http://pathwaycommons.org/pc12/Catalysis_3a4326df4f2251f894d0c35c66870023"
-          ]
-        },
-        "position": {},
-        "group": "edges",
-        "removed": false,
-        "selected": false,
-        "selectable": true,
-        "locked": false,
-        "grabbable": true,
-        "classes": "Modification"
       },
       {
         "data": {

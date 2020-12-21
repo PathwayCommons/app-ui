@@ -1,0 +1,571 @@
+{
+  "elements": {
+    "nodes": [
+      {
+        "data": {
+          "class": "ball",
+          "id": "SUMO2",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 150.2083791234877,
+          "y": 53.5
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "SUMO1",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 55.5,
+          "y": 170.65435103662298
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "SENP1",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 186.00915780362266,
+          "y": 180.27598710754796
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "SUMO3",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 282.7096254813182,
+          "y": 63.50539926590454
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      }
+    ],
+    "edges": [
+      {
+        "data": {
+          "id": "SUMO2 controls state change of SUMO1",
+          "type": "controls-state-change-of",
+          "source": "SUMO2",
+          "target": "SUMO1",
+          "datasources": [
+            "Comparative Toxicogenomics Database"
+          ],
+          "pubmedIds": [
+            "26060329"
+          ],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/ComplexAssembly_5e7afe99f074d8550097ec7b69993c87",
+            "http://pathwaycommons.org/pc12/Catalysis_2a8044247405a6b3d28941ff5927fa3d",
+            "http://pathwaycommons.org/pc12/Control_dc84b6fad88941da0832d0d7c32ef06c",
+            "http://pathwaycommons.org/pc12/ComplexAssembly_5cc735b9807592da82c78aad6ba11dbe"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      },
+      {
+        "data": {
+          "id": "SUMO1 controls state change of SUMO2",
+          "type": "controls-state-change-of",
+          "source": "SUMO1",
+          "target": "SUMO2",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "22635276",
+            "22661230"
+          ],
+          "pathwayNames": [
+            "Processing of DNA double-strand break ends"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Catalysis_1162793077eb939a200981566a488300"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      },
+      {
+        "data": {
+          "id": "SENP1 interacts with SUMO3",
+          "type": "interacts-with",
+          "source": "SENP1",
+          "target": "SUMO3",
+          "datasources": [
+            "Biomolecular Interaction Network Database",
+            "IntAct",
+            "BioGRID"
+          ],
+          "pubmedIds": [
+            "16553580",
+            "16608850",
+            "22878415"
+          ],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/MolecularInteraction_5808416f-a448-4867-b24c-5cbf5fda8c62___null__192296_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_b1bc7d35-6488-444d-829a-0410e7082b26___null__192347_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_9a1619d7-4712-4f8e-8be9-964268364f4c___null__1543758_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_ef3d8b0f-21cb-4bb0-bbfc-e99a50465144__IM-20877-9_1358873_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_ddc06032-5344-4ebd-8c73-dee15c9534da___null__192351_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_f40eb281-b93c-474a-afaf-9938d8fc8b98___null__192356_"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Binding"
+      },
+      {
+        "data": {
+          "id": "SENP1 interacts with SUMO2",
+          "type": "interacts-with",
+          "source": "SENP1",
+          "target": "SUMO2",
+          "datasources": [
+            "IntAct",
+            "Database of Interacting Proteins",
+            "BioGRID"
+          ],
+          "pubmedIds": [
+            "16553580",
+            "17000875",
+            "17099698",
+            "22878415"
+          ],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/MolecularInteraction_afd852c5-77bf-402b-83a6-d319c5e09b8d___null__164932_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_f8471643-a6e7-4f5d-995b-524bc3f9f371__IM-8593-4_2696284_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_7035b993-9e58-47fa-aa75-8422ee9c1f40__IM-25472-10394_2201638_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_5cd17828-2e72-4900-b48c-f643f09495e6__IM-8593-5_2696315_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_37de87e8-fbb8-437d-b35f-7282acbab25a__IM-8593-10_2696304_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_02cc7af5-b829-4a97-a64b-fa93f8b34ac5__IM-8593-7_2696330_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_87ad9cf6-68a8-4028-aa1d-b53e6cc55f10___null__57276_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_c0e1ced3-402f-4261-be11-af891efeffb8___null__165111_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_aa268f09-3c91-4f62-a434-735352c036b2___null__192294_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_46e76a6b-8c3b-4289-b9fe-895708113bdc___null__164929_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_c2f9eea9-64d3-472d-bbb4-5a951c73f2df___null__165112_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_00b9f66a-b30d-45b8-85bd-c58b12de63b5___null__192339_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_8e45c6e6-b1ab-4c09-a982-da546cd2f197__IM-25472-63420_1995779_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_98f55110-1947-414d-b9df-45cb2f8489f0___null__192353_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_1932b574-b077-46e5-81c4-54ed6caae6f5___null__57277_"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Binding"
+      },
+      {
+        "data": {
+          "id": "SENP1 controls state change of SUMO1",
+          "type": "controls-state-change-of",
+          "source": "SENP1",
+          "target": "SUMO1",
+          "datasources": [
+            "Comparative Toxicogenomics Database",
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "11896061",
+            "12192048",
+            "14563852",
+            "15487983",
+            "16253240",
+            "16738331",
+            "17591783",
+            "26060329"
+          ],
+          "pathwayNames": [
+            "SUMO is proteolytically processed"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Catalysis_70dddcc71641c3e83147a7003d4c8a11",
+            "http://pathwaycommons.org/pc12/ComplexAssembly_03705bed5040a0f9c6c8dffbc90da2ba",
+            "http://pathwaycommons.org/pc12/Control_6645437b3e189f584d448a39b1027096"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      },
+      {
+        "data": {
+          "id": "SENP1 controls state change of SUMO2",
+          "type": "controls-state-change-of",
+          "source": "SENP1",
+          "target": "SUMO2",
+          "datasources": [
+            "Comparative Toxicogenomics Database",
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "11896061",
+            "12192048",
+            "14563852",
+            "15487983",
+            "16253240",
+            "16608850",
+            "16738315",
+            "16738331",
+            "17591783",
+            "26060329"
+          ],
+          "pathwayNames": [
+            "SUMO is proteolytically processed"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Control_ca8e1859f879d894873736d6dbbe2e17",
+            "http://pathwaycommons.org/pc12/ComplexAssembly_4b9e936b757e8b084d4759935838651a",
+            "http://pathwaycommons.org/pc12/Catalysis_060a0852bec2778eeb9bdb2b485671e5"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      },
+      {
+        "data": {
+          "id": "SENP1 controls state change of SUMO3",
+          "type": "controls-state-change-of",
+          "source": "SENP1",
+          "target": "SUMO3",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "11896061",
+            "12192048",
+            "14563852",
+            "15487983",
+            "16253240",
+            "16608850",
+            "16738315",
+            "16738331",
+            "17591783"
+          ],
+          "pathwayNames": [
+            "SUMO is proteolytically processed"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Catalysis_f11ed42752c39876e7b4b492fa931f99"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      },
+      {
+        "data": {
+          "id": "SUMO2 interacts with SUMO1",
+          "type": "interacts-with",
+          "source": "SUMO2",
+          "target": "SUMO1",
+          "datasources": [
+            "HPRD"
+          ],
+          "pubmedIds": [
+            "17000644"
+          ],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/MolecularInteraction_fea23ed5-1986-463d-8a6a-f5e6248b788c___null__39637_"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Binding"
+      },
+      {
+        "data": {
+          "id": "SUMO2 interacts with SUMO3",
+          "type": "interacts-with",
+          "source": "SUMO2",
+          "target": "SUMO3",
+          "datasources": [
+            "HPRD"
+          ],
+          "pubmedIds": [
+            "11889051"
+          ],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/MolecularInteraction_455b348f-a256-4589-81c8-87069390c532___null__40570_"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Binding"
+      },
+      {
+        "data": {
+          "id": "SENP1 interacts with SUMO1",
+          "type": "interacts-with",
+          "source": "SENP1",
+          "target": "SUMO1",
+          "datasources": [
+            "IntAct",
+            "Database of Interacting Proteins",
+            "BioGRID"
+          ],
+          "pubmedIds": [
+            "15896780",
+            "16553580",
+            "16608850",
+            "17000875",
+            "17099698",
+            "22878415",
+            "30082317"
+          ],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/MolecularInteraction_2ba5ad87-27db-4329-9331-a69faebc1dac___null__164931_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_d8cae1da-e8a7-4c36-9c50-1d39c8bd2a3f__IM-8593-2_2696264_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_3ec606f9-6d71-4b56-8633-fe9a2dd8d107___null__57274_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_ca052f37-3112-4cec-a4bb-cd5932f08c72__IM-20877-8_1358869_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_ebfc0708-cf15-4f70-a9b9-405ea41bbf5d__IM-25472-93847_1967953_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_1423dcfd-98bd-4d75-ad24-529256d2202f___null__192295_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_2dd382d7-1b13-4319-bf02-bfe52e2d95a1___null__192352_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_ede5d80c-2fa5-4f84-bc71-93ad839ea18b__IM-20877-29_1358972_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_52acde61-5bf8-4fe1-a989-894d5c41801a___null__192350_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_80b0f8e1-ae87-4fd6-832b-5244740ca05e__IM-8593-8_2696309_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_da9c909b-d69f-48d2-a658-daadc15d9422__IM-8593-11_2696299_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_fe887cb6-2ecd-4d63-b516-81151f6a81ff__IM-8593-6_2696321_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_1e41a6b7-970a-485b-8be0-ec5afc1115f7___null__192346_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_ecf74e36-3598-4e66-903d-7c03ec21a007___null__164926_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_79a1a2c4-0fe1-4c6b-81d3-f8178f307269__IM-11345-10_196965_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_d950d619-5488-4bb5-b03f-aab409de381f___null__164928_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_cc8d9e86-eb7e-451e-9b11-229db67fd8a8__IM-25472-40829_2173812_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_06580fea-2117-453c-b9a7-83fcdf36591b___null__192340_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_dbae3b49-59e4-40a3-a90c-3cd732cc7b53___null__57275_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_05d302d3-272a-48c9-9b74-893008d1e067__IM-8593-9_2696272_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_5a15e6df-5934-4f7e-a86e-cec37a28642a__IM-8593-3_2696291_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_a1e1803f-9090-48ac-b80c-684f9667de48___null__465855_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_720734b8-b2b5-4b6f-8af0-ca1babec545c__IM-8593-1_2696277_"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Binding"
+      }
+    ]
+  },
+  "style": [
+    {
+      "selector": "edge",
+      "style": {
+        "opacity": "0.4",
+        "width": "4px",
+        "line-color": "#555",
+        "curve-style": "haystack",
+        "haystack-radius": "0.25"
+      }
+    },
+    {
+      "selector": ".Modification",
+      "style": {
+        "line-color": "#ffc28b"
+      }
+    },
+    {
+      "selector": ".Binding",
+      "style": {
+        "line-color": "#8bd8dd"
+      }
+    },
+    {
+      "selector": ".Expression",
+      "style": {
+        "line-color": "#f4a2a3"
+      }
+    },
+    {
+      "selector": ".Other",
+      "style": {
+        "line-color": "#949494"
+      }
+    },
+    {
+      "selector": "node[class @= \"ball\"]",
+      "style": {
+        "label": "data(id)",
+        "text-valign": "center",
+        "text-halign": "center",
+        "color": "#fff",
+        "text-outline-color": "#555",
+        "text-outline-width": "4px",
+        "font-size": "20px",
+        "height": "50px",
+        "width": "50px",
+        "background-color": "#555"
+      }
+    },
+    {
+      "selector": ".highlighted",
+      "style": {
+        "opacity": "1"
+      }
+    },
+    {
+      "selector": ".unhighlighted",
+      "style": {
+        "opacity": "0.2"
+      }
+    },
+    {
+      "selector": ".metric-hidden",
+      "style": {
+        "display": "none"
+      }
+    },
+    {
+      "selector": ".type-hidden",
+      "style": {
+        "display": "none"
+      }
+    },
+    {
+      "selector": ".matched",
+      "style": {
+        "text-outline-color": "#606000",
+        "background-color": "#606000",
+        "border-color": "yellow",
+        "border-width": "10px"
+      }
+    },
+    {
+      "selector": "node[[degree = 0]]",
+      "style": {
+        "display": "none"
+      }
+    },
+    {
+      "selector": "node[?queried]",
+      "style": {
+        "display": "element",
+        "height": "75px",
+        "width": "75px"
+      }
+    },
+    {
+      "selector": "node:selected",
+      "style": {
+        "text-outline-color": "#0169d9",
+        "background-color": "#0169d9"
+      }
+    },
+    {
+      "selector": "edge:selected",
+      "style": {
+        "opacity": "1",
+        "z-index": "999"
+      }
+    }
+  ],
+  "zoomingEnabled": true,
+  "userZoomingEnabled": true,
+  "zoom": 4,
+  "minZoom": 0.08,
+  "maxZoom": 4,
+  "panningEnabled": true,
+  "userPanningEnabled": true,
+  "pan": {
+    "x": 474.0807490373636,
+    "y": 116.94802578490408
+  },
+  "boxSelectionEnabled": true,
+  "renderer": {
+    "name": "canvas"
+  }
+}

@@ -1,0 +1,1097 @@
+{
+  "elements": {
+    "nodes": [
+      {
+        "data": {
+          "class": "ball",
+          "id": "LCFA",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": -669.5018303317578,
+          "y": 519.1350674503891
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "UCP1",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": -518.0268502914985,
+          "y": 517.0076760222344
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "highlighted"
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "SENP1",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": -511.05067492395165,
+          "y": 205.23628175190612
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "highlighted"
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "SUMO2",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": -634.1355189682091,
+          "y": 87.4307678181651
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "SUMO1",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": -673.5634029183947,
+          "y": 206.6028885255514
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "SUMO3",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": -513.5244450626333,
+          "y": 48.22941949163334
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "ATF2",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 39.67718049660888,
+          "y": 188.9110026027379
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "NR1D1",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": -3.0770487630037575,
+          "y": 99.40466898434916
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "ACSS2",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": -162.1096229291617,
+          "y": 518.8791418215725
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "GLUD1",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 19.133949281198365,
+          "y": 402.18700109875357
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "SIRT3",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": -273.82682009635977,
+          "y": 286.8122657458119
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "highlighted"
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "SIRT5",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": -275.0873842930673,
+          "y": 411.35090556863213
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "highlighted"
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "CRTC1",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": -100.1508559998817,
+          "y": 52.76127029542908
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "PPARGC1A",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": -124.73464494977739,
+          "y": 196.58793846416964
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "SOD2",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": 35.90119782977557,
+          "y": 314.71101945104954
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "IDH2",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": -56.933992604275275,
+          "y": 478.7992860776278
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "CYCS",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": -274.84036084665485,
+          "y": 534.7877010860722
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      },
+      {
+        "data": {
+          "class": "ball",
+          "id": "MEF2C",
+          "queried": true,
+          "metric": 9007199254740992
+        },
+        "position": {
+          "x": -226.98816566509086,
+          "y": 53.205130175607756
+        },
+        "group": "nodes",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": ""
+      }
+    ],
+    "edges": [
+      {
+        "data": {
+          "id": "UCP1 controls transport of LCFA",
+          "type": "controls-transport-of-chemical",
+          "source": "UCP1",
+          "target": "LCFA",
+          "database": "Reactome",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "11709078",
+            "8576230"
+          ],
+          "pathwayNames": [
+            "The fatty acid cycling model"
+          ],
+          "pcIds": []
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Other"
+      },
+      {
+        "data": {
+          "id": "SIRT5 controls state change of UCP1",
+          "type": "controls-state-change-of",
+          "source": "SIRT5",
+          "target": "UCP1",
+          "database": "Biofactoid",
+          "datasources": [
+            "Biofactoid"
+          ],
+          "pubmedIds": [
+            "31000437"
+          ],
+          "pathwayNames": [
+            "Regulation of UCP1 and Mitochondrial Metabolism in Brown Adipose Tissue by Reversible Succinylation"
+          ],
+          "pcIds": []
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "link"
+      },
+      {
+        "data": {
+          "id": "SENP1 interacts with SIRT3",
+          "type": "interacts-with",
+          "source": "SENP1",
+          "target": "SIRT3",
+          "database": "Biofactoid",
+          "datasources": [
+            "Biofactoid"
+          ],
+          "pubmedIds": [
+            "31302001"
+          ],
+          "pathwayNames": [
+            "SENP1-Sirt3 Signaling Controls Mitochondrial Protein Acetylation and Metabolism"
+          ],
+          "pcIds": []
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "link"
+      },
+      {
+        "data": {
+          "id": "SENP1 controls state change of SUMO1",
+          "type": "controls-state-change-of",
+          "source": "SENP1",
+          "target": "SUMO1",
+          "datasources": [
+            "Comparative Toxicogenomics Database",
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "11896061",
+            "12192048",
+            "14563852",
+            "15487983",
+            "16253240",
+            "16738331",
+            "17591783",
+            "26060329"
+          ],
+          "pathwayNames": [
+            "SUMO is proteolytically processed"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Catalysis_70dddcc71641c3e83147a7003d4c8a11",
+            "http://pathwaycommons.org/pc12/ComplexAssembly_03705bed5040a0f9c6c8dffbc90da2ba",
+            "http://pathwaycommons.org/pc12/Control_6645437b3e189f584d448a39b1027096"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      },
+      {
+        "data": {
+          "id": "SENP1 interacts with SUMO3",
+          "type": "interacts-with",
+          "source": "SENP1",
+          "target": "SUMO3",
+          "datasources": [
+            "Biomolecular Interaction Network Database",
+            "IntAct",
+            "BioGRID"
+          ],
+          "pubmedIds": [
+            "16553580",
+            "16608850",
+            "22878415"
+          ],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/MolecularInteraction_5808416f-a448-4867-b24c-5cbf5fda8c62___null__192296_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_b1bc7d35-6488-444d-829a-0410e7082b26___null__192347_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_9a1619d7-4712-4f8e-8be9-964268364f4c___null__1543758_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_ef3d8b0f-21cb-4bb0-bbfc-e99a50465144__IM-20877-9_1358873_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_ddc06032-5344-4ebd-8c73-dee15c9534da___null__192351_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_f40eb281-b93c-474a-afaf-9938d8fc8b98___null__192356_"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Binding"
+      },
+      {
+        "data": {
+          "id": "SENP1 interacts with SUMO2",
+          "type": "interacts-with",
+          "source": "SENP1",
+          "target": "SUMO2",
+          "datasources": [
+            "IntAct",
+            "Database of Interacting Proteins",
+            "BioGRID"
+          ],
+          "pubmedIds": [
+            "16553580",
+            "17000875",
+            "17099698",
+            "22878415"
+          ],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/MolecularInteraction_afd852c5-77bf-402b-83a6-d319c5e09b8d___null__164932_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_f8471643-a6e7-4f5d-995b-524bc3f9f371__IM-8593-4_2696284_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_7035b993-9e58-47fa-aa75-8422ee9c1f40__IM-25472-10394_2201638_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_5cd17828-2e72-4900-b48c-f643f09495e6__IM-8593-5_2696315_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_37de87e8-fbb8-437d-b35f-7282acbab25a__IM-8593-10_2696304_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_02cc7af5-b829-4a97-a64b-fa93f8b34ac5__IM-8593-7_2696330_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_87ad9cf6-68a8-4028-aa1d-b53e6cc55f10___null__57276_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_c0e1ced3-402f-4261-be11-af891efeffb8___null__165111_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_aa268f09-3c91-4f62-a434-735352c036b2___null__192294_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_46e76a6b-8c3b-4289-b9fe-895708113bdc___null__164929_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_c2f9eea9-64d3-472d-bbb4-5a951c73f2df___null__165112_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_00b9f66a-b30d-45b8-85bd-c58b12de63b5___null__192339_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_8e45c6e6-b1ab-4c09-a982-da546cd2f197__IM-25472-63420_1995779_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_98f55110-1947-414d-b9df-45cb2f8489f0___null__192353_",
+            "http://pathwaycommons.org/pc12/MolecularInteraction_1932b574-b077-46e5-81c4-54ed6caae6f5___null__57277_"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Binding"
+      },
+      {
+        "data": {
+          "id": "PPARGC1A controls expression of SIRT3",
+          "type": "controls-expression-of",
+          "source": "PPARGC1A",
+          "target": "SIRT3",
+          "datasources": [
+            "Comparative Toxicogenomics Database",
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "12374852",
+            "16079181",
+            "17437997",
+            "18215119",
+            "20661474",
+            "25522270"
+          ],
+          "pathwayNames": [
+            "Transcriptional activation of mitochondrial biogenesis"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Control_ac8053bf4cd5918dcb0c78e477ac84e1",
+            "http://pathwaycommons.org/pc12/TemplateReaction_6d94bd3a1d023569aea2ed49f2a12d48",
+            "http://pathwaycommons.org/pc12/Control_b34e5dcbe3db828d62dd3d3cd3f8df2e"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Expression"
+      },
+      {
+        "data": {
+          "id": "SIRT3 interacts with SIRT5",
+          "type": "interacts-with",
+          "source": "SIRT3",
+          "target": "SIRT5",
+          "datasources": [
+            "BioGRID"
+          ],
+          "pubmedIds": [
+            "17715127"
+          ],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/MolecularInteraction_b27b45b9-4674-442a-9baf-4f2710009c3d___null__63128_"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Binding"
+      },
+      {
+        "data": {
+          "id": "CRTC1 controls expression of PPARGC1A",
+          "type": "controls-expression-of",
+          "source": "CRTC1",
+          "target": "PPARGC1A",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "10643692",
+            "10713165",
+            "11557984",
+            "12563009",
+            "12764228",
+            "15024092",
+            "16980408",
+            "19233136"
+          ],
+          "pathwayNames": [
+            "Circadian Clock",
+            "Transcriptional activation of mitochondrial biogenesis"
+          ],
+          "pcIds": []
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Expression"
+      },
+      {
+        "data": {
+          "id": "ATF2 controls expression of PPARGC1A",
+          "type": "controls-expression-of",
+          "source": "ATF2",
+          "target": "PPARGC1A",
+          "datasources": [
+            "NCI Pathway Interaction Database: Pathway",
+            "Molecular Signatures Database",
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "10643692",
+            "10713165",
+            "12563009",
+            "15024092",
+            "15767263",
+            "17488713",
+            "18434626"
+          ],
+          "pathwayNames": [
+            "ATF-2 transcription factor network",
+            "Circadian Clock",
+            "Transcriptional activation of mitochondrial biogenesis"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/TemplateReaction_ddc05fb6431637f83cd5c9e099cf907a",
+            "http://pathwaycommons.org/pc12/TemplateReactionRegulation_faf59aca323fc18478d9b152966a5589",
+            "http://pathwaycommons.org/pc12/TemplateReaction_9b31985c28e12efa9c5a3277d6c9dd7f",
+            "http://pathwaycommons.org/pc12/TemplateReaction_f64eb51f94f4502f74ad1717421302d8",
+            "http://pathwaycommons.org/pc12/TemplateReactionRegulation_81d5ba53559b3a85f454e97e9ff53a34",
+            "http://pathwaycommons.org/pc12/TemplateReactionRegulation_b3cd68763a54a3777dd7d73809ccefc5"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Expression"
+      },
+      {
+        "data": {
+          "id": "IDH2 and GLUD1 in catalysis",
+          "type": "catalysis-precedes",
+          "source": "IDH2",
+          "target": "GLUD1",
+          "datasources": [
+            "Pathbank",
+            "HumanCyc",
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "11903050",
+            "11969",
+            "12054821",
+            "12207025",
+            "14832224",
+            "18806796",
+            "18914071",
+            "429360",
+            "753382"
+          ],
+          "pathwayNames": [
+            "Citric acid cycle (TCA cycle)",
+            "Glutamate and glutamine metabolism",
+            "The Oncogenic Action of 2-Hydroxyglutarate",
+            "The Oncogenic Action of D-2-Hydroxyglutarate in Hydroxyglutaric aciduria",
+            "The Oncogenic Action of Fumarate",
+            "The Oncogenic Action of L-2-Hydroxyglutarate in Hydroxyglutaric aciduria",
+            "The Oncogenic Action of Succinate",
+            "arginine biosynthesis IV",
+            "glutamate biosynthesis II",
+            "glutamate degradation X"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Catalysis_21e67faaca5ec69f108bf01c1335f1e7",
+            "http://pathwaycommons.org/pc12/Catalysis_53c8bcc4530a68445a21ec1c33aa0d3f",
+            "http://pathwaycommons.org/pc12/Catalysis_07368efd69e38e6ce15e8857f9a9c026",
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_75a91631f98a40f7918c045f288ad12b",
+            "http://pathwaycommons.org/pc12/Catalysis_8f8e3cf36bf24126475a03fca0384174",
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_b766cfee2f0e1e58ee897b5908c46d6e",
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_11efdf4f9ebf8fbc8cd8874962f1620d",
+            "http://pathwaycommons.org/pc12/Catalysis_b30729e18f95a74c47bcb8000cbac964",
+            "http://pathwaycommons.org/pc12/Catalysis_42dee2b392ce0de8ab3bd008ba35d6bb",
+            "http://pathwaycommons.org/pc12/Catalysis_86fbfecb82881f43145de032470e7371",
+            "http://pathwaycommons.org/pc12/Catalysis_b81c8044a14dc3041557849e362e8ab1",
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_3cdd4548b1ca55b262f05b7299049748",
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_8361b3bc067b72732f46599f80d2e31a",
+            "http://pathwaycommons.org/pc12/Catalysis_029c436d8d6603169f6af93ee6a390ed",
+            "http://pathwaycommons.org/pc12/Catalysis_fd16118c3f94a89c60f3786361d48d30"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Other"
+      },
+      {
+        "data": {
+          "id": "SIRT3 controls state change of IDH2",
+          "type": "controls-state-change-of",
+          "source": "SIRT3",
+          "target": "IDH2",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "16788062",
+            "17923681",
+            "18680753",
+            "21172655"
+          ],
+          "pathwayNames": [
+            "Transcriptional activation of mitochondrial biogenesis"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Catalysis_1f8058020f8f8f193ecaec3bff57f514"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      },
+      {
+        "data": {
+          "id": "MEF2C controls expression of PPARGC1A",
+          "type": "controls-expression-of",
+          "source": "MEF2C",
+          "target": "PPARGC1A",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "10643692",
+            "10713165",
+            "12563009",
+            "12764228"
+          ],
+          "pathwayNames": [
+            "Circadian Clock",
+            "Transcriptional activation of mitochondrial biogenesis"
+          ],
+          "pcIds": []
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Expression"
+      },
+      {
+        "data": {
+          "id": "PPARGC1A controls expression of SOD2",
+          "type": "controls-expression-of",
+          "source": "PPARGC1A",
+          "target": "SOD2",
+          "datasources": [
+            "Comparative Toxicogenomics Database"
+          ],
+          "pubmedIds": [
+            "26781513"
+          ],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Control_25f9f3af7bcc57b7742e9a461d9e536a",
+            "http://pathwaycommons.org/pc12/TemplateReaction_fb3a56167e79b8a0fc5f3452ad47d161",
+            "http://pathwaycommons.org/pc12/Control_787e4583adf2b1a07165bd1e65e40ee6"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Expression"
+      },
+      {
+        "data": {
+          "id": "IDH2 and ACSS2 in catalysis",
+          "type": "catalysis-precedes",
+          "source": "IDH2",
+          "target": "ACSS2",
+          "datasources": [
+            "Recon X"
+          ],
+          "pubmedIds": [
+            "10843999",
+            "12623130",
+            "1735445",
+            "1988962",
+            "2355017",
+            "6361812",
+            "7892212"
+          ],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_559574a23c32ea3b9ab2fc1b6fddc466",
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_1262b5779db281cb5b96845d26ef7864",
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_6bcbe1b55b5997e71224c215af4c22e1",
+            "http://pathwaycommons.org/pc12/Control_ce469e791594f7846be7945791d135fd",
+            "http://pathwaycommons.org/pc12/BiochemicalReaction_43b562953ee3b814d1eaeb2cef506120",
+            "http://pathwaycommons.org/pc12/Control_c4ea3895fa86b7f096c716c0aa64362b",
+            "http://pathwaycommons.org/pc12/Control_59c2f41139ea97263e16c95cd10d6ae0"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Other"
+      },
+      {
+        "data": {
+          "id": "SIRT3 controls expression of SOD2",
+          "type": "controls-expression-of",
+          "source": "SIRT3",
+          "target": "SOD2",
+          "datasources": [
+            "Comparative Toxicogenomics Database"
+          ],
+          "pubmedIds": [
+            "23494737"
+          ],
+          "pathwayNames": [],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Control_6e3ca700ce68ff1a62c2ea59822046aa",
+            "http://pathwaycommons.org/pc12/TemplateReaction_fb3a56167e79b8a0fc5f3452ad47d161"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Expression"
+      },
+      {
+        "data": {
+          "id": "SIRT5 controls state change of CYCS",
+          "type": "controls-state-change-of",
+          "source": "SIRT5",
+          "target": "CYCS",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "18680753",
+            "20680393"
+          ],
+          "pathwayNames": [
+            "Transcriptional activation of mitochondrial biogenesis"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Catalysis_3a4326df4f2251f894d0c35c66870023"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      },
+      {
+        "data": {
+          "id": "SIRT3 controls state change of ACSS2",
+          "type": "controls-state-change-of",
+          "source": "SIRT3",
+          "target": "ACSS2",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "16788062",
+            "17923681",
+            "18680753",
+            "21172655"
+          ],
+          "pathwayNames": [
+            "Transcriptional activation of mitochondrial biogenesis"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Catalysis_1f8058020f8f8f193ecaec3bff57f514"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      },
+      {
+        "data": {
+          "id": "NR1D1 controls expression of PPARGC1A",
+          "type": "controls-expression-of",
+          "source": "NR1D1",
+          "target": "PPARGC1A",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "10643692",
+            "10713165",
+            "12563009",
+            "19710360"
+          ],
+          "pathwayNames": [
+            "Circadian Clock",
+            "Transcriptional activation of mitochondrial biogenesis"
+          ],
+          "pcIds": []
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Expression"
+      },
+      {
+        "data": {
+          "id": "SIRT3 controls state change of GLUD1",
+          "type": "controls-state-change-of",
+          "source": "SIRT3",
+          "target": "GLUD1",
+          "datasources": [
+            "Reactome"
+          ],
+          "pubmedIds": [
+            "16788062",
+            "17923681",
+            "18680753",
+            "21172655"
+          ],
+          "pathwayNames": [
+            "Transcriptional activation of mitochondrial biogenesis"
+          ],
+          "pcIds": [
+            "http://pathwaycommons.org/pc12/Catalysis_1f8058020f8f8f193ecaec3bff57f514"
+          ]
+        },
+        "position": {},
+        "group": "edges",
+        "removed": false,
+        "selected": false,
+        "selectable": true,
+        "locked": false,
+        "grabbable": true,
+        "classes": "Modification"
+      }
+    ]
+  },
+  "style": [
+    {
+      "selector": "edge",
+      "style": {
+        "opacity": "0.4",
+        "width": "4px",
+        "line-color": "#555",
+        "curve-style": "haystack",
+        "haystack-radius": "0"
+      }
+    },
+    {
+      "selector": ".link",
+      "style": {
+        "opacity": "1",
+        "width": "8px",
+        "line-color": "#c0392b"
+      }
+    },
+    {
+      "selector": "node[class @= \"ball\"]",
+      "style": {
+        "label": "data(id)",
+        "text-valign": "center",
+        "text-halign": "center",
+        "color": "#fff",
+        "text-outline-color": "#555",
+        "text-outline-width": "4px",
+        "font-size": "20px",
+        "height": "50px",
+        "width": "50px",
+        "background-color": "#555"
+      }
+    },
+    {
+      "selector": "node[?queried]",
+      "style": {
+        "display": "element",
+        "height": "65px",
+        "width": "65px"
+      }
+    },
+    {
+      "selector": ".highlighted",
+      "style": {
+        "text-valign": "center",
+        "text-halign": "center",
+        "color": "#fff",
+        "text-outline-color": "#555",
+        "text-outline-width": "4px",
+        "font-size": "20px",
+        "height": "65px",
+        "width": "65px",
+        "background-color": "#555"
+      }
+    }
+  ],
+  "zoomingEnabled": true,
+  "userZoomingEnabled": true,
+  "zoom": 0.9761841068595772,
+  "minZoom": 0.08,
+  "maxZoom": 4,
+  "panningEnabled": true,
+  "userPanningEnabled": true,
+  "pan": {
+    "x": 712.123317465688,
+    "y": 10.321120239089609
+  },
+  "boxSelectionEnabled": true,
+  "renderer": {
+    "name": "canvas"
+  }
+}

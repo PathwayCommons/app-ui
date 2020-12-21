@@ -56,14 +56,16 @@ class Interactions extends React.Component {
         return;
       }
 
-      cy.layout(_.assign({}, interactionsLayoutOpts( cy ), {
-        stop: () => {
-          this.setState({
-            loading: false,
-            error: null
-          });
-        }
-      })).run();
+      if(!isFile){
+        cy.layout(_.assign({}, interactionsLayoutOpts( cy ), {
+          stop: () => {
+            this.setState({
+              loading: false,
+              error: null
+            });
+          }
+        })).run();
+      }
     };
 
     if(!isFile){
@@ -182,8 +184,6 @@ class Interactions extends React.Component {
 
     let content = !errorMessage ? [
       h(Loader, { loaded: !loading, options: { left: '50%', color: '#16a085' }}, [
-        appBar,
-        interactionsLegend
       ]),
       h(CytoscapeNetwork, {
         cySrv,

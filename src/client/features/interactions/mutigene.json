@@ -9,8 +9,8 @@
           "metric": 9007199254740992
         },
         "position": {
-          "x": 368.3364472117819,
-          "y": 359.5132381252479
+          "x": 135.56230964458211,
+          "y": 298.99506211576664
         },
         "group": "nodes",
         "removed": false,
@@ -28,8 +28,8 @@
           "metric": 9007199254740992
         },
         "position": {
-          "x": 487.18326045703225,
-          "y": 444.080601199144
+          "x": 297.5502543654949,
+          "y": 473.6244834685383
         },
         "group": "nodes",
         "removed": false,
@@ -47,8 +47,8 @@
           "metric": 9007199254740992
         },
         "position": {
-          "x": 493.5411553201061,
-          "y": 314.7421328771791
+          "x": 351.1153705571427,
+          "y": 300.44849469851954
         },
         "group": "nodes",
         "removed": false,
@@ -66,8 +66,8 @@
           "metric": 9007199254740992
         },
         "position": {
-          "x": 612.9302330379574,
-          "y": 403.99273052844114
+          "x": 509.90737886396585,
+          "y": 462.9973583401289
         },
         "group": "nodes",
         "removed": false,
@@ -85,8 +85,8 @@
           "metric": 9007199254740992
         },
         "position": {
-          "x": 533.6610732932352,
-          "y": 70.11053745371964
+          "x": 629.5325317357972,
+          "y": 112.496298427769
         },
         "group": "nodes",
         "removed": false,
@@ -104,8 +104,8 @@
           "metric": 9007199254740992
         },
         "position": {
-          "x": 450.5216623150354,
-          "y": 185.97056742082475
+          "x": 481.5395927167841,
+          "y": 155.23482726397276
         },
         "group": "nodes",
         "removed": false,
@@ -123,8 +123,8 @@
           "metric": 9007199254740992
         },
         "position": {
-          "x": 414.7781295184386,
-          "y": 53.5
+          "x": 457.6778355847809,
+          "y": 9.039722327900467
         },
         "group": "nodes",
         "removed": false,
@@ -142,8 +142,8 @@
           "metric": 9007199254740992
         },
         "position": {
-          "x": 304.1769544710223,
-          "y": 197.91564440357206
+          "x": 275.8468873617527,
+          "y": 3.548135250772276
         },
         "group": "nodes",
         "removed": false,
@@ -161,8 +161,8 @@
           "metric": 9007199254740992
         },
         "position": {
-          "x": 599.6103898169304,
-          "y": 201.39236262701263
+          "x": 583.4747460207057,
+          "y": 307.08876766449634
         },
         "group": "nodes",
         "removed": false,
@@ -180,8 +180,8 @@
           "metric": 9007199254740992
         },
         "position": {
-          "x": 185.24054297232215,
-          "y": 284.24341663328323
+          "x": 251.8042321970765,
+          "y": 159.52562024684585
         },
         "group": "nodes",
         "removed": false,
@@ -199,8 +199,8 @@
           "metric": 9007199254740992
         },
         "position": {
-          "x": 176.08074064690618,
-          "y": 154.28087186509777
+          "x": 85.80965755143598,
+          "y": 15.148319032216783
         },
         "group": "nodes",
         "removed": false,
@@ -218,8 +218,8 @@
           "metric": 9007199254740992
         },
         "position": {
-          "x": 361.25367831189897,
-          "y": 487.7910917016104
+          "x": 100.71773078913907,
+          "y": 468.38337141350047
         },
         "group": "nodes",
         "removed": false,
@@ -237,8 +237,8 @@
           "metric": 9007199254740992
         },
         "position": {
-          "x": 55.5,
-          "y": 285.31129043587566
+          "x": 45.30695904969794,
+          "y": 166.2251726909778
         },
         "group": "nodes",
         "removed": false,
@@ -252,34 +252,21 @@
     "edges": [
       {
         "data": {
-          "id": "ACSS1 and ACSS2 in catalysis",
-          "type": "catalysis-precedes",
-          "source": "ACSS1",
-          "target": "ACSS2",
+          "id": "SENP1 interacts with SIRT3",
+          "type": "interacts-with",
+          "source": "SENP1",
+          "target": "SIRT3",
+          "database": "Biofactoid",
           "datasources": [
-            "Pathbank"
+            "Biofactoid"
           ],
-          "pubmedIds": [],
+          "pubmedIds": [
+            "31302001"
+          ],
           "pathwayNames": [
-            "Leigh Syndrome",
-            "Malonic Aciduria",
-            "Malonyl-CoA Decarboxylase Deficiency",
-            "Methylmalonic Aciduria Due to Cobalamin-Related Disorders",
-            "Primary Hyperoxaluria II, PH2",
-            "Propanoate Metabolism",
-            "Pyruvate Decarboxylase E1 Component Deficiency (PDHE1 Deficiency)",
-            "Pyruvate Dehydrogenase Complex Deficiency",
-            "Pyruvate Kinase Deficiency",
-            "Pyruvate Metabolism"
+            "SENP1-Sirt3 Signaling Controls Mitochondrial Protein Acetylation and Metabolism"
           ],
-          "pcIds": [
-            "http://pathwaycommons.org/pc12/BiochemicalReaction_33941fb3864c2f325a73432430660006",
-            "http://pathwaycommons.org/pc12/BiochemicalReaction_c120c0de1c82da72b25692fa0c332d2d",
-            "http://pathwaycommons.org/pc12/Catalysis_aa654860d6e83844b8d26297ad512061",
-            "http://pathwaycommons.org/pc12/Catalysis_c6dd00a5aa693f7c874474ec4a749a4e",
-            "http://pathwaycommons.org/pc12/Catalysis_3f380aa7ed61fc532cd6a309066cca97",
-            "http://pathwaycommons.org/pc12/BiochemicalReaction_c674c0ebd9cb1d5f1eb0b2b190788bc6"
-          ]
+          "pcIds": []
         },
         "position": {},
         "group": "edges",
@@ -296,6 +283,7 @@
           "type": "catalysis-precedes",
           "source": "ACSS2",
           "target": "ACSS1",
+          "database": "Pathbank",
           "datasources": [
             "Pathbank"
           ],
@@ -332,6 +320,7 @@
           "type": "controls-state-change-of",
           "source": "SIRT3",
           "target": "IDH2",
+          "database": "Reactome",
           "datasources": [
             "Reactome"
           ],
@@ -363,6 +352,7 @@
           "type": "controls-expression-of",
           "source": "MEF2C",
           "target": "PPARGC1A",
+          "database": "Reactome",
           "datasources": [
             "Reactome"
           ],
@@ -389,62 +379,11 @@
       },
       {
         "data": {
-          "id": "PPARGC1A in complex with MEF2C",
-          "type": "in-complex-with",
-          "source": "PPARGC1A",
-          "target": "MEF2C",
-          "datasources": [
-            "Reactome"
-          ],
-          "pubmedIds": [],
-          "pathwayNames": [
-            "Circadian Clock"
-          ],
-          "pcIds": [
-            "http://pathwaycommons.org/pc12/Complex_9c0d0eae720d1e1026144177689b5802"
-          ]
-        },
-        "position": {},
-        "group": "edges",
-        "removed": false,
-        "selected": false,
-        "selectable": true,
-        "locked": false,
-        "grabbable": true,
-        "classes": ""
-      },
-      {
-        "data": {
-          "id": "MEF2D in complex with PPARGC1A",
-          "type": "in-complex-with",
-          "source": "MEF2D",
-          "target": "PPARGC1A",
-          "datasources": [
-            "Reactome"
-          ],
-          "pubmedIds": [],
-          "pathwayNames": [
-            "Circadian Clock"
-          ],
-          "pcIds": [
-            "http://pathwaycommons.org/pc12/Complex_9c0d0eae720d1e1026144177689b5802"
-          ]
-        },
-        "position": {},
-        "group": "edges",
-        "removed": false,
-        "selected": false,
-        "selectable": true,
-        "locked": false,
-        "grabbable": true,
-        "classes": ""
-      },
-      {
-        "data": {
           "id": "PPARGC1A controls expression of SOD2",
           "type": "controls-expression-of",
           "source": "PPARGC1A",
           "target": "SOD2",
+          "database": "Comparative Toxicogenomics Database",
           "datasources": [
             "Comparative Toxicogenomics Database"
           ],
@@ -469,34 +408,11 @@
       },
       {
         "data": {
-          "id": "SIRT3 in complex with SOD2",
-          "type": "in-complex-with",
-          "source": "SIRT3",
-          "target": "SOD2",
-          "datasources": [
-            "Comparative Toxicogenomics Database"
-          ],
-          "pubmedIds": [],
-          "pathwayNames": [],
-          "pcIds": [
-            "http://pathwaycommons.org/pc12/Complex_b0c4c2de3015625390689da299c2951b"
-          ]
-        },
-        "position": {},
-        "group": "edges",
-        "removed": false,
-        "selected": false,
-        "selectable": true,
-        "locked": false,
-        "grabbable": true,
-        "classes": ""
-      },
-      {
-        "data": {
           "id": "SENP1 controls state change of SUMO1",
           "type": "controls-state-change-of",
           "source": "SENP1",
           "target": "SUMO1",
+          "database": "Comparative Toxicogenomics Database",
           "datasources": [
             "Comparative Toxicogenomics Database",
             "Reactome"
@@ -535,6 +451,7 @@
           "type": "controls-expression-of",
           "source": "MEF2D",
           "target": "PPARGC1A",
+          "database": "Reactome",
           "datasources": [
             "Reactome"
           ],
@@ -565,6 +482,7 @@
           "type": "controls-state-change-of",
           "source": "SENP1",
           "target": "SUMO2",
+          "database": "Comparative Toxicogenomics Database",
           "datasources": [
             "Comparative Toxicogenomics Database",
             "Reactome"
@@ -605,6 +523,7 @@
           "type": "catalysis-precedes",
           "source": "ACSS1",
           "target": "ACADL",
+          "database": "Recon X",
           "datasources": [
             "Recon X"
           ],
@@ -638,6 +557,7 @@
           "type": "controls-state-change-of",
           "source": "SENP1",
           "target": "SUMO3",
+          "database": "Reactome",
           "datasources": [
             "Reactome"
           ],
@@ -674,6 +594,7 @@
           "type": "catalysis-precedes",
           "source": "ACSS2",
           "target": "ACADL",
+          "database": "Recon X",
           "datasources": [
             "Recon X"
           ],
@@ -707,6 +628,7 @@
           "type": "catalysis-precedes",
           "source": "IDH2",
           "target": "ACSS2",
+          "database": "Recon X",
           "datasources": [
             "Recon X"
           ],
@@ -741,34 +663,11 @@
       },
       {
         "data": {
-          "id": "SUMO2 in complex with SENP1",
-          "type": "in-complex-with",
-          "source": "SUMO2",
-          "target": "SENP1",
-          "datasources": [
-            "Comparative Toxicogenomics Database"
-          ],
-          "pubmedIds": [],
-          "pathwayNames": [],
-          "pcIds": [
-            "http://pathwaycommons.org/pc12/Complex_e591bca0161043c5e8fc2d54e1cca4c6"
-          ]
-        },
-        "position": {},
-        "group": "edges",
-        "removed": false,
-        "selected": false,
-        "selectable": true,
-        "locked": false,
-        "grabbable": true,
-        "classes": ""
-      },
-      {
-        "data": {
           "id": "SIRT3 controls expression of SOD2",
           "type": "controls-expression-of",
           "source": "SIRT3",
           "target": "SOD2",
+          "database": "Comparative Toxicogenomics Database",
           "datasources": [
             "Comparative Toxicogenomics Database"
           ],
@@ -792,47 +691,11 @@
       },
       {
         "data": {
-          "id": "SIRT3 controls state change of SOD2",
-          "type": "controls-state-change-of",
-          "source": "SIRT3",
-          "target": "SOD2",
-          "datasources": [
-            "Reactome"
-          ],
-          "pubmedIds": [
-            "12239572",
-            "16788062",
-            "17923681",
-            "18680753",
-            "19652361",
-            "21172655",
-            "26523980",
-            "27064125"
-          ],
-          "pathwayNames": [
-            "FOXO-mediated transcription of oxidative stress, metabolic and neuronal genes",
-            "Transcriptional activation of mitochondrial biogenesis"
-          ],
-          "pcIds": [
-            "http://pathwaycommons.org/pc12/Control_307f32a0127a33a88f2f5051d1b9cd89",
-            "http://pathwaycommons.org/pc12/Catalysis_1f8058020f8f8f193ecaec3bff57f514"
-          ]
-        },
-        "position": {},
-        "group": "edges",
-        "removed": false,
-        "selected": false,
-        "selectable": true,
-        "locked": false,
-        "grabbable": true,
-        "classes": "Modification"
-      },
-      {
-        "data": {
           "id": "SUMO2 controls state change of SUMO1",
           "type": "controls-state-change-of",
           "source": "SUMO2",
           "target": "SUMO1",
+          "database": "Comparative Toxicogenomics Database",
           "datasources": [
             "Comparative Toxicogenomics Database"
           ],
@@ -858,65 +721,11 @@
       },
       {
         "data": {
-          "id": "SUMO1 controls state change of SUMO2",
-          "type": "controls-state-change-of",
-          "source": "SUMO1",
-          "target": "SUMO2",
-          "datasources": [
-            "Reactome"
-          ],
-          "pubmedIds": [
-            "22635276",
-            "22661230"
-          ],
-          "pathwayNames": [
-            "Processing of DNA double-strand break ends"
-          ],
-          "pcIds": [
-            "http://pathwaycommons.org/pc12/Catalysis_1162793077eb939a200981566a488300"
-          ]
-        },
-        "position": {},
-        "group": "edges",
-        "removed": false,
-        "selected": false,
-        "selectable": true,
-        "locked": false,
-        "grabbable": true,
-        "classes": "Modification"
-      },
-      {
-        "data": {
-          "id": "SUMO2 in complex with SUMO1",
-          "type": "in-complex-with",
-          "source": "SUMO2",
-          "target": "SUMO1",
-          "datasources": [
-            "Reactome"
-          ],
-          "pubmedIds": [],
-          "pathwayNames": [
-            "Processing of DNA double-strand break ends"
-          ],
-          "pcIds": [
-            "http://pathwaycommons.org/pc12/Complex_38a86df916e06639c65a5f345f8d875e"
-          ]
-        },
-        "position": {},
-        "group": "edges",
-        "removed": false,
-        "selected": false,
-        "selectable": true,
-        "locked": false,
-        "grabbable": true,
-        "classes": ""
-      },
-      {
-        "data": {
           "id": "SIRT3 controls state change of ACSS1",
           "type": "controls-state-change-of",
           "source": "SIRT3",
           "target": "ACSS1",
+          "database": "NCI Pathway Interaction Database: Pathway",
           "datasources": [
             "NCI Pathway Interaction Database: Pathway"
           ],
@@ -946,6 +755,7 @@
           "type": "controls-state-change-of",
           "source": "SIRT3",
           "target": "ACSS2",
+          "database": "Reactome",
           "datasources": [
             "Reactome"
           ],
@@ -977,6 +787,7 @@
           "type": "controls-expression-of",
           "source": "PPARGC1A",
           "target": "SIRT3",
+          "database": "Comparative Toxicogenomics Database",
           "datasources": [
             "Comparative Toxicogenomics Database",
             "Reactome"
@@ -1013,11 +824,11 @@
     {
       "selector": "edge",
       "style": {
-        "opacity": "0.4",
+        "opacity": "1",
         "width": "4px",
         "line-color": "#555",
         "curve-style": "haystack",
-        "haystack-radius": "0.25"
+        "haystack-radius": "0"
       }
     },
     {
@@ -1107,10 +918,10 @@
       }
     },
     {
-      "selector": "node:selected",
+      "selector": "node[id = \"SENP1\"], node[id = \"SIRT3\"]",
       "style": {
-        "text-outline-color": "#0169d9",
-        "background-color": "#0169d9"
+        "text-outline-color": "#c0392b",
+        "background-color": "#c0392b"
       }
     },
     {
@@ -1119,18 +930,55 @@
         "opacity": "1",
         "z-index": "999"
       }
+    },
+    {
+      "selector": "edge[database = \"Pathbank\"]",
+      "style": {
+        "line-color": "#ffc28b"
+      }
+    },
+    {
+      "selector": "edge[database = \"Comparative Toxicogenomics Database\"]",
+      "style": {
+        "line-color": "#949494"
+      }
+    },
+    {
+      "selector": "edge[database = \"Recon X\"]",
+      "style": {
+        "line-color": "#1abc9c"
+      }
+    },
+    {
+      "selector": "edge[database = \"NCI Pathway Interaction Database: Pathway\"]",
+      "style": {
+        "line-color": "#9b59b6"
+      }
+    },
+    {
+      "selector": "edge[database = \"Reactome\"]",
+      "style": {
+        "line-color": "#3498db"
+      }
+    },
+    {
+      "selector": "edge[database = \"Biofactoid\"]",
+      "style": {
+        "width": "8px",
+        "line-color": "#c0392b"
+      }
     }
   ],
   "zoomingEnabled": true,
   "userZoomingEnabled": true,
-  "zoom": 1.9593663771243683,
+  "zoom": 0.9292138005396349,
   "minZoom": 0.08,
   "maxZoom": 4,
   "panningEnabled": true,
   "userPanningEnabled": true,
   "pan": {
-    "x": 45.60950434313452,
-    "y": 54.20621734146073
+    "x": 52.33019402231755,
+    "y": 93.74835947800335
   },
   "boxSelectionEnabled": true,
   "renderer": {

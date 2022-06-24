@@ -159,7 +159,7 @@ let getGenericPhyiscalEntityData = async nodes => {
   let genericPhysicalEntityMap = await getGenericPhysicalEntityMap();
 
   nodes.forEach(node => {
-    let genericPE = genericPhysicalEntityMap[node.data.id];
+    let genericPE = genericPhysicalEntityMap.get(node.data.id);
     let syns = _.get(genericPE, 'synonyms', []);
     if( syns == null) { syns = []; }
     nodeGeneSynonyms[node.data.id] = syns;

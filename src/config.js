@@ -39,7 +39,8 @@ let defaults = {
   NS_NCBI_GENE: 'ncbigene',
   NS_PUBMED: 'pubmed',
   NS_REACTOME: 'reactome',
-  NS_UNIPROT: 'uniprot'
+  NS_UNIPROT: 'uniprot',
+  NS_BIOFACTOID: 'biofactoid'
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );

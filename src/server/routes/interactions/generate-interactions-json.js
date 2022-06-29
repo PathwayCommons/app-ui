@@ -5,7 +5,7 @@ const pc = require('../../external-services/pathway-commons');
 const { cachePromise } = require('../../cache');
 // const ncbi = require('../../external-services/ncbi');
 
-const { PC_CACHE_MAX_SIZE, MAX_SIF_NODES } = require('../../../config');
+const { PC_CACHE_MAX_SIZE, MAX_SIF_NODES, NS_BIOFACTOID } = require('../../../config');
 
 let interactionType2Label = type => {
   switch( type ){
@@ -65,6 +65,18 @@ let interactionTxt2CyJson = async (srcId, tgtId, type, providersString, pubmedId
   };
 };
 
+const calcMetricUpdate = ( oldValue, providersString ) => {
+  const increment = 1;
+  const providers = providersString.split(';').map( p => p.toLowerCase() );
+  let boost = 1;
+
+  if( _.includes( providers, NS_BIOFACTOID ) ){
+    boost = 5;
+  }
+  let newValue = oldValue + increment * boost;
+  return newValue;
+};
+
 let sifText2CyJson = async (sifText, sourceIds) => {
   let interactionsData = sifText.split('\n');
 
@@ -88,8 +100,8 @@ let sifText2CyJson = async (sifText, sourceIds) => {
     }
 
     let interactionJson = await interactionTxt2CyJson( srcId, tgtId, type, providersString, pubMedIdsString, pathwayNamesString, mediatorIdsString );
-    srcJson.data.metric += 1;
-    tgtJson.data.metric += 1;
+    srcJson.data.metric = calcMetricUpdate( srcJson.data.metric, providersString );
+    tgtJson.data.metric = calcMetricUpdate( tgtJson.data.metric, providersString );
 
     edges.push(interactionJson);
   });

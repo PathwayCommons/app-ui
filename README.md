@@ -5,7 +5,7 @@
 
 ## Required software
 
-- [Node.js](https://nodejs.org/en/) >=8.11.2
+- [Node.js](https://nodejs.org/en/) >=10.0.0 <11.0.0
 
 ## Running the App Locally
 

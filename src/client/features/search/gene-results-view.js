@@ -43,11 +43,11 @@ class GeneResultsView extends React.Component {
     let hint = `Requires at least ${MIN_GENE_COUNT_ENRICHMENT} genes.`;
     let linkPath = '/enrichment';
     let link = `${linkPath}/?${searchString}`;
-    let image = h( `div.app-card-image.enrichment-logo` );
+    let imageClass = 'enrichment-logo';
     let title = 'Enrichment';
     let body = 'Explore a network of pathways that contain genes identified in your query.';
 
-    return { enabled, hint, link, image, title, body };
+    return { enabled, hint, link, imageClass, title, body };
   }
 
   getInteractionsAppInfo( geneResults, searchString ){
@@ -55,11 +55,11 @@ class GeneResultsView extends React.Component {
     let hint = `Requires one recognized gene.`;
     let linkPath = '/interactions';
     let link = `${linkPath}/?${searchString}`;
-    let body = 'Visualize interactions between the genes identified in your query.';
+    let imageClass = 'interactions-logo';
     let title = 'Interactions';
-    let image = h( `div.app-card-image.interactions-logo` );
+    let body = 'Visualize interactions between the genes identified in your query.';
 
-    return { enabled, hint, link, image, title, body };
+    return { enabled, hint, link, imageClass, title, body };
   }
 
   render(){

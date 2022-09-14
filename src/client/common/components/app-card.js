@@ -8,7 +8,7 @@ class AppCard extends React.Component {
   }
 
   render(){
-    let { enabled, hint, link, image, title, body } = this.props;
+    let { enabled, hint, link, image, imageClass, title, body } = this.props;
 
     return h('.app-card', {
         className: classNames({ 'app-card-disabled': !enabled })
@@ -17,7 +17,12 @@ class AppCard extends React.Component {
         href: link,
         target: '_blank'
       }, [
-        h( 'div.app-card-image', [ image ]),
+        h( 'div.app-card-image', {
+          className: classNames({
+            [imageClass]: !!imageClass,
+            'background': !!imageClass,
+          })
+        }, [ image ]),
         h('div.app-card-content', [
           h( 'div.app-card-header', [
             h( 'h4.app-card-title', title ),
@@ -29,5 +34,13 @@ class AppCard extends React.Component {
     ]);
   }
 }
+
+// Specifies the default values for props:
+AppCard.defaultProps = {
+  enabled: true,
+  hint: null,
+  imageClass: null,
+  image: null
+};
 
 module.exports = { AppCard };

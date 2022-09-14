@@ -2,13 +2,12 @@
   AppCard
 */
 .app-card {
-  /* width: 100%; */
   box-shadow: var(--box-shadow);
   border: 1px solid var(--light-base-colour-dark);
   margin: 0.5em 0.25em 0.5em 0;
   position: relative;
   overflow: hidden;
-  /* padding-bottom: 1.75em; */
+  padding-bottom: 1.75em;
   padding-bottom: 1.75em;
 
   &.app-card-disabled {
@@ -53,17 +52,20 @@
   display: none;
 }
 
-.app-card-link-action {
-  text-transform: uppercase;
-}
-
 .app-card-image {
-  max-width: 430px;
-  width: 100%;
+  text-align: center;
   height: var(--appImgHeight);
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center center;
+
+  & > img {
+    height: 100%;
+    padding-bottom: 1.75em;
+  }
+
+  &.background {
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+  }
 }
 
 .app-card .hidden {

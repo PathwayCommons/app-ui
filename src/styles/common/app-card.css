@@ -1,0 +1,71 @@
+/*
+  AppCard
+*/
+.app-card {
+  /* width: 100%; */
+  box-shadow: var(--box-shadow);
+  border: 1px solid var(--light-base-colour-dark);
+  margin: 0.5em 0.25em 0.5em 0;
+  position: relative;
+  overflow: hidden;
+  /* padding-bottom: 1.75em; */
+  padding-bottom: 1.75em;
+
+  &.app-card-disabled {
+    opacity: 0.5;
+
+    & a {
+      cursor: default;
+      pointer-events: none;
+    }
+
+    & .app-card-hint {
+      display: block;
+    }
+  }
+}
+
+.app-card-content {
+  padding: 0.5em 0.25em;
+  background: rgba(255, 255, 255, 0.85);
+  position: absolute;
+  transform: translateY(-0.25em);
+  pointer-events: none;
+  transition: transform 250ms ease-out;
+}
+
+.app-card:hover .app-card-content {
+  transform: translateY(calc(-100% + 2em));
+}
+
+.app-card-header {
+  margin-bottom: 0.5em;
+}
+
+.app-card-title {
+  margin: 0;
+  padding-bottom: 0.5em;
+}
+
+.app-card-hint {
+  text-decoration: underline;
+  margin-bottom: 1em;
+  display: none;
+}
+
+.app-card-link-action {
+  text-transform: uppercase;
+}
+
+.app-card-image {
+  max-width: 430px;
+  width: 100%;
+  height: var(--appImgHeight);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center center;
+}
+
+.app-card .hidden {
+  display: none;
+}

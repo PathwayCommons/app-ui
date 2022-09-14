@@ -42,24 +42,24 @@ class GeneResultsView extends React.Component {
     let enabled = geneResults.length >= MIN_GENE_COUNT_ENRICHMENT;
     let hint = `Requires at least ${MIN_GENE_COUNT_ENRICHMENT} genes.`;
     let linkPath = '/enrichment';
-    let link = `${linkPath}/?${searchString}`;
+    let url = `${linkPath}/?${searchString}`;
     let imageClass = 'enrichment-logo';
     let title = 'Enrichment';
     let body = 'Explore a network of pathways that contain genes identified in your query.';
 
-    return { enabled, hint, link, imageClass, title, body };
+    return { enabled, hint, url, imageClass, title, body };
   }
 
   getInteractionsAppInfo( geneResults, searchString ){
     let enabled = geneResults.length > 0;
     let hint = `Requires one recognized gene.`;
     let linkPath = '/interactions';
-    let link = `${linkPath}/?${searchString}`;
+    let url = `${linkPath}/?${searchString}`;
     let imageClass = 'interactions-logo';
     let title = 'Interactions';
     let body = 'Visualize interactions between the genes identified in your query.';
 
-    return { enabled, hint, link, imageClass, title, body };
+    return { enabled, hint, url, imageClass, title, body };
   }
 
   render(){

@@ -108,8 +108,8 @@ const searchPathways = query => {
  */
 const search = async ( query ) => {
   return Promise.all([ searchGenes( query.q ), searchPathways( query ), pc.getDataSources() ])
-    .then( ([ genes, searchHits, dataSources ]) => {
-      return { genes, searchHits, dataSources };
+    .then( ([ genes, { searchHits, feature }, dataSources ]) => {
+      return { genes, searchHits, feature, dataSources };
     } );
 };
 

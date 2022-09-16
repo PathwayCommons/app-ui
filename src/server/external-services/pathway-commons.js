@@ -110,6 +110,80 @@ const augmentSearchHits = async function( searchHits ) {
   return Promise.all( searchHits.map( searchHit => addSourceInfo( searchHit, dataSources ) ) );
 };
 
+// Feature a search hit
+const getFeature = async searchHits => {
+  let feature = null;
+
+  const formatAuthorInfo = () => {
+    const info = [];
+
+    return info;
+  };
+
+  const formatEntityInfo = ({ elements = [] }) => {
+    const isGroundedEntity = e => _.has( e, ['association', 'id'] );
+    const unique = c => _.uniqBy( c, 'association.id' );
+    const entity2Info = ({ association: { id, dbPrefix, name } }) => ({
+      name,
+      url: `${config.IDENTIFIERS_URL}/${dbPrefix}:${id}`
+    });
+
+    const groundedEntities = elements.filter( isGroundedEntity );
+    const uniqueEntities = unique( groundedEntities );
+    return uniqueEntities.map( entity2Info );
+  };
+
+  const formatArticleInfo = ({ citation }) => {
+    let url = null;
+    const { title, reference, pmid, doi } = citation;
+    if( doi ){
+      url = `${config.DOI_BASE_URL}${doi}`;
+    } else if ( pmid ) {
+      url = `${config.IDENTIFIERS_URL}/${config.NS_PUBMED}:${pmid}`;
+    }
+    let authors = _.get( citation, ['authors', 'abbreviation'], null );
+    return ({ title, url, authors, reference });
+  };
+
+  const formatPathwayInfo = () => {
+    const info = [];
+    return info;
+  };
+
+  const formatFeatureInfo = raw => {
+    const info = {
+      'authors': formatAuthorInfo( raw ),
+      'entities': formatEntityInfo( raw ),
+      'article': formatArticleInfo( raw )
+    };
+    return info;
+  };
+
+  const getFeatureInfo = async id => {
+    const url = `${config.FACTOID_URL}api/document/${id}`;
+    const res = await fetch( url, fetchOptions );
+    const raw = await res.json();
+    return formatFeatureInfo( raw );
+  };
+  const topHit = _.first( searchHits );
+  const shouldFeature = topHit && topHit.sourceInfo.identifier === config.NS_BIOFACTOID;
+
+  if ( shouldFeature ){
+    const featureHit = searchHits.shift();
+    try {
+      const ids = await traverse( featureHit.uri, 'Pathway/xref:UnificationXref/id' );
+      const id = _.first( ids );
+      feature = await getFeatureInfo( id );
+      const pathwayInfo = formatPathwayInfo( featureHit );
+      _.set( feature, 'pathways', pathwayInfo );
+    } catch (err) { // swallow errors
+      logger.error('Failed to get feature - ' + err);
+    }
+  }
+  return feature;
+};
+
+
 // A wrapper for PC web services search.
 // The argument (query object) has the following fields:
 //  - q: user input - search query string
@@ -121,7 +195,9 @@ let search = async opts => {
     let size = _.get( result, 'numParticipants', 0);
     return size > 0;
   });
-  return augmentSearchHits( searchResults );
+  const searchHits = await augmentSearchHits( searchResults );
+  const feature = await getFeature( searchHits );
+  return ({ searchHits, feature });
 };
 
 const cachedSearch = cachePromise(search, queryCache);

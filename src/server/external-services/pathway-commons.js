@@ -114,10 +114,14 @@ const augmentSearchHits = async function( searchHits ) {
 const getFeature = async searchHits => {
   let feature = null;
 
-  const formatAuthorInfo = () => {
-    const info = [];
-
-    return info;
+  const formatAuthorInfo = ({ authorProfiles = [] }) => {
+    const profile2Info = ({ name, orcid }) => ({
+      name,
+      url: `${config.ORCID_BASE_URL}${orcid}`
+    });
+    const hasOrcid = a => a.orcid !== null;
+    const withOrcid = authorProfiles.filter( hasOrcid );
+    return withOrcid.map( profile2Info );
   };
 
   const formatEntityInfo = ({ elements = [] }) => {
@@ -145,19 +149,11 @@ const getFeature = async searchHits => {
     return ({ title, url, authors, reference });
   };
 
-  const formatPathwayInfo = () => {
-    const info = [];
-    return info;
-  };
-
-  const formatFeatureInfo = raw => {
-    const info = {
-      'authors': formatAuthorInfo( raw ),
-      'entities': formatEntityInfo( raw ),
-      'article': formatArticleInfo( raw )
-    };
-    return info;
-  };
+  const formatFeatureInfo = raw => ({
+    'authors': formatAuthorInfo( raw ),
+    'entities': formatEntityInfo( raw ),
+    'article': formatArticleInfo( raw )
+  });
 
   const getFeatureInfo = async id => {
     const url = `${config.FACTOID_URL}api/document/${id}`;
@@ -173,9 +169,9 @@ const getFeature = async searchHits => {
     try {
       const ids = await traverse( featureHit.uri, 'Pathway/xref:UnificationXref/id' );
       const id = _.first( ids );
-      feature = await getFeatureInfo( id );
-      const pathwayInfo = formatPathwayInfo( featureHit );
-      _.set( feature, 'pathways', pathwayInfo );
+      feature = await getFeatureInfo( id, featureHit );
+      _.set( feature, 'pathway', featureHit );
+
     } catch (err) { // swallow errors
       logger.error('Failed to get feature - ' + err);
     }

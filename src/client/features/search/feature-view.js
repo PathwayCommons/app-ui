@@ -64,7 +64,7 @@ class FeatureView extends React.Component {
 
     const { article, pathways, entities, authors } = feature;
     const biofactoidPathway = _.find( pathways, ['db', NS_BIOFACTOID] );
-    // const pcPathway = _.find( pathways, ['db', NS_PATHWAYCOMMONS] );
+    const pcPathway = _.find( pathways, ['db', NS_PATHWAYCOMMONS] );
     const caption = biofactoidPathway.caption || biofactoidPathway.text;
 
     const featureItems = [
@@ -83,46 +83,10 @@ class FeatureView extends React.Component {
           { label: 'ORCID', className: 'i.icon.icon-orcid' }
         ]
       }
-      // ,
-      // {
-      //   title: 'Detailed Pathway',
-      //   items: [{
-      //     url: `/pathways?uri=${pcPathway.url}`,
-      //     name: pcPathway.name
-      //   }],
-      //   sources: [
-      //     { label: 'Pathway Commons', className: 'i.icon.pc-logo-light' }
-      //   ]
-      // }
     ].map( i => h(FeatureItem, i) );
 
     return (
       h('div.feature-container', [
-        h('div.feature-content.feature-article', [
-          h('div.feature-item', [
-            h('a.feature-headline', {
-              href: article.url,
-              target: '_blank'
-            }, article.title),
-            h('div.feature-detail', [
-              h('span', article.authors),
-              h('span', ' \u2022 '),
-              h('span', article.reference)
-            ])
-          ]),
-          h('hr'),
-          h('div.feature-item', [
-            h(AppCard, {
-              url: biofactoidPathway.url,
-              image: h('img', { src: biofactoidPathway.imageSrc }),
-              title: h('div', [
-                h('span', ' Explore on Biofactoid')
-              ]),
-              body: h('div', caption )
-            })
-          ])
-        ]),
-        h('div.feature-content.feature-metadata', interleave( featureItems, h('hr') ) ),
         h('div.feature-content.feature-credit', [
           h('a', {
             href: FACTOID_URL,
@@ -130,7 +94,43 @@ class FeatureView extends React.Component {
           }, [
             h('span.feature-detail', 'Powered by biofactoid.org')
           ])
-        ])
+        ]),
+        h('div.feature-content.feature-article', [
+          h('div.feature-item', [
+            h('div.feature-item-body', [
+              h('a.feature-headline', {
+                href: article.url,
+                target: '_blank'
+              }, article.title),
+              h('div.feature-detail', [
+                h('span', article.authors),
+                h('span', ' \u2022 '),
+                h('span', article.reference)
+              ])
+            ])
+          ]),
+          h('hr'),
+          h('div.feature-item', [
+            h('div.feature-item-title', 'Pathways'),
+            h('div.feature-item-body', [
+              h(AppCard, {
+                url: biofactoidPathway.url,
+                image: h('img', { src: biofactoidPathway.imageSrc }),
+                title: h('div', [
+                  h('span', ' Explore on Biofactoid')
+                ]),
+                body: h('div', caption )
+              })
+            ]),
+            h('div.feature-item-body', [
+              h('a.plain-link', {
+                href: `/pathways?uri=${pcPathway.url}`,
+                target: '_blank'
+              }, 'Explore on Pathway Commons')
+            ])
+          ])
+        ]),
+        h('div.feature-content.feature-metadata', featureItems )
       ])
     );
   }

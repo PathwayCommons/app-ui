@@ -244,6 +244,7 @@
 
 .feature-credit {
   grid-area: credit;
+  text-align: right;
 }
 
 .feature-container {
@@ -251,8 +252,8 @@
   grid-template-columns: 1.5fr 1fr;
   grid-template-rows: auto;
   grid-template-areas:
-    'article metadata'
-    '. credit';
+    '. credit'
+    'article metadata';
   column-gap: 2%;
   margin: 1em auto 3em;
   line-height: normal;
@@ -282,17 +283,14 @@
 
 /* FeatureItem */
 .feature-item {
-  margin: 1em auto;
+  margin: 0.5em auto 2em;
 }
 
 .feature-item-title {
   font-size: 1.1em;
-  margin-bottom: 0.5em;
+  margin-bottom: 1em;
+  /* font-weight: bold; */
 }
-
-/* .feature-item-body {
-  margin: 0.25em;
-} */
 
 .feature-item-body-row {
   display: flex;

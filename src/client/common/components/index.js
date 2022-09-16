@@ -3,6 +3,7 @@ const Popover = require('./popover');
 const Tooltip = require('./tooltip');
 const IconButton = require('./icon-button');
 const { Card, CardGrid } = require('./card');
+const { AppCard } = require('./app-card');
 const PcLogoLink = require('./pc-logo-link');
 const EmptyNetwork = require('./empty-network');
 const Sidebar = require('./sidebar');
@@ -15,6 +16,7 @@ module.exports = {
   IconButton,
   Card,
   CardGrid,
+  AppCard,
   PcLogoLink,
   EmptyNetwork,
   Sidebar,

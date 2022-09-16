@@ -152,73 +152,6 @@
   }
 }
 
-.app-linkout {
-  width: 48%;
-  box-shadow: var(--box-shadow);
-  border: 1px solid var(--light-base-colour-dark);
-  margin: 0.5em 0.25em 0.5em 0;
-  position: relative;
-  overflow: hidden;
-  padding-bottom: 1.75em;
-
-  &.app-linkout-disabled {
-    opacity: 0.5;
-
-    & a {
-      cursor: default;
-    }
-  }
-}
-
-.app-linkout-content {
-  padding: 0.5em 0.25em;
-  background: rgba(255, 255, 255, 0.85);
-  position: absolute;
-  transform: translateY(-0.25em);
-  pointer-events: none;
-  transition: transform 250ms ease-out;
-}
-
-.app-linkout:hover .app-linkout-content {
-  transform: translateY(calc(-100% + 2em));
-}
-
-.app-title {
-  margin: 0;
-  padding-bottom: 0.5em;
-}
-
-.app-header {
-  margin-bottom: 0.5em;
-}
-
-.app-hint {
-  text-decoration: underline;
-  margin-bottom: 1em;
-}
-
-.app-linkouts {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
-  padding-bottom: 0.5em;
-  padding-right: 0.25em;
-}
-
-.app-link-action {
-  text-transform: uppercase;
-}
-
-.app-image {
-  max-width: 430px;
-  width: 100%;
-  height: var(--appImgHeight);
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center center;
-  border-bottom: 1px solid var(--light-base-colour-dark);
-}
-
 .interactions-logo {
   background-image: url("../image/interactions-icon.png");
 }
@@ -294,6 +227,12 @@
   width: 60%;
 }
 
+.search-app-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 2%;
+}
+
 @media (--small-width-viewport) {
   .search-header {
     display: block;
@@ -317,5 +256,9 @@
 
   .search-tabs {
     overflow-x: scroll;
+  }
+
+  .search-app-cards {
+    grid-template-columns: 1fr;
   }
 }

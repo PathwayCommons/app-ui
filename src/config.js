@@ -13,6 +13,7 @@ let defaults = {
   NCBI_API_KEY: 'b99e10ebe0f90d815a7a99f18403aab08008', // for dev testing only (baderlabsysmonitor ncbi key)
   HGNC_BASE_URL: 'https://rest.genenames.org',
   UNIPROT_API_BASE_URL: 'https://www.ebi.ac.uk/proteins/api',
+  DOI_BASE_URL: 'https://doi.org/',
   PC_IMAGE_CACHE_MAX_SIZE: 10000,
   PC_CACHE_MAX_SIZE: 1000,
   PUB_CACHE_MAX_SIZE: 1000000,
@@ -29,7 +30,7 @@ let defaults = {
   DB_PASS: undefined,
   DB_CERT: undefined,
   // factoid specific urls
-  FACTOID_URL: 'http://unstable.factoid.baderlab.org/',
+  FACTOID_URL: 'https://biofactoid.org/',
   NS_CHEBI: 'chebi',
   NS_ENSEMBL: 'ensembl',
   NS_GENECARDS: 'genecards',

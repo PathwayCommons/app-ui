@@ -3,7 +3,9 @@ const h = require('react-hyperscript');
 const { AppCard } = require('../../common/components');
 const _ = require('lodash');
 
-const { NS_BIOFACTOID, NS_PATHWAYCOMMONS } = require('../../../config');
+const { NS_BIOFACTOID, NS_PATHWAYCOMMONS, FACTOID_URL } = require('../../../config');
+
+const interleave = (arr, thing) => [].concat(...arr.map(n => [n, thing])).slice(0, -1);
 
 class Logo extends React.Component {
   render(){
@@ -20,14 +22,14 @@ class FeatureItem extends React.Component {
     const { title, items, sources, limit } = this.props;
 
     const sourceComponents = sources.map( ({ label, className }) => {
-      return h('div.feature-body-item', [
+      return h('div', [
         h( Logo, { className, label })
       ]);
     });
 
     const itemComponents = items.map( ({ url: href, name }) => {
-      return h('div.feature-body-item', [
-        h('a.plain-link.feature-body-item', {
+      return h('div', [
+        h('a.plain-link', {
           href, target: '_blank'
         }, name )
       ]);
@@ -35,10 +37,10 @@ class FeatureItem extends React.Component {
 
     return (
       h('div.feature-item', [
-        h('div.feature-title', title),
-        h('div.feature-body-row', [
-          h('div.feature-body', sourceComponents),
-          h('div.feature-body', itemComponents)
+        h('div.feature-item-title', title),
+        h('div.feature-item-body-row', [
+          h('div.feature-item-body.feature-item-sources', sourceComponents),
+          h('div.feature-item-body', itemComponents)
         ])
       ])
     );
@@ -62,7 +64,7 @@ class FeatureView extends React.Component {
 
     const { article, pathways, entities, authors } = feature;
     const biofactoidPathway = _.find( pathways, ['db', NS_BIOFACTOID] );
-    const pcPathway = _.find( pathways, ['db', NS_PATHWAYCOMMONS] );
+    // const pcPathway = _.find( pathways, ['db', NS_PATHWAYCOMMONS] );
     const caption = biofactoidPathway.caption || biofactoidPathway.text;
 
     const featureItems = [
@@ -80,22 +82,23 @@ class FeatureView extends React.Component {
         sources: [
           { label: 'ORCID', className: 'i.icon.icon-orcid' }
         ]
-      },
-      {
-        title: 'Pathway',
-        items: [{
-          url: `/pathways?uri=${pcPathway.url}`,
-          name: pcPathway.name
-        }],
-        sources: [
-          { label: 'Biofactoid', className: 'i.icon.icon-logo-biofactoid' }
-        ]
       }
+      // ,
+      // {
+      //   title: 'Detailed Pathway',
+      //   items: [{
+      //     url: `/pathways?uri=${pcPathway.url}`,
+      //     name: pcPathway.name
+      //   }],
+      //   sources: [
+      //     { label: 'Pathway Commons', className: 'i.icon.pc-logo-light' }
+      //   ]
+      // }
     ].map( i => h(FeatureItem, i) );
 
     return (
       h('div.feature-container', [
-        h('div.feature-content', [
+        h('div.feature-content.feature-article', [
           h('div.feature-item', [
             h('a.feature-headline', {
               href: article.url,
@@ -107,6 +110,7 @@ class FeatureView extends React.Component {
               h('span', article.reference)
             ])
           ]),
+          h('hr'),
           h('div.feature-item', [
             h(AppCard, {
               url: biofactoidPathway.url,
@@ -118,14 +122,15 @@ class FeatureView extends React.Component {
             })
           ])
         ]),
-        h('div.feature-content', featureItems )
-        // h('div.feature-content', {
-        //   href: FACTOID_URL,
-        //   target: '_blank'
-        // }, [
-        //   h('i.icon.icon-logo-biofactoid'),
-        //   h('span.feature-lead', ' Powered by biofactoid.org')
-        // ])
+        h('div.feature-content.feature-metadata', interleave( featureItems, h('hr') ) ),
+        h('div.feature-content.feature-credit', [
+          h('a', {
+            href: FACTOID_URL,
+            target: '_blank'
+          }, [
+            h('span.feature-detail', 'Powered by biofactoid.org')
+          ])
+        ])
       ])
     );
   }

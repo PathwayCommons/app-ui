@@ -14,6 +14,7 @@ const { PathwayResultsView } = require('./pathway-results-view');
 const { GeneResultsView } = require('./gene-results-view');
 const { TimeoutError } = require('../../../util');
 const { ErrorMessage } = require('../../common/components/error-message');
+const { FeatureView } = require('./feature-view');
 
 class Search extends React.Component {
 
@@ -30,6 +31,7 @@ class Search extends React.Component {
       }, query),
       geneResults: null,
       searchHits: null,
+      feature: null,
       dataSources: [],
       loading: false,
       error: null
@@ -45,10 +47,11 @@ class Search extends React.Component {
         loading: true,
       });
       ServerAPI.search( query ).then( res => {
-        let { genes, searchHits, dataSources } = res;
+        let { genes, searchHits, feature, dataSources } = res;
         this.setState({
           geneResults: genes,
           searchHits,
+          feature,
           dataSources,
           loading: false,
           error: null
@@ -110,10 +113,11 @@ class Search extends React.Component {
   }
 
   render() {
-    let { geneResults, searchHits, query, loading, dataSources } = this.state;
+    let { geneResults, searchHits, feature, query, loading, dataSources } = this.state;
 
     const searchListing = h(Loader, { loaded: !loading, options: { left: '50%', color: '#16A085' } }, [
       h('div', [
+        h(FeatureView, { feature }),
         h(GeneResultsView, { geneResults } ),
         h(PathwayResultsView, { searchHits, query, controller: this, dataSources})
       ])

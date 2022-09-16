@@ -322,11 +322,36 @@ input {
   width: 1em;
   height: 1em;
   background-size: contain;
+  background-repeat: no-repeat;
 
   &.icon-spinner {
     transform: translate3d(0, 0, 0);
     background-image: url('./image/spinner.svg');
     animation: spin 750ms infinite linear;
+  }
+
+  &.icon-logo-biofactoid {
+    background-image: url('./image/biofactoid-logo.svg');
+  }
+
+  &.icon-t {
+    background-image: url('./image/icon-twitter.svg');
+  }
+
+  &.icon-t-white {
+    background-image: url('./image/icon-twitter-white.svg');
+  }
+
+  &.icon-orcid {
+    background-image: url('./image/icon-orcid.svg');
+  }
+
+  &.icon-ncbi {
+    background-image: url('./image/icon-ncbi.png');
+  }
+
+  &.icon-chebi {
+    background-image: url('./image/icon-chebi.png');
   }
 }
 

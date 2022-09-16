@@ -149,17 +149,43 @@ const getFeature = async searchHits => {
     return ({ title, url, authors, reference });
   };
 
-  const formatFeatureInfo = raw => ({
+  const formatPathwayInfo = ( raw, searchHit ) => {
+    const info = [];
+    const { id, caption = null, text, citation: { title } } = raw;
+    info.push({
+      db: config.NS_BIOFACTOID,
+      url: `${config.FACTOID_URL}document/${id}`,
+      imageSrc: `${config.FACTOID_URL}api/document/${id}.png`,
+      name: title,
+      caption,
+      text
+    });
+
+    const { uri, name } = searchHit;
+    info.push({
+      db: config.NS_PATHWAYCOMMONS,
+      url: uri,
+      imageSrc: null,
+      name,
+      caption: null,
+      text: null
+    });
+
+    return info;
+  };
+
+  const formatFeatureInfo = ( raw, searchHit ) => ({
     'authors': formatAuthorInfo( raw ),
     'entities': formatEntityInfo( raw ),
-    'article': formatArticleInfo( raw )
+    'article': formatArticleInfo( raw ),
+    'pathways': formatPathwayInfo( raw, searchHit )
   });
 
-  const getFeatureInfo = async id => {
+  const getFeatureInfo = async ( id, searchHit ) => {
     const url = `${config.FACTOID_URL}api/document/${id}`;
     const res = await fetch( url, fetchOptions );
     const raw = await res.json();
-    return formatFeatureInfo( raw );
+    return formatFeatureInfo( raw, searchHit );
   };
   const topHit = _.first( searchHits );
   const shouldFeature = topHit && topHit.sourceInfo.identifier === config.NS_BIOFACTOID;
@@ -170,8 +196,6 @@ const getFeature = async searchHits => {
       const ids = await traverse( featureHit.uri, 'Pathway/xref:UnificationXref/id' );
       const id = _.first( ids );
       feature = await getFeatureInfo( id, featureHit );
-      _.set( feature, 'pathway', featureHit );
-
     } catch (err) { // swallow errors
       logger.error('Failed to get feature - ' + err);
     }

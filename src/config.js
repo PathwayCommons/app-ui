@@ -42,7 +42,8 @@ let defaults = {
   NS_PUBMED: 'pubmed',
   NS_REACTOME: 'reactome',
   NS_UNIPROT: 'uniprot',
-  NS_BIOFACTOID: 'biofactoid'
+  NS_BIOFACTOID: 'biofactoid',
+  NS_PATHWAYCOMMONS: 'pathwaycommons'
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );

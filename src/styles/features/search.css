@@ -234,39 +234,45 @@
 }
 
 /* Feature */
-.feature-article {
-  grid-area: article;
-}
+.feature-content {
+  &.credit {
+    grid-area: credit;
+    text-align: right;
+  }
 
-.feature-metadata {
-  grid-area: metadata;
-}
+  &.article {
+    grid-area: article;
+  }
 
-.feature-credit {
-  grid-area: credit;
-  text-align: right;
+  &.pathway {
+    grid-area: pathway;
+  }
+
+  &.metadata {
+    grid-area: metadata;
+  }
 }
 
 .feature-container {
   display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  grid-template-rows: auto;
+  grid-template-columns: 1fr 1fr;
   grid-template-areas:
     '. credit'
-    'article metadata';
+    'article article'
+    'pathway metadata';
   column-gap: 2%;
-  margin: 1em auto 3em;
+  margin: 1em auto;
   line-height: normal;
 
   & .app-card-image {
-    height: calc(var(--appImgHeight) * 1.5);
+    height: calc(var(--appImgHeight) * 1.4);
   }
 
   & hr {
     display: block;
     overflow: hidden;
     border: solid 0.5px #D3D3D3;
-    margin: 2em auto;
+    margin: 1em auto;
   }
 }
 
@@ -349,8 +355,9 @@
   .feature-container {
     grid-template-columns: 100%;
     grid-template-areas:
+    'credit'
     'article'
-    'metadata'
-    'credit';
+    'pathway'
+    'metadata';
   }
 }

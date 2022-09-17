@@ -5,8 +5,6 @@ const _ = require('lodash');
 
 const { NS_BIOFACTOID, NS_PATHWAYCOMMONS, FACTOID_URL } = require('../../../config');
 
-const interleave = (arr, thing) => [].concat(...arr.map(n => [n, thing])).slice(0, -1);
-
 class Logo extends React.Component {
   render(){
     const { className, label } = this.props;
@@ -87,15 +85,16 @@ class FeatureView extends React.Component {
 
     return (
       h('div.feature-container', [
-        h('div.feature-content.feature-credit', [
+        h('div.feature-content.credit', [
           h('a', {
             href: FACTOID_URL,
             target: '_blank'
           }, [
-            h('span.feature-detail', 'Powered by biofactoid.org')
+            h('i.icon.icon-logo-biofactoid'),
+            h('span.feature-detail', ' Powered by biofactoid.org')
           ])
         ]),
-        h('div.feature-content.feature-article', [
+        h('div.feature-content.article', [
           h('div.feature-item', [
             h('div.feature-item-body', [
               h('a.feature-headline', {
@@ -109,10 +108,13 @@ class FeatureView extends React.Component {
               ])
             ])
           ]),
-          h('hr'),
+          h('hr')
+        ]),
+        h('div.feature-content.pathway', [
           h('div.feature-item', [
             h('div.feature-item-title', 'Pathways'),
             h('div.feature-item-body', [
+              h('div', 'Explore on biofactoid.org'),
               h(AppCard, {
                 url: biofactoidPathway.url,
                 image: h('img', { src: biofactoidPathway.imageSrc }),
@@ -128,9 +130,10 @@ class FeatureView extends React.Component {
                 target: '_blank'
               }, 'Explore on Pathway Commons')
             ])
-          ])
+          ]),
+
         ]),
-        h('div.feature-content.feature-metadata', featureItems )
+        h('div.feature-content.metadata', featureItems )
       ])
     );
   }

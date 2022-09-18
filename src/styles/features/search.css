@@ -241,6 +241,7 @@
 
   &.credit {
     grid-area: credit;
+    text-align: right;
   }
 
   &.pathway {
@@ -257,8 +258,9 @@
   grid-template-columns: 1fr 1fr;
   grid-template-areas:
     'article article'
+    'pathway metadata'
     'credit credit'
-    'pathway metadata';
+    ;
   column-gap: 2%;
   margin: 1em auto;
   line-height: normal;
@@ -277,8 +279,11 @@
 
 .feature-item-title {
   font-size: 1.4em;
-  margin-bottom: 1em;
-  /* font-weight: bold; */
+  margin-bottom: 0.5em;
+}
+
+.feature-item-subtitle {
+  color: rgb(102, 102, 102);
 }
 
 .feature-item-body-row {
@@ -365,9 +370,10 @@
   .feature-container {
     grid-template-columns: 100%;
     grid-template-areas:
-    'credit'
     'article'
     'pathway'
-    'metadata';
+    'metadata'
+    'credit'
+    ;
   }
 }

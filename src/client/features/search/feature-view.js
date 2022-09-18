@@ -33,14 +33,22 @@ class FeatureView extends React.Component {
     const biofactoidPathway = _.find( pathways, ['db', NS_BIOFACTOID] );
 
     const genes = entities.filter( ({ dbPrefix }) => dbPrefix === NS_NCBI_GENE );
+    const orgs = _.groupBy( genes, g => g.organismName );
+    const orgCounts = _.toPairs( orgs ).map( ([org, entries]) => [org, entries.length] );
+    // eslint-disable-next-line no-unused-vars
+    const maxOrgs = _.maxBy( orgCounts, ([org, count]) => count );
+    const organism = maxOrgs && maxOrgs.length ? `Species: ${_.first( maxOrgs )}` : null;
     const chemicals = entities.filter( ({ dbPrefix }) => dbPrefix === NS_CHEBI.toUpperCase() );
+
     const genesComponent = genes.length ?
-      h('div.feature-item-body-row', [
-        h( Logo, { label: 'NCBI Gene', className: 'i.icon.icon-ncbi' }),
-        h('ul.horizontal-list', genes.map( ({ url: href, label }, key) => {
-          let element = h('a.plain-link', { href, target: '_blank' }, `${label} ` );
-          return h('li', { key }, element );
-        }))
+      h('div.feature-item-body', [
+        h('div.feature-item-body-row', [
+          h( Logo, { label: 'NCBI Gene', className: 'i.icon.icon-ncbi' }),
+          h('ul.horizontal-list', genes.map( ({ url: href, label }, key) => {
+            let element = h('a.plain-link', { href, target: '_blank' }, `${label} ` );
+            return h('li', { key }, element );
+          }))
+        ])
       ]) : null;
     const chemicalsComponent = chemicals.length ?
       h('div.feature-item-body-row', [
@@ -88,11 +96,13 @@ class FeatureView extends React.Component {
             }, [
               h('span', 'biofactoid.org')
             ])
-          ])
+          ]),
+          h('hr')
         ]),
         h('div.feature-area.pathway', [
           h('div.feature-item', [
             h('div.feature-item-title', 'Article Pathway'),
+            h('div.feature-item-subtitle', organism),
             h('div.feature-item-body.feature-appcard', [
               h(AppCard, {
                 url: biofactoidPathway.url,

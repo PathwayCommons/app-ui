@@ -116,7 +116,7 @@ const getFeature = async searchHits => {
 
   const formatAuthorInfo = ({ authorProfiles = [] }) => {
     const profile2Info = ({ name, orcid }) => ({
-      name,
+      label: name,
       url: `${config.ORCID_BASE_URL}${orcid}`
     });
     const hasOrcid = a => a.orcid !== null;
@@ -127,10 +127,12 @@ const getFeature = async searchHits => {
   const formatEntityInfo = ({ elements = [] }) => {
     const isGroundedEntity = e => _.has( e, ['association', 'id'] );
     const unique = c => _.uniqBy( c, 'association.id' );
-    const entity2Info = ({ association: { id, dbPrefix, name } }) => ({
-      name,
-      url: `${config.IDENTIFIERS_URL}/${dbPrefix}:${id}`
-    });
+    const entity2Info = ({ association: { id, dbPrefix, name, organismName } }) => {
+      let label = `${name}`;
+      if ( organismName ) label += ` (${organismName})`;
+      const url = `${config.IDENTIFIERS_URL}/${dbPrefix}:${id}`;
+      return { label, url };
+    };
 
     const groundedEntities = elements.filter( isGroundedEntity );
     const uniqueEntities = unique( groundedEntities );
@@ -151,14 +153,16 @@ const getFeature = async searchHits => {
 
   const formatPathwayInfo = ( raw, searchHit ) => {
     const info = [];
-    const { id, caption = null, text, citation: { title } } = raw;
+    const { id, caption, text: interactions, citation: { title } } = raw;
+    const parts = [{ title: 'Interactions', body: interactions }];
+    if( caption ) parts.unshift( { title: 'Context', body: caption } );
+
     info.push({
       db: config.NS_BIOFACTOID,
       url: `${config.FACTOID_URL}document/${id}`,
       imageSrc: `${config.FACTOID_URL}api/document/${id}.png`,
-      name: title,
-      caption,
-      text
+      label: title,
+      text: parts
     });
 
     const { uri, name } = searchHit;
@@ -166,8 +170,7 @@ const getFeature = async searchHits => {
       db: config.NS_PATHWAYCOMMONS,
       url: uri,
       imageSrc: null,
-      name,
-      caption: null,
+      label: name,
       text: null
     });
 

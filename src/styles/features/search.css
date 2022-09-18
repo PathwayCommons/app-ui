@@ -264,10 +264,6 @@
   margin: 1em auto;
   line-height: normal;
 
-  & .app-card-image {
-    height: calc(var(--appImgHeight) * 1.4);
-  }
-
   & hr {
     display: block;
     overflow: hidden;
@@ -290,6 +286,10 @@
 /* FeatureItem */
 .feature-item {
   margin: 0.5em auto 2em;
+
+  & .feature-item-sources > :not(:first-child) {
+    margin-top: 0.5em;
+  }
 }
 
 .feature-item-title {
@@ -303,16 +303,34 @@
   flex-flow: row nowrap;
   justify-content: flex-start;
   align-items: center;
+  overflow-x: hidden;
 }
 
-.feature-item-sources > :not(:first-child) {
-  margin-top: 0.5em;
+.feature-appcard {
+
+  & .app-card-image {
+    height: calc(var(--appImgHeight) * 1.4);
+  }
+
+  & p {
+    margin: 0 0.5em;
+  }
+
+  & .feature-appcard-body-title {
+    font-weight: bold;
+  }
+
+  & i {
+    width: 10em;
+    height: 1.25em;
+  }
 }
 
 /* Feature - Logo */
 .logo {
-  width: 5em;
+  width: 4em;
   text-align: center;
+  margin: auto 1em;
 
   & i.icon {
     font-size: 2em;
@@ -322,6 +340,7 @@
     font-size: 0.9em;
   }
 }
+
 
 @media (--small-width-viewport) {
   .search-header {

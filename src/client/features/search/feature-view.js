@@ -10,7 +10,7 @@ class Logo extends React.Component {
     const { className, label } = this.props;
     return h('div.logo', [
       h(`${className}.logo-icon`),
-      h('div.logo-label', label)
+      label ? h('div.logo-label', label) : null
     ]);
   }
 }
@@ -25,11 +25,11 @@ class FeatureItem extends React.Component {
       ]);
     });
 
-    const itemComponents = items.map( ({ url: href, name }) => {
+    const itemComponents = items.map( ({ url: href, label }) => {
       return h('div', [
         h('a.plain-link', {
           href, target: '_blank'
-        }, name )
+        }, label )
       ]);
     }).slice( 0, limit );
 
@@ -61,9 +61,8 @@ class FeatureView extends React.Component {
     if( feature == null ) return null;
 
     const { article, pathways, entities, authors } = feature;
-    const biofactoidPathway = _.find( pathways, ['db', NS_BIOFACTOID] );
     const pcPathway = _.find( pathways, ['db', NS_PATHWAYCOMMONS] );
-    const caption = biofactoidPathway.caption || biofactoidPathway.text;
+    const biofactoidPathway = _.find( pathways, ['db', NS_BIOFACTOID] );
 
     const featureItems = [
       {
@@ -90,8 +89,7 @@ class FeatureView extends React.Component {
             href: FACTOID_URL,
             target: '_blank'
           }, [
-            h('i.icon.icon-logo-biofactoid'),
-            h('span.feature-detail', ' Powered by biofactoid.org')
+            h('span.feature-detail', 'Ariticle data provided by biofactoid.org')
           ])
         ]),
         h('div.feature-content.article', [
@@ -112,23 +110,28 @@ class FeatureView extends React.Component {
         ]),
         h('div.feature-content.pathway', [
           h('div.feature-item', [
-            h('div.feature-item-title', 'Pathways'),
-            h('div.feature-item-body', [
-              h('div', 'Explore on biofactoid.org'),
+            h('div.feature-item-title', 'Pathway'),
+            h('div.feature-item-body.feature-appcard', [
               h(AppCard, {
                 url: biofactoidPathway.url,
                 image: h('img', { src: biofactoidPathway.imageSrc }),
                 title: h('div', [
-                  h('span', ' Explore on Biofactoid')
+                  h('i.icon.logo-biofactoid')
                 ]),
-                body: h('div', caption )
+                body: h('div', biofactoidPathway.text.map( ({title, body}) => {
+                  return h( 'p', [
+                    h('span.feature-appcard-body-title', title ),
+                    h('span', ': ' ),
+                    h('span', body )
+                  ]);
+                } ) )
               })
             ]),
-            h('div.feature-item-body', [
+            h('div.feature-item-body-row', [
               h('a.plain-link', {
                 href: `/pathways?uri=${pcPathway.url}`,
                 target: '_blank'
-              }, 'Explore on Pathway Commons')
+              }, 'Detailed pathway view (SBGN)')
             ])
           ]),
 

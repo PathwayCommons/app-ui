@@ -330,8 +330,8 @@ input {
     animation: spin 750ms infinite linear;
   }
 
-  &.icon-logo-biofactoid {
-    background-image: url('./image/biofactoid-logo.svg');
+  &.icon-biofactoid {
+    background-image: url('./image/icon-biofactoid.svg');
   }
 
   &.icon-t {
@@ -352,6 +352,14 @@ input {
 
   &.icon-chebi {
     background-image: url('./image/icon-chebi.png');
+  }
+
+  &.icon-pc-light {
+    background-image: url('./image/pc_logo_light.svg');
+  }
+
+  &.logo-biofactoid {
+    background-image: url('./image/logo-biofactoid.svg');
   }
 }
 

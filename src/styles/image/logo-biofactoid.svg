@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 1229 187" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-1926.56,-1883.8)">
+        <g transform="matrix(1,0,0,1,0,607.427)">
+            <g transform="matrix(0.904512,0,0,0.904512,1381.44,266.242)">
+                <text x="836.31px" y="1317.08px" style="font-family:'HelveticaNeue-Thin', 'Helvetica Neue', sans-serif;font-weight:200;font-size:266.667px;">bio</text>
+                <text x="1172.58px" y="1317.08px" style="font-family:'HelveticaNeue-Medium', 'Helvetica Neue', sans-serif;font-weight:500;font-size:266.667px;">fact</text>
+                <text x="1641.91px" y="1317.08px" style="font-family:'HelveticaNeue-Thin', 'Helvetica Neue', sans-serif;font-weight:200;font-size:266.667px;">oid</text>
+            </g>
+            <g transform="matrix(1.34193,0,0,1.34193,416.61,-209.197)">
+                <g>
+                    <g transform="matrix(1.2169e-17,0.198734,-0.198734,1.2169e-17,1434.11,904.48)">
+                        <path d="M1369.82,847.06L1540.04,945.334L1540.04,1141.88L1369.82,1240.16L1199.61,1141.88L1199.61,945.334L1369.82,847.06Z" style="fill:rgb(255,212,121);"/>
+                    </g>
+                    <g transform="matrix(1.2169e-17,0.198734,-0.198734,1.2169e-17,1371.67,868.635)">
+                        <path d="M1369.82,847.06L1540.04,945.334L1540.04,1141.88L1369.82,1240.16L1199.61,1141.88L1199.61,945.334L1369.82,847.06Z" style="fill:rgb(255,212,121);"/>
+                    </g>
+                    <g transform="matrix(1.2169e-17,0.198734,-0.198734,1.2169e-17,1371.67,940.242)">
+                        <path d="M1369.82,847.06L1540.04,945.334L1540.04,1141.88L1369.82,1240.16L1199.61,1141.88L1199.61,945.334L1369.82,847.06Z" style="fill:rgb(255,212,121);"/>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -436,9 +436,28 @@ li {
   margin: 1em 0;
 }
 
+ul.horizontal-list {
+  margin: 0;
+  padding: 0;
+}
+
+ul.horizontal-list > li {
+  list-style: none;
+  display: inline;
+}
+
+ul.horizontal-list > li::after {
+  content: '\00a0\00b7\00a0';
+}
+
+ul.horizontal-list > li:last-child::after {
+  content: none;
+}
+
 code,
 pre,
 .code,
 input.code {
   font-family: Inconsolata, Courier New, monospace;
 }
+

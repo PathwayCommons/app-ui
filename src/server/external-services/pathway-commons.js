@@ -117,23 +117,19 @@ const getFeature = async searchHits => {
   const formatAuthorInfo = ({ authorProfiles = [] }) => {
     const profile2Info = ({ name, orcid }) => ({
       label: name,
-      url: `${config.ORCID_BASE_URL}${orcid}`
+      url: orcid ? `${config.ORCID_BASE_URL}${orcid}` : null
     });
-    const hasOrcid = a => a.orcid !== null;
-    const withOrcid = authorProfiles.filter( hasOrcid );
-    return withOrcid.map( profile2Info );
+    return authorProfiles.map( profile2Info );
   };
 
   const formatEntityInfo = ({ elements = [] }) => {
     const isGroundedEntity = e => _.has( e, ['association', 'id'] );
     const unique = c => _.uniqBy( c, 'association.id' );
-    const entity2Info = ({ association: { id, dbPrefix, name, organismName } }) => {
-      let label = `${name}`;
-      if ( organismName ) label += ` (${organismName})`;
+    const entity2Info = ({ name: given, association: { id, dbPrefix, organismName } }) => {
+      let label = given;
       const url = `${config.IDENTIFIERS_URL}/${dbPrefix}:${id}`;
-      return { label, url };
+      return { label, url, organismName, dbPrefix };
     };
-
     const groundedEntities = elements.filter( isGroundedEntity );
     const uniqueEntities = unique( groundedEntities );
     return uniqueEntities.map( entity2Info );

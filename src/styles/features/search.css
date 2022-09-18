@@ -234,14 +234,13 @@
 }
 
 /* Feature */
-.feature-content {
-  &.credit {
-    grid-area: credit;
-    text-align: right;
-  }
-
+.feature-area {
   &.article {
     grid-area: article;
+  }
+
+  &.credit {
+    grid-area: credit;
   }
 
   &.pathway {
@@ -257,8 +256,8 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-areas:
-    '. credit'
     'article article'
+    'credit credit'
     'pathway metadata';
   column-gap: 2%;
   margin: 1em auto;
@@ -272,28 +271,12 @@
   }
 }
 
-.feature-headline {
-  font-size: 1.2em;
-  color: #0066CC;
-}
-
-.feature-detail {
-  font-size: 0.8em;
-  font-weight: lighter;
-  color: rgb(102, 102, 102);
-}
-
-/* FeatureItem */
 .feature-item {
-  margin: 0.5em auto 2em;
-
-  & .feature-item-sources > :not(:first-child) {
-    margin-top: 0.5em;
-  }
+  margin-bottom: 0.5em;
 }
 
 .feature-item-title {
-  font-size: 1.1em;
+  font-size: 1.4em;
   margin-bottom: 1em;
   /* font-weight: bold; */
 }
@@ -303,7 +286,7 @@
   flex-flow: row nowrap;
   justify-content: flex-start;
   align-items: center;
-  overflow-x: hidden;
+  margin: 1em auto;
 }
 
 .feature-appcard {
@@ -326,18 +309,26 @@
   }
 }
 
+.feature-headline {
+  font-size: 1.3em;
+  color: #0066CC;
+}
+
+.feature-detail {
+  font-size: 0.85em;
+  font-weight: lighter;
+  color: rgb(102, 102, 102);
+}
+
 /* Feature - Logo */
 .logo {
   width: 4em;
   text-align: center;
-  margin: auto 1em;
+  font-size: 0.9em;
+  margin-right: 1em;
 
   & i.icon {
     font-size: 2em;
-  }
-
-  & .logo-label {
-    font-size: 0.9em;
   }
 }
 

@@ -3,7 +3,13 @@ const h = require('react-hyperscript');
 const { AppCard } = require('../../common/components');
 const _ = require('lodash');
 
-const { NS_BIOFACTOID, NS_PATHWAYCOMMONS, FACTOID_URL } = require('../../../config');
+const {
+  NS_BIOFACTOID,
+  NS_PATHWAYCOMMONS,
+  NS_NCBI_GENE,
+  NS_CHEBI,
+  FACTOID_URL
+} = require('../../../config');
 
 class Logo extends React.Component {
   render(){
@@ -14,44 +20,6 @@ class Logo extends React.Component {
     ]);
   }
 }
-
-class FeatureItem extends React.Component {
-  render(){
-    const { title, items, sources, limit } = this.props;
-
-    const sourceComponents = sources.map( ({ label, className }) => {
-      return h('div', [
-        h( Logo, { className, label })
-      ]);
-    });
-
-    const itemComponents = items.map( ({ url: href, label }) => {
-      return h('div', [
-        h('a.plain-link', {
-          href, target: '_blank'
-        }, label )
-      ]);
-    }).slice( 0, limit );
-
-    return (
-      h('div.feature-item', [
-        h('div.feature-item-title', title),
-        h('div.feature-item-body-row', [
-          h('div.feature-item-body.feature-item-sources', sourceComponents),
-          h('div.feature-item-body', itemComponents)
-        ])
-      ])
-    );
-  }
-}
-
-// Specifies the default values for props:
-FeatureItem.defaultProps = {
-  title: null,
-  items: [],
-  sources: [],
-  limit: Number.MAX_SAFE_INTEGER
-};
 
 class FeatureView extends React.Component {
 
@@ -64,53 +32,67 @@ class FeatureView extends React.Component {
     const pcPathway = _.find( pathways, ['db', NS_PATHWAYCOMMONS] );
     const biofactoidPathway = _.find( pathways, ['db', NS_BIOFACTOID] );
 
-    const featureItems = [
-      {
-        title: 'Genes & Chemicals',
-        items: entities,
-        sources: [
-          { label: 'NCBI', className: 'i.icon.icon-ncbi' },
-          { label: 'ChEBI', className: 'i.icon.icon-chebi' }
-        ]
-      },
-      {
-        title: 'Authors',
-        items: authors,
-        sources: [
-          { label: 'ORCID', className: 'i.icon.icon-orcid' }
-        ]
-      }
-    ].map( i => h(FeatureItem, i) );
+    const genes = entities.filter( ({ dbPrefix }) => dbPrefix === NS_NCBI_GENE );
+    const chemicals = entities.filter( ({ dbPrefix }) => dbPrefix === NS_CHEBI.toUpperCase() );
+    const genesComponent = genes.length ?
+      h('div.feature-item-body-row', [
+        h( Logo, { label: 'NCBI Gene', className: 'i.icon.icon-ncbi' }),
+        h('ul.horizontal-list', genes.map( ({ url: href, label }, key) => {
+          let element = h('a.plain-link', { href, target: '_blank' }, `${label} ` );
+          return h('li', { key }, element );
+        }))
+      ]) : null;
+    const chemicalsComponent = chemicals.length ?
+      h('div.feature-item-body-row', [
+        h( Logo, { label: 'ChEBI', className: 'i.icon.icon-chebi' }),
+        h('ul.horizontal-list', chemicals.map( ({ url: href, label }, key) => {
+          let element = h('a.plain-link', { href, target: '_blank' }, `${label} ` );
+          return h('li', { key }, element );
+        }))
+      ]) : null;
 
     return (
       h('div.feature-container', [
-        h('div.feature-content.credit', [
-          h('a', {
-            href: FACTOID_URL,
-            target: '_blank'
-          }, [
-            h('span.feature-detail', 'Ariticle data provided by biofactoid.org')
-          ])
-        ]),
-        h('div.feature-content.article', [
+        h('div.feature-area.article', [
           h('div.feature-item', [
             h('div.feature-item-body', [
               h('a.feature-headline', {
                 href: article.url,
                 target: '_blank'
               }, article.title),
+              h('ul.horizontal-list.feature-detail', authors.map( ({ url: href, label }, key) => {
+                let element = null;
+                if( href ){
+                  element = [
+                    h('a.plain-link', { href, target: '_blank' }, `${label} ` ),
+                    h('i.icon.icon-orcid.editor-info-author-orcid')
+                  ];
+                } else {
+                  element = h( 'span', label );
+                }
+                return h('li', { key }, element );
+              })),
               h('div.feature-detail', [
-                h('span', article.authors),
-                h('span', ' \u2022 '),
                 h('span', article.reference)
               ])
             ])
           ]),
           h('hr')
         ]),
-        h('div.feature-content.pathway', [
+        h('div.feature-area.credit', [
+          h('div.feature-item.feature-detail', [
+            h('span', 'Article information curated by author using '),
+            h('a.plain-link', {
+              href: FACTOID_URL,
+              target: '_blank'
+            }, [
+              h('span', 'biofactoid.org')
+            ])
+          ])
+        ]),
+        h('div.feature-area.pathway', [
           h('div.feature-item', [
-            h('div.feature-item-title', 'Pathway'),
+            h('div.feature-item-title', 'Article Pathway'),
             h('div.feature-item-body.feature-appcard', [
               h(AppCard, {
                 url: biofactoidPathway.url,
@@ -136,7 +118,13 @@ class FeatureView extends React.Component {
           ]),
 
         ]),
-        h('div.feature-content.metadata', featureItems )
+        h('div.feature-area.metadata', [
+          h('div.feature-item', [
+            h('div.feature-item-title', 'Genes & Chemicals'),
+            genesComponent,
+            chemicalsComponent
+          ])
+        ])
       ])
     );
   }

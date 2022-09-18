@@ -119,7 +119,7 @@ class Search extends React.Component {
       h('div', [
         h(FeatureView, { feature }),
         h(GeneResultsView, { geneResults } ),
-        h(PathwayResultsView, { searchHits, query, controller: this, dataSources})
+        h(PathwayResultsView, { searchHits, query, controller: this, dataSources, hasFeature: feature != null })
       ])
     ]);
 

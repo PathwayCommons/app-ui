@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const luceneEscapeQuery = require('lucene-escape-query');
 
 const { NS_NCBI_GENE, NS_HGNC_SYMBOL, NS_UNIPROT } = require('../../../config');
 
@@ -21,7 +22,10 @@ const idFromXrefs = ( xrefLinks, namespace ) => {
   return xref ? _.last( _.compact( xref.uri.split('/') ) ) : undefined;
 };
 
-const sanitize = ( rawQuery, maxLength = QUERY_MAX_CHARS ) => rawQuery.trim().substring( 0, maxLength );
+const sanitize = ( rawQuery, maxLength = QUERY_MAX_CHARS ) => {
+  const escape = raw => luceneEscapeQuery.escape( raw );
+  return escape( rawQuery.trim().substring( 0, maxLength ) );
+};
 const splitOnWhitespace = tokens => _.flatten( tokens.map( t => t.split(/\s+/) ) );
 const splitOnCommas = queryString => queryString.split(/,/).map( t => t.trim() );
 const dropQuotes = tokens => tokens.map( t => t.replace(/['"]/g, '') );

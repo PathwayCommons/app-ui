@@ -350,6 +350,10 @@ input {
     background-image: url('./image/icon-ncbi.png');
   }
 
+  &.logo-pubmed {
+    background-image: url('./image/logo-pubmed.svg');
+  }
+
   &.icon-chebi {
     background-image: url('./image/icon-chebi.png');
   }

@@ -136,20 +136,28 @@ const getFeature = async searchHits => {
   };
 
   const formatArticleInfo = ({ citation }) => {
-    let url = null;
+    let doiUrl = null;
+    let pubmedUrl = null;
     const { title, reference, pmid, doi } = citation;
     if( doi ){
-      url = `${config.DOI_BASE_URL}${doi}`;
-    } else if ( pmid ) {
-      url = `${config.IDENTIFIERS_URL}/${config.NS_PUBMED}:${pmid}`;
+      doiUrl = `${config.DOI_BASE_URL}${doi}`;
+    }
+    if ( pmid ) {
+      pubmedUrl = `${config.IDENTIFIERS_URL}/${config.NS_PUBMED}:${pmid}`;
     }
     let authors = _.get( citation, ['authors', 'abbreviation'], null );
-    return ({ title, url, authors, reference });
+    return ({ title, doiUrl, pubmedUrl, authors, reference });
   };
 
   const formatPathwayInfo = ( raw, searchHit ) => {
     const info = [];
-    const { id, caption, text: interactions, citation: { title } } = raw;
+    const { id, caption, elements, text: interactions, citation: { title } } = raw;
+    const genes = elements.map( ({ association }) => association ).filter( ({ dbPrefix }) => dbPrefix === config.NS_NCBI_GENE );
+    const orgs = _.groupBy( genes, g => g.organismName );
+    const orgCounts = _.toPairs( orgs ).map( ([org, entries]) => [org, entries.length] );
+    // eslint-disable-next-line no-unused-vars
+    const maxOrgs = _.maxBy( orgCounts, ([org, count]) => count );
+    const organism = maxOrgs && maxOrgs.length ? _.first( maxOrgs ) : null;
     const parts = [{ title: 'Interactions', body: interactions }];
     if( caption ) parts.unshift( { title: 'Context', body: caption } );
 
@@ -158,7 +166,8 @@ const getFeature = async searchHits => {
       url: `${config.FACTOID_URL}document/${id}`,
       imageSrc: `${config.FACTOID_URL}api/document/${id}.png`,
       label: title,
-      text: parts
+      text: parts,
+      organism
     });
 
     const { uri, name } = searchHit;
@@ -167,7 +176,8 @@ const getFeature = async searchHits => {
       url: uri,
       imageSrc: null,
       label: name,
-      text: null
+      text: null,
+      organism
     });
 
     return info;

@@ -235,21 +235,65 @@
 
 /* Feature */
 .feature-area {
-  &.article {
-    grid-area: article;
+  &.header {
+    grid-area: header;
   }
 
-  &.credit {
-    grid-area: credit;
-    text-align: right;
+  &.article {
+    grid-area: article;
+
+    & .headline {
+      font-size: 1.3em;
+      color: #0066CC;
+    }
+
+    & i.icon.logo-pubmed {
+      margin: auto 1em;
+      width: 6em;
+      height: 2em;
+    }
   }
 
   &.pathway {
     grid-area: pathway;
+
+    & .app-card {
+
+      & .app-card-image {
+        height: calc(var(--appImgHeight) * 1.4);
+      }
+
+      & .app-card-title {
+        font-size: 0.9em;
+        color: rgb(102, 102, 102);
+        font-weight: normal;
+
+        & i.icon {
+          width: 10em;
+          height: 1.25em;
+        }
+      }
+
+      & .app-card-body {
+        & p {
+          font-size: 0.9em;
+          margin: 0.25em auto;
+
+          & .sub-heading {
+            font-weight: bold;
+            margin-right: 0.5em;
+          }
+        }
+
+        & i.icon {
+          margin-left: 0.2em;
+        }
+      }
+    }
   }
 
-  &.metadata {
-    grid-area: metadata;
+  &.footer {
+    grid-area: footer;
   }
 }
 
@@ -257,15 +301,16 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-areas:
-    'article article'
-    'pathway metadata'
-    'credit credit'
+    'header header'
+    'pathway article'
+    'footer footer'
     ;
   column-gap: 2%;
   margin: 1em auto;
   line-height: normal;
 
   & hr {
+    width: var(--search-width);
     display: block;
     overflow: hidden;
     border: solid 0.5px #D3D3D3;
@@ -274,69 +319,20 @@
 }
 
 .feature-item {
-  margin-bottom: 0.5em;
-}
-
-.feature-item-title {
-  font-size: 1.4em;
-  margin-bottom: 0.5em;
-}
-
-.feature-item-subtitle {
-  color: rgb(102, 102, 102);
-}
-
-.feature-item-body-row {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: flex-start;
-  align-items: center;
-  margin: 1em auto;
-}
-
-.feature-appcard {
-
-  & .app-card-image {
-    height: calc(var(--appImgHeight) * 1.4);
-  }
-
-  & p {
-    margin: 0 0.5em;
-  }
-
-  & .feature-appcard-body-title {
-    font-weight: bold;
-  }
-
-  & i {
-    width: 10em;
-    height: 1.25em;
-  }
-}
-
-.feature-headline {
-  font-size: 1.3em;
-  color: #0066CC;
+  margin: auto auto 1em;
 }
 
 .feature-detail {
   font-size: 0.85em;
-  font-weight: lighter;
   color: rgb(102, 102, 102);
 }
 
-/* Feature - Logo */
-.logo {
-  text-align: center;
-  font-size: 0.9em;
-  margin-right: 1em;
-  flex: 0 0 4em;
-  
-  & i.icon {
-    font-size: 2em;
-  }
+.feature-item-row {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
 }
-
 
 @media (--small-width-viewport) {
   .search-header {
@@ -370,10 +366,10 @@
   .feature-container {
     grid-template-columns: 100%;
     grid-template-areas:
-    'article'
+    'header'
     'pathway'
-    'metadata'
-    'credit'
+    'article'
+    'footer'
     ;
   }
 }

@@ -11,16 +11,6 @@ const {
   FACTOID_URL
 } = require('../../../config');
 
-class Logo extends React.Component {
-  render(){
-    const { className, label } = this.props;
-    return h('div.logo', [
-      h(`${className}.logo-icon`),
-      label ? h('div.logo-label', label) : null
-    ]);
-  }
-}
-
 class FeatureView extends React.Component {
 
   render(){
@@ -28,113 +18,112 @@ class FeatureView extends React.Component {
     const { feature } = this.props;
     if( feature == null ) return null;
 
+    const MAX_AUTHORS = 40;
+
     const { article, pathways, entities, authors } = feature;
     const pcPathway = _.find( pathways, ['db', NS_PATHWAYCOMMONS] );
     const biofactoidPathway = _.find( pathways, ['db', NS_BIOFACTOID] );
 
-    const genes = entities.filter( ({ dbPrefix }) => dbPrefix === NS_NCBI_GENE );
-    const orgs = _.groupBy( genes, g => g.organismName );
-    const orgCounts = _.toPairs( orgs ).map( ([org, entries]) => [org, entries.length] );
-    // eslint-disable-next-line no-unused-vars
-    const maxOrgs = _.maxBy( orgCounts, ([org, count]) => count );
-    const organism = maxOrgs && maxOrgs.length ? `Species: ${_.first( maxOrgs )}` : null;
-    const chemicals = entities.filter( ({ dbPrefix }) => dbPrefix === NS_CHEBI.toUpperCase() );
+    // Card Content
+    const pathwayTextComponent = biofactoidPathway.text.map( ({ title, body }) => {
+      return h( 'p', [
+        h('span.sub-heading', title),
+        h('span', body)
+      ]);
+    });
 
-    const genesComponent = genes.length ?
-      h('div.feature-item-body', [
-        h('div.feature-item-body-row', [
-          h( Logo, { label: 'NCBI Gene', className: 'i.icon.icon-ncbi' }),
-          h('ul.horizontal-list', genes.map( ({ url: href, label }, key) => {
-            let element = h('a.plain-link', { href, target: '_blank' }, `${label} ` );
-            return h('li', { key }, element );
-          }))
-        ])
-      ]) : null;
-    const chemicalsComponent = chemicals.length ?
-      h('div.feature-item-body-row', [
-        h( Logo, { label: 'ChEBI', className: 'i.icon.icon-chebi' }),
-        h('ul.horizontal-list', chemicals.map( ({ url: href, label }, key) => {
-          let element = h('a.plain-link', { href, target: '_blank' }, `${label} ` );
-          return h('li', { key }, element );
-        }))
-      ]) : null;
+    const entityComponent = h( 'p', [
+      h('span.sub-heading', 'Genes & Chemicals'),
+      h('ul.horizontal-list',
+        entities.map( ({ label, url, dbPrefix }) => {
+          let icon = null;
+          if ( dbPrefix.toLowerCase() === NS_NCBI_GENE.toLowerCase() ) {
+            icon = h('i.icon.icon-ncbi');
+          } else if ( dbPrefix.toLowerCase() === NS_CHEBI.toLowerCase() ) {
+            icon = h('i.icon.icon-chebi');
+          }
+          return h( 'li', [
+            h('a.plain-link', { href: url, target: '_blank' }, label ),
+            icon
+          ]);
+      }))
+    ]);
+
+    const cardBody = _.concat( pathwayTextComponent, entityComponent );
+
+    // Authors
+    let authorList = authors.map( ({ url: href, label }, key) => {
+      let element = null;
+      if( href ){
+        element = [
+          h('a.plain-link', { href, target: '_blank' }, `${label} ` ),
+          h('i.icon.icon-orcid')
+        ];
+      } else {
+        element = h( 'span', label );
+      }
+      return h('li', { key }, element );
+    });
+    if ( authorList.length > MAX_AUTHORS ){ // Abbreviate when necessary
+      const numFromStart = Math.floor( MAX_AUTHORS / 2 );
+      const numFromEnd = Math.ceil( MAX_AUTHORS / 2 );
+      authorList = _.concat(
+        _.take( authorList, numFromStart ),
+        h('li', '...'),
+        _.takeRight( authorList, numFromEnd )
+      );
+    }
 
     return (
       h('div.feature-container', [
-        h('div.feature-area.article', [
-          h('div.feature-item', [
-            h('div.feature-item-body', [
-              h('a.feature-headline', {
-                href: article.url,
-                target: '_blank'
-              }, article.title),
-              h('ul.horizontal-list.feature-detail', authors.map( ({ url: href, label }, key) => {
-                let element = null;
-                if( href ){
-                  element = [
-                    h('a.plain-link', { href, target: '_blank' }, `${label} ` ),
-                    h('i.icon.icon-orcid.editor-info-author-orcid')
-                  ];
-                } else {
-                  element = h( 'span', label );
-                }
-                return h('li', { key }, element );
-              })),
-              h('div.feature-detail', [
-                h('span', article.reference)
-              ])
-            ])
-          ]),
-          h('hr')
-        ]),
-        h('div.feature-area.credit', [
-          h('div.feature-item.feature-detail', [
-            h('span', 'Article information curated by author using '),
+        h('div.feature-area.header', [
+          h('h3', [
+            h('span', 'Pathway curated by author (via '),
             h('a.plain-link', {
               href: FACTOID_URL,
               target: '_blank'
             }, [
               h('span', 'biofactoid.org')
-            ])
-          ]),
-          h('hr')
+            ]),
+            h('span', ')')
+          ])
         ]),
         h('div.feature-area.pathway', [
           h('div.feature-item', [
-            h('div.feature-item-title', 'Article Pathway'),
-            h('div.feature-item-subtitle', organism),
-            h('div.feature-item-body.feature-appcard', [
-              h(AppCard, {
-                url: biofactoidPathway.url,
-                image: h('img', { src: biofactoidPathway.imageSrc }),
-                title: h('div', [
-                  h('i.icon.logo-biofactoid')
-                ]),
-                body: h('div', biofactoidPathway.text.map( ({title, body}) => {
-                  return h( 'p', [
-                    h('span.feature-appcard-body-title', title ),
-                    h('span', ': ' ),
-                    h('span', body )
-                  ]);
-                } ) )
-              })
-            ]),
-            h('div.feature-item-body-row', [
-              h('a.plain-link', {
-                href: `/pathways?uri=${pcPathway.url}`,
-                target: '_blank'
-              }, 'Detailed pathway view (SBGN)')
-            ])
-          ]),
-
-        ]),
-        h('div.feature-area.metadata', [
-          h('div.feature-item', [
-            h('div.feature-item-title', 'Genes & Chemicals'),
-            genesComponent,
-            chemicalsComponent
+            h(AppCard, {
+              url: biofactoidPathway.url,
+              image: h('img', { src: biofactoidPathway.imageSrc }),
+              title: h('div', [
+                h('i.icon.logo-biofactoid'),
+                biofactoidPathway.organism ? h('span', biofactoidPathway.organism ) : null
+              ]),
+              body: h('div', cardBody )
+            }),
+            h('a.plain-link', {
+              href: `/pathways?uri=${pcPathway.url}`,
+              target: '_blank'
+            }, 'Detailed pathway view (SBGN)')
           ])
-        ])
+        ]),
+        h('div.feature-area.article', [
+          h('div.feature-item', [
+            h('div.headline', article.title ),
+            h('ul.horizontal-list.feature-detail', authorList ),
+            h('div.feature-item-row.feature-detail',
+              [
+                h('div', [
+                  article.doiUrl ?
+                    h('a.plain-link', { href: article.doiUrl, target: '_blank' }, article.reference ) :
+                    h( 'span', article.reference ),
+                ]),
+                article.pubmedUrl ? h('div', [
+                    h('a', { href: article.pubmedUrl, target: '_blank' }, h('i.icon.logo-pubmed') )
+                  ]) : null
+              ]
+            )
+          ])
+        ]),
+        h('div.feature-area.footer', [ h('hr') ] )
       ])
     );
   }

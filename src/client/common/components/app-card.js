@@ -22,14 +22,14 @@ class AppCard extends React.Component {
             [imageClass]: !!imageClass,
             'background': !!imageClass,
           })
-        }, [ image ]),
-        h('div.app-card-content', [
-          h( 'div.app-card-header', [
-            h( 'h4.app-card-title', [title] ),
-            h( 'span.app-card-hint', [hint] )
-          ]),
-          h( 'div.app-card-body', [body] )
-        ])
+        }, [ image ])
+      ]),
+      h('div.app-card-content', [
+        h( 'div.app-card-header', [
+          h( 'h4.app-card-title', [title] ),
+          h( 'span.app-card-hint', [hint] )
+        ]),
+        h( 'div.app-card-body', [body] )
       ])
     ]);
   }

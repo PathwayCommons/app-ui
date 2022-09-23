@@ -23,7 +23,11 @@ const idFromXrefs = ( xrefLinks, namespace ) => {
 };
 
 const sanitize = ( rawQuery, maxLength = QUERY_MAX_CHARS ) => {
-  const escape = raw => luceneEscapeQuery.escape( raw );
+  const escape = raw => {
+    let escaped = luceneEscapeQuery.escape( raw );
+    escaped = escaped.replace(/\//g, '\\/');
+    return escaped;
+  };
   return escape( rawQuery.trim().substring( 0, maxLength ) );
 };
 const splitOnWhitespace = tokens => _.flatten( tokens.map( t => t.split(/\s+/) ) );

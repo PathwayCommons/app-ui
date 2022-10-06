@@ -69,6 +69,12 @@
   }
 }
 
+.app-card-body {
+  margin: 0.5em;
+  max-height: calc(var(--appImgHeight) * 0.75);
+  overflow-y: scroll;
+}
+
 .app-card .hidden {
   display: none;
 }

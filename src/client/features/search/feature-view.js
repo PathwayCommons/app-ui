@@ -18,7 +18,7 @@ class FeatureView extends React.Component {
     const { feature } = this.props;
     if( feature == null ) return null;
 
-    const MAX_AUTHORS = 40;
+    const MAX_AUTHORS = 20;
 
     const { article, pathways, entities, authors } = feature;
     const pcPathway = _.find( pathways, ['db', NS_PATHWAYCOMMONS] );

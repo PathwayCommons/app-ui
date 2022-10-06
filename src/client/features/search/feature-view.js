@@ -94,8 +94,12 @@ class FeatureView extends React.Component {
               url: biofactoidPathway.url,
               image: h('img', { src: biofactoidPathway.imageSrc }),
               title: h('div', [
-                h('i.icon.logo-biofactoid'),
+                h('a', {
+                  href: biofactoidPathway.url,
+                  target: '_blank'
+                }, [ h('i.icon.logo-biofactoid'),
                 biofactoidPathway.organism ? h('span', biofactoidPathway.organism ) : null
+               ])
               ]),
               body: h('div', cardBody )
             }),

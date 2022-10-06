@@ -49,7 +49,7 @@ class FeatureView extends React.Component {
       }))
     ]);
 
-    const cardBody = _.concat( pathwayTextComponent, entityComponent );
+    const cardBody = _.concat( entityComponent, pathwayTextComponent );
 
     // Authors
     let authorList = authors.map( ({ url: href, label }, key) => {

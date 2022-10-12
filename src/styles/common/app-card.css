@@ -9,7 +9,7 @@
   overflow: hidden;
   padding-bottom: 1.75em;
   padding-bottom: 1.75em;
-  cursor: pointer;
+  cursor: default;
 
   &.app-card-disabled {
     opacity: 0.5;
@@ -26,6 +26,7 @@
 }
 
 .app-card-content {
+  width: 100%;
   padding: 0.5em 0.25em;
   background: rgba(255, 255, 255, 0.85);
   position: absolute;
@@ -66,6 +67,12 @@
     background-size: contain;
     background-position: center center;
   }
+}
+
+.app-card-body {
+  margin: 0.5em;
+  max-height: calc(var(--appImgHeight) * 0.75);
+  overflow-y: scroll;
 }
 
 .app-card .hidden {

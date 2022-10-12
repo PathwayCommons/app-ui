@@ -110,6 +110,109 @@ const augmentSearchHits = async function( searchHits ) {
   return Promise.all( searchHits.map( searchHit => addSourceInfo( searchHit, dataSources ) ) );
 };
 
+// Feature a search hit
+const getFeature = async searchHits => {
+  let feature = null;
+
+  const formatAuthorInfo = ({ authorProfiles = [] }) => {
+    const profile2Info = ({ name, orcid }) => ({
+      label: name,
+      url: orcid ? `${config.ORCID_BASE_URL}${orcid}` : null
+    });
+    return authorProfiles.map( profile2Info );
+  };
+
+  const formatEntityInfo = ({ elements = [] }) => {
+    const isGroundedEntity = e => _.has( e, ['association', 'id'] );
+    const unique = c => _.uniqBy( c, 'association.id' );
+    const entity2Info = ({ name: given, association: { id, dbPrefix, organismName } }) => {
+      let label = given;
+      const url = `${config.IDENTIFIERS_URL}/${dbPrefix}:${id}`;
+      return { label, url, organismName, dbPrefix };
+    };
+    const groundedEntities = elements.filter( isGroundedEntity );
+    const uniqueEntities = unique( groundedEntities );
+    return uniqueEntities.map( entity2Info );
+  };
+
+  const formatArticleInfo = ({ citation }) => {
+    let doiUrl = null;
+    let pubmedUrl = null;
+    const { title, reference, pmid, doi } = citation;
+    if( doi ){
+      doiUrl = `${config.DOI_BASE_URL}${doi}`;
+    }
+    if ( pmid ) {
+      pubmedUrl = `${config.IDENTIFIERS_URL}/${config.NS_PUBMED}:${pmid}`;
+    }
+    let authors = _.get( citation, ['authors', 'abbreviation'], null );
+    return ({ title, doiUrl, pubmedUrl, authors, reference });
+  };
+
+  const formatPathwayInfo = ( raw, searchHit ) => {
+    const info = [];
+    const { id, caption, elements, text: interactions, citation: { title } } = raw;
+    const genes = elements.map( ({ association }) => association ).filter( ({ dbPrefix }) => dbPrefix === config.NS_NCBI_GENE );
+    const orgs = _.groupBy( genes, g => g.organismName );
+    const orgCounts = _.toPairs( orgs ).map( ([org, entries]) => [org, entries.length] );
+    // eslint-disable-next-line no-unused-vars
+    const maxOrgs = _.maxBy( orgCounts, ([org, count]) => count );
+    const organism = maxOrgs && maxOrgs.length ? _.first( maxOrgs ) : null;
+    const parts = [{ title: 'Interactions', body: interactions }];
+    if( caption ) parts.unshift( { title: 'Context', body: caption } );
+
+    info.push({
+      db: config.NS_BIOFACTOID,
+      url: `${config.FACTOID_URL}document/${id}`,
+      imageSrc: `${config.FACTOID_URL}api/document/${id}.png`,
+      label: title,
+      text: parts,
+      organism
+    });
+
+    const { uri, name } = searchHit;
+    info.push({
+      db: config.NS_PATHWAYCOMMONS,
+      url: uri,
+      imageSrc: null,
+      label: name,
+      text: null,
+      organism
+    });
+
+    return info;
+  };
+
+  const formatFeatureInfo = ( raw, searchHit ) => ({
+    'authors': formatAuthorInfo( raw ),
+    'entities': formatEntityInfo( raw ),
+    'article': formatArticleInfo( raw ),
+    'pathways': formatPathwayInfo( raw, searchHit )
+  });
+
+  const getFeatureInfo = async ( id, searchHit ) => {
+    const url = `${config.FACTOID_URL}api/document/${id}`;
+    const res = await fetch( url, fetchOptions );
+    const raw = await res.json();
+    return formatFeatureInfo( raw, searchHit );
+  };
+  const topHit = _.first( searchHits );
+  const shouldFeature = topHit && topHit.sourceInfo.identifier === config.NS_BIOFACTOID;
+
+  if ( shouldFeature ){
+    const featureHit = searchHits.shift();
+    try {
+      const ids = await traverse( featureHit.uri, 'Pathway/xref:UnificationXref/id' );
+      const id = _.first( ids );
+      feature = await getFeatureInfo( id, featureHit );
+    } catch (err) { // swallow errors
+      logger.error('Failed to get feature - ' + err);
+    }
+  }
+  return feature;
+};
+
+
 // A wrapper for PC web services search.
 // The argument (query object) has the following fields:
 //  - q: user input - search query string
@@ -121,7 +224,9 @@ let search = async opts => {
     let size = _.get( result, 'numParticipants', 0);
     return size > 0;
   });
-  return augmentSearchHits( searchResults );
+  const searchHits = await augmentSearchHits( searchResults );
+  const feature = await getFeature( searchHits );
+  return ({ searchHits, feature });
 };
 
 const cachedSearch = cachePromise(search, queryCache);

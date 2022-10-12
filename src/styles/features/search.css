@@ -233,6 +233,107 @@
   column-gap: 2%;
 }
 
+/* Feature */
+.feature-area {
+  &.header {
+    grid-area: header;
+  }
+
+  &.article {
+    grid-area: article;
+
+    & .headline {
+      font-size: 1.3em;
+      color: #0066CC;
+    }
+
+    & i.icon.logo-pubmed {
+      margin: auto 1em;
+      width: 6em;
+      height: 2em;
+    }
+  }
+
+  &.pathway {
+    grid-area: pathway;
+
+    & .app-card {
+
+      & .app-card-image {
+        height: calc(var(--appImgHeight) * 1.4);
+      }
+
+      & .app-card-title {
+        font-size: 0.9em;
+        color: rgb(102, 102, 102);
+        font-weight: normal;
+
+        & i.icon {
+          width: 10em;
+          height: 1.25em;
+        }
+      }
+
+      & .app-card-body {
+        & p {
+          font-size: 0.9em;
+          margin: 0.25em auto;
+
+          & .sub-heading {
+            font-weight: bold;
+            margin-right: 0.5em;
+          }
+        }
+
+        & i.icon {
+          margin-left: 0.2em;
+        }
+      }
+    }
+  }
+
+  &.footer {
+    grid-area: footer;
+  }
+}
+
+.feature-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    'header header'
+    'pathway article'
+    'footer footer'
+    ;
+  column-gap: 2%;
+  margin: 1em auto;
+  line-height: normal;
+
+  & hr {
+    width: var(--search-width);
+    display: block;
+    overflow: hidden;
+    border: solid 0.5px #D3D3D3;
+    margin: 1em auto;
+  }
+}
+
+.feature-item {
+  margin: auto auto 1em;
+}
+
+.feature-detail {
+  font-size: 0.85em;
+  color: rgb(102, 102, 102);
+}
+
+.feature-item-row {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
 @media (--small-width-viewport) {
   .search-header {
     display: block;
@@ -260,5 +361,15 @@
 
   .search-app-cards {
     grid-template-columns: 1fr;
+  }
+
+  .feature-container {
+    grid-template-columns: 100%;
+    grid-template-areas:
+    'header'
+    'pathway'
+    'article'
+    'footer'
+    ;
   }
 }

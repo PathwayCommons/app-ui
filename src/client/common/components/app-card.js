@@ -8,7 +8,7 @@ class AppCard extends React.Component {
   }
 
   render(){
-    let { enabled, hint, url, image, imageClass, title, body } = this.props;
+    let { enabled, hint, url, image, imageClass, title, body, linkifyContent } = this.props;
 
     return h('.app-card', {
         className: classNames({ 'app-card-disabled': !enabled })
@@ -24,12 +24,17 @@ class AppCard extends React.Component {
           })
         }, [ image ])
       ]),
-      h('div.app-card-content', [
-        h( 'div.app-card-header', [
-          h( 'h4.app-card-title', [title] ),
-          h( 'span.app-card-hint', [hint] )
-        ]),
-        h( 'div.app-card-body', [body] )
+      h('a.app-card-content-link', linkifyContent ? {
+        href: url,
+        target: '_blank'
+      } : {}, [
+        h('div.app-card-content', [
+          h( 'div.app-card-header', [
+            h( 'h4.app-card-title', [title] ),
+            h( 'span.app-card-hint', [hint] )
+          ]),
+          h( 'div.app-card-body', [body] )
+        ])
       ])
     ]);
   }

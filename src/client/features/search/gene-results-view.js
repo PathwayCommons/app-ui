@@ -47,7 +47,7 @@ class GeneResultsView extends React.Component {
     let title = 'Enrichment';
     let body = 'Explore a network of pathways that contain genes identified in your query.';
 
-    return { enabled, hint, url, imageClass, title, body };
+    return { enabled, hint, url, imageClass, title, body, linkifyContent: true };
   }
 
   getInteractionsAppInfo( geneResults, searchString ){
@@ -59,7 +59,7 @@ class GeneResultsView extends React.Component {
     let title = 'Interactions';
     let body = 'Visualize interactions between the genes identified in your query.';
 
-    return { enabled, hint, url, imageClass, title, body };
+    return { enabled, hint, url, imageClass, title, body, linkifyContent: true };
   }
 
   render(){

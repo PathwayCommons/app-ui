@@ -59,7 +59,7 @@
     "forever": "^0.15.3",
     "fready": "^1.0.0",
     "hyperscript": "^2.0.2",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.21",
     "lucene-escape-query": "^1.0.1",
     "mem": "^4.0.0",
     "morgan": "^1.9.0",

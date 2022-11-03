@@ -113,7 +113,7 @@
     "eslint-plugin-standard": "^3.0.1",
     "livereload": "^0.7.0",
     "mocha": "^5.2.0",
-    "nodemon": "^1.18.7",
+    "nodemon": "^2.0.20",
     "npm-run-all": "^4.1.1",
     "postcss": "^6.0.13",
     "postcss-cli": "^4.1.1",

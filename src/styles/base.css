@@ -322,11 +322,48 @@ input {
   width: 1em;
   height: 1em;
   background-size: contain;
+  background-repeat: no-repeat;
 
   &.icon-spinner {
     transform: translate3d(0, 0, 0);
     background-image: url('./image/spinner.svg');
     animation: spin 750ms infinite linear;
+  }
+
+  &.icon-biofactoid {
+    background-image: url('./image/icon-biofactoid.svg');
+  }
+
+  &.icon-t {
+    background-image: url('./image/icon-twitter.svg');
+  }
+
+  &.icon-t-white {
+    background-image: url('./image/icon-twitter-white.svg');
+  }
+
+  &.icon-orcid {
+    background-image: url('./image/icon-orcid.svg');
+  }
+
+  &.icon-ncbi {
+    background-image: url('./image/icon-ncbi.png');
+  }
+
+  &.logo-pubmed {
+    background-image: url('./image/logo-pubmed.svg');
+  }
+
+  &.icon-chebi {
+    background-image: url('./image/icon-chebi.png');
+  }
+
+  &.icon-pc-light {
+    background-image: url('./image/pc_logo_light.svg');
+  }
+
+  &.logo-biofactoid {
+    background-image: url('./image/logo-biofactoid.svg');
   }
 }
 
@@ -403,9 +440,28 @@ li {
   margin: 1em 0;
 }
 
+ul.horizontal-list {
+  margin: 0;
+  padding: 0;
+}
+
+ul.horizontal-list > li {
+  list-style: none;
+  display: inline;
+}
+
+ul.horizontal-list > li::after {
+  content: '\00a0\00b7\00a0';
+}
+
+ul.horizontal-list > li:last-child::after {
+  content: none;
+}
+
 code,
 pre,
 .code,
 input.code {
   font-family: Inconsolata, Courier New, monospace;
 }
+

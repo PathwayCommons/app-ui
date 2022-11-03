@@ -1,12 +1,11 @@
 const React = require('react');
 const h = require('react-hyperscript');
-const { Link } = require('react-router-dom');
 const queryString = require('query-string');
 const _ = require('lodash');
-const classNames = require('classnames');
 
 const MIN_GENE_COUNT_ENRICHMENT = 5;
 const { NS_HGNC_SYMBOL, NS_GENECARDS, NS_NCBI_GENE, NS_UNIPROT } = require('../../../config');
+const { AppCard } = require('../../common/components');
 
 const SUPPORTED_COLLECTIONS = new Map([
   [NS_GENECARDS, 'GeneCards'],
@@ -39,28 +38,28 @@ class EntitySummaryBox extends React.Component {
 }
 
 class GeneResultsView extends React.Component {
-  getEnrichmentAppInfo( geneResults ){
-    let label = `View`;
-    let linkPath = '/enrichment';
-    let description = 'Explore a network of pathways that contain genes identified in your query.';
+  getEnrichmentAppInfo( geneResults, searchString ){
+    let enabled = geneResults.length >= MIN_GENE_COUNT_ENRICHMENT;
     let hint = `Requires at least ${MIN_GENE_COUNT_ENRICHMENT} genes.`;
+    let linkPath = '/enrichment';
+    let url = `${linkPath}/?${searchString}`;
     let imageClass = 'enrichment-logo';
     let title = 'Enrichment';
-    let enabled = geneResults.length >= MIN_GENE_COUNT_ENRICHMENT;
+    let body = 'Explore a network of pathways that contain genes identified in your query.';
 
-    return { label, title, linkPath, description, hint, imageClass, enabled };
+    return { enabled, hint, url, imageClass, title, body, linkifyContent: true };
   }
 
-  getInteractionsAppInfo( geneResults ){
-    let label = `View`;
-    let description = 'Visualize interactions between the genes identified in your query.';
+  getInteractionsAppInfo( geneResults, searchString ){
+    let enabled = geneResults.length > 0;
     let hint = `Requires one recognized gene.`;
     let linkPath = '/interactions';
+    let url = `${linkPath}/?${searchString}`;
     let imageClass = 'interactions-logo';
     let title = 'Interactions';
-    let enabled = geneResults.length > 0;
+    let body = 'Visualize interactions between the genes identified in your query.';
 
-    return { label, title, linkPath, description, hint, imageClass, enabled };
+    return { enabled, hint, url, imageClass, title, body, linkifyContent: true };
   }
 
   render(){
@@ -71,39 +70,12 @@ class GeneResultsView extends React.Component {
     }
 
     let sources = geneResults.map( geneInfo => geneInfo.geneSymbol );
-    let AppLinkout = appInfo => {
-      let { linkPath, imageClass, title, description, enabled, hint } = appInfo;
+    let searchString = queryString.stringify({ source: sources.join(',') });
 
-      let img = h( `div.app-image.${imageClass}` );
-      let appImage = h( Link,{ to: { pathname: linkPath, search: queryString.stringify({ source: sources.join(',') }) }, target: '_blank' }, [ img ]);
-      let appHeader = h( 'div.app-header', [ h( 'h4.app-title', title ) ] );
-      let appDescription = h( 'div.app-description', description );
-
-      if( !enabled ){
-        appImage = img;
-        appHeader = h( 'div.app-header', [
-          h( 'h4.app-title', title ),
-          h( 'span.app-hint', hint )
-        ]);
-      }
-
-      return h('.app-linkout', {
-          className: classNames({
-            'app-linkout-disabled': !enabled
-          })
-        }, [
-        appImage,
-        h('div.app-linkout-content', [
-          appHeader,
-          appDescription
-        ])
-      ]);
-    };
-
-    const appsLinkouts = [
-      this.getInteractionsAppInfo( geneResults ),
-      this.getEnrichmentAppInfo( geneResults )
-    ].map( info => h( AppLinkout, info ) );
+    const appsInfos = [
+      this.getInteractionsAppInfo( geneResults, searchString ),
+      this.getEnrichmentAppInfo( geneResults, searchString )
+    ].map( info => h( AppCard, info ) );
 
     return h('div.search-genes-results', [
       h('h3.search-genes-header', `Recognized genes (${geneResults.length})`),
@@ -114,7 +86,7 @@ class GeneResultsView extends React.Component {
             ]);
           })
         ]),
-        h( 'div.app-linkouts', appsLinkouts )
+        h( 'div.search-app-cards', appsInfos )
     ]);
   }
 }

@@ -3,3 +3,9 @@
   width: 30px;
   background-image: url("../image/pc_logo_dark.svg");
 }
+
+.pc-logo-light {
+  height: 30px;
+  width: 30px;
+  background-image: url("../image/pc_logo_light.svg");
+}

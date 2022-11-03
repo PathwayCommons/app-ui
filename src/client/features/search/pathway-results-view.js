@@ -8,7 +8,7 @@ const { ErrorMessage } = require('../../common/components/error-message');
 
 class PathwayResultsView extends React.Component {
   render(){
-    let { searchHits: pathwayResults, controller, query , dataSources } = this.props;
+    let { searchHits: pathwayResults, controller, query , dataSources, hasFeature } = this.props;
     const curDatasource = query.datasource;
     const sources = dataSources.filter( source => query.type === 'Pathway' ?
       !source.notPathwayData && source.numPathways :
@@ -49,7 +49,7 @@ class PathwayResultsView extends React.Component {
 
     const header = h('h3.search-pathways-header', pathwayResults.length ? `Pathways (${searchList.length})`: null);
     const filter = pathwayResults.length || curDatasource.length ? searchResultFilter: null;
-    const listing = pathwayResults.length ? searchList: [noPathwaysMsg];
+    const listing = pathwayResults.length || hasFeature ? searchList: [noPathwaysMsg];
 
     return h('div.search-pathway-results', [
       h('div.search-tools', [ header, filter ]),

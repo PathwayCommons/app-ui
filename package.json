@@ -1,6 +1,6 @@
 {
   "name": "app-ui",
-  "version": "3.6.0",
+  "version": "3.7.0",
   "description": "App UI",
   "repository": {
     "type": "git",
@@ -76,7 +76,6 @@
     "quick-lru": "^1.1.0",
     "react": "^16.5.1",
     "react-dom": "^16.5.1",
-    "react-ga": "^2.5.3",
     "react-hyperscript": "^3.2.0",
     "react-loader": "^2.4.5",
     "react-router-dom": "^4.3.1",

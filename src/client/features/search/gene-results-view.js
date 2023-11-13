@@ -78,6 +78,7 @@ class GeneResultsView extends React.Component {
     ].map( info => h( AppCard, info ) );
 
     return h('div.search-genes-results', [
+      h('h2', 'Explore how your search is connected to millions of curated interactions'),
       h('h3.search-genes-header', `Recognized genes (${geneResults.length})`),
         h('div.search-genes-list', [
           ...geneResults.map( geneInfo => {

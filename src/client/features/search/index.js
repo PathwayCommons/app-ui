@@ -16,6 +16,8 @@ const { TimeoutError } = require('../../../util');
 const { ErrorMessage } = require('../../common/components/error-message');
 const { FeatureView } = require('./feature-view');
 
+const { PC_URL } = require('../../../config');
+
 class Search extends React.Component {
 
   constructor(props) {
@@ -134,6 +136,42 @@ class Search extends React.Component {
     let searchBody = errorMessage ? errorMessage : searchListing;
 
     return h('div.search', [
+      h('div.search-nav-links', [
+        h('a', {
+          href: PC_URL,
+          target: '_blank'
+        }, 'About'),
+
+        h('a', {
+          href: PC_URL + '#faq',
+          target: '_blank'
+        }, 'FAQ'),
+
+        h('a', {
+          href: PC_URL + '#training',
+          target: '_blank'
+        }, 'Training'),
+
+        h('a', {
+          href: PC_URL + '#data',
+          target: '_blank'
+        }, 'Data'),
+
+        // h('a', {
+        //   href: PC_URL + '#tools',
+        //   target: '_blank'
+        // }, 'Tools'),
+
+        h('a', {
+          href: PC_URL + '#contact',
+          target: '_blank'
+        }, 'Contact'),
+
+        // h('a', {
+        //   href: 'https://biofactoid.org',
+        //   target: '_blank'
+        // }, 'Add My Paper to PC using Biofactoid')
+      ]),
       h('div.search-header', [
         h('div.search-branding', [
           h(PcLogoLink, { className: 'search-logo'} ),

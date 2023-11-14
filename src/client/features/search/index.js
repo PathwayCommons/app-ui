@@ -123,7 +123,7 @@ class Search extends React.Component {
           className: classNames({
             'hidden': _.isEmpty(geneResults) && _.isEmpty(searchHits)
           })
-        }, 'Explore how your search is connected to millions of curated interactions'),
+        }, 'Explore how your query is connected to millions of curated interactions'),
         h(FeatureView, { feature }),
         h(GeneResultsView, { geneResults } ),
         h(PathwayResultsView, { searchHits, query, controller: this, dataSources, hasFeature: feature != null })

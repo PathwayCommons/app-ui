@@ -3,6 +3,10 @@
   width: 100vw;
 }
 
+.search .hidden {
+  display: none;
+}
+
 .search-nav-links {
   display: flex;
   justify-content: flex-start;

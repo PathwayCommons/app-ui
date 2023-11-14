@@ -2,7 +2,7 @@ const React = require('react');
 const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
 const Loader = require('react-loader');
-
+const classNames = require('classnames');
 const queryString = require('query-string');
 const _ = require('lodash');
 
@@ -119,6 +119,11 @@ class Search extends React.Component {
 
     const searchListing = h(Loader, { loaded: !loading, options: { left: '50%', color: '#16A085' } }, [
       h('div', [
+        h('h2', {
+          className: classNames({
+            'hidden': _.isEmpty(geneResults) && _.isEmpty(searchHits)
+          })
+        }, 'Explore how your search is connected to millions of curated interactions'),
         h(FeatureView, { feature }),
         h(GeneResultsView, { geneResults } ),
         h(PathwayResultsView, { searchHits, query, controller: this, dataSources, hasFeature: feature != null })

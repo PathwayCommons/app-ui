@@ -351,6 +351,10 @@
 }
 
 @media (--small-width-viewport) {
+  .search-nav-links {
+    display: none;
+  }
+
   .search-header {
     display: block;
   }

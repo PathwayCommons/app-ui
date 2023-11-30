@@ -20,6 +20,7 @@ const MAX_ELEMENTS_CUTOFF = 3;
 const LIST_ELEMENTS_SHOWN = MAX_ELEMENTS_CUTOFF - 1;
 
 const InteractionsMenu = require('./interactions-menu');
+const { Contribute } = require('../../common/components/contribute');
 
 class Interactions extends React.Component {
   constructor(props) {
@@ -110,7 +111,8 @@ class Interactions extends React.Component {
         h(PcLogoLink),
         h('div.app-bar-title', titleContent)
       ]),
-      h(InteractionsToolbar, { cySrv, activeMenu, sources: this.state.sources, controller: this })
+      h(InteractionsToolbar, { cySrv, activeMenu, sources: this.state.sources, controller: this }),
+      h(Contribute, { message: 'Add my interactions' })
     ]);
 
     let interactionsLegend = h('div.interactions-legend', [

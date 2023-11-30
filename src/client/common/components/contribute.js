@@ -11,21 +11,19 @@ class Contribute extends React.Component {
   }
 
   render(){
-    const { message, info } = this.props;
+    const { text, info } = this.props;
 
     return h('div.contribute', {}, [
       h('a.plain-link.contribute-popover-link', {
         href: `${FACTOID_URL}document/new`,
         target: '_blank'
-      }, message),
+      }, text),
       h(Popover , {
           tippy: {
             position: 'bottom',
             html: h('div.contribute-popover', [info] )
           }
-        }, [
-          h('i.material-icons', 'info')
-        ]
+        }, [ h('i.material-icons', 'info') ]
       )
     ]);
   }
@@ -33,15 +31,15 @@ class Contribute extends React.Component {
 
 // Specifies the default values for props:
 Contribute.defaultProps = {
-  message: 'Add my data',
+  text: 'Add my data',
   info: h('div.contribute-popover-info', {
   }, [
     `Authors of primary research articles with pathway and interaction information (e.g. binding, transcription) can contribute these findings to Pathway Commons through Biofactoid. Learn more at `,
     h('a.plain-link', {
       href: `${FACTOID_URL}`,
       target: '_blank'
-    }, 'biofactoid.org.')
-  ])
+    }, 'biofactoid.org'), '.'
+  ]),
 };
 
 module.exports = { Contribute };

@@ -112,7 +112,7 @@ class Interactions extends React.Component {
         h('div.app-bar-title', titleContent)
       ]),
       h(InteractionsToolbar, { cySrv, activeMenu, sources: this.state.sources, controller: this }),
-      h(Contribute, { message: 'Add my interactions' })
+      h(Contribute, { text: 'Add my interactions' })
     ]);
 
     let interactionsLegend = h('div.interactions-legend', [

@@ -5,6 +5,7 @@
 
   & i {
     margin: 0em 0.25em;
+    color: var(--widgetDisabledTextColor);
   }
 
   & i:hover {
@@ -13,7 +14,7 @@
 }
 
 .contribute-popover-info {
-  max-width: 450px;
+  max-width: 30em;
   padding: 0.5em;
 }
 

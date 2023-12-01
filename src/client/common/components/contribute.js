@@ -1,7 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const Popover = require('./popover');
-// const classNames = require('classnames');
 
 const { FACTOID_URL } = require('../../../config');
 

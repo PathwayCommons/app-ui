@@ -15,6 +15,7 @@ const { stylesheet, bindCyEvents, PATHWAYS_LAYOUT_OPTS } = require('./cy');
 
 const { TimeoutError } = require('../../../util');
 const { ErrorMessage } = require('../../common/components/error-message');
+const { Contribute } = require('../../common/components/contribute');
 
 class Pathways extends React.Component {
   constructor(props) {
@@ -91,7 +92,8 @@ class Pathways extends React.Component {
           h('a.plain-link', { href: pathway.datasourceUrl(), target: '_blank' }, ' ' + pathway.datasource())
         ])
       ]),
-      h(PathwaysToolbar, { cySrv, pathway, downloadOpts })
+      h(PathwaysToolbar, { cySrv, pathway, downloadOpts }),
+      h(Contribute, { text: 'Add my pathway' })
     ]);
 
     let content = !errorMessage ? [

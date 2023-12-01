@@ -15,6 +15,7 @@ const { GeneResultsView } = require('./gene-results-view');
 const { TimeoutError } = require('../../../util');
 const { ErrorMessage } = require('../../common/components/error-message');
 const { FeatureView } = require('./feature-view');
+const { Contribute } = require('../../common/components/contribute');
 
 const { PC_URL } = require('../../../config');
 
@@ -172,10 +173,7 @@ class Search extends React.Component {
           target: '_blank'
         }, 'Contact'),
 
-        // h('a', {
-        //   href: 'https://biofactoid.org',
-        //   target: '_blank'
-        // }, 'Add My Paper to PC using Biofactoid')
+        h(Contribute)
       ]),
       h('div.search-header', [
         h('div.search-branding', [

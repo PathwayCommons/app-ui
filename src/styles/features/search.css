@@ -19,6 +19,15 @@
   /* background: cyan; */
 }
 
+.search-nav-links .contribute {
+  position: relative;
+  margin: 1em;
+
+  & a {
+    padding: 0;
+  }
+}
+
 .search-header {
   display: flex;
   justify-content: flex-start;

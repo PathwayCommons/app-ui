@@ -14,6 +14,7 @@ const { ServerAPI } = require('../../services');
 const { enrichmentLayout, enrichmentStylesheet, bindEvents } = require('./cy');
 const { TimeoutError } = require('../../../util');
 const { ErrorMessage } = require('../../common/components/error-message');
+const { Contribute } = require('../../common/components/contribute');
 
 const MAX_ELEMENTS_CUTOFF = 3;
 const LIST_ELEMENTS_SHOWN = MAX_ELEMENTS_CUTOFF - 1;
@@ -112,7 +113,8 @@ class Enrichment extends React.Component {
         h(PcLogoLink),
         h('div.app-bar-title', titleContent)
       ]),
-      h(EnrichmentToolbar, { cySrv, sources: this.state.sources, controller: this })
+      h(EnrichmentToolbar, { cySrv, sources: this.state.sources, controller: this }),
+      h(Contribute, { text: 'Add my pathway' })
     ]);
 
     return !errorMessage ? h('div.enrichment', [

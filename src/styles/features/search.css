@@ -3,6 +3,31 @@
   width: 100vw;
 }
 
+.search .hidden {
+  display: none;
+}
+
+.search-nav-links {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 0em 0.5em;
+}
+
+.search-nav-links a {
+  padding: 1em 1em;
+  /* background: cyan; */
+}
+
+.search-nav-links .contribute {
+  position: relative;
+  margin: 1em;
+
+  & a {
+    padding: 0;
+  }
+}
+
 .search-header {
   display: flex;
   justify-content: flex-start;
@@ -335,6 +360,10 @@
 }
 
 @media (--small-width-viewport) {
+  .search-nav-links {
+    display: none;
+  }
+
   .search-header {
     display: block;
   }

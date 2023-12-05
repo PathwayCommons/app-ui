@@ -1,11 +1,38 @@
-version: '3'
+version: "3.8"
 services:
-  webapp:
-    image: pathwaycommons/app-ui:master
-    container_name: appui_webapp
-    ports:
-      - "9090:3000"
+  watch:
+    image: containrrr/watchtower:${WATCHTOWER_IMAGE_TAG:-latest}
+    labels:
+      - com.centurylinklabs.watchtower.scope=${WATCHTOWER_SCOPE:-development}
+    restart: always
+    depends_on:
+      - webapp
+    container_name: watch
     environment:
-      NODE_ENV: "production"
-      PC_URL: "http://www.pathwaycommons.org/"
-      FACTOID_URL: "http://factoid.baderlab.org/"
+      TZ: "America/Toronto"
+      WATCHTOWER_SCHEDULE:
+      WATCHTOWER_CLEANUP:
+      WATCHTOWER_SCOPE:
+    networks:
+      -  app-ui-network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: ["webapp"]
+  webapp:
+    image: pathwaycommons/app-ui:${APPUI_IMAGE_TAG:-latest}
+    labels:
+      - com.centurylinklabs.watchtower.scope=${WATCHTOWER_SCOPE:-development}
+    restart: unless-stopped
+    container_name: webapp
+    ports:
+      - "${APPUI_PORT:-3000}:3000"
+    environment:
+      PC_URL:
+      NODE_ENV:
+      FACTOID_URL:
+    networks:
+      - app-ui-network
+
+networks:
+  app-ui-network:
+    driver: bridge

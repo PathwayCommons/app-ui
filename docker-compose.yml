@@ -1,27 +1,7 @@
 version: "3.8"
 services:
-  watch:
-    image: containrrr/watchtower:${WATCHTOWER_IMAGE_TAG:-latest}
-    labels:
-      - com.centurylinklabs.watchtower.scope=${WATCHTOWER_SCOPE:-development}
-    restart: always
-    depends_on:
-      - webapp
-    container_name: watch
-    environment:
-      TZ: "America/Toronto"
-      WATCHTOWER_SCHEDULE:
-      WATCHTOWER_CLEANUP:
-      WATCHTOWER_SCOPE:
-    networks:
-      -  app-ui-network
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: ["webapp"]
   webapp:
     image: pathwaycommons/app-ui:${APPUI_IMAGE_TAG:-latest}
-    labels:
-      - com.centurylinklabs.watchtower.scope=${WATCHTOWER_SCOPE:-development}
     restart: unless-stopped
     container_name: webapp
     ports:

@@ -46,15 +46,15 @@ const ServerAPI = {
     );
   },
 
-  getFactoids() {
+  getAllDocs() {
     return (
-      fetch('/api/factoids', defaultFetchOpts)
+      fetch('/api/biofactoid', defaultFetchOpts)
         .then( res => res.json() )
     );
   },
 
-  getFactoid(id) {
-    let url = `/api/factoids/${ id }`;
+  getDocById(id) {
+    let url = `/api/biofactoid/${ id }`;
     return (
       fetch(url, defaultFetchOpts)
         .then(res =>  res.json())

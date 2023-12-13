@@ -3,7 +3,7 @@ const Pathways = require('./pathways');
 const Search = require('./search');
 const Interactions = require('./interactions');
 const Enrichment = require('./enrichment');
-const Factoids = require('./factoids');
+const Biofactoid = require('./biofactoid');
 
 module.exports = {
   Paint,
@@ -11,5 +11,5 @@ module.exports = {
   Pathways,
   Interactions,
   Enrichment,
-  Factoids
+  Biofactoid
 };

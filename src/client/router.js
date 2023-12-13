@@ -36,16 +36,16 @@ module.exports = () => {
         }
       },
       {
-        path: '/factoids',
+        path: '/biofactoid',
         render: props => {
-          return h(Features.Factoids, props);
+          return h(Features.Biofactoid, props);
         }
       },
       {
-        path: '/factoids/:factoidId',
+        path: '/biofactoid/:id',
         render: props => {
           let { match } = props;
-          let id = match.params.factoidId;
+          let { id } = match.params;
           let apiOpts = {
             type: 'factoids',
             id

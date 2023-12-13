@@ -47,7 +47,7 @@ module.exports = () => {
           let { match } = props;
           let { id } = match.params;
           let apiOpts = {
-            type: 'factoids',
+            type: 'biofactoid',
             id
           };
 

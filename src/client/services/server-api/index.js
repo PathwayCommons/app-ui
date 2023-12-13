@@ -23,9 +23,9 @@ const ServerAPI = {
         throw new Error('Invalid parameter.  Pathways api calls require a uri parameter');
       }
     }
-    if( type === 'factoids' ){
+    if( type === 'biofactoid' ){
       if( id !== null ){
-        return this.getFactoid(opts.id);
+        return this.getDocById(opts.id);
       } else {
         throw new Error('Invalid paramter. Factoids api calls require a id parameter');
       }

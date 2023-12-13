@@ -58,9 +58,9 @@ router.get('/:id', ( req, res, next ) => {
 
   Promise.all([getDoc( id ), getDocSbgnJson( id )])
     .then( results => {
-      let [ factoidJson, factoidSbgnJson ] = results;
-      const pathwayMetadata = getPathwayMetadata( factoidJson );
-      return _.assign({}, factoidSbgnJson, { pathwayMetadata });
+      let [ docJson, sbgnJson ] = results;
+      const pathwayMetadata = getPathwayMetadata( docJson );
+      return _.assign({}, sbgnJson, { pathwayMetadata });
     } )
     .then( j => res.json( j ) )
     .catch( next );

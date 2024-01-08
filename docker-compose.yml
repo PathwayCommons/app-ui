@@ -32,6 +32,14 @@ services:
       FACTOID_URL:
     networks:
       - app-ui-network
+  syblars:
+    image: pathwaycommons/syblars:${SYBLARS_IMAGE_TAG:-latest}
+    restart: unless-stopped
+    container_name: syblars
+    ports:
+      - "${SYBLARS_PORT:-9090}:3000"
+    networks:
+      - app-ui-network
 
 networks:
   app-ui-network:

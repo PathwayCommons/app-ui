@@ -7,7 +7,7 @@ const nodefetch = require( 'node-fetch' );
 const fs = require( 'fs' );
 const fsPromises = require('fs').promises;
 const readline = require( 'readline' );
-const Bottleneck = require( 'bottleneck' );
+const retry = require( 'async-retry' );
 
 const logger = require( '../server/logger.js' );
 const {
@@ -107,7 +107,7 @@ async function sbgn2image( sbgn, opts ){
 }
 
 /**
- * Iterate over each line in a PC GMT file and retrieve an image, add to store.
+ * Iterate over each line in a PC GMT file and retrieve an image, save to store.
  * @param {string} fpath file path to the GMT file
  * @param {object} store persistence via save function
  * @param {object} get data retrieval
@@ -117,26 +117,35 @@ async function sbgn2image( sbgn, opts ){
 async function imagesFromGmtFile( fpath, store, get, parse, convert ) {
   let rl;
   try {
-    const limiter = new Bottleneck({
-      maxConcurrent: 1,
-      minTime: 250
-    });
-    const handleLine = limiter.wrap( async ({ value }) => {
+    const handleLine = async ({ value }) => {
       const { uri, meta, genes } = parse( value );
-      logger.info( `Converting pathway "${meta.name}" from ${meta.source}` );
+      logger.info( `Handling pathway "${meta.name}" from ${meta.source}` );
       const markup = await get({ uri, format: 'sbgn' });
       const image = await convert( markup );
       const item = _.assign( {}, { uri, genes, image }, meta );
       await store.save( item );
-    });
+    };
     const input = fs.createReadStream( fpath );
     rl = readline.createInterface( { input, crlfDelay: Infinity });
     const it = rl[Symbol.asyncIterator]();
     let line = await it.next();
 
     while( !line.done ){
-      await handleLine( line );
-      line = await it.next();
+      await retry(
+        async (bail, count) => {
+          try {
+            logger.info( `------------------------------` );
+            logger.info(`Processing line: attempt ${count}`);
+            await handleLine( line );
+            line = await it.next();
+          } catch (err) {
+            logger.error(`Fatal error processing`);
+            if( err.name === 'FetchError' ) bail( err );
+          }
+        },
+        { retries: 3 }
+      );
+
     }
 
   } catch ( err ) {

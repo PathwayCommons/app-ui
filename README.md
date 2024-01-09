@@ -68,7 +68,7 @@ docker build --build-arg NODE_ENV=production -t app-ui .
 Run the container:
 
 ```
-docker run -it --rm -p 12345:3000 -e "NODE_ENV=production" --name "app-ui" app-ui
+docker run -it --rm -p 3000:3000 -e "NODE_ENV=production" --name "app-ui" app-ui
 ```
 
 Notes:
@@ -95,24 +95,14 @@ PC repository on Docker Hub).
 To run the app using the pathwaycommons/app-ui:master image, execute:
 
 ```sh
-docker-compose up -d
+docker-compose up -d webapp
 ```
 
-Access the app instance at port `9090` (can be specified in the docker-compose.yml).
+Access the app instance at port `3000` (can be specified in the docker-compose.yml).
 
 Notes:
 - References:
   - [Getting started with Docker Compose](https://docs.docker.com/compose/gettingstarted/)
-
-### Custom build/rebuild/run with Docker Compose
-
-Create .env file in this directory and define there yours: NODE_ENV, PC_URL, FACTOID_URL, PORT options;
-execute:
-
-```sh
-docker-compose -f dev-compose.yml build
-docker-compose -f dev-compose.yml up -d
-```
 
 
 ## Testing

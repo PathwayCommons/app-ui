@@ -16,6 +16,7 @@ let defaults = {
   DOI_BASE_URL: 'https://doi.org/',
   ORCID_BASE_URL: 'https://orcid.org/',
   SBGN_IMG_SERVICE_BASE_URL: 'http://localhost:9090/',
+  SBGN_IMG_PATH: 'public/img/pathways',
   PC_IMAGE_CACHE_MAX_SIZE: 10000,
   PC_CACHE_MAX_SIZE: 1000,
   PUB_CACHE_MAX_SIZE: 1000000,

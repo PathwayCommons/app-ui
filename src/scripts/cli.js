@@ -12,7 +12,8 @@ const Bottleneck = require( 'bottleneck' );
 const logger = require( '../server/logger.js' );
 const {
   DOWNLOADS_FOLDER_NAME,
-  SBGN_IMG_SERVICE_BASE_URL
+  SBGN_IMG_SERVICE_BASE_URL,
+  SBGN_IMG_PATH
 } = require( '../config.js' );
 const { fetch } = require( '../util/index.js' );
 const pc = require( '../server/external-services/pathway-commons.js' );
@@ -165,13 +166,12 @@ const parsePCGmtLine = line => {
 const uri2filename = s => s.replace(/[^a-z0-9]/gi, '_').toLowerCase();
 
 async function getStore( ) {
-  const PATHWAY_IMG_DIR = 'public/img/pathways';
   const store = {
     async save( item ){
       const { uri, image: { data, mediatype } } = item;
       const ext = mediatype.split('/')[1];
       const filename = uri2filename( uri );
-      const fpath = path.resolve( PATHWAY_IMG_DIR, `${filename}.${ext}` );
+      const fpath = path.resolve( SBGN_IMG_PATH, `${filename}.${ext}` );
       try {
         await fsPromises.writeFile( fpath, data );
         logger.info(`Saved item at ${uri} to file`);

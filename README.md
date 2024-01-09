@@ -36,6 +36,8 @@ The following environment variables can be used to configure the server (also do
 - `PC_URL`: Pathway Commons homepage URL (default: 'http://www.pathwaycommons.org/'; cPath2 service should be there available at /pc2/ path)
 - `NCBI_API_KEY`: NCBI E-Utilities API key ([read more](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/))
 - `FACTOID_URL`: the Factoid app URL (default: 'http://unstable.factoid.baderlab.org/')
+- `SBGN_IMG_SERVICE_BASE_URL`: URL for service that converts SBGN to an image (i.e. [Syblars](http://syblars.cs.bilkent.edu.tr/); default is `http://localhost:9090/`)
+- `SBGN_IMG_PATH`: cli tool `snapshot` output folder for images (default: `public/img/pathways`)
 
 ## Run targets
 
@@ -120,6 +122,26 @@ can run `npm run test ./test/path/to/test` to run specific tests.
 
 [Chai](http://chaijs.com/) is included to make the tests easier to read and write.
 
+
+## Scripts
+
+### Command line tools
+
+The `scripts/cli.js` file contains app-ui command line tools:
+  - `source`: Download and extract a file to `downloads` folder
+  - `snapshot`: Generate PNG images for pathways listed in a PC GMT-formatted file
+    - Requires an instance of [Syblars](http://syblars.cs.bilkent.edu.tr/) accessible at a location defined by the configuration variable `SBGN_IMG_SERVICE_BASE_URL` (see `docker-compose.yml` service `syblars`)
+    - Images will be placed in directory `SBGN_IMG_PATH` (default: `public/img/pathways`)
+
+Usage: To generate a PNG of an SBGN representation for each pathway declared in the GMT file at `downloads/PathwayCommons12.All.hgnc.gmt`:
+
+```sh
+$ docker-compose up -d syblars
+$ SERVER_FETCH_TIMEOUT="60000" node snapshot --file PathwayCommons12.All.hgnc.gmt
+```
+NB: The default timeout of fetch is normally quite brief (5 seconds).
+
+In this way, images will be served via expressJS at `img/pathways/:id`, where `id` is the pathway URI with anything that is not a letter (a-z) or digit (0-9) is replaced with underscores (`_`).
 
 ## Developing a feature and making a pull request
 

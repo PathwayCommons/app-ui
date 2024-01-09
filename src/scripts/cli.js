@@ -1,0 +1,240 @@
+const _ = require( 'lodash' );
+const stream = require( 'stream' );
+const path = require( 'path' );
+const { program } = require( 'commander' );
+const zlib = require( 'zlib' );
+const nodefetch = require( 'node-fetch' );
+const fs = require( 'fs' );
+const fsPromises = require('fs').promises;
+const readline = require( 'readline' );
+const Bottleneck = require( 'bottleneck' );
+
+const logger = require( '../server/logger.js' );
+const {
+  DOWNLOADS_FOLDER_NAME,
+  SBGN_IMG_SERVICE_BASE_URL
+} = require( '../config.js' );
+const { fetch } = require( '../util/index.js' );
+const pc = require( '../server/external-services/pathway-commons.js' );
+
+global.fetch = nodefetch;
+
+/**
+ * Source (download and extract) a file
+ *
+ * @param {string} url The url for the file
+ * @param {string} options command line opts
+ * @returns
+ */
+async function source( url, options ){
+  try {
+    let extractor;
+    const { file, type } = options;
+    switch( type ) {
+      case 'zip':
+        extractor = zlib.createUnzip();
+        break;
+      case 'gzip':
+        extractor = zlib.createGunzip();
+        break;
+      default:
+        extractor = new stream.PassThrough();
+    }
+    const outfile = path.resolve( DOWNLOADS_FOLDER_NAME, file );
+    const outstream = fs.createWriteStream( outfile );
+    const response = await fetch( url );
+    return response.body.pipe( extractor ).pipe( outstream );
+
+  } catch (err) {
+    throw err;
+  }
+}
+
+/**
+ * Get a PNG image given SBGN-ML
+ *
+ * @param {string} sbgn The sbgn xml text
+ * @param {object} opts Options for the image service {@link https://github.com/iVis-at-Bilkent/syblars?tab=readme-ov-file#usage}
+ * @returns base64 encoded PNG
+ */
+async function sbgn2image( sbgn, opts ){
+  const decodeBase64img = str => {
+    const extractFields = s => {
+      const { groups } = s.match(/^data:(?<mediatype>.*);(?<encoding>.*),(?<base64str>.*)$/);
+      return groups;
+    };
+    const { base64str, encoding, mediatype } = extractFields(str);
+    const data = Buffer.from( base64str, encoding );
+    return { data, mediatype };
+  };
+  let url = `${SBGN_IMG_SERVICE_BASE_URL}sbgnml`;
+  const defaults = {
+    layoutOptions: {
+      name: 'fcose',
+      randomize: true,
+      padding: 30
+    },
+    imageOptions: {
+      format: 'png',
+      background: 'transparent',
+      width: 1280,
+      height: 1280,
+      color: 'black_white'
+    }
+  };
+  const imageOpts = _.defaults( opts, defaults );
+  const imageOptsString = JSON.stringify( imageOpts );
+  const body = `${sbgn}${imageOptsString}`;
+  const fetchOpts = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain',
+      'Accept': 'application/json'
+    },
+    body
+  };
+
+  try {
+    const response = await fetch( url , fetchOpts );
+    const { image } = await response.json();
+    return decodeBase64img( image );
+
+  } catch ( err ) {
+    logger.error( err );
+    throw err;
+  }
+}
+
+/**
+ * Iterate over each line in a PC GMT file and retrieve an image, add to store.
+ * @param {string} fpath file path to the GMT file
+ * @param {object} store persistence via save function
+ * @param {object} get data retrieval
+ * @param {object} parse function to extract information from each line in GMT
+ * @param {object} convert function to map data to image
+ */
+async function imagesFromGmtFile( fpath, store, get, parse, convert ) {
+  let rl;
+  try {
+    const limiter = new Bottleneck({
+      maxConcurrent: 1,
+      minTime: 250
+    });
+    const handleLine = limiter.wrap( async ({ value }) => {
+      const { uri, meta, genes } = parse( value );
+      logger.info( `Converting pathway "${meta.name}" from ${meta.source}` );
+      const markup = await get({ uri, format: 'sbgn' });
+      const image = await convert( markup );
+      const item = _.assign( {}, { uri, genes, image }, meta );
+      await store.save( item );
+    });
+    const input = fs.createReadStream( fpath );
+    rl = readline.createInterface( { input, crlfDelay: Infinity });
+    const it = rl[Symbol.asyncIterator]();
+    let line = await it.next();
+
+    while( !line.done ){
+      await handleLine( line );
+      line = await it.next();
+    }
+
+  } catch ( err ) {
+    logger.error( err );
+    throw err;
+
+  } finally {
+    rl.close();
+  }
+}
+
+// ambiguous: e.g. value[1] = 'name: t(4;14) translocations of FGFR3; datasource: reactome; organism: 9606; idtype: hgnc symbol'
+const parsePCGmtLine = line => {
+  const extractFields = str => str.match(/^name:\s(?<name>.*);\sdatasource:\s(?<source>.*);\sorganism:\s(?<organism>.*);\sidtype:\s(?<idtype>.*)$/);
+  const parseMeta = value => {
+    const { groups } = extractFields( value );
+    return groups;
+  };
+  const values = line.split('\t');
+  const uri = values[0];
+  const meta = parseMeta( values[1] );
+  const genes = values.slice(2);
+  return { uri, meta, genes };
+};
+
+// Create file safe names from a uri
+const uri2filename = s => s.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+
+async function getStore( ) {
+  const PATHWAY_IMG_DIR = 'public/img/pathways';
+  const store = {
+    async save( item ){
+      const { uri, image: { data, mediatype } } = item;
+      const ext = mediatype.split('/')[1];
+      const filename = uri2filename( uri );
+      const fpath = path.resolve( PATHWAY_IMG_DIR, `${filename}.${ext}` );
+      try {
+        await fsPromises.writeFile( fpath, data );
+        logger.info(`Saved item at ${uri} to file`);
+
+      } catch (err) {
+        logger.error(`Error saving data for ${uri}`);
+        logger.error(err);
+        throw err;
+      }
+    },
+
+    close(){
+      logger.info(`TODO: close store`);
+    }
+  };
+  return store;
+}
+
+/**
+ * Generate images for all pathways in a PC .gmt file
+ *
+ * @param {object} options Command line opts
+ */
+async function snapshot( options ){
+  const { file } = options;
+  const fpath = path.resolve( DOWNLOADS_FOLDER_NAME, file );
+  let store;
+  try {
+    store = await getStore();
+    await imagesFromGmtFile( fpath, store, pc.query, parsePCGmtLine, sbgn2image );
+
+  } catch ( err ) {
+    logger.error( err );
+    throw err;
+
+  } finally {
+    await store.close();
+  }
+}
+
+async function main () {
+  (program
+    .name( 'app-ui' )
+    .description( 'A CLI for processing pathway data' )
+  );
+
+  ( program.command( 'source' )
+    .description( 'Source (download and extract) a file' )
+    .argument( '<url>', 'URL of source file' )
+    .requiredOption( '-f, --file <name>', 'Name of output file' )
+    .option( '-t, --type <type>', 'Compression type', 'gzip' )
+    .action( source )
+  );
+
+  ( program.command( 'snapshot' )
+    .description( 'Generate images for all pathways in a PC gmt file' )
+    .requiredOption( '-f, --file <name>', 'Name of PC-formatted gmt source file' )
+    .action( snapshot )
+  );
+
+  await program.parseAsync();
+}
+
+main();
+
+module.exports = { snapshot, source };

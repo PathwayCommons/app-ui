@@ -127,7 +127,7 @@ Usage: To generate a PNG of an SBGN representation for each pathway declared in 
 
 ```sh
 $ docker-compose up -d syblars
-$ SERVER_FETCH_TIMEOUT="60000" node snapshot --file PathwayCommons12.All.hgnc.gmt
+$ SERVER_FETCH_TIMEOUT="60000" node src/scripts/cli.js snapshot --file PathwayCommons12.All.hgnc.gmt
 ```
 NB: The default timeout of fetch is normally quite brief (5 seconds).
 

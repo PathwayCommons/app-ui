@@ -23,9 +23,9 @@ const ServerAPI = {
         throw new Error('Invalid parameter.  Pathways api calls require a uri parameter');
       }
     }
-    if( type === 'factoids' ){
+    if( type === 'biofactoid' ){
       if( id !== null ){
-        return this.getFactoid(opts.id);
+        return this.getDocById(opts.id);
       } else {
         throw new Error('Invalid paramter. Factoids api calls require a id parameter');
       }
@@ -46,15 +46,15 @@ const ServerAPI = {
     );
   },
 
-  getFactoids() {
+  getAllDocs() {
     return (
-      fetch('/api/factoids', defaultFetchOpts)
+      fetch('/api/biofactoid', defaultFetchOpts)
         .then( res => res.json() )
     );
   },
 
-  getFactoid(id) {
-    let url = `/api/factoids/${ id }`;
+  getDocById(id) {
+    let url = `/api/biofactoid/${ id }`;
     return (
       fetch(url, defaultFetchOpts)
         .then(res =>  res.json())

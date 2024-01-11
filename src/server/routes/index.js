@@ -7,7 +7,7 @@ router.use('/api/pc', pc);
 router.use('/api/pathways', require('./pathways'));
 router.use('/api/interactions', require('./interactions'));
 router.use('/api/enrichment', require('./enrichment'));
-router.use('/api/factoids', require('./factoids'));
+router.use('/api/biofactoid', require('./biofactoid'));
 router.get('/api/test/', (req, res) => {
   Promise.resolve().then( () => setTimeout( () => res.json({ msg:'hi'}), 10000));
 });

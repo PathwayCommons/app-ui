@@ -29,7 +29,7 @@ class PathwayResultsView extends React.Component {
       const showPreview = topHit && hasPreview;
 
       return h('div.search-item', {
-        className: classNames({ 'featured': showPreview })
+        className: classNames({ 'preview': showPreview })
       }, [
         h('div.search-item-info', [
           h('div.search-item-icon',[

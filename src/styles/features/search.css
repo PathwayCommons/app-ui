@@ -204,8 +204,9 @@
   padding: 1em 0;
 }
 
-.search-item.featured {
-  background-color: var(--cloud);
+.search-item.preview {
+  /* background-color: var(--cloud); */
+  border: 1px solid var(--cloud-darker);
 }
 
 .search-item-info {

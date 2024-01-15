@@ -201,10 +201,17 @@
 }
 
 .search-item {
+  padding: 1em 0;
+}
+
+.search-item.featured {
+  background-color: var(--cloud);
+}
+
+.search-item-info {
   display: flex;
   vertical-align: middle;
   align-items: center;
-  padding: 1em 0;
 }
 
 .search-item-icon {
@@ -236,6 +243,13 @@
   margin-top: 2px;
   color: #7f8c8d;
   font-size: 0.66em;
+}
+
+.search-item-preview {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 70%;
 }
 
 .loader {

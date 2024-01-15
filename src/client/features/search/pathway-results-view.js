@@ -3,6 +3,7 @@ const h = require('react-hyperscript');
 const Link = require('react-router-dom').Link;
 const queryString = require('query-string');
 const _ = require('lodash');
+const classNames = require('classnames');
 
 const { ErrorMessage } = require('../../common/components/error-message');
 
@@ -19,20 +20,28 @@ class PathwayResultsView extends React.Component {
       return null;
     }
 
-    const searchList = pathwayResults.map(result => {
+    const searchList = pathwayResults.map( ( result, index ) => {
       let dsInfo = _.get( result, 'sourceInfo', '' );
       let iconUrl = dsInfo.iconUrl || '';
       let name = dsInfo.name || '';
+      const topHit = index === 0;
+      const hasPreview = result.previewUrl;
+      const showPreview = topHit && hasPreview;
 
-      return h('div.search-item', [
-        h('div.search-item-icon',[
-          h('img', {src: iconUrl})
+      return h('div.search-item', {
+        className: classNames({ 'featured': showPreview })
+      }, [
+        h('div.search-item-info', [
+          h('div.search-item-icon',[
+            h('img', {src: iconUrl})
+          ]),
+          h('div.search-item-content', [
+            h(Link, { className: 'plain-link', to: { pathname: '/pathways', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' }, [result.name || 'N/A']),
+            h('p.search-item-content-datasource', ` ${name}`),
+            h('p.search-item-content-participants', `${result.numParticipants} Participants`)
+          ])
         ]),
-        h('div.search-item-content', [
-          h(Link, { className: 'plain-link', to: { pathname: '/pathways', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' }, [result.name || 'N/A']),
-          h('p.search-item-content-datasource', ` ${name}`),
-          h('p.search-item-content-participants', `${result.numParticipants} Participants`)
-        ])
+        showPreview ? h('img.search-item-preview', {src: result.previewUrl}) : null
       ]);
     });
 

@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const qs = require('query-string');
 const url = require('url');
 const QuickLRU = require('quick-lru');
@@ -105,7 +107,24 @@ const addSourceInfo = async function( searchHit, dataSources ) {
   return searchHit;
 };
 
+// Fill in preview URL
+const addPreviewUrl = function( searchHit ) {
+  // see https://github.com/PathwayCommons/app-ui/pull/1443 for config vars/functions
+  const SBGN_IMG_PATH = 'public/img/pathways';
+  const uri2filename = s => s.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  const { uri } = searchHit;
+  const fname = uri2filename( uri );
+  const fpath = path.resolve( SBGN_IMG_PATH, `${fname}.png` );
+  const hasImage = fs.existsSync( fpath );
+  if ( hasImage ){
+    const previewUrl = fpath.split( path.sep ).slice(-3).join(path.sep);
+    searchHit.previewUrl = previewUrl;
+  }
+  return searchHit;
+};
+
 const augmentSearchHits = async function( searchHits ) {
+  if( searchHits.length ) addPreviewUrl( searchHits[0] );
   const dataSources = await getDataSourcesMap();
   return Promise.all( searchHits.map( searchHit => addSourceInfo( searchHit, dataSources ) ) );
 };

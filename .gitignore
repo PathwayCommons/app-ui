@@ -13,4 +13,3 @@ src/scripts/jsonld/*
 /nohup.out
 src/*.gmt
 downloads/*
-public/img/pathways/*.png

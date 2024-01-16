@@ -1,7 +1,7 @@
 FROM node:14.21.3
 
 # Environment variables
-ENV NODE_OPTIONS=--max_old_space_size=4096
+ENV NODE_OPTIONS=--max_old_space_size=8192
 
 # Create an unprivileged user w/ home directory
 RUN groupadd appuser \

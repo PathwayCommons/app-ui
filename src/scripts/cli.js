@@ -78,8 +78,6 @@ async function sbgn2image( sbgn, opts ){
     imageOptions: {
       format: 'png',
       background: 'transparent',
-      width: 1280,
-      height: 1280,
       color: 'black_white'
     }
   };

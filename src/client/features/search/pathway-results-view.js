@@ -24,25 +24,39 @@ class PathwayResultsView extends React.Component {
       let dsInfo = _.get( result, 'sourceInfo', '' );
       let iconUrl = dsInfo.iconUrl || '';
       let name = dsInfo.name || '';
+      const pathwayTitle = result.name;      
       const topHit = index === 0;
       const hasPreview = result.previewUrl;
       const showPreview = topHit && hasPreview;
-
+    
+      let item;
+      const itemLink = children => h(Link, { className: 'plain-link', to: { pathname: '/pathways', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' }, children || 'N/A');
+      const itemPreview = h('img.search-item-preview', {src: result.previewUrl});
+      const itemInfo = title => h('div.search-item-info', [
+        h('div.search-item-icon', [ 
+          h('img', {src: iconUrl}) 
+        ]),
+        h('div.search-item-content', [
+          title,         
+          h('p.search-item-content-datasource', ` ${name}`),
+          h('p.search-item-content-participants', `${result.numParticipants} Participants`)
+        ])
+      ]);
+      
+      if( showPreview ){ 
+        // Wrap the entire item in a link 
+        item = itemLink([
+          itemInfo( pathwayTitle ), 
+          itemPreview
+        ]);
+      } else {
+        // Associate the link with the content
+        item = itemInfo( itemLink( pathwayTitle ) );
+      } 
+      
       return h('div.search-item', {
         className: classNames({ 'preview': showPreview })
-      }, [
-        h('div.search-item-info', [
-          h('div.search-item-icon',[
-            h('img', {src: iconUrl})
-          ]),
-          h('div.search-item-content', [
-            h(Link, { className: 'plain-link', to: { pathname: '/pathways', search: queryString.stringify({ uri: result.uri }) }, target: '_blank' }, [result.name || 'N/A']),
-            h('p.search-item-content-datasource', ` ${name}`),
-            h('p.search-item-content-participants', `${result.numParticipants} Participants`)
-          ])
-        ]),
-        showPreview ? h('img.search-item-preview', {src: result.previewUrl}) : null
-      ]);
+      }, item );
     });
 
     const searchResultFilter = h('div.search-filters', [

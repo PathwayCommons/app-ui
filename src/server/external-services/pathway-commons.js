@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const qs = require('query-string');
 const url = require('url');
 const QuickLRU = require('quick-lru');
@@ -8,6 +10,7 @@ const { cachePromise } = require('../cache');
 const { fetch } = require('../../util');
 const logger = require('../logger');
 const config = require('../../config');
+const { uri2filename } = require('../../util/uri.js');
 
 const xrefCache = new QuickLRU({ maxSize: config.PC_CACHE_MAX_SIZE });
 const queryCache = new QuickLRU({ maxSize: config.PC_CACHE_MAX_SIZE });
@@ -105,7 +108,21 @@ const addSourceInfo = async function( searchHit, dataSources ) {
   return searchHit;
 };
 
+// Fill in preview URL
+const addPreviewUrl = function( searchHit ) {
+  const { uri } = searchHit;
+  const fname = uri2filename( uri );
+  const fpath = path.resolve( config.SBGN_IMG_PATH, `${fname}.png` );
+  const hasImage = fs.existsSync( fpath );
+  if ( hasImage ){
+    const previewUrl = fpath.split( path.sep ).slice(-3).join(path.sep);
+    searchHit.previewUrl = previewUrl;
+  }
+  return searchHit;
+};
+
 const augmentSearchHits = async function( searchHits ) {
+  if( searchHits.length ) addPreviewUrl( searchHits[0] );
   const dataSources = await getDataSourcesMap();
   return Promise.all( searchHits.map( searchHit => addSourceInfo( searchHit, dataSources ) ) );
 };

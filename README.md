@@ -36,6 +36,8 @@ The following environment variables can be used to configure the server (also do
 - `PC_URL`: Pathway Commons homepage URL (default: 'http://www.pathwaycommons.org/'; cPath2 service should be there available at /pc2/ path)
 - `NCBI_API_KEY`: NCBI E-Utilities API key ([read more](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/))
 - `FACTOID_URL`: the Factoid app URL (default: 'http://unstable.factoid.baderlab.org/')
+- `SBGN_IMG_SERVICE_BASE_URL`: URL for service that converts SBGN to an image (i.e. [Syblars](http://syblars.cs.bilkent.edu.tr/); default is `http://localhost:9090/`)
+- `SBGN_IMG_PATH`: cli tool `snapshot` output folder for images (default: `public/img/pathways`)
 
 ## Run targets
 
@@ -66,7 +68,7 @@ docker build --build-arg NODE_ENV=production -t app-ui .
 Run the container:
 
 ```
-docker run -it --rm -p 12345:3000 -e "NODE_ENV=production" --name "app-ui" app-ui
+docker run -it --rm -p 3000:3000 -e "NODE_ENV=production" --name "app-ui" app-ui
 ```
 
 Notes:
@@ -93,24 +95,14 @@ PC repository on Docker Hub).
 To run the app using the pathwaycommons/app-ui:master image, execute:
 
 ```sh
-docker-compose up -d
+docker-compose up -d webapp
 ```
 
-Access the app instance at port `9090` (can be specified in the docker-compose.yml).
+Access the app instance at port `3000` (can be specified in the docker-compose.yml).
 
 Notes:
 - References:
   - [Getting started with Docker Compose](https://docs.docker.com/compose/gettingstarted/)
-
-### Custom build/rebuild/run with Docker Compose
-
-Create .env file in this directory and define there yours: NODE_ENV, PC_URL, FACTOID_URL, PORT options;
-execute:
-
-```sh
-docker-compose -f dev-compose.yml build
-docker-compose -f dev-compose.yml up -d
-```
 
 
 ## Testing
@@ -120,6 +112,26 @@ can run `npm run test ./test/path/to/test` to run specific tests.
 
 [Chai](http://chaijs.com/) is included to make the tests easier to read and write.
 
+
+## Scripts
+
+### Command line tools
+
+The `scripts/cli.js` file contains app-ui command line tools:
+  - `source`: Download and extract a file to `downloads` folder
+  - `snapshot`: Generate PNG images for pathways listed in a PC GMT-formatted file
+    - Requires an instance of [Syblars](http://syblars.cs.bilkent.edu.tr/) accessible at a location defined by the configuration variable `SBGN_IMG_SERVICE_BASE_URL` (see `docker-compose.yml` service `syblars`)
+    - Images will be placed in directory `SBGN_IMG_PATH` (default: `public/img/pathways`)
+
+Usage: To generate a PNG of an SBGN representation for each pathway declared in the GMT file at `downloads/PathwayCommons12.All.hgnc.gmt`:
+
+```sh
+$ docker-compose up -d syblars
+$ SERVER_FETCH_TIMEOUT="60000" node src/scripts/cli.js snapshot --file PathwayCommons12.All.hgnc.gmt
+```
+NB: The default timeout of fetch is normally quite brief (5 seconds).
+
+In this way, images will be served via expressJS at `img/pathways/:id`, where `id` is the pathway URI with anything that is not a letter (a-z) or digit (0-9) is replaced with underscores (`_`).
 
 ## Developing a feature and making a pull request
 

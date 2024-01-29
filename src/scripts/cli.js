@@ -9,6 +9,7 @@ const fsPromises = require('fs').promises;
 const readline = require( 'readline' );
 const retry = require( 'async-retry' );
 
+const { uri2filename } = require( '../util/uri.js' );
 const logger = require( '../server/logger.js' );
 const {
   DOWNLOADS_FOLDER_NAME,
@@ -168,9 +169,6 @@ const parsePCGmtLine = line => {
   const genes = values.slice(2);
   return { uri, meta, genes };
 };
-
-// Create file safe names from a uri
-const uri2filename = s => s.replace(/[^a-z0-9]/gi, '_').toLowerCase();
 
 async function getStore( ) {
   const store = {

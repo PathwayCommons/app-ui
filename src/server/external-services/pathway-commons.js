@@ -10,6 +10,7 @@ const { cachePromise } = require('../cache');
 const { fetch } = require('../../util');
 const logger = require('../logger');
 const config = require('../../config');
+const { uri2filename } = require('../../util/uri.js');
 
 const xrefCache = new QuickLRU({ maxSize: config.PC_CACHE_MAX_SIZE });
 const queryCache = new QuickLRU({ maxSize: config.PC_CACHE_MAX_SIZE });
@@ -109,12 +110,9 @@ const addSourceInfo = async function( searchHit, dataSources ) {
 
 // Fill in preview URL
 const addPreviewUrl = function( searchHit ) {
-  // see https://github.com/PathwayCommons/app-ui/pull/1443 for config vars/functions
-  const SBGN_IMG_PATH = 'public/img/pathways';
-  const uri2filename = s => s.replace(/[^a-z0-9]/gi, '_').toLowerCase();
   const { uri } = searchHit;
   const fname = uri2filename( uri );
-  const fpath = path.resolve( SBGN_IMG_PATH, `${fname}.png` );
+  const fpath = path.resolve( config.SBGN_IMG_PATH, `${fname}.png` );
   const hasImage = fs.existsSync( fpath );
   if ( hasImage ){
     const previewUrl = fpath.split( path.sep ).slice(-3).join(path.sep);

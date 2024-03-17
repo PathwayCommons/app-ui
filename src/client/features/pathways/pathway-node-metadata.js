@@ -76,7 +76,7 @@ class PathwayNodeMetadataView extends React.Component {
     let publicationEles = publications.map(publication => {
       let { id, title, firstAuthor, date, source } = publication;
       return h('div.cy-overflow-content', [
-        h('a.plain-link', { href: 'http://identifiers.org/pubmed/' + id, target: '_blank'  }, title),
+        h('a.plain-link', { href: 'http://bioregistry.io/pubmed:' + id, target: '_blank'  }, title),
         h('div', firstAuthor +  ' et al. | ' + source + ' - ' + new Date(date).getFullYear().toString())
       ]);
     });

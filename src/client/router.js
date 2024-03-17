@@ -79,27 +79,6 @@ module.exports = () => {
           return h(Features.Search, props);
         }
       }
-      // {
-      //   path: '/interactions',
-      //   render: props => {
-      //     return h(Features.Interactions, props);
-      //   }
-      // },
-      // {
-      //   path: '/enrichment',
-      //   render: props => {
-      //     return h(Features.Enrichment, props);
-      //   }
-      // },
-      // {
-      //   path: '/edit',
-      //   render: props => {
-      //     const editProps = _.assign({}, props, {
-      //       admin: true
-      //     });
-      //     return h(Features.Edit, editProps);
-      //   }
-      // }
     ].map( spec => h(Route, _.assign({ exact: true }, spec)) ))
   ]);
 };

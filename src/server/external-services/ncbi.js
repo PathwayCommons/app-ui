@@ -148,7 +148,7 @@ const fetchByGeneIds = ( geneIds ) => {
   );
 };
 
-const createUri = ( namespace, localId ) => IDENTIFIERS_URL + '/' + namespace + '/' + localId;
+const createUri = ( namespace, localId ) => IDENTIFIERS_URL + '/' + namespace + ':' + localId;
 
 const rawMakeSummary = (ent) => {
   const xrefLinks = [];

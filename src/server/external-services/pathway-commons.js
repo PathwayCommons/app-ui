@@ -288,7 +288,7 @@ const formatXrefQuery = ( name, localId ) => _.concat( [], { db: name, id: local
  * @return { object } the URL origin and namespace
  */
 const fetchEntityUriBase = ( name, localId ) => {
-  const url = config.XREF_SERVICE_URL + 'xref/';
+  const url = config.XREF_SERVICE_URL;
   const fetchOpts = {
     method: 'POST',
     headers: {
@@ -311,7 +311,7 @@ const getEntityUriParts = cachePromise(fetchEntityUriBase, xrefCache, name => na
 /*
  * xref2Uri
  * Obtain the URI for an xref
- * @param {string} name -  MIRIAM 'name', 'synonym' ?OR MI CV database citation (MI:0444) 'label'
+ * @param {string} name - identifiers collection name or synonym (from bioregistry.io), or CV term (a name/label from MI:0444 ontology subtree)
  * @param {string} localId - Entity local entity identifier, should be valid
  * @return {Object} return the origin and 'namespace' in path
  *
@@ -320,7 +320,7 @@ const getEntityUriParts = cachePromise(fetchEntityUriBase, xrefCache, name => na
 const xref2Uri =  ( name, localId ) => {
   return getEntityUriParts( name, localId )
     .then( uriParts => ({
-      uri: uriParts.origin + '/' + uriParts.namespace + '/' + localId,
+      uri: uriParts.origin + '/' + uriParts.namespace + ':' + localId,
       namespace: uriParts.namespace
     }) );
 };

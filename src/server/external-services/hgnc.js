@@ -20,7 +20,7 @@ const fetchBySymbol = symbol => {
 
 const fetchBySymbols = symbols => Promise.all( symbols.map(fetchBySymbol) );
 
-const createUri = ( namespace, localId ) => IDENTIFIERS_URL + '/' + namespace + '/' + localId;
+const createUri = ( namespace, localId ) => IDENTIFIERS_URL + '/' + namespace + ':' + localId;
 
 const getEntitySummary = async symbols => {
 

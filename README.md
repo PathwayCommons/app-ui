@@ -55,55 +55,17 @@ The following environment variables can be used to configure the server (also do
 
 ## Using Docker and Dockerfile
 
-### Build image and run locally
-
 Build the image.
-Here, `app-ui` is used as the image name.
 
 ```
-cd app-ui
-docker build --build-arg NODE_ENV=production -t app-ui .
+docker build -t app-ui .
 ```
 
 Run the container:
 
 ```
-docker run -it --rm -p 3000:3000 -e "NODE_ENV=production" --name "app-ui" app-ui
+docker run --detach --rm --publish 3000:3000 --env "NODE_ENV=production" --name "app-ui" app-ui
 ```
-
-Notes:
-
-- The `-it` switches are necessary to make `node` respond to `ctrl+c` etc. in `docker`.
-- The `-p` switch indicates that port 3000 on the container is mapped to port 12345 on the host.  Without this switch, the server is inaccessible.
-- The `-u` switch is used so that a non-root user is used inside the container.
-- The `-e` switch is used to set environment variables.  Alternatively use `--env-file` to use a file with the environment variables.
-- References:
-  - [Dockerizing a Node.js web app](https://nodejs.org/en/docs/guides/nodejs-docker-webapp/)
-  - [Documentation of docker-node](https://github.com/nodejs/docker-node)
-  - [Docker CLI docs](https://docs.docker.com/engine/reference/commandline/cli/)
-
-
-### Run the image from Docker Hub using Docker Compose
-
-NOTE: existing images and containers must be restarted shortly after every new official PC release; otherwise, the web app will be still using some old cached data while getting new pathway data from the web service at http://www.pathwaycommons.org/
-
-Pathway Commons maintains a stable [Docker Hub](https://hub.docker.com/) image for
-[app-ui](https://hub.docker.com/r/pathwaycommons/app-ui/) that is automatically built each time a commit is pushed
-to the master branch on GitHub (other versions can be also built automatically or on-demand and pushed to that
-PC repository on Docker Hub).
-
-To run the app using the pathwaycommons/app-ui:master image, execute:
-
-```sh
-docker-compose up -d webapp
-```
-
-Access the app instance at port `3000` (can be specified in the docker-compose.yml).
-
-Notes:
-- References:
-  - [Getting started with Docker Compose](https://docs.docker.com/compose/gettingstarted/)
-
 
 ## Testing
 

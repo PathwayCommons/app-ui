@@ -58,13 +58,13 @@ The following environment variables can be used to configure the server (also do
 Build the image.
 
 ```
-docker build -t app-ui .
+docker build -t pathwaycommons/app-ui .
 ```
 
 Run the container:
 
 ```
-docker run --detach --rm --publish 3000:3000 --env "NODE_ENV=production" --name "app-ui" app-ui
+docker run --detach --rm --publish 3000:3000 --env "NODE_ENV=production" --name "app-ui" pathwaycommons/app-ui
 ```
 
 ## Testing

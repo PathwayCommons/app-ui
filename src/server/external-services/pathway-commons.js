@@ -29,8 +29,8 @@ const toJSON = res => res.json();
 let query = opts => {
   let queryOpts = _.assign( { user: 'app-ui', cmd: 'pc2/get' }, opts);
   let { cmd } = queryOpts;
+  delete queryOpts.cmd; //not need to add the cmd as query parameters as well (it's part of URI)
   let url = config.PC_URL + cmd + '?' + qs.stringify( queryOpts );
-
   return fetch(url, fetchOptions)
     .then(res => ( cmd === 'pc2/get' || cmd === 'pc2/graph' ? res.text() : res.json() ) )
     .catch( e => {
@@ -284,8 +284,7 @@ const formatXrefQuery = ( name, localId ) => _.concat( [], { db: name, id: local
 
 /* fetchEntityUriBase
  * Wrapper around the BioPAX service to fetch URI
- * given the identifiers collection name and identifier of a bio entity
- * http://biopax.baderlab.org/docs/index.html#_introduction
+ * given the identifiers collection name and identifier of a bio entity;
  * @return { object } the URL origin and namespace
  */
 const fetchEntityUriBase = ( name, localId ) => {

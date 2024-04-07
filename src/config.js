@@ -4,7 +4,6 @@ let defaults = {
   PORT: 3000,
   METADATA_CRON_SCHEDULE: '0 0 * * Monday', // update file from gprofiler etc. (Monday at midnight)
   PC_URL: 'https://www.pathwaycommons.org/',
-  XREF_SERVICE_URL: 'https://biopax.baderlab.org/xref/',
   DOWNLOADS_FOLDER_NAME: 'downloads',
   GPROFILER_URL: "https://biit.cs.ut.ee/gprofiler/",
   GMT_ARCHIVE_URL: 'https://biit.cs.ut.ee/gprofiler/static/gprofiler_hsapiens.name.zip',
@@ -56,8 +55,7 @@ let envVars = _.pick( process.env, Object.keys( defaults ) );
 let clientVars = {
   NODE_ENV: process.env.NODE_ENV,
   PC_URL: process.env.PC_URL,
-  FACTOID_URL: process.env.FACTOID_URL,
-  XREF_SERVICE_URL: process.env.XREF_SERVICE_URL
+  FACTOID_URL: process.env.FACTOID_URL
 };
 
 _.assign(envVars, clientVars);

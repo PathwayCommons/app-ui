@@ -283,12 +283,13 @@ const handleXrefServiceResponse = res => {
 const formatXrefQuery = ( name, localId ) => _.concat( [], { db: name, id: localId } );
 
 /* fetchEntityUriBase
- * Light wrapper around the BioPAX service to fetch URI given a collection name and local ID for entity
+ * Wrapper around the BioPAX service to fetch URI
+ * given the identifiers collection name and identifier of a bio entity
  * http://biopax.baderlab.org/docs/index.html#_introduction
  * @return { object } the URL origin and namespace
  */
 const fetchEntityUriBase = ( name, localId ) => {
-  const url = config.XREF_SERVICE_URL;
+  const url = config.PC_URL + "validate/xref/";
   const fetchOpts = {
     method: 'POST',
     headers: {

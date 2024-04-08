@@ -288,7 +288,7 @@ const formatXrefQuery = ( name, localId ) => _.concat( [], { db: name, id: local
  * @return { object } the URL origin and namespace
  */
 const fetchEntityUriBase = ( name, localId ) => {
-  const url = config.PC_URL + "validate/xref/";
+  const url = config.PC_URL + "validate/xref";
   const fetchOpts = {
     method: 'POST',
     headers: {

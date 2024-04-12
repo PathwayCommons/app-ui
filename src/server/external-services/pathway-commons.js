@@ -267,13 +267,19 @@ const sifGraph = opts => {
   });
 };
 
+//for the /xref service api see:
+// biopax.baderlab.org/docs/index.html (OLD/experimental Spring docs version)
+// pathwaycommons.io/validate/swagger-ui/index.html#/suggester-controller/xref
 const handleXrefServiceResponse = res => {
   const { values } = res;
-  const xrefInfo = _.head( values );
+  const xrefInfo = _.head( values ); //use top/first item only
+  if( !xrefInfo || !xrefInfo.uri) {
+    logger.debug("no useful xref");
+    return null;
+  }
   const uri = new url.URL( xrefInfo.uri ); // Throws TypeError
-  const pathParts = _.compact( uri.pathname.split('/') );
-  if( _.isEmpty( pathParts ) || pathParts.length !== 2 ) throw new Error( 'Unrecognized URI' );
-  const namespace = _.head( pathParts );
+  //valid url is like: http://bioregistry.io/<namespace>:<id> (older version - http://identifiers.org/<namespace>/<id>)
+  const namespace = xrefInfo.namespace; //when xref.db was there recognized (see also: xrefInfo.dbOk and xrefInfo.idOk)
   return {
     origin: uri.origin,
     namespace

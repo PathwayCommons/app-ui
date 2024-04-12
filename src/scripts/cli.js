@@ -156,7 +156,7 @@ async function imagesFromGmtFile( fpath, store, get, parse, convert ) {
   }
 }
 
-// ambiguous: e.g. value[1] = 'name: t(4;14) translocations of FGFR3; datasource: reactome; organism: 9606; idtype: hgnc symbol'
+// ambiguous: e.g. value[1] = 'name: t(4;14) translocations of FGFR3; datasource: reactome; organism: 9606; idtype: hgnc.symbol'
 const parsePCGmtLine = line => {
   const extractFields = str => str.match(/^name:\s(?<name>.*);\sdatasource:\s(?<source>.*);\sorganism:\s(?<organism>.*);\sidtype:\s(?<idtype>.*)$/);
   const parseMeta = value => {

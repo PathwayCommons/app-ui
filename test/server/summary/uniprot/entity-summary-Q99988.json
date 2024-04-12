@@ -17,19 +17,19 @@
 	"xrefLinks": [
 		{
 			"namespace": "uniprot",
-			"uri": "https://identifiers.org/uniprot/Q99988"
+			"uri": "http://bioregistry.io/uniprot:Q99988"
 		},
 		{
 			"namespace": "ncbigene",
-			"uri": "https://identifiers.org/ncbigene/9518"
+			"uri": "http://bioregistry.io/ncbigene:9518"
 		},
 		{
 			"namespace": "genecards",
-			"uri": "https://identifiers.org/genecards/GDF15"
+			"uri": "http://bioregistry.io/genecards:GDF15"
 		},
 		{
 			"namespace": "hgnc.symbol",
-			"uri": "https://identifiers.org/hgnc.symbol/GDF15"
+			"uri": "http://bioregistry.io/hgnc.symbol:GDF15"
 		}
 	]
 }]

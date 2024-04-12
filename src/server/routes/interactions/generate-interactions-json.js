@@ -144,7 +144,7 @@ let getInteractionsCyJson = async (sifText, geneIds) => {
 };
 
 let getInteractionsNetwork = sources => {
-  let uniqueGeneIds  = _.uniq([].concat(sources).map( source => source.toUpperCase() ) );
+  let uniqueGeneIds  = _.uniq([].concat(sources).map( source => source.toUpperCase() ) );//todo: why uppercase (gene symbols are case-sensitive)?
 
   let params = {
     source: uniqueGeneIds

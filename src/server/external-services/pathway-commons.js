@@ -49,13 +49,12 @@ const dataSourceFields = [
   "identifier",
   "name",
   "description",
-  "urlToHomepage",
+  "homepageUrl",
   "iconUrl",
   "pubmedId",
   "numPathways",
   "numInteractions",
-  "numPhysicalEntities",
-  "notPathwayData"
+  "numPhysicalEntities"
 ];
 const sortByLength = arr => arr.sort( ( a, b ) => b.length - a.length );
 /**
@@ -87,7 +86,7 @@ const getDataSources = () => getDataSourcesMap().then( dsMap => _.uniqBy( [ ...d
 /**
  * getDataSourceInfo
  * Find first instance of dataSource that matches any elements of an array of 'names'.
- * Flexible enough to accomodate cases where 'name' varies in size.
+ * Flexible enough to accommodate cases where 'name' varies in size.
  * @param { Array } Strings of dataSource names
  * @param { Map } The dataSource Map
  * @returns { Object } Various dataSource fields (see dataSourceFields)

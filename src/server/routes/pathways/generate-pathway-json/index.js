@@ -21,6 +21,7 @@ const sbgn2CyJsonInThread = file => {
 
 const fillInBiopaxMetadataInThread = (nodes, biopaxJson) => {
   let task = Future.wrap(function(nodes, biopaxJson, next){ // code in this block runs in its own thread
+//  console.log(nodes.nodes[1]);
     try {
       let res = fillInBiopaxMetadata(nodes, biopaxJson);
 
@@ -55,7 +56,7 @@ function getPathwayMetadata(uri) {
       dataSource: _.get( supportedProvider, 'name' ), 
       comments, 
       organism,
-      urlToHomepage: _.get( supportedProvider, 'urlToHomepage' ) 
+      urlToHomepage: _.get( supportedProvider, 'homepageUrl' )
     };
   });
 }

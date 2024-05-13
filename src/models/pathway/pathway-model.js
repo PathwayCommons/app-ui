@@ -1,7 +1,6 @@
 const _ = require('lodash');
 
 // basic pathway model to serve the needs of the pathways view
-// TODO:
 //  - api to get entities,
 //  - compose each entity with entity metadata
 //  - get entity by id

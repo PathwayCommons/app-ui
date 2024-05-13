@@ -1,6 +1,6 @@
 {
   "@graph" : [ {
-    "@id" : "http://bioregistry.io/CHEBI:10545",
+    "@id" : "http://bioregistry.io/chebi:10545",
     "@type" : "bp:SmallMoleculeReference",
     "comment" : [ "is_a CHEBI:36338", "Elementary particle not affected by the strong force having a spin 1/2, a negative elementary charge and a rest mass of 0.000548579903(13) u, or 0.51099906(15) MeV." ],
     "displayName" : "electron",
@@ -8,7 +8,7 @@
     "standardName" : "electron",
     "xref" : [ "pc2:RelationshipXref_chebi_CHEBI_36338_multiple_parent_reference", "pc2:UnificationXref_chebi_CHEBI_10545" ]
   }, {
-    "@id" : "http://bioregistry.io/CHEBI:15346",
+    "@id" : "http://bioregistry.io/chebi:15346",
     "@type" : "bp:SmallMoleculeReference",
     "comment" : [ "A thiol comprising a panthothenate unit in phosphoric anhydride linkage with a 3',5'-adenosine diphosphate unit; and an aminoethanethiol unit.", "is_a CHEBI:37240", "has_role CHEBI:23354", "has_role CHEBI:75771", "has_functional_parent CHEBI:16761", "is_conjugate_acid_of CHEBI:57287" ],
     "displayName" : "coenzyme A",
@@ -16,7 +16,7 @@
     "standardName" : "3'-phosphoadenosine 5'-{3-[(3R)-3-hydroxy-2,2-dimethyl-4-oxo-4-({3-oxo-3-[(2-sulfanylethyl)amino]propyl}amino)butyl] dihydrogen diphosphate}",
     "xref" : [ "pc2:RelationshipXref_chebi_CHEBI_23355_secondary-ac", "pc2:UnificationXref_chebi_CHEBI_15346", "pc2:RelationshipXref_chebi_CHEBI_41597_secondary-ac", "pc2:RelationshipXref_chebi_CHEBI_76971_see-also", "pc2:RelationshipXref_chebi_CHEBI_57287_see-also", "pc2:RelationshipXref_chebi_CHEBI_3771_secondary-ac", "pc2:RelationshipXref_chebi_CHEBI_741566_secondary-ac", "pc2:RelationshipXref_chebi_CHEBI_16761_see-also", "pc2:RelationshipXref_chebi_CHEBI_13298_secondary-ac", "pc2:RelationshipXref_chebi_CHEBI_41631_secondary-ac", "pc2:RelationshipXref_chebi_CHEBI_37240_multiple_parent_reference", "pc2:RelationshipXref_chebi_CHEBI_75771_see-also", "pc2:RelationshipXref_chebi_CHEBI_13295_secondary-ac", "pc2:RelationshipXref_chebi_CHEBI_13294_secondary-ac", "pc2:RelationshipXref_chebi_CHEBI_23354_see-also" ]
   }, {
-    "@id" : "http://bioregistry.io/CHEBI:15351",
+    "@id" : "http://bioregistry.io/chebi:15351",
     "@type" : "bp:SmallMoleculeReference",
     "comment" : [ "has_functional_parent CHEBI:15346", "has_role CHEBI:23354", "is_a CHEBI:17984", "has_role CHEBI:78675", "has_functional_parent CHEBI:15366", "is_conjugate_acid_of CHEBI:57288", "has_role CHEBI:62049", "An acyl-CoA having acetyl as its S-acetyl component.", "has_role CHEBI:35224" ],
     "displayName" : "acetyl-CoA",
@@ -24,7 +24,7 @@
     "standardName" : "3'-phosphoadenosine 5'-(3-{(3R)-4-[(3-{[2-(acetylsulfanyl)ethyl]amino}-3-oxopropyl)amino]-3-hydroxy-2,2-dimethyl-4-oxobutyl} dihydrogen diphosphate)",
     "xref" : [ "pc2:RelationshipXref_chebi_CHEBI_62049_see-also", "pc2:RelationshipXref_chebi_CHEBI_22192_secondary-ac", "pc2:RelationshipXref_chebi_CHEBI_13712_secondary-ac", "pc2:RelationshipXref_chebi_CHEBI_15366_see-also", "pc2:RelationshipXref_chebi_CHEBI_35224_see-also", "pc2:RelationshipXref_chebi_CHEBI_40470_secondary-ac", "pc2:RelationshipXref_chebi_CHEBI_15346_see-also", "pc2:RelationshipXref_chebi_CHEBI_78675_see-also", "pc2:RelationshipXref_chebi_CHEBI_2408_secondary-ac", "pc2:UnificationXref_chebi_CHEBI_15351", "pc2:RelationshipXref_chebi_CHEBI_23354_see-also", "pc2:RelationshipXref_chebi_CHEBI_57288_see-also", "pc2:RelationshipXref_chebi_CHEBI_17984_multiple_parent_reference" ]
   }, {
-    "@id" : "http://bioregistry.io/CHEBI:15422",
+    "@id" : "http://bioregistry.io/chebi:15422",
     "@type" : "bp:SmallMoleculeReference",
     "comment" : ["An adenosine 5'-phosphate in which the 5'-phosphate is a triphosphate group. It is involved in the transportation of chemical energy during metabolic pathways.", "is_conjugate_acid_of CHEBI:57299", "has_role CHEBI:78675", "is_a CHEBI:37096", "is_a CHEBI:37045", "has_role CHEBI:27027", "has_role CHEBI:50733" ],
     "displayName" : "ATP",
@@ -32,7 +32,7 @@
     "standardName" : "adenosine 5'-(tetrahydrogen triphosphate)",
     "xref" : [ "pc2:RelationshipXref_chebi_CHEBI_10789_secondary-ac", "pc2:RelationshipXref_chebi_CHEBI_50733_see-also", "pc2:RelationshipXref_chebi_CHEBI_40938_secondary-ac", "pc2:RelationshipXref_chebi_CHEBI_37096_multiple_parent_reference", "pc2:RelationshipXref_chebi_CHEBI_78675_see-also", "pc2:UnificationXref_chebi_CHEBI_15422", "pc2:RelationshipXref_chebi_CHEBI_57299_see-also", "pc2:RelationshipXref_chebi_CHEBI_2359_secondary-ac", "pc2:RelationshipXref_chebi_CHEBI_27027_see-also", "pc2:RelationshipXref_chebi_CHEBI_37045_multiple_parent_reference", "pc2:RelationshipXref_chebi_CHEBI_10841_secondary-ac", "pc2:RelationshipXref_chebi_CHEBI_13236_secondary-ac", "pc2:RelationshipXref_chebi_CHEBI_22249_secondary-ac" ]
   }, {
-    "@id" : "http://bioregistry.io/CHEBI:16761",
+    "@id" : "http://bioregistry.io/chebi:16761",
     "@type" : "bp:SmallMoleculeReference",
     "comment" : ["has_role CHEBI:78675", "is_a CHEBI:37096", "is_a CHEBI:37038", "is_conjugate_acid_of CHEBI:87518", "A purine ribonucleoside 5'-diphosphate having adenine as the nucleobase.",  "is_conjugate_acid_of CHEBI:456216", "has_role CHEBI:77746" ],
     "displayName" : "ADP",
@@ -40,7 +40,7 @@
     "standardName" : "adenosine 5'-(trihydrogen diphosphate)",
     "xref" : [ "pc2:RelationshipXref_chebi_CHEBI_22244_secondary-ac", "pc2:RelationshipXref_chebi_CHEBI_40553_secondary-ac", "pc2:RelationshipXref_chebi_CHEBI_87518_see-also", "pc2:RelationshipXref_chebi_CHEBI_77746_see-also", "pc2:RelationshipXref_chebi_CHEBI_37096_multiple_parent_reference", "pc2:RelationshipXref_chebi_CHEBI_456216_see-also", "pc2:RelationshipXref_chebi_CHEBI_13222_secondary-ac", "pc2:UnificationXref_chebi_CHEBI_16761", "pc2:RelationshipXref_chebi_CHEBI_37038_multiple_parent_reference", "pc2:RelationshipXref_chebi_CHEBI_78675_see-also", "pc2:RelationshipXref_chebi_CHEBI_2342_secondary-ac" ]
   }, {
-    "@id" : "http://bioregistry.io/CHEBI:24636",
+    "@id" : "http://bioregistry.io/chebi:24636",
     "@type" : "bp:SmallMoleculeReference",
     "comment" : [ "is_a CHEBI:15378", "Nuclear particle of charge number +1, spin 1/2 and rest mass of 1.007276470(12) u.", "is_a CHEBI:33253" ],
     "displayName" : "proton",
@@ -48,14 +48,14 @@
     "standardName" : "proton",
     "xref" : [ "pc2:RelationshipXref_chebi_CHEBI_15378_multiple_parent_reference", "pc2:UnificationXref_chebi_CHEBI_24636", "pc2:RelationshipXref_chebi_CHEBI_33253_multiple_parent_reference" ]
   }, {
-    "@id" : "http://bioregistry.io/CHEBI:26523",
+    "@id" : "http://bioregistry.io/chebi:26523",
     "@type" : "bp:SmallMoleculeReference",
     "comment" : [ "Molecules or ions formed by the incomplete one-electron reduction of oxygen. They contribute to the microbicidal activity of phagocytes, regulation of signal transduction and gene expression, and the oxidative damage to biopolymers.", "is_a CHEBI:25806" ],
     "displayName" : "reactive oxygen species",
     "name" : [ "CHEBI:26523", "ROS" ],
     "xref" : [ "pc2:RelationshipXref_chebi_CHEBI_25806_multiple_parent_reference", "pc2:UnificationXref_chebi_CHEBI_26523" ]
   }, {
-    "@id" : "http://bioregistry.io/CHEBI:30212",
+    "@id" : "http://bioregistry.io/chebi:30212",
     "@type" : "bp:SmallMoleculeReference",
     "comment" : [ "Particle of zero charge, zero rest mass, spin quantum number 1, energy hnu and momentum hnu/c (h is the Planck constant, nu the frequency of radiation and c the speed of light), carrier of electromagnetic force.", "is_a CHEBI:36341" ],
     "displayName" : "photon",
@@ -63,7 +63,7 @@
     "standardName" : "photon",
     "xref" : [ "pc2:RelationshipXref_chebi_CHEBI_36341_multiple_parent_reference", "pc2:RelationshipXref_chebi_CHEBI_10581_secondary-ac", "pc2:RelationshipXref_chebi_CHEBI_14383_secondary-ac", "pc2:UnificationXref_chebi_CHEBI_30212" ]
   }, {
-    "@id" : "http://bioregistry.io/CHEBI:30216",
+    "@id" : "http://bioregistry.io/chebi:30216",
     "@type" : "bp:SmallMoleculeReference",
     "comment" : [ "is_a CHEBI:33316", "Nucleus of the (4)He atom.", "is_a CHEBI:33252" ],
     "displayName" : "alpha-particle",
@@ -628,7 +628,7 @@
   }, {
     "@id" : "pc2:Catalysis_21d2b697d8883df7c235d05f058c4712",
     "@type" : "bp:Catalysis",
-    "comment" : 
+
     "controlType" : "ACTIVATION",
     "controlled" : "http://bioregistry.io/reactome:R-HSA-5682044",
     "controller" : "pc2:Complex_edde54f1da02d5ee1aaf8ce67f9e6250",
@@ -637,7 +637,6 @@
   }, {
     "@id" : "pc2:Catalysis_42b2d75fbcad8dcbbc507bd83aee4736",
     "@type" : "bp:Catalysis",
-    "comment" : 
     "controlType" : "ACTIVATION",
     "controlled" : "http://bioregistry.io/reactome:R-HSA-5693540",
     "controller" : "pc2:Complex_7657d922d7eb25e28b62d2eeb78adf26",
@@ -799,7 +798,7 @@
   }, {
     "@id" : "pc2:DnaReference_fa71e7fd909c871b5fc4f33e35a0dc5d",
     "@type" : "bp:DnaReference",
-    "comment" : 
+
     "displayName" : "CIP1",
     "name" : [ "PIC1", "CAP20", "CDKN1A", "WAF1", "MDA6", "CDKN1", "SDI1", "ENSEMBL:ENSG00000124762 CDKN1A" ],
     "organism" : "http://bioregistry.io/ncbitaxon:9606",
@@ -817,67 +816,67 @@
   }, {
     "@id" : "pc2:FragmentFeature_2afbd73597cf623afffc4e425f7bebd2",
     "@type" : "bp:FragmentFeature",
-    "comment" : 
+
     "featureLocation" : "pc2:SequenceInterval_9e5d5956a164c721c2d6d85c2800f393"
   }, {
     "@id" : "pc2:FragmentFeature_3b70948276a66a008f980cfd004ca1ec",
     "@type" : "bp:FragmentFeature",
-    "comment" : 
+
     "featureLocation" : "pc2:SequenceInterval_86b6f864f9056afd6277e0c301322156"
   }, {
     "@id" : "pc2:FragmentFeature_4200ed98c54fd822df91557d0b2bea5f",
     "@type" : "bp:FragmentFeature",
-    "comment" : 
+
     "featureLocation" : "pc2:SequenceInterval_b4a03db191a7d3ba9d501db498abdee4"
   }, {
     "@id" : "pc2:FragmentFeature_481b0c8cae39800a688f171002b08109",
     "@type" : "bp:FragmentFeature",
-    "comment" : 
+
     "featureLocation" : "pc2:SequenceInterval_27e5493e21af596c352067a0c2b3c06a"
   }, {
     "@id" : "pc2:FragmentFeature_69f7ab75c867b93b6b7817cca4e26313",
     "@type" : "bp:FragmentFeature",
-    "comment" : 
+
     "featureLocation" : "pc2:SequenceInterval_5c50257d97ada9687cf2691e202fd7ca"
   }, {
     "@id" : "pc2:FragmentFeature_a53e0b63f62fcf58bbeec6507e2e02d0",
     "@type" : "bp:FragmentFeature",
-    "comment" : 
+
     "featureLocation" : "pc2:SequenceInterval_1e1fb307aaf9ebecb79ed508abc9aef9"
   }, {
     "@id" : "pc2:FragmentFeature_b9c523842da0033079fc51ee2dde6c48",
     "@type" : "bp:FragmentFeature",
-    "comment" : 
+
     "featureLocation" : "pc2:SequenceInterval_ce5aa9bcec8422749561749ced89e2b2"
   }, {
     "@id" : "pc2:FragmentFeature_bcebb341e983b95a94b4afe51a64ef51",
     "@type" : "bp:FragmentFeature",
-    "comment" : 
+
     "featureLocation" : "pc2:SequenceInterval_ae11659350c0f0305105930dfda08359"
   }, {
     "@id" : "pc2:FragmentFeature_cb2e40c50cca8cfd668bd91d3d7f9f0f",
     "@type" : "bp:FragmentFeature",
-    "comment" : 
+
     "featureLocation" : "pc2:SequenceInterval_7df6c21220bfbf2b1b2f6847e2a90139"
   }, {
     "@id" : "pc2:FragmentFeature_e9c088944b1dd7575174816702772047",
     "@type" : "bp:FragmentFeature",
-    "comment" : 
+
     "featureLocation" : "pc2:SequenceInterval_df098d46d5607f33f2456d4050b6c9a6"
   }, {
     "@id" : "pc2:FragmentFeature_edd6c3042894a8d8dae51e6a30a0ba94",
     "@type" : "bp:FragmentFeature",
-    "comment" : 
+
     "featureLocation" : "pc2:SequenceInterval_42a2f7e8b8f54b950eec521226507fd3"
   }, {
     "@id" : "pc2:FragmentFeature_fb7974c4f86ce5554fb54db50313c971",
     "@type" : "bp:FragmentFeature",
-    "comment" : 
+
     "featureLocation" : "pc2:SequenceInterval_9e5e86c5ae0e63ceb7003d61d88c2368"
   }, {
     "@id" : "pc2:FragmentFeature_ff6a3c1b2a59562dade1a09d98ac9c14",
     "@type" : "bp:FragmentFeature",
-    "comment" : 
+
     "featureLocation" : "pc2:SequenceInterval_9c69153d3ec71d57cd1e1c91850b0331"
   }, {
     "@id" : "pc2:ModificationFeature_0281d16be7b85f3cd29abb0cc49a8eb4",
@@ -984,7 +983,7 @@
   }, {
     "@id" : "pc2:ModificationFeature_2cb5a6f76af173d63340c98ad1561c47",
     "@type" : "bp:ModificationFeature",
-    "comment" : 
+
     "modificationType" : "pc2:SequenceModificationVocabulary_19d3894f53ce79c3f836f26cf8a3be3b"
   }, {
     "@id" : "pc2:ModificationFeature_34484b2c27de2b56a9f2526f40357ef3",
@@ -995,7 +994,7 @@
   }, {
     "@id" : "pc2:ModificationFeature_3c8f6571c461529b63b41db7d816be76",
     "@type" : "bp:ModificationFeature",
-    "comment" : 
+
     "featureLocation" : "pc2:SequenceSite_0b35ad49ad6720f5eedeb8e702a835b3",
     "modificationType" : "pc2:SequenceModificationVocabulary_4a7b32ae405ca5f1515dec35a38dc81c"
   }, {
@@ -1013,7 +1012,7 @@
   }, {
     "@id" : "pc2:ModificationFeature_3e9d2d450b1cc466e37acd828496e4ba",
     "@type" : "bp:ModificationFeature",
-    "comment" : 
+
     "featureLocation" : "pc2:SequenceSite_3ee01c1af69aef61668d4fc802b34489",
     "modificationType" : "pc2:SequenceModificationVocabulary_ac5aeb4d5f08ef74331fc7aa49f56564"
   }, {
@@ -1055,7 +1054,7 @@
   }, {
     "@id" : "pc2:ModificationFeature_507633b2e5a9a5f735e4dac3a1efe362",
     "@type" : "bp:ModificationFeature",
-    "comment" : 
+
     "modificationType" : "pc2:SequenceModificationVocabulary_19d3894f53ce79c3f836f26cf8a3be3b"
   }, {
     "@id" : "pc2:ModificationFeature_52062da5869553bee0ba1c2e0d1094e3",
@@ -1078,7 +1077,7 @@
   }, {
     "@id" : "pc2:ModificationFeature_67b9d9cca57f41eda94ea09b51e6fdfc",
     "@type" : "bp:ModificationFeature",
-    "comment" : 
+
     "modificationType" : "pc2:SequenceModificationVocabulary_19d3894f53ce79c3f836f26cf8a3be3b"
   }, {
     "@id" : "pc2:ModificationFeature_69658ede296581e1845517138ae8edf3",
@@ -1101,7 +1100,7 @@
   }, {
     "@id" : "pc2:ModificationFeature_70ee4f9f2c837956efe63433b591f72c",
     "@type" : "bp:ModificationFeature",
-    "comment" : 
+
     "modificationType" : "pc2:SequenceModificationVocabulary_c76a5e84e4bdee527e274ea30c680d79"
   }, {
     "@id" : "pc2:ModificationFeature_71a8fc9873211a6aa77060efdaf1607e",
@@ -1136,7 +1135,7 @@
   }, {
     "@id" : "pc2:ModificationFeature_8339db58bb56918182c7699f6204905f",
     "@type" : "bp:ModificationFeature",
-    "comment" : 
+
     "modificationType" : "pc2:SequenceModificationVocabulary_c76a5e84e4bdee527e274ea30c680d79"
   }, {
     "@id" : "pc2:ModificationFeature_8872e7c7b8ad0f6cdaf0d5bc9941445a",
@@ -1195,7 +1194,7 @@
   }, {
     "@id" : "pc2:ModificationFeature_ab972b2c0912444e05df5a447e9cc054",
     "@type" : "bp:ModificationFeature",
-    "comment" : 
+
     "modificationType" : "pc2:SequenceModificationVocabulary_c76a5e84e4bdee527e274ea30c680d79"
   }, {
     "@id" : "pc2:ModificationFeature_b3dcb6f40b98236f8a0c3fd7ff3857c1",
@@ -1230,13 +1229,13 @@
   }, {
     "@id" : "pc2:ModificationFeature_baa359e597736511d9a568434ac08205",
     "@type" : "bp:ModificationFeature",
-    "comment" : 
+
     "featureLocation" : "pc2:SequenceSite_a782607f8a0ecd3e5003e2f7fe73e936",
     "modificationType" : "pc2:SequenceModificationVocabulary_ac5aeb4d5f08ef74331fc7aa49f56564"
   }, {
     "@id" : "pc2:ModificationFeature_bfc1c08b90651fe726c042b2300365a8",
     "@type" : "bp:ModificationFeature",
-    "comment" : 
+
     "modificationType" : "pc2:SequenceModificationVocabulary_19d3894f53ce79c3f836f26cf8a3be3b"
   }, {
     "@id" : "pc2:ModificationFeature_c2ac2521e5343d82692b67d7cfdebb21",
@@ -1265,7 +1264,7 @@
   }, {
     "@id" : "pc2:ModificationFeature_cb215f84c3dc2c25bf16ceafa140aec0",
     "@type" : "bp:ModificationFeature",
-    "comment" : 
+
     "featureLocation" : "pc2:SequenceSite_496eebc66ec3d4a60b3da4d8a3463b88",
     "modificationType" : "pc2:SequenceModificationVocabulary_ac5aeb4d5f08ef74331fc7aa49f56564"
   }, {
@@ -1295,7 +1294,7 @@
   }, {
     "@id" : "pc2:ModificationFeature_d1cf029575673908f937f208ae68f3de",
     "@type" : "bp:ModificationFeature",
-    "comment" : 
+
     "modificationType" : "pc2:SequenceModificationVocabulary_575cf720ad4ab56962e3032aff055567"
   }, {
     "@id" : "pc2:ModificationFeature_d42b4369734b64c86a88eb36c6a0e197",
@@ -1318,7 +1317,7 @@
   }, {
     "@id" : "pc2:ModificationFeature_d95dbed53b3526e78d745e9cef3c35b5",
     "@type" : "bp:ModificationFeature",
-    "comment" : 
+
     "modificationType" : "pc2:SequenceModificationVocabulary_c76a5e84e4bdee527e274ea30c680d79"
   }, {
     "@id" : "pc2:ModificationFeature_e024901ee63ce8d11744dd1678fd3091",
@@ -1389,83 +1388,83 @@
   }, {
     "@id" : "pc2:PathwayStep_28213f0000078ff2ceae8f2b135b1396",
     "@type" : "bp:PathwayStep",
-    "comment" : 
+
     "stepProcess" : [ "http://bioregistry.io/reactome:R-HSA-5693540", "pc2:Catalysis_42b2d75fbcad8dcbbc507bd83aee4736" ]
   }, {
     "@id" : "pc2:PathwayStep_30242d0225b613e24d23c63479def6f5",
     "@type" : "bp:PathwayStep",
-    "comment" : 
+
     "nextStep" : "pc2:PathwayStep_ddb51b07fb19d415f637bdb2c34f2e45",
     "stepProcess" : "http://bioregistry.io/reactome:R-HSA-3785704"
   }, {
     "@id" : "pc2:PathwayStep_326ae28e1b2132a2503a4c5e95441958",
     "@type" : "bp:PathwayStep",
-    "comment" : 
+
     "nextStep" : "pc2:PathwayStep_96588e533c4319821da988c63e82914f",
     "stepProcess" : "http://bioregistry.io/reactome:R-HSA-6803801"
   }, {
     "@id" : "pc2:PathwayStep_4a5288797c9847c3841b51bf4ca3a184",
     "@type" : "bp:PathwayStep",
-    "comment" : 
+
     "nextStep" : "pc2:PathwayStep_326ae28e1b2132a2503a4c5e95441958",
     "stepProcess" : "http://bioregistry.io/reactome:R-HSA-6803719"
   }, {
     "@id" : "pc2:PathwayStep_5e10fcb0cbeb8d287477328a4753ed05",
     "@type" : "bp:PathwayStep",
-    "comment" : 
+
     "nextStep" : "pc2:PathwayStep_d3cf4463e0a92fd4a8d076b527b2ee92",
     "stepProcess" : "http://bioregistry.io/reactome:R-HSA-5684008"
   }, {
     "@id" : "pc2:PathwayStep_8e78a6dc422ae89dfdc91ab137d01017",
     "@type" : "bp:PathwayStep",
-    "comment" : 
+
     "nextStep" : "pc2:PathwayStep_da66ac0e39a28db420bfd83ad297f8d7",
     "stepProcess" : "http://bioregistry.io/reactome:R-HSA-5693612"
   }, {
     "@id" : "pc2:PathwayStep_96588e533c4319821da988c63e82914f",
     "@type" : "bp:PathwayStep",
-    "comment" : 
+
     "nextStep" : "pc2:PathwayStep_cb2d816170ba71bcbbc3e736c85923e1",
     "stepProcess" : [ "http://bioregistry.io/reactome:R-HSA-6803387", "http://bioregistry.io/reactome:R-HSA-6803388" ]
   }, {
     "@id" : "pc2:PathwayStep_97326379139683f1f6ae2738fe8e8974",
     "@type" : "bp:PathwayStep",
-    "comment" : 
+
     "nextStep" : "pc2:PathwayStep_ddb51b07fb19d415f637bdb2c34f2e45",
     "stepProcess" : "http://bioregistry.io/reactome:R-HSA-75174"
   }, {
     "@id" : "pc2:PathwayStep_bcceb2e6974e730c3b12917f18a3e473",
     "@type" : "bp:PathwayStep",
-    "comment" : 
+
     "nextStep" : "pc2:PathwayStep_97326379139683f1f6ae2738fe8e8974",
     "stepProcess" : "http://bioregistry.io/reactome:R-HSA-75172"
   }, {
     "@id" : "pc2:PathwayStep_ca815c0f5e7abd04eeb385035e64c5cb",
     "@type" : "bp:PathwayStep",
-    "comment" : 
+
     "stepProcess" : [ "http://bioregistry.io/reactome:R-HSA-6803411", "http://bioregistry.io/reactome:R-HSA-6803416" ]
   }, {
     "@id" : "pc2:PathwayStep_cb2d816170ba71bcbbc3e736c85923e1",
     "@type" : "bp:PathwayStep",
-    "comment" : 
+
     "nextStep" : "pc2:PathwayStep_ca815c0f5e7abd04eeb385035e64c5cb",
     "stepProcess" : "http://bioregistry.io/reactome:R-HSA-6803403"
   }, {
     "@id" : "pc2:PathwayStep_d3cf4463e0a92fd4a8d076b527b2ee92",
     "@type" : "bp:PathwayStep",
-    "comment" : 
+
     "nextStep" : "pc2:PathwayStep_97326379139683f1f6ae2738fe8e8974",
     "stepProcess" : "http://bioregistry.io/reactome:R-HSA-5684006"
   }, {
     "@id" : "pc2:PathwayStep_da66ac0e39a28db420bfd83ad297f8d7",
     "@type" : "bp:PathwayStep",
-    "comment" : 
+
     "nextStep" : "pc2:PathwayStep_28213f0000078ff2ceae8f2b135b1396",
     "stepProcess" : [ "http://bioregistry.io/reactome:R-HSA-5682044", "pc2:Catalysis_21d2b697d8883df7c235d05f058c4712" ]
   }, {
     "@id" : "pc2:PathwayStep_ddb51b07fb19d415f637bdb2c34f2e45",
     "@type" : "bp:PathwayStep",
-    "comment" : 
+
     "nextStep" : "pc2:PathwayStep_8e78a6dc422ae89dfdc91ab137d01017",
     "stepProcess" : "http://bioregistry.io/reactome:R-HSA-3785768"
   }, {
@@ -2030,28 +2029,28 @@
   }, {
     "@id" : "pc2:RelationshipXref_reactomehttp___www_reactome_org_biopax_64_48887_RelationshipXref190",
     "@type" : "bp:RelationshipXref",
-    "comment" : 
+
     "db" : "gene ontology",
     "id" : "GO:0016407",
     "relationshipType" : "http://bioregistry.io/psimi:MI:0355"
   }, {
     "@id" : "pc2:RelationshipXref_reactomehttp___www_reactome_org_biopax_64_48887_RelationshipXref191",
     "@type" : "bp:RelationshipXref",
-    "comment" : 
+
     "db" : "reactome database id release 64",
     "id" : "5682030",
     "relationshipType" : "pc2:RelationshipTypeVocabulary_ac7de6f2f302971b64781fc96cc97c86"
   }, {
     "@id" : "pc2:RelationshipXref_reactomehttp___www_reactome_org_biopax_64_48887_RelationshipXref192",
     "@type" : "bp:RelationshipXref",
-    "comment" : 
+
     "db" : "reactome database id release 64",
     "id" : "5694649",
     "relationshipType" : "pc2:RelationshipTypeVocabulary_ac7de6f2f302971b64781fc96cc97c86"
   }, {
     "@id" : "pc2:RelationshipXref_reactomehttp___www_reactome_org_biopax_64_48887_RelationshipXref74",
     "@type" : "bp:RelationshipXref",
-    "comment" : 
+
     "db" : "gene ontology",
     "id" : "GO:0004674",
     "relationshipType" : "http://bioregistry.io/psimi:MI:0355"
@@ -2065,7 +2064,7 @@
   }, {
     "@id" : "pc2:RnaReference_58853697b5a3844e4dbd66699f56e70e",
     "@type" : "bp:RnaReference",
-    "comment" : 
+
     "displayName" : "CDKN1A",
     "name" : "ENSEMBL:ENST00000244741 CDKN1A",
     "organism" : "http://bioregistry.io/ncbitaxon:9606",
@@ -2083,79 +2082,79 @@
   }, {
     "@id" : "pc2:SequenceInterval_1e1fb307aaf9ebecb79ed508abc9aef9",
     "@type" : "bp:SequenceInterval",
-    "comment" : 
+
     "sequenceIntervalBegin" : "pc2:SequenceSite_28ff31d1d48b3d9df4160fca3158280e",
     "sequenceIntervalEnd" : "pc2:SequenceSite_e518cb860c389c3ad82487e0915da3e4"
   }, {
     "@id" : "pc2:SequenceInterval_27e5493e21af596c352067a0c2b3c06a",
     "@type" : "bp:SequenceInterval",
-    "comment" : 
+
     "sequenceIntervalBegin" : "pc2:SequenceSite_c1ec20b781958e35cee8c7dbee20e75a",
     "sequenceIntervalEnd" : "pc2:SequenceSite_99a16a5cfadeab922e314edb9102fbd0"
   }, {
     "@id" : "pc2:SequenceInterval_42a2f7e8b8f54b950eec521226507fd3",
     "@type" : "bp:SequenceInterval",
-    "comment" : 
+
     "sequenceIntervalBegin" : "pc2:SequenceSite_78cc18f18ec0d07728b50b79f4ff8fbf",
     "sequenceIntervalEnd" : "pc2:SequenceSite_257fb11b776a53f71f053288594247cc"
   }, {
     "@id" : "pc2:SequenceInterval_5c50257d97ada9687cf2691e202fd7ca",
     "@type" : "bp:SequenceInterval",
-    "comment" : 
+
     "sequenceIntervalBegin" : "pc2:SequenceSite_857199a632e4959a24b6c5999e322887",
     "sequenceIntervalEnd" : "pc2:SequenceSite_05a06c1b5f3e3d9f305f26c296ce55b7"
   }, {
     "@id" : "pc2:SequenceInterval_7df6c21220bfbf2b1b2f6847e2a90139",
     "@type" : "bp:SequenceInterval",
-    "comment" : 
+
     "sequenceIntervalBegin" : "pc2:SequenceSite_5bf01ce5dbd758e2373bed325e8ef387",
     "sequenceIntervalEnd" : "pc2:SequenceSite_b0ec3b4e528e6cb7017d43db95eb70d5"
   }, {
     "@id" : "pc2:SequenceInterval_86b6f864f9056afd6277e0c301322156",
     "@type" : "bp:SequenceInterval",
-    "comment" : 
+
     "sequenceIntervalBegin" : "pc2:SequenceSite_be00c762f288d98b477e2011f40456b1",
     "sequenceIntervalEnd" : "pc2:SequenceSite_ebcea7e2c23b29f70d5ae906e463c37f"
   }, {
     "@id" : "pc2:SequenceInterval_9c69153d3ec71d57cd1e1c91850b0331",
     "@type" : "bp:SequenceInterval",
-    "comment" : 
+
     "sequenceIntervalBegin" : "pc2:SequenceSite_2d792238f4e3289af00070b0d8f0161b",
     "sequenceIntervalEnd" : "pc2:SequenceSite_3ca494a979047e0c1fab121df6b773b7"
   }, {
     "@id" : "pc2:SequenceInterval_9e5d5956a164c721c2d6d85c2800f393",
     "@type" : "bp:SequenceInterval",
-    "comment" : 
+
     "sequenceIntervalBegin" : "pc2:SequenceSite_7d79fb30d63d91136ca64d16dd8f026b",
     "sequenceIntervalEnd" : "pc2:SequenceSite_cfe515fa005398942cd744358a47b49a"
   }, {
     "@id" : "pc2:SequenceInterval_9e5e86c5ae0e63ceb7003d61d88c2368",
     "@type" : "bp:SequenceInterval",
-    "comment" : 
+
     "sequenceIntervalBegin" : "pc2:SequenceSite_58faf46980de89eccb8f3b223b203e91",
     "sequenceIntervalEnd" : "pc2:SequenceSite_0601b29f983a8f782d08aa15af223dfa"
   }, {
     "@id" : "pc2:SequenceInterval_ae11659350c0f0305105930dfda08359",
     "@type" : "bp:SequenceInterval",
-    "comment" : 
+
     "sequenceIntervalBegin" : "pc2:SequenceSite_d4d8b910e378f4350a27ded6ec3c7f65",
     "sequenceIntervalEnd" : "pc2:SequenceSite_9f62bd4edfa34f3556492d374168eda6"
   }, {
     "@id" : "pc2:SequenceInterval_b4a03db191a7d3ba9d501db498abdee4",
     "@type" : "bp:SequenceInterval",
-    "comment" : 
+
     "sequenceIntervalBegin" : "pc2:SequenceSite_d69b500364fc503fe49068749c7d908c",
     "sequenceIntervalEnd" : "pc2:SequenceSite_56f765008a6a44865596557ff3c81fcc"
   }, {
     "@id" : "pc2:SequenceInterval_ce5aa9bcec8422749561749ced89e2b2",
     "@type" : "bp:SequenceInterval",
-    "comment" : 
+
     "sequenceIntervalBegin" : "pc2:SequenceSite_89166cfa8ca03691b488dcf8224ecc0d",
     "sequenceIntervalEnd" : "pc2:SequenceSite_67f2108f4d8aa40fe1468c9b9aa9388e"
   }, {
     "@id" : "pc2:SequenceInterval_df098d46d5607f33f2456d4050b6c9a6",
     "@type" : "bp:SequenceInterval",
-    "comment" : 
+
     "sequenceIntervalBegin" : "pc2:SequenceSite_ff37896ed20a8b6f460baded1949308b",
     "sequenceIntervalEnd" : "pc2:SequenceSite_2a7b80259bee77a153d17716182bd667"
   }, {
@@ -2217,13 +2216,13 @@
   }, {
     "@id" : "pc2:SequenceSite_05a06c1b5f3e3d9f305f26c296ce55b7",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "529"
   }, {
     "@id" : "pc2:SequenceSite_0601b29f983a8f782d08aa15af223dfa",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "403"
   }, {
@@ -2234,7 +2233,7 @@
   }, {
     "@id" : "pc2:SequenceSite_0b35ad49ad6720f5eedeb8e702a835b3",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "3016"
   }, {
@@ -2275,7 +2274,7 @@
   }, {
     "@id" : "pc2:SequenceSite_257fb11b776a53f71f053288594247cc",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "754"
   }, {
@@ -2286,13 +2285,13 @@
   }, {
     "@id" : "pc2:SequenceSite_28ff31d1d48b3d9df4160fca3158280e",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "2"
   }, {
     "@id" : "pc2:SequenceSite_2a7b80259bee77a153d17716182bd667",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "3056"
   }, {
@@ -2303,7 +2302,7 @@
   }, {
     "@id" : "pc2:SequenceSite_2d792238f4e3289af00070b0d8f0161b",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "1"
   }, {
@@ -2324,7 +2323,7 @@
   }, {
     "@id" : "pc2:SequenceSite_3ca494a979047e0c1fab121df6b773b7",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "3056"
   }, {
@@ -2335,7 +2334,7 @@
   }, {
     "@id" : "pc2:SequenceSite_3ee01c1af69aef61668d4fc802b34489",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "15"
   }, {
@@ -2351,7 +2350,7 @@
   }, {
     "@id" : "pc2:SequenceSite_496eebc66ec3d4a60b3da4d8a3463b88",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "1981"
   }, {
@@ -2382,7 +2381,7 @@
   }, {
     "@id" : "pc2:SequenceSite_56f765008a6a44865596557ff3c81fcc",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "513"
   }, {
@@ -2393,13 +2392,13 @@
   }, {
     "@id" : "pc2:SequenceSite_58faf46980de89eccb8f3b223b203e91",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "1"
   }, {
     "@id" : "pc2:SequenceSite_5bf01ce5dbd758e2373bed325e8ef387",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "2"
   }, {
@@ -2420,7 +2419,7 @@
   }, {
     "@id" : "pc2:SequenceSite_67f2108f4d8aa40fe1468c9b9aa9388e",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "754"
   }, {
@@ -2461,13 +2460,13 @@
   }, {
     "@id" : "pc2:SequenceSite_78cc18f18ec0d07728b50b79f4ff8fbf",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "1"
   }, {
     "@id" : "pc2:SequenceSite_7d79fb30d63d91136ca64d16dd8f026b",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "1"
   }, {
@@ -2478,13 +2477,13 @@
   }, {
     "@id" : "pc2:SequenceSite_857199a632e4959a24b6c5999e322887",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "2"
   }, {
     "@id" : "pc2:SequenceSite_89166cfa8ca03691b488dcf8224ecc0d",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "1"
   }, {
@@ -2530,7 +2529,7 @@
   }, {
     "@id" : "pc2:SequenceSite_99a16a5cfadeab922e314edb9102fbd0",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "393"
   }, {
@@ -2546,7 +2545,7 @@
   }, {
     "@id" : "pc2:SequenceSite_9f62bd4edfa34f3556492d374168eda6",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "708"
   }, {
@@ -2562,7 +2561,7 @@
   }, {
     "@id" : "pc2:SequenceSite_a782607f8a0ecd3e5003e2f7fe73e936",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "20"
   }, {
@@ -2578,7 +2577,7 @@
   }, {
     "@id" : "pc2:SequenceSite_b0ec3b4e528e6cb7017d43db95eb70d5",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "164"
   }, {
@@ -2619,31 +2618,31 @@
   }, {
     "@id" : "pc2:SequenceSite_be00c762f288d98b477e2011f40456b1",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "1"
   }, {
     "@id" : "pc2:SequenceSite_c1ec20b781958e35cee8c7dbee20e75a",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "1"
   }, {
     "@id" : "pc2:SequenceSite_cfe515fa005398942cd744358a47b49a",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "3056"
   }, {
     "@id" : "pc2:SequenceSite_d4d8b910e378f4350a27ded6ec3c7f65",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "1"
   }, {
     "@id" : "pc2:SequenceSite_d69b500364fc503fe49068749c7d908c",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "1"
   }, {
@@ -2674,13 +2673,13 @@
   }, {
     "@id" : "pc2:SequenceSite_e518cb860c389c3ad82487e0915da3e4",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "529"
   }, {
     "@id" : "pc2:SequenceSite_ebcea7e2c23b29f70d5ae906e463c37f",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "1312"
   }, {
@@ -2721,7 +2720,7 @@
   }, {
     "@id" : "pc2:SequenceSite_ff37896ed20a8b6f460baded1949308b",
     "@type" : "bp:SequenceSite",
-    "comment" : 
+
     "positionStatus" : "EQUAL",
     "sequencePosition" : "1"
   }, {
@@ -2729,7 +2728,7 @@
     "@type" : "bp:SmallMoleculeReference",
     "comment" : "auto-generated generic entity reference",
     "displayName" : "DSB inducing agents",
-    "memberEntityReference" : [ "http://bioregistry.io/CHEBI:24636", "http://bioregistry.io/CHEBI:30216", "http://bioregistry.io/CHEBI:10545", "http://bioregistry.io/CHEBI:30212", "http://bioregistry.io/CHEBI:26523" ],
+    "memberEntityReference" : [ "http://bioregistry.io/chebi:24636", "http://bioregistry.io/chebi:30216", "http://bioregistry.io/chebi:10545", "http://bioregistry.io/chebi:30212", "http://bioregistry.io/chebi:26523" ],
     "name" : "Double strand break inducing agents",
     "xref" : "pc2:RelationshipXref_388ff2f101d4585ce46bba4294c317fb"
   }, {
@@ -2739,7 +2738,7 @@
     "comment" : [  "Reactome DB_ID: 6783907" ],
     "dataSource" : "pc2:reactome",
     "displayName" : "e-",
-    "entityReference" : "http://bioregistry.io/CHEBI:10545",
+    "entityReference" : "http://bioregistry.io/chebi:10545",
     "name" : [ "electron", "beta-particle" ],
     "xref" : "pc2:UnificationXref_reactome_R-ALL-6783907"
   }, {
@@ -2749,7 +2748,7 @@
     "comment" : [ "Reactome DB_ID: 6783899" ],
     "dataSource" : "pc2:reactome",
     "displayName" : "X-ray",
-    "entityReference" : "http://bioregistry.io/CHEBI:30212",
+    "entityReference" : "http://bioregistry.io/chebi:30212",
     "name" : "photon",
     "xref" : "pc2:UnificationXref_reactome_R-ALL-6783899"
   }, {
@@ -2759,7 +2758,7 @@
     "comment" : [  "Reactome DB_ID: 2485002" ],
     "dataSource" : "pc2:reactome",
     "displayName" : "CoA",
-    "entityReference" : "http://bioregistry.io/CHEBI:15346",
+    "entityReference" : "http://bioregistry.io/chebi:15346",
     "name" : [ "coenzyme A", "CoA-SH" ],
     "xref" : "pc2:UnificationXref_reactome_R-ALL-2485002"
   }, {
@@ -2769,7 +2768,7 @@
     "comment" : [  "Reactome DB_ID: 6783905" ],
     "dataSource" : "pc2:reactome",
     "displayName" : "alpha-particle",
-    "entityReference" : "http://bioregistry.io/CHEBI:30216",
+    "entityReference" : "http://bioregistry.io/chebi:30216",
     "name" : "nucleus of the 4He atom",
     "xref" : "pc2:UnificationXref_reactome_R-ALL-6783905"
   }, {
@@ -2779,7 +2778,7 @@
     "comment" : [ "Reactome DB_ID: 6783901" ],
     "dataSource" : "pc2:reactome",
     "displayName" : "proton",
-    "entityReference" : "http://bioregistry.io/CHEBI:24636",
+    "entityReference" : "http://bioregistry.io/chebi:24636",
     "xref" : "pc2:UnificationXref_reactome_R-ALL-6783901"
   }, {
     "@id" : "pc2:SmallMolecule_948bf8145e3535f9ea5a9924ece63093",
@@ -2788,7 +2787,7 @@
     "comment" : [ "Reactome DB_ID: 3785707" ],
     "dataSource" : "pc2:reactome",
     "displayName" : "ROS",
-    "entityReference" : "http://bioregistry.io/CHEBI:26523",
+    "entityReference" : "http://bioregistry.io/chebi:26523",
     "name" : "reactive oxygen species",
     "xref" : "pc2:UnificationXref_reactome_R-ALL-3785707"
   }, {
@@ -2808,7 +2807,7 @@
     "comment" : [  "Reactome DB_ID: 113560" ],
     "dataSource" : "pc2:reactome",
     "displayName" : "Ac-CoA",
-    "entityReference" : "http://bioregistry.io/CHEBI:15351",
+    "entityReference" : "http://bioregistry.io/chebi:15351",
     "name" : [ "Acetyl coenzyme A", "acetyl-CoA" ],
     "xref" : "pc2:UnificationXref_reactome_R-ALL-113560"
   }, {
@@ -2818,7 +2817,7 @@
     "comment" : [  "Reactome DB_ID: 113582" ],
     "dataSource" : "pc2:reactome",
     "displayName" : "ADP",
-    "entityReference" : "http://bioregistry.io/CHEBI:16761",
+    "entityReference" : "http://bioregistry.io/chebi:16761",
     "name" : "Adenosine 5'-diphosphate",
     "xref" : "pc2:UnificationXref_reactome_R-ALL-113582"
   }, {
@@ -2828,7 +2827,7 @@
     "comment" : [ "Reactome DB_ID: 29358" ],
     "dataSource" : "pc2:reactome",
     "displayName" : "ATP",
-    "entityReference" : "http://bioregistry.io/CHEBI:15422",
+    "entityReference" : "http://bioregistry.io/chebi:15422",
     "name" : "Adenosine 5'-triphosphate",
     "xref" : "pc2:UnificationXref_reactome_R-ALL-29358"
   }, {
@@ -2838,205 +2837,205 @@
     "comment" : [ "Reactome DB_ID: 6783900" ],
     "dataSource" : "pc2:reactome",
     "displayName" : "photon",
-    "entityReference" : "http://bioregistry.io/CHEBI:30212",
+    "entityReference" : "http://bioregistry.io/chebi:30212",
     "name" : "gamma-ray",
     "xref" : "pc2:UnificationXref_reactome_R-ALL-6783900"
   }, {
     "@id" : "pc2:Stoichiometry_02ba24617b150accc35331cfd0014283",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Protein_94babea4bbe4cfa74a5eaa14bd64fdb9",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_10b0729b5f97da669980fc7aad7d130a",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Protein_f871c53cb0c928af78b7868f3c8b184a",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_10f9dd1d41bd34a2e4c471126fb381e7",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Complex_e4c55477314b3d4bfd4b8f47ceff3e14",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_111c38d910f269eeac93ddcbf084d877",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Protein_a7b5f8ae33ec48bd898bf0cb9b0246b3",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_1179a7c28e324ec87900f62e7923210f",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Complex_c97f236694c67d2287e5c7143f031fb4",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_18adfec017a9c3a2320a59b7f528bd1b",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Protein_079c664cd60078b347fcf6d0f97f5af4",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_1982b94d33df43ab6e5d01448dc896d9",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Rna_b0c799710a192ab1ed6794a6332e3b0f",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_1a502a643ac0849f22df8a218c2567b3",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Complex_c97f236694c67d2287e5c7143f031fb4",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_1e0da41e8b20d7d1abe48e54c0d453d5",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Protein_1bda2d80d7f26e79f1ec46b69ea62814",
     "stoichiometricCoefficient" : "4.0"
   }, {
     "@id" : "pc2:Stoichiometry_2bcf88a9e23c728fe95022d01ef7dc61",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Protein_94babea4bbe4cfa74a5eaa14bd64fdb9",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_2c12f372fa8a7cac2023fa153ccf1d06",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Complex_d74f07949ce6144bcdec62f1686fc0b1",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_36a2713eb528debfc85f582c8300cf8f",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Complex_a2295af11b0327cd8f98b91eea4ce252",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_3c0e34cb367a6166038b99a5590f33fa",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:SmallMolecule_bdc306107e5d72faf9357799185031ed",
     "stoichiometricCoefficient" : "2.0"
   }, {
     "@id" : "pc2:Stoichiometry_407cd0d960b3e4319a1b070766b682df",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:SmallMolecule_b7f6b2e486be1c185ee0b70a840df0cc",
     "stoichiometricCoefficient" : "2.0"
   }, {
     "@id" : "pc2:Stoichiometry_439839d0af2bd704ae1a662e72354a7d",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Protein_079c664cd60078b347fcf6d0f97f5af4",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_4a6a420a4e03ee8ca5b7b8f6d007308b",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Protein_0f347010df2a91a3a183ca2e040e9338",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_5afb71fdfbe7f1632385ff87e4e8584d",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:SmallMolecule_d4997fadf0da73f4e01b3fbae639f1e0",
     "stoichiometricCoefficient" : "2.0"
   }, {
     "@id" : "pc2:Stoichiometry_6150cc8935aa6843123f6300f668b3c0",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:PhysicalEntity_aed382f7f338f592b19bfb03e26c3fbc",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_63b2e947b84c197a171be68114d420a0",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Protein_b6ddd20b19f30691c2d753540409b505",
     "stoichiometricCoefficient" : "2.0"
   }, {
     "@id" : "pc2:Stoichiometry_692e41d18f87bafcb6247fe5b67250ba",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Protein_86fea9631543db72915416397068b8c8",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_69f404ff4da7a4d57fe95c0d67f6bb54",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:SmallMolecule_3527193872605d2ec7861a33dc753417",
     "stoichiometricCoefficient" : "2.0"
   }, {
     "@id" : "pc2:Stoichiometry_9726df5e798641b9833dc24131f2e621",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Dna_91b0bb49fefe3673ba23d46ddacefc56",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_9e957b84ce01b4ec472f281764868b73",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Protein_0f347010df2a91a3a183ca2e040e9338",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_b048e5ce4448bc6d60d06be4feff725f",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Protein_74816ffc8af8e1d43b16b1226a5c0db2",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_b835aac9ed247e85ef12e1ef54253930",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Complex_3b9bde21e8f130870b91f73ac31dcaba",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_c4e4f57cb35310f0a65c871af5687d67",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Protein_80a7257fa4eecb6571c669c22dc5b016",
     "stoichiometricCoefficient" : "2.0"
   }, {
     "@id" : "pc2:Stoichiometry_d4dbb16461ed615deb77dcf93b798a38",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Protein_4b95624c3ca7717f25445d2382208b34",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_dab897c161f89664371ed7ddfc4a4578",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Complex_2683d3c3f5aabcf9f40339825e6a2458",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_dd9e6f47572b674f8aae7902d015cdf0",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Protein_94babea4bbe4cfa74a5eaa14bd64fdb9",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_e1725a1bfc5fcb44efc7ef63bd693d31",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Complex_a2295af11b0327cd8f98b91eea4ce252",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_f338df5c22638e6ef76b249cba0c7faa",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Protein_94babea4bbe4cfa74a5eaa14bd64fdb9",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_f75658e51741cb0814daa98fc33c2415",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Protein_c1f5c065e6bc72127ca56ee0bf005494",
     "stoichiometricCoefficient" : "1.0"
   }, {
     "@id" : "pc2:Stoichiometry_fffd876473bfed66c6ba24be58fa3462",
     "@type" : "bp:Stoichiometry",
-    "comment" : 
+
     "physicalEntity" : "pc2:Complex_a2295af11b0327cd8f98b91eea4ce252",
     "stoichiometricCoefficient" : "1.0"
   }, {

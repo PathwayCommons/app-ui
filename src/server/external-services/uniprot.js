@@ -18,7 +18,7 @@ const fetchByAccessions = ( accessions ) => {
     });
 };
 
-const createUri = ( namespace, localId ) => IDENTIFIERS_URL + '/' + namespace + '/' + localId;
+const createUri = ( namespace, localId ) => IDENTIFIERS_URL + '/' + namespace + ':' + localId;
 
 const getEntitySummary = async ( accessions ) => {
 

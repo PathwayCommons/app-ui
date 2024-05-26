@@ -11,9 +11,7 @@ class PathwayResultsView extends React.Component {
   render(){
     let { searchHits: pathwayResults, controller, query , dataSources, hasFeature } = this.props;
     const curDatasource = query.datasource;
-    const sources = dataSources.filter( source => query.type === 'Pathway' ?
-      !source.notPathwayData && source.numPathways :
-      !source.notPathwayData && source.numInteractions );
+    const sources = dataSources.filter( source => query.type === 'Pathway' ? source.numPathways : source.numInteractions );
     const noPathwaysMsg = h( ErrorMessage, { title: 'Your search didn\'t match any pathways', footer: 'Try different keywords or gene names.'} );
 
     if( pathwayResults === null ){

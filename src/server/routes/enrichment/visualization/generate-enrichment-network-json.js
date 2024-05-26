@@ -10,7 +10,7 @@ const isReactomeId = token => /^R-HSA-\d+$/.test( token );
 const normalizeId = pathwayId => pathwayId.replace('REAC:', '');
 
 const reThrow = error => { throw error; };
-const fallbackXref = ( namespace, record ) => ({ uri: IDENTIFIERS_URL + '/' + namespace + '/' + record, namespace });
+const fallbackXref = ( namespace, record ) => ({ uri: IDENTIFIERS_URL + '/' + namespace + ':' + record, namespace });
 
 const getXref = id => {
   let name;

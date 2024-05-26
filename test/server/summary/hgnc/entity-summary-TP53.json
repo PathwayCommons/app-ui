@@ -13,19 +13,19 @@
 	"xrefLinks": [
 		{
 			"namespace": "genecards",
-			"uri": "https://identifiers.org/genecards/TP53"
+			"uri": "http://bioregistry.io/genecards:TP53"
 		},
 		{
 			"namespace": "hgnc.symbol",
-			"uri": "https://identifiers.org/hgnc.symbol/TP53"
+			"uri": "http://bioregistry.io/hgnc.symbol:TP53"
 		},
 		{
 			"namespace": "ncbigene",
-			"uri": "https://identifiers.org/ncbigene/7157"
+			"uri": "http://bioregistry.io/ncbigene:7157"
 		},
 		{
 			"namespace": "uniprot",
-			"uri": "https://identifiers.org/uniprot/P04637"
+			"uri": "http://bioregistry.io/uniprot:P04637"
 		}
 	]
 }]

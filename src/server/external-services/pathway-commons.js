@@ -29,8 +29,8 @@ const toJSON = res => res.json();
 let query = opts => {
   let queryOpts = _.assign( { user: 'app-ui', cmd: 'pc2/get' }, opts);
   let { cmd } = queryOpts;
+  delete queryOpts.cmd; //not need to add the cmd as query parameters as well (it's part of URI)
   let url = config.PC_URL + cmd + '?' + qs.stringify( queryOpts );
-
   return fetch(url, fetchOptions)
     .then(res => ( cmd === 'pc2/get' || cmd === 'pc2/graph' ? res.text() : res.json() ) )
     .catch( e => {
@@ -49,13 +49,12 @@ const dataSourceFields = [
   "identifier",
   "name",
   "description",
-  "urlToHomepage",
+  "homepageUrl",
   "iconUrl",
   "pubmedId",
   "numPathways",
   "numInteractions",
-  "numPhysicalEntities",
-  "notPathwayData"
+  "numPhysicalEntities"
 ];
 const sortByLength = arr => arr.sort( ( a, b ) => b.length - a.length );
 /**
@@ -87,7 +86,7 @@ const getDataSources = () => getDataSourcesMap().then( dsMap => _.uniqBy( [ ...d
 /**
  * getDataSourceInfo
  * Find first instance of dataSource that matches any elements of an array of 'names'.
- * Flexible enough to accomodate cases where 'name' varies in size.
+ * Flexible enough to accommodate cases where 'name' varies in size.
  * @param { Array } Strings of dataSource names
  * @param { Map } The dataSource Map
  * @returns { Object } Various dataSource fields (see dataSourceFields)
@@ -267,13 +266,19 @@ const sifGraph = opts => {
   });
 };
 
+//for the /xref service api see:
+// biopax.baderlab.org/docs/index.html (OLD/experimental Spring docs version)
+// pathwaycommons.io/validate/swagger-ui/index.html#/suggester-controller/xref
 const handleXrefServiceResponse = res => {
   const { values } = res;
-  const xrefInfo = _.head( values );
+  const xrefInfo = _.head( values ); //use top/first item only
+  if( !xrefInfo || !xrefInfo.uri) {
+    logger.debug("no useful xref");
+    return null;
+  }
   const uri = new url.URL( xrefInfo.uri ); // Throws TypeError
-  const pathParts = _.compact( uri.pathname.split('/') );
-  if( _.isEmpty( pathParts ) || pathParts.length !== 2 ) throw new Error( 'Unrecognized URI' );
-  const namespace = _.head( pathParts );
+  //valid url is like: http://bioregistry.io/<namespace>:<id> (older version - http://identifiers.org/<namespace>/<id>)
+  const namespace = xrefInfo.namespace; //when xref.db was there recognized (see also: xrefInfo.dbOk and xrefInfo.idOk)
   return {
     origin: uri.origin,
     namespace
@@ -283,12 +288,12 @@ const handleXrefServiceResponse = res => {
 const formatXrefQuery = ( name, localId ) => _.concat( [], { db: name, id: localId } );
 
 /* fetchEntityUriBase
- * Light wrapper around the BioPAX service to fetch URI given a collection name and local ID for entity
- * http://biopax.baderlab.org/docs/index.html#_introduction
+ * Wrapper around the BioPAX service to fetch URI
+ * given the identifiers collection name and identifier of a bio entity;
  * @return { object } the URL origin and namespace
  */
 const fetchEntityUriBase = ( name, localId ) => {
-  const url = config.XREF_SERVICE_URL + 'xref/';
+  const url = config.PC_URL + "validate/xref";
   const fetchOpts = {
     method: 'POST',
     headers: {
@@ -311,7 +316,7 @@ const getEntityUriParts = cachePromise(fetchEntityUriBase, xrefCache, name => na
 /*
  * xref2Uri
  * Obtain the URI for an xref
- * @param {string} name -  MIRIAM 'name', 'synonym' ?OR MI CV database citation (MI:0444) 'label'
+ * @param {string} name - identifiers collection name or synonym (from bioregistry.io), or CV term (a name/label from MI:0444 ontology subtree)
  * @param {string} localId - Entity local entity identifier, should be valid
  * @return {Object} return the origin and 'namespace' in path
  *
@@ -320,7 +325,7 @@ const getEntityUriParts = cachePromise(fetchEntityUriBase, xrefCache, name => na
 const xref2Uri =  ( name, localId ) => {
   return getEntityUriParts( name, localId )
     .then( uriParts => ({
-      uri: uriParts.origin + '/' + uriParts.namespace + '/' + localId,
+      uri: uriParts.origin + '/' + uriParts.namespace + ':' + localId,
       namespace: uriParts.namespace
     }) );
 };

@@ -114,8 +114,8 @@ const ServerAPI = {
 
   search(query){
     const queryClone=_.assign({},query);
-    if (/^((uniprot|hgnc):\w+|ncbi:[0-9]+)$/i.test(queryClone.q)) {
-      queryClone.q=queryClone.q.replace(/^(uniprot|ncbi|hgnc):/i,"");
+    if (/^((uniprot|hgnc|hgnc.symbol):\w+|ncbi:[0-9]+)$/i.test(queryClone.q)) {
+      queryClone.q=queryClone.q.replace(/^(uniprot|ncbi|hgnc|hgnc.symbol):/i,"");
     }
     return fetch(`/api/search`, {
       method: 'POST',

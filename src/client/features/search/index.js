@@ -17,8 +17,6 @@ const { ErrorMessage } = require('../../common/components/error-message');
 const { FeatureView } = require('./feature-view');
 const { Contribute } = require('../../common/components/contribute');
 
-const { PC_URL } = require('../../../config');
-
 class Search extends React.Component {
 
   constructor(props) {
@@ -67,6 +65,9 @@ class Search extends React.Component {
 
   componentDidMount() {
     this.getSearchResult();
+    ServerAPI.getPCURL().then(PC_URL => {
+      this.PC_URL = PC_URL;
+    });
   }
 
   onSearchValueChange(e) {
@@ -144,22 +145,22 @@ class Search extends React.Component {
     return h('div.search', [
       h('div.search-nav-links', [
         h('a', {
-          href: PC_URL,
+          href: this.PC_URL,
           target: '_blank'
         }, 'About'),
 
         h('a', {
-          href: PC_URL + '#faq',
+          href: this.PC_URL + '#faq',
           target: '_blank'
         }, 'FAQ'),
 
         h('a', {
-          href: PC_URL + '#training',
+          href: this.PC_URL + '#training',
           target: '_blank'
         }, 'Training'),
 
         h('a', {
-          href: PC_URL + '#data',
+          href: this.PC_URL + '#data',
           target: '_blank'
         }, 'Data'),
 
@@ -169,7 +170,7 @@ class Search extends React.Component {
         // }, 'Tools'),
 
         h('a', {
-          href: PC_URL + '#contact',
+          href: this.PC_URL + '#contact',
           target: '_blank'
         }, 'Contact'),
 

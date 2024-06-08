@@ -22,7 +22,6 @@ cron.schedule(METADATA_CRON_SCHEDULE, () => {
 // make fetch() available as a global just like it is on the client side
 global.fetch = require('node-fetch');
 
-// const db = require('./db'); // for now disable db
 const logger = require('./logger');
 
 const app = express();

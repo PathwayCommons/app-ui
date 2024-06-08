@@ -3,7 +3,6 @@ const { DB_NAME, DB_HOST, DB_PORT, DB_CERT, DB_USER, DB_PASS } = require('../con
 const Promise = require('bluebird');
 let fs = require('fs');
 
-
 let db = {
   connect(){
     if( this.conn ){

@@ -11,8 +11,7 @@ WORKDIR /home/appuser/app
 # Bundle app
 COPY . /home/appuser/app
 
-# Install app dependencies
-# Note: here NODE_ENV env must be 'development' so that dev dependencies are installed
+# Here NODE_ENV must be 'development' so that all dependencies are installed
 RUN NODE_ENV=development npm ci
 
 # Bundle JS and CSS

@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const logger = require('../../logger');
+// const logger = require('../../logger');
 const url = require('url');
 const luceneEscapeQuery = require('lucene-escape-query');
 const { NS_NCBI_GENE, NS_HGNC_SYMBOL, NS_UNIPROT } = require('../../../config');

@@ -1,7 +1,7 @@
 const qs = require('query-string');
 const _ = require('lodash');
 
-const { PC_URL } = require('../../../config');
+let PC_URL;
 const { fetch } = require('../../../util');
 
 const defaultFetchOpts = {
@@ -12,6 +12,19 @@ const defaultFetchOpts = {
 };
 
 const ServerAPI = {
+  getPCURL(){
+    if( PC_URL ){
+      return Promise.resolve(PC_URL);
+    } else {
+      return fetch('/api/pc/baseURL')
+        .then( res => res.text() )
+        .then( baseUrl => {
+          PC_URL = baseUrl;
+          return PC_URL;
+        });
+    }
+  },
+
   // a generic method that gets pathway sbgn json from various sources
   // e.g. pathwaycommons, factoid, or human created layouts
   getAPIResource(opts){
@@ -109,7 +122,10 @@ const ServerAPI = {
   },
 
   downloadFileFromPathwayCommons( uri, format ){
-    return fetch(PC_URL + 'pc2/get?' + qs.stringify({ uri, format}), defaultFetchOpts);
+    return this.getPCURL()
+      .then( url => {
+        return fetch(url + 'pc2/get?' + qs.stringify({ uri, format}), defaultFetchOpts);
+      });
   },
 
   search(query){

@@ -168,7 +168,8 @@ const getFeature = async searchHits => {
   const formatPathwayInfo = ( raw, searchHit ) => {
     const info = [];
     const { id, caption, elements, text: interactions, citation: { title } } = raw;
-    const genes = elements.map( ({ association }) => association ).filter( ({ dbPrefix }) => dbPrefix === config.NS_NCBI_GENE );
+    const genes = elements.map( ({ association }) => association )
+      .filter( assoc => assoc && assoc.dbPrefix === config.NS_NCBI_GENE );
     const orgs = _.groupBy( genes, g => g.organismName );
     const orgCounts = _.toPairs( orgs ).map( ([org, entries]) => [org, entries.length] );
     // eslint-disable-next-line no-unused-vars

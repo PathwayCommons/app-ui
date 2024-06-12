@@ -174,7 +174,7 @@ class Search extends React.Component {
           target: '_blank'
         }, 'Contact'),
 
-        h(Contribute, {text: 'Contribute to PC'})
+        h(Contribute, {text: 'Contribute'})
       ]),
       h('div.search-header', [
         h('div.search-branding', [

@@ -13,7 +13,7 @@ class Contribute extends React.Component {
     const { text, info } = this.props;
 
     return h('div.contribute', {}, [
-      h('a.plain-link.contribute-popover-link', {
+      h('a.contribute-popover-link', {
         href: `${FACTOID_URL}document/new`,
         target: '_blank'
       }, text),

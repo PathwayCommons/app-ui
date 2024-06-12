@@ -20,10 +20,10 @@
 }
 
 .search-nav-links .contribute {
-  position: relative;
-  margin: 1em;
+  padding: 1em;
 
   & a {
+    text-decoration: none;
     padding: 0;
   }
 }
@@ -155,15 +155,9 @@
   margin-top: 10px;
 }
 
-.search-pathway-results {
-}
-
 .search-genes-info-panel {
   display: flex;
   flex-flow: row wrap;
-}
-
-.search-genes-results {
 }
 
 .search-genes-list {

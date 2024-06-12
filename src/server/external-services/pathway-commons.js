@@ -175,15 +175,17 @@ const getFeature = async searchHits => {
     // eslint-disable-next-line no-unused-vars
     const maxOrgs = _.maxBy( orgCounts, ([org, count]) => count );
     const organism = maxOrgs && maxOrgs.length ? _.first( maxOrgs ) : null;
-    const parts = [{ title: 'Interactions', body: interactions }];
-    if( caption ) parts.unshift( { title: 'Context', body: caption } );
+
+    // Prefer the caption over the pathway template text
+    let text = interactions;
+    if( caption ) text = caption;
 
     info.push({
       db: config.NS_BIOFACTOID,
       url: `${config.FACTOID_URL}document/${id}`,
       imageSrc: `${config.FACTOID_URL}api/document/${id}.png`,
       label: title,
-      text: parts,
+      text,
       organism
     });
 

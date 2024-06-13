@@ -1,7 +1,4 @@
 .contribute {
-  position: absolute;
-  margin: 0.5em 0;
-  left: 0.25em;
 
   & i {
     margin: 0em 0.25em;
@@ -23,4 +20,5 @@
     font-size: 0.8em;
   }
 }
+
 

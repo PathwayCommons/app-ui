@@ -20,10 +20,10 @@
 }
 
 .search-nav-links .contribute {
-  position: relative;
-  margin: 1em;
+  padding: 1em;
 
   & a {
+    text-decoration: none;
     padding: 0;
   }
 }
@@ -155,15 +155,9 @@
   margin-top: 10px;
 }
 
-.search-pathway-results {
-}
-
 .search-genes-info-panel {
   display: flex;
   flex-flow: row wrap;
-}
-
-.search-genes-results {
 }
 
 .search-genes-list {
@@ -294,6 +288,18 @@
     }
   }
 
+  & .feature-detail-links {
+    display: flex;
+    flex-flow: row;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 1em 0;
+
+    & .feature-detail-link {
+      margin-right: 1em;
+    }
+  }
+
   &.pathway {
     grid-area: pathway;
 
@@ -317,12 +323,7 @@
       & .app-card-body {
         & p {
           font-size: 0.9em;
-          margin: 0.25em auto;
-
-          & .sub-heading {
-            font-weight: bold;
-            margin-right: 0.5em;
-          }
+          margin: 0 auto;
         }
 
         & i.icon {

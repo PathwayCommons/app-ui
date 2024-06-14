@@ -47,14 +47,14 @@ function getPathwayMetadata(uri) {
     get('Entity/dataSource/displayName'),
     get('Entity/comment'),
     get('Pathway/organism/displayName'),
-    pcServices.getDataSources() 
+    pcServices.getDataSources()
   ])
   .then( ([ title, dataSource, comments, organism, supportedProviders ]) => {
     const supportedProvider = supportedProviders.find( supportedProvider => supportedProvider.alias.some( alias => alias === _.head( dataSource ) ) );
-    return { 
-      title, 
-      dataSource: _.get( supportedProvider, 'name' ), 
-      comments, 
+    return {
+      title: _.head( title ),
+      dataSource: _.get( supportedProvider, 'name' ),
+      comments,
       organism,
       urlToHomepage: _.get( supportedProvider, 'homepageUrl' )
     };

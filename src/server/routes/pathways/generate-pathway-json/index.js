@@ -47,18 +47,33 @@ function getPathwayMetadata(uri) {
     get('Entity/dataSource/displayName'),
     get('Entity/comment'),
     get('Pathway/organism/displayName'),
-    pcServices.getDataSources()
+    pcServices.getDataSources(),
+    get('Pathway/xref:PublicationXref')
   ])
-  .then( ([ title, dataSource, comments, organism, supportedProviders ]) => {
+  .then( ([ title, dataSource, comments, organism, supportedProviders, pubXrefUris ]) => {
     const supportedProvider = supportedProviders.find( supportedProvider => supportedProvider.alias.some( alias => alias === _.head( dataSource ) ) );
     return {
       title: _.head( title ),
       dataSource: _.get( supportedProvider, 'name' ),
       comments,
       organism,
-      urlToHomepage: _.get( supportedProvider, 'homepageUrl' )
+      urlToHomepage: _.get( supportedProvider, 'homepageUrl' ),
+      pubXrefUris
     };
   });
+}
+
+/**
+ * Get the model in different formats (SBGN and BioPAX JSON-LD) for a given URI
+ *
+ * @param {string} uri URI representing the BioPAX element
+ * @returns {Array<string>} Strings of model in formats [sbgnString, jsonldString]
+ */
+async function getModelStrings(uri) {
+  let getSbgn = () => pcServices.query({uri, format: 'sbgn'});
+  let getBiopax = () => pcServices.query({uri, format: 'jsonld'});
+  const [sbgnString, jsonldString] = await Promise.all([ getSbgn(), getBiopax() ]);
+  return [sbgnString, jsonldString];
 }
 
 /**
@@ -69,14 +84,26 @@ function getPathwayMetadata(uri) {
  * @param {*} uri URI representing the network (query)
  * @returns A Cytoscape JSON which represents the network, enhanced with BioPAX metadata
  */
-function getPathwayNodesAndEdges(uri) {
-  let getSbgn = () => pcServices.query({uri, format: 'sbgn'}).then(file => sbgn2CyJsonInThread(file));
-  let getBiopax = () => pcServices.query({uri, format: 'jsonld'});
+async function getPathwayNodesAndEdges(uri) {
+  const [ sbgnString, jsonldString ] = await getModelStrings(uri);
+  const cyJson = await sbgn2CyJsonInThread(sbgnString);
+  await fillInBiopaxMetadataInThread(cyJson, jsonldString);
+  return [cyJson, jsonldString];
+}
 
-  return (
-    Promise.all([ getSbgn(), getBiopax() ])
-    .then( ([ cyJson, biopaxJson ]) => fillInBiopaxMetadataInThread(cyJson, biopaxJson) )
-  );
+function fillInPathwayPubXrefs(pathwayData, jsonldString) {
+  const { pubXrefUris } = pathwayData;
+  if (pubXrefUris == null) return;
+
+  const toJSON = txt => JSON.parse(txt);
+  const jsonLD = toJSON(jsonldString);
+  const graph = jsonLD['@graph'];
+  const getPubXref = uri => {
+    const { db, id } = _.find(graph, { '@id': uri });
+    return { db, id };
+  };
+  let pubXrefs = pubXrefUris.map( getPubXref );
+  _.set(pathwayData, 'pubXrefs', pubXrefs);
 }
 
 /**
@@ -84,15 +111,12 @@ function getPathwayNodesAndEdges(uri) {
  * @param {*} uri URI representing the network
  * @returns A Cytoscape JSON which represents the network, enhanced with BioPAX metadata
  */
-function getPathwayJson(uri) {
-  let pathwayData, elementData;
-
-  return Promise.all([
-    getPathwayMetadata(uri).then(data => pathwayData = _.assign({}, data, { uri: uri })),
-    getPathwayNodesAndEdges(uri).then(data => elementData = data)
-  ]).then(() => {
-    return _.assign({}, elementData, { pathwayMetadata: pathwayData });
-  });
+async function getPathwayJson(uri) {
+  const [cyJson, jsonldString] = await getPathwayNodesAndEdges(uri);
+  let pathwayMetadata = await getPathwayMetadata(uri);
+  fillInPathwayPubXrefs(pathwayMetadata, jsonldString);
+  pathwayMetadata = _.assign({}, pathwayMetadata, { uri: uri });
+  return _.assign({}, cyJson, { pathwayMetadata });
 }
 
 module.exports = { getPathwayJson };

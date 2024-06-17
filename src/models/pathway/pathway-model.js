@@ -52,6 +52,10 @@ class Pathway {
     return _.uniq(names);
   }
 
+  publicationXrefs(){
+    return _.get( this.raw, 'graph.pathwayMetadata.pubXrefs' );
+  }
+
 }
 
 module.exports = Pathway;

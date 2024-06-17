@@ -16,6 +16,7 @@ const { stylesheet, bindCyEvents, PATHWAYS_LAYOUT_OPTS } = require('./cy');
 const { TimeoutError } = require('../../../util');
 const { ErrorMessage } = require('../../common/components/error-message');
 const { Contribute } = require('../../common/components/contribute');
+const PathwayTitle = require('./pathway-title');
 
 class Pathways extends React.Component {
   constructor(props) {
@@ -87,10 +88,7 @@ class Pathways extends React.Component {
     let appBar = h('div.app-bar', [
       h('div.app-bar-branding', [
         h(PcLogoLink),
-        h('div.app-bar-title', [
-          h('span', pathway.name() + ' | '),
-          h('a.plain-link', { href: pathway.datasourceUrl(), target: '_blank' }, ' ' + pathway.datasource())
-        ])
+        h(PathwayTitle, { pathway })
       ]),
       h(PathwaysToolbar, { cySrv, pathway, downloadOpts }),
       h(Contribute, { text: 'Add my pathway' })

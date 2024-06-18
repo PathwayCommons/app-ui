@@ -47,7 +47,6 @@ class PathwayTitle extends React.Component {
   getName(){
     // Crapshoot whether a DB has a resolvable URL or not
     const DB_PREFIX_2_URL_TEMPLATE = new Map([
-      ['biocyc', `${IDENTIFIERS_URL}/biocyc:`],
       ['biofactoid', `${IDENTIFIERS_URL}/biofactoid:`],
       ['panther.pathway', `${IDENTIFIERS_URL}/panther.pathway:`],
       ['smpdb', `${IDENTIFIERS_URL}/smpdb:`],

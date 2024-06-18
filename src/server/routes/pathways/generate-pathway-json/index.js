@@ -38,13 +38,13 @@ const fillInBiopaxMetadataInThread = (nodes, biopaxJson) => {
 //Requires a valid pathway uri
 function getPathwayMetadata( uri, biopaxJson ) {
 
-  const getPathwayPubXrefs = ( pubXrefUris = [] )=> {
+  const getPathwayXrefs = ( uris = [] )=> {
     const graph = biopaxJson['@graph'];
-    const getPubXref = uri => {
+    const getXref = uri => {
       const { db, id } = _.find(graph, { '@id': uri });
       return { db, id };
     };
-    return pubXrefUris.map( getPubXref );
+    return uris.map( getXref );
   };
 
   // let title, dataSource, comments, organism, supportedProviders;
@@ -57,11 +57,13 @@ function getPathwayMetadata( uri, biopaxJson ) {
     get('Entity/comment'),
     get('Pathway/organism/displayName'),
     pcServices.getDataSources(),
-    get('Pathway/xref:PublicationXref')
+    get('Pathway/xref:PublicationXref'),
+    get('Pathway/xref:UnificationXref')
   ])
-  .then( ([ title, dataSource, comments, organism, supportedProviders, pubXrefUris ]) => {
+  .then( ([ title, dataSource, comments, organism, supportedProviders, pubXrefUris, uniXrefUris ]) => {
     const supportedProvider = supportedProviders.find( supportedProvider => supportedProvider.alias.some( alias => alias === _.head( dataSource ) ) );
-    const pubXrefs = getPathwayPubXrefs( pubXrefUris );
+    const pubXrefs = getPathwayXrefs( pubXrefUris );
+    const uniXrefs = getPathwayXrefs( uniXrefUris );
 
     return {
       uri,
@@ -70,7 +72,8 @@ function getPathwayMetadata( uri, biopaxJson ) {
       comments,
       organism,
       urlToHomepage: _.get( supportedProvider, 'homepageUrl' ),
-      pubXrefs
+      pubXrefs,
+      uniXrefs
     };
   });
 }

@@ -56,6 +56,10 @@ class Pathway {
     return _.get( this.raw, 'graph.pathwayMetadata.pubXrefs' );
   }
 
+  unificationXrefs(){
+    return _.get( this.raw, 'graph.pathwayMetadata.uniXrefs' );
+  }
+
 }
 
 module.exports = Pathway;

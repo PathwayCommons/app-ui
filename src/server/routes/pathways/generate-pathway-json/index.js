@@ -36,7 +36,16 @@ const fillInBiopaxMetadataInThread = (nodes, biopaxJson) => {
 
 //Get pathway name, description, and datasource
 //Requires a valid pathway uri
-function getPathwayMetadata(uri) {
+function getPathwayMetadata( uri, biopaxJson ) {
+
+  const getPathwayXrefs = ( uris = [] )=> {
+    const graph = biopaxJson['@graph'];
+    const getXref = uri => {
+      const { db, id } = _.find(graph, { '@id': uri });
+      return { db, id };
+    };
+    return uris.map( getXref );
+  };
 
   // let title, dataSource, comments, organism, supportedProviders;
   let get = path => pcServices.query({cmd:'pc2/traverse', uri, path})
@@ -47,52 +56,68 @@ function getPathwayMetadata(uri) {
     get('Entity/dataSource/displayName'),
     get('Entity/comment'),
     get('Pathway/organism/displayName'),
-    pcServices.getDataSources() 
+    pcServices.getDataSources(),
+    get('Pathway/xref:PublicationXref'),
+    get('Pathway/xref:UnificationXref')
   ])
-  .then( ([ title, dataSource, comments, organism, supportedProviders ]) => {
+  .then( ([ title, dataSource, comments, organism, supportedProviders, pubXrefUris, uniXrefUris ]) => {
     const supportedProvider = supportedProviders.find( supportedProvider => supportedProvider.alias.some( alias => alias === _.head( dataSource ) ) );
-    return { 
-      title, 
-      dataSource: _.get( supportedProvider, 'name' ), 
-      comments, 
+    const pubXrefs = getPathwayXrefs( pubXrefUris );
+    const uniXrefs = getPathwayXrefs( uniXrefUris );
+
+    return {
+      uri,
+      title: _.head( title ),
+      dataSource: _.get( supportedProvider, 'name' ),
+      comments,
       organism,
-      urlToHomepage: _.get( supportedProvider, 'homepageUrl' )
+      urlToHomepage: _.get( supportedProvider, 'homepageUrl' ),
+      pubXrefs,
+      uniXrefs
     };
   });
 }
 
 /**
- * Executes a Pathway Commons web query and builds a new JSON network model
- * using the result SBGN (auto-converted to CyJSON) and additional metadata and data
- * from the corresponding BioPAX L3 JSON-LD model and generic entities mapping file (json).
+ * Retrieve the model in SBGN and (BioPAX) JSON-LD format
  *
- * @param {*} uri URI representing the network (query)
- * @returns A Cytoscape JSON which represents the network, enhanced with BioPAX metadata
+ * @param {string} uri URI representing the BioPAX element
+ * @returns {Array<object>} Model in SBGN-ML and JSON-LD formats
  */
-function getPathwayNodesAndEdges(uri) {
-  let getSbgn = () => pcServices.query({uri, format: 'sbgn'}).then(file => sbgn2CyJsonInThread(file));
-  let getBiopax = () => pcServices.query({uri, format: 'jsonld'});
-
-  return (
-    Promise.all([ getSbgn(), getBiopax() ])
-    .then( ([ cyJson, biopaxJson ]) => fillInBiopaxMetadataInThread(cyJson, biopaxJson) )
-  );
+async function getModel( uri ) {
+  const toJSON = str => JSON.parse( str );
+  let getSbgn = () => pcServices.query({ uri, format: 'sbgn' });
+  let getBiopax = () => pcServices.query({ uri, format: 'jsonld' });
+  const [ sbgn, biopaxJsonStr ] = await Promise.all([ getSbgn(), getBiopax() ]);
+  const biopaxJson = toJSON( biopaxJsonStr );
+  return ([ sbgn, biopaxJson ]);
 }
 
 /**
+ * Builds a new JSON network model using an SBGN-ML (auto-converted to CyJSON) and additional metadata and data
+ * from the corresponding BioPAX L3 JSON-LD model and generic entities mapping file (json).
  *
- * @param {*} uri URI representing the network
+ * @param {string} sbgn The sbgn representation of the network
+ * @param {string} biopaxJson The JSON-LD representation of the network
  * @returns A Cytoscape JSON which represents the network, enhanced with BioPAX metadata
  */
-function getPathwayJson(uri) {
-  let pathwayData, elementData;
+async function getPathwayNodesAndEdges( sbgn, biopaxJson ) {
+  const cyJson = await sbgn2CyJsonInThread( sbgn );
+  await fillInBiopaxMetadataInThread( cyJson, biopaxJson );
+  return cyJson;
+}
 
-  return Promise.all([
-    getPathwayMetadata(uri).then(data => pathwayData = _.assign({}, data, { uri: uri })),
-    getPathwayNodesAndEdges(uri).then(data => elementData = data)
-  ]).then(() => {
-    return _.assign({}, elementData, { pathwayMetadata: pathwayData });
-  });
+/**
+ *  Retrieve a Cytoscape JSON representation alongside pathway metadata
+ *
+ * @param {string} uri URI representing the network
+ * @returns A Cytoscape JSON which represents the network, enhanced with BioPAX metadata
+ */
+async function getPathwayJson( uri ) {
+  const [ sbgn, biopaxJson ] = await getModel( uri );
+  const cyJson = await getPathwayNodesAndEdges( sbgn, biopaxJson );
+  const pathwayMetadata = await getPathwayMetadata( uri, biopaxJson );
+  return _.assign( {}, cyJson, { pathwayMetadata } );
 }
 
 module.exports = { getPathwayJson };

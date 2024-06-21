@@ -3,6 +3,7 @@ const _ = require('lodash');
 
 let PC_URL;
 const { fetch } = require('../../../util');
+const { NCBI_EUTILS_BASE_URL } = require('../../../config');
 
 const defaultFetchOpts = {
   headers: {
@@ -87,8 +88,14 @@ const ServerAPI = {
   },
 
   getPubmedPublications( pubmedIds ){
+    const opts = {
+      db: 'pubmed',
+      retmode: 'json',
+      id: pubmedIds.toString()
+    };
+    const url = `${NCBI_EUTILS_BASE_URL}/esummary.fcgi?${qs.stringify(opts)}`;
     return (
-      fetch('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id=' + pubmedIds.toString())
+      fetch(url)
         .then(res => res.json())
         .then(res => {
           let { result } = res;
@@ -96,15 +103,22 @@ const ServerAPI = {
           let { uids } = result;
 
           return uids.map( uid => {
-            let { title, authors, sortfirstauthor, sortpubdate, source } = result[uid];
+            const record = result[uid];
+            let { title, authors, sortfirstauthor, pubdate, source, articleids } = record;
+            const doi = _.find( articleids, { idtype: 'doi' } );
+            const pubmed = _.find( articleids, { idtype: 'pubmed' } );
+            const pmc = _.find( articleids, { idtype: 'pmc' } );
 
             return {
               id: uid,
               title,
               authors,
               firstAuthor: sortfirstauthor,
-              date: sortpubdate,
-              source
+              date: pubdate,
+              source,
+              doi: _.get( doi, 'value', null),
+              pubmed: _.get( pubmed, 'value', null),
+              pmc: pmc ? pmc.value : null
             };
           } );
         })

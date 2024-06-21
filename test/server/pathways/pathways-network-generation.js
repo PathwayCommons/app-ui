@@ -73,24 +73,25 @@ describe('Pathways route', function(){
   });
 
   describe('biopaxText2ElementMap', function(){
-    let biopaxJsonText;
+    let biopaxJson;
 
     before( () => {
-      biopaxJsonText = fs.readFileSync( path.resolve( __dirname, './sample-biopax-data.json' ), 'utf-8');
+      const str = fs.readFileSync( path.resolve( __dirname, './sample-biopax-data.json' ), 'utf-8');
+      biopaxJson = JSON.parse( str );
     });
 
     it('Should call the xrefSuggested dependency', async () => {
-      await biopaxText2ElementMap( biopaxJsonText, xref2UriStub );
+      await biopaxText2ElementMap( biopaxJson, xref2UriStub );
       expect( xref2UriStub.called ).to.be.true;
     });
 
     it('Should return populated Map', async () => {
-      const elementMap = await biopaxText2ElementMap( biopaxJsonText, xref2UriStub );
+      const elementMap = await biopaxText2ElementMap( biopaxJson, xref2UriStub );
       expect( elementMap.size ).to.be.at.least(1);
-    });  
+    });
 
     it('Should return Map value with correct properties', async () => {
-      const elementMap = await biopaxText2ElementMap( biopaxJsonText, xref2UriStub );
+      const elementMap = await biopaxText2ElementMap( biopaxJson, xref2UriStub );
       const mapValue = elementMap.get( MAP_ELEMENT_KEY );
       expect( mapValue ).to.exist;
       expect( mapValue ).to.have.property('@id');
@@ -101,7 +102,7 @@ describe('Pathways route', function(){
       expect( mapValue ).to.have.property('entityReference');
       expect( mapValue ).to.have.property('name');
       expect( mapValue ).to.have.property('xref');
-    });  
+    });
   }); // biopaxText2ElementMap
 
   describe('extractBiopaxMetadata', function(){
@@ -115,7 +116,7 @@ describe('Pathways route', function(){
       expect( metadata ).to.have.property('standardName');
       expect( metadata ).to.have.property('displayName');
       expect( metadata ).to.have.property('xrefLinks');
-    });  
+    });
   }); // extractBiopaxMetadata
 });
 

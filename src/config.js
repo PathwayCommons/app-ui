@@ -10,6 +10,7 @@ let defaults = {
   IDENTIFIERS_URL: 'http://bioregistry.io',
   NCBI_EUTILS_BASE_URL: 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils',
   NCBI_API_KEY: 'b99e10ebe0f90d815a7a99f18403aab08008', // for dev testing only (baderlabsysmonitor ncbi key)
+  PUBMED_BASE_URL: 'https://pubmed.ncbi.nlm.nih.gov/',
   HGNC_BASE_URL: 'https://rest.genenames.org',
   UNIPROT_API_BASE_URL: 'https://www.ebi.ac.uk/proteins/api',
   DOI_BASE_URL: 'https://doi.org/',

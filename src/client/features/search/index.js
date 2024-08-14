@@ -35,7 +35,8 @@ class Search extends React.Component {
       feature: null,
       dataSources: [],
       loading: false,
-      error: null
+      error: null,
+      PC_URL: null
     };
   }
 
@@ -65,9 +66,8 @@ class Search extends React.Component {
 
   componentDidMount() {
     this.getSearchResult();
-    ServerAPI.getPCURL().then(PC_URL => {
-      this.PC_URL = PC_URL;
-    });
+    return ServerAPI.getPCURL()
+      .then( PC_URL => this.setState({ PC_URL }) );
   }
 
   onSearchValueChange(e) {
@@ -117,7 +117,7 @@ class Search extends React.Component {
   }
 
   render() {
-    let { geneResults, searchHits, feature, query, loading, dataSources } = this.state;
+    let { geneResults, searchHits, feature, query, loading, dataSources, PC_URL } = this.state;
 
     const searchListing = h(Loader, { loaded: !loading, options: { left: '50%', color: '#16A085' } }, [
       h('div', [
@@ -145,32 +145,27 @@ class Search extends React.Component {
     return h('div.search', [
       h('div.search-nav-links', [
         h('a', {
-          href: this.PC_URL,
+          href: PC_URL,
           target: '_blank'
         }, 'About'),
 
         h('a', {
-          href: this.PC_URL + '#faq',
+          href: PC_URL + '#faq',
           target: '_blank'
         }, 'FAQ'),
 
         h('a', {
-          href: this.PC_URL + '#training',
+          href: PC_URL + '#training',
           target: '_blank'
         }, 'Training'),
 
         h('a', {
-          href: this.PC_URL + '#data',
+          href: PC_URL + '#data',
           target: '_blank'
         }, 'Data'),
 
-        // h('a', {
-        //   href: PC_URL + '#tools',
-        //   target: '_blank'
-        // }, 'Tools'),
-
         h('a', {
-          href: this.PC_URL + '#contact',
+          href: PC_URL + '#contact',
           target: '_blank'
         }, 'Contact'),
 

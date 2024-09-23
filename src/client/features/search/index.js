@@ -6,6 +6,7 @@ const classNames = require('classnames');
 const queryString = require('query-string');
 const _ = require('lodash');
 
+const { FACTOID_URL } = require('../../../config');
 const { ServerAPI } = require('../../services');
 
 const PcLogoLink = require('../../common/components/pc-logo-link');
@@ -120,12 +121,21 @@ class Search extends React.Component {
     let { geneResults, searchHits, feature, query, loading, dataSources, PC_URL } = this.state;
 
     const searchListing = h(Loader, { loaded: !loading, options: { left: '50%', color: '#16A085' } }, [
-      h('div', [
-        h('h2', {
+      h('div.search-results-header', [
+        h('p.search-results-header-title', {
           className: classNames({
             'hidden': _.isEmpty(geneResults) && _.isEmpty(searchHits)
           })
         }, 'Explore how your query is connected to millions of curated interactions'),
+        h('p.search-results-header-subtitle', [
+          'Pathway Commons accepts contributions - ',
+          h('a.plain-link', {
+            href: `${FACTOID_URL}`,
+            target: '_blank'
+          }, 'add interactions from your publication')
+        ]),
+      ]),
+      h('div.search-results-content', [
         h(FeatureView, { feature }),
         h(GeneResultsView, { geneResults } ),
         h(PathwayResultsView, { searchHits, query, controller: this, dataSources, hasFeature: feature != null })

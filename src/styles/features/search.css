@@ -132,6 +132,19 @@
   position: relative;
 }
 
+.search-results-header p {
+  margin: 0.5em 0 0.25em;
+}
+
+.search-results-header .search-results-header-title {
+  font-size: larger;
+}
+
+.search-results-header .search-results-header-subtitle {
+  font-size: smaller;
+  color: var(--dark-base-colour);
+}
+
 .search-tools {
   display: flex;
   flex-direction: row;

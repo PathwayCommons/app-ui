@@ -14,7 +14,7 @@ class Contribute extends React.Component {
 
     return h('div.contribute', {}, [
       h('a.contribute-popover-link', {
-        href: `${FACTOID_URL}document/new`,
+        href: `${FACTOID_URL}`,
         target: '_blank'
       }, text),
       h(Popover , {

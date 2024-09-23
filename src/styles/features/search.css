@@ -158,6 +158,10 @@
     flex-direction: column;
     align-items: flex-start;
   }
+
+  .search-results-header {
+    display: none;
+  }
 }
 
 .search-pathways-header {
@@ -421,13 +425,11 @@
     grid-template-columns: 1fr;
   }
 
+  .search-results-header {
+    display: none;
+  }
+
   .feature-container {
-    grid-template-columns: 100%;
-    grid-template-areas:
-    'header'
-    'pathway'
-    'article'
-    'footer'
-    ;
+    display: none;
   }
 }

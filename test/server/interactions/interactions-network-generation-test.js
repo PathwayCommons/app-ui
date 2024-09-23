@@ -16,7 +16,7 @@ describe('Interactions network to cy.js conversion', function(){
         ],
         "description": "BioGRID Release 3.5.175 (only BIOGRID-ORGANISM-Homo_sapiens-3.5.175.psi25.xml), 25-Jul-2019",
         "urlToData": "https://downloads.thebiogrid.org/Download/BioGRID/Release-Archive/BIOGRID-3.5.175/BIOGRID-ORGANISM-3.5.175.psi25.zip",
-        "urlToHomepage": "https://thebiogrid.org/",
+        "homepageUrl": "https://thebiogrid.org/",
         "iconUrl": "https://pathwaycommons.github.io/cpath2/logos/favicon_bigger.png",
         "type": "PSI_MI",
         "cleanerClassname": null,
@@ -28,8 +28,7 @@ describe('Interactions network to cy.js conversion', function(){
         "availability": "free",
         "numPathways": 0,
         "numInteractions": 501500,
-        "numPhysicalEntities": 1003000,
-        "notPathwayData": false
+        "numPhysicalEntities": 1003000
       }, 
       {
         "id": 8,
@@ -39,7 +38,7 @@ describe('Interactions network to cy.js conversion', function(){
         ],
         "description": "HPRD PSI-MI Release 9; 13-Apr-2010",
         "urlToData": "http://www.hprd.org/download",
-        "urlToHomepage": "http://www.hprd.org",
+        "homepageUrl": "http://www.hprd.org",
         "iconUrl": "https://pathwaycommons.github.io/cpath2/logos/hprd.png",
         "type": "PSI_MI",
         "cleanerClassname": "cpath.cleaner.HPRDCleaner",
@@ -51,8 +50,7 @@ describe('Interactions network to cy.js conversion', function(){
         "availability": "academic",
         "numPathways": 0,
         "numInteractions": 39824,
-        "numPhysicalEntities": 83475,
-        "notPathwayData": false
+        "numPhysicalEntities": 83475
       }
     ] } );
   });

@@ -1,8 +1,8 @@
 const _ = require('lodash');
+// const logger = require('../../logger');
+const url = require('url');
 const luceneEscapeQuery = require('lucene-escape-query');
-
 const { NS_NCBI_GENE, NS_HGNC_SYMBOL, NS_UNIPROT } = require('../../../config');
-
 const { getEntitySummary: getNcbiGeneSummary } = require('../../external-services/ncbi');
 const { validatorGconvert } = require('../../external-services/gprofiler/gconvert');
 const pc = require('../../external-services/pathway-commons');
@@ -16,10 +16,19 @@ const PATHWAY_SEARCH_DEFAULTS = {
   type: 'pathway'
 };
 
-// Get the identifier from an EntitySummary's xrefLinks
+// Get the identifier from an EntitySummary's xrefLinks (not actual xref URIs from PC BioPAX model
+// but normalized URLs created from the BioPAX xref.db,xref.id (if valid)
+// by Suggester biopax.baderlab.org/xref webservice (will be also at pathwaycommons.org/validate/xref)
+// Such xref links look like: http://bioregistry.io/hgnc.symbol:PCNA (since PCv14 release/model)
+// or http://identifiers.org/hgnc.symbol/PCNA (in prev. model versions) or http://identifiers.org/hgnc.symbol:PCNA...
 const idFromXrefs = ( xrefLinks, namespace ) => {
+  let identifier = undefined;
   const xref = _.find( xrefLinks, link  => link.namespace === namespace );
-  return xref ? _.last( _.compact( xref.uri.split('/') ) ) : undefined;
+  if (xref) {
+    const uri = new url.URL( xref.uri );
+    identifier = uri.pathname.substr( xref.namespace.length + 2 );//pathname e.g. '/hgnc.symbol:PCNA' goes after origin (excluding query str.)
+  }
+  return identifier;
 };
 
 const sanitize = ( rawQuery, maxLength = QUERY_MAX_CHARS ) => {

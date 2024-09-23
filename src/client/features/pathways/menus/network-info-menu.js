@@ -7,8 +7,8 @@ class NetworkInfoMenu extends React.Component {
     const { infoList } = this.props;
 
     const noInfoMessage = [
-      h('p', 'No additional information was found for this network!'),
-      h('p', 'Additional information about the network is normally found here, but we couldn\'t find any for this one.')
+      h('p', { key: 1 }, 'No additional information was found for this network!'),
+      h('p', { key: 2 }, 'Additional information about the network is normally found here, but we couldn\'t find any for this one.')
     ];
 
     const comments = infoList.map( ( comment, key ) => h('p', { key }, comment.replace(/<p>/g, ' ')));

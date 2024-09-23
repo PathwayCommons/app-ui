@@ -6,6 +6,7 @@ const classNames = require('classnames');
 const queryString = require('query-string');
 const _ = require('lodash');
 
+const { FACTOID_URL } = require('../../../config');
 const { ServerAPI } = require('../../services');
 
 const PcLogoLink = require('../../common/components/pc-logo-link');
@@ -16,8 +17,6 @@ const { TimeoutError } = require('../../../util');
 const { ErrorMessage } = require('../../common/components/error-message');
 const { FeatureView } = require('./feature-view');
 const { Contribute } = require('../../common/components/contribute');
-
-const { PC_URL } = require('../../../config');
 
 class Search extends React.Component {
 
@@ -37,7 +36,8 @@ class Search extends React.Component {
       feature: null,
       dataSources: [],
       loading: false,
-      error: null
+      error: null,
+      PC_URL: null
     };
   }
 
@@ -67,6 +67,8 @@ class Search extends React.Component {
 
   componentDidMount() {
     this.getSearchResult();
+    return ServerAPI.getPCURL()
+      .then( PC_URL => this.setState({ PC_URL }) );
   }
 
   onSearchValueChange(e) {
@@ -116,15 +118,24 @@ class Search extends React.Component {
   }
 
   render() {
-    let { geneResults, searchHits, feature, query, loading, dataSources } = this.state;
+    let { geneResults, searchHits, feature, query, loading, dataSources, PC_URL } = this.state;
 
     const searchListing = h(Loader, { loaded: !loading, options: { left: '50%', color: '#16A085' } }, [
-      h('div', [
-        h('h2', {
+      h('div.search-results-header', [
+        h('p.search-results-header-title', {
           className: classNames({
             'hidden': _.isEmpty(geneResults) && _.isEmpty(searchHits)
           })
         }, 'Explore how your query is connected to millions of curated interactions'),
+        h('p.search-results-header-subtitle', [
+          'Pathway Commons accepts contributions - ',
+          h('a.plain-link', {
+            href: `${FACTOID_URL}`,
+            target: '_blank'
+          }, 'add interactions from your publication')
+        ]),
+      ]),
+      h('div.search-results-content', [
         h(FeatureView, { feature }),
         h(GeneResultsView, { geneResults } ),
         h(PathwayResultsView, { searchHits, query, controller: this, dataSources, hasFeature: feature != null })
@@ -163,17 +174,12 @@ class Search extends React.Component {
           target: '_blank'
         }, 'Data'),
 
-        // h('a', {
-        //   href: PC_URL + '#tools',
-        //   target: '_blank'
-        // }, 'Tools'),
-
         h('a', {
           href: PC_URL + '#contact',
           target: '_blank'
         }, 'Contact'),
 
-        h(Contribute, {text: 'Contribute to PC'})
+        h(Contribute, {text: 'Contribute'})
       ]),
       h('div.search-header', [
         h('div.search-branding', [
@@ -202,8 +208,8 @@ class Search extends React.Component {
           h('div.search-suggestions', [
             'e.g. ',
             h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, query, {q: 'cell cycle'})) }}, 'cell cycle, '),
-            h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, query, {q: 'pcna xrcc2 xrcc3 rad50 rad51'})) }}, 'pcna xrcc2 xrcc3 rad50 rad51, '),
-            h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, query, {q: 'P12004'})) }}, 'P12004')
+            h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, query, {q: 'SRC TLN1 DLC1 PXN VCL KANK1'})) }}, 'SRC TLN1 DLC1 PXN VCL KANK1, '),
+            h(Link, { to: { pathname: '/search', search: queryString.stringify(_.assign({}, query, {q: 'uniprot:Q9Y490'})) }}, 'uniprot:Q9Y490')
           ])
         ])
       ]),

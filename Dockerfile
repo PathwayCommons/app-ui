@@ -11,14 +11,11 @@ WORKDIR /home/appuser/app
 # Bundle app
 COPY . /home/appuser/app
 
-# Install app dependencies
-# Note: here NODE_ENV env must be 'development' so that dev dependencies are installed
-RUN NODE_ENV=development npm install
+# Here NODE_ENV must be 'development' so that all dependencies are installed
+RUN NODE_ENV=development npm ci
 
-
-# NODE_ENV arg with the default value for buildng and running the client-server node web app
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
+# Bundle JS and CSS
+RUN npm run build-prod
 
 # Expose port
 EXPOSE 3000
@@ -28,5 +25,4 @@ RUN chown appuser:appuser -R /home/appuser/app
 USER appuser
 
 # Apply start commands
-COPY entrypoint.sh /
-CMD ["/entrypoint.sh"]
+CMD ["npm", "start"]

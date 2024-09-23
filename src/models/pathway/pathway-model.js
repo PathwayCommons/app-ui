@@ -1,7 +1,6 @@
 const _ = require('lodash');
 
 // basic pathway model to serve the needs of the pathways view
-// TODO:
 //  - api to get entities,
 //  - compose each entity with entity metadata
 //  - get entity by id
@@ -28,7 +27,7 @@ class Pathway {
   }
 
   name(){
-    return _.get(this.raw, 'graph.pathwayMetadata.title.0', '');
+    return _.get(this.raw, 'graph.pathwayMetadata.title', '');
   }
 
   datasource(){
@@ -51,6 +50,14 @@ class Pathway {
     let ms = this.macromolecules();
     let names = _.flatten(ms.map( node => [ ..._.get(node, 'data.metadata.synonyms', []), ...[_.get(node, 'data.label', '')] ] ));
     return _.uniq(names);
+  }
+
+  publicationXrefs(){
+    return _.get( this.raw, 'graph.pathwayMetadata.pubXrefs' );
+  }
+
+  unificationXrefs(){
+    return _.get( this.raw, 'graph.pathwayMetadata.uniXrefs' );
   }
 
 }

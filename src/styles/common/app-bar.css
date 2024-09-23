@@ -25,12 +25,12 @@
   border-radius: 0.25em 0.25em 0 0;
 }
 
-.app-bar-title {
+/* .app-bar-title {
   color: var(--dark-base-colour);
   font-weight: bold;
   font-size: 0.9em;
   max-width: 95vw;
-}
+} */
 
 .app-toolbar {
   display: flex; /* use inline-flex if you want the bar to take up only the width of its children */
@@ -65,4 +65,10 @@
   & .element-search-input {
     width: 100%;
   }
+}
+
+.app-bar .contribute {
+  position: absolute;
+  margin: 0.5em 0;
+  left: 0.25em;
 }

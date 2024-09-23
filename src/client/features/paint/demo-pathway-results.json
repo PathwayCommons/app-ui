@@ -282,7 +282,7 @@
               "ensembl": [
                 "ENST00000244741"
               ],
-              "hgnc symbol": [
+              "hgnc.symbol": [
                 "CDKN1A"
               ],
               "reactome": [
@@ -368,7 +368,7 @@
               "ensembl": [
                 "ENST00000244741"
               ],
-              "hgnc symbol": [
+              "hgnc.symbol": [
                 "CDKN1A"
               ],
               "reactome": [
@@ -418,13 +418,13 @@
               "REPLACED http://www.reactome.org/biopax/64/48887#Protein10458"
             ],
             "databaseIds": {
-              "hgnc symbol": [
+              "hgnc.symbol": [
                 "PCBP4"
               ],
               "reactome": [
                 "R-HSA-6803382"
               ],
-              "uniprot knowledgebase": [
+              "uniprot": [
                 "P57723"
               ]
             },
@@ -471,13 +471,13 @@
               "REPLACED http://www.reactome.org/biopax/64/48887#Protein10458"
             ],
             "databaseIds": {
-              "hgnc symbol": [
+              "hgnc.symbol": [
                 "PCBP4"
               ],
               "reactome": [
                 "R-HSA-6803382"
               ],
-              "uniprot knowledgebase": [
+              "uniprot": [
                 "P57723"
               ]
             },
@@ -648,13 +648,13 @@
               "REPLACED http://www.reactome.org/biopax/64/48887#Protein10457"
             ],
             "databaseIds": {
-              "hgnc symbol": [
+              "hgnc.symbol": [
                 "ZNF385A"
               ],
               "reactome": [
                 "R-HSA-6803421"
               ],
-              "uniprot knowledgebase": [
+              "uniprot": [
                 "Q96PM9"
               ]
             },
@@ -728,13 +728,13 @@
               "Reactome DB_ID: 69683"
             ],
             "databaseIds": {
-              "hgnc symbol": [
+              "hgnc.symbol": [
                 "TP53"
               ],
               "reactome": [
                 "R-HSA-69683"
               ],
-              "uniprot knowledgebase": [
+              "uniprot": [
                 "P04637"
               ]
             },
@@ -801,7 +801,7 @@
               "ensembl": [
                 "ENSG00000124762"
               ],
-              "hgnc symbol": [
+              "hgnc.symbol": [
                 "CDKN1A"
               ],
               "reactome": [
@@ -860,13 +860,13 @@
               "REPLACED http://www.reactome.org/biopax/64/48887#Protein1393"
             ],
             "databaseIds": {
-              "hgnc symbol": [
+              "hgnc.symbol": [
                 "CDKN1A"
               ],
               "reactome": [
                 "R-HSA-182585"
               ],
-              "uniprot knowledgebase": [
+              "uniprot": [
                 "P38936"
               ]
             },
@@ -954,13 +954,13 @@
               "Reactome DB_ID: 69683"
             ],
             "databaseIds": {
-              "hgnc symbol": [
+              "hgnc.symbol": [
                 "TP53"
               ],
               "reactome": [
                 "R-HSA-69683"
               ],
-              "uniprot knowledgebase": [
+              "uniprot": [
                 "P04637"
               ]
             },
@@ -1024,13 +1024,13 @@
               "REPLACED http://www.reactome.org/biopax/64/48887#Protein10457"
             ],
             "databaseIds": {
-              "hgnc symbol": [
+              "hgnc.symbol": [
                 "ZNF385A"
               ],
               "reactome": [
                 "R-HSA-6803421"
               ],
-              "uniprot knowledgebase": [
+              "uniprot": [
                 "Q96PM9"
               ]
             },
@@ -1104,13 +1104,13 @@
               "Reactome DB_ID: 69683"
             ],
             "databaseIds": {
-              "hgnc symbol": [
+              "hgnc.symbol": [
                 "TP53"
               ],
               "reactome": [
                 "R-HSA-69683"
               ],
-              "uniprot knowledgebase": [
+              "uniprot": [
                 "P04637"
               ]
             },
@@ -1177,7 +1177,7 @@
               "ensembl": [
                 "ENSG00000124762"
               ],
-              "hgnc symbol": [
+              "hgnc.symbol": [
                 "CDKN1A"
               ],
               "reactome": [
@@ -1236,13 +1236,13 @@
               "REPLACED http://www.reactome.org/biopax/64/48887#Protein10457"
             ],
             "databaseIds": {
-              "hgnc symbol": [
+              "hgnc.symbol": [
                 "ZNF385A"
               ],
               "reactome": [
                 "R-HSA-6803421"
               ],
-              "uniprot knowledgebase": [
+              "uniprot": [
                 "Q96PM9"
               ]
             },

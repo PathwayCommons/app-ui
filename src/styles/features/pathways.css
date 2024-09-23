@@ -4,3 +4,24 @@
   position: relative;
   overflow: hidden;
 }
+
+.pathway-title {
+  max-width: 95vw;
+  margin: 0.25em;
+}
+
+.pathway-title .pathway-title-name {
+  font-size: 1.2em;
+  font-weight: bold;
+  padding: 0.15em;
+
+  & .highlight-link {
+    color: rgb(26, 117, 215);
+  }
+}
+
+.pathway-title .pathway-title-source {
+  font-size: 1em;
+  padding: 0.15em;
+
+}

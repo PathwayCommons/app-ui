@@ -13,3 +13,6 @@ src/scripts/jsonld/*
 /nohup.out
 src/*.gmt
 downloads/*
+public/img/pathways/*
+!/**/.gitkeep
+debug.log

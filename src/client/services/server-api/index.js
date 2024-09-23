@@ -1,8 +1,9 @@
 const qs = require('query-string');
 const _ = require('lodash');
 
-const { PC_URL } = require('../../../config');
+let PC_URL;
 const { fetch } = require('../../../util');
+const { NCBI_EUTILS_BASE_URL } = require('../../../config');
 
 const defaultFetchOpts = {
   headers: {
@@ -12,6 +13,19 @@ const defaultFetchOpts = {
 };
 
 const ServerAPI = {
+  getPCURL(){
+    if( PC_URL ){
+      return Promise.resolve(PC_URL);
+    } else {
+      return fetch('/api/pc/baseURL')
+        .then( res => res.text() )
+        .then( baseUrl => {
+          PC_URL = baseUrl;
+          return PC_URL;
+        });
+    }
+  },
+
   // a generic method that gets pathway sbgn json from various sources
   // e.g. pathwaycommons, factoid, or human created layouts
   getAPIResource(opts){
@@ -23,9 +37,9 @@ const ServerAPI = {
         throw new Error('Invalid parameter.  Pathways api calls require a uri parameter');
       }
     }
-    if( type === 'factoids' ){
+    if( type === 'biofactoid' ){
       if( id !== null ){
-        return this.getFactoid(opts.id);
+        return this.getDocById(opts.id);
       } else {
         throw new Error('Invalid paramter. Factoids api calls require a id parameter');
       }
@@ -46,15 +60,15 @@ const ServerAPI = {
     );
   },
 
-  getFactoids() {
+  getAllDocs() {
     return (
-      fetch('/api/factoids', defaultFetchOpts)
+      fetch('/api/biofactoid', defaultFetchOpts)
         .then( res => res.json() )
     );
   },
 
-  getFactoid(id) {
-    let url = `/api/factoids/${ id }`;
+  getDocById(id) {
+    let url = `/api/biofactoid/${ id }`;
     return (
       fetch(url, defaultFetchOpts)
         .then(res =>  res.json())
@@ -74,8 +88,14 @@ const ServerAPI = {
   },
 
   getPubmedPublications( pubmedIds ){
+    const opts = {
+      db: 'pubmed',
+      retmode: 'json',
+      id: pubmedIds.toString()
+    };
+    const url = `${NCBI_EUTILS_BASE_URL}/esummary.fcgi?${qs.stringify(opts)}`;
     return (
-      fetch('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id=' + pubmedIds.toString())
+      fetch(url)
         .then(res => res.json())
         .then(res => {
           let { result } = res;
@@ -83,15 +103,22 @@ const ServerAPI = {
           let { uids } = result;
 
           return uids.map( uid => {
-            let { title, authors, sortfirstauthor, sortpubdate, source } = result[uid];
+            const record = result[uid];
+            let { title, authors, sortfirstauthor, pubdate, source, articleids } = record;
+            const doi = _.find( articleids, { idtype: 'doi' } );
+            const pubmed = _.find( articleids, { idtype: 'pubmed' } );
+            const pmc = _.find( articleids, { idtype: 'pmc' } );
 
             return {
               id: uid,
               title,
               authors,
               firstAuthor: sortfirstauthor,
-              date: sortpubdate,
-              source
+              date: pubdate,
+              source,
+              doi: _.get( doi, 'value', null),
+              pubmed: _.get( pubmed, 'value', null),
+              pmc: pmc ? pmc.value : null
             };
           } );
         })
@@ -109,13 +136,16 @@ const ServerAPI = {
   },
 
   downloadFileFromPathwayCommons( uri, format ){
-    return fetch(PC_URL + 'pc2/get?' + qs.stringify({ uri, format}), defaultFetchOpts);
+    return this.getPCURL()
+      .then( url => {
+        return fetch(url + 'pc2/get?' + qs.stringify({ uri, format}), defaultFetchOpts);
+      });
   },
 
   search(query){
     const queryClone=_.assign({},query);
-    if (/^((uniprot|hgnc):\w+|ncbi:[0-9]+)$/i.test(queryClone.q)) {
-      queryClone.q=queryClone.q.replace(/^(uniprot|ncbi|hgnc):/i,"");
+    if (/^((uniprot|hgnc|hgnc.symbol):\w+|ncbi:[0-9]+)$/i.test(queryClone.q)) {
+      queryClone.q=queryClone.q.replace(/^(uniprot|ncbi|hgnc|hgnc.symbol):/i,"");
     }
     return fetch(`/api/search`, {
       method: 'POST',

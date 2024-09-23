@@ -43,13 +43,13 @@ let extractBiopaxMetadata = ( biopaxJsonEntry, physicalEntityData ) => {
   };
 };
 
-// transform biopaxJsonText into a consolidated js object
-let biopaxText2ElementMap = async ( biopaxJsonText, xrefSuggester ) => {
+// transform biopaxJson into a consolidated js object
+let biopaxText2ElementMap = async ( biopaxJson, xrefSuggester ) => {
   let rawMap = new Map();
   let elementMap = new Map();
   let xRefMap = new Map();
 
-  let biopaxElementGraph = JSON.parse(biopaxJsonText)['@graph'];
+  let biopaxElementGraph = biopaxJson['@graph'];
   let externalReferences = [];
 
   biopaxElementGraph.forEach( element => {
@@ -115,27 +115,27 @@ let biopaxText2ElementMap = async ( biopaxJsonText, xrefSuggester ) => {
 };
 
 
-let fillInBiopaxMetadata = async ( cyJsonEles, biopaxJsonText ) => {
+let fillInBiopaxMetadata = async ( cyJsonEles, biopaxJson ) => {
   let nodes = cyJsonEles.nodes;
 
-  let bm = await biopaxText2ElementMap( biopaxJsonText, xref2Uri );
+  let bm = await biopaxText2ElementMap( biopaxJson, xref2Uri );
   let physicalEntityData = await getGenericPhyiscalEntityData( nodes );
 
   nodes.forEach( node => {
     let nodeId = node.data.id;
-    let altPCId = nodeId.substring(0, nodeId.lastIndexOf('_'));
+    let altId = nodeId.substring(0, nodeId.lastIndexOf('_'));
     node.data.metadata = {};
 
-    // weird legacy hack to get extra metadata for certain nodes that have PC prefixes
+    // a hack for certain nodes that have id like '<pc_uri>_<hash>' (due to how the biopax-to-sbgn converter works)
     if( bm.has( nodeId ) ){
       node.data.metadata = extractBiopaxMetadata( bm.get(nodeId), physicalEntityData[nodeId] );
-    } else {
-      if( bm.has( altPCId ) ){
-        node.data.metadata = extractBiopaxMetadata( bm.get(altPCId), physicalEntityData[nodeId] );
-      }
+    } else if( bm.has( altId ) ){
+      node.data.metadata = extractBiopaxMetadata( bm.get(altId), physicalEntityData[nodeId] );
     }
   });
-
+//  console.log("bm: ", bm.get(nodes[1].data.id));
+//  console.log(nodes[1].data.id+": ", nodes[1]);
+//  console.log("synonyms: ", nodes[1].data.metadata.synonyms);
   return cyJsonEles;
 };
 

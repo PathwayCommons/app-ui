@@ -209,7 +209,7 @@ enrichmentRouter.post('/visualization', (req, res, next) => {
  *             type: string
  *         namespace:
  *           type: string
- *           description: "MIRIAM collection namespace to map to (see http://identifiers.org/) \n Default: hgnc"
+ *           description: "Idenifiers collection namespace prefix to map to (see http://bioregistry.io/) \n Default: hgnc"
  *           example: "ensembl"
  *           enum:
  *           - "ensembl"
@@ -417,7 +417,7 @@ enrichmentRouter.post('/visualization', (req, res, next) => {
  *                 - CDK5
  *             uri:
  *               type: string
- *               example: http://identifiers.org/go/GO:0006354
+ *               example: http://bioregistry.io/go:0006354
  *             namespace:
  *               type: string
  *               example: go

@@ -2,7 +2,6 @@
 
 [![DOI](https://zenodo.org/badge/104936681.svg)](https://zenodo.org/badge/latestdoi/104936681)
 
-
 ## Required software
 
 - [Node.js](https://nodejs.org/en/) >=10.0.0 <11.0.0
@@ -24,7 +23,7 @@
     For a production build:
     ```
     npm run build-prod
-    npm run start
+    npm start
     ```
 
 ## Configuration
@@ -35,7 +34,9 @@ The following environment variables can be used to configure the server (also do
 - `PORT`: the port on which the server runs (default 3000)
 - `PC_URL`: Pathway Commons homepage URL (default: 'http://www.pathwaycommons.org/'; cPath2 service should be there available at /pc2/ path)
 - `NCBI_API_KEY`: NCBI E-Utilities API key ([read more](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/))
-- `FACTOID_URL`: the Factoid app URL (default: 'http://unstable.factoid.baderlab.org/')
+- `FACTOID_URL`: the Factoid app URL (default: 'https://biofactoid.org/')
+- `SBGN_IMG_SERVICE_BASE_URL`: URL for service that converts SBGN to an image (i.e. [Syblars](http://syblars.cs.bilkent.edu.tr/); default is `http://localhost:9090/`)
+- `SBGN_IMG_PATH`: cli tool `snapshot` output folder for images (default: `public/img/pathways`)
 
 ## Run targets
 
@@ -48,70 +49,22 @@ The following environment variables can be used to configure the server (also do
 - `npm run watch` : watch mode (debug mode enabled, autorebuild, autoreload)
 - `npm test` : run tests
 - `npm run lint` : lint the project
-- `npm run ci` : run the tests and lint at once
+- `npm run ci` : run the tests and lint and build-prod at once
 
 
 ## Using Docker and Dockerfile
 
-### Build image and run locally
-
 Build the image.
-Here, `app-ui` is used as the image name.
 
 ```
-cd app-ui
-docker build --build-arg NODE_ENV=production -t app-ui .
+docker build -t pathwaycommons/app-ui .
 ```
 
 Run the container:
 
 ```
-docker run -it --rm -p 12345:3000 -e "NODE_ENV=production" --name "app-ui" app-ui
+docker run --detach --rm --publish 3000:3000 --env "NODE_ENV=production" --name "app-ui" pathwaycommons/app-ui
 ```
-
-Notes:
-
-- The `-it` switches are necessary to make `node` respond to `ctrl+c` etc. in `docker`.
-- The `-p` switch indicates that port 3000 on the container is mapped to port 12345 on the host.  Without this switch, the server is inaccessible.
-- The `-u` switch is used so that a non-root user is used inside the container.
-- The `-e` switch is used to set environment variables.  Alternatively use `--env-file` to use a file with the environment variables.
-- References:
-  - [Dockerizing a Node.js web app](https://nodejs.org/en/docs/guides/nodejs-docker-webapp/)
-  - [Documentation of docker-node](https://github.com/nodejs/docker-node)
-  - [Docker CLI docs](https://docs.docker.com/engine/reference/commandline/cli/)
-
-
-### Run the image from Docker Hub using Docker Compose
-
-NOTE: existing images and containers must be restarted shortly after every new official PC release; otherwise, the web app will be still using some old cached data while getting new pathway data from the web service at http://www.pathwaycommons.org/
-
-Pathway Commons maintains a stable [Docker Hub](https://hub.docker.com/) image for
-[app-ui](https://hub.docker.com/r/pathwaycommons/app-ui/) that is automatically built each time a commit is pushed
-to the master branch on GitHub (other versions can be also built automatically or on-demand and pushed to that
-PC repository on Docker Hub).
-
-To run the app using the pathwaycommons/app-ui:master image, execute:
-
-```sh
-docker-compose up -d
-```
-
-Access the app instance at port `9090` (can be specified in the docker-compose.yml).
-
-Notes:
-- References:
-  - [Getting started with Docker Compose](https://docs.docker.com/compose/gettingstarted/)
-
-### Custom build/rebuild/run with Docker Compose
-
-Create .env file in this directory and define there yours: NODE_ENV, PC_URL, FACTOID_URL, PORT options;
-execute:
-
-```sh
-docker-compose -f dev-compose.yml build
-docker-compose -f dev-compose.yml up -d
-```
-
 
 ## Testing
 
@@ -121,12 +74,32 @@ can run `npm run test ./test/path/to/test` to run specific tests.
 [Chai](http://chaijs.com/) is included to make the tests easier to read and write.
 
 
+## Scripts
+
+### Command line tools
+
+The `scripts/cli.js` file contains app-ui command line tools:
+  - `source`: Download and extract a file to `downloads` folder
+  - `snapshot`: Generate PNG images for pathways listed in a PC GMT-formatted file
+    - Requires an instance of [Syblars](http://syblars.cs.bilkent.edu.tr/) accessible at a location defined by the configuration variable `SBGN_IMG_SERVICE_BASE_URL` (see `docker-compose.yml` service `syblars`)
+    - Images will be placed in directory `SBGN_IMG_PATH` (default: `public/img/pathways`)
+
+Usage: To generate a PNG of an SBGN representation for each pathway declared in the GMT file at `downloads/pc-hgnc.gmt.gz`:
+
+```sh
+$ docker-compose up -d syblars
+$ SERVER_FETCH_TIMEOUT="60000" node src/scripts/cli.js snapshot --file pc-hgnc.gmt
+```
+NB: The default timeout of fetch is normally quite brief (5 seconds).
+
+In this way, images will be served via expressJS at `img/pathways/:id`, where `id` is the pathway URI with anything that is not a letter (a-z) or digit (0-9) is replaced with underscores (`_`).
+
 ## Developing a feature and making a pull request
 
 Students who work on the repo should follow these instructions for each feature that they work on:
 
 1. Initial preparation (only needed once)
-    1. [Make a fork on Github](https://github.com/PathwayCommons/app-ui#fork-destination-box) (if you haven't already)
+    1. [Make a fork on GitHub](https://github.com/PathwayCommons/app-ui#fork-destination-box) (if you haven't already)
     under your personal account
     1. Check out the fork repo: `git clone https://github.com/myusername/app-ui.git`
     1. Change the directory to the project: `cd app-ui`
@@ -142,7 +115,7 @@ Students who work on the repo should follow these instructions for each feature 
         1. Select `Merge into Current Branch`
   1. Make a feature branch for the new feature or change you are working on.  Make sure to give your branch a clear, meaningful name.
       1. Using the console: `git checkout -b name-of-feature`
-      1. Using GitUp: Right click the `HEAD` commit (which should be the top commit of your local `development` branch),
+      1. Using GitUp: right-click the `HEAD` commit (which should be the top commit of your local `development` branch),
       then select `Create Branch...`
 1. Make commits as you're working on your feature:
     1. Using the console: `git commit -am "My descriptive commit message"`

@@ -4,6 +4,11 @@ const pc = require('../external-services/pathway-commons');
 
 const router = express.Router();
 
+const { PC_URL } = require('../../config');
+
+router.get('/baseURL', function (req, res) {
+  res.send(PC_URL);
+});
 
 router.get('/search', function (req, res) {
   pc.search(req.query).then(r => res.json(r));

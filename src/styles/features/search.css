@@ -20,10 +20,10 @@
 }
 
 .search-nav-links .contribute {
-  position: relative;
-  margin: 1em;
+  padding: 1em;
 
   & a {
+    text-decoration: none;
     padding: 0;
   }
 }
@@ -132,6 +132,19 @@
   position: relative;
 }
 
+.search-results-header p {
+  margin: 0.5em 0 0.25em;
+}
+
+.search-results-header .search-results-header-title {
+  font-size: larger;
+}
+
+.search-results-header .search-results-header-subtitle {
+  font-size: smaller;
+  color: var(--dark-base-colour);
+}
+
 .search-tools {
   display: flex;
   flex-direction: row;
@@ -145,6 +158,10 @@
     flex-direction: column;
     align-items: flex-start;
   }
+
+  .search-results-header {
+    display: none;
+  }
 }
 
 .search-pathways-header {
@@ -155,15 +172,9 @@
   margin-top: 10px;
 }
 
-.search-pathway-results {
-}
-
 .search-genes-info-panel {
   display: flex;
   flex-flow: row wrap;
-}
-
-.search-genes-results {
 }
 
 .search-genes-list {
@@ -201,10 +212,18 @@
 }
 
 .search-item {
+  padding: 1em 0;
+}
+
+.search-item.preview {
+  /* background-color: var(--cloud); */
+  border: 1px solid var(--cloud-darker);
+}
+
+.search-item-info {
   display: flex;
   vertical-align: middle;
   align-items: center;
-  padding: 1em 0;
 }
 
 .search-item-icon {
@@ -236,6 +255,13 @@
   margin-top: 2px;
   color: #7f8c8d;
   font-size: 0.66em;
+}
+
+.search-item-preview {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 70%;
 }
 
 .loader {
@@ -279,6 +305,18 @@
     }
   }
 
+  & .feature-detail-links {
+    display: flex;
+    flex-flow: row;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 1em 0;
+
+    & .feature-detail-link {
+      margin-right: 1em;
+    }
+  }
+
   &.pathway {
     grid-area: pathway;
 
@@ -302,12 +340,7 @@
       & .app-card-body {
         & p {
           font-size: 0.9em;
-          margin: 0.25em auto;
-
-          & .sub-heading {
-            font-weight: bold;
-            margin-right: 0.5em;
-          }
+          margin: 0 auto;
         }
 
         & i.icon {
@@ -392,13 +425,11 @@
     grid-template-columns: 1fr;
   }
 
+  .search-results-header {
+    display: none;
+  }
+
   .feature-container {
-    grid-template-columns: 100%;
-    grid-template-areas:
-    'header'
-    'pathway'
-    'article'
-    'footer'
-    ;
+    display: none;
   }
 }

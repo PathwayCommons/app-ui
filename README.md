@@ -81,18 +81,36 @@ can run `npm run test ./test/path/to/test` to run specific tests.
 The `scripts/cli.js` file contains app-ui command line tools:
   - `source`: Download and extract a file to `downloads` folder
   - `snapshot`: Generate PNG images for pathways listed in a PC GMT-formatted file
-    - Requires an instance of [Syblars](http://syblars.cs.bilkent.edu.tr/) accessible at a location defined by the configuration variable `SBGN_IMG_SERVICE_BASE_URL` (see `docker-compose.yml` service `syblars`)
+    - Requires an instance of [Syblars](http://syblars.cs.bilkent.edu.tr/) accessible at a location defined by the configuration variable `SBGN_IMG_SERVICE_BASE_URL`
     - Images will be placed in directory `SBGN_IMG_PATH` (default: `public/img/pathways`)
 
-Usage: To generate a PNG of an SBGN representation for each pathway declared in the GMT file at `downloads/pc-hgnc.gmt.gz`:
 
-```sh
-$ docker-compose up -d syblars
-$ SERVER_FETCH_TIMEOUT="60000" node src/scripts/cli.js snapshot --file pc-hgnc.gmt
-```
-NB: The default timeout of fetch is normally quite brief (5 seconds).
+### Usage
 
-In this way, images will be served via expressJS at `img/pathways/:id`, where `id` is the pathway URI with anything that is not a letter (a-z) or digit (0-9) is replaced with underscores (`_`).
+1. Retrieve a GMT file
+
+    [Pathway Commons](https://www.pathwaycommons.org/) makes compressed archives of GMT files for each release [available for download](https://download.baderlab.org/PathwayCommons/PC2/). For PC version 14, issue the following command:
+
+    ```sh
+    node src/scripts/cli.js source --file pc-hgnc.gmt https://download.baderlab.org/PathwayCommons/PC2/v14/pc-hgnc.gmt.gz
+    ```
+
+2. Build and run a Syblars instance
+
+    ```sh
+    docker build --file Dockerfile.syblars -t pathwaycommon/syblars:latest .
+    docker run --detach --rm --publish 9090:3000 --name syblars pathwaycommon/syblars:latest
+    ```
+
+3. Generate a PNG of an SBGN representation for each pathway declared in the GMT file at `downloads/pc-hgnc.gmt`:
+
+    ```sh
+    SERVER_FETCH_TIMEOUT="60000" node src/scripts/cli.js snapshot --file pc-hgnc.gmt
+    ```
+
+- Notes
+  - The default timeout of fetch is normally quite brief (5 seconds).
+  - Images will be served via expressJS at `img/pathways/:id`, where `id` is the pathway URI with anything that is not a letter (a-z) or digit (0-9) is replaced with underscores (`_`).
 
 ## Developing a feature and making a pull request
 

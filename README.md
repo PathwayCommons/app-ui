@@ -85,7 +85,7 @@ The `scripts/cli.js` file contains app-ui command line tools:
     - Images will be placed in directory `SBGN_IMG_PATH` (default: `public/img/pathways`)
 
 
-### Usage
+#### Generate image snapshots from a GMT file
 
 1. Retrieve a GMT file
 

@@ -38,6 +38,48 @@ class EntitySummaryBox extends React.Component {
 }
 
 class GeneResultsView extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      canScrollLeft: false,
+      canScrollRight: true
+    };
+    
+    this.genesListRef = React.createRef();
+    this.scrollAmount = 300; // pixels to scroll on each button click
+  }
+
+  componentDidMount() {
+    // Update scroll buttons state on mount
+    this.updateScrollButtonState();
+  }
+
+  updateScrollButtonState() {
+    const container = this.genesListRef.current;
+    
+    if (container) {
+      // Check if we can scroll left (not at the beginning)
+      const canScrollLeft = container.scrollLeft > 0;
+      
+      // Check if we can scroll right (not at the end)
+      const canScrollRight = container.scrollLeft < (container.scrollWidth - container.clientWidth);
+      
+      this.setState({ canScrollLeft, canScrollRight });
+    }
+  }
+
+  scrollGeneList(direction) {
+    const container = this.genesListRef.current;
+    
+    if (container) {
+      const scrollAmount = direction === 'left' ? -this.scrollAmount : this.scrollAmount;
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      
+      // Update button states after scrolling
+      setTimeout(() => this.updateScrollButtonState(), 300);
+    }
+  }
+
   getEnrichmentAppInfo( geneResults, searchString ){
     let enabled = geneResults.length >= MIN_GENE_COUNT_ENRICHMENT;
     let hint = `Requires at least ${MIN_GENE_COUNT_ENRICHMENT} genes.`;
@@ -77,16 +119,40 @@ class GeneResultsView extends React.Component {
       this.getEnrichmentAppInfo( geneResults, searchString )
     ].map( info => h( AppCard, info ) );
 
+    // Create left and right caret buttons for scrolling
+    const leftCaretButton = h('button.scroll-caret-button.left', {
+      onClick: () => this.scrollGeneList('left'),
+      disabled: !this.state.canScrollLeft,
+      className: this.state.canScrollLeft ? 'active' : 'inactive'
+    }, [
+      h('i.icon.icon-chevron-left')
+    ]);
+
+    const rightCaretButton = h('button.scroll-caret-button.right', {
+      onClick: () => this.scrollGeneList('right'),
+      disabled: !this.state.canScrollRight,
+      className: this.state.canScrollRight ? 'active' : 'inactive'
+    }, [
+      h('i.icon.icon-chevron-right')
+    ]);
+
     return h('div.search-genes-results', [
       h('h3.search-genes-header', `Recognized genes (${geneResults.length})`),
-        h('div.search-genes-list', [
+      h('div.search-genes-scroll-container', [
+        leftCaretButton,
+        h('div.search-genes-list', {
+          ref: this.genesListRef,
+          onScroll: () => this.updateScrollButtonState()
+        }, [
           ...geneResults.map( geneInfo => {
             return h('div.card', [
               h(EntitySummaryBox, { geneInfo } )
             ]);
           })
         ]),
-        h( 'div.search-app-cards', appsInfos )
+        rightCaretButton
+      ]),
+      h('div.search-app-cards', appsInfos)
     ]);
   }
 }

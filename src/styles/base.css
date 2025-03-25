@@ -365,6 +365,27 @@ input {
   &.logo-biofactoid {
     background-image: url('./image/logo-biofactoid.svg');
   }
+
+  /* Add chevron icons for gene card scrolling */
+  &.icon-chevron-left {
+    position: relative;
+    width: 0.6em;
+    height: 0.6em;
+    border-width: 0 0 0.1em 0.1em;
+    border-style: solid;
+    border-color: currentColor;
+    transform: rotate(45deg);
+  }
+
+  &.icon-chevron-right {
+    position: relative;
+    width: 0.6em;
+    height: 0.6em;
+    border-width: 0.1em 0.1em 0 0;
+    border-style: solid;
+    border-color: currentColor;
+    transform: rotate(45deg);
+  }
 }
 
 .icon-rot-90 {

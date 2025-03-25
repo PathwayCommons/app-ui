@@ -182,9 +182,74 @@
   flex-flow: row nowrap;
   overflow-x: scroll;
   margin-bottom: 0.25em;
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+
+  &::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
+  }
 
   & * {
     flex-shrink: 0;
+  }
+}
+
+/* Add styles for gene card scrolling container and buttons */
+.search-genes-scroll-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-bottom: 0.25em;
+}
+
+.scroll-caret-button {
+  position: absolute;
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-color: white;
+  border: 1px solid var(--light-base-colour-dark);
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.scroll-caret-button:hover {
+  background-color: var(--light-base-colour);
+}
+
+.scroll-caret-button.inactive {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.scroll-caret-button.left {
+  left: 5px;
+}
+
+.scroll-caret-button.right {
+  right: 5px;
+}
+
+/* Ensure the gene list takes up the remaining space */
+.search-genes-scroll-container .search-genes-list {
+  flex: 1;
+  padding: 0 40px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 700px) {
+  .scroll-caret-button {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .search-genes-scroll-container .search-genes-list {
+    padding: 0 35px;
   }
 }
 

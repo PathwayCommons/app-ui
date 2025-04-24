@@ -1,15 +1,15 @@
 const _ = require('lodash');
 
-// const { TimeoutError } = require('../../../../util');
+const { TimeoutError } = require('../../../../util');
 const logger = require('../../../logger');
 const { IDENTIFIERS_URL, NS_GENE_ONTOLOGY, NS_REACTOME } = require('../../../../config');
-// const { xref2Uri } = require('../../../external-services/pathway-commons');
+const { xref2Uri } = require('../../../external-services/pathway-commons');
 
 const isGOId = token => /^GO:\d+$/.test( token );
 const isReactomeId = token => /^R-HSA-\d+$/.test( token );
 const normalizeId = pathwayId => pathwayId.replace('REAC:', '');
 
-// const reThrow = error => { throw error; };
+const reThrow = error => { throw error; };
 const fallbackXref = ( namespace, record ) => ({ uri: IDENTIFIERS_URL + '/' + namespace + ':' + record, namespace });
 
 const getXref = id => {
@@ -17,15 +17,13 @@ const getXref = id => {
 
   if( isGOId( id ) ){
     name = NS_GENE_ONTOLOGY;
-    id = id.replace( 'GO:', '' );
+    id = id.replace('GO:', '');
   } else if ( isReactomeId( id ) ) {
     name = NS_REACTOME;
   }
-
-  return fallbackXref( name, id );
   // Try the service. Fallback to manually constructing xref if TimeoutError
-  // return xref2Uri( name, id )
-  //     .catch( error => error instanceof TimeoutError ? fallbackXref( name, id ): reThrow( error ) );
+  return xref2Uri( name, id )
+      .catch( error => error instanceof TimeoutError ? fallbackXref( name, id ): reThrow( error ) );
 };
 
 const createEnrichmentNetworkNode = pathway => {

@@ -10,7 +10,7 @@ const { cachePromise } = require('../cache');
 const { fetch } = require('../../util');
 const logger = require('../logger');
 const config = require('../../config');
-const { uri2filename } = require('../../util/uri.js');
+const { uri2filename, fromXref } = require('../../util/uri.js');
 
 const xrefCache = new QuickLRU({ maxSize: config.PC_CACHE_MAX_SIZE });
 const queryCache = new QuickLRU({ maxSize: config.PC_CACHE_MAX_SIZE });
@@ -314,7 +314,7 @@ const fetchEntityUriBase = ( name, localId ) => {
     });
 };
 
-const getEntityUriParts = cachePromise(fetchEntityUriBase, xrefCache, name => name);
+const getEntityUriParts = cachePromise(fetchEntityUriBase, xrefCache, name => name); // eslint-disable-line
 
 /*
  * xref2Uri
@@ -325,12 +325,17 @@ const getEntityUriParts = cachePromise(fetchEntityUriBase, xrefCache, name => na
  *
  * This could be updated to accept array of { name, localId } fields now....
  */
-const xref2Uri =  ( name, localId ) => {
-  return getEntityUriParts( name, localId )
-    .then( uriParts => ({
-      uri: uriParts.origin + '/' + uriParts.namespace + ':' + localId,
-      namespace: uriParts.namespace
-    }) );
+const xref2Uri = async ( name, localId ) => {
+  // Manually bypass service call
+  return ({
+    uri: fromXref( name, localId ),
+    namespace: name
+  });
+  // return getEntityUriParts( name, localId )
+  //   .then( uriParts => ({
+  //     uri: uriParts.origin + '/' + uriParts.namespace + ':' + localId,
+  //     namespace: uriParts.namespace
+  //   }) );
 };
 
 module.exports = { query, search: cachedSearch, sifGraph, xref2Uri, getDataSources };

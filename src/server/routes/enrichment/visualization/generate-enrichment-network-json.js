@@ -17,6 +17,7 @@ const getXref = id => {
 
   if( isGOId( id ) ){
     name = NS_GENE_ONTOLOGY;
+    id = id.replace('GO:', '');
   } else if ( isReactomeId( id ) ) {
     name = NS_REACTOME;
   }

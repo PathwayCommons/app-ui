@@ -2,7 +2,7 @@ const _ = require('lodash');
 // const logger = require('../../logger');
 const url = require('url');
 const luceneEscapeQuery = require('lucene-escape-query');
-const { NS_NCBI_GENE, NS_HGNC_SYMBOL, NS_UNIPROT } = require('../../../config');
+const { NS_NCBI_GENE, NS_HGNC_SYMBOL, NS_UNIPROT, IDENTIFIERS_URL } = require('../../../config');
 const { getEntitySummary: getNcbiGeneSummary } = require('../../external-services/ncbi');
 const { validatorGconvert } = require('../../external-services/gprofiler/gconvert');
 const pc = require('../../external-services/pathway-commons');
@@ -52,9 +52,13 @@ const fillInXref = async ( summaries, ncbiAlias, uniprotAlias, name ) => {
     const eSummary = _.find( summaries, s => s.localId === ncbiGeneId );
     const hasUniProt = idFromXrefs( _.get( eSummary, 'xrefLinks' ), NS_UNIPROT );
     if ( eSummary && !hasUniProt ) {
-      // Use our internal service to grab the xref info
-      const xref = await pc.xref2Uri( name, _.get( uniprotAlias, token ) );
-      eSummary.xrefLinks.push( xref );
+      // TODO - duplicate function in ncbi.js
+      const createUri = ( namespace, localId ) => IDENTIFIERS_URL + '/' + namespace + ':' + localId;
+      const localId = uniprotAlias[ token ];
+      eSummary.xrefLinks.push({
+          namespace: name,
+          uri: createUri( name, localId )
+      });
     }
   }
 };

@@ -295,7 +295,7 @@ const formatXrefQuery = ( name, localId ) => _.concat( [], { db: name, id: local
  * given the identifiers collection name and identifier of a bio entity;
  * @return { object } the URL origin and namespace
  */
-const fetchEntityUriBase = ( name, localId ) => { // eslint-disable-line
+const fetchEntityUriBase = ( name, localId ) => {
   const url = config.PC_URL + "validate/xref";
   const fetchOpts = {
     method: 'POST',

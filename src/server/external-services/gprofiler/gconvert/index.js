@@ -11,7 +11,7 @@ const GCONVERT_URL = GPROFILER_URL + 'api/convert/convert/';
 const GPROFILER_NS_MAP = new Map([
   [NS_HGNC, 'HGNC_ACC'],
   [NS_HGNC_SYMBOL, 'HGNC'],
-  [NS_UNIPROT, 'UNIPROTSWISSPROT'],
+  [NS_UNIPROT, 'UNIPROTSWISSPROT_ACC'],
   [NS_NCBI_GENE, 'ENTREZGENE_ACC'],
   [NS_ENSEMBL, 'ENSG']
 ]);
@@ -30,7 +30,7 @@ const createGConvertOpts = opts => {
   const target = GPROFILER_NS_MAP.get(  _.get( opts, ['namespace'], defaults.target ) );
   const query = _.get( opts, ['query'] );
   let gConvertOpts = _.assign( {}, defaults, { query, target } );
-  
+
   if( !Array.isArray( query ) ){
     throw new InvalidParamError( `Error creating gconvert request - expected an array of strings for "query", got ${query}`);
   }
@@ -38,7 +38,7 @@ const createGConvertOpts = opts => {
   if( target == null ){
     throw new InvalidParamError( `Error creating gconvert request - expected a valid "namespace", got ${target}`);
   }
-  
+
   return gConvertOpts;
 };
 

@@ -177,15 +177,103 @@
   flex-flow: row wrap;
 }
 
+.search-genes-scroll-container {
+  position: relative;
+  width: 100%;
+  padding: 0 2em; /* Reduced padding for arrows */
+  margin: 1em 0;
+}
+
 .search-genes-list {
   display: flex;
-  flex-flow: row nowrap;
-  overflow-x: scroll;
-  margin-bottom: 0.25em;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  gap: 1em; /* Space between cards */
+  padding: 0.5em 0; /* Vertical padding only */
+  scroll-snap-type: x mandatory;
+}
 
-  & * {
-    flex-shrink: 0;
-  }
+.search-genes-list::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.scroll-caret-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--light-base-colour-dark);
+  border-radius: 50%;
+  width: 2em;
+  height: 2em;
+  display: none; /* Hidden by default */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1;
+  transition: all 0.2s ease;
+}
+
+.scroll-caret-button:hover {
+  background: var(--light-base-colour);
+}
+
+.scroll-caret-button.left {
+  left: 0.5em; /* Adjusted position */
+}
+
+.scroll-caret-button.right {
+  right: 0.5em; /* Adjusted position */
+}
+
+.scroll-caret-button.inactive {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.search-genes-scroll-container.has-scroll .scroll-caret-button {
+  display: flex; /* Only show when needed */
+}
+
+/* Ensure cards have consistent width and spacing */
+.search-genes-list .card {
+  flex: 0 0 auto;
+  width: calc(33.33% - 0.67em); /* One-third width minus gap */
+  min-width: 15em; /* Minimum width for readability */
+  margin: 0; /* Remove margin as we're using gap */
+  scroll-snap-align: start;
+}
+
+.search-genes-header {
+  margin-bottom: 1em;
+}
+
+/* Ensure the container takes full width */
+.search-genes-results {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.card {
+  min-width: 20em; /* Previously was in px */
+  margin: 0.5em;
+  flex-shrink: 0;
+}
+
+/* Update other pixel values to em/rem */
+.search-genes-header {
+  margin-bottom: 1em;
+  font-size: 1.25rem;
+}
+
+.search-app-cards {
+  margin-top: 2em;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20em, 1fr));
+  gap: 1em;
 }
 
 .interactions-logo {
@@ -276,12 +364,6 @@
   padding: 10px;
   padding-left: 215px;
   width: 60%;
-}
-
-.search-app-cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 2%;
 }
 
 /* Feature */

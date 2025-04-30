@@ -6,29 +6,53 @@ const isNonNil = x => x != null;
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const isProfile = env.PROFILE == 'true';
 
-const envVars = ['NODE_ENV', 'PC_URL', 'FACTOID_URL'];
+// Define environment variables with default values
+const envDefaults = {
+  NODE_ENV: 'development',
+  PC_URL: 'https://www.pathwaycommons.org',
+  FACTOID_URL: 'https://factoid.baderlab.org'
+};
 
 let conf = {
   entry: './src/client/index.js',
 
   output: {
-    filename: './build/bundle.js'
+    filename: './public/bundle.js',
+    path: __dirname
   },
 
   devtool: 'inline-source-map',
   module: {
     rules: [
-      { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' }
+      { 
+        test: /\.js$/, 
+        exclude: /node_modules/, 
+        loader: 'babel-loader',
+        options: {
+          presets: [
+            ['@babel/preset-env', {
+              targets: {
+                browsers: ['last 3 versions', 'ie >= 11']
+              }
+            }],
+            '@babel/preset-react'
+          ],
+          plugins: [
+            '@babel/plugin-transform-async-generator-functions'
+          ]
+        }
+      }
     ]
   },
   plugins: [
     isProfile ? new BundleAnalyzerPlugin() : null,
 
-    new webpack.EnvironmentPlugin(envVars),
+    // Use EnvironmentPlugin with default values
+    new webpack.EnvironmentPlugin(envDefaults),
 
     new webpack.optimize.CommonsChunkPlugin({
       name: 'deps',
-      filename: './build/deps.js',
+      filename: './public/deps.js',
       minChunks( module ){
         let context = module.context || '';
 
@@ -36,7 +60,12 @@ let conf = {
       }
     }),
 
-    isProd ? new UglifyJSPlugin() : null
+    isProd ? new UglifyJSPlugin({
+      compress: {
+        warnings: false
+      },
+      sourceMap: true
+    }) : null
   ].filter( isNonNil )
 };
 
